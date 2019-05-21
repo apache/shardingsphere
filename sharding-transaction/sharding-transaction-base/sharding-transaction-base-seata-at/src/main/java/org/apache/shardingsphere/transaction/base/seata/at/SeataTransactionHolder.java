@@ -24,7 +24,7 @@ import io.seata.tm.api.GlobalTransaction;
  *
  * @author zhaojun
  */
-public final class SeataTransactionHolder {
+final class SeataTransactionHolder {
     
     private static final ThreadLocal<GlobalTransaction> CONTEXT = new ThreadLocal<>();
     
@@ -33,7 +33,7 @@ public final class SeataTransactionHolder {
      *
      * @param transaction global transaction context
      */
-    public static void set(final GlobalTransaction transaction) {
+    static void set(final GlobalTransaction transaction) {
         CONTEXT.set(transaction);
     }
     
@@ -42,14 +42,14 @@ public final class SeataTransactionHolder {
      *
      * @return global transaction
      */
-    public static GlobalTransaction get() {
+    static GlobalTransaction get() {
         return CONTEXT.get();
     }
     
     /**
      * Clear global transaction.
      */
-    public static void clear() {
+    static void clear() {
         CONTEXT.remove();
     }
 }
