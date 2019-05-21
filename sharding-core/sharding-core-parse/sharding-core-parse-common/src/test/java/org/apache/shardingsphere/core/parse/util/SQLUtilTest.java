@@ -17,13 +17,15 @@
 
 package org.apache.shardingsphere.core.parse.util;
 
-import org.junit.Test;
-
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
+import org.junit.Test;
+
 public class SQLUtilTest {
-    
+
     @Test
     public void assertGetExactlyValue() {
         assertThat(SQLUtil.getExactlyValue("`xxx`"), is("xxx"));
@@ -31,4 +33,23 @@ public class SQLUtilTest {
         assertThat(SQLUtil.getExactlyValue("\"xxx\""), is("xxx"));
         assertThat(SQLUtil.getExactlyValue("'xxx'"), is("xxx"));
     }
+
+
+    @Test
+    public void testGetExactlyExpressionUsingAndReturningNull() {
+        assertNull(SQLUtil.getExactlyExpression(null));
+    }
+
+
+    @Test
+    public void testGetExactlyExpressionUsingAndReturningEmptyString() {
+        assertEquals("", SQLUtil.getExactlyExpression(""));
+    }
+
+
+    @Test
+    public void testGetExactlyValueUsingNull() {
+        assertNull(SQLUtil.getExactlyValue(null));
+    }
+
 }
