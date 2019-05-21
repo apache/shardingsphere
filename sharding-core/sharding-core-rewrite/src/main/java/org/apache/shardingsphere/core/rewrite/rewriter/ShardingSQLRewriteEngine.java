@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.engine;
+package org.apache.shardingsphere.core.rewrite.rewriter;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.core.constant.DatabaseType;
