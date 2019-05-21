@@ -17,6 +17,10 @@
 
 package org.apache.shardingsphere.transaction.base.seata.at;
 
+import io.seata.core.protocol.MergeResultMessage;
+import io.seata.core.protocol.MergedWarpMessage;
+import io.seata.core.protocol.RegisterTMRequest;
+import io.seata.core.protocol.RegisterTMResponse;
 import io.seata.rm.datasource.ConnectionProxy;
 import io.seata.rm.datasource.DataSourceProxy;
 import lombok.SneakyThrows;
@@ -37,7 +41,9 @@ import java.sql.Connection;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Queue;
 import java.util.concurrent.Executors;
+import java.util.concurrent.locks.LockSupport;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -77,6 +83,7 @@ public class SeataATShardingTransactionManagerTest {
     @Before
     public void setUp() {
         seataATShardingTransactionManager.init(DatabaseType.MySQL, getResourceDataSources());
+        LockSupport.parkUntil(System.currentTimeMillis() + 1000);
     }
     
     private DataSource getDataSource() {
@@ -113,5 +120,18 @@ public class SeataATShardingTransactionManagerTest {
         Field field = seataATShardingTransactionManager.getClass().getDeclaredField("dataSourceMap");
         field.setAccessible(true);
         return (Map<String, DataSource>) field.get(seataATShardingTransactionManager);
+    }
+    
+    @Test
+    public void assertBegin() {
+        seataATShardingTransactionManager.begin();
+        Queue<Object> requestQueue = mockSeataServer.getMessageHandler().getRequestQueue();
+        Queue<Object> responseQueue = mockSeataServer.getMessageHandler().getResponseQueue();
+        assertThat(requestQueue.size(), is(2));
+        assertThat(responseQueue.size(), is(2));
+        assertThat(requestQueue.poll(), instanceOf(RegisterTMRequest.class));
+        assertThat(requestQueue.poll(), instanceOf(MergedWarpMessage.class));
+        assertThat(responseQueue.poll(), instanceOf(RegisterTMResponse.class));
+        assertThat(responseQueue.poll(), instanceOf(MergeResultMessage.class));
     }
 }
