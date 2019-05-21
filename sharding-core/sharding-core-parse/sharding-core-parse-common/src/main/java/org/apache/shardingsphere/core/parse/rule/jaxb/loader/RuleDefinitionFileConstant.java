@@ -30,21 +30,15 @@ import org.apache.shardingsphere.core.constant.DatabaseType;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RuleDefinitionFileConstant {
     
+    private static final String ROOT_PATH = "META-INF/parsing-rule-definition";
+    
+    private static final String GENERAL = "general";
+    
     private static final String EXTRACTOR_RULE_DEFINITION_FILE_NAME = "extractor-rule-definition.xml";
     
     private static final String FILLER_RULE_DEFINITION_FILE_NAME = "filler-rule-definition.xml";
     
     private static final String SQL_STATEMENT_RULE_DEFINITION_FILE_NAME = "sql-statement-rule-definition.xml";
-    
-    private static final String ROOT_PATH = "META-INF/parsing-rule-definition";
-    
-    private static final String GENERAL = "general";
-    
-    public static final String SHARDING_ROOT_PATH = ROOT_PATH + "/sharding";
-    
-    public static final String MASTER_SALVE_ROOT_PATH = ROOT_PATH + "/masterslave";
-    
-    public static final String ENCRYPT_ROOT_PATH = ROOT_PATH + "/encrypt";
     
     /**
      * Get general extractor rule definition file name.
@@ -53,6 +47,17 @@ public final class RuleDefinitionFileConstant {
      */
     public static String getGeneralExtractorRuleDefinitionFileName() {
         return Joiner.on('/').join(ROOT_PATH, GENERAL, EXTRACTOR_RULE_DEFINITION_FILE_NAME);
+    }
+    
+    /**
+     * Get extractor rule definition file name.
+     *
+     * @param featureType feature type
+     * @param databaseType database type
+     * @return extractor rule definition file name
+     */
+    public static String getExtractorRuleDefinitionFileName(final String featureType, final DatabaseType databaseType) {
+        return Joiner.on('/').join(ROOT_PATH, featureType, databaseType.name().toLowerCase(), EXTRACTOR_RULE_DEFINITION_FILE_NAME);
     }
     
     /**
@@ -65,44 +70,34 @@ public final class RuleDefinitionFileConstant {
     }
     
     /**
-     * Get extractor rule definition file name.
+     * Get general filler rule definition file name.
      *
-     * @param rootDir root dir
-     * @param databaseType database type
-     * @return extractor rule definition file name
-     */
-    public static String getExtractorRuleDefinitionFileName(final String rootDir, final DatabaseType databaseType) {
-        return Joiner.on('/').join(rootDir, databaseType.name().toLowerCase(), EXTRACTOR_RULE_DEFINITION_FILE_NAME);
-    }
-    
-    /**
-     * Get extractor rule definition file name.
-     *
-     * @param rootDir root dir
-     * @param databaseType database type
-     * @return extractor rule definition file name
-     */
-    public static String getFillerRuleDefinitionFileName(final String rootDir, final DatabaseType databaseType) {
-        return Joiner.on('/').join(rootDir, databaseType.name().toLowerCase(), FILLER_RULE_DEFINITION_FILE_NAME);
-    }
-    
-    /**
-     * Get sharding general filler rule definition file name.
-     *
+     * @param featureType feature type
      * @return filler rule definition file name
      */
-    public static String getShardingGeneralFillerRuleDefinitionFileName() {
-        return Joiner.on('/').join(SHARDING_ROOT_PATH, GENERAL, FILLER_RULE_DEFINITION_FILE_NAME);
+    public static String getGeneralFillerRuleDefinitionFileName(final String featureType) {
+        return Joiner.on('/').join(ROOT_PATH, featureType, GENERAL, FILLER_RULE_DEFINITION_FILE_NAME);
+    }
+    
+    /**
+     * Get filler rule definition file name.
+     *
+     * @param featureType feature type
+     * @param databaseType database type
+     * @return filler rule definition file name
+     */
+    public static String getFillerRuleDefinitionFileName(final String featureType, final DatabaseType databaseType) {
+        return Joiner.on('/').join(ROOT_PATH, featureType, databaseType.name().toLowerCase(), FILLER_RULE_DEFINITION_FILE_NAME);
     }
     
     /**
      * Get SQL statement rule definition file name.
      *
-     * @param rootDir root dir
+     * @param featureType feature type
      * @param databaseType database type
      * @return SQL statement rule definition file name
      */
-    public static String getSQLStatementRuleDefinitionFileName(final String rootDir, final DatabaseType databaseType) {
-        return Joiner.on('/').join(rootDir, databaseType.name().toLowerCase(), SQL_STATEMENT_RULE_DEFINITION_FILE_NAME);
+    public static String getSQLStatementRuleDefinitionFileName(final String featureType, final DatabaseType databaseType) {
+        return Joiner.on('/').join(ROOT_PATH, featureType, databaseType.name().toLowerCase(), SQL_STATEMENT_RULE_DEFINITION_FILE_NAME);
     }
 }

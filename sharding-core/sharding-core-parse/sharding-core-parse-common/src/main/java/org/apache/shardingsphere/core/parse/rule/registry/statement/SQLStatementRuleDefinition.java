@@ -18,20 +18,13 @@
 package org.apache.shardingsphere.core.parse.rule.registry.statement;
 
 import com.google.common.base.CaseFormat;
-import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.core.parse.extractor.api.SQLSegmentExtractor;
-import org.apache.shardingsphere.core.parse.optimizer.SQLStatementOptimizer;
 import org.apache.shardingsphere.core.parse.rule.jaxb.entity.statement.SQLStatementRuleDefinitionEntity;
 import org.apache.shardingsphere.core.parse.rule.jaxb.entity.statement.SQLStatementRuleEntity;
 import org.apache.shardingsphere.core.parse.rule.registry.extractor.ExtractorRuleDefinition;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
-import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
 
 /**
@@ -44,39 +37,15 @@ public final class SQLStatementRuleDefinition {
     
     private final Map<String, SQLStatementRule> rules = new LinkedHashMap<>();
     
-    /**
-     * Initialize SQL statement rule definition.
-     * 
-     * @param entity SQL dialect statement rule definition entity
-     * @param extractorRuleDefinition extractor rule definition
-     */
     @SuppressWarnings("unchecked")
     @SneakyThrows
-    public void init(final SQLStatementRuleDefinitionEntity entity, final ExtractorRuleDefinition extractorRuleDefinition) {
+    public SQLStatementRuleDefinition(final SQLStatementRuleDefinitionEntity entity, final ExtractorRuleDefinition extractorRuleDefinition) {
         for (SQLStatementRuleEntity each : entity.getRules()) {
-            SQLStatementRule sqlStatementRule = new SQLStatementRule(
-                    each.getContext(), (Class<? extends SQLStatement>) Class.forName(each.getSqlStatementClass()), (SQLStatementOptimizer) newClassInstance(each.getOptimizerClass()));
-            sqlStatementRule.getExtractors().addAll(createExtractors(each.getExtractorRuleRefs(), extractorRuleDefinition));
-            rules.put(getContextClassName(each.getContext()), sqlStatementRule);
+            rules.put(getContextClassName(each.getContext()), new SQLStatementRule(each, extractorRuleDefinition));
         }
-    }
-    
-    private Collection<SQLSegmentExtractor> createExtractors(final String sqlExtractorRuleRefs, final ExtractorRuleDefinition extractorRuleDefinition) {
-        Collection<SQLSegmentExtractor> result = new LinkedList<>();
-        if (sqlExtractorRuleRefs != null) {
-            for (String each : Splitter.on(',').trimResults().splitToList(sqlExtractorRuleRefs)) {
-                result.add(extractorRuleDefinition.getRules().get(each));
-            }
-        }
-        return result;
     }
     
     private String getContextClassName(final String context) {
         return CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, context + "Context");
-    }
-    
-    @SneakyThrows
-    private Object newClassInstance(final String className) {
-        return Strings.isNullOrEmpty(className) ? null : Class.forName(className).newInstance();
     }
 }

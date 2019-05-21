@@ -33,7 +33,7 @@ import java.util.Collections;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MasterSlaveParseRuleRegistry extends ParseRuleRegistry {
     
-    private static volatile ParseRuleRegistry instance;
+    private static volatile ParseRuleRegistry instance = new MasterSlaveParseRuleRegistry();
     
     /**
      * Get singleton instance of parsing rule registry.
@@ -41,29 +41,22 @@ public final class MasterSlaveParseRuleRegistry extends ParseRuleRegistry {
      * @return instance of parsing rule registry
      */
     public static ParseRuleRegistry getInstance() {
-        if (null == instance) {
-            synchronized (MasterSlaveParseRuleRegistry.class) {
-                if (null == instance) {
-                    instance = new MasterSlaveParseRuleRegistry();
-                }
-            }
-        }
         return instance;
     }
     
     @Override
     protected String getExtractorFile(final DatabaseType databaseType) {
-        return RuleDefinitionFileConstant.getExtractorRuleDefinitionFileName(RuleDefinitionFileConstant.MASTER_SALVE_ROOT_PATH, databaseType);
+        return RuleDefinitionFileConstant.getExtractorRuleDefinitionFileName("masterslave", databaseType);
     }
     
     @Override
     protected Collection<String> getFillerFiles(final DatabaseType databaseType) {
-        return Collections.singletonList(RuleDefinitionFileConstant.getFillerRuleDefinitionFileName(RuleDefinitionFileConstant.MASTER_SALVE_ROOT_PATH, databaseType));
+        return Collections.singletonList(RuleDefinitionFileConstant.getFillerRuleDefinitionFileName("masterslave", databaseType));
     }
     
     @Override
     protected String getStatementRuleFile(final DatabaseType databaseType) {
-        return RuleDefinitionFileConstant.getSQLStatementRuleDefinitionFileName(RuleDefinitionFileConstant.MASTER_SALVE_ROOT_PATH, databaseType);
+        return RuleDefinitionFileConstant.getSQLStatementRuleDefinitionFileName("masterslave", databaseType);
     }
 }
 

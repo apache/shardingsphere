@@ -33,7 +33,7 @@ import java.util.Collections;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class EncryptParseRuleRegistry extends ParseRuleRegistry {
     
-    private static volatile ParseRuleRegistry instance;
+    private static volatile ParseRuleRegistry instance = new EncryptParseRuleRegistry();
     
     /**
      * Get singleton instance of parsing rule registry.
@@ -41,29 +41,22 @@ public final class EncryptParseRuleRegistry extends ParseRuleRegistry {
      * @return instance of parsing rule registry
      */
     public static ParseRuleRegistry getInstance() {
-        if (null == instance) {
-            synchronized (EncryptParseRuleRegistry.class) {
-                if (null == instance) {
-                    instance = new EncryptParseRuleRegistry();
-                }
-            }
-        }
         return instance;
     }
     
     @Override
     protected String getExtractorFile(final DatabaseType databaseType) {
-        return RuleDefinitionFileConstant.getExtractorRuleDefinitionFileName(RuleDefinitionFileConstant.ENCRYPT_ROOT_PATH, databaseType);
+        return RuleDefinitionFileConstant.getExtractorRuleDefinitionFileName("encrypt", databaseType);
     }
     
     @Override
     protected Collection<String> getFillerFiles(final DatabaseType databaseType) {
-        return Collections.singletonList(RuleDefinitionFileConstant.getFillerRuleDefinitionFileName(RuleDefinitionFileConstant.ENCRYPT_ROOT_PATH, databaseType));
+        return Collections.singletonList(RuleDefinitionFileConstant.getFillerRuleDefinitionFileName("encrypt", databaseType));
     }
     
     @Override
     protected String getStatementRuleFile(final DatabaseType databaseType) {
-        return RuleDefinitionFileConstant.getSQLStatementRuleDefinitionFileName(RuleDefinitionFileConstant.ENCRYPT_ROOT_PATH, databaseType);
+        return RuleDefinitionFileConstant.getSQLStatementRuleDefinitionFileName("encrypt", databaseType);
     }
 }
 

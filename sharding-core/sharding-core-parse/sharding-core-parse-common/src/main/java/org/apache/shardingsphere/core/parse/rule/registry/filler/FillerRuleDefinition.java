@@ -35,16 +35,18 @@ import java.util.Map;
 @Getter
 public final class FillerRuleDefinition {
     
-    private final Map<Class<? extends SQLSegment>, SQLSegmentFiller> rules = new LinkedHashMap<>();
+    private final Map<Class<? extends SQLSegment>, SQLSegmentFiller> rules;
     
-    /**
-     * Initialize filler rule definition.
-     * 
-     * @param entity filler rule definition entity
-     */
+    public FillerRuleDefinition(final FillerRuleDefinitionEntity... entities) {
+        rules = new LinkedHashMap<>();
+        for (FillerRuleDefinitionEntity each : entities) {
+            put(each);
+        }
+    }
+    
     @SuppressWarnings("unchecked")
     @SneakyThrows
-    public void init(final FillerRuleDefinitionEntity entity) {
+    private void put(final FillerRuleDefinitionEntity entity) {
         for (FillerRuleEntity each : entity.getRules()) {
             rules.put((Class<? extends SQLSegment>) Class.forName(each.getSqlSegmentClass()), (SQLSegmentFiller) Class.forName(each.getFillerClass()).newInstance());
         }

@@ -33,7 +33,7 @@ import java.util.LinkedList;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingParseRuleRegistry extends ParseRuleRegistry {
     
-    private static volatile ParseRuleRegistry instance;
+    private static volatile ParseRuleRegistry instance = new ShardingParseRuleRegistry();
     
     /**
      * Get singleton instance of parsing rule registry.
@@ -41,33 +41,26 @@ public final class ShardingParseRuleRegistry extends ParseRuleRegistry {
      * @return instance of parsing rule registry
      */
     public static ParseRuleRegistry getInstance() {
-        if (null == instance) {
-            synchronized (ShardingParseRuleRegistry.class) {
-                if (null == instance) {
-                    instance = new ShardingParseRuleRegistry();
-                }
-            }
-        }
         return instance;
     }
     
     @Override
     protected String getExtractorFile(final DatabaseType databaseType) {
-        return RuleDefinitionFileConstant.getExtractorRuleDefinitionFileName(RuleDefinitionFileConstant.SHARDING_ROOT_PATH, databaseType);
+        return RuleDefinitionFileConstant.getExtractorRuleDefinitionFileName("sharding", databaseType);
     }
     
     @Override
     protected Collection<String> getFillerFiles(final DatabaseType databaseType) {
         Collection<String> result = new LinkedList<>();
-        result.add(RuleDefinitionFileConstant.getShardingGeneralFillerRuleDefinitionFileName());
+        result.add(RuleDefinitionFileConstant.getGeneralFillerRuleDefinitionFileName("sharding"));
         if (DatabaseType.MySQL == databaseType) {
-            result.add(RuleDefinitionFileConstant.getFillerRuleDefinitionFileName(RuleDefinitionFileConstant.SHARDING_ROOT_PATH, databaseType));
+            result.add(RuleDefinitionFileConstant.getFillerRuleDefinitionFileName("sharding", databaseType));
         }
         return result;
     }
     
     @Override
     protected String getStatementRuleFile(final DatabaseType databaseType) {
-        return RuleDefinitionFileConstant.getSQLStatementRuleDefinitionFileName(RuleDefinitionFileConstant.SHARDING_ROOT_PATH, databaseType);
+        return RuleDefinitionFileConstant.getSQLStatementRuleDefinitionFileName("sharding", databaseType);
     }
 }
