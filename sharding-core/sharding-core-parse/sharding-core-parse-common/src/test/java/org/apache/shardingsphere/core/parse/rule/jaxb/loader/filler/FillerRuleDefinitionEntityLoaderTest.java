@@ -15,20 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.rule;
+package org.apache.shardingsphere.core.parse.rule.jaxb.loader.filler;
 
-import org.apache.shardingsphere.core.parse.rule.jaxb.loader.RuleDefinitionFileConstantTest;
-import org.apache.shardingsphere.core.parse.rule.jaxb.loader.extractor.ExtractorRuleDefinitionEntityLoaderTest;
-import org.apache.shardingsphere.core.parse.rule.jaxb.loader.filler.FillerRuleDefinitionEntityLoaderTest;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import org.junit.Test;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-        RuleDefinitionFileConstantTest.class,
-        ExtractorRuleDefinitionEntityLoaderTest.class,
-        FillerRuleDefinitionEntityLoaderTest.class
-})
-public final class AllRuleTests {
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+public final class FillerRuleDefinitionEntityLoaderTest {
+    
+    @Test
+    public void assertLoad() {
+        assertFalse(new FillerRuleDefinitionEntityLoader().load("META-INF/parsing-rule-definition/filler-rule-definition.xml").getRules().isEmpty());
+    }
+    
+    @Test
+    public void assertLoadWithNotExistedPath() {
+        assertTrue(new FillerRuleDefinitionEntityLoader().load("not-existed.xml").getRules().isEmpty());
+    }
 }
