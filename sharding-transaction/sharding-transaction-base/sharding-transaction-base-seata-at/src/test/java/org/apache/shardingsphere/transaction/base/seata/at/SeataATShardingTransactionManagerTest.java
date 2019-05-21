@@ -22,6 +22,7 @@ import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.transaction.core.ResourceDataSource;
+import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -38,6 +39,7 @@ import java.util.concurrent.Executors;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -52,7 +54,6 @@ public class SeataATShardingTransactionManagerTest {
     @BeforeClass
     @SneakyThrows
     public static void before() {
-        
         Executors.newSingleThreadExecutor().submit(new Runnable() {
             @Override
             public void run() {
@@ -93,6 +94,8 @@ public class SeataATShardingTransactionManagerTest {
         Map<String, DataSource> actual = getShardingDataSourceMap();
         assertThat(actual.size(), is(1));
         assertThat(actual.get("demo_ds"), instanceOf(DataSourceProxy.class));
+        assertThat(seataATShardingTransactionManager.getTransactionType(), is(TransactionType.BASE));
+        assertFalse(seataATShardingTransactionManager.isInTransaction());
     }
     
     @SneakyThrows
