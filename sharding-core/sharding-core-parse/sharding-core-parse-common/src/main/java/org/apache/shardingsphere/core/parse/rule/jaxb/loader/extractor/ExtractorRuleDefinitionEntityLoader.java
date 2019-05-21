@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.parse.rule.jaxb.loader.extractor;
 
-import com.google.common.base.Preconditions;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.parse.rule.jaxb.entity.extractor.ExtractorRuleDefinitionEntity;
 import org.apache.shardingsphere.core.parse.rule.jaxb.loader.RuleDefinitionEntityLoader;
@@ -36,7 +35,7 @@ public final class ExtractorRuleDefinitionEntityLoader implements RuleDefinition
     @SneakyThrows
     public ExtractorRuleDefinitionEntity load(final String extractorRuleDefinitionFile) {
         InputStream inputStream = ExtractorRuleDefinitionEntityLoader.class.getClassLoader().getResourceAsStream(extractorRuleDefinitionFile);
-        Preconditions.checkNotNull(inputStream, "Cannot load extractor rule definition file: %s, ", extractorRuleDefinitionFile);
-        return (ExtractorRuleDefinitionEntity) JAXBContext.newInstance(ExtractorRuleDefinitionEntity.class).createUnmarshaller().unmarshal(inputStream);
+        return null == inputStream
+                ? new ExtractorRuleDefinitionEntity() : (ExtractorRuleDefinitionEntity) JAXBContext.newInstance(ExtractorRuleDefinitionEntity.class).createUnmarshaller().unmarshal(inputStream);
     }
 }
