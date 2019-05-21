@@ -75,23 +75,22 @@ public final class ShardingSQLRewriteEngine {
     }
     
     public void pattern(final SQLBuilder sqlBuilder, final SQLToken sqlToken) {
-        boolean isRewrite = 
         if (sqlToken instanceof TableToken) {
             appendTablePlaceholder(sqlBuilder, (TableToken) sqlToken);
         } else if (sqlToken instanceof IndexToken) {
             appendIndexPlaceholder(sqlBuilder, (IndexToken) sqlToken);
         } else if (sqlToken instanceof SelectItemsToken) {
-            appendSelectItemsPlaceholder(sqlBuilder, (SelectItemsToken) sqlToken, isRewrite);
+            appendSelectItemsPlaceholder(sqlBuilder, (SelectItemsToken) sqlToken);
         } else if (sqlToken instanceof InsertColumnsToken) {
             appendInsertColumnsPlaceholder(sqlBuilder, (InsertColumnsToken) sqlToken);
         } else if (sqlToken instanceof RowCountToken) {
-            appendLimitRowCountPlaceholder(sqlBuilder, (RowCountToken) sqlToken, isRewrite);
+            appendLimitRowCountPlaceholder(sqlBuilder, (RowCountToken) sqlToken);
         } else if (sqlToken instanceof OffsetToken) {
-            appendLimitOffsetPlaceholder(sqlBuilder, (OffsetToken) sqlToken, isRewrite);
+            appendLimitOffsetPlaceholder(sqlBuilder, (OffsetToken) sqlToken);
         } else if (sqlToken instanceof OrderByToken) {
-            appendOrderByPlaceholder(sqlBuilder, isRewrite);
+            appendOrderByPlaceholder(sqlBuilder);
         } else if (sqlToken instanceof AggregationDistinctToken) {
-            appendAggregationDistinctPlaceholder(sqlBuilder, (AggregationDistinctToken) sqlToken, isRewrite);
+            appendAggregationDistinctPlaceholder(sqlBuilder, (AggregationDistinctToken) sqlToken);
         } else if (sqlToken instanceof RemoveToken) {
         }
     }
@@ -108,8 +107,8 @@ public final class ShardingSQLRewriteEngine {
         sqlBuilder.appendPlaceholder(new IndexPlaceholder(indexToken.getIndexName(), logicTableName, indexToken.getQuoteCharacter()));
     }
     
-    private void appendSelectItemsPlaceholder(final SQLBuilder sqlBuilder, final SelectItemsToken selectItemsToken, final boolean isRewrite) {
-        if (isRewrite) {
+    private void appendSelectItemsPlaceholder(final SQLBuilder sqlBuilder, final SelectItemsToken selectItemsToken) {
+        if (isRewrite()) {
             SelectItemsPlaceholder selectItemsPlaceholder = new SelectItemsPlaceholder(selectItemsToken.isFirstOfItemsSpecial());
             selectItemsPlaceholder.getItems().addAll(selectItemsToken.getItems());
             sqlBuilder.appendPlaceholder(selectItemsPlaceholder);
@@ -122,9 +121,9 @@ public final class ShardingSQLRewriteEngine {
         sqlBuilder.appendPlaceholder(columnsPlaceholder);
     }
     
-    private void appendLimitRowCountPlaceholder(final SQLBuilder sqlBuilder, final RowCountToken rowCountToken, final boolean isRewrite) {
+    private void appendLimitRowCountPlaceholder(final SQLBuilder sqlBuilder, final RowCountToken rowCountToken) {
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
-        sqlBuilder.appendPlaceholder(new LimitRowCountPlaceholder(getRowCount(rowCountToken, isRewrite, selectStatement, sqlRouteResult.getLimit())));
+        sqlBuilder.appendPlaceholder(new LimitRowCountPlaceholder(getRowCount(rowCountToken, isRewrite(), selectStatement, sqlRouteResult.getLimit())));
     }
     
     private int getRowCount(final RowCountToken rowCountToken, final boolean isRewrite, final SelectStatement selectStatement, final Limit limit) {
@@ -141,14 +140,14 @@ public final class ShardingSQLRewriteEngine {
         return (!selectStatement.getGroupByItems().isEmpty() || !selectStatement.getAggregationSelectItems().isEmpty()) && !selectStatement.isSameGroupByAndOrderByItems();
     }
     
-    private void appendLimitOffsetPlaceholder(final SQLBuilder sqlBuilder, final OffsetToken offsetToken, final boolean isRewrite) {
-        sqlBuilder.appendPlaceholder(new LimitOffsetPlaceholder(isRewrite ? 0 : offsetToken.getOffset()));
+    private void appendLimitOffsetPlaceholder(final SQLBuilder sqlBuilder, final OffsetToken offsetToken) {
+        sqlBuilder.appendPlaceholder(new LimitOffsetPlaceholder(isRewrite() ? 0 : offsetToken.getOffset()));
     }
     
-    private void appendOrderByPlaceholder(final SQLBuilder sqlBuilder, final boolean isRewrite) {
+    private void appendOrderByPlaceholder(final SQLBuilder sqlBuilder) {
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
         OrderByPlaceholder orderByPlaceholder = new OrderByPlaceholder();
-        if (isRewrite) {
+        if (isRewrite()) {
             for (OrderItem each : selectStatement.getOrderByItems()) {
                 String columnLabel = Strings.isNullOrEmpty(each.getColumnLabel()) ? String.valueOf(each.getIndex()) : each.getColumnLabel();
                 orderByPlaceholder.getColumnLabels().add(columnLabel);
@@ -158,8 +157,8 @@ public final class ShardingSQLRewriteEngine {
         }
     }
     
-    private void appendAggregationDistinctPlaceholder(final SQLBuilder sqlBuilder, final AggregationDistinctToken distinctToken, final boolean isRewrite) {
-        if (!isRewrite) {
+    private void appendAggregationDistinctPlaceholder(final SQLBuilder sqlBuilder, final AggregationDistinctToken distinctToken) {
+        if (!isRewrite()) {
             sqlBuilder.appendLiterals(originalSQL.substring(distinctToken.getStartIndex(), distinctToken.getStopIndex() + 1));
         } else {
             sqlBuilder.appendPlaceholder(new AggregationDistinctPlaceholder(distinctToken.getColumnName().toLowerCase(), distinctToken.getAlias()));
