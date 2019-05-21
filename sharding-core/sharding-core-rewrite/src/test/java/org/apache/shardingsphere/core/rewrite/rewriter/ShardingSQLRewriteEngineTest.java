@@ -49,6 +49,7 @@ import org.apache.shardingsphere.core.parse.sql.token.impl.RemoveToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.RowCountToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.SelectItemsToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.TableToken;
+import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
 import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.SQLUnit;

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.rewriter;
+package org.apache.shardingsphere.core.rewrite;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
@@ -30,6 +30,8 @@ import org.apache.shardingsphere.core.parse.sql.token.Substitutable;
 import org.apache.shardingsphere.core.parse.sql.token.impl.AggregationDistinctToken;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
+import org.apache.shardingsphere.core.rewrite.rewriter.EncryptSQLRewriteEngine;
+import org.apache.shardingsphere.core.rewrite.rewriter.ShardingSQLRewriteEngine;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.SQLUnit;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
