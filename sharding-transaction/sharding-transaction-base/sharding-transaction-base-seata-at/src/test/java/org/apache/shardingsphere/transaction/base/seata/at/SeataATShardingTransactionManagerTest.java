@@ -156,6 +156,12 @@ public class SeataATShardingTransactionManagerTest {
         assertResult();
     }
     
+    @Test(expected = IllegalStateException.class)
+    public void assertRollbackWithoutBegin() {
+        SeataTransactionHolder.set(GlobalTransactionContext.getCurrentOrCreate());
+        seataATShardingTransactionManager.rollback();
+    }
+    
     private void assertResult() {
         assertThat(requestQueue.size(), is(2));
         assertThat(responseQueue.size(), is(2));

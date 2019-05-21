@@ -58,14 +58,6 @@ public final class SeataATShardingTransactionManager implements ShardingTransact
         }
     }
     
-    private void initSeataRPCClient() {
-        String applicationId = configuration.getConfig("client.application.id");
-        Preconditions.checkNotNull(applicationId, "please config application id within seata.conf file");
-        String transactionServiceGroup = configuration.getConfig("client.transaction.service.group", "default");
-        TMClient.init(applicationId, transactionServiceGroup);
-        RMClient.init(applicationId, transactionServiceGroup);
-    }
-    
     @Override
     public TransactionType getTransactionType() {
         return TransactionType.BASE;
@@ -115,5 +107,12 @@ public final class SeataATShardingTransactionManager implements ShardingTransact
         TmRpcClient.getInstance().destroy();
         RmRpcClient.getInstance().destroy();
     }
+    
+    private void initSeataRPCClient() {
+        String applicationId = configuration.getConfig("client.application.id");
+        Preconditions.checkNotNull(applicationId, "please config application id within seata.conf file");
+        String transactionServiceGroup = configuration.getConfig("client.transaction.service.group", "default");
+        TMClient.init(applicationId, transactionServiceGroup);
+        RMClient.init(applicationId, transactionServiceGroup);
+    }
 }
-
