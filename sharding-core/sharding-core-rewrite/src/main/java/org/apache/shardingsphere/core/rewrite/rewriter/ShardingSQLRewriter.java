@@ -54,7 +54,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
  * @author maxiaoguang
  * @author panjuan
  */
-public final class ShardingSQLRewriteEngine {
+public final class ShardingSQLRewriter {
     
     private final ShardingRule shardingRule;
     
@@ -66,7 +66,7 @@ public final class ShardingSQLRewriteEngine {
     
     private final SQLStatement sqlStatement;
     
-    public ShardingSQLRewriteEngine(final ShardingRule shardingRule, final String originalSQL, final DatabaseType databaseType, final SQLStatement sqlStatement, final SQLRouteResult sqlRouteResult) {
+    public ShardingSQLRewriter(final ShardingRule shardingRule, final String originalSQL, final DatabaseType databaseType, final SQLStatement sqlStatement, final SQLRouteResult sqlRouteResult) {
         this.shardingRule = shardingRule;
         this.originalSQL = originalSQL;
         this.databaseType = databaseType;
