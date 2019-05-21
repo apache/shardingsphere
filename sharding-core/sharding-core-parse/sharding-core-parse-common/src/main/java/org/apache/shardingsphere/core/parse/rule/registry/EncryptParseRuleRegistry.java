@@ -33,7 +33,7 @@ import java.util.Collections;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class EncryptParseRuleRegistry extends ParseRuleRegistry {
     
-    private static volatile ParseRuleRegistry instance;
+    private static volatile ParseRuleRegistry instance = new EncryptParseRuleRegistry();
     
     /**
      * Get singleton instance of parsing rule registry.
@@ -41,13 +41,6 @@ public final class EncryptParseRuleRegistry extends ParseRuleRegistry {
      * @return instance of parsing rule registry
      */
     public static ParseRuleRegistry getInstance() {
-        if (null == instance) {
-            synchronized (EncryptParseRuleRegistry.class) {
-                if (null == instance) {
-                    instance = new EncryptParseRuleRegistry();
-                }
-            }
-        }
         return instance;
     }
     

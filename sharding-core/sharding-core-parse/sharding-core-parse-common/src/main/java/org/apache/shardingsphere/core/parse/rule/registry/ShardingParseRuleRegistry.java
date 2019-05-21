@@ -33,7 +33,7 @@ import java.util.LinkedList;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingParseRuleRegistry extends ParseRuleRegistry {
     
-    private static volatile ParseRuleRegistry instance;
+    private static volatile ParseRuleRegistry instance = new ShardingParseRuleRegistry();
     
     /**
      * Get singleton instance of parsing rule registry.
@@ -41,13 +41,6 @@ public final class ShardingParseRuleRegistry extends ParseRuleRegistry {
      * @return instance of parsing rule registry
      */
     public static ParseRuleRegistry getInstance() {
-        if (null == instance) {
-            synchronized (ShardingParseRuleRegistry.class) {
-                if (null == instance) {
-                    instance = new ShardingParseRuleRegistry();
-                }
-            }
-        }
         return instance;
     }
     

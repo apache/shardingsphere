@@ -33,7 +33,7 @@ import java.util.Collections;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MasterSlaveParseRuleRegistry extends ParseRuleRegistry {
     
-    private static volatile ParseRuleRegistry instance;
+    private static volatile ParseRuleRegistry instance = new MasterSlaveParseRuleRegistry();
     
     /**
      * Get singleton instance of parsing rule registry.
@@ -41,13 +41,6 @@ public final class MasterSlaveParseRuleRegistry extends ParseRuleRegistry {
      * @return instance of parsing rule registry
      */
     public static ParseRuleRegistry getInstance() {
-        if (null == instance) {
-            synchronized (MasterSlaveParseRuleRegistry.class) {
-                if (null == instance) {
-                    instance = new MasterSlaveParseRuleRegistry();
-                }
-            }
-        }
         return instance;
     }
     
