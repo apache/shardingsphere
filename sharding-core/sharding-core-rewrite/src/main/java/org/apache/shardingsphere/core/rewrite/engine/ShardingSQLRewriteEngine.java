@@ -74,6 +74,12 @@ public final class ShardingSQLRewriteEngine {
         this.sqlStatement = sqlStatement;
     }
     
+    /**
+     * Pattern.
+     *
+     * @param sqlBuilder sql builder
+     * @param sqlToken sql token
+     */
     public void pattern(final SQLBuilder sqlBuilder, final SQLToken sqlToken) {
         if (sqlToken instanceof TableToken) {
             appendTablePlaceholder(sqlBuilder, (TableToken) sqlToken);
