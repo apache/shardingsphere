@@ -18,23 +18,19 @@
 package org.apache.shardingsphere.transaction.base.seata.at;
 
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
-import io.netty.channel.WriteBufferWaterMark;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.handler.timeout.IdleStateHandler;
-import io.seata.common.XID;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.seata.core.rpc.netty.MessageCodecHandler;
-import io.seata.core.rpc.netty.NettyServerConfig;
-import io.seata.discovery.registry.RegistryFactory;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
-import java.net.InetSocketAddress;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -45,56 +41,45 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Slf4j
 public final class MockSeataServer {
     
-    private final ServerBootstrap serverBootstrap;
+    private final ServerBootstrap bootstrap;
     
-    private final EventLoopGroup eventLoopGroupBoss;
+    private final EventLoopGroup bossGroup;
     
-    private final EventLoopGroup eventLoopGroupWorker;
+    private final EventLoopGroup workerGroup;
     
-    private final NettyServerConfig nettyServerConfig;
+    private int port;
     
-    private int listenPort;
-    
+    @Getter
     private final AtomicBoolean initialized = new AtomicBoolean(false);
     
     public MockSeataServer() {
-        this.serverBootstrap = new ServerBootstrap();
-        this.nettyServerConfig = new NettyServerConfig();
-        this.eventLoopGroupBoss = new NioEventLoopGroup(1);
-        this.eventLoopGroupWorker = new NioEventLoopGroup();
-        listenPort = 8091;
+        this.bootstrap = new ServerBootstrap();
+        this.bossGroup = new NioEventLoopGroup(1);
+        this.workerGroup = new NioEventLoopGroup();
+        port = 8091;
     }
     
     /**
      * start.
      */
+    @SneakyThrows
     public void start() {
-        this.serverBootstrap.group(this.eventLoopGroupBoss, this.eventLoopGroupWorker)
-            .channel(nettyServerConfig.SERVER_CHANNEL_CLAZZ)
-            .option(ChannelOption.SO_BACKLOG, nettyServerConfig.getSoBackLogSize())
-            .option(ChannelOption.SO_REUSEADDR, true)
-            .childOption(ChannelOption.SO_KEEPALIVE, true)
+        bootstrap.group(bossGroup, workerGroup)
+            .channel(NioServerSocketChannel.class)
+            .option(ChannelOption.SO_BACKLOG, 128)
+            .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
+            .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
             .childOption(ChannelOption.TCP_NODELAY, true)
-            .childOption(ChannelOption.SO_SNDBUF, nettyServerConfig.getServerSocketSendBufSize())
-            .childOption(ChannelOption.SO_RCVBUF, nettyServerConfig.getServerSocketResvBufSize())
-            .localAddress(new InetSocketAddress(listenPort))
             .childHandler(new ChannelInitializer<SocketChannel>() {
                 @Override
-                public void initChannel(final SocketChannel ch) {
-                    ch.pipeline().addLast(new IdleStateHandler(nettyServerConfig.getChannelMaxReadIdleSeconds(), 0, 0))
-                        .addLast(new MessageCodecHandler())
-                        .addLast(new MockCommandHandler());
+                public void initChannel(final SocketChannel socketChannel) {
+                    socketChannel.pipeline().addLast(new MessageCodecHandler()).addLast(new MockCommandHandler());
                 }
             });
-        try {
-            log.info("Server started ... ");
-            RegistryFactory.getInstance().register(new InetSocketAddress(XID.getIpAddress(), XID.getPort()));
-            initialized.set(true);
-            ChannelFuture future = this.serverBootstrap.bind(listenPort).sync();
-            future.channel().closeFuture().sync();
-        } catch (final Exception ex) {
-            throw new RuntimeException(ex);
-        }
+        ChannelFuture future = bootstrap.bind(port).sync();
+        initialized.set(true);
+        log.info("mock seata server have started");
+        future.channel().closeFuture().sync();
     }
     
     /**
@@ -103,11 +88,8 @@ public final class MockSeataServer {
     @SneakyThrows
     public void shutdown() {
         if (initialized.get()) {
-            RegistryFactory.getInstance().unregister(new InetSocketAddress(XID.getIpAddress(), XID.getPort()));
-            RegistryFactory.getInstance().close();
-            TimeUnit.SECONDS.sleep(nettyServerConfig.getServerShutdownWaitTime());
+            this.bossGroup.shutdownGracefully();
+            this.workerGroup.shutdownGracefully();
         }
-        this.eventLoopGroupBoss.shutdownGracefully();
-        this.eventLoopGroupWorker.shutdownGracefully();
     }
 }
