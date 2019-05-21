@@ -18,13 +18,18 @@
 package org.apache.shardingsphere.core.parse.rule.registry.statement;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.parse.extractor.api.SQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.optimizer.SQLStatementOptimizer;
+import org.apache.shardingsphere.core.parse.rule.jaxb.entity.statement.SQLStatementRuleEntity;
+import org.apache.shardingsphere.core.parse.rule.registry.extractor.ExtractorRuleDefinition;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 
 /**
@@ -32,7 +37,6 @@ import java.util.LinkedList;
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
 @Getter
 public final class SQLStatementRule {
     
@@ -40,9 +44,29 @@ public final class SQLStatementRule {
     
     private final Class<? extends SQLStatement> sqlStatementClass;
     
-    private final Collection<SQLSegmentExtractor> extractors = new LinkedList<>();
+    private final Collection<SQLSegmentExtractor> extractors;
     
     private final SQLStatementOptimizer optimizer;
+    
+    @SuppressWarnings("unchecked")
+    @SneakyThrows
+    public SQLStatementRule(final SQLStatementRuleEntity entity, final ExtractorRuleDefinition extractorRuleDefinition) {
+        contextName = entity.getContext();
+        sqlStatementClass = (Class<? extends SQLStatement>) Class.forName(entity.getSqlStatementClass());
+        extractors = getExtractors(entity.getExtractorRuleRefs(), extractorRuleDefinition);
+        optimizer = Strings.isNullOrEmpty(entity.getOptimizerClass()) ? null : (SQLStatementOptimizer) Class.forName(entity.getOptimizerClass()).newInstance();
+    }
+    
+    private Collection<SQLSegmentExtractor> getExtractors(final String extractorRuleRefs, final ExtractorRuleDefinition extractorRuleDefinition) {
+        if (null == extractorRuleRefs) {
+            return Collections.emptyList();
+        }
+        Collection<SQLSegmentExtractor> result = new LinkedList<>();
+        for (String each : Splitter.on(',').trimResults().splitToList(extractorRuleRefs)) {
+            result.add(extractorRuleDefinition.getRules().get(each));
+        }
+        return result;
+    }
     
     /**
      * Get SQL statement optimizer.

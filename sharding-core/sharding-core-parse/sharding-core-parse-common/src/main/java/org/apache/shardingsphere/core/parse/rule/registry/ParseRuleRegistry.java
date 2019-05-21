@@ -66,11 +66,12 @@ public abstract class ParseRuleRegistry {
         ExtractorRuleDefinitionEntity generalExtractorRuleDefinitionEntity = extractorRuleDefinitionLoader.load(RuleDefinitionFileConstant.getGeneralExtractorRuleDefinitionFileName());
         FillerRuleDefinitionEntity generalFillerRuleDefinitionEntity = fillerRuleDefinitionLoader.load(RuleDefinitionFileConstant.getGeneralFillerRuleDefinitionFileName());
         for (DatabaseType each : DatabaseType.values()) {
-            if (DatabaseType.H2 != each) {
-                extractorRuleDefinitions.put(each, new ExtractorRuleDefinition(generalExtractorRuleDefinitionEntity, extractorRuleDefinitionLoader.load(getExtractorFile(each))));
-                initFillerRuleDefinition(generalFillerRuleDefinitionEntity, each);
-                initSQLStatementRuleDefinition(each);
+            if (DatabaseType.H2 == each) {
+                continue;
             }
+            extractorRuleDefinitions.put(each, new ExtractorRuleDefinition(generalExtractorRuleDefinitionEntity, extractorRuleDefinitionLoader.load(getExtractorFile(each))));
+            initFillerRuleDefinition(generalFillerRuleDefinitionEntity, each);
+            sqlStatementRuleDefinitions.put(each, new SQLStatementRuleDefinition(statementRuleDefinitionLoader.load(getStatementRuleFile(each)), extractorRuleDefinitions.get(each)));
         }
     }
     
@@ -81,12 +82,6 @@ public abstract class ParseRuleRegistry {
             entities.add(fillerRuleDefinitionLoader.load(each));
         }
         fillerRuleDefinitions.put(databaseType, new FillerRuleDefinition(entities.toArray(new FillerRuleDefinitionEntity[entities.size()])));
-    }
-    
-    private void initSQLStatementRuleDefinition(final DatabaseType databaseType) {
-        SQLStatementRuleDefinition sqlStatementRuleDefinition = new SQLStatementRuleDefinition();
-        sqlStatementRuleDefinition.init(statementRuleDefinitionLoader.load(getStatementRuleFile(databaseType)), extractorRuleDefinitions.get(databaseType));
-        sqlStatementRuleDefinitions.put(databaseType, sqlStatementRuleDefinition);
     }
     
     protected abstract String getExtractorFile(DatabaseType databaseType);
