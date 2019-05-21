@@ -53,6 +53,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SeataATShardingTransactionManagerTest {
@@ -131,6 +132,7 @@ public class SeataATShardingTransactionManagerTest {
     @Test
     public void assertBegin() {
         seataATShardingTransactionManager.begin();
+        assertTrue(seataATShardingTransactionManager.isInTransaction());
         assertResult();
     }
     
