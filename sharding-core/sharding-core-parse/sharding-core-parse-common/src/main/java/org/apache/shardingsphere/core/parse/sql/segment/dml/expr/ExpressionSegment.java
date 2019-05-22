@@ -32,6 +32,7 @@ public interface ExpressionSegment extends SQLSegment {
      *
      * @return start index
      */
+    @Override
     int getStartIndex();
     
     /**
@@ -39,5 +40,6 @@ public interface ExpressionSegment extends SQLSegment {
      *
      * @return stop index
      */
+    @Override
     int getStopIndex();
 }

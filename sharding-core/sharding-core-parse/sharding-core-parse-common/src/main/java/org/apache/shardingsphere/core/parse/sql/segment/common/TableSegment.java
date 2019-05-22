@@ -59,6 +59,7 @@ public final class TableSegment implements SQLSegment, OwnerAvailable, AliasAvai
      * 
      * @return start index
      */
+    @Override
     public int getStartIndex() {
         return null == owner ? startIndex : owner.getStartIndex(); 
     }

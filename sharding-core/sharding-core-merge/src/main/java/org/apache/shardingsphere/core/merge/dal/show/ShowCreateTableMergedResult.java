@@ -45,6 +45,7 @@ public final class ShowCreateTableMergedResult extends LogicTablesMergedResult {
         super(LABEL_AND_INDEX_MAP, shardingRule, queryResults, shardingTableMetaData);
     }
     
+    @Override
     protected void setCellValue(final MemoryQueryResultRow memoryResultSetRow, final String logicTableName, final String actualTableName) {
         memoryResultSetRow.setCell(2, memoryResultSetRow.getCell(2).toString().replaceFirst(actualTableName, logicTableName));
     }
