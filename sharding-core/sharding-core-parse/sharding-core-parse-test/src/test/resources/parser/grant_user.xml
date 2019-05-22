@@ -86,4 +86,50 @@
     </parser-result>
     <parser-result sql-case-id="grant_role_to_user" />
     <parser-result sql-case-id="grant_roles_to_users" />
+    <parser-result sql-case-id="grant_system_privilege" />
+    <parser-result sql-case-id="grant_system_privileges" />
+    <parser-result sql-case-id="grant_all_system_privileges" />
+    <parser-result sql-case-id="grant_system_privilege_to_users" />
+    <parser-result sql-case-id="grant_object_privilege">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="16" table-name="t_order" length="12" />
+        </tokens>
+    </parser-result>
+    <parser-result sql-case-id="grant_object_privileges">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="40" table-name="t_order" length="12" />
+        </tokens>
+    </parser-result>
+    <parser-result sql-case-id="grant_all_object_privileges">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="24" table-name="t_order" length="12" />
+        </tokens>
+    </parser-result>
+    <parser-result sql-case-id="grant_object_privilege_to_users">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="16" table-name="t_order" length="12" />
+        </tokens>
+    </parser-result>
+    <parser-result sql-case-id="grant_object_privilege_column">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="27" table-name="t_order" length="12" />
+        </tokens>
+    </parser-result>
+    <parser-result sql-case-id="grant_program" />
+    <parser-result sql-case-id="grant_roles_to_programs" />
 </parser-result-sets>
