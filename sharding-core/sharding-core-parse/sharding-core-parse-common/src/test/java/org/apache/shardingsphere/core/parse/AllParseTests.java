@@ -20,6 +20,7 @@ package org.apache.shardingsphere.core.parse;
 import org.apache.shardingsphere.core.parse.constant.AllConstantTests;
 import org.apache.shardingsphere.core.parse.hook.SPIParsingHookTest;
 import org.apache.shardingsphere.core.parse.rule.AllRuleTests;
+import org.apache.shardingsphere.core.parse.rule.registry.ParseRuleRegistryTest;
 import org.apache.shardingsphere.core.parse.sql.context.AllContextTests;
 import org.apache.shardingsphere.core.parse.util.SQLUtilTest;
 import org.junit.runner.RunWith;
@@ -32,7 +33,8 @@ import org.junit.runners.Suite.SuiteClasses;
         AllRuleTests.class,
         SQLUtilTest.class,
         AllContextTests.class,
-        SPIParsingHookTest.class
+        SPIParsingHookTest.class,
+        ParseRuleRegistryTest.class
 })
 public final class AllParseTests {
 }
