@@ -69,6 +69,52 @@
             <table-token start-index="25" table-name="t_order" length="7" />
         </tokens>
     </parser-result>
-    <parser-result sql-case-id="revoke_role_to_user" />
-    <parser-result sql-case-id="revoke_roles_to_users"/>
+    <parser-result sql-case-id="revoke_role_from_user" />
+    <parser-result sql-case-id="revoke_roles_from_users"/>
+    <parser-result sql-case-id="revoke_system_privilege" />
+    <parser-result sql-case-id="revoke_system_privileges" />
+    <parser-result sql-case-id="revoke_all_system_privileges" />
+    <parser-result sql-case-id="revoke_system_privilege_from_users" />
+    <parser-result sql-case-id="revoke_object_privilege">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="17" table-name="t_order" length="12" />
+        </tokens>
+    </parser-result>
+    <parser-result sql-case-id="revoke_object_privileges">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="41" table-name="t_order" length="12" />
+        </tokens>
+    </parser-result>
+    <parser-result sql-case-id="revoke_all_object_privileges">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="25" table-name="t_order" length="12" />
+        </tokens>
+    </parser-result>
+    <parser-result sql-case-id="revoke_object_privilege_from_users">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="17" table-name="t_order" length="12" />
+        </tokens>
+    </parser-result>
+    <parser-result sql-case-id="revoke_object_privilege_column">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="28" table-name="t_order" length="12" />
+        </tokens>
+    </parser-result>
+    <parser-result sql-case-id="revoke_program" />
+    <parser-result sql-case-id="revoke_roles_from_programs" />
 </parser-result-sets>
