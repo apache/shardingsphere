@@ -37,6 +37,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.concurrent.locks.LockSupport;
 
+/*
+    Please startup seata-server( before running this example.
+    Download seata-server from here https://github.com/seata/seata/releases
+ */
 public class YamlConfigurationTransactionExample {
     
     private static String configFile = "/META-INF/sharding-databases-tables.yaml";
@@ -66,7 +70,7 @@ public class YamlConfigurationTransactionExample {
             insertSuccess(connection, commonService);
             connection.commit();
         }
-        LockSupport.parkUntil(System.currentTimeMillis() + 3000);
+        LockSupport.parkUntil(System.currentTimeMillis() + 1000);
         truncateTable(dataSource);
         System.out.println("------############## End seata succeed transaction ######################------");
         System.out.println("------############## Start seata failure transaction ############------");

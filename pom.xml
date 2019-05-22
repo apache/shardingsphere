@@ -35,6 +35,8 @@
         <mybatis-spring.version>1.3.0</mybatis-spring.version>
         <jpa.version>1.0.0.Final</jpa.version>
         <hibernate.version>4.3.11.Final</hibernate.version>
+    
+        <seata.version>0.5.1</seata.version>
 
         <junit.version>4.12</junit.version>
         <hamcrest.version>1.3</hamcrest.version>
@@ -200,6 +202,16 @@
                 <groupId>org.mybatis.spring.boot</groupId>
                 <artifactId>mybatis-spring-boot-starter</artifactId>
                 <version>${mybatis-spring.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.seata</groupId>
+                <artifactId>seata-rm-datasource</artifactId>
+                <version>${seata.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.seata</groupId>
+                <artifactId>seata-tm</artifactId>
+                <version>${seata.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>

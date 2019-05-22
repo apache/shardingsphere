@@ -31,4 +31,15 @@
     <modules>
         <module>transaction-base-seata-raw-jdbc-example</module>
     </modules>
+    
+    <dependencies>
+        <dependency>
+            <groupId>io.seata</groupId>
+            <artifactId>seata-rm-datasource</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.seata</groupId>
+            <artifactId>seata-tm</artifactId>
+        </dependency>
+    </dependencies>
 </project>
