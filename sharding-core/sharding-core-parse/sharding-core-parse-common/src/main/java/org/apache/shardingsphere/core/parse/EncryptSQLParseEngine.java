@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.parse;
 
 import com.google.common.base.Optional;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
@@ -29,6 +30,7 @@ import org.apache.shardingsphere.core.rule.EncryptRule;
  *
  * @author panjuan
  */
+@RequiredArgsConstructor
 public final class EncryptSQLParseEngine {
     
     private final DatabaseType dbType;
@@ -37,14 +39,7 @@ public final class EncryptSQLParseEngine {
     
     private final ShardingTableMetaData shardingTableMetaData;
     
-    private final ParsingResultCache parsingResultCache;
-    
-    public EncryptSQLParseEngine(final DatabaseType dbType, final EncryptRule encryptRule, final ShardingTableMetaData shardingTableMetaData) {
-        this.dbType = dbType;
-        this.encryptRule = encryptRule;
-        this.shardingTableMetaData = shardingTableMetaData;
-        parsingResultCache = new ParsingResultCache();
-    }
+    private final ParsingResultCache parsingResultCache = new ParsingResultCache();
     
     /**
      * Parse SQL.
