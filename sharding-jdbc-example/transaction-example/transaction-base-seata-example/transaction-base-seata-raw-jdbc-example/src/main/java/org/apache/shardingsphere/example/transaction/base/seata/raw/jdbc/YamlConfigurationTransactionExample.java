@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.example.transaction.base.seata.raw.jdbc;
 
+import org.apache.shardingsphere.example.common.entity.Order;
 import org.apache.shardingsphere.example.common.entity.OrderItem;
 import org.apache.shardingsphere.example.common.jdbc.repository.OrderItemRepositoryImpl;
 import org.apache.shardingsphere.example.common.jdbc.repository.OrderRepositoryImpl;
@@ -34,6 +35,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.concurrent.locks.LockSupport;
 
 public class YamlConfigurationTransactionExample {
     
@@ -44,7 +46,7 @@ public class YamlConfigurationTransactionExample {
         DataSource dataSource = YamlShardingDataSourceFactory.createDataSource(getFile(configFile));
         CommonService commonService = getCommonService(dataSource);
         commonService.initEnvironment();
-        processSagaTransaction(dataSource, commonService);
+        processSeataTransaction(dataSource, commonService);
         commonService.cleanEnvironment();
     }
     
@@ -56,45 +58,68 @@ public class YamlConfigurationTransactionExample {
         return new CommonServiceImpl(new OrderRepositoryImpl(dataSource), new OrderItemRepositoryImpl(dataSource));
     }
     
-    private static void processSagaTransaction(final DataSource dataSource, final CommonService commonService) throws SQLException {
+    private static void processSeataTransaction(final DataSource dataSource, final CommonService commonService) throws SQLException {
         TransactionTypeHolder.set(TransactionType.BASE);
-        System.out.println("------ start seata transaction ------");
+        System.out.println("------############## Start seata succeed transaction ##################------");
         try (Connection connection = dataSource.getConnection()) {
+            connection.setAutoCommit(false);
             insertSuccess(connection, commonService);
             connection.commit();
-            commonService.printData();
         }
+        LockSupport.parkUntil(System.currentTimeMillis() + 3000);
         truncateTable(dataSource);
-        System.out.println("------ end seata transaction ------");
-        System.out.println("------ start failure transaction ------");
+        System.out.println("------############## End seata succeed transaction ######################------");
+        System.out.println("------############## Start seata failure transaction ############------");
+        TransactionTypeHolder.set(TransactionType.BASE);
         Connection connection = dataSource.getConnection();
         try {
+            connection.setAutoCommit(false);
             insertSuccess(connection, commonService);
             throw new SQLException("exception occur!");
         } catch (final SQLException ex) {
             connection.rollback();
         }
         commonService.printData();
-        System.out.println("------ end failure transaction ------");
+        System.out.println("------############# End seata failure transaction #############------");
         truncateTable(dataSource);
     }
     
     private static void insertSuccess(final Connection connection, final CommonService commonService) throws SQLException {
-        connection.setAutoCommit(false);
         for (int i = 0; i < 10; i++) {
+            Order order = new Order();
+            order.setUserId(i);
+            order.setStatus("SEATA-INIT");
+            insertOrder(connection, order);
             OrderItem item = new OrderItem();
             item.setUserId(i);
+            item.setOrderId(order.getOrderId());
             item.setStatus("SEATA-INIT");
             insertOrderItem(connection, item);
         }
         commonService.printData();
     }
     
+    private static Long insertOrder(final Connection connection, final Order order) {
+        String sql = "INSERT INTO t_order (user_id, status) VALUES (?, ?)";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            preparedStatement.setObject(1, order.getUserId());
+            preparedStatement.setObject(2, order.getStatus());
+            preparedStatement.executeUpdate();
+            try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
+                if (resultSet.next()) {
+                    order.setOrderId(resultSet.getLong(1));
+                }
+            }
+        } catch (final SQLException ignored) {
+        }
+        return order.getOrderId();
+    }
+    
     private static Long insertOrderItem(final Connection connection, final OrderItem orderItem) {
         String sql = "INSERT INTO t_order_item (order_id, user_id, status) VALUES (?, ?, ?)";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            preparedStatement.setLong(1, 1L);
-            preparedStatement.setInt(2, orderItem.getUserId());
+            preparedStatement.setObject(1, orderItem.getOrderId());
+            preparedStatement.setObject(2, orderItem.getUserId());
             preparedStatement.setString(3, orderItem.getStatus());
             preparedStatement.executeUpdate();
             try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
@@ -109,6 +134,8 @@ public class YamlConfigurationTransactionExample {
     
     private static void truncateTable(final DataSource dataSource) {
         OrderRepositoryImpl orderRepository = new OrderRepositoryImpl(dataSource);
+        OrderItemRepositoryImpl orderItemRepository = new OrderItemRepositoryImpl(dataSource);
         orderRepository.truncateTable();
+        orderItemRepository.truncateTable();
     }
 }
