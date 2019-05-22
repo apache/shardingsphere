@@ -49,11 +49,11 @@ public final class EncryptSQLParseEngine {
     /**
      * Parse SQL.
      *
-     * @param useCache use cache or not
      * @param sql SQL
+     * @param useCache use cache or not
      * @return parsed SQL statement
      */
-    public SQLStatement parse(final boolean useCache, final String sql) {
+    public SQLStatement parse(final String sql, final boolean useCache) {
         Optional<SQLStatement> cachedSQLStatement = getSQLStatementFromCache(useCache, sql);
         if (cachedSQLStatement.isPresent()) {
             return cachedSQLStatement.get();
