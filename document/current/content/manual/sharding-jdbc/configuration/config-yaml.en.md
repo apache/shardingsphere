@@ -52,6 +52,7 @@ shardingRule:
     none:
   defaultKeyGenerator:
     type: SNOWFLAKE
+    column: order_id
   
 props:
   sql.show: true
@@ -154,6 +155,7 @@ shardingRule:
     none:
   defaultKeyGenerator:
     type: SNOWFLAKE
+    column: order_id
   
   masterSlaveRules:
       ms_ds0:
@@ -291,6 +293,7 @@ shardingRule:
   defaultTableStrategy: #Default strategy for sharding tables, same as tables sharding strategy
   defaultKeyGenerator:
     type: #Type of default key generator, use user-defined ones or built-in ones, e.g. SNOWFLAKE, UUID. Default key generator is `org.apache.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator`
+    column: #Column name of default key generator
     props: #Properties of default key generator, e.g. `worker.id` and `max.tolerate.time.difference.milliseconds` for `SNOWFLAKE` 
   
   masterSlaveRules: #Read-write splitting rule configuration, more details can reference Read-write splitting part
