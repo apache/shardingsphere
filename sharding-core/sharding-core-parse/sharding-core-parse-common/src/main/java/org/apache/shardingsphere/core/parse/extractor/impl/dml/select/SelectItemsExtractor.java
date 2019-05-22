@@ -84,8 +84,9 @@ public final class SelectItemsExtractor implements OptionalSQLSegmentExtractor {
     
     private boolean extractDistinct(final ParserRuleContext selectItemsNode) {
         Optional<ParserRuleContext> duplicateSpecificationNode = ExtractorUtils.findFirstChildNode(selectItemsNode, RuleName.DUPLICATE_SPECIFICATION);
+        String text = duplicateSpecificationNode.get().getText();
         return duplicateSpecificationNode.isPresent()
-                && (duplicateSpecificationNode.get().getText().equalsIgnoreCase("DISTINCT") || duplicateSpecificationNode.get().getText().equalsIgnoreCase("DISTINCTROW"));
+                && ("DISTINCT".equalsIgnoreCase(text) || "DISTINCTROW".equalsIgnoreCase(text));
     }
     
     private ParserRuleContext findMainQueryNode(final ParserRuleContext ancestorNode) {
