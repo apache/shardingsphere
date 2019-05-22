@@ -21,13 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.constant.SQLType;
-import org.apache.shardingsphere.core.parse.old.lexer.token.DefaultKeyword;
-import org.apache.shardingsphere.core.parse.old.lexer.token.Keyword;
-import org.apache.shardingsphere.core.parse.old.lexer.token.TokenType;
 import org.apache.shardingsphere.core.parse.sql.statement.AbstractSQLStatement;
-
-import java.util.Arrays;
-import java.util.Collection;
 
 /**
  * DML statement.
@@ -39,19 +33,7 @@ import java.util.Collection;
 @Setter
 public abstract class DMLStatement extends AbstractSQLStatement {
     
-    private static final Collection<Keyword> STATEMENT_PREFIX = Arrays.<Keyword>asList(DefaultKeyword.INSERT, DefaultKeyword.UPDATE, DefaultKeyword.DELETE);
-    
     public DMLStatement() {
         super(SQLType.DML);
-    }
-    
-    /**
-     * Is DML statement.
-     *
-     * @param tokenType token type
-     * @return is DML or not
-     */
-    public static boolean isDML(final TokenType tokenType) {
-        return STATEMENT_PREFIX.contains(tokenType);
     }
 }

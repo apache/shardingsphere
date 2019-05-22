@@ -18,16 +18,8 @@
 package org.apache.shardingsphere.core.parse.sql.statement.tcl;
 
 import lombok.ToString;
-import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.constant.SQLType;
-import org.apache.shardingsphere.core.parse.old.lexer.LexerEngine;
-import org.apache.shardingsphere.core.parse.old.lexer.token.DefaultKeyword;
-import org.apache.shardingsphere.core.parse.old.lexer.token.Keyword;
-import org.apache.shardingsphere.core.parse.old.lexer.token.TokenType;
 import org.apache.shardingsphere.core.parse.sql.statement.AbstractSQLStatement;
-
-import java.util.Arrays;
-import java.util.Collection;
 
 /**
  * Transaction Control Language statement.
@@ -38,37 +30,8 @@ import java.util.Collection;
 @ToString(callSuper = true)
 public class TCLStatement extends AbstractSQLStatement {
     
-    private static final Collection<Keyword> STATEMENT_PREFIX = Arrays.<Keyword>asList(DefaultKeyword.COMMIT, DefaultKeyword.ROLLBACK, DefaultKeyword.SAVEPOINT, DefaultKeyword.BEGIN);
-    
     public TCLStatement() {
         super(SQLType.TCL);
     }
     
-    /**
-     * Is TCL statement.
-     *
-     * @param tokenType token type
-     * @return is TCL or not
-     */
-    public static boolean isTCL(final TokenType tokenType) {
-        return STATEMENT_PREFIX.contains(tokenType);
-    }
-    
-    /**
-     * Is TCL statement.
-     *
-     * @param databaseType database type
-     * @param tokenType token type
-     * @param lexerEngine lexer engine
-     * @return is TCL or not
-     */
-    public static boolean isTCLUnsafe(final DatabaseType databaseType, final TokenType tokenType, final LexerEngine lexerEngine) {
-        if (DefaultKeyword.SET.equals(tokenType) || DatabaseType.SQLServer.equals(databaseType) && DefaultKeyword.IF.equals(tokenType)) {
-            lexerEngine.skipUntil(DefaultKeyword.TRANSACTION, DefaultKeyword.AUTOCOMMIT, DefaultKeyword.IMPLICIT_TRANSACTIONS);
-            if (!lexerEngine.isEnd()) {
-                return true;
-            }
-        }
-        return false;
-    }
 }

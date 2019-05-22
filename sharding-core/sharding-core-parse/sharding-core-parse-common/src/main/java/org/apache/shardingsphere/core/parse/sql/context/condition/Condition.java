@@ -25,7 +25,6 @@ import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.constant.ShardingOperator;
 import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.core.parse.old.lexer.token.Symbol;
 import org.apache.shardingsphere.core.parse.sql.context.expression.SQLExpression;
 import org.apache.shardingsphere.core.parse.sql.context.expression.SQLNumberExpression;
 import org.apache.shardingsphere.core.parse.sql.context.expression.SQLParameterMarkerExpression;
@@ -73,7 +72,7 @@ public class Condition {
     public Condition(final Column column, final String compareOperator, final SQLExpression sqlExpression) {
         this.column = column;
         this.compareOperator = compareOperator;
-        if (Symbol.EQ.getLiterals().equals(compareOperator)) {
+        if ("=".equals(compareOperator)) {
             operator = ShardingOperator.EQUAL;
         } else {
             operator = null;

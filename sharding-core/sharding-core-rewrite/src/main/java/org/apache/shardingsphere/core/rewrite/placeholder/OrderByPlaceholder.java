@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.rewrite.placeholder;
 
 import lombok.Getter;
 import org.apache.shardingsphere.core.constant.OrderDirection;
-import org.apache.shardingsphere.core.parse.old.lexer.token.DefaultKeyword;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -39,7 +38,7 @@ public final class OrderByPlaceholder implements ShardingPlaceholder {
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
-        result.append(" ").append(DefaultKeyword.ORDER).append(" ").append(DefaultKeyword.BY).append(" ");
+        result.append(" ORDER BY ");
         for (int i = 0; i < columnLabels.size(); i++) {
             if (0 == i) {
                 result.append(columnLabels.get(i)).append(" ").append(orderDirections.get(i).name());

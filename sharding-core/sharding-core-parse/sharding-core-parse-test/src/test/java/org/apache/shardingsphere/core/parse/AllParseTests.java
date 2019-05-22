@@ -18,14 +18,12 @@
 package org.apache.shardingsphere.core.parse;
 
 import org.apache.shardingsphere.core.parse.integrate.AllParsingIntegrateTests;
-import org.apache.shardingsphere.core.parse.rule.AllRuleTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        AllRuleTests.class,
         SQLParseEngineTest.class,
         AllParsingIntegrateTests.class,
         EncryptIntegrateParsingTest.class

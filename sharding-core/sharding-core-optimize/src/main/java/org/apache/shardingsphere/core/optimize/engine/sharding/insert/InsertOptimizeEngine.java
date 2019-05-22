@@ -26,7 +26,6 @@ import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResult;
 import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResultUnit;
-import org.apache.shardingsphere.core.optimize.result.insert.InsertType;
 import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
 import org.apache.shardingsphere.core.parse.sql.context.expression.SQLExpression;
@@ -35,7 +34,6 @@ import org.apache.shardingsphere.core.parse.sql.context.expression.SQLParameterM
 import org.apache.shardingsphere.core.parse.sql.context.expression.SQLTextExpression;
 import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.parse.sql.token.impl.InsertValuesToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
 
@@ -69,7 +67,7 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
         List<AndCondition> andConditions = insertStatement.getRouteCondition().getOrConditions();
         Iterator<Comparable<?>> generatedKeys = createGeneratedKeys();
         List<ShardingCondition> shardingConditions = new ArrayList<>(andConditions.size());
-        InsertOptimizeResult insertOptimizeResult = createInsertOptimizeResult();
+        InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(insertStatement.getColumnNames());
         int parametersCount = 0;
         for (int i = 0; i < andConditions.size(); i++) {
             InsertValue insertValue = insertStatement.getValues().get(i);
@@ -90,11 +88,6 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
             shardingConditions.add(shardingCondition);
         }
         return new OptimizeResult(new ShardingConditions(shardingConditions), insertOptimizeResult);
-    }
-    
-    private InsertOptimizeResult createInsertOptimizeResult() {
-        InsertType type = insertStatement.findSQLToken(InsertValuesToken.class).isPresent() ? InsertType.VALUES : InsertType.SET;
-        return new InsertOptimizeResult(type, insertStatement.getColumnNames());
     }
     
     private Iterator<Comparable<?>> createGeneratedKeys() {
@@ -150,7 +143,6 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
     
     private void fillWithGeneratedKeyName(final InsertOptimizeResult insertOptimizeResult) {
         String generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTables().getSingleTableName()).get();
-        insertOptimizeResult.getColumnNames().remove(generateKeyColumnName);
         insertOptimizeResult.getColumnNames().add(generateKeyColumnName);
     }
     

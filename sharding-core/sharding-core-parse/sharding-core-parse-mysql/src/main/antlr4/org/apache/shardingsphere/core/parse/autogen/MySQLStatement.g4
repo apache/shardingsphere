@@ -17,7 +17,7 @@
 
 grammar MySQLStatement;
 
-import Symbol, Comments, DMLStatement, DDLStatement, TCLStatement, DCLStatement, DALStatement;
+import Symbol, Comments, DMLStatement, DDLStatement, TCLStatement, DCLStatement, DALStatement, StoreProcedure;
 
 execute
     : (select
@@ -57,5 +57,6 @@ execute
     | showCreateTable
     | showOther
     | setVariable
+    | call
     ) SEMI_?
     ;

@@ -46,6 +46,7 @@ import java.util.List;
  * Insert values filler for sharding.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @Setter
 public final class ShardingInsertValuesFiller implements SQLSegmentFiller<InsertValuesSegment>, ShardingRuleAwareFiller {
@@ -67,7 +68,8 @@ public final class ShardingInsertValuesFiller implements SQLSegmentFiller<Insert
         InsertValue insertValue = new InsertValue(columnValues);
         insertStatement.getValues().add(insertValue);
         insertStatement.setParametersIndex(insertStatement.getParametersIndex() + insertValue.getParametersCount());
-        fillInsertValuesToken(sqlSegment, insertStatement);
+        fillWithInsertValuesToken(sqlSegment, insertStatement);
+        reviseInsertColumnNames(sqlSegment, insertStatement);
     }
     
     private Iterator<String> getColumnNames(final InsertValuesSegment sqlSegment, final InsertStatement insertStatement) {
@@ -76,20 +78,8 @@ public final class ShardingInsertValuesFiller implements SQLSegmentFiller<Insert
         Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTables().getSingleTableName());
         if (insertStatement.getColumnNames().size() != sqlSegment.getValues().size() && generateKeyColumnName.isPresent()) {
             result.remove(generateKeyColumnName.get());
-            reviseInsertColumnsToken(insertStatement, generateKeyColumnName.get(), result);
         }
         return result.iterator();
-    }
-    
-    private void reviseInsertColumnsToken(final InsertStatement insertStatement, final String generateKeyColumnName, final Collection<String> columnNames) {
-        Optional<InsertColumnsToken> insertColumnsToken = insertStatement.findSQLToken(InsertColumnsToken.class);
-        Collection<String> assistedColumns = new LinkedList<>(insertColumnsToken.get().getColumns());
-        assistedColumns.removeAll(columnNames);
-        assistedColumns.remove(generateKeyColumnName);
-        insertColumnsToken.get().getColumns().clear();
-        insertColumnsToken.get().getColumns().addAll(columnNames);
-        insertColumnsToken.get().getColumns().add(generateKeyColumnName);
-        insertColumnsToken.get().getColumns().addAll(assistedColumns);
     }
     
     private SQLExpression getColumnValue(final InsertStatement insertStatement, final AndCondition andCondition, final String columnName, final ExpressionSegment expressionSegment) {
@@ -108,7 +98,7 @@ public final class ShardingInsertValuesFiller implements SQLSegmentFiller<Insert
         }
     }
     
-    private void fillInsertValuesToken(final InsertValuesSegment sqlSegment, final InsertStatement insertStatement) {
+    private void fillWithInsertValuesToken(final InsertValuesSegment sqlSegment, final InsertStatement insertStatement) {
         Optional<InsertValuesToken> insertValuesToken = insertStatement.findSQLToken(InsertValuesToken.class);
         if (insertValuesToken.isPresent()) {
             int startIndex = insertValuesToken.get().getStartIndex() < sqlSegment.getStartIndex() ? insertValuesToken.get().getStartIndex() : sqlSegment.getStartIndex();
@@ -118,5 +108,28 @@ public final class ShardingInsertValuesFiller implements SQLSegmentFiller<Insert
         } else {
             insertStatement.getSQLTokens().add(new InsertValuesToken(sqlSegment.getStartIndex(), sqlSegment.getStopIndex()));
         }
+    }
+    
+    private void reviseInsertColumnNames(final InsertValuesSegment sqlSegment, final InsertStatement insertStatement) {
+        Collection<String> result = new ArrayList<>(insertStatement.getColumnNames());
+        result.removeAll(shardingRule.getShardingEncryptorEngine().getAssistedQueryColumns(insertStatement.getTables().getSingleTableName()));
+        Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTables().getSingleTableName());
+        if (insertStatement.getColumnNames().size() != sqlSegment.getValues().size() && generateKeyColumnName.isPresent()) {
+            result.remove(generateKeyColumnName.get());
+            reviseInsertColumnsToken(insertStatement, generateKeyColumnName.get(), result);
+        }
+        insertStatement.getColumnNames().clear();
+        insertStatement.getColumnNames().addAll(result);
+    }
+    
+    private void reviseInsertColumnsToken(final InsertStatement insertStatement, final String generateKeyColumnName, final Collection<String> columnNames) {
+        Optional<InsertColumnsToken> insertColumnsToken = insertStatement.findSQLToken(InsertColumnsToken.class);
+        Collection<String> assistedColumns = new LinkedList<>(insertColumnsToken.get().getColumns());
+        assistedColumns.removeAll(columnNames);
+        assistedColumns.remove(generateKeyColumnName);
+        insertColumnsToken.get().getColumns().clear();
+        insertColumnsToken.get().getColumns().addAll(columnNames);
+        insertColumnsToken.get().getColumns().add(generateKeyColumnName);
+        insertColumnsToken.get().getColumns().addAll(assistedColumns);
     }
 }

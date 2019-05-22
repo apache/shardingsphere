@@ -45,6 +45,6 @@ public final class ShardingRouterFactory {
      */
     public static ShardingRouter newInstance(final ShardingRule shardingRule, final ShardingMetaData shardingMetaData, final DatabaseType databaseType, final ParsingResultCache parsingResultCache) {
         return HintManager.isDatabaseShardingOnly()
-                ? new DatabaseHintSQLRouter(shardingRule) : new ParsingSQLRouter(shardingRule, shardingMetaData, databaseType, parsingResultCache);
+                ? new DatabaseHintSQLRouter(databaseType, shardingRule) : new ParsingSQLRouter(shardingRule, shardingMetaData, databaseType, parsingResultCache);
     }
 }

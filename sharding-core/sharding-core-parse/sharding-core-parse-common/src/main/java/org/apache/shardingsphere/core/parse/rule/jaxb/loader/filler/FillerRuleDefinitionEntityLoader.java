@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.parse.rule.jaxb.loader.filler;
 
-import com.google.common.base.Preconditions;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.parse.rule.jaxb.entity.filler.FillerRuleDefinitionEntity;
 import org.apache.shardingsphere.core.parse.rule.jaxb.loader.RuleDefinitionEntityLoader;
@@ -36,7 +35,7 @@ public final class FillerRuleDefinitionEntityLoader implements RuleDefinitionEnt
     @SneakyThrows
     public FillerRuleDefinitionEntity load(final String fillerRuleDefinitionFile) {
         InputStream inputStream = FillerRuleDefinitionEntityLoader.class.getClassLoader().getResourceAsStream(fillerRuleDefinitionFile);
-        Preconditions.checkNotNull(inputStream, "Cannot load SQL filler rule definition file :%s, ", fillerRuleDefinitionFile);
-        return (FillerRuleDefinitionEntity) JAXBContext.newInstance(FillerRuleDefinitionEntity.class).createUnmarshaller().unmarshal(inputStream);
+        return null == inputStream
+                ? new FillerRuleDefinitionEntity() : (FillerRuleDefinitionEntity) JAXBContext.newInstance(FillerRuleDefinitionEntity.class).createUnmarshaller().unmarshal(inputStream);
     }
 }

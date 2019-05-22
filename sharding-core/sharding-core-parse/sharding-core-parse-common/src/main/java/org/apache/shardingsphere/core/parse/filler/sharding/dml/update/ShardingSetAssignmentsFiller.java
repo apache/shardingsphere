@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.parse.filler.sharding.dml.update;
 
+import com.google.common.base.Optional;
 import lombok.Setter;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.exception.SQLParsingException;
@@ -27,6 +28,7 @@ import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
 import org.apache.shardingsphere.core.parse.sql.context.expression.SQLExpression;
+import org.apache.shardingsphere.core.parse.sql.context.expression.SQLParameterMarkerExpression;
 import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
@@ -37,9 +39,13 @@ import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.core.parse.sql.token.impl.EncryptColumnToken;
-import org.apache.shardingsphere.core.parse.sql.token.impl.InsertSetToken;
+import org.apache.shardingsphere.core.parse.sql.token.impl.InsertSetAddItemsToken;
+import org.apache.shardingsphere.core.parse.sql.token.impl.InsertSetEncryptValueToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -79,12 +85,49 @@ public final class ShardingSetAssignmentsFiller implements SQLSegmentFiller<SetA
         for (AssignmentSegment each : sqlSegment.getAssignments()) {
             SQLExpression columnValue = getColumnValue(insertStatement, andCondition, columnNames.next(), each.getValue());
             columnValues.add(columnValue);
+            fillWithInsertSetEncryptValueToken(insertStatement, each, columnValue);
         }
         InsertValue insertValue = new InsertValue(columnValues);
         insertStatement.getValues().add(insertValue);
         insertStatement.getRouteCondition().getOrConditions().add(andCondition);
         insertStatement.setParametersIndex(insertValue.getParametersCount());
-        insertStatement.getSQLTokens().add(new InsertSetToken(sqlSegment.getStartIndex(), sqlSegment.getStopIndex()));
+        fillWithInsertSetAddItemsToken(insertStatement, sqlSegment);
+    }
+    
+    private void fillWithInsertSetEncryptValueToken(final InsertStatement insertStatement, final AssignmentSegment segment, final SQLExpression columnValue) {
+        Optional<ShardingEncryptor> shardingEncryptor = shardingRule.getShardingEncryptorEngine().getShardingEncryptor(insertStatement.getTables().getSingleTableName(), segment.getColumn().getName());
+        if (shardingEncryptor.isPresent() && !(columnValue instanceof SQLParameterMarkerExpression)) {
+            insertStatement.getSQLTokens().add(new InsertSetEncryptValueToken(segment.getValue().getStartIndex(), segment.getValue().getStopIndex(), segment.getColumn().getName()));
+        }
+    }
+    
+    private void fillWithInsertSetAddItemsToken(final InsertStatement insertStatement, final SetAssignmentsSegment sqlSegment) {
+        Collection<String> columnNames = getQueryAssistedColumn(insertStatement);
+        if (getGeneratedKeyColumn(insertStatement).isPresent()) {
+            columnNames.add(getGeneratedKeyColumn(insertStatement).get());
+        }
+        if (columnNames.isEmpty()) {
+            return;
+        }
+        List<AssignmentSegment> assignments = new ArrayList<>(sqlSegment.getAssignments());
+        insertStatement.getSQLTokens().add(new InsertSetAddItemsToken(assignments.get(assignments.size() - 1).getStopIndex() + 1, columnNames));
+    }
+    
+    private Optional<String> getGeneratedKeyColumn(final InsertStatement insertStatement) {
+        String tableName = insertStatement.getTables().getSingleTableName();
+        Optional<String> generateKeyColumn = shardingRule.findGenerateKeyColumnName(tableName);
+        return generateKeyColumn.isPresent() && !insertStatement.getColumnNames().contains(generateKeyColumn.get()) ? generateKeyColumn : Optional.<String>absent();
+    }
+    
+    private Collection<String> getQueryAssistedColumn(final InsertStatement insertStatement) {
+        Collection<String> result = new LinkedList<>();
+        for (String each : insertStatement.getColumnNames()) {
+            Optional<String> assistedColumnName = shardingRule.getShardingEncryptorEngine().getAssistedQueryColumn(insertStatement.getTables().getSingleTableName(), each);
+            if (assistedColumnName.isPresent()) {
+                result.add(assistedColumnName.get());
+            }
+        }
+        return result;
     }
     
     private int getColumnCountExcludeAssistedQueryColumns(final InsertStatement insertStatement) {

@@ -36,7 +36,7 @@ public final class SQLStatementRuleDefinitionEntityLoader implements RuleDefinit
     @SneakyThrows
     public SQLStatementRuleDefinitionEntity load(final String sqlStatementRuleDefinitionFile) {
         InputStream inputStream = SQLStatementRuleDefinitionEntityLoader.class.getClassLoader().getResourceAsStream(sqlStatementRuleDefinitionFile);
-        Preconditions.checkNotNull(inputStream, "Cannot load SQL statement rule definition file :%s, ", sqlStatementRuleDefinitionFile);
+        Preconditions.checkNotNull(inputStream, "Cannot load SQL statement rule definition file: %s, ", sqlStatementRuleDefinitionFile);
         return (SQLStatementRuleDefinitionEntity) JAXBContext.newInstance(SQLStatementRuleDefinitionEntity.class).createUnmarshaller().unmarshal(inputStream);
     }
 }

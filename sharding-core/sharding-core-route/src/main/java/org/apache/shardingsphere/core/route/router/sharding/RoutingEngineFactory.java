@@ -27,7 +27,6 @@ import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.stat
 import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.statement.UseStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.postgresql.statement.ResetParameterStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.postgresql.statement.SetStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
 import org.apache.shardingsphere.core.route.type.broadcast.DataSourceGroupBroadcastRoutingEngine;
 import org.apache.shardingsphere.core.route.type.broadcast.DatabaseBroadcastRoutingEngine;
@@ -103,9 +102,12 @@ public final class RoutingEngineFactory {
         }
         return new DataSourceGroupBroadcastRoutingEngine(shardingRule);
     }
-
+    
     private static RoutingEngine getDCLRoutingEngine(final ShardingRule shardingRule, final SQLStatement sqlStatement, final ShardingDataSourceMetaData shardingDataSourceMetaData) {
-        return ((DCLStatement) sqlStatement).isGrantForSingleTable()
-                ? new TableBroadcastRoutingEngine(shardingRule, sqlStatement) : new InstanceBroadcastRoutingEngine(shardingRule, shardingDataSourceMetaData);
+        return isGrantForSingleTable(sqlStatement) ? new TableBroadcastRoutingEngine(shardingRule, sqlStatement) : new InstanceBroadcastRoutingEngine(shardingRule, shardingDataSourceMetaData);
+    }
+    
+    private static boolean isGrantForSingleTable(final SQLStatement sqlStatement) {
+        return !sqlStatement.getTables().isEmpty() && !"*".equals(sqlStatement.getTables().getSingleTableName());
     }
 }
