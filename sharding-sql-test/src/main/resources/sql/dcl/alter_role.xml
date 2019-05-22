@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<sql-cases db-types="Oracle" namespace="oracle.dcl.alterRole">
+<sql-cases db-types="Oracle">
     <sql-case id="alter_no_identified_role" value="ALTER ROLE role1 NOT IDENTIFIED" />
     <sql-case id="alter_external_role" value="ALTER ROLE role1 IDENTIFIED EXTERNALLY" />
     <sql-case id="alter_global_role" value="ALTER ROLE role1 IDENTIFIED GLOBALLY" />
