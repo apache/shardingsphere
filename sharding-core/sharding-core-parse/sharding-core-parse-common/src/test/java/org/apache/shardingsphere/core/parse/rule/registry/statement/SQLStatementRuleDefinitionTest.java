@@ -21,6 +21,7 @@ import org.apache.shardingsphere.core.parse.rule.jaxb.entity.extractor.Extractor
 import org.apache.shardingsphere.core.parse.rule.jaxb.loader.extractor.ExtractorRuleDefinitionEntityLoader;
 import org.apache.shardingsphere.core.parse.rule.jaxb.loader.statement.SQLStatementRuleDefinitionEntityLoader;
 import org.apache.shardingsphere.core.parse.rule.registry.extractor.ExtractorRuleDefinition;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -29,16 +30,28 @@ import static org.junit.Assert.assertTrue;
 
 public final class SQLStatementRuleDefinitionTest {
     
-    @Test
-    public void assertGetSQLStatementRule() {
+    private static SQLStatementRuleDefinition sqlStatementRuleDefinition;
+    
+    @BeforeClass
+    public static void setUp() {
         ExtractorRuleDefinitionEntity extractorRuleDefinitionEntity =
                 new ExtractorRuleDefinitionEntityLoader().load("META-INF/parsing-rule-definition/extractor-rule-definition.xml");
-        SQLStatementRuleDefinition sqlStatementRuleDefinition = new SQLStatementRuleDefinition(
+        sqlStatementRuleDefinition = new SQLStatementRuleDefinition(
                 new SQLStatementRuleDefinitionEntityLoader().load("META-INF/parsing-rule-definition/sql-statement-rule-definition.xml"), new ExtractorRuleDefinition(extractorRuleDefinitionEntity));
+    }
+    
+    @Test
+    public void assertSelectStatementRule() {
         SQLStatementRule sqlStatementRule = sqlStatementRuleDefinition.getSQLStatementRule("SelectContext");
         assertThat(sqlStatementRule.getContextName(), is("select"));
         assertThat(sqlStatementRule.getSqlStatementClass().getName(), is("org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement"));
         assertThat(sqlStatementRule.getExtractors().size(), is(3));
         assertTrue(sqlStatementRule.getOptimizer().isPresent());
+    }
+    
+    @Test
+    public void assertDeleteStatementRule() {
+        SQLStatementRule sqlStatementRule = sqlStatementRuleDefinition.getSQLStatementRule("DeleteContext");
+        assertThat(sqlStatementRule.getExtractors().size(), is(0));
     }
 }
