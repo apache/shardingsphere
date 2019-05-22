@@ -32,11 +32,18 @@
     <parser-result sql-case-id="create_user_if_not_exists" />
     <parser-result sql-case-id="create_local_user" />
     <parser-result sql-case-id="create_user_with_roles" />
-    <parser-result sql-case-id="create_user_with_password" />
+    <parser-result sql-case-id="create_user_with_password_default_role" />
     <parser-result sql-case-id="create_user_with_resource_option" />
     <parser-result sql-case-id="create_user_with_resource_options" />
     <parser-result sql-case-id="create_user_with_password_option" />
     <parser-result sql-case-id="create_user_with_password_options" />
     <parser-result sql-case-id="create_user_with_lock_option" />
     <parser-result sql-case-id="create_user_with_options" />
+    <parser-result sql-case-id="create_external_user" />
+    <parser-result sql-case-id="create_global_user" />
+    <parser-result sql-case-id="create_user_with_password" />
+    <parser-result sql-case-id="create_user_with_tablespace" />
+    <parser-result sql-case-id="create_role_with_container" />
+    <parser-result sql-case-id="create_user_with_quota_option" />
+    <parser-result sql-case-id="create_user_with_password_expire_lock" />
 </parser-result-sets>
