@@ -42,4 +42,10 @@ public final class ParseRuleRegistryTest {
         assertTrue(encryptParseRuleRegistry.findSQLStatementRule(DatabaseType.MySQL, "SelectContext").isPresent());
         assertTrue(encryptParseRuleRegistry.findSQLSegmentFiller(DatabaseType.MySQL, ColumnDefinitionSegment.class).isPresent());
     }
+    
+    @Test
+    public void assertMasterSlaveParseRuleRegistry() {
+        assertTrue(masterSlaveParseRuleRegistry.findSQLStatementRule(DatabaseType.MySQL, "SelectContext").isPresent());
+        assertTrue(masterSlaveParseRuleRegistry.findSQLSegmentFiller(DatabaseType.MySQL, ColumnDefinitionSegment.class).isPresent());
+    }
 }
