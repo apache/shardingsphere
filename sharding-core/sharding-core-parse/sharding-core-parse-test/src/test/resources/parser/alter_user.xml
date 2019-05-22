@@ -39,4 +39,15 @@
     <parser-result sql-case-id="alter_user_with_password_options" />
     <parser-result sql-case-id="alter_user_with_lock_option" />
     <parser-result sql-case-id="alter_user_with_options" />
+    <parser-result sql-case-id="alter_external_user" />
+    <parser-result sql-case-id="alter_global_user" />
+    <parser-result sql-case-id="alter_user_with_tablespace_option" />
+    <parser-result sql-case-id="alter_user_with_container" />
+    <parser-result sql-case-id="alter_user_with_quota_option" />
+    <parser-result sql-case-id="alter_user_password_with_lock_option" />
+    <parser-result sql-case-id="alter_user_expire_with_options" />
+    <parser-result sql-case-id="alter_user_grant_proxy" />
+    <parser-result sql-case-id="alter_user_grant_proxy_with_option" />
+    <parser-result sql-case-id="alter_user_revoke_proxy" />
+    <parser-result sql-case-id="alter_user_proxys" />
 </parser-result-sets>
