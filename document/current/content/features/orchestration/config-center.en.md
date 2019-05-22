@@ -7,18 +7,13 @@ weight = 1
 
 ## Motivation
 
-- Configuration centralization: 
-increasing runtime instances make it hard to manage separate configurations and asynchronized configurations can cause serious problems. 
-Concentrating configurations in configuration center makes it more effective to manage.
+- Centralized configuration: more and more running examples have made it hard to manage separate configurations and asynchronized configurations can cause serious problems. Concentrating them in the configuration center can make the management more effective.
 
-- Dynamic configuration: 
-distribution after configuration modification is another important capability that configuration center can provide. 
-It can support dynamic switch between data sources, tables, shards and the read-write split strategy.
+- Dynamic configuration: distribution after configuration modification is another important capability of configuration center. It can support dynamic switch between data sources, tables, shards and the read-write split strategy.
 
 ## Data Structure in Configuration Center
 
-Under configuration of defined name space, configuration center stores data source, sharding databases, sharding tables, read-write split, and Properties configurations in YAML form. 
-Modifying nodes can dynamically manage configuration.
+Under defined name space config, configuration center stores data sources, sharding databases, sharding tables, read-write split, and properties in YAML. Modifying nodes can dynamically manage configuration.
 
 ```
 config
@@ -42,7 +37,7 @@ username: root
 
 ### config/sharding/props
 
-Correspond to Sharding Properties in ShardingSphere configuration.
+It corresponds to Sharding Properties in ShardingSphere configuration.
 
 ```yaml
 executor.size: 20
@@ -51,7 +46,7 @@ sql.show: true
 
 ### config/schema/schemeName/datasource
 
-A collection of multiple database connection pools, whose properties (e.g. DBCP，C3P0，Druid, HikariCP) are configured by users themselves.
+A collection of multiple database connection pools, whose properties (e.g. DBCP, C3P0, Druid and HikariCP) are configured by users themselves.
 
 ```yaml
 ds_0: !!org.apache.shardingsphere.orchestration.yaml.YamlDataSourceConfiguration
@@ -82,7 +77,7 @@ ds_1: !!org.apache.shardingsphere.orchestration.yaml.YamlDataSourceConfiguration
 
 ### config/schema/sharding_db/rule
 
-Database and table sharding configuration, including sharding + read-write split configuration.
+It refers to sharding configuration, including sharding + read-write split configuration.
 
 ```yaml
 tables:
@@ -133,4 +128,4 @@ loadBalanceAlgorithmType: ROUND_ROBIN
 
 ## Dynamic Effectiveness
 
-Modification, deletion and addition of relevant configurations in registry center will be pushed to the production environment and take effect immediately.
+Modification, deletion and insertion of relevant configurations in the registry center will  immediately take effect in the producing environment.
