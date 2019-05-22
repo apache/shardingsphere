@@ -59,8 +59,6 @@ public final class SQLRewriteEngine {
     
     private final BaseRule baseRule;
     
-    private final String originalSQL;
-    
     private final DatabaseType databaseType;
     
     private final SQLRouteResult sqlRouteResult;
@@ -69,24 +67,24 @@ public final class SQLRewriteEngine {
     
     private final SQLBuilder sqlBuilder;
     
-    public SQLRewriteEngine(final ShardingRule shardingRule, final String originalSQL, final DatabaseType databaseType, final SQLRouteResult sqlRouteResult, final List<Object> parameters) {
-        this(shardingRule, originalSQL, databaseType, sqlRouteResult, sqlRouteResult.getSqlStatement(), new SQLBuilder(new ParameterBuilder(parameters)));
+    public SQLRewriteEngine(final ShardingRule shardingRule, final DatabaseType databaseType, final SQLRouteResult sqlRouteResult, final List<Object> parameters) {
+        this(shardingRule, databaseType, sqlRouteResult, sqlRouteResult.getSqlStatement(), new SQLBuilder(new ParameterBuilder(parameters)));
         pattern(sqlRouteResult.getOptimizeResult());
     }
     
-    public SQLRewriteEngine(final EncryptRule encryptRule, final String originalSQL, final SQLStatement sqlStatement, final OptimizeResult optimizeResult, final List<Object> parameters) {
-        this(encryptRule, originalSQL, DatabaseType.MySQL, null, sqlStatement, new SQLBuilder(new ParameterBuilder(parameters)));
+    public SQLRewriteEngine(final EncryptRule encryptRule, final SQLStatement sqlStatement, final OptimizeResult optimizeResult, final List<Object> parameters) {
+        this(encryptRule, DatabaseType.MySQL, null, sqlStatement, new SQLBuilder(new ParameterBuilder(parameters)));
         pattern(optimizeResult);
     }
     
-    public SQLRewriteEngine(final String originalSQL, final SQLStatement sqlStatement) {
-        this(null, originalSQL, null, null, sqlStatement, new SQLBuilder(new ParameterBuilder(Collections.emptyList())));
+    public SQLRewriteEngine(final SQLStatement sqlStatement) {
+        this(null, null, null, sqlStatement, new SQLBuilder(new ParameterBuilder(Collections.emptyList())));
         pattern(null);
     }
     
     private void pattern(final OptimizeResult optimizeResult) {
         if (sqlStatement.getSQLTokens().isEmpty()) {
-            sqlBuilder.appendLiterals(originalSQL);
+            sqlBuilder.appendLiterals(sqlStatement.getLogicSQL());
             return;
         }
         rewrite(optimizeResult);
@@ -97,7 +95,7 @@ public final class SQLRewriteEngine {
         int count = 0;
         for (SQLToken each : sqlStatement.getSQLTokens()) {
             new EncryptSQLRewriter(getShardingEncryptorEngine(), sqlStatement, optimizeResult).rewrite(sqlBuilder, each);
-            new ShardingSQLRewriter(getShardingRule(), originalSQL, databaseType, sqlStatement, sqlRouteResult).rewrite(sqlBuilder, each);
+            new ShardingSQLRewriter(getShardingRule(), sqlStatement.getLogicSQL(), databaseType, sqlStatement, sqlRouteResult).rewrite(sqlBuilder, each);
             rewriteRestLiteral(sqlBuilder, each, count);
             count++;
         }
@@ -107,7 +105,7 @@ public final class SQLRewriteEngine {
         if (isRewriteDistinctLiteral()) {
             appendAggregationDistinctLiteral(sqlBuilder);
         } else {
-            sqlBuilder.appendLiterals(originalSQL.substring(0, sqlStatement.getSQLTokens().get(0).getStartIndex()));
+            sqlBuilder.appendLiterals(sqlStatement.getLogicSQL().substring(0, sqlStatement.getSQLTokens().get(0).getStartIndex()));
         }
     }
     
@@ -128,8 +126,8 @@ public final class SQLRewriteEngine {
     private void appendAggregationDistinctLiteral(final SQLBuilder sqlBuilder) {
         StringBuilder stringBuilder = new StringBuilder();
         int firstSelectItemStartIndex = ((SelectStatement) sqlStatement).getFirstSelectItemStartIndex();
-        stringBuilder.append(originalSQL.substring(0, firstSelectItemStartIndex)).append("DISTINCT ")
-                .append(originalSQL.substring(firstSelectItemStartIndex, sqlStatement.getSQLTokens().get(0).getStartIndex()));
+        stringBuilder.append(sqlStatement.getLogicSQL().substring(0, firstSelectItemStartIndex)).append("DISTINCT ")
+                .append(sqlStatement.getLogicSQL().substring(firstSelectItemStartIndex, sqlStatement.getSQLTokens().get(0).getStartIndex()));
         sqlBuilder.appendLiterals(stringBuilder.toString());
     }
     
@@ -145,6 +143,7 @@ public final class SQLRewriteEngine {
     }
     
     private void rewriteRestLiteral(final SQLBuilder sqlBuilder, final SQLToken sqlToken, final int count) {
+        String originalSQL = sqlStatement.getLogicSQL();
         int stopPosition = sqlStatement.getSQLTokens().size() - 1 == count ? originalSQL.length() : sqlStatement.getSQLTokens().get(count + 1).getStartIndex();
         sqlBuilder.appendLiterals(originalSQL.substring(getStartIndex(sqlToken) > originalSQL.length() ? originalSQL.length() : getStartIndex(sqlToken), stopPosition));
     }
