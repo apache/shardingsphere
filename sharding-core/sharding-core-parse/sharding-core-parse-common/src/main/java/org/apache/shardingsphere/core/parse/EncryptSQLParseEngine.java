@@ -54,7 +54,7 @@ public final class EncryptSQLParseEngine {
      * @return parsed SQL statement
      */
     public SQLStatement parse(final String sql, final boolean useCache) {
-        Optional<SQLStatement> cachedSQLStatement = getSQLStatementFromCache(useCache, sql);
+        Optional<SQLStatement> cachedSQLStatement = getSQLStatementFromCache(sql, useCache);
         if (cachedSQLStatement.isPresent()) {
             return cachedSQLStatement.get();
         }
@@ -65,7 +65,7 @@ public final class EncryptSQLParseEngine {
         return result;
     }
     
-    private Optional<SQLStatement> getSQLStatementFromCache(final boolean useCache, final String sql) {
+    private Optional<SQLStatement> getSQLStatementFromCache(final String sql, final boolean useCache) {
         return useCache ? Optional.fromNullable(parsingResultCache.getSQLStatement(sql)) : Optional.<SQLStatement>absent();
     }
 }
