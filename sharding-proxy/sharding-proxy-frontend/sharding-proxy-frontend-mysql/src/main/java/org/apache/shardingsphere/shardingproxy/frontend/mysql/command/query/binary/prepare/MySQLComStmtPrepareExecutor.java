@@ -65,10 +65,10 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     public Collection<DatabasePacket> execute() {
         // TODO we should use none-sharding parsing engine in future.
         ShardingSQLParseEngine shardingSQLParseEngine = new ShardingSQLParseEngine(
-                LogicSchemas.getInstance().getDatabaseType(), packet.getSql(), getShardingRule(logicSchema), logicSchema.getMetaData().getTable(), logicSchema.getParsingResultCache());
+                LogicSchemas.getInstance().getDatabaseType(), getShardingRule(logicSchema), logicSchema.getMetaData().getTable(), logicSchema.getParsingResultCache());
         Collection<DatabasePacket> result = new LinkedList<>();
         int currentSequenceId = 0;
-        SQLStatement sqlStatement = shardingSQLParseEngine.parse(true);
+        SQLStatement sqlStatement = shardingSQLParseEngine.parse(packet.getSql(), true);
         int parametersIndex = sqlStatement.getParametersIndex();
         result.add(new MySQLComStmtPrepareOKPacket(
                 ++currentSequenceId, PREPARED_STATEMENT_REGISTRY.register(packet.getSql(), parametersIndex), getNumColumns(sqlStatement), parametersIndex, 0));

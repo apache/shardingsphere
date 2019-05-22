@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.parse;
 
 import com.google.common.base.Optional;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
@@ -29,6 +30,7 @@ import org.apache.shardingsphere.core.rule.EncryptRule;
  *
  * @author panjuan
  */
+@RequiredArgsConstructor
 public final class EncryptSQLParseEngine {
     
     private final DatabaseType dbType;
@@ -37,24 +39,17 @@ public final class EncryptSQLParseEngine {
     
     private final ShardingTableMetaData shardingTableMetaData;
     
-    private final ParsingResultCache parsingResultCache;
-    
-    public EncryptSQLParseEngine(final DatabaseType dbType, final EncryptRule encryptRule, final ShardingTableMetaData shardingTableMetaData) {
-        this.dbType = dbType;
-        this.encryptRule = encryptRule;
-        this.shardingTableMetaData = shardingTableMetaData;
-        parsingResultCache = new ParsingResultCache();
-    }
+    private final ParsingResultCache parsingResultCache = new ParsingResultCache();
     
     /**
      * Parse SQL.
      *
-     * @param useCache use cache or not
      * @param sql SQL
+     * @param useCache use cache or not
      * @return parsed SQL statement
      */
-    public SQLStatement parse(final boolean useCache, final String sql) {
-        Optional<SQLStatement> cachedSQLStatement = getSQLStatementFromCache(useCache, sql);
+    public SQLStatement parse(final String sql, final boolean useCache) {
+        Optional<SQLStatement> cachedSQLStatement = getSQLStatementFromCache(sql, useCache);
         if (cachedSQLStatement.isPresent()) {
             return cachedSQLStatement.get();
         }
@@ -65,7 +60,7 @@ public final class EncryptSQLParseEngine {
         return result;
     }
     
-    private Optional<SQLStatement> getSQLStatementFromCache(final boolean useCache, final String sql) {
+    private Optional<SQLStatement> getSQLStatementFromCache(final String sql, final boolean useCache) {
         return useCache ? Optional.fromNullable(parsingResultCache.getSQLStatement(sql)) : Optional.<SQLStatement>absent();
     }
 }

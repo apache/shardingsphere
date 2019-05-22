@@ -62,7 +62,7 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
         if ("select_with_same_table_name_and_alias".equals(sqlCaseId)) {
             return;
         }
-        new SQLStatementAssert(new ShardingSQLParseEngine(
-                databaseType, sql, getShardingRule(), getShardingTableMetaData(), new ParsingResultCache()).parse(false), sqlCaseId, sqlCaseType, databaseType).assertSQLStatement();
+        new SQLStatementAssert(new ShardingSQLParseEngine(databaseType, getShardingRule(), getShardingTableMetaData(), new ParsingResultCache())
+                .parse(sql, false), sqlCaseId, sqlCaseType, databaseType).assertSQLStatement();
     }
 }

@@ -35,8 +35,6 @@ public final class ShardingSQLParseEngine {
     
     private final DatabaseType dbType;
     
-    private final String sql;
-    
     private final ShardingRule shardingRule;
     
     private final ShardingTableMetaData shardingTableMetaData;
@@ -46,11 +44,12 @@ public final class ShardingSQLParseEngine {
     /**
      * Parse SQL.
      *
+     * @param sql SQL
      * @param useCache use cache or not
      * @return SQL statement
      */
-    public SQLStatement parse(final boolean useCache) {
-        Optional<SQLStatement> cachedSQLStatement = getSQLStatementFromCache(useCache);
+    public SQLStatement parse(final String sql, final boolean useCache) {
+        Optional<SQLStatement> cachedSQLStatement = getSQLStatementFromCache(sql, useCache);
         if (cachedSQLStatement.isPresent()) {
             return cachedSQLStatement.get();
         }
@@ -61,7 +60,7 @@ public final class ShardingSQLParseEngine {
         return result;
     }
     
-    private Optional<SQLStatement> getSQLStatementFromCache(final boolean useCache) {
+    private Optional<SQLStatement> getSQLStatementFromCache(final String sql, final boolean useCache) {
         return useCache ? Optional.fromNullable(parsingResultCache.getSQLStatement(sql)) : Optional.<SQLStatement>absent();
     }
 }
