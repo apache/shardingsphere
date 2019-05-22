@@ -29,8 +29,7 @@ public final class ExtractorRuleDefinitionTest {
     
     @Test
     public void assertGetExtractor() {
-        ExtractorRuleDefinitionEntity extractorRuleDefinitionEntity = 
-                new ExtractorRuleDefinitionEntityLoader().load("META-INF/parsing-rule-definition/extractor-rule-definition.xml");
+        ExtractorRuleDefinitionEntity extractorRuleDefinitionEntity = new ExtractorRuleDefinitionEntityLoader().load("META-INF/parsing-rule-definition/extractor-rule-definition.xml");
         assertThat(new ExtractorRuleDefinition(extractorRuleDefinitionEntity).getExtractor("schema"), instanceOf(SchemaExtractor.class));
     }
 }

@@ -34,8 +34,7 @@ public final class SQLStatementRuleDefinitionTest {
     
     @BeforeClass
     public static void setUp() {
-        ExtractorRuleDefinitionEntity extractorRuleDefinitionEntity =
-                new ExtractorRuleDefinitionEntityLoader().load("META-INF/parsing-rule-definition/extractor-rule-definition.xml");
+        ExtractorRuleDefinitionEntity extractorRuleDefinitionEntity = new ExtractorRuleDefinitionEntityLoader().load("META-INF/parsing-rule-definition/extractor-rule-definition.xml");
         sqlStatementRuleDefinition = new SQLStatementRuleDefinition(
                 new SQLStatementRuleDefinitionEntityLoader().load("META-INF/parsing-rule-definition/sql-statement-rule-definition.xml"), new ExtractorRuleDefinition(extractorRuleDefinitionEntity));
     }
