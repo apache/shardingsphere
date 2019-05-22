@@ -20,4 +20,9 @@
     <parser-result sql-case-id="create_role" />
     <parser-result sql-case-id="create_roles"  />
     <parser-result sql-case-id="create_role_if_not_exists" />
+    <parser-result sql-case-id="create_no_identified_role" />
+    <parser-result sql-case-id="create_external_role"  />
+    <parser-result sql-case-id="create_global_role" />
+    <parser-result sql-case-id="create_role_with_password" />
+    <parser-result sql-case-id="create_role_with_container"  />
 </parser-result-sets>
