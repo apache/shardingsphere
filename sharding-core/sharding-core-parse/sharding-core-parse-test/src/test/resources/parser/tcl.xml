@@ -19,8 +19,11 @@
 <parser-result-sets>
     <parser-result sql-case-id="setTransaction" tcl-actual-statement-class-type="org.apache.shardingsphere.core.parse.sql.statement.tcl.SetTransactionStatement" />
     <parser-result sql-case-id="commit" tcl-actual-statement-class-type="org.apache.shardingsphere.core.parse.sql.statement.tcl.CommitStatement" />
+    <parser-result sql-case-id="commitWithComment" tcl-actual-statement-class-type="org.apache.shardingsphere.core.parse.sql.statement.tcl.CommitStatement" />
+    <parser-result sql-case-id="commitForce" tcl-actual-statement-class-type="org.apache.shardingsphere.core.parse.sql.statement.tcl.CommitStatement" />
     <parser-result sql-case-id="rollback" tcl-actual-statement-class-type="org.apache.shardingsphere.core.parse.sql.statement.tcl.RollbackStatement" />
     <parser-result sql-case-id="rollbackToSavepoint" tcl-actual-statement-class-type="org.apache.shardingsphere.core.parse.sql.statement.tcl.RollbackStatement" />
+     <parser-result sql-case-id="rollbackForce" tcl-actual-statement-class-type="org.apache.shardingsphere.core.parse.sql.statement.tcl.RollbackStatement" />
     <parser-result sql-case-id="savepoint" tcl-actual-statement-class-type="org.apache.shardingsphere.core.parse.sql.statement.tcl.SavepointStatement" />
     <parser-result sql-case-id="begin" tcl-actual-statement-class-type="org.apache.shardingsphere.core.parse.sql.statement.tcl.BeginTransactionStatement" />
     <parser-result sql-case-id="setAutoCommitOn" tcl-actual-statement-class-type="org.apache.shardingsphere.core.parse.sql.statement.tcl.SetAutoCommitStatement" />
@@ -30,4 +33,5 @@
     <parser-result sql-case-id="rollbackToSavepoint" tcl-actual-statement-class-type="org.apache.shardingsphere.core.parse.sql.statement.tcl.RollbackStatement" />
     <parser-result sql-case-id="setGlobalTransaction" tcl-actual-statement-class-type="org.apache.shardingsphere.core.parse.sql.statement.tcl.SetTransactionStatement" />
     <parser-result sql-case-id="setTransactionReadOnly" tcl-actual-statement-class-type="org.apache.shardingsphere.core.parse.sql.statement.tcl.SetTransactionStatement" />
+    <parser-result sql-case-id="setTransactionWithName" tcl-actual-statement-class-type="org.apache.shardingsphere.core.parse.sql.statement.tcl.SetTransactionStatement" />
 </parser-result-sets>
