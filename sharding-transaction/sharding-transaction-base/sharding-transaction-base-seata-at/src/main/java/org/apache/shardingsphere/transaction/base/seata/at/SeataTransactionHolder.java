@@ -15,32 +15,41 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.annotation;
+package org.apache.shardingsphere.transaction.base.seata.at;
 
-import org.apache.shardingsphere.transaction.core.TransactionType;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import io.seata.tm.api.GlobalTransaction;
 
 /**
- * Sharding transactional annotation.
+ * Seata transaction holder.
  *
- * @author yangyi
+ * @author zhaojun
  */
-@Target({ElementType.METHOD, ElementType.TYPE})
-@Retention(RetentionPolicy.RUNTIME)
-@Inherited
-public @interface ShardingTransactionType {
+final class SeataTransactionHolder {
+    
+    private static final ThreadLocal<GlobalTransaction> CONTEXT = new ThreadLocal<>();
     
     /**
-     * Sharding transaction type, include LOCAL, XA, BASE.
-     * default LOCAL.
+     * Set seata global transaction.
      *
-     * @return Sharding transaction type
+     * @param transaction global transaction context
      */
-    TransactionType value() default TransactionType.LOCAL;
+    static void set(final GlobalTransaction transaction) {
+        CONTEXT.set(transaction);
+    }
+    
+    /**
+     * Get seata global transaction.
+     *
+     * @return global transaction
+     */
+    static GlobalTransaction get() {
+        return CONTEXT.get();
+    }
+    
+    /**
+     * Clear global transaction.
+     */
+    static void clear() {
+        CONTEXT.remove();
+    }
 }
-
