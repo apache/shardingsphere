@@ -3,7 +3,6 @@ pre = "<b>3.4.1.2 </b>"
 toc = true
 title = "Saga BASE Transaction"
 weight = 3
-
 +++
 
 ### Saga Transaction

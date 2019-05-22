@@ -3,7 +3,6 @@ pre = "<b>3.4.1.1 </b>"
 toc = true
 title = "2PC Transaction-XA"
 weight = 1
-
 +++
 
 2PC transaction submit uses the [DTP Model](http://pubs.opengroup.org/onlinepubs/009680699/toc.pdf) defined by X/OPEN, in which extracted `AP`, `TM` and `RM` can guarantee a high transaction consistency. `TM` and `RM` exchange transaction information according to XA. Compared with traditional local transactions, XA transactions have a prepare phase, where the database can not only passively receive commands, but also notify the submitter whether the transaction can be accepted. So `TM` can collect all the prepare results of transactions in branches before submitting all of them together, which has guaranteed the high consistency.
