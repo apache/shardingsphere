@@ -26,4 +26,14 @@
     <sql-case id="drop_index" value="DROP INDEX t_log_index ON t_log" db-types="MySQL,SQLServer" />
     <sql-case id="drop_index_without_on" value="DROP INDEX order_index" db-types="PostgreSQL,Oracle" />
     <sql-case id="drop_index_if_exists" value="DROP INDEX IF EXISTS order_index" db-types="PostgreSQL" />
+    <sql-case id="drop_table_with_space" value="    DROP TABLE
+        t_order    " db-types="MySQL" />
+    <sql-case id="drop_table_with_back_quota" value="DROP TABLE `t_order`" left-delimiter="`" right-delimiter="`" db-types="MySQL" />
+    <sql-case id="drop_tables" value="DROP TABLE t_order_item, t_order" db-types="MySQL" />
+    <sql-case id="drop_temporary_table" value="DROP TEMPORARY TABLE t_order" db-types="MySQL" />
+    <sql-case id="drop_index_with_space" value="    DROP INDEX
+        order_index
+    ON
+        t_order    " db-types="MySQL" />
+    <sql-case id="drop_index_with_back_quota" value="DROP INDEX `order_index` ON `t_order`" db-types="MySQL" />
 </sql-cases>
