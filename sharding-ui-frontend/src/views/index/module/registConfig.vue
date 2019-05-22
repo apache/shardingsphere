@@ -52,7 +52,6 @@
         <el-form-item :label="$t('index.registDialog.centerType')" prop="centerType">
           <el-radio-group v-model="form.centerType">
             <el-radio label="Zookeeper">Zookeeper</el-radio>
-            <el-radio label="Etcd">Etcd</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item :label="$t('index.registDialog.address')" prop="address">
