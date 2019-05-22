@@ -25,8 +25,6 @@ dataSources:
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 65
-    minPoolSize: 1
-    maintenanceIntervalMilliseconds: 30000
   ds1:
     url: jdbc:postgresql://localhost:5432/ds1
     username: root
@@ -35,8 +33,6 @@ dataSources:
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 65
-    minPoolSize: 1
-    maintenanceIntervalMilliseconds: 30000
 
 shardingRule:  
   tables:
@@ -47,33 +43,31 @@ shardingRule:
           shardingColumn: order_id
           algorithmExpression: t_order${order_id % 2}
       keyGenerator:
-        column: order_id
+        type: SNOWFLAKE
+        columnn: order_id
     t_order_item:
       actualDataNodes: ds${0..1}.t_order_item${0..1}
       tableStrategy:
         inline:
           shardingColumn: order_id
-          algorithmExpression: t_order_item${order_id % 2}   
+          algorithmExpression: t_order_item${order_id % 2}
+      keyGenerator:
+        type: SNOWFLAKE
+        column: order_item_id
   bindingTables:
     - t_order,t_order_item
-  broadcastTables:
-    - t_config
-  
-  defaultDataSourceName: ds0
   defaultDatabaseStrategy:
     inline:
       shardingColumn: user_id
       algorithmExpression: ds${user_id % 2}
   defaultTableStrategy:
     none:
-  defaultKeyGenerator:
-    type: SNOWFLAKE
 ```
 
 ### Read-Write Split
 
 ```yaml
-schemaName: sharding_master_slave_db
+schemaName: master_slave_db
 
 dataSources:
   ds_master:
@@ -84,28 +78,22 @@ dataSources:
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 65
-    minPoolSize: 1
-    maintenanceIntervalMilliseconds: 30000
   ds_slave0:
     url: jdbc:postgresql://localhost:5432/ds_slave0
     username: root
-    password:
+    password: 
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 65
-    minPoolSize: 1
-    maintenanceIntervalMilliseconds: 30000
   ds_slave1:
     url: jdbc:postgresql://localhost:5432/ds_slave1
     username: root
-    password:
+    password: 
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 65
-    minPoolSize: 1
-    maintenanceIntervalMilliseconds: 30000
 
 masterSlaveRule:
   name: ds_ms
@@ -124,13 +112,11 @@ dataSources:
   ds0:
     url: jdbc:postgresql://localhost:5432/ds0
     username: root
-    password:
+    password: 
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 65
-    minPoolSize: 1
-    maintenanceIntervalMilliseconds: 30000
   ds0_slave0:
     url: jdbc:postgresql://localhost:5432/ds0_slave0
     username: root
@@ -139,18 +125,14 @@ dataSources:
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 65
-    minPoolSize: 1
-    maintenanceIntervalMilliseconds: 30000
   ds0_slave1:
     url: jdbc:postgresql://localhost:5432/ds0_slave1
     username: root
-    password:
+    password: 
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 65
-    minPoolSize: 1
-    maintenanceIntervalMilliseconds: 30000
   ds1:
     url: jdbc:postgresql://localhost:5432/ds1
     username: root
@@ -159,8 +141,6 @@ dataSources:
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 65
-    minPoolSize: 1
-    maintenanceIntervalMilliseconds: 30000
   ds1_slave0:
     url: jdbc:postgresql://localhost:5432/ds1_slave0
     username: root
@@ -169,18 +149,14 @@ dataSources:
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 65
-    minPoolSize: 1
-    maintenanceIntervalMilliseconds: 30000
   ds1_slave1:
     url: jdbc:postgresql://localhost:5432/ds1_slave1
     username: root
-    password:
+    password: 
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 65
-    minPoolSize: 1
-    maintenanceIntervalMilliseconds: 30000
 
 shardingRule:  
   tables:
@@ -191,23 +167,29 @@ shardingRule:
           shardingColumn: order_id
           algorithmExpression: t_order${order_id % 2}
       keyGenerator:
+        type: SNOWFLAKE
         column: order_id
     t_order_item:
       actualDataNodes: ms_ds${0..1}.t_order_item${0..1}
       tableStrategy:
         inline:
           shardingColumn: order_id
-          algorithmExpression: t_order_item${order_id % 2}  
+          algorithmExpression: t_order_item${order_id % 2}
+      keyGenerator:
+        type: SNOWFLAKE
+        column: order_item_id
   bindingTables:
     - t_order,t_order_item
+  broadcastTables:
+    - t_config
+  defaultDataSourceName: ds0
   defaultDatabaseStrategy:
     inline:
       shardingColumn: user_id
       algorithmExpression: ms_ds${user_id % 2}
   defaultTableStrategy:
     none:
-  defaultKeyGenerator:
-    type: SNOWFLAKE
+  
   masterSlaveRules:
       ms_ds0:
         masterDataSourceName: ds0
@@ -239,8 +221,6 @@ dataSources:
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 65
-    minPoolSize: 1
-    maintenanceIntervalMilliseconds: 30000
   ds1:
     url: jdbc:postgresql://localhost:5432/ds1
     username: root
@@ -249,8 +229,6 @@ dataSources:
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 65
-    minPoolSize: 1
-    maintenanceIntervalMilliseconds: 30000
 
 shardingRule:  
   tables:
@@ -261,13 +239,17 @@ shardingRule:
           shardingColumn: order_id
           algorithmExpression: t_order${order_id % 2}
       keyGenerator:
+        type: SNOWFLAKE
         columnn: order_id
     t_order_item:
       actualDataNodes: ds${0..1}.t_order_item${0..1}
       tableStrategy:
         inline:
           shardingColumn: order_id
-          algorithmExpression: t_order_item${order_id % 2}  
+          algorithmExpression: t_order_item${order_id % 2}
+      keyGenerator:
+        type: SNOWFLAKE
+        columnn: order_item_id
   bindingTables:
     - t_order,t_order_item
   defaultDatabaseStrategy:
@@ -276,8 +258,6 @@ shardingRule:
       algorithmExpression: ds${user_id % 2}
   defaultTableStrategy:
     none:
-  defaultKeyGenerator:
-    type: SNOWFLAKE
     
   encryptRule:
     encryptors:
@@ -337,8 +317,6 @@ dataSources: #Data source configuration, which can be multiple data_source_name
     idleTimeoutMilliseconds: 60000 #Idle timeout setting
     maxLifetimeMilliseconds: 1800000 #Maximum lifetime
     maxPoolSize: 65 #Maximum connection number in the pool
-    minPoolSize: 1 #Minimum connection number in the pool
-    maintenanceIntervalMilliseconds: 30000 #Interval time for connection maintenance 
 
 shardingRule: #Omit data sharding configuration and be consistent with Sharding-JDBC configuration
 ```
