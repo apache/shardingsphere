@@ -35,10 +35,12 @@ public class SagaTransactionalService implements CommonService {
         this.springPojoService = jpaCommonService;
     }
     
+    @Override
     public void initEnvironment() {
         springPojoService.initEnvironment();
     }
     
+    @Override
     public void cleanEnvironment() {
         springPojoService.cleanEnvironment();
     }
@@ -46,6 +48,7 @@ public class SagaTransactionalService implements CommonService {
     /**
      * process success, XA transaction will be committed.
      */
+    @Override
     @ShardingTransactionType(TransactionType.BASE)
     @Transactional
     public void processSuccess() {
@@ -55,12 +58,14 @@ public class SagaTransactionalService implements CommonService {
     /**
      * process failure, XA transaction will be rollback.
      */
+    @Override
     @ShardingTransactionType(TransactionType.BASE)
     @Transactional
     public void processFailure() {
         springPojoService.processFailure();
     }
     
+    @Override
     public void printData() {
         springPojoService.printData();
     }
