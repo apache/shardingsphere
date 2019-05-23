@@ -3,7 +3,6 @@ pre = "<b>3.4.3.1 </b>"
 toc = true
 title = "2PC transaction-XA"
 weight = 2
-
 +++
 
 ## Principle

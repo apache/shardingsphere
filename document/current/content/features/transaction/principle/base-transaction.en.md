@@ -3,7 +3,6 @@ pre = "<b>3.4.3.2 </b>"
 toc = true
 title = "BASE Transaction"
 weight = 3
-
 +++
 
 ## Design

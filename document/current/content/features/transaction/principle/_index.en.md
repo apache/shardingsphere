@@ -3,7 +3,6 @@ pre = "<b>3.4.3. </b>"
 title = "Principle"
 weight = 3
 chapter = true
-
 +++
 
 ## Navigation
