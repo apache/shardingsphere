@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.parse.api.SQLParser;
-import org.apache.shardingsphere.core.parse.spi.ShardingParseEngine;
+import org.apache.shardingsphere.core.parse.spi.SQLParserEngine;
 import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
 
 /**
@@ -34,7 +34,7 @@ import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
 public final class SQLParserFactory {
     
     static {
-        NewInstanceServiceLoader.register(ShardingParseEngine.class);
+        NewInstanceServiceLoader.register(SQLParserEngine.class);
     }
     
     /** 
@@ -45,7 +45,7 @@ public final class SQLParserFactory {
      * @return SQL parser
      */
     public static SQLParser newInstance(final DatabaseType databaseType, final String sql) {
-        for (ShardingParseEngine each : NewInstanceServiceLoader.newServiceInstances(ShardingParseEngine.class)) {
+        for (SQLParserEngine each : NewInstanceServiceLoader.newServiceInstances(SQLParserEngine.class)) {
             if (DatabaseType.valueOf(each.getDatabaseType()) == databaseType) {
                 return each.createSQLParser(sql);
             }

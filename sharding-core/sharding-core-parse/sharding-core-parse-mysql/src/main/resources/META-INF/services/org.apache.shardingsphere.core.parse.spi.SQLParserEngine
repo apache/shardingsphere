@@ -15,4 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.core.parse.SQLServerShardingParseEngine
+org.apache.shardingsphere.core.parse.MySQLParserEngine
+org.apache.shardingsphere.core.parse.H2ParserEngine

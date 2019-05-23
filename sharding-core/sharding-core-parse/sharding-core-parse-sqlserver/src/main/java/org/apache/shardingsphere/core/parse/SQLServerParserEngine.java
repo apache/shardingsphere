@@ -19,23 +19,23 @@ package org.apache.shardingsphere.core.parse;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.apache.shardingsphere.core.parse.autogen.MySQLStatementLexer;
-import org.apache.shardingsphere.core.parse.spi.ShardingParseEngine;
+import org.apache.shardingsphere.core.parse.autogen.SQLServerStatementLexer;
+import org.apache.shardingsphere.core.parse.spi.SQLParserEngine;
 
 /**
- * Sharding parse engine for MySQL.
+ * SQL parser engine for SQLServer.
  *
  * @author zhangliang
  */
-public final class MySQLShardingParseEngine implements ShardingParseEngine {
+public final class SQLServerParserEngine implements SQLParserEngine {
     
     @Override
     public String getDatabaseType() {
-        return "MySQL";
+        return "SQLServer";
     }
     
     @Override
-    public MySQLParser createSQLParser(final String sql) {
-        return new MySQLParser(new CommonTokenStream(new MySQLStatementLexer(CharStreams.fromString(sql))));
+    public SQLServerParser createSQLParser(final String sql) {
+        return new SQLServerParser(new CommonTokenStream(new SQLServerStatementLexer(CharStreams.fromString(sql))));
     }
 }

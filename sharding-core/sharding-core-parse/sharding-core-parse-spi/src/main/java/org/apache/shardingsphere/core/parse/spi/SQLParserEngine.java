@@ -15,27 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse;
+package org.apache.shardingsphere.core.parse.spi;
 
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.apache.shardingsphere.core.parse.autogen.PostgreSQLStatementLexer;
-import org.apache.shardingsphere.core.parse.spi.ShardingParseEngine;
+import org.apache.shardingsphere.core.parse.api.SQLParser;
 
 /**
- * Sharding parse engine for PostgreSQL.
+ * SQL parser engine.
  *
  * @author zhangliang
  */
-public final class PostgreSQLShardingParseEngine implements ShardingParseEngine {
+public interface SQLParserEngine {
     
-    @Override
-    public String getDatabaseType() {
-        return "PostgreSQL";
-    }
+    /**
+     * Get database type.
+     * 
+     * @return database type
+     */
+    String getDatabaseType();
     
-    @Override
-    public PostgreSQLParser createSQLParser(final String sql) {
-        return new PostgreSQLParser(new CommonTokenStream(new PostgreSQLStatementLexer(CharStreams.fromString(sql))));
-    }
+    /**
+     * Create SQL parser.
+     *
+     * @param sql SQL
+     * @return instance of SQL parser
+     */
+    SQLParser createSQLParser(String sql);
 }
