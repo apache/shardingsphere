@@ -21,6 +21,9 @@ import org.apache.shardingsphere.core.parse.rule.jaxb.loader.RuleDefinitionFileC
 import org.apache.shardingsphere.core.parse.rule.jaxb.loader.extractor.ExtractorRuleDefinitionEntityLoaderTest;
 import org.apache.shardingsphere.core.parse.rule.jaxb.loader.filler.FillerRuleDefinitionEntityLoaderTest;
 import org.apache.shardingsphere.core.parse.rule.jaxb.loader.statement.SQLStatementRuleDefinitionEntityLoaderTest;
+import org.apache.shardingsphere.core.parse.rule.registry.extractor.ExtractorRuleDefinitionTest;
+import org.apache.shardingsphere.core.parse.rule.registry.filler.FillerRuleDefinitionTest;
+import org.apache.shardingsphere.core.parse.rule.registry.statement.SQLStatementRuleDefinitionTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -30,7 +33,10 @@ import org.junit.runners.Suite.SuiteClasses;
         RuleDefinitionFileConstantTest.class,
         ExtractorRuleDefinitionEntityLoaderTest.class,
         FillerRuleDefinitionEntityLoaderTest.class,
-        SQLStatementRuleDefinitionEntityLoaderTest.class
+        SQLStatementRuleDefinitionEntityLoaderTest.class,
+        ExtractorRuleDefinitionTest.class,
+        FillerRuleDefinitionTest.class,
+        SQLStatementRuleDefinitionTest.class
 })
 public final class AllRuleTests {
 }

@@ -69,16 +69,16 @@ public abstract class ParseRuleRegistry {
         }
     }
     
+    private FillerRuleDefinition createFillerRuleDefinition(final FillerRuleDefinitionEntity generalFillerRuleEntity,
+                                                            final FillerRuleDefinitionEntity featureGeneralFillerRuleEntity, final DatabaseType databaseType) {
+        return new FillerRuleDefinition(
+                generalFillerRuleEntity, featureGeneralFillerRuleEntity, fillerRuleLoader.load(RuleDefinitionFileConstant.getFillerRuleDefinitionFile(getType(), databaseType)));
+    }
+    
     private SQLStatementRuleDefinition createSQLStatementRuleDefinition(final ExtractorRuleDefinitionEntity generalExtractorRuleEntity, final DatabaseType databaseType) {
         ExtractorRuleDefinition extractorRuleDefinition = new ExtractorRuleDefinition(
                 generalExtractorRuleEntity, extractorRuleLoader.load(RuleDefinitionFileConstant.getExtractorRuleDefinitionFile(getType(), databaseType)));
         return new SQLStatementRuleDefinition(statementRuleLoader.load(RuleDefinitionFileConstant.getSQLStatementRuleDefinitionFile(getType(), databaseType)), extractorRuleDefinition);
-    }
-    
-    private FillerRuleDefinition createFillerRuleDefinition(final FillerRuleDefinitionEntity generalFillerRuleEntity, 
-                                                            final FillerRuleDefinitionEntity featureGeneralFillerRuleEntity, final DatabaseType databaseType) {
-        return new FillerRuleDefinition(
-                generalFillerRuleEntity, featureGeneralFillerRuleEntity, fillerRuleLoader.load(RuleDefinitionFileConstant.getFillerRuleDefinitionFile(getType(), databaseType)));
     }
     
     /**
@@ -89,14 +89,14 @@ public abstract class ParseRuleRegistry {
     protected abstract String getType();
     
     /**
-     * Find SQL statement rule.
+     * Get SQL statement rule.
      *
      * @param databaseType database type
      * @param contextClassName context class name
      * @return SQL statement rule
      */
-    public Optional<SQLStatementRule> findSQLStatementRule(final DatabaseType databaseType, final String contextClassName) {
-        return Optional.fromNullable(sqlStatementRuleDefinitions.get(DatabaseType.H2 == databaseType ? DatabaseType.MySQL : databaseType).getSQLStatementRule(contextClassName));
+    public SQLStatementRule getSQLStatementRule(final DatabaseType databaseType, final String contextClassName) {
+        return sqlStatementRuleDefinitions.get(DatabaseType.H2 == databaseType ? DatabaseType.MySQL : databaseType).getSQLStatementRule(contextClassName);
     }
     
     /**

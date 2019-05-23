@@ -86,12 +86,12 @@ public final class EncryptSQLRewriter implements SQLRewriter {
             return null;
         }
         for (InsertOptimizeResultUnit each : insertOptimizeResult.get().getUnits()) {
-            encryptInsertOptimizeResultUnit(insertOptimizeResult.get().getColumnNames(), each);
+            encryptInsertOptimizeResultUnit(each, insertOptimizeResult.get().getColumnNames());
         }
         return insertOptimizeResult.get();
     }
     
-    private void encryptInsertOptimizeResultUnit(final Collection<String> columnNames, final InsertOptimizeResultUnit unit) {
+    private void encryptInsertOptimizeResultUnit(final InsertOptimizeResultUnit unit, final Collection<String> columnNames) {
         for (String each : columnNames) {
             Optional<ShardingEncryptor> shardingEncryptor = encryptorEngine.getShardingEncryptor(sqlStatement.getTables().getSingleTableName(), each);
             if (shardingEncryptor.isPresent()) {
@@ -102,16 +102,16 @@ public final class EncryptSQLRewriter implements SQLRewriter {
     
     private void encryptInsertOptimizeResult(final InsertOptimizeResultUnit unit, final String columnName, final ShardingEncryptor shardingEncryptor) {
         if (shardingEncryptor instanceof ShardingQueryAssistedEncryptor) {
-            String assistedColumnName = encryptorEngine.getAssistedQueryColumn(sqlStatement.getTables().getSingleTableName(), columnName).get();
-            unit.setColumnValue(
-                    assistedColumnName, ((ShardingQueryAssistedEncryptor) shardingEncryptor).queryAssistedEncrypt(unit.getColumnValue(columnName).toString()));
+            Optional<String> assistedColumnName = encryptorEngine.getAssistedQueryColumn(sqlStatement.getTables().getSingleTableName(), columnName);
+            Preconditions.checkArgument(assistedColumnName.isPresent(), "Can not find assisted query Column Name");
+            unit.setColumnValue(assistedColumnName.get(), ((ShardingQueryAssistedEncryptor) shardingEncryptor).queryAssistedEncrypt(unit.getColumnValue(columnName).toString()));
         }
         unit.setColumnValue(columnName, shardingEncryptor.encrypt(unit.getColumnValue(columnName)));
     }
     
     @Override
-    public void rewrite(final SQLBuilder sqlBuilder, final SQLToken sqlToken) {
-        sqlBuilder.getParameterBuilder().setInsertParameterUnits(insertOptimizeResult);
+    public void rewrite(final SQLBuilder sqlBuilder, final ParameterBuilder parameterBuilder, final SQLToken sqlToken) {
+        parameterBuilder.setInsertParameterUnits(insertOptimizeResult);
         if (sqlToken instanceof InsertValuesToken) {
             appendInsertValuesPlaceholder(sqlBuilder, insertOptimizeResult);
         } else if (sqlToken instanceof InsertSetEncryptValueToken) {
@@ -119,7 +119,7 @@ public final class EncryptSQLRewriter implements SQLRewriter {
         } else if (sqlToken instanceof InsertSetAddItemsToken) {
             appendInsertSetAddItemsPlaceholder(sqlBuilder, (InsertSetAddItemsToken) sqlToken, insertOptimizeResult);
         } else if (sqlToken instanceof EncryptColumnToken) {
-            appendEncryptColumnPlaceholder(sqlBuilder, (EncryptColumnToken) sqlToken, sqlBuilder.getParameterBuilder());
+            appendEncryptColumnPlaceholder(sqlBuilder, (EncryptColumnToken) sqlToken, parameterBuilder);
         }
     }
     

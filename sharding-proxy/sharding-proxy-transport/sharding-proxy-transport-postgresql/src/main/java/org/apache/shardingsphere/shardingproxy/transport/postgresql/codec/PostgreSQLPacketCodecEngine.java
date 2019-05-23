@@ -62,7 +62,7 @@ public final class PostgreSQLPacketCodecEngine implements DatabasePacketCodecEng
             message.write(payload);
             if (!(message instanceof PostgreSQLSSLNegativePacket)) {
                 out.writeByte(message.getMessageType());
-                out.writeInt(payload.getByteBuf().readableBytes() + message.PAYLOAD_LENGTH);
+                out.writeInt(payload.getByteBuf().readableBytes() + PostgreSQLPacket.PAYLOAD_LENGTH);
             }
             out.writeBytes(payload.getByteBuf());
         }

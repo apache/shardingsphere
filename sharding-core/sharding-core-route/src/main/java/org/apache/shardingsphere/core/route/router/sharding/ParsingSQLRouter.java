@@ -28,8 +28,8 @@ import org.apache.shardingsphere.core.optimize.OptimizeEngineFactory;
 import org.apache.shardingsphere.core.optimize.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.condition.ShardingConditions;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
-import org.apache.shardingsphere.core.parse.ShardingSQLParseEngine;
 import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
+import org.apache.shardingsphere.core.parse.entry.ShardingSQLParseEntry;
 import org.apache.shardingsphere.core.parse.hook.ParsingHook;
 import org.apache.shardingsphere.core.parse.hook.SPIParsingHook;
 import org.apache.shardingsphere.core.parse.sql.context.limit.Limit;
@@ -75,7 +75,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
     public SQLStatement parse(final String logicSQL, final boolean useCache) {
         parsingHook.start(logicSQL);
         try {
-            SQLStatement result = new ShardingSQLParseEngine(databaseType, logicSQL, shardingRule, shardingMetaData.getTable(), parsingResultCache).parse(useCache);
+            SQLStatement result = new ShardingSQLParseEntry(databaseType, shardingRule, shardingMetaData.getTable(), parsingResultCache).parse(logicSQL, useCache);
             parsingHook.finishSuccess(result, shardingMetaData.getTable());
             return result;
             // CHECKSTYLE:OFF

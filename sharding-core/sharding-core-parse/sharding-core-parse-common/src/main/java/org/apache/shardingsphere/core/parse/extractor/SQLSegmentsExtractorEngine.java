@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.parse.extractor;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.extractor.api.CollectionSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.extractor.api.OptionalSQLSegmentExtractor;
@@ -48,9 +47,8 @@ public final class SQLSegmentsExtractorEngine {
      */
     public Collection<SQLSegment> extract(final SQLAST ast) {
         Collection<SQLSegment> result = new LinkedList<>();
-        Preconditions.checkState(ast.getSQLStatementRule().isPresent());
         Map<ParserRuleContext, Integer> parameterMarkerIndexes = getParameterMarkerIndexes(ast.getParserRuleContext());
-        for (SQLSegmentExtractor each : ast.getSQLStatementRule().get().getExtractors()) {
+        for (SQLSegmentExtractor each : ast.getSqlStatementRule().getExtractors()) {
             if (each instanceof OptionalSQLSegmentExtractor) {
                 Optional<? extends SQLSegment> sqlSegment = ((OptionalSQLSegmentExtractor) each).extract(ast.getParserRuleContext(), parameterMarkerIndexes);
                 if (sqlSegment.isPresent()) {

@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.core.parse.parser;
 
-import com.google.common.base.Optional;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -29,21 +27,11 @@ import org.apache.shardingsphere.core.parse.rule.registry.statement.SQLStatement
  *
  * @author zhangliang
  */
-@AllArgsConstructor
 @RequiredArgsConstructor
 @Getter
 public final class SQLAST {
     
     private final ParserRuleContext parserRuleContext;
     
-    private SQLStatementRule sqlStatementRule;
-    
-    /**
-     * Get SQL statement rule.
-     * 
-     * @return SQL statement rule
-     */
-    public Optional<SQLStatementRule> getSQLStatementRule() {
-        return Optional.fromNullable(sqlStatementRule);
-    }
+    private final SQLStatementRule sqlStatementRule;
 }

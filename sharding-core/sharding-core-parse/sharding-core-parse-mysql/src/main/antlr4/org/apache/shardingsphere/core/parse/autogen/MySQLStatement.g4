@@ -22,9 +22,9 @@ import Symbol, Comments, DMLStatement, DDLStatement, TCLStatement, DCLStatement,
 execute
     : (select
     | insert
-    | replace
     | update
     | delete
+    | replace
     | createTable
     | alterTable
     | dropTable

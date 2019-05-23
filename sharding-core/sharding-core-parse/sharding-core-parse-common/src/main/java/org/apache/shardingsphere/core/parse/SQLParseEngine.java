@@ -29,7 +29,6 @@ import org.apache.shardingsphere.core.parse.rule.registry.MasterSlaveParseRuleRe
 import org.apache.shardingsphere.core.parse.rule.registry.ParseRuleRegistry;
 import org.apache.shardingsphere.core.parse.rule.registry.ShardingParseRuleRegistry;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.GeneralSQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.rule.BaseRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -44,8 +43,6 @@ import java.util.Collection;
  */
 public final class SQLParseEngine {
     
-    private final ParseRuleRegistry parseRuleRegistry;
-    
     private final SQLParserEngine parserEngine;
     
     private final SQLSegmentsExtractorEngine extractorEngine;
@@ -55,7 +52,7 @@ public final class SQLParseEngine {
     private final SQLStatementOptimizerEngine optimizerEngine;
     
     public SQLParseEngine(final DatabaseType databaseType, final String sql, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
-        parseRuleRegistry = getParseRuleRegistry(rule);
+        ParseRuleRegistry parseRuleRegistry = getParseRuleRegistry(rule);
         parserEngine = new SQLParserEngine(parseRuleRegistry, databaseType, sql);
         extractorEngine = new SQLSegmentsExtractorEngine();
         fillerEngine = new SQLStatementFillerEngine(parseRuleRegistry, databaseType, sql, rule, shardingTableMetaData);
@@ -79,12 +76,9 @@ public final class SQLParseEngine {
      */
     public SQLStatement parse() {
         SQLAST ast = parserEngine.parse();
-        if (!ast.getSQLStatementRule().isPresent() && (parseRuleRegistry instanceof EncryptParseRuleRegistry)) {
-            return new GeneralSQLStatement();
-        }
         Collection<SQLSegment> sqlSegments = extractorEngine.extract(ast);
-        SQLStatement result = fillerEngine.fill(sqlSegments, ast.getSQLStatementRule().get());
-        optimizerEngine.optimize(ast.getSQLStatementRule().get(), result);
+        SQLStatement result = fillerEngine.fill(sqlSegments, ast.getSqlStatementRule());
+        optimizerEngine.optimize(ast.getSqlStatementRule(), result);
         return result;
     }
 }
