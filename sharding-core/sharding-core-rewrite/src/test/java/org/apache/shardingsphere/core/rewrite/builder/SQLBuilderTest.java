@@ -20,11 +20,9 @@ package org.apache.shardingsphere.core.rewrite.builder;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.core.constant.DatabaseType;
-import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import org.apache.shardingsphere.core.parse.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.rewrite.placeholder.IndexPlaceholder;
-import org.apache.shardingsphere.core.rewrite.placeholder.SchemaPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.TablePlaceholder;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.junit.Before;
@@ -117,32 +115,6 @@ public final class SQLBuilderTest {
         assertThat(sqlBuilder.toSQL(null, tableTokens).getSql(), is("CREATE INDEX index_name_table_x_1 ON table_x_1 ('column')"));
     }
     
-    @Test(expected = ShardingException.class)
-    public void assertSchemaPlaceholderAppendTableWithoutTableToken() {
-        SQLBuilder sqlBuilder = new SQLBuilder(parameterBuilder);
-        sqlBuilder.appendLiterals("SHOW ");
-        sqlBuilder.appendLiterals("CREATE TABLE ");
-        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", QuoteCharacter.NONE));
-        sqlBuilder.appendLiterals("ON ");
-        sqlBuilder.appendPlaceholder(new SchemaPlaceholder("dx", "table_x", QuoteCharacter.NONE, createShardingRule(), null));
-        sqlBuilder.toSQL(null, Collections.<String, String>emptyMap());
-    }
-    
-    @Test
-    public void assertSchemaPlaceholderAppendTableWithTableToken() {
-        SQLBuilder sqlBuilder = new SQLBuilder(parameterBuilder);
-        sqlBuilder.appendLiterals("SHOW ");
-        sqlBuilder.appendLiterals("CREATE TABLE ");
-        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_0", QuoteCharacter.NONE));
-        sqlBuilder.appendLiterals(" ON ");
-        sqlBuilder.appendPlaceholder(new SchemaPlaceholder("ds0", "table_0", QuoteCharacter.NONE, createShardingRule(), shardingDataSourceMetaData));
-        Map<String, String> tableTokens = new HashMap<>(1, 1);
-        tableTokens.put("table_0", "table_1");
-//        ShardingDataSourceMetaData shardingDataSourceMetaData = Mockito.mock(ShardingDataSourceMetaData.class);
-//        Mockito.when(shardingDataSourceMetaData.getActualSchemaName(Mockito.anyString())).thenReturn("actual_db");
-        assertThat(sqlBuilder.toSQL(null, tableTokens).getSql(), is("SHOW CREATE TABLE table_1 ON actual_db"));
-    }
-    
     @Test
     public void assertAppendTableWithoutTableTokenWithBackQuotes() {
         SQLBuilder sqlBuilder = new SQLBuilder(parameterBuilder);
@@ -192,19 +164,6 @@ public final class SQLBuilderTest {
     }
     
     @Test
-    public void assertSchemaPlaceholderAppendTableWithTableTokenWithBackQuotes() {
-        SQLBuilder sqlBuilder = new SQLBuilder(parameterBuilder);
-        sqlBuilder.appendLiterals("SHOW ");
-        sqlBuilder.appendLiterals("CREATE TABLE ");
-        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_0", QuoteCharacter.BACK_QUOTE));
-        sqlBuilder.appendLiterals(" ON ");
-        sqlBuilder.appendPlaceholder(new SchemaPlaceholder("ds", "table_0", QuoteCharacter.NONE, createShardingRule(), shardingDataSourceMetaData));
-        Map<String, String> tableTokens = new HashMap<>(1, 1);
-        tableTokens.put("table_0", "table_1");
-        assertThat(sqlBuilder.toSQL(null, tableTokens).getSql(), is("SHOW CREATE TABLE `table_1` ON actual_db"));
-    }
-    
-    @Test
     public void assertAppendTableWithoutTableTokenWithDoubleQuotes() {
         SQLBuilder sqlBuilder = new SQLBuilder(parameterBuilder);
         sqlBuilder.appendLiterals("SELECT ");
@@ -250,19 +209,6 @@ public final class SQLBuilderTest {
         Map<String, String> tableTokens = new HashMap<>(1, 1);
         tableTokens.put("table_x", "table_x_1");
         assertThat(sqlBuilder.toSQL(null, tableTokens).getSql(), is("CREATE INDEX index_name_table_x_1 ON \"table_x_1\" ('column')"));
-    }
-    
-    @Test
-    public void assertSchemaPlaceholderAppendTableWithTableTokenWithDoubleQuotes() {
-        SQLBuilder sqlBuilder = new SQLBuilder(parameterBuilder);
-        sqlBuilder.appendLiterals("SHOW ");
-        sqlBuilder.appendLiterals("CREATE TABLE ");
-        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_0", QuoteCharacter.QUOTE));
-        sqlBuilder.appendLiterals(" ON ");
-        sqlBuilder.appendPlaceholder(new SchemaPlaceholder("ds", "table_0", QuoteCharacter.NONE, createShardingRule(), shardingDataSourceMetaData));
-        Map<String, String> tableTokens = new HashMap<>(1, 1);
-        tableTokens.put("table_0", "table_1");
-        assertThat(sqlBuilder.toSQL(null, tableTokens).getSql(), is("SHOW CREATE TABLE \"table_1\" ON actual_db"));
     }
     
     @Test
