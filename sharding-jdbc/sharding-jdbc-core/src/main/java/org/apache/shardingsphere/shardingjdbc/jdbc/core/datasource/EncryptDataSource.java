@@ -25,7 +25,7 @@ import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
-import org.apache.shardingsphere.core.parse.EncryptSQLParseEngine;
+import org.apache.shardingsphere.core.parse.entry.EncryptSQLParseEntry;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
@@ -58,7 +58,7 @@ public class EncryptDataSource extends AbstractUnsupportedOperationDataSource im
     
     private final EncryptRule encryptRule;
     
-    private final EncryptSQLParseEngine parseEngine;
+    private final EncryptSQLParseEntry parseEngine;
     
     @Setter
     private PrintWriter logWriter = new PrintWriter(System.out);
@@ -68,7 +68,7 @@ public class EncryptDataSource extends AbstractUnsupportedOperationDataSource im
         this.dataSource = dataSource;
         databaseType = getDatabaseType();
         encryptRule = new EncryptRule(encryptRuleConfiguration);
-        parseEngine = new EncryptSQLParseEngine(databaseType, encryptRule, createEncryptTableMetaData());
+        parseEngine = new EncryptSQLParseEntry(databaseType, encryptRule, createEncryptTableMetaData());
     }
     
     @SneakyThrows

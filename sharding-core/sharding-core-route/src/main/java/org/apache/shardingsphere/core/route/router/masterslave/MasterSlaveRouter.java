@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.route.router.masterslave;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.constant.SQLType;
-import org.apache.shardingsphere.core.parse.MasterSlaveSQLParseEngine;
+import org.apache.shardingsphere.core.parse.entry.MasterSlaveSQLParseEntry;
 import org.apache.shardingsphere.core.route.SQLLogger;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 
@@ -39,7 +39,7 @@ public final class MasterSlaveRouter {
     
     private final MasterSlaveRule masterSlaveRule;
     
-    private final MasterSlaveSQLParseEngine parseEngine;
+    private final MasterSlaveSQLParseEntry parseEngine;
     
     private final boolean showSQL;
     
