@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.parse.parser;
 
-import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
@@ -51,10 +50,10 @@ public final class SQLParserEngine {
         if (parseTree instanceof ErrorNode) {
             throw new SQLParsingException(String.format("Unsupported SQL of `%s`", sql));
         }
-        Optional<SQLStatementRule> sqlStatementRule = parseRuleRegistry.findSQLStatementRule(databaseType, parseTree.getClass().getSimpleName());
-        if (sqlStatementRule.isPresent()) {
-            return new SQLAST((ParserRuleContext) parseTree, sqlStatementRule.get());
+        SQLStatementRule sqlStatementRule = parseRuleRegistry.getSQLStatementRule(databaseType, parseTree.getClass().getSimpleName());
+        if (null == sqlStatementRule) {
+            throw new SQLParsingException(String.format("Unsupported SQL of `%s`", sql));
         }
-        throw new SQLParsingException(String.format("Unsupported SQL of `%s`", sql));
+        return new SQLAST((ParserRuleContext) parseTree, sqlStatementRule);
     }
 }

@@ -21,6 +21,7 @@ import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.parse.sql.segment.ddl.column.ColumnDefinitionSegment;
 import org.junit.Test;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public final class ParseRuleRegistryTest {
@@ -33,19 +34,19 @@ public final class ParseRuleRegistryTest {
     
     @Test
     public void assertShardingParseRuleRegistry() {
-        assertTrue(shardingParseRuleRegistry.findSQLStatementRule(DatabaseType.MySQL, "SelectContext").isPresent());
+        assertNotNull(shardingParseRuleRegistry.getSQLStatementRule(DatabaseType.MySQL, "SelectContext"));
         assertTrue(shardingParseRuleRegistry.findSQLSegmentFiller(DatabaseType.MySQL, ColumnDefinitionSegment.class).isPresent());
     }
     
     @Test
     public void assertEncryptParseRuleRegistry() {
-        assertTrue(encryptParseRuleRegistry.findSQLStatementRule(DatabaseType.MySQL, "SelectContext").isPresent());
+        assertNotNull(encryptParseRuleRegistry.getSQLStatementRule(DatabaseType.MySQL, "SelectContext"));
         assertTrue(encryptParseRuleRegistry.findSQLSegmentFiller(DatabaseType.MySQL, ColumnDefinitionSegment.class).isPresent());
     }
     
     @Test
     public void assertMasterSlaveParseRuleRegistry() {
-        assertTrue(masterSlaveParseRuleRegistry.findSQLStatementRule(DatabaseType.MySQL, "SelectContext").isPresent());
+        assertNotNull(masterSlaveParseRuleRegistry.getSQLStatementRule(DatabaseType.MySQL, "SelectContext"));
         assertTrue(masterSlaveParseRuleRegistry.findSQLSegmentFiller(DatabaseType.MySQL, ColumnDefinitionSegment.class).isPresent());
     }
 }
