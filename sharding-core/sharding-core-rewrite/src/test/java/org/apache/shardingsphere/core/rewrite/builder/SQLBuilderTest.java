@@ -19,42 +19,22 @@ package org.apache.shardingsphere.core.rewrite.builder;
 
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
-import org.apache.shardingsphere.core.constant.DatabaseType;
-import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import org.apache.shardingsphere.core.parse.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.rewrite.placeholder.IndexPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.TablePlaceholder;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public final class SQLBuilderTest {
-    
-    private ShardingDataSourceMetaData shardingDataSourceMetaData;
-    
-    private ParameterBuilder parameterBuilder;
-    
-    @Before
-    public void setUp() {
-        Map<String, String> shardingDataSourceURLs = new LinkedHashMap<>();
-        shardingDataSourceURLs.put("ds0", "jdbc:mysql://127.0.0.1:3306/actual_db");
-        shardingDataSourceURLs.put("ds1", "jdbc:mysql://127.0.0.1:3306/actual_db");
-        shardingDataSourceMetaData = new ShardingDataSourceMetaData(shardingDataSourceURLs, createShardingRule(), DatabaseType.MySQL);
-        parameterBuilder = mock(ParameterBuilder.class);
-        when(parameterBuilder.getParameters(null)).thenReturn(Collections.emptyList());
-    }
     
     @Test
     public void assertAppendLiteralsOnly() {
