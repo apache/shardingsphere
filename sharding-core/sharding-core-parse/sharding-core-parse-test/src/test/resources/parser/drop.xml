@@ -141,6 +141,12 @@
         </tokens>
     </parser-result>
     
+    <parser-result sql-case-id="drop_index_oracle">
+        <tokens>
+            <index-token start-index="11" stop-index="21" table-name="t_order" />
+        </tokens>
+    </parser-result>
+    
     <parser-result sql-case-id="drop_index_with_back_quota">
         <tables>
             <table name="t_order" />
@@ -148,6 +154,21 @@
         <tokens>
             <index-token start-index="11" stop-index="23" table-name="t_order"/>
             <table-token start-index="28" table-name="t_order" left-delimiter="`" right-delimiter="`" length="9" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="drop_table_with_quota">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="11" table-name="t_order" left-delimiter="&quot;" right-delimiter="&quot;" length="9" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="drop_index_with_quota">
+        <tokens>
+            <index-token start-index="11" stop-index="23" table-name="t_order" />
         </tokens>
     </parser-result>
 </parser-result-sets>
