@@ -30,7 +30,7 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 @Getter
-public final class InsertParameterUnit {
+public final class InsertParameterGroup {
     
     private final List<Object> parameters;
     
