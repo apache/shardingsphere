@@ -173,7 +173,7 @@ public final class ShardingSQLRewriter implements SQLRewriter {
         } else {
             sqlBuilder.appendPlaceholder(new AggregationDistinctPlaceholder(distinctToken.getColumnName().toLowerCase(), distinctToken.getAlias()));
         }
-     }
+    }
     
     private boolean isRewrite() {
         return !sqlRouteResult.getRoutingResult().isSingleRouting();
