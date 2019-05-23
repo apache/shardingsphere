@@ -24,7 +24,6 @@ import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.parse.exception.SQLParsingException;
-import org.apache.shardingsphere.core.parse.rule.registry.EncryptParseRuleRegistry;
 import org.apache.shardingsphere.core.parse.rule.registry.ParseRuleRegistry;
 import org.apache.shardingsphere.core.parse.rule.registry.statement.SQLStatementRule;
 
@@ -55,9 +54,6 @@ public final class SQLParserEngine {
         Optional<SQLStatementRule> sqlStatementRule = parseRuleRegistry.findSQLStatementRule(databaseType, parseTree.getClass().getSimpleName());
         if (sqlStatementRule.isPresent()) {
             return new SQLAST((ParserRuleContext) parseTree, sqlStatementRule.get());
-        }
-        if (parseRuleRegistry instanceof EncryptParseRuleRegistry) {
-            return new SQLAST((ParserRuleContext) parseTree);
         }
         throw new SQLParsingException(String.format("Unsupported SQL of `%s`", sql));
     }
