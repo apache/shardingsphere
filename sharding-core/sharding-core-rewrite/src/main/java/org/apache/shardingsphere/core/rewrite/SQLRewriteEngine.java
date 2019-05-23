@@ -21,9 +21,7 @@ import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
-import org.apache.shardingsphere.core.parse.sql.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
 import org.apache.shardingsphere.core.parse.sql.token.Substitutable;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
@@ -100,23 +98,7 @@ public final class SQLRewriteEngine {
     }
     
     private void rewriteInitialLiteral() {
-        if (isNeededToRewriteDistinctLiteral()) {
-            appendAggregationDistinctLiteral(sqlBuilder);
-        } else {
-            sqlBuilder.appendLiterals(sqlStatement.getLogicSQL().substring(0, sqlStatement.getSQLTokens().get(0).getStartIndex()));
-        }
-    }
-    
-    private boolean isNeededToRewriteDistinctLiteral() {
-        return null != sqlRouteResult && !sqlRouteResult.getRoutingResult().isSingleRouting() && ((AbstractSQLStatement) sqlStatement).isContainsAggregationDistinctToken();
-    }
-        
-    private void appendAggregationDistinctLiteral(final SQLBuilder sqlBuilder) {
-        StringBuilder stringBuilder = new StringBuilder();
-        int firstSelectItemStartIndex = ((SelectStatement) sqlStatement).getFirstSelectItemStartIndex();
-        stringBuilder.append(sqlStatement.getLogicSQL().substring(0, firstSelectItemStartIndex)).append("DISTINCT ")
-                .append(sqlStatement.getLogicSQL().substring(firstSelectItemStartIndex, sqlStatement.getSQLTokens().get(0).getStartIndex()));
-        sqlBuilder.appendLiterals(stringBuilder.toString());
+        sqlBuilder.appendLiterals(sqlStatement.getLogicSQL().substring(0, sqlStatement.getSQLTokens().get(0).getStartIndex()));
     }
     
     private ShardingEncryptorEngine getShardingEncryptorEngine() {
