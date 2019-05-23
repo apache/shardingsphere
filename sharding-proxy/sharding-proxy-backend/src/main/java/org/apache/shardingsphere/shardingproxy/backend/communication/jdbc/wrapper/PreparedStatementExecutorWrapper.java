@@ -61,7 +61,7 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     
     private SQLRouteResult doMasterSlaveRoute(final DatabaseType databaseType, final String sql) {
         SQLStatement sqlStatement = new SQLParseEngine(databaseType, sql, null, null).parse();
-        SQLRewriteEngine sqlRewriteEngine = new SQLRewriteEngine(sql, sqlStatement);
+        SQLRewriteEngine sqlRewriteEngine = new SQLRewriteEngine(sqlStatement);
         String rewriteSQL = sqlRewriteEngine.generateSQL().getSql();
         SQLRouteResult result = new SQLRouteResult(sqlStatement);
         for (String each : new MasterSlaveRouter(databaseType, 
