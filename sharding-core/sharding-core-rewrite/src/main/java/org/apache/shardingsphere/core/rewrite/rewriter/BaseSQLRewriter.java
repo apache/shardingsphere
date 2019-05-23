@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
 import org.apache.shardingsphere.core.parse.sql.token.Substitutable;
+import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
 
 /**
@@ -54,7 +55,7 @@ public final class BaseSQLRewriter implements SQLRewriter {
     }
     
     @Override
-    public void rewrite(final SQLBuilder sqlBuilder, final SQLToken sqlToken) {
+    public void rewrite(final SQLBuilder sqlBuilder, final ParameterBuilder parameterBuilder, final SQLToken sqlToken) {
         String originalSQL = sqlStatement.getLogicSQL();
         int stopIndex = sqlStatement.getSQLTokens().size() - 1 == tokenCount ? originalSQL.length() : sqlStatement.getSQLTokens().get(tokenCount + 1).getStartIndex();
         sqlBuilder.appendLiterals(originalSQL.substring(getStartIndex(sqlToken) > originalSQL.length() ? originalSQL.length() : getStartIndex(sqlToken), stopIndex));

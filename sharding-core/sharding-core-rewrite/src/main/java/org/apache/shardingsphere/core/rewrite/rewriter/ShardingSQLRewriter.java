@@ -34,6 +34,7 @@ import org.apache.shardingsphere.core.parse.sql.token.impl.RowCountToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.SelectItemPrefixToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.SelectItemsToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.TableToken;
+import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
 import org.apache.shardingsphere.core.rewrite.placeholder.AggregationDistinctPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.IndexPlaceholder;
@@ -75,7 +76,7 @@ public final class ShardingSQLRewriter implements SQLRewriter {
     }
     
     @Override
-    public void rewrite(final SQLBuilder sqlBuilder, final SQLToken sqlToken) {
+    public void rewrite(final SQLBuilder sqlBuilder, final ParameterBuilder parameterBuilder, final SQLToken sqlToken) {
         if (sqlToken instanceof SelectItemPrefixToken) {
             appendSelectItemPrefixPlaceholder(sqlBuilder, (SelectItemPrefixToken) sqlToken);
         } else if (sqlToken instanceof TableToken) {

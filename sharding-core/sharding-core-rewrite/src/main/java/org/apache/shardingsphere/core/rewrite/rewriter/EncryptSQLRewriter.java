@@ -110,8 +110,8 @@ public final class EncryptSQLRewriter implements SQLRewriter {
     }
     
     @Override
-    public void rewrite(final SQLBuilder sqlBuilder, final SQLToken sqlToken) {
-        sqlBuilder.getParameterBuilder().setInsertParameterUnits(insertOptimizeResult);
+    public void rewrite(final SQLBuilder sqlBuilder, final ParameterBuilder parameterBuilder, final SQLToken sqlToken) {
+        parameterBuilder.setInsertParameterUnits(insertOptimizeResult);
         if (sqlToken instanceof InsertValuesToken) {
             appendInsertValuesPlaceholder(sqlBuilder, insertOptimizeResult);
         } else if (sqlToken instanceof InsertSetEncryptValueToken) {
@@ -119,7 +119,7 @@ public final class EncryptSQLRewriter implements SQLRewriter {
         } else if (sqlToken instanceof InsertSetAddItemsToken) {
             appendInsertSetAddItemsPlaceholder(sqlBuilder, (InsertSetAddItemsToken) sqlToken, insertOptimizeResult);
         } else if (sqlToken instanceof EncryptColumnToken) {
-            appendEncryptColumnPlaceholder(sqlBuilder, (EncryptColumnToken) sqlToken, sqlBuilder.getParameterBuilder());
+            appendEncryptColumnPlaceholder(sqlBuilder, (EncryptColumnToken) sqlToken, parameterBuilder);
         }
     }
     
