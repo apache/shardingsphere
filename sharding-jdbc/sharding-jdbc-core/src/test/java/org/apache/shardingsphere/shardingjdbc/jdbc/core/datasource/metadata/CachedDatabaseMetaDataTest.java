@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata;
 
+import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.core.rule.ShardingDataSourceNames;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.DatabaseMetaDataResultSet;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,8 +45,14 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.google.common.base.Optional;
+
 @RunWith(MockitoJUnitRunner.class)
 public final class CachedDatabaseMetaDataTest {
+    
+    private final String DATASOURCE_NAME = "ds";
+    
+    private final String TABLE_NAME = "table";
     
     @Mock
     private DataSource dataSource;
@@ -64,7 +72,7 @@ public final class CachedDatabaseMetaDataTest {
     
     @Before
     public void setUp() throws SQLException {
-        dataSourceMap.put("ds", dataSource);
+        dataSourceMap.put(DATASOURCE_NAME, dataSource);
         when(dataSource.getConnection()).thenReturn(connection);
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         when(resultSet.getMetaData()).thenReturn(mock(ResultSetMetaData.class));
@@ -74,9 +82,11 @@ public final class CachedDatabaseMetaDataTest {
     private ShardingRule mockShardingRule() {
         ShardingRule result = mock(ShardingRule.class);
         ShardingDataSourceNames shardingDataSourceNames = mock(ShardingDataSourceNames.class);
-        when(shardingDataSourceNames.getRandomDataSourceName()).thenReturn("ds");
-        when(shardingDataSourceNames.getRawMasterDataSourceName("ds")).thenReturn("ds");
+        when(shardingDataSourceNames.getRandomDataSourceName()).thenReturn(DATASOURCE_NAME);
+        when(shardingDataSourceNames.getRawMasterDataSourceName(DATASOURCE_NAME)).thenReturn(DATASOURCE_NAME);
         when(result.getShardingDataSourceNames()).thenReturn(shardingDataSourceNames);
+        when(result.findTableRule(TABLE_NAME)).thenReturn(Optional.of(new TableRule(DATASOURCE_NAME, TABLE_NAME)));
+        when(result.getDataNode(TABLE_NAME)).thenReturn(new DataNode(DATASOURCE_NAME, TABLE_NAME));
         return result;
     }
     
@@ -938,8 +948,8 @@ public final class CachedDatabaseMetaDataTest {
     
     @Test
     public void assertGetIndexInfo() throws SQLException {
-        when(databaseMetaData.getIndexInfo("test", null, null, true, true)).thenReturn(resultSet);
-        assertThat(cachedDatabaseMetaData.getIndexInfo("test", null, null, true, true), instanceOf(DatabaseMetaDataResultSet.class));
+        when(databaseMetaData.getIndexInfo("test", null, TABLE_NAME, true, true)).thenReturn(resultSet);
+        assertThat(cachedDatabaseMetaData.getIndexInfo("test", null, TABLE_NAME, true, true), instanceOf(DatabaseMetaDataResultSet.class));
     }
     
     @Test

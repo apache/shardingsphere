@@ -25,7 +25,7 @@ public final class SQLStatementRuleDefinitionEntityLoaderTest {
     
     @Test
     public void assertLoad() {
-        assertFalse(new SQLStatementRuleDefinitionEntityLoader().load("META-INF/parsing-rule-definition/sql-statement-rule-definition.xml").getRules().isEmpty());
+        assertFalse(new SQLStatementRuleDefinitionEntityLoader().load("META-INF/parsing-rule-definition/sharding/mysql/sql-statement-rule-definition.xml").getRules().isEmpty());
     }
     
     @Test(expected = NullPointerException.class)
