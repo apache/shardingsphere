@@ -33,7 +33,7 @@ public final class MasterSlaveSQLParseEngine {
     
     private final DatabaseType dbType;
     
-    private final ParsingResultCache parsingResultCache;
+    private final ParsingResultCache parsingResultCache = new ParsingResultCache();
     
     /**
      * Parse SQL.

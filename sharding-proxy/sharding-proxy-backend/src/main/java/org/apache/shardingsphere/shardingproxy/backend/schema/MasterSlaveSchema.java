@@ -24,6 +24,7 @@ import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.parse.MasterSlaveSQLParseEngine;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.MasterSlaveRuleChangedEvent;
@@ -48,12 +49,15 @@ public final class MasterSlaveSchema extends LogicSchema {
     
     private final ShardingRule defaultShardingRule;
     
+    private final MasterSlaveSQLParseEngine parseEngine;
+    
     public MasterSlaveSchema(final String name, final Map<String, YamlDataSourceParameter> dataSources, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final boolean isUsingRegistry) {
         super(name, dataSources);
         masterSlaveRule = createMasterSlaveRule(masterSlaveRuleConfig, isUsingRegistry);
         // TODO we should remove it after none-sharding parsingEngine completed.
         defaultShardingRule = new ShardingRule(new ShardingRuleConfiguration(), getDataSources().keySet());
         metaData = createShardingMetaData();
+        parseEngine = new MasterSlaveSQLParseEngine(LogicSchemas.getInstance().getDatabaseType());
     }
     
     private MasterSlaveRule createMasterSlaveRule(final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final boolean isUsingRegistry) {

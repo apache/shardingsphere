@@ -21,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.SimpleQueryShardingEngine;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
-import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
 import org.apache.shardingsphere.core.route.RouteUnit;
@@ -52,30 +51,28 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
     
     @Override
     public SQLRouteResult route(final String sql, final DatabaseType databaseType) {
-        SQLRouteResult result;
         if (logicSchema instanceof ShardingSchema) {
-            result = doShardingRoute(sql, databaseType);
-        } else if (logicSchema instanceof MasterSlaveSchema) {
-            result = doMasterSlaveRoute(databaseType, sql);
-        } else {
-            result = doTransparentRoute(databaseType, sql);
+            return doShardingRoute(sql, databaseType);
         }
-        return result;
+        if (logicSchema instanceof MasterSlaveSchema) {
+            return doMasterSlaveRoute(sql);
+        }
+        return doTransparentRoute(sql);
     }
     
-    private SQLRouteResult doTransparentRoute(final DatabaseType databaseType, final String sql) {
-        SQLRouteResult result = new SQLRouteResult(new SQLParseEngine(databaseType, sql, null, null).parse());
+    private SQLRouteResult doTransparentRoute(final String sql) {
+        SQLRouteResult result = new SQLRouteResult(((MasterSlaveSchema) logicSchema).getParseEngine().parse(sql, false));
         result.getRouteUnits().add(new RouteUnit(logicSchema.getDataSources().keySet().iterator().next(), new SQLUnit(sql, Collections.emptyList())));
         return result;
     }
     
-    private SQLRouteResult doMasterSlaveRoute(final DatabaseType databaseType, final String sql) {
-        SQLStatement sqlStatement = new SQLParseEngine(databaseType, sql, null, null).parse();
-        SQLRewriteEngine sqlRewriteEngine = new SQLRewriteEngine(sqlStatement);
+    private SQLRouteResult doMasterSlaveRoute(final String sql) {
+        SQLStatement sqlStatement = ((MasterSlaveSchema) logicSchema).getParseEngine().parse(sql, false);
+        SQLRewriteEngine sqlRewriteEngine = new SQLRewriteEngine(sql, sqlStatement);
         String rewriteSQL = sqlRewriteEngine.generateSQL().getSql();
         SQLRouteResult result = new SQLRouteResult(sqlStatement);
-        for (String each : new MasterSlaveRouter(databaseType, 
-                ((MasterSlaveSchema) logicSchema).getMasterSlaveRule(), SHARDING_PROXY_CONTEXT.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW)).route(rewriteSQL)) {
+        for (String each : new MasterSlaveRouter(((MasterSlaveSchema) logicSchema).getMasterSlaveRule(), ((MasterSlaveSchema) logicSchema).getParseEngine(), 
+                SHARDING_PROXY_CONTEXT.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW)).route(rewriteSQL, false)) {
             result.getRouteUnits().add(new RouteUnit(each, new SQLUnit(rewriteSQL, Collections.emptyList())));
         }
         return result;
