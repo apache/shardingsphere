@@ -102,14 +102,14 @@ public final class SQLRewriteEngine {
     }
     
     private void rewriteInitialLiteral() {
-        if (isRewriteDistinctLiteral()) {
+        if (isNeededToRewriteDistinctLiteral()) {
             appendAggregationDistinctLiteral(sqlBuilder);
         } else {
             sqlBuilder.appendLiterals(sqlStatement.getLogicSQL().substring(0, sqlStatement.getSQLTokens().get(0).getStartIndex()));
         }
     }
     
-    private boolean isRewriteDistinctLiteral() {
+    private boolean isNeededToRewriteDistinctLiteral() {
         return null != sqlRouteResult && !sqlRouteResult.getRoutingResult().isSingleRouting() && isContainsAggregationDistinctToken();
     }
     
