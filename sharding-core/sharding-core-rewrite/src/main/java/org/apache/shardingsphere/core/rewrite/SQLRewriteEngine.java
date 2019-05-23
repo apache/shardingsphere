@@ -83,8 +83,7 @@ public final class SQLRewriteEngine {
     private void pattern(final OptimizeResult optimizeResult) {
         BaseSQLRewriter baseSQLRewriter = new BaseSQLRewriter(sqlStatement);
         if (baseSQLRewriter.isToRewriteSQLTokens()) {
-            rewrite(baseSQLRewriter, new ShardingSQLRewriter(getShardingRule(), sqlStatement.getLogicSQL(), databaseType, sqlStatement, sqlRouteResult), 
-                    new EncryptSQLRewriter(getShardingEncryptorEngine(), sqlStatement, optimizeResult));
+            rewrite(baseSQLRewriter, new ShardingSQLRewriter(getShardingRule(), databaseType, sqlRouteResult), new EncryptSQLRewriter(getShardingEncryptorEngine(), sqlStatement, optimizeResult));
         } else {
             baseSQLRewriter.rewrite(sqlBuilder);
         }
