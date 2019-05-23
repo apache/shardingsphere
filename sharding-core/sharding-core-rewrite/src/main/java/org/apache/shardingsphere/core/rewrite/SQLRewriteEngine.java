@@ -63,18 +63,20 @@ public final class SQLRewriteEngine {
     
     private final SQLBuilder sqlBuilder;
     
+    private final ParameterBuilder parameterBuilder;
+    
     public SQLRewriteEngine(final ShardingRule shardingRule, final DatabaseType databaseType, final SQLRouteResult sqlRouteResult, final List<Object> parameters) {
-        this(shardingRule, databaseType, sqlRouteResult, sqlRouteResult.getSqlStatement(), new SQLBuilder(new ParameterBuilder(parameters)));
+        this(shardingRule, databaseType, sqlRouteResult, sqlRouteResult.getSqlStatement(), new SQLBuilder(), new ParameterBuilder(parameters));
         pattern(sqlRouteResult.getOptimizeResult());
     }
     
     public SQLRewriteEngine(final EncryptRule encryptRule, final DatabaseType databaseType, final SQLStatement sqlStatement, final OptimizeResult optimizeResult, final List<Object> parameters) {
-        this(encryptRule, databaseType, null, sqlStatement, new SQLBuilder(new ParameterBuilder(parameters)));
+        this(encryptRule, databaseType, null, sqlStatement, new SQLBuilder(), new ParameterBuilder(parameters));
         pattern(optimizeResult);
     }
     
     public SQLRewriteEngine(final SQLStatement sqlStatement) {
-        this(null, null, null, sqlStatement, new SQLBuilder(new ParameterBuilder(Collections.emptyList())));
+        this(null, null, null, sqlStatement, new SQLBuilder(), new ParameterBuilder(Collections.emptyList()));
         pattern(null);
     }
     
