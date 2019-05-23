@@ -104,9 +104,9 @@ public final class SQLRewriteEngine {
     private void rewrite(final BaseSQLRewriter baseSQLRewriter, final ShardingSQLRewriter shardingSQLRewriter, final EncryptSQLRewriter encryptSQLRewriter) {
         baseSQLRewriter.rewriteInitialLiteral(sqlBuilder);
         for (SQLToken each : sqlStatement.getSQLTokens()) {
-            shardingSQLRewriter.rewrite(sqlBuilder, each);
-            encryptSQLRewriter.rewrite(sqlBuilder, each);
-            baseSQLRewriter.rewrite(sqlBuilder, each);
+            shardingSQLRewriter.rewrite(sqlBuilder, parameterBuilder, each);
+            encryptSQLRewriter.rewrite(sqlBuilder, parameterBuilder, each);
+            baseSQLRewriter.rewrite(sqlBuilder, parameterBuilder, each);
         }
     }
     
@@ -116,7 +116,7 @@ public final class SQLRewriteEngine {
      * @return sql unit
      */
     public SQLUnit generateSQL() {
-        return sqlBuilder.toSQL();
+        return new SQLUnit(sqlBuilder.toSQL(), parameterBuilder.getParameters());
     }
     
     /**
@@ -126,7 +126,7 @@ public final class SQLRewriteEngine {
      * @return sql unit
      */
     public SQLUnit generateSQL(final RoutingUnit routingUnit) {
-        return sqlBuilder.toSQL(routingUnit, getTableTokens(routingUnit));
+        return new SQLUnit(sqlBuilder.toSQL(routingUnit, getTableTokens(routingUnit)), parameterBuilder.getParameters(routingUnit));
     }
    
     private Map<String, String> getTableTokens(final RoutingUnit routingUnit) {
