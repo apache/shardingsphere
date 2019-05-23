@@ -42,12 +42,12 @@ public final class ParameterBuilder {
     
     private final Map<Integer, Object> assistedIndexAndParametersForUpdate;
     
-    private final List<InsertParameterGroup> insertParameterGroups;
+    private final List<InsertParameterUnit> insertParameterUnits;
     
     public ParameterBuilder(final List<Object> parameters) {
         originalParameters = new LinkedList<>(parameters);
         assistedIndexAndParametersForUpdate = new HashMap<>();
-        insertParameterGroups = new LinkedList<>();
+        insertParameterUnits = new LinkedList<>();
     }
     
     /**
@@ -55,19 +55,19 @@ public final class ParameterBuilder {
      * 
      * @param insertOptimizeResult insert optimize result
      */
-    public void setInsertParameterGroups(final InsertOptimizeResult insertOptimizeResult) {
-        if (insertParameterGroups.isEmpty() && null != insertOptimizeResult) {
-            insertParameterGroups.addAll(createInsertParameterUnits(insertOptimizeResult));
+    public void setInsertParameterUnits(final InsertOptimizeResult insertOptimizeResult) {
+        if (insertParameterUnits.isEmpty() && null != insertOptimizeResult) {
+            insertParameterUnits.addAll(createInsertParameterUnits(insertOptimizeResult));
         }
     }
     
-    private List<InsertParameterGroup> createInsertParameterUnits(final InsertOptimizeResult insertOptimizeResult) {
-        List<InsertParameterGroup> result = new LinkedList<>();
+    private List<InsertParameterUnit> createInsertParameterUnits(final InsertOptimizeResult insertOptimizeResult) {
+        List<InsertParameterUnit> result = new LinkedList<>();
         if (null == insertOptimizeResult) {
             return result;
         }
         for (InsertOptimizeResultUnit each : insertOptimizeResult.getUnits()) {
-            result.add(new InsertParameterGroup(Arrays.asList(each.getParameters()), each.getDataNodes()));
+            result.add(new InsertParameterUnit(Arrays.asList(each.getParameters()), each.getDataNodes()));
         }
         return result;
     }
@@ -95,7 +95,7 @@ public final class ParameterBuilder {
     
     private List<Object> getInsertParameters() {
         List<Object> result = new LinkedList<>();
-        for (InsertParameterGroup each : insertParameterGroups) {
+        for (InsertParameterUnit each : insertParameterUnits) {
             result.addAll(each.getParameters());
         }
         return result;
@@ -103,7 +103,7 @@ public final class ParameterBuilder {
     
     private List<Object> getInsertParameters(final RoutingUnit routingUnit) {
         List<Object> result = new LinkedList<>();
-        for (InsertParameterGroup each : insertParameterGroups) {
+        for (InsertParameterUnit each : insertParameterUnits) {
             if (isAppendInsertParameter(each, routingUnit)) {
                 result.addAll(each.getParameters());
             }
@@ -111,7 +111,7 @@ public final class ParameterBuilder {
         return result;
     }
     
-    private boolean isAppendInsertParameter(final InsertParameterGroup unit, final RoutingUnit routingUnit) {
+    private boolean isAppendInsertParameter(final InsertParameterUnit unit, final RoutingUnit routingUnit) {
         for (DataNode each : unit.getDataNodes()) {
             if (routingUnit.getTableUnit(each.getDataSourceName(), each.getTableName()).isPresent()) {
                 return true;

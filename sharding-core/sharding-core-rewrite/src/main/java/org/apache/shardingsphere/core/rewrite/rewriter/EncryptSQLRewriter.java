@@ -111,7 +111,7 @@ public final class EncryptSQLRewriter implements SQLRewriter {
     
     @Override
     public void rewrite(final SQLBuilder sqlBuilder, final SQLToken sqlToken) {
-        sqlBuilder.getParameterBuilder().setInsertParameterGroups(insertOptimizeResult);
+        sqlBuilder.getParameterBuilder().setInsertParameterUnits(insertOptimizeResult);
         if (sqlToken instanceof InsertValuesToken) {
             appendInsertValuesPlaceholder(sqlBuilder, insertOptimizeResult);
         } else if (sqlToken instanceof InsertSetEncryptValueToken) {
