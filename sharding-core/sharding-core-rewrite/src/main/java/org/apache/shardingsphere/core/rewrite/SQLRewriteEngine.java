@@ -72,8 +72,8 @@ public final class SQLRewriteEngine {
         pattern(sqlRouteResult.getOptimizeResult());
     }
     
-    public SQLRewriteEngine(final EncryptRule encryptRule, final SQLStatement sqlStatement, final OptimizeResult optimizeResult, final List<Object> parameters) {
-        this(encryptRule, DatabaseType.MySQL, null, sqlStatement, new SQLBuilder(new ParameterBuilder(parameters)));
+    public SQLRewriteEngine(final EncryptRule encryptRule, final DatabaseType databaseType, final SQLStatement sqlStatement, final OptimizeResult optimizeResult, final List<Object> parameters) {
+        this(encryptRule, databaseType, null, sqlStatement, new SQLBuilder(new ParameterBuilder(parameters)));
         pattern(optimizeResult);
     }
     
