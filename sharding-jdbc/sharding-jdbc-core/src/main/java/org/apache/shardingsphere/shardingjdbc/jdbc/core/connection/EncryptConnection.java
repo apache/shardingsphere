@@ -42,14 +42,14 @@ import java.sql.Statement;
 @RequiredArgsConstructor
 @Getter
 public final class EncryptConnection extends AbstractUnsupportedOperationConnection {
-
+    
+    private final DatabaseType databaseType;
+    
     private final Connection connection;
 
     private final EncryptRule encryptRule;
 
-    private final DatabaseType databaseType;
-
-    private final EncryptSQLParseEngine encryptSQLParseEngine;
+    private final EncryptSQLParseEngine parseEngine;
 
     @Override
     public DatabaseMetaData getMetaData() throws SQLException {

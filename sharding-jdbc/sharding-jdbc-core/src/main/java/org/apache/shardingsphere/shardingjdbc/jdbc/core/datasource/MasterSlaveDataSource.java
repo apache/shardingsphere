@@ -47,16 +47,16 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     
     private final MasterSlaveRule masterSlaveRule;
     
-    private final ShardingProperties shardingProperties;
-    
     private final MasterSlaveSQLParseEngine parseEngine;
+    
+    private final ShardingProperties shardingProperties;
     
     public MasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final Properties props) throws SQLException {
         super(dataSourceMap);
         cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap);
         this.masterSlaveRule = new MasterSlaveRule(masterSlaveRuleConfig);
-        shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
         parseEngine = new MasterSlaveSQLParseEngine(getDatabaseType());
+        shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
     }
     
     public MasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRule masterSlaveRule, final Properties props) throws SQLException {
