@@ -33,6 +33,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemSegme
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.ShorthandSelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.core.parse.sql.token.impl.SelectItemPrefixToken;
 
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -54,7 +55,7 @@ public final class SelectItemsFiller implements SQLSegmentFiller<SelectItemsSegm
     public void fill(final SelectItemsSegment sqlSegment, final SQLStatement sqlStatement) {
         selectItemFiller = new SelectItemFiller(shardingTableMetaData);
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
-        selectStatement.setFirstSelectItemStartIndex(sqlSegment.getStartIndex());
+        selectStatement.getSQLTokens().add(new SelectItemPrefixToken(sqlSegment.getStartIndex()));
         selectStatement.setSelectListStopIndex(sqlSegment.getStopIndex());
         if (sqlSegment.isHasDistinct()) {
             fillDistinct(sqlSegment, selectStatement);

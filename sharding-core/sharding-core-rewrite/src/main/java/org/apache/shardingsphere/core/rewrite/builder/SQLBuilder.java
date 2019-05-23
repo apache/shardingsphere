@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.core.rewrite.builder;
 
-import lombok.Getter;
 import org.apache.shardingsphere.core.rewrite.placeholder.Alterable;
 import org.apache.shardingsphere.core.rewrite.placeholder.ShardingPlaceholder;
-import org.apache.shardingsphere.core.route.SQLUnit;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 
 import java.util.Collections;
@@ -40,14 +38,10 @@ public final class SQLBuilder {
     
     private final List<Object> segments;
     
-    @Getter
-    private final ParameterBuilder parameterBuilder;
-    
     private StringBuilder currentSegment;
     
-    public SQLBuilder(final ParameterBuilder parameterBuilder) {
+    public SQLBuilder() {
         segments = new LinkedList<>();
-        this.parameterBuilder = parameterBuilder;
         currentSegment = new StringBuilder();
         segments.add(currentSegment);
     }
@@ -73,11 +67,11 @@ public final class SQLBuilder {
     }
     
     /**
-     * Convert to SQL unit.
+     * Convert to SQL.
      *
-     * @return SQL unit
+     * @return SQL
      */
-    public SQLUnit toSQL() {
+    public String toSQL() {
         StringBuilder result = new StringBuilder();
         for (Object each : segments) {
             if (each instanceof Alterable) {
@@ -86,17 +80,17 @@ public final class SQLBuilder {
                 result.append(each);
             }
         }
-        return new SQLUnit(result.toString(), parameterBuilder.getParameters());
+        return result.toString();
     }
     
     /**
-     * Convert to SQL unit.
+     * Convert to SQL.
      *
      * @param routingUnit routing unit
      * @param logicAndActualTables logic and actual map
-     * @return SQL unit
+     * @return SQL
      */
-    public SQLUnit toSQL(final RoutingUnit routingUnit, final Map<String, String> logicAndActualTables) {
+    public String toSQL(final RoutingUnit routingUnit, final Map<String, String> logicAndActualTables) {
         StringBuilder result = new StringBuilder();
         for (Object each : segments) {
             if (each instanceof Alterable) {
@@ -105,6 +99,6 @@ public final class SQLBuilder {
                 result.append(each);
             }
         }
-        return new SQLUnit(result.toString(), parameterBuilder.getParameters(routingUnit));
+        return result.toString();
     }
 }

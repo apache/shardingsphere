@@ -15,25 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.rewriter;
+package org.apache.shardingsphere.core.parse.sql.token.impl;
 
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.core.parse.sql.token.Attachable;
 import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
-import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
-import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
 
 /**
- * SQL rewriter.
+ * Select item prefix token.
  *
  * @author panjuan
  */
-public interface SQLRewriter {
+@Getter
+public final class SelectItemPrefixToken extends SQLToken implements Attachable {
     
-    /**
-     * Rewrite.
-     *
-     * @param sqlBuilder sql builder
-     * @param parameterBuilder parameter builder
-     * @param sqlToken sql token
-     */
-    void rewrite(SQLBuilder sqlBuilder, ParameterBuilder parameterBuilder, SQLToken sqlToken);
+    @Setter
+    private boolean isToAppendDistinct;
+    
+    public SelectItemPrefixToken(final int startIndex) {
+        super(startIndex);
+    }
 }
