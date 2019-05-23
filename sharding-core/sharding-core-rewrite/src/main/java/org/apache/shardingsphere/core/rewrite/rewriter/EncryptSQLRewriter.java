@@ -103,8 +103,7 @@ public final class EncryptSQLRewriter implements SQLRewriter {
     private void encryptInsertOptimizeResult(final InsertOptimizeResultUnit unit, final String columnName, final ShardingEncryptor shardingEncryptor) {
         if (shardingEncryptor instanceof ShardingQueryAssistedEncryptor) {
             String assistedColumnName = encryptorEngine.getAssistedQueryColumn(sqlStatement.getTables().getSingleTableName(), columnName).get();
-            unit.setColumnValue(
-                    assistedColumnName, ((ShardingQueryAssistedEncryptor) shardingEncryptor).queryAssistedEncrypt(unit.getColumnValue(columnName).toString()));
+            unit.setColumnValue(assistedColumnName, ((ShardingQueryAssistedEncryptor) shardingEncryptor).queryAssistedEncrypt(unit.getColumnValue(columnName).toString()));
         }
         unit.setColumnValue(columnName, shardingEncryptor.encrypt(unit.getColumnValue(columnName)));
     }
