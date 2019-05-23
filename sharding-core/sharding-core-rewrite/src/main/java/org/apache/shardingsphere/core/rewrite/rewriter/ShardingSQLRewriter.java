@@ -31,6 +31,7 @@ import org.apache.shardingsphere.core.parse.sql.token.impl.OffsetToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.OrderByToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.RemoveToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.RowCountToken;
+import org.apache.shardingsphere.core.parse.sql.token.impl.SelectItemPrefixToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.SelectItemsToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.TableToken;
 import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
@@ -40,6 +41,7 @@ import org.apache.shardingsphere.core.rewrite.placeholder.InsertColumnsPlacehold
 import org.apache.shardingsphere.core.rewrite.placeholder.LimitOffsetPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.LimitRowCountPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.OrderByPlaceholder;
+import org.apache.shardingsphere.core.rewrite.placeholder.SelectItemPrefixPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.SelectItemsPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.TablePlaceholder;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
@@ -74,7 +76,9 @@ public final class ShardingSQLRewriter implements SQLRewriter {
     
     @Override
     public void rewrite(final SQLBuilder sqlBuilder, final SQLToken sqlToken) {
-        if (sqlToken instanceof TableToken) {
+        if (sqlToken instanceof SelectItemPrefixToken) {
+            appendSelectItemPrefixPlaceholder(sqlBuilder, (SelectItemPrefixToken) sqlToken);
+        } else if (sqlToken instanceof TableToken) {
             appendTablePlaceholder(sqlBuilder, (TableToken) sqlToken);
         } else if (sqlToken instanceof IndexToken) {
             appendIndexPlaceholder(sqlBuilder, (IndexToken) sqlToken);
@@ -92,6 +96,12 @@ public final class ShardingSQLRewriter implements SQLRewriter {
             appendAggregationDistinctPlaceholder(sqlBuilder, (AggregationDistinctToken) sqlToken);
         } else if (sqlToken instanceof RemoveToken) {
             return;
+        }
+    }
+    
+    private void appendSelectItemPrefixPlaceholder(final SQLBuilder sqlBuilder, final SelectItemPrefixToken selectItemPrefixToken) {
+        if (selectItemPrefixToken.isToAppendDistinct() && isRewrite()) {
+            sqlBuilder.appendPlaceholder(new SelectItemPrefixPlaceholder());
         }
     }
     
