@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.rewrite.rewriter;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.DatabaseType;
@@ -39,6 +40,7 @@ import org.apache.shardingsphere.core.parse.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
+import org.apache.shardingsphere.core.parse.sql.token.impl.AggregationDistinctToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.EncryptColumnToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.IndexToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.InsertColumnsToken;
@@ -47,6 +49,7 @@ import org.apache.shardingsphere.core.parse.sql.token.impl.OffsetToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.OrderByToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.RemoveToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.RowCountToken;
+import org.apache.shardingsphere.core.parse.sql.token.impl.SelectItemPrefixToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.SelectItemsToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.TableToken;
 import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
@@ -878,7 +881,22 @@ public final class ShardingSQLRewriterTest {
         routeResult.setRoutingResult(new RoutingResult());
         updateStatement.setLogicSQL("UPDATE table_z SET id = 1 WHERE id = 2");
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, DatabaseType.MySQL, routeResult, Collections.emptyList());
-        assertThat(getSQLBuilder(rewriteEngine).toSQL(null, tableTokens).getSql(), 
-                is("UPDATE table_z SET id = 'encryptValue' WHERE id = 'encryptValue'"));
+        assertThat(getSQLBuilder(rewriteEngine).toSQL(null, tableTokens).getSql(), is("UPDATE table_z SET id = 'encryptValue' WHERE id = 'encryptValue'"));
+    }
+    
+    @Test
+    public void assertSelectInWithAggregationDistinct() {
+        selectStatement.addSQLToken(new TableToken(49, 55, "table_z", QuoteCharacter.NONE));
+        SelectItemPrefixToken selectItemPrefixToken = new SelectItemPrefixToken(7);
+        selectItemPrefixToken.setToAppendDistinct(true);
+        selectStatement.addSQLToken(selectItemPrefixToken);
+        selectStatement.addSQLToken(new AggregationDistinctToken(7, 24, "id", Optional.<String>absent()));
+        selectStatement.addSQLToken(new AggregationDistinctToken(27, 42, "id", Optional.<String>absent()));
+        routeResult = new SQLRouteResult(selectStatement);
+        routeResult.setLimit(selectStatement.getLimit());
+        routeResult.setRoutingResult(new RoutingResult());
+        selectStatement.setLogicSQL("SELECT COUNT(DISTINCT id), SUM(DISTINCT id) FROM table_z WHERE id in (3,5)");
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, DatabaseType.MySQL, routeResult, new LinkedList<>());
+        assertThat(getSQLBuilder(rewriteEngine).toSQL(null, tableTokens).getSql(), is("SELECT DISTINCT id, id FROM table_z WHERE id in (3,5)"));
     }
 }
