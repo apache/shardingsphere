@@ -28,7 +28,7 @@ import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
 public interface SQLRewriter {
     
     /**
-     * Pattern.
+     * Rewrite.
      *
      * @param sqlBuilder sql builder
      * @param sqlToken sql token
