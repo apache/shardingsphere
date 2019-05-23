@@ -79,22 +79,12 @@ public final class SQLRewriteEngine {
     }
     
     private void pattern(final OptimizeResult optimizeResult) {
-        if (sqlStatement.getSQLTokens().isEmpty()) {
-            sqlBuilder.appendLiterals(sqlStatement.getLogicSQL());
-            return;
-        }
-        rewrite(optimizeResult);
-    }
-    
-    private void rewrite(final OptimizeResult optimizeResult) {
         BaseSQLRewriter baseSQLRewriter = new BaseSQLRewriter(sqlStatement);
-        EncryptSQLRewriter encryptSQLRewriter = new EncryptSQLRewriter(getShardingEncryptorEngine(), sqlStatement, optimizeResult);
-        ShardingSQLRewriter shardingSQLRewriter = new ShardingSQLRewriter(getShardingRule(), sqlStatement.getLogicSQL(), databaseType, sqlStatement, sqlRouteResult);
-        baseSQLRewriter.rewrite(sqlBuilder);
-        for (SQLToken each : sqlStatement.getSQLTokens()) {
-            encryptSQLRewriter.rewrite(sqlBuilder, each);
-            shardingSQLRewriter.rewrite(sqlBuilder, each);
-            baseSQLRewriter.rewrite(sqlBuilder, each);
+        if (baseSQLRewriter.isToRewriteSQLTokens()) {
+            rewrite(baseSQLRewriter, new ShardingSQLRewriter(getShardingRule(), sqlStatement.getLogicSQL(), databaseType, sqlStatement, sqlRouteResult), 
+                    new EncryptSQLRewriter(getShardingEncryptorEngine(), sqlStatement, optimizeResult));
+        } else {
+            baseSQLRewriter.rewrite(sqlBuilder);
         }
     }
     
@@ -107,6 +97,15 @@ public final class SQLRewriteEngine {
     
     private ShardingRule getShardingRule() {
         return baseRule instanceof ShardingRule ? (ShardingRule) baseRule : null;
+    }
+    
+    private void rewrite(final BaseSQLRewriter baseSQLRewriter, final ShardingSQLRewriter shardingSQLRewriter, final EncryptSQLRewriter encryptSQLRewriter) {
+        baseSQLRewriter.rewriteInitialLiteral(sqlBuilder);
+        for (SQLToken each : sqlStatement.getSQLTokens()) {
+            shardingSQLRewriter.rewrite(sqlBuilder, each);
+            encryptSQLRewriter.rewrite(sqlBuilder, each);
+            baseSQLRewriter.rewrite(sqlBuilder, each);
+        }
     }
     
     /**
