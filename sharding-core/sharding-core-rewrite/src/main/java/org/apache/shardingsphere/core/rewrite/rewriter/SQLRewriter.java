@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.rewrite.rewriter;
 
 import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
+import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
 
 /**
@@ -31,7 +32,8 @@ public interface SQLRewriter {
      * Rewrite.
      *
      * @param sqlBuilder sql builder
+     * @param parameterBuilder parameter builder
      * @param sqlToken sql token
      */
-    void rewrite(SQLBuilder sqlBuilder, SQLToken sqlToken);
+    void rewrite(SQLBuilder sqlBuilder, ParameterBuilder parameterBuilder, SQLToken sqlToken);
 }
