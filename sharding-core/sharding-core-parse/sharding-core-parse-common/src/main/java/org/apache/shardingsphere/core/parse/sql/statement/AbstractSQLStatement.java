@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.core.parse.sql.statement;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterators;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +31,7 @@ import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
 import org.apache.shardingsphere.core.parse.sql.context.condition.ParseCondition;
 import org.apache.shardingsphere.core.parse.sql.context.table.Tables;
 import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
+import org.apache.shardingsphere.core.parse.sql.token.impl.AggregationDistinctToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.EncryptColumnToken;
 
 import java.util.Collections;
@@ -111,5 +114,20 @@ public abstract class AbstractSQLStatement implements SQLStatement {
             }
         }
         throw new ShardingException("Index Out Of Bounds For sqlTokens.");
+    }
+    
+    /**
+     * Is containing aggregation distinct token or not.
+     * 
+     * @return Is containing aggregation distinct token or not
+     */
+    public boolean isContainsAggregationDistinctToken() {
+        return Iterators.tryFind(sqlTokens.iterator(), new Predicate<SQLToken>() {
+            
+            @Override
+            public boolean apply(final SQLToken input) {
+                return input instanceof AggregationDistinctToken;
+            }
+        }).isPresent();
     }
 }
