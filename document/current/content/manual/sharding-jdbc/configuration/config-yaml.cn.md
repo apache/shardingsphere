@@ -52,6 +52,7 @@ shardingRule:
     none:
   defaultKeyGenerator:
     type: SNOWFLAKE
+    column: order_id
   
 props:
   sql.show: true
@@ -154,6 +155,7 @@ shardingRule:
     none:
   defaultKeyGenerator:
     type: SNOWFLAKE
+    column: order_id
   
   masterSlaveRules:
       ms_ds0:
