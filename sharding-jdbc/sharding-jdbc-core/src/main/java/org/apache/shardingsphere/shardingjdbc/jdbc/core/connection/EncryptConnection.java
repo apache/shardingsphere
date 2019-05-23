@@ -39,8 +39,8 @@ import java.sql.Statement;
  *
  * @author panjuan
  */
-@Getter
 @RequiredArgsConstructor
+@Getter
 public final class EncryptConnection extends AbstractUnsupportedOperationConnection {
 
     private final Connection connection;
