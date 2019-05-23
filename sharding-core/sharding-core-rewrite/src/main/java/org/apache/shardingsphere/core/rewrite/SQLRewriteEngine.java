@@ -26,6 +26,7 @@ import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
 import org.apache.shardingsphere.core.parse.sql.token.Substitutable;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
+import org.apache.shardingsphere.core.rewrite.rewriter.BaseSQLRewriter;
 import org.apache.shardingsphere.core.rewrite.rewriter.EncryptSQLRewriter;
 import org.apache.shardingsphere.core.rewrite.rewriter.ShardingSQLRewriter;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
@@ -87,18 +88,15 @@ public final class SQLRewriteEngine {
     }
     
     private void rewrite(final OptimizeResult optimizeResult) {
-        rewriteInitialLiteral();
-        int count = 0;
+        BaseSQLRewriter baseSQLRewriter = new BaseSQLRewriter(sqlStatement);
+        EncryptSQLRewriter encryptSQLRewriter = new EncryptSQLRewriter(getShardingEncryptorEngine(), sqlStatement, optimizeResult);
+        ShardingSQLRewriter shardingSQLRewriter = new ShardingSQLRewriter(getShardingRule(), sqlStatement.getLogicSQL(), databaseType, sqlStatement, sqlRouteResult);
+        baseSQLRewriter.rewrite(sqlBuilder);
         for (SQLToken each : sqlStatement.getSQLTokens()) {
-            new EncryptSQLRewriter(getShardingEncryptorEngine(), sqlStatement, optimizeResult).rewrite(sqlBuilder, each);
-            new ShardingSQLRewriter(getShardingRule(), sqlStatement.getLogicSQL(), databaseType, sqlStatement, sqlRouteResult).rewrite(sqlBuilder, each);
-            rewriteRestLiteral(sqlBuilder, each, count);
-            count++;
+            encryptSQLRewriter.rewrite(sqlBuilder, each);
+            shardingSQLRewriter.rewrite(sqlBuilder, each);
+            baseSQLRewriter.rewrite(sqlBuilder, each);
         }
-    }
-    
-    private void rewriteInitialLiteral() {
-        sqlBuilder.appendLiterals(sqlStatement.getLogicSQL().substring(0, sqlStatement.getSQLTokens().get(0).getStartIndex()));
     }
     
     private ShardingEncryptorEngine getShardingEncryptorEngine() {
