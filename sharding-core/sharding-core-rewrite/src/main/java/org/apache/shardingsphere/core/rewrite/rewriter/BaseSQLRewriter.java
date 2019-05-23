@@ -36,12 +36,12 @@ public final class BaseSQLRewriter implements SQLRewriter {
     private int tokenCount;
     
     /**
-     * rewrite initial literal.
-     * 
+     * rewrite original literal.
+     *
      * @param sqlBuilder sql builder
      */
     public void rewrite(final SQLBuilder sqlBuilder) {
-        sqlBuilder.appendLiterals(sqlStatement.getLogicSQL().substring(0, sqlStatement.getSQLTokens().get(0).getStartIndex()));
+        sqlBuilder.appendLiterals(sqlStatement.getLogicSQL());
     }
     
     @Override
@@ -54,5 +54,14 @@ public final class BaseSQLRewriter implements SQLRewriter {
     
     private int getStartIndex(final SQLToken sqlToken) {
         return sqlToken instanceof Substitutable ? ((Substitutable) sqlToken).getStopIndex() + 1 : sqlToken.getStartIndex();
+    }
+    
+    /**
+     * rewrite initial literal.
+     *
+     * @param sqlBuilder sql builder
+     */
+    public void rewriteInitialLiteral(final SQLBuilder sqlBuilder) {
+        sqlBuilder.appendLiterals(sqlStatement.getLogicSQL().substring(0, sqlStatement.getSQLTokens().get(0).getStartIndex()));
     }
 }
