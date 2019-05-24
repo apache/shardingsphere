@@ -67,12 +67,12 @@ public final class ShardingSQLRewriter implements SQLRewriter {
     
     private final SQLStatement sqlStatement;
     
-    public ShardingSQLRewriter(final ShardingRule shardingRule, final DatabaseType databaseType, final SQLRouteResult sqlRouteResult) {
+    public ShardingSQLRewriter(final ShardingRule shardingRule, final String originalSQL, final DatabaseType databaseType, final SQLStatement sqlStatement, final SQLRouteResult sqlRouteResult) {
         this.shardingRule = shardingRule;
-        this.originalSQL = sqlRouteResult.getSqlStatement().getLogicSQL();
+        this.originalSQL = originalSQL;
         this.databaseType = databaseType;
         this.sqlRouteResult = sqlRouteResult;
-        this.sqlStatement = sqlRouteResult.getSqlStatement();
+        this.sqlStatement = sqlStatement;
     }
     
     @Override
