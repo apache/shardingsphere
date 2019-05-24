@@ -21,6 +21,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
 import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
+import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.StatementRoutingEngine;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.junit.Before;
@@ -60,7 +61,9 @@ public final class SimpleQueryShardingEngineTest extends BaseShardingEngineTest 
     }
     
     protected void assertShard() {
-        when(routingEngine.route(getSql())).thenReturn(createSQLRouteResult());
+        SQLRouteResult sqlRouteResult = createSQLRouteResult();
+        sqlRouteResult.getSqlStatement().setLogicSQL("SELECT 1");
+        when(routingEngine.route(getSql())).thenReturn(sqlRouteResult);
         assertSQLRouteResult(shardingEngine.shard(getSql(), getParameters()));
     }
 }

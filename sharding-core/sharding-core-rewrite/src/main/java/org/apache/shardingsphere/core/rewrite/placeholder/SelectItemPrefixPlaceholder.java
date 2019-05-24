@@ -15,27 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse;
+package org.apache.shardingsphere.core.rewrite.placeholder;
 
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.apache.shardingsphere.core.parse.autogen.PostgreSQLStatementLexer;
-import org.apache.shardingsphere.core.parse.spi.ShardingParseEngine;
+import lombok.Getter;
 
 /**
- * Sharding parse engine for PostgreSQL.
+ * Select item prefix placeholder for rewrite.
  *
- * @author zhangliang
+ * @author panjuan
  */
-public final class PostgreSQLShardingParseEngine implements ShardingParseEngine {
+@Getter
+public final class SelectItemPrefixPlaceholder implements ShardingPlaceholder {
     
     @Override
-    public String getDatabaseType() {
-        return "PostgreSQL";
-    }
-    
-    @Override
-    public PostgreSQLParser createSQLParser(final String sql) {
-        return new PostgreSQLParser(new CommonTokenStream(new PostgreSQLStatementLexer(CharStreams.fromString(sql))));
+    public String toString() {
+        return "DISTINCT ";
     }
 }

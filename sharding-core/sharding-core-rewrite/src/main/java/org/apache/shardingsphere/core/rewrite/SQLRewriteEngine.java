@@ -18,18 +18,14 @@
 package org.apache.shardingsphere.core.rewrite;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterators;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
-import org.apache.shardingsphere.core.parse.sql.token.Substitutable;
-import org.apache.shardingsphere.core.parse.sql.token.impl.AggregationDistinctToken;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
+import org.apache.shardingsphere.core.rewrite.rewriter.BaseSQLRewriter;
 import org.apache.shardingsphere.core.rewrite.rewriter.EncryptSQLRewriter;
 import org.apache.shardingsphere.core.rewrite.rewriter.ShardingSQLRewriter;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
@@ -59,8 +55,6 @@ public final class SQLRewriteEngine {
     
     private final BaseRule baseRule;
     
-    private final String originalSQL;
-    
     private final DatabaseType databaseType;
     
     private final SQLRouteResult sqlRouteResult;
@@ -69,68 +63,31 @@ public final class SQLRewriteEngine {
     
     private final SQLBuilder sqlBuilder;
     
-    public SQLRewriteEngine(final ShardingRule shardingRule, final String originalSQL, final DatabaseType databaseType, final SQLRouteResult sqlRouteResult, final List<Object> parameters) {
-        this(shardingRule, originalSQL, databaseType, sqlRouteResult, sqlRouteResult.getSqlStatement(), new SQLBuilder(new ParameterBuilder(parameters)));
+    private final ParameterBuilder parameterBuilder;
+    
+    public SQLRewriteEngine(final ShardingRule shardingRule, final DatabaseType databaseType, final SQLRouteResult sqlRouteResult, final List<Object> parameters) {
+        this(shardingRule, databaseType, sqlRouteResult, sqlRouteResult.getSqlStatement(), new SQLBuilder(), new ParameterBuilder(parameters));
         pattern(sqlRouteResult.getOptimizeResult());
     }
     
-    public SQLRewriteEngine(final EncryptRule encryptRule, final String originalSQL, final SQLStatement sqlStatement, final OptimizeResult optimizeResult, final List<Object> parameters) {
-        this(encryptRule, originalSQL, DatabaseType.MySQL, null, sqlStatement, new SQLBuilder(new ParameterBuilder(parameters)));
+    public SQLRewriteEngine(final EncryptRule encryptRule, final DatabaseType databaseType, final SQLStatement sqlStatement, final OptimizeResult optimizeResult, final List<Object> parameters) {
+        this(encryptRule, databaseType, null, sqlStatement, new SQLBuilder(), new ParameterBuilder(parameters));
         pattern(optimizeResult);
     }
     
-    public SQLRewriteEngine(final String originalSQL, final SQLStatement sqlStatement) {
-        this(null, originalSQL, null, null, sqlStatement, new SQLBuilder(new ParameterBuilder(Collections.emptyList())));
+    public SQLRewriteEngine(final SQLStatement sqlStatement) {
+        this(null, null, null, sqlStatement, new SQLBuilder(), new ParameterBuilder(Collections.emptyList()));
         pattern(null);
     }
     
     private void pattern(final OptimizeResult optimizeResult) {
-        if (sqlStatement.getSQLTokens().isEmpty()) {
-            sqlBuilder.appendLiterals(originalSQL);
-            return;
-        }
-        rewrite(optimizeResult);
-    }
-    
-    private void rewrite(final OptimizeResult optimizeResult) {
-        rewriteInitialLiteral();
-        int count = 0;
-        for (SQLToken each : sqlStatement.getSQLTokens()) {
-            new EncryptSQLRewriter(getShardingEncryptorEngine(), sqlStatement, optimizeResult).rewrite(sqlBuilder, each);
-            new ShardingSQLRewriter(getShardingRule(), originalSQL, databaseType, sqlStatement, sqlRouteResult).rewrite(sqlBuilder, each);
-            rewriteRestLiteral(sqlBuilder, each, count);
-            count++;
-        }
-    }
-    
-    private void rewriteInitialLiteral() {
-        if (isRewriteDistinctLiteral()) {
-            appendAggregationDistinctLiteral(sqlBuilder);
+        BaseSQLRewriter baseSQLRewriter = new BaseSQLRewriter(sqlStatement);
+        if (baseSQLRewriter.isToRewriteSQLTokens()) {
+            rewrite(baseSQLRewriter, new ShardingSQLRewriter(getShardingRule(), sqlStatement.getLogicSQL(), databaseType, sqlStatement, sqlRouteResult), 
+                    new EncryptSQLRewriter(getShardingEncryptorEngine(), sqlStatement, optimizeResult));
         } else {
-            sqlBuilder.appendLiterals(originalSQL.substring(0, sqlStatement.getSQLTokens().get(0).getStartIndex()));
+            baseSQLRewriter.rewrite(sqlBuilder);
         }
-    }
-    
-    private boolean isRewriteDistinctLiteral() {
-        return null != sqlRouteResult && !sqlRouteResult.getRoutingResult().isSingleRouting() && isContainsAggregationDistinctToken();
-    }
-    
-    private boolean isContainsAggregationDistinctToken() {
-        return Iterators.tryFind(sqlStatement.getSQLTokens().iterator(), new Predicate<SQLToken>() {
-            
-            @Override
-            public boolean apply(final SQLToken input) {
-                return input instanceof AggregationDistinctToken;
-            }
-        }).isPresent();
-    }
-    
-    private void appendAggregationDistinctLiteral(final SQLBuilder sqlBuilder) {
-        StringBuilder stringBuilder = new StringBuilder();
-        int firstSelectItemStartIndex = ((SelectStatement) sqlStatement).getFirstSelectItemStartIndex();
-        stringBuilder.append(originalSQL.substring(0, firstSelectItemStartIndex)).append("DISTINCT ")
-                .append(originalSQL.substring(firstSelectItemStartIndex, sqlStatement.getSQLTokens().get(0).getStartIndex()));
-        sqlBuilder.appendLiterals(stringBuilder.toString());
     }
     
     private ShardingEncryptorEngine getShardingEncryptorEngine() {
@@ -144,13 +101,13 @@ public final class SQLRewriteEngine {
         return baseRule instanceof ShardingRule ? (ShardingRule) baseRule : null;
     }
     
-    private void rewriteRestLiteral(final SQLBuilder sqlBuilder, final SQLToken sqlToken, final int count) {
-        int stopPosition = sqlStatement.getSQLTokens().size() - 1 == count ? originalSQL.length() : sqlStatement.getSQLTokens().get(count + 1).getStartIndex();
-        sqlBuilder.appendLiterals(originalSQL.substring(getStartIndex(sqlToken) > originalSQL.length() ? originalSQL.length() : getStartIndex(sqlToken), stopPosition));
-    }
-    
-    private int getStartIndex(final SQLToken sqlToken) {
-        return sqlToken instanceof Substitutable ? ((Substitutable) sqlToken).getStopIndex() + 1 : sqlToken.getStartIndex();
+    private void rewrite(final BaseSQLRewriter baseSQLRewriter, final ShardingSQLRewriter shardingSQLRewriter, final EncryptSQLRewriter encryptSQLRewriter) {
+        baseSQLRewriter.rewriteInitialLiteral(sqlBuilder);
+        for (SQLToken each : sqlStatement.getSQLTokens()) {
+            shardingSQLRewriter.rewrite(sqlBuilder, parameterBuilder, each);
+            encryptSQLRewriter.rewrite(sqlBuilder, parameterBuilder, each);
+            baseSQLRewriter.rewrite(sqlBuilder, parameterBuilder, each);
+        }
     }
     
     /**
@@ -159,7 +116,7 @@ public final class SQLRewriteEngine {
      * @return sql unit
      */
     public SQLUnit generateSQL() {
-        return sqlBuilder.toSQL();
+        return new SQLUnit(sqlBuilder.toSQL(), parameterBuilder.getParameters());
     }
     
     /**
@@ -169,7 +126,7 @@ public final class SQLRewriteEngine {
      * @return sql unit
      */
     public SQLUnit generateSQL(final RoutingUnit routingUnit) {
-        return sqlBuilder.toSQL(routingUnit, getTableTokens(routingUnit));
+        return new SQLUnit(sqlBuilder.toSQL(routingUnit, getTableTokens(routingUnit)), parameterBuilder.getParameters(routingUnit));
     }
    
     private Map<String, String> getTableTokens(final RoutingUnit routingUnit) {

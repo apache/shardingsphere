@@ -25,7 +25,7 @@ import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.optimize.OptimizeEngineFactory;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
-import org.apache.shardingsphere.core.parse.EncryptSQLParseEngine;
+import org.apache.shardingsphere.core.parse.entry.EncryptSQLParseEntry;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
 import org.apache.shardingsphere.core.route.SQLUnit;
@@ -50,7 +50,7 @@ public final class EncryptSQLRewriterTest {
     
     private EncryptRule encryptRule;
     
-    private EncryptSQLParseEngine encryptSQLParseEngine;
+    private EncryptSQLParseEntry encryptSQLParseEngine;
     
     private List<Object> parameters;
     
@@ -60,7 +60,7 @@ public final class EncryptSQLRewriterTest {
         parameters = new LinkedList<>();
         parameters.add(1);
         parameters.add(2);
-        encryptSQLParseEngine = new EncryptSQLParseEngine(databaseType, encryptRule, createShardingTableMetaData());
+        encryptSQLParseEngine = new EncryptSQLParseEntry(databaseType, encryptRule, createShardingTableMetaData());
     }
     
     private EncryptRuleConfiguration createEncryptRuleConfiguration() {
@@ -184,6 +184,6 @@ public final class EncryptSQLRewriterTest {
     private SQLUnit getSQLUnit(final String sql, final List<Object> parameters) {
         SQLStatement sqlStatement = encryptSQLParseEngine.parse(sql, false);
         OptimizeResult optimizeResult = OptimizeEngineFactory.newInstance(encryptRule, sqlStatement, parameters).optimize();
-        return new SQLRewriteEngine(encryptRule, sql, sqlStatement, optimizeResult, parameters).generateSQL();
+        return new SQLRewriteEngine(encryptRule, databaseType, sqlStatement, optimizeResult, parameters).generateSQL();
     }
 }

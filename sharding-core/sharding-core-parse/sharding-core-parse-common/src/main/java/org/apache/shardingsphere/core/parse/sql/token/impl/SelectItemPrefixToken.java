@@ -15,18 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.statement;
+package org.apache.shardingsphere.core.parse.sql.token.impl;
 
-import org.apache.shardingsphere.core.constant.SQLType;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.core.parse.sql.token.Attachable;
+import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
 
 /**
- * General SQL statement.
+ * Select item prefix token.
  *
- * @author duhongjun
+ * @author panjuan
  */
-public final class GeneralSQLStatement extends AbstractSQLStatement {
+@Getter
+public final class SelectItemPrefixToken extends SQLToken implements Attachable {
     
-    public GeneralSQLStatement() {
-        super(SQLType.GENERAL);
+    @Setter
+    private boolean isToAppendDistinct;
+    
+    public SelectItemPrefixToken(final int startIndex) {
+        super(startIndex);
     }
 }

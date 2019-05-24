@@ -15,23 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse;
+package org.apache.shardingsphere.core.parse.entry;
 
-import com.google.common.base.Optional;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
 /**
- * SQL parse engine for encrypt.
+ * SQL parse entry for encrypt.
  *
  * @author panjuan
  */
-@RequiredArgsConstructor
-public final class EncryptSQLParseEngine {
+public final class EncryptSQLParseEntry extends SQLParseEntry {
     
     private final DatabaseType dbType;
     
@@ -39,28 +36,15 @@ public final class EncryptSQLParseEngine {
     
     private final ShardingTableMetaData shardingTableMetaData;
     
-    private final ParsingResultCache parsingResultCache = new ParsingResultCache();
-    
-    /**
-     * Parse SQL.
-     *
-     * @param sql SQL
-     * @param useCache use cache or not
-     * @return parsed SQL statement
-     */
-    public SQLStatement parse(final String sql, final boolean useCache) {
-        Optional<SQLStatement> cachedSQLStatement = getSQLStatementFromCache(sql, useCache);
-        if (cachedSQLStatement.isPresent()) {
-            return cachedSQLStatement.get();
-        }
-        SQLStatement result = new SQLParseEngine(dbType, sql, encryptRule, shardingTableMetaData).parse();
-        if (useCache) {
-            parsingResultCache.put(sql, result);
-        }
-        return result;
+    public EncryptSQLParseEntry(final DatabaseType dbType, final EncryptRule encryptRule, final ShardingTableMetaData shardingTableMetaData) {
+        super(new ParsingResultCache());
+        this.dbType = dbType;
+        this.encryptRule = encryptRule;
+        this.shardingTableMetaData = shardingTableMetaData;
     }
     
-    private Optional<SQLStatement> getSQLStatementFromCache(final String sql, final boolean useCache) {
-        return useCache ? Optional.fromNullable(parsingResultCache.getSQLStatement(sql)) : Optional.<SQLStatement>absent();
+    @Override
+    protected SQLParseEngine getSQLParseEngine(final String sql) {
+        return new SQLParseEngine(dbType, sql, encryptRule, shardingTableMetaData);
     }
 }

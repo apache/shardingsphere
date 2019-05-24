@@ -20,14 +20,14 @@ package org.apache.shardingsphere.core.parse;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.apache.shardingsphere.core.parse.autogen.OracleStatementLexer;
-import org.apache.shardingsphere.core.parse.spi.ShardingParseEngine;
+import org.apache.shardingsphere.core.parse.spi.SQLParserEngine;
 
 /**
- * Sharding parse engine for Oracle.
+ * SQL parser engine for Oracle.
  *
  * @author zhangliang
  */
-public final class OracleShardingParseEngine implements ShardingParseEngine {
+public final class OracleParserEngine implements SQLParserEngine {
     
     @Override
     public String getDatabaseType() {

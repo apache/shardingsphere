@@ -15,25 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.rewriter;
+package org.apache.shardingsphere.core.parse.entry;
 
-import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
-import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
-import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
+import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.core.parse.SQLParseEngine;
+import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
 
 /**
- * SQL rewriter.
+ * SQL parse entry for master-slave.
  *
- * @author panjuan
+ * @author zhangliang
  */
-public interface SQLRewriter {
+public final class MasterSlaveSQLParseEntry extends SQLParseEntry {
     
-    /**
-     * Rewrite.
-     *
-     * @param sqlBuilder sql builder
-     * @param parameterBuilder parameter builder
-     * @param sqlToken sql token
-     */
-    void rewrite(SQLBuilder sqlBuilder, ParameterBuilder parameterBuilder, SQLToken sqlToken);
+    private final DatabaseType dbType;
+    
+    public MasterSlaveSQLParseEntry(final DatabaseType dbType) {
+        super(new ParsingResultCache());
+        this.dbType = dbType;
+    }
+    
+    @Override
+    protected SQLParseEngine getSQLParseEngine(final String sql) {
+        return new SQLParseEngine(dbType, sql, null, null);
+    }
 }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.connection;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.MasterSlaveSQLParseEngine;
+import org.apache.shardingsphere.core.parse.entry.MasterSlaveSQLParseEntry;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractConnectionAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.MasterSlavePreparedStatement;
@@ -46,7 +46,7 @@ public final class MasterSlaveConnection extends AbstractConnectionAdapter {
     
     private final Map<String, DataSource> dataSourceMap;
     
-    private final MasterSlaveSQLParseEngine parseEngine;
+    private final MasterSlaveSQLParseEntry parseEngine;
     
     @Override
     public DatabaseMetaData getMetaData() throws SQLException {

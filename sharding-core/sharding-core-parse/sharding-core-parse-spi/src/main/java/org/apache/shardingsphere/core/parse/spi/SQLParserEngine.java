@@ -15,25 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.rewriter;
+package org.apache.shardingsphere.core.parse.spi;
 
-import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
-import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
-import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
+import org.apache.shardingsphere.core.parse.api.SQLParser;
 
 /**
- * SQL rewriter.
+ * SQL parser engine.
  *
- * @author panjuan
+ * @author zhangliang
  */
-public interface SQLRewriter {
+public interface SQLParserEngine {
     
     /**
-     * Rewrite.
-     *
-     * @param sqlBuilder sql builder
-     * @param parameterBuilder parameter builder
-     * @param sqlToken sql token
+     * Get database type.
+     * 
+     * @return database type
      */
-    void rewrite(SQLBuilder sqlBuilder, ParameterBuilder parameterBuilder, SQLToken sqlToken);
+    String getDatabaseType();
+    
+    /**
+     * Create SQL parser.
+     *
+     * @param sql SQL
+     * @return instance of SQL parser
+     */
+    SQLParser createSQLParser(String sql);
 }
