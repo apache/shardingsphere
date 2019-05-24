@@ -55,7 +55,8 @@ public final class TopSelectItemExtractor implements OptionalSQLSegmentExtractor
         Optional<LimitValueSegment> limitValueSegment = createLimitValueSegment(topExpr.get());
         Preconditions.checkState(limitValueSegment.isPresent());
         ParserRuleContext rowNumberAliasNode = ExtractorUtils.getFirstChildNode(topNode.get().getParent(), RuleName.ALIAS);
-        return Optional.of(new TopSegment(topNode.get().getStart().getStartIndex(), topNode.get().getStop().getStopIndex(), limitValueSegment.get(), rowNumberAliasNode.getText()));
+        return Optional.of(
+                new TopSegment(topNode.get().getStart().getStartIndex(), topNode.get().getStop().getStopIndex(), topNode.get().getText(), limitValueSegment.get(), rowNumberAliasNode.getText()));
     }
     
     private Optional<LimitValueSegment> createLimitValueSegment(final ExpressionSegment topExpr) {

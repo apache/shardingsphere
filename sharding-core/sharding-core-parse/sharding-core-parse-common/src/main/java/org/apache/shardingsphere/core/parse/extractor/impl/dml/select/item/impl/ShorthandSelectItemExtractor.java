@@ -38,11 +38,13 @@ public final class ShorthandSelectItemExtractor implements OptionalSQLSegmentExt
     public Optional<ShorthandSelectItemSegment> extract(final ParserRuleContext expressionNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> unqualifiedShorthandNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.UNQUALIFIED_SHORTHAND);
         if (unqualifiedShorthandNode.isPresent()) {
-            return Optional.of(new ShorthandSelectItemSegment(unqualifiedShorthandNode.get().getStart().getStartIndex(), unqualifiedShorthandNode.get().getStop().getStopIndex()));
+            return Optional.of(new ShorthandSelectItemSegment(
+                    unqualifiedShorthandNode.get().getStart().getStartIndex(), unqualifiedShorthandNode.get().getStop().getStopIndex(), unqualifiedShorthandNode.get().getText()));
         }
         Optional<ParserRuleContext> qualifiedShorthandNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.QUALIFIED_SHORTHAND);
         if (qualifiedShorthandNode.isPresent()) {
-            ShorthandSelectItemSegment result = new ShorthandSelectItemSegment(qualifiedShorthandNode.get().getStart().getStartIndex(), qualifiedShorthandNode.get().getStop().getStopIndex());
+            ShorthandSelectItemSegment result = new ShorthandSelectItemSegment(
+                    qualifiedShorthandNode.get().getStart().getStartIndex(), qualifiedShorthandNode.get().getStop().getStopIndex(), qualifiedShorthandNode.get().getText());
             ParserRuleContext ownerNode = (ParserRuleContext) qualifiedShorthandNode.get().getChild(0);
             result.setOwner(new TableSegment(ownerNode.getStart().getStartIndex(), ownerNode.getStop().getStopIndex(), ownerNode.getText()));
             return Optional.of(result);

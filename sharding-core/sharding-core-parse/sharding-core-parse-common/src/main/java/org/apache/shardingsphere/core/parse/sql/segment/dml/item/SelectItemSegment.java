@@ -25,4 +25,11 @@ import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
  * @author zhangliang
  */
 public interface SelectItemSegment extends SQLSegment {
+    
+    /**
+     * Get text.
+     * 
+     * @return text
+     */
+    String getText();
 }

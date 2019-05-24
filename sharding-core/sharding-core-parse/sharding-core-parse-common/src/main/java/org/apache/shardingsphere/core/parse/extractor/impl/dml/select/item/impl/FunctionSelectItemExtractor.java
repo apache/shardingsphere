@@ -75,8 +75,9 @@ public final class FunctionSelectItemExtractor implements OptionalSQLSegmentExtr
         int innerExpressionStartIndex = ((TerminalNode) aggregationFunctionCallNode.getChild(1)).getSymbol().getStartIndex();
         return ExtractorUtils.findFirstChildNode(aggregationFunctionCallNode, RuleName.DISTINCT).isPresent()
                 ? new AggregationDistinctSelectItemSegment(aggregationFunctionCallNode.getStart().getStartIndex(), aggregationFunctionCallNode.getStop().getStopIndex(), 
-                type, innerExpressionStartIndex, getDistinctExpression(aggregationFunctionCallNode))
-                : new AggregationSelectItemSegment(aggregationFunctionCallNode.getStart().getStartIndex(), aggregationFunctionCallNode.getStop().getStopIndex(), type, innerExpressionStartIndex);
+                aggregationFunctionCallNode.getText(), type, innerExpressionStartIndex, getDistinctExpression(aggregationFunctionCallNode))
+                : new AggregationSelectItemSegment(aggregationFunctionCallNode.getStart().getStartIndex(), aggregationFunctionCallNode.getStop().getStopIndex(), 
+                aggregationFunctionCallNode.getText(), type, innerExpressionStartIndex);
     }
     
     private String getDistinctExpression(final ParserRuleContext functionNode) {
