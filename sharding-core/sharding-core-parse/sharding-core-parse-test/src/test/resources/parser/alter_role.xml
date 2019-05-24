@@ -22,4 +22,17 @@
     <parser-result sql-case-id="alter_global_role" />
     <parser-result sql-case-id="alter_role_with_password"  />
     <parser-result sql-case-id="alter_role_with_container" />
+    <parser-result sql-case-id="alter_role_with_password_postgresql" />
+    <parser-result sql-case-id="alter_current_user_with_password"  />
+    <parser-result sql-case-id="alter_role_with_option" />
+    <parser-result sql-case-id="alter_role_with_options"  />
+    <parser-result sql-case-id="rename_role" />
+    <parser-result sql-case-id="alter_role_set_config" />
+    <parser-result sql-case-id="alter_all_roles_set_config"  />
+    <parser-result sql-case-id="alter_role_set_config_in_database" />
+    <parser-result sql-case-id="alter_role_set_config_from_current_user"  />
+    <parser-result sql-case-id="alter_role_reset_config" />
+    <parser-result sql-case-id="alter_all_roles_reset_config" />
+    <parser-result sql-case-id="alter_role_reset_config_in_database"  />
+    <parser-result sql-case-id="alter_role_reset_all_config" />
 </parser-result-sets>
