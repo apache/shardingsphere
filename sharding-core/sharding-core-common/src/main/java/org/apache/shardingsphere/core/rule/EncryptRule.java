@@ -45,9 +45,4 @@ public final class EncryptRule implements BaseRule {
     public Collection<String> getEncryptTableNames() {
         return encryptorEngine.getEncryptTableNames();
     }
-    
-    @Override
-    public String getActualDataSourceName(final String actualTableName) {
-        return "";
-    }
 }

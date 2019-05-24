@@ -24,12 +24,4 @@ package org.apache.shardingsphere.core.rule;
  * @author panjuan
  */
 public interface BaseRule {
-    
-    /**
-     * Get actual data source name.
-     *
-     * @param actualTableName actual table name
-     * @return actual data source name
-     */
-    String getActualDataSourceName(String actualTableName);
 }
