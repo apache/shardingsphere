@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.core.parse;
 
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.Lexer;
+import org.apache.shardingsphere.core.parse.api.SQLParser;
 import org.apache.shardingsphere.core.parse.autogen.PostgreSQLStatementLexer;
 import org.apache.shardingsphere.core.parse.spi.SQLParserEntry;
 
@@ -35,7 +35,12 @@ public final class PostgreSQLParserEntry implements SQLParserEntry {
     }
     
     @Override
-    public PostgreSQLParser createSQLParser(final String sql) {
-        return new PostgreSQLParser(new CommonTokenStream(new PostgreSQLStatementLexer(CharStreams.fromString(sql))));
+    public Class<? extends Lexer> getLexerClass() {
+        return PostgreSQLStatementLexer.class;
+    }
+    
+    @Override
+    public Class<? extends SQLParser> getParserClass() {
+        return PostgreSQLParser.class;
     }
 }

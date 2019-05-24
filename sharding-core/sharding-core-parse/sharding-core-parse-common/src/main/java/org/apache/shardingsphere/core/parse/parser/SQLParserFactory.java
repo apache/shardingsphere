@@ -19,6 +19,12 @@ package org.apache.shardingsphere.core.parse.parser;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.Lexer;
+import org.antlr.v4.runtime.TokenStream;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.parse.api.SQLParser;
 import org.apache.shardingsphere.core.parse.spi.SQLParserEntry;
@@ -47,9 +53,15 @@ public final class SQLParserFactory {
     public static SQLParser newInstance(final DatabaseType databaseType, final String sql) {
         for (SQLParserEntry each : NewInstanceServiceLoader.newServiceInstances(SQLParserEntry.class)) {
             if (DatabaseType.valueOf(each.getDatabaseType()) == databaseType) {
-                return each.createSQLParser(sql);
+                return createSQLParser(sql, each);
             }
         }
         throw new UnsupportedOperationException(String.format("Cannot support database type '%s'", databaseType));
+    }
+    
+    @SneakyThrows
+    private static SQLParser createSQLParser(final String sql, final SQLParserEntry parserEntry) {
+        Lexer lexer = parserEntry.getLexerClass().getConstructor(CharStream.class).newInstance(CharStreams.fromString(sql));
+        return parserEntry.getParserClass().getConstructor(TokenStream.class).newInstance(new CommonTokenStream(lexer));
     }
 }

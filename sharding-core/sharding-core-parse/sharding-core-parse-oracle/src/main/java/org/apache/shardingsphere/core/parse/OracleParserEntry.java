@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.core.parse;
 
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.Lexer;
+import org.apache.shardingsphere.core.parse.api.SQLParser;
 import org.apache.shardingsphere.core.parse.autogen.OracleStatementLexer;
 import org.apache.shardingsphere.core.parse.spi.SQLParserEntry;
 
@@ -35,7 +35,12 @@ public final class OracleParserEntry implements SQLParserEntry {
     }
     
     @Override
-    public OracleParser createSQLParser(final String sql) {
-        return new OracleParser(new CommonTokenStream(new OracleStatementLexer(CharStreams.fromString(sql))));
+    public Class<? extends Lexer> getLexerClass() {
+        return OracleStatementLexer.class;
+    }
+    
+    @Override
+    public Class<? extends SQLParser> getParserClass() {
+        return OracleParser.class;
     }
 }
