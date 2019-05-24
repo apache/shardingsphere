@@ -76,9 +76,4 @@ public class MasterSlaveRule implements BaseRule {
     public boolean containDataSourceName(final String dataSourceName) {
         return masterDataSourceName.equals(dataSourceName) || slaveDataSourceNames.contains(dataSourceName);
     }
-    
-    @Override
-    public String getActualDataSourceName(final String actualTableName) {
-        return masterDataSourceName;
-    }
 }
