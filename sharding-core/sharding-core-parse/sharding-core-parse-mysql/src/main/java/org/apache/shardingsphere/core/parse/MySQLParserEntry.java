@@ -19,23 +19,23 @@ package org.apache.shardingsphere.core.parse;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.apache.shardingsphere.core.parse.autogen.PostgreSQLStatementLexer;
-import org.apache.shardingsphere.core.parse.spi.SQLParserEngine;
+import org.apache.shardingsphere.core.parse.autogen.MySQLStatementLexer;
+import org.apache.shardingsphere.core.parse.spi.SQLParserEntry;
 
 /**
- * SQL parser engine for PostgreSQL.
+ * SQL parser entry for MySQL.
  *
  * @author zhangliang
  */
-public final class PostgreSQLParserEngine implements SQLParserEngine {
+public final class MySQLParserEntry implements SQLParserEntry {
     
     @Override
     public String getDatabaseType() {
-        return "PostgreSQL";
+        return "MySQL";
     }
     
     @Override
-    public PostgreSQLParser createSQLParser(final String sql) {
-        return new PostgreSQLParser(new CommonTokenStream(new PostgreSQLStatementLexer(CharStreams.fromString(sql))));
+    public MySQLParser createSQLParser(final String sql) {
+        return new MySQLParser(new CommonTokenStream(new MySQLStatementLexer(CharStreams.fromString(sql))));
     }
 }

@@ -19,23 +19,23 @@ package org.apache.shardingsphere.core.parse;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.apache.shardingsphere.core.parse.autogen.OracleStatementLexer;
-import org.apache.shardingsphere.core.parse.spi.SQLParserEngine;
+import org.apache.shardingsphere.core.parse.autogen.SQLServerStatementLexer;
+import org.apache.shardingsphere.core.parse.spi.SQLParserEntry;
 
 /**
- * SQL parser engine for Oracle.
+ * SQL parser entry for SQLServer.
  *
  * @author zhangliang
  */
-public final class OracleParserEngine implements SQLParserEngine {
+public final class SQLServerParserEntry implements SQLParserEntry {
     
     @Override
     public String getDatabaseType() {
-        return "Oracle";
+        return "SQLServer";
     }
     
     @Override
-    public OracleParser createSQLParser(final String sql) {
-        return new OracleParser(new CommonTokenStream(new OracleStatementLexer(CharStreams.fromString(sql))));
+    public SQLServerParser createSQLParser(final String sql) {
+        return new SQLServerParser(new CommonTokenStream(new SQLServerStatementLexer(CharStreams.fromString(sql))));
     }
 }

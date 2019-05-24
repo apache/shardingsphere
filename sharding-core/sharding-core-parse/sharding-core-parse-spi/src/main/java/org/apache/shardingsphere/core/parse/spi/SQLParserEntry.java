@@ -15,27 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse;
+package org.apache.shardingsphere.core.parse.spi;
 
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.apache.shardingsphere.core.parse.autogen.MySQLStatementLexer;
-import org.apache.shardingsphere.core.parse.spi.SQLParserEngine;
+import org.apache.shardingsphere.core.parse.api.SQLParser;
 
 /**
- * SQL parser engine for H2.
+ * SQL parser entry.
  *
  * @author zhangliang
  */
-public final class H2ParserEngine implements SQLParserEngine {
+public interface SQLParserEntry {
     
-    @Override
-    public String getDatabaseType() {
-        return "H2";
-    }
+    /**
+     * Get database type.
+     * 
+     * @return database type
+     */
+    String getDatabaseType();
     
-    @Override
-    public MySQLParser createSQLParser(final String sql) {
-        return new MySQLParser(new CommonTokenStream(new MySQLStatementLexer(CharStreams.fromString(sql))));
-    }
+    /**
+     * Create SQL parser.
+     *
+     * @param sql SQL
+     * @return instance of SQL parser
+     */
+    SQLParser createSQLParser(String sql);
 }
