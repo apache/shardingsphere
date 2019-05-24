@@ -85,10 +85,9 @@ public final class ShardingExecuteEngine implements AutoCloseable {
     
     private <I, O> List<O> serialExecute(final Collection<ShardingExecuteGroup<I>> inputGroups, final ShardingGroupExecuteCallback<I, O> firstCallback,
                                          final ShardingGroupExecuteCallback<I, O> callback) throws SQLException {
-        List<O> result = new LinkedList<>();
         Iterator<ShardingExecuteGroup<I>> inputGroupsIterator = inputGroups.iterator();
         ShardingExecuteGroup<I> firstInputs = inputGroupsIterator.next();
-        result.addAll(syncGroupExecute(firstInputs, null == firstCallback ? callback : firstCallback));
+        List<O> result = new LinkedList<>(syncGroupExecute(firstInputs, null == firstCallback ? callback : firstCallback));
         for (ShardingExecuteGroup<I> each : Lists.newArrayList(inputGroupsIterator)) {
             result.addAll(syncGroupExecute(each, callback));
         }
@@ -127,8 +126,7 @@ public final class ShardingExecuteEngine implements AutoCloseable {
     }
     
     private <O> List<O> getGroupResults(final Collection<O> firstResults, final Collection<ListenableFuture<Collection<O>>> restFutures) throws SQLException {
-        List<O> result = new LinkedList<>();
-        result.addAll(firstResults);
+        List<O> result = new LinkedList<>(firstResults);
         for (ListenableFuture<Collection<O>> each : restFutures) {
             try {
                 result.addAll(each.get());

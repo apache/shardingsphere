@@ -17,25 +17,30 @@
 
 package org.apache.shardingsphere.core.parse;
 
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.apache.shardingsphere.core.parse.autogen.OracleStatementLexer;
-import org.apache.shardingsphere.core.parse.spi.ShardingParseEngine;
+import org.antlr.v4.runtime.Lexer;
+import org.apache.shardingsphere.core.parse.api.SQLParser;
+import org.apache.shardingsphere.core.parse.autogen.MySQLStatementLexer;
+import org.apache.shardingsphere.core.parse.spi.SQLParserEntry;
 
 /**
- * Sharding parse engine for Oracle.
+ * SQL parser entry for H2.
  *
  * @author zhangliang
  */
-public final class OracleShardingParseEngine implements ShardingParseEngine {
+public final class H2ParserEntry implements SQLParserEntry {
     
     @Override
     public String getDatabaseType() {
-        return "Oracle";
+        return "H2";
     }
     
     @Override
-    public OracleParser createSQLParser(final String sql) {
-        return new OracleParser(new CommonTokenStream(new OracleStatementLexer(CharStreams.fromString(sql))));
+    public Class<? extends Lexer> getLexerClass() {
+        return MySQLStatementLexer.class;
+    }
+    
+    @Override
+    public Class<? extends SQLParser> getParserClass() {
+        return MySQLParser.class;
     }
 }

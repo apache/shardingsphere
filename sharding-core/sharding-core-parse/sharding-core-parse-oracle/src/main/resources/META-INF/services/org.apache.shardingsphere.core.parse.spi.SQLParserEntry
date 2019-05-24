@@ -15,5 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.core.parse.MySQLShardingParseEngine
-org.apache.shardingsphere.core.parse.H2ShardingParseEngine
+org.apache.shardingsphere.core.parse.OracleParserEntry

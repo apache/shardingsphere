@@ -15,18 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.statement;
+package org.apache.shardingsphere.core.parse;
 
-import org.apache.shardingsphere.core.constant.SQLType;
+import org.antlr.v4.runtime.Lexer;
+import org.apache.shardingsphere.core.parse.api.SQLParser;
+import org.apache.shardingsphere.core.parse.autogen.MySQLStatementLexer;
+import org.apache.shardingsphere.core.parse.spi.SQLParserEntry;
 
 /**
- * General SQL statement.
+ * SQL parser entry for MySQL.
  *
- * @author duhongjun
+ * @author zhangliang
  */
-public final class GeneralSQLStatement extends AbstractSQLStatement {
+public final class MySQLParserEntry implements SQLParserEntry {
     
-    public GeneralSQLStatement() {
-        super(SQLType.GENERAL);
+    @Override
+    public String getDatabaseType() {
+        return "MySQL";
+    }
+    
+    @Override
+    public Class<? extends Lexer> getLexerClass() {
+        return MySQLStatementLexer.class;
+    }
+    
+    @Override
+    public Class<? extends SQLParser> getParserClass() {
+        return MySQLParser.class;
     }
 }

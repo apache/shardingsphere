@@ -15,29 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse;
+package org.apache.shardingsphere.core.parse.entry;
 
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.constant.DatabaseType;
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
- * SQL parse engine for sharding.
+ * SQL parse entry.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class ShardingSQLParseEngine {
-    
-    private final DatabaseType dbType;
-    
-    private final ShardingRule shardingRule;
-    
-    private final ShardingTableMetaData shardingTableMetaData;
+public abstract class SQLParseEntry {
     
     private final ParsingResultCache parsingResultCache;
     
@@ -48,12 +40,12 @@ public final class ShardingSQLParseEngine {
      * @param useCache use cache or not
      * @return SQL statement
      */
-    public SQLStatement parse(final String sql, final boolean useCache) {
+    public final SQLStatement parse(final String sql, final boolean useCache) {
         Optional<SQLStatement> cachedSQLStatement = getSQLStatementFromCache(sql, useCache);
         if (cachedSQLStatement.isPresent()) {
             return cachedSQLStatement.get();
         }
-        SQLStatement result = new SQLParseEngine(dbType, sql, shardingRule, shardingTableMetaData).parse();
+        SQLStatement result = getSQLParseEngine(sql).parse();
         if (useCache) {
             parsingResultCache.put(sql, result);
         }
@@ -63,4 +55,6 @@ public final class ShardingSQLParseEngine {
     private Optional<SQLStatement> getSQLStatementFromCache(final String sql, final boolean useCache) {
         return useCache ? Optional.fromNullable(parsingResultCache.getSQLStatement(sql)) : Optional.<SQLStatement>absent();
     }
+    
+    protected abstract SQLParseEngine getSQLParseEngine(String sql);
 }

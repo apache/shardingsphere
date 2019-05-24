@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.core.parse.PostgreSQLShardingParseEngine
+org.apache.shardingsphere.core.parse.PostgreSQLParserEntry

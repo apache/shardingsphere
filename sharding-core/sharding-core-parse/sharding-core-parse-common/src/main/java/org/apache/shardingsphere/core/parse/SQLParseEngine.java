@@ -24,15 +24,10 @@ import org.apache.shardingsphere.core.parse.filler.SQLStatementFillerEngine;
 import org.apache.shardingsphere.core.parse.optimizer.SQLStatementOptimizerEngine;
 import org.apache.shardingsphere.core.parse.parser.SQLAST;
 import org.apache.shardingsphere.core.parse.parser.SQLParserEngine;
-import org.apache.shardingsphere.core.parse.rule.registry.EncryptParseRuleRegistry;
-import org.apache.shardingsphere.core.parse.rule.registry.MasterSlaveParseRuleRegistry;
 import org.apache.shardingsphere.core.parse.rule.registry.ParseRuleRegistry;
-import org.apache.shardingsphere.core.parse.rule.registry.ShardingParseRuleRegistry;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.GeneralSQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.rule.BaseRule;
-import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Collection;
 
@@ -44,8 +39,6 @@ import java.util.Collection;
  */
 public final class SQLParseEngine {
     
-    private final ParseRuleRegistry parseRuleRegistry;
-    
     private final SQLParserEngine parserEngine;
     
     private final SQLSegmentsExtractorEngine extractorEngine;
@@ -54,22 +47,11 @@ public final class SQLParseEngine {
     
     private final SQLStatementOptimizerEngine optimizerEngine;
     
-    public SQLParseEngine(final DatabaseType databaseType, final String sql, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
-        parseRuleRegistry = getParseRuleRegistry(rule);
+    public SQLParseEngine(final ParseRuleRegistry parseRuleRegistry, final DatabaseType databaseType, final String sql, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
         parserEngine = new SQLParserEngine(parseRuleRegistry, databaseType, sql);
         extractorEngine = new SQLSegmentsExtractorEngine();
         fillerEngine = new SQLStatementFillerEngine(parseRuleRegistry, databaseType, sql, rule, shardingTableMetaData);
         optimizerEngine = new SQLStatementOptimizerEngine(shardingTableMetaData);
-    }
-    
-    private ParseRuleRegistry getParseRuleRegistry(final BaseRule rule) {
-        if (null == rule) {
-            return MasterSlaveParseRuleRegistry.getInstance();
-        }
-        if (rule instanceof ShardingRule) {
-            return ShardingParseRuleRegistry.getInstance();
-        }
-        return EncryptParseRuleRegistry.getInstance();
     }
     
     /**
@@ -79,12 +61,9 @@ public final class SQLParseEngine {
      */
     public SQLStatement parse() {
         SQLAST ast = parserEngine.parse();
-        if (!ast.getSQLStatementRule().isPresent() && (parseRuleRegistry instanceof EncryptParseRuleRegistry)) {
-            return new GeneralSQLStatement();
-        }
         Collection<SQLSegment> sqlSegments = extractorEngine.extract(ast);
-        SQLStatement result = fillerEngine.fill(sqlSegments, ast.getSQLStatementRule().get());
-        optimizerEngine.optimize(ast.getSQLStatementRule().get(), result);
+        SQLStatement result = fillerEngine.fill(sqlSegments, ast.getSqlStatementRule());
+        optimizerEngine.optimize(ast.getSqlStatementRule(), result);
         return result;
     }
 }

@@ -20,10 +20,9 @@ package org.apache.shardingsphere.core.optimize.result.insert;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLExpression;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLNumberExpression;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLParameterMarkerExpression;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLTextExpression;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.core.rule.DataNode;
 
 import java.util.ArrayList;
@@ -43,7 +42,7 @@ public final class InsertOptimizeResultUnit {
     
     private final Collection<String> columnNames;
     
-    private final SQLExpression[] values;
+    private final ExpressionSegment[] values;
     
     private final Object[] parameters;
     
@@ -54,10 +53,10 @@ public final class InsertOptimizeResultUnit {
     /**
      * Add column value.
      *
-     * @param sqlExpression SQL expression
+     * @param expressionSegment expression segment
      */
-    public void addColumnValue(final SQLExpression sqlExpression) {
-        values[getCurrentIndex(values, 0)] = sqlExpression;
+    public void addColumnValue(final ExpressionSegment expressionSegment) {
+        values[getCurrentIndex(values, 0)] = expressionSegment;
     }
     
     /**
@@ -85,12 +84,11 @@ public final class InsertOptimizeResultUnit {
      * @param columnValue column value
      */
     public void setColumnValue(final String columnName, final Object columnValue) {
-        SQLExpression sqlExpression = values[getColumnIndex(columnName)];
-        if (sqlExpression instanceof SQLParameterMarkerExpression) {
-            parameters[getParameterIndex(sqlExpression)] = columnValue;
+        ExpressionSegment expressionSegment = values[getColumnIndex(columnName)];
+        if (expressionSegment instanceof ParameterMarkerExpressionSegment) {
+            parameters[getParameterIndex(expressionSegment)] = columnValue;
         } else {
-            SQLExpression columnExpression = String.class == columnValue.getClass() ? new SQLTextExpression(String.valueOf(columnValue)) : new SQLNumberExpression((Number) columnValue);
-            values[getColumnIndex(columnName)] = columnExpression;
+            values[getColumnIndex(columnName)] = new LiteralExpressionSegment(expressionSegment.getStartIndex(), expressionSegment.getStopIndex(), columnValue);
         }
     }
     
@@ -98,12 +96,12 @@ public final class InsertOptimizeResultUnit {
         return new ArrayList<>(columnNames).indexOf(columnName);
     }
     
-    private int getParameterIndex(final SQLExpression sqlExpression) {
+    private int getParameterIndex(final ExpressionSegment expressionSegment) {
         int result = 0;
-        for (SQLExpression each : values) {
-            if (sqlExpression == each) {
+        for (ExpressionSegment each : values) {
+            if (expressionSegment == each) {
                 return result;
-            } else if (each instanceof SQLParameterMarkerExpression) {
+            } else if (each instanceof ParameterMarkerExpressionSegment) {
                 result++;
             }
         }
@@ -117,14 +115,11 @@ public final class InsertOptimizeResultUnit {
      * @return column value
      */
     public Object getColumnValue(final String columnName) {
-        SQLExpression sqlExpression = values[getColumnIndex(columnName)];
-        if (sqlExpression instanceof SQLParameterMarkerExpression) {
-            return parameters[getParameterIndex(sqlExpression)];
-        } else if (sqlExpression instanceof SQLTextExpression) {
-            return ((SQLTextExpression) sqlExpression).getText();
-        } else {
-            return ((SQLNumberExpression) sqlExpression).getNumber();
+        ExpressionSegment expressionSegment = values[getColumnIndex(columnName)];
+        if (expressionSegment instanceof ParameterMarkerExpressionSegment) {
+            return parameters[getParameterIndex(expressionSegment)];
         }
+        return ((LiteralExpressionSegment) expressionSegment).getLiterals();
     }
     
     /**
@@ -133,7 +128,7 @@ public final class InsertOptimizeResultUnit {
      * @param columnName column name
      * @return column sql expression
      */
-    public SQLExpression getColumnSQLExpression(final String columnName) {
+    public ExpressionSegment getColumnSQLExpression(final String columnName) {
         return values[getColumnIndex(columnName)];
     }
 }

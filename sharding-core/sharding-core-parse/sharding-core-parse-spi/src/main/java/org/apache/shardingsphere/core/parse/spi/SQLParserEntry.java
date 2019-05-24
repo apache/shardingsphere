@@ -17,14 +17,15 @@
 
 package org.apache.shardingsphere.core.parse.spi;
 
+import org.antlr.v4.runtime.Lexer;
 import org.apache.shardingsphere.core.parse.api.SQLParser;
 
 /**
- * Sharding parse engine.
+ * SQL parser entry.
  *
  * @author zhangliang
  */
-public interface ShardingParseEngine {
+public interface SQLParserEntry {
     
     /**
      * Get database type.
@@ -34,10 +35,16 @@ public interface ShardingParseEngine {
     String getDatabaseType();
     
     /**
-     * Create SQL parser.
+     * Get SQL lexer class type.
      *
-     * @param sql SQL
-     * @return instance of SQL parser
+     * @return SQL lexer class type
      */
-    SQLParser createSQLParser(String sql);
+    Class<? extends Lexer> getLexerClass();
+    
+    /**
+     * Get SQL parser class type.
+     * 
+     * @return SQL parser class type
+     */
+    Class<? extends SQLParser> getParserClass();
 }

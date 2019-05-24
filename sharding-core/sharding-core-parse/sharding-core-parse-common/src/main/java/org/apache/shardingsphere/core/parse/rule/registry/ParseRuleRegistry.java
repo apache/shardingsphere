@@ -89,14 +89,14 @@ public abstract class ParseRuleRegistry {
     protected abstract String getType();
     
     /**
-     * Find SQL statement rule.
+     * Get SQL statement rule.
      *
      * @param databaseType database type
      * @param contextClassName context class name
      * @return SQL statement rule
      */
-    public Optional<SQLStatementRule> findSQLStatementRule(final DatabaseType databaseType, final String contextClassName) {
-        return Optional.fromNullable(sqlStatementRuleDefinitions.get(DatabaseType.H2 == databaseType ? DatabaseType.MySQL : databaseType).getSQLStatementRule(contextClassName));
+    public SQLStatementRule getSQLStatementRule(final DatabaseType databaseType, final String contextClassName) {
+        return sqlStatementRuleDefinitions.get(DatabaseType.H2 == databaseType ? DatabaseType.MySQL : databaseType).getSQLStatementRule(contextClassName);
     }
     
     /**

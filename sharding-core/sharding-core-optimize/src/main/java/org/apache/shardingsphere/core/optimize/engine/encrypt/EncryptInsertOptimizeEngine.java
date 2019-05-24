@@ -23,11 +23,10 @@ import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResult;
 import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResultUnit;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLExpression;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLNumberExpression;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLParameterMarkerExpression;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLTextExpression;
 import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
@@ -56,7 +55,7 @@ public final class EncryptInsertOptimizeEngine implements OptimizeEngine {
         int parametersCount = 0;
         int insertOptimizeResultIndex = 0;
         for (InsertValue each : insertValues) {
-            SQLExpression[] currentColumnValues = createCurrentColumnValues(each);
+            ExpressionSegment[] currentColumnValues = createCurrentColumnValues(each);
             Object[] currentParameters = createCurrentParameters(parametersCount, each);
             parametersCount = parametersCount + each.getParametersCount();
             insertOptimizeResult.addUnit(currentColumnValues, currentParameters, each.getParametersCount());
@@ -68,8 +67,8 @@ public final class EncryptInsertOptimizeEngine implements OptimizeEngine {
         return new OptimizeResult(insertOptimizeResult);
     }
     
-    private SQLExpression[] createCurrentColumnValues(final InsertValue insertValue) {
-        SQLExpression[] result = new SQLExpression[insertValue.getAssignments().size() + getIncrement()];
+    private ExpressionSegment[] createCurrentColumnValues(final InsertValue insertValue) {
+        ExpressionSegment[] result = new ExpressionSegment[insertValue.getAssignments().size() + getIncrement()];
         insertValue.getAssignments().toArray(result);
         return result;
     }
@@ -112,12 +111,12 @@ public final class EncryptInsertOptimizeEngine implements OptimizeEngine {
     
     private void fillInsertOptimizeResultUnit(final InsertOptimizeResultUnit unit, final Comparable<?> columnValue) {
         if (!parameters.isEmpty()) {
-            unit.addColumnValue(new SQLParameterMarkerExpression(parameters.size() - 1));
+            // TODO fix start index and stop index
+            unit.addColumnValue(new ParameterMarkerExpressionSegment(0, 0, parameters.size() - 1));
             unit.addColumnParameter(columnValue);
-        } else if (columnValue.getClass() == String.class) {
-            unit.addColumnValue(new SQLTextExpression(columnValue.toString()));
         } else {
-            unit.addColumnValue(new SQLNumberExpression((Number) columnValue));
+            // TODO fix start index and stop index
+            unit.addColumnValue(new LiteralExpressionSegment(0, 0, columnValue));
         }
     }
 }

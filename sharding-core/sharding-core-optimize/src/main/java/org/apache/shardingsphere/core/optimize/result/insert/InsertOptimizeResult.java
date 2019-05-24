@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.optimize.result.insert;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLExpression;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -48,7 +48,7 @@ public final class InsertOptimizeResult {
      * @param columnParameters column parameters
      * @param startIndexOfAppendedParameters start index of appended parameters
      */
-    public void addUnit(final SQLExpression[] columnValues, final Object[] columnParameters, final int startIndexOfAppendedParameters) {
+    public void addUnit(final ExpressionSegment[] columnValues, final Object[] columnParameters, final int startIndexOfAppendedParameters) {
         this.units.add(new InsertOptimizeResultUnit(columnNames, columnValues, columnParameters, startIndexOfAppendedParameters));
     }
 }
