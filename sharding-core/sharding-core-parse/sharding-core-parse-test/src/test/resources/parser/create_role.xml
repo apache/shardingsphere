@@ -25,4 +25,8 @@
     <parser-result sql-case-id="create_global_role" />
     <parser-result sql-case-id="create_role_with_password" />
     <parser-result sql-case-id="create_role_with_container"  />
+    <parser-result sql-case-id="create_role_with_role"  />
+    <parser-result sql-case-id="create_role_with_roles" />
+    <parser-result sql-case-id="create_role_with_option" />
+    <parser-result sql-case-id="create_role_with_options"  />
 </parser-result-sets>
