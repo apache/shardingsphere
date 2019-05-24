@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<sql-cases db-types="PostgreSQL" namespace="postgre.dal.reset">
-    <sql-case id="reset_all" value="RESET ALL" />
-    <sql-case id="reset_timezone" value="RESET timezone" />
-</sql-cases>
+<parser-result-sets>
+    <parser-result sql-case-id="reset_all" />
+    <parser-result sql-case-id="reset_timezone" />
+</parser-result-sets>
