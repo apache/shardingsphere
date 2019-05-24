@@ -46,4 +46,10 @@
     <sql-case id="create_role_with_container" value="CREATE USER user1 IDENTIFIED BY password CONTAINER = ALL" />
     <sql-case id="create_user_with_quota_option" value="CREATE USER user1 IDENTIFIED BY password QUOTA 1M ON tablespace1" />
     <sql-case id="create_user_with_password_expire_lock" value="CREATE USER user1 IDENTIFIED BY password PASSWORD EXPIRE ACCOUNT LOCK" />
+    <sql-case id="create_user_postgresql" value="CREATE USER user1" db-types="PostgreSQL" />
+    <sql-case id="create_user_with_role_postgresql" value="CREATE USER user1 WITH ROLE role1" db-types="PostgreSQL" />
+    <sql-case id="create_user_with_roles_postgresql" value="CREATE USER user1 WITH ROLE role1, role2" db-types="PostgreSQL" />
+    <sql-case id="create_user_with_password_postgresql" value="CREATE USER user1 WITH ENCRYPTED PASSWORD 'password'" db-types="PostgreSQL" />
+    <sql-case id="create_user_with_option_postgresql" value="CREATE USER user1 WITH SUPERUSER" db-types="PostgreSQL" />
+    <sql-case id="create_user_with_options_postgresql" value="CREATE USER user1 WITH CREATEDB CREATEROLE" db-types="PostgreSQL" />
 </sql-cases>
