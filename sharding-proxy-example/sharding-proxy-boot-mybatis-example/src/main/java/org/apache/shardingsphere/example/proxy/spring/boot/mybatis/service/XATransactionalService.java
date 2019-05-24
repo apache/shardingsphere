@@ -35,10 +35,12 @@ public class XATransactionalService implements CommonService {
         this.springPojoService = springPojoService;
     }
     
+    @Override
     public void initEnvironment() {
         springPojoService.initEnvironment();
     }
     
+    @Override
     public void cleanEnvironment() {
         springPojoService.cleanEnvironment();
     }
@@ -46,6 +48,7 @@ public class XATransactionalService implements CommonService {
     /**
      * process success, XA transaction will be committed.
      */
+    @Override
     @ShardingTransactionType(TransactionType.XA)
     @Transactional
     public void processSuccess() {
@@ -55,12 +58,14 @@ public class XATransactionalService implements CommonService {
     /**
      * process failure, XA transaction will be rollback.
      */
+    @Override
     @ShardingTransactionType(TransactionType.XA)
     @Transactional
     public void processFailure() {
         springPojoService.processFailure();
     }
     
+    @Override
     public void printData() {
         springPojoService.printData();
     }
