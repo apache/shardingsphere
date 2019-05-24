@@ -22,10 +22,9 @@ import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLExpression;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLNumberExpression;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLParameterMarkerExpression;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLTextExpression;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -42,7 +41,7 @@ import java.util.Map;
 @Setter
 public final class UpdateStatement extends DMLStatement {
     
-    private final Map<Column, SQLExpression> assignments = new LinkedHashMap<>();
+    private final Map<Column, ExpressionSegment> assignments = new LinkedHashMap<>();
     
     private int whereStartIndex;
     
@@ -60,26 +59,13 @@ public final class UpdateStatement extends DMLStatement {
      * @return column value
      */
     public Comparable<?> getColumnValue(final Column column, final List<Object> parameters) {
-        SQLExpression sqlExpression = assignments.get(column);
-        if (sqlExpression instanceof SQLParameterMarkerExpression) {
-            return parameters.get(((SQLParameterMarkerExpression) sqlExpression).getIndex()).toString();
+        ExpressionSegment expressionSegment = assignments.get(column);
+        if (expressionSegment instanceof ParameterMarkerExpressionSegment) {
+            return (Comparable<?>) parameters.get(((ParameterMarkerExpressionSegment) expressionSegment).getParameterMarkerIndex());
         }
-        if (sqlExpression instanceof SQLTextExpression) {
-            return ((SQLTextExpression) sqlExpression).getText();
-        }
-        if (sqlExpression instanceof SQLNumberExpression) {
-            return (Comparable) ((SQLNumberExpression) sqlExpression).getNumber();
+        if (expressionSegment instanceof LiteralExpressionSegment) {
+            return (Comparable<?>) ((LiteralExpressionSegment) expressionSegment).getLiterals();
         }
         throw new ShardingException("Can not find column value by %s.", column);
-    }
-    
-    /**
-     * Is SQL parameter marker expression.
-     * 
-     * @param column column
-     * @return SQL parameter marker expression or not
-     */
-    public boolean isSQLParameterMarkerExpression(final Column column) {
-        return assignments.get(column) instanceof SQLParameterMarkerExpression;
     }
 }

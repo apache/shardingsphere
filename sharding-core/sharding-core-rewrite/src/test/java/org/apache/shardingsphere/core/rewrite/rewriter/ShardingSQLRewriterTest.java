@@ -880,7 +880,7 @@ public final class ShardingSQLRewriterTest {
         Column column = new Column("id", "table_z");
         updateStatement.addSQLToken(new TableToken(7, 13, "table_z", QuoteCharacter.NONE));
         updateStatement.addSQLToken(new EncryptColumnToken(19, 24, column, false));
-        updateStatement.getAssignments().put(column, new SQLNumberExpression(1));
+        updateStatement.getAssignments().put(column, new LiteralExpressionSegment(0, 0, 1));
         updateStatement.addSQLToken(new EncryptColumnToken(32, 37, column, true));
         updateStatement.getEncryptCondition().getOrConditions().add(new AndCondition());
         updateStatement.getEncryptCondition().getOrConditions().get(0).getConditions().add(new Condition(column, new SQLNumberExpression(2)));

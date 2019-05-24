@@ -108,8 +108,7 @@ public final class GeneratedKey {
     
     private static Optional<ExpressionSegment> findGenerateKeyExpressionSegment(final String generateKeyColumnName, final Iterator<String> columnNames, final InsertValue insertValue) {
         for (ExpressionSegment each : insertValue.getAssignments()) {
-            String columnName = columnNames.next();
-            if (generateKeyColumnName.equalsIgnoreCase(columnName)) {
+            if (generateKeyColumnName.equalsIgnoreCase(columnNames.next())) {
                 return Optional.of(each);
             }
         }
