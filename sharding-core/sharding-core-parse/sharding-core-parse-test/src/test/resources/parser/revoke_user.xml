@@ -117,4 +117,112 @@
     </parser-result>
     <parser-result sql-case-id="revoke_program" />
     <parser-result sql-case-id="revoke_roles_from_programs" />
+    <parser-result sql-case-id="revoke_all_on_table_from_roles">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="31" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    <parser-result sql-case-id="revoke_select_on_table">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="23" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    <parser-result sql-case-id="revoke_select_on_tables">
+        <tables>
+            <table name="t_order" />
+            <table name="t_order_item" />
+        </tables>
+        <tokens>
+            <table-token start-index="23" table-name="t_order" length="7" />
+            <table-token start-index="32" table-name="t_order_item" length="12" />
+        </tokens>
+    </parser-result>
+    <parser-result sql-case-id="revoke_select_on_all_tables" />
+    <parser-result sql-case-id="revoke_all_column_on_table">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="42" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    <parser-result sql-case-id="revoke_all_column_on_table_from_roles">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="42" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    <parser-result sql-case-id="revoke_select_column_on_table">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="34" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    <parser-result sql-case-id="revoke_select_column_on_tables">
+        <tables>
+            <table name="t_order" />
+            <table name="t_order_item" />
+        </tables>
+        <tokens>
+            <table-token start-index="34" table-name="t_order" length="7" />
+            <table-token start-index="43" table-name="t_order_item" length="12" />
+        </tokens>
+    </parser-result>
+    <parser-result sql-case-id="revoke_all_on_sequence" />
+    <parser-result sql-case-id="revoke_all_on_sequence_from_roles" />
+    <parser-result sql-case-id="revoke_select_on_sequence" />
+    <parser-result sql-case-id="revoke_select_on_sequences" />
+    <parser-result sql-case-id="revoke_select_on_all_sequences" />
+    <parser-result sql-case-id="revoke_all_on_database" />
+    <parser-result sql-case-id="revoke_all_on_database_from_roles" />
+    <parser-result sql-case-id="revoke_create_on_database" />
+    <parser-result sql-case-id="revoke_create_on_databases" />
+    <parser-result sql-case-id="revoke_all_on_domain" />
+    <parser-result sql-case-id="revoke_all_on_domain_from_roles" />
+    <parser-result sql-case-id="revoke_usage_on_domain" />
+    <parser-result sql-case-id="revoke_usage_on_domains" />
+    <parser-result sql-case-id="revoke_all_on_foreign_data_wrapper" />
+    <parser-result sql-case-id="revoke_all_on_foreign_data_wrapper_from_roles" />
+    <parser-result sql-case-id="revoke_usage_on_foreign_data_wrapper" />
+    <parser-result sql-case-id="revoke_usage_on_foreign_data_wrappers" />
+    <parser-result sql-case-id="revoke_all_on_foreign_server" />
+    <parser-result sql-case-id="revoke_all_on_foreign_server_from_roles" />
+    <parser-result sql-case-id="revoke_usage_on_foreign_server" />
+    <parser-result sql-case-id="revoke_usage_on_foreign_servers" />
+    <parser-result sql-case-id="revoke_all_on_function" />
+    <parser-result sql-case-id="revoke_all_on_function_from_roles" />
+    <parser-result sql-case-id="revoke_execute_on_function" />
+    <parser-result sql-case-id="revoke_execute_on_functions" />
+    <parser-result sql-case-id="revoke_execute_on_all_functions" />
+    <parser-result sql-case-id="revoke_all_on_language" />
+    <parser-result sql-case-id="revoke_all_on_language_from_roles" />
+    <parser-result sql-case-id="revoke_usage_on_language" />
+    <parser-result sql-case-id="revoke_usage_on_languages" />
+    <parser-result sql-case-id="revoke_all_on_large_object" />
+    <parser-result sql-case-id="revoke_all_on_large_object_from_roles" />
+    <parser-result sql-case-id="revoke_select_large_object" />
+    <parser-result sql-case-id="revoke_all_on_schema_from_role" />
+    <parser-result sql-case-id="revoke_select_on_large_objects" />
+    <parser-result sql-case-id="revoke_all_on_schema_from_roles" />
+    <parser-result sql-case-id="revoke_create_on_schema" />
+    <parser-result sql-case-id="revoke_create_on_schemas" />
+    <parser-result sql-case-id="revoke_all_on_tablespace" />
+    <parser-result sql-case-id="revoke_all_on_tablespace_from_roles" />
+    <parser-result sql-case-id="revoke_create_on_tablespace" />
+    <parser-result sql-case-id="revoke_create_on_tablespaces" />
+    <parser-result sql-case-id="revoke_all_on_type" />
+    <parser-result sql-case-id="revoke_all_on_type_from_roles" />
+    <parser-result sql-case-id="revoke_usage_on_type" />
+    <parser-result sql-case-id="revoke_usage_on_types" />
+    <parser-result sql-case-id="revoke_roles" />
 </parser-result-sets>
