@@ -23,7 +23,6 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLExpression;
 import org.apache.shardingsphere.core.parse.sql.context.table.Table;
 import org.apache.shardingsphere.core.parse.sql.context.table.Tables;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
@@ -98,8 +97,7 @@ public final class PredicateUtils {
      * @return condition
      */
     public static Optional<Condition> createCompareCondition(final PredicateCompareRightValue compareRightValue, final Column column) {
-        return compareRightValue.getExpression() instanceof SimpleExpressionSegment
-                ? Optional.of(new Condition(column, ((SimpleExpressionSegment) compareRightValue.getExpression()).getSQLExpression())) : Optional.<Condition>absent();
+        return compareRightValue.getExpression() instanceof SimpleExpressionSegment ? Optional.of(new Condition(column, compareRightValue.getExpression())) : Optional.<Condition>absent();
     }
     
     /**
@@ -110,16 +108,15 @@ public final class PredicateUtils {
      * @return condition
      */
     public static Optional<Condition> createInCondition(final PredicateInRightValue inRightValue, final Column column) {
-        List<SQLExpression> sqlExpressions = new LinkedList<>();
+        List<ExpressionSegment> expressionSegments = new LinkedList<>();
         for (ExpressionSegment each : inRightValue.getSqlExpressions()) {
-            if (!(each instanceof SimpleExpressionSegment)) {
-                sqlExpressions.clear();
-                break;
+            if (each instanceof SimpleExpressionSegment) {
+                expressionSegments.add(each);
             } else {
-                sqlExpressions.add(((SimpleExpressionSegment) each).getSQLExpression());
+                return Optional.absent();
             }
         }
-        return sqlExpressions.isEmpty() ? Optional.<Condition>absent() : Optional.of(new Condition(column, sqlExpressions));
+        return expressionSegments.isEmpty() ? Optional.<Condition>absent() : Optional.of(new Condition(column, expressionSegments));
     }
     
     /**
@@ -131,8 +128,6 @@ public final class PredicateUtils {
      */
     public static Optional<Condition> createBetweenCondition(final PredicateBetweenRightValue betweenRightValue, final Column column) {
         return betweenRightValue.getBetweenExpression() instanceof SimpleExpressionSegment && betweenRightValue.getAndExpression() instanceof SimpleExpressionSegment
-                ? Optional.of(new Condition(column,
-                ((SimpleExpressionSegment) betweenRightValue.getBetweenExpression()).getSQLExpression(), ((SimpleExpressionSegment) betweenRightValue.getAndExpression()).getSQLExpression()))
-                : Optional.<Condition>absent();
+                ? Optional.of(new Condition(column, betweenRightValue.getBetweenExpression(), betweenRightValue.getAndExpression())) : Optional.<Condition>absent();
     }
 }

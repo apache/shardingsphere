@@ -80,7 +80,7 @@ public final class ShardingInsertValuesFiller implements SQLSegmentFiller<Insert
     
     private void fillShardingCondition(final AndCondition andCondition, final String tableName, final String columnName, final SimpleExpressionSegment expressionSegment) {
         if (shardingRule.isShardingColumn(columnName, tableName)) {
-            andCondition.getConditions().add(new Condition(new Column(columnName, tableName), expressionSegment.getSQLExpression()));
+            andCondition.getConditions().add(new Condition(new Column(columnName, tableName), expressionSegment));
         }
     }
     
