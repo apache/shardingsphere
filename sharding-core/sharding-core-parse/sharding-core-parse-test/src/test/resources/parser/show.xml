@@ -84,4 +84,7 @@
     </parser-result>
     
     <parser-result sql-case-id="show_table_status" />
+    <parser-result sql-case-id="show_all" />
+    <parser-result sql-case-id="show_server_version" />
+    <parser-result sql-case-id="show_transaction_isolation_level" />
 </parser-result-sets>
