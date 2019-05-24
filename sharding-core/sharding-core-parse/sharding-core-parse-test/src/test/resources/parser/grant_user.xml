@@ -132,4 +132,151 @@
     </parser-result>
     <parser-result sql-case-id="grant_program" />
     <parser-result sql-case-id="grant_roles_to_programs" />
+    
+    <parser-result sql-case-id="grant_all_on_table_to_roles">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="30" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="grant_all_on_table_to_current_user">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="30" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="grant_select_on_table">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="22" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="grant_select_on_tables">
+        <tables>
+            <table name="t_order" />
+            <table name="t_order_item" />
+        </tables>
+        <tokens>
+            <table-token start-index="22" table-name="t_order" length="7" />
+            <table-token start-index="31" table-name="t_order_item" length="12" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="grant_select_on_all_tables"/>
+    
+    <parser-result sql-case-id="grant_all_column_on_table">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="41" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="grant_all_column_on_table_to_roles">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="41" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="grant_all_column_on_table_to_current_user">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="41" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="grant_select_column_on_table">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="33" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="grant_select_column_on_tables">
+        <tables>
+            <table name="t_order" />
+            <table name="t_order_item" />
+        </tables>
+        <tokens>
+            <table-token start-index="33" table-name="t_order" length="7" />
+            <table-token start-index="42" table-name="t_order_item" length="12" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="grant_all_on_sequence" />
+    <parser-result sql-case-id="grant_all_on_sequence_to_roles" />
+    <parser-result sql-case-id="grant_all_on_sequence_to_current_user" />
+    <parser-result sql-case-id="grant_select_on_sequence" />
+    <parser-result sql-case-id="grant_select_on_sequences" />
+    <parser-result sql-case-id="grant_select_on_all_sequences" />
+    <parser-result sql-case-id="grant_all_on_database" />
+    <parser-result sql-case-id="grant_all_on_database_to_roles" />
+    <parser-result sql-case-id="grant_all_on_database_to_current_user" />
+    <parser-result sql-case-id="grant_create_on_database" />
+    <parser-result sql-case-id="grant_create_on_databases" />
+    <parser-result sql-case-id="grant_all_on_domain" />
+    <parser-result sql-case-id="grant_all_on_domain_to_roles" />
+    <parser-result sql-case-id="grant_all_on_domain_to_current_user" />
+    <parser-result sql-case-id="grant_usage_on_domain" />
+    <parser-result sql-case-id="grant_usage_on_domains" />
+    <parser-result sql-case-id="grant_all_on_foreign_data_wrapper" />
+    <parser-result sql-case-id="grant_all_on_foreign_data_wrapper_to_roles" />
+    <parser-result sql-case-id="grant_all_on_foreign_data_wrapper_to_current_user" />
+    <parser-result sql-case-id="grant_usage_on_foreign_data_wrapper" />
+    <parser-result sql-case-id="grant_usage_on_foreign_data_wrappers" />
+    <parser-result sql-case-id="grant_all_on_foreign_server" />
+    <parser-result sql-case-id="grant_all_on_foreign_server_to_roles" />
+    <parser-result sql-case-id="grant_all_on_foreign_server_to_current_user" />
+    <parser-result sql-case-id="grant_usage_on_foreign_server" />
+    <parser-result sql-case-id="grant_usage_on_foreign_servers" />
+    <parser-result sql-case-id="grant_all_on_function" />
+    <parser-result sql-case-id="grant_all_on_function_to_roles" />
+    <parser-result sql-case-id="grant_all_on_function_to_current_user" />
+    <parser-result sql-case-id="grant_execute_on_function" />
+    <parser-result sql-case-id="grant_execute_on_functions" />
+    <parser-result sql-case-id="grant_execute_on_all_functions" />
+    <parser-result sql-case-id="grant_all_on_language" />
+    <parser-result sql-case-id="grant_all_on_language_to_roles" />
+    <parser-result sql-case-id="grant_all_on_language_to_current_user" />
+    <parser-result sql-case-id="grant_usage_on_language" />
+    <parser-result sql-case-id="grant_usage_on_languages" />
+    <parser-result sql-case-id="grant_all_on_large_object" />
+    <parser-result sql-case-id="grant_all_on_large_object_to_roles" />
+    <parser-result sql-case-id="grant_all_on_large_object_to_current_user" />
+    <parser-result sql-case-id="grant_select_large_object" />
+    <parser-result sql-case-id="grant_select_on_large_objects" />
+    <parser-result sql-case-id="grant_all_on_schema" />
+    <parser-result sql-case-id="grant_all_on_schema_to_roles" />
+    <parser-result sql-case-id="grant_all_on_schema_to_current_user" />
+    <parser-result sql-case-id="grant_create_on_schema" />
+    <parser-result sql-case-id="grant_create_on_schemas" />
+    <parser-result sql-case-id="grant_all_on_tablespace" />
+    <parser-result sql-case-id="grant_all_on_tablespace_to_roles" />
+    <parser-result sql-case-id="grant_all_on_tablespace_to_current_user" />
+    <parser-result sql-case-id="grant_create_on_tablespace" />
+    <parser-result sql-case-id="grant_create_on_tablespaces" />
+    <parser-result sql-case-id="grant_all_on_type" />
+    <parser-result sql-case-id="grant_all_on_type_to_roles" />
+    <parser-result sql-case-id="grant_all_on_type_to_current_user" />
+    <parser-result sql-case-id="grant_usage_on_type" />
+    <parser-result sql-case-id="grant_usage_on_types" />
+    <parser-result sql-case-id="grant_roles" />
+    
 </parser-result-sets>
