@@ -18,13 +18,12 @@
 package org.apache.shardingsphere.core.optimize;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLExpression;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLIgnoreExpression;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLNumberExpression;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLParameterMarkerExpression;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLTextExpression;
 import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.sql.context.table.Table;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.complex.CommonExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.junit.Before;
@@ -63,7 +62,7 @@ public final class GeneratedKeyTest {
     
     @Test
     public void assertGetGenerateKeyWhenCreateWithGenerateKeyColumnConfiguration() {
-        insertStatement.getValues().add(new InsertValue(Collections.<SQLExpression>emptyList()));
+        insertStatement.getValues().add(new InsertValue(Collections.<ExpressionSegment>emptyList()));
         when(shardingRule.findGenerateKeyColumnName("tbl")).thenReturn(Optional.of("id1"));
         Optional<GeneratedKey> actual = GeneratedKey.getGenerateKey(shardingRule, Collections.<Object>singletonList(1), insertStatement);
         assertTrue(actual.isPresent());
@@ -72,10 +71,10 @@ public final class GeneratedKeyTest {
     
     @Test
     public void assertGetGenerateKeyWhenFind() {
-        insertStatement.getValues().add(new InsertValue(Collections.<SQLExpression>singletonList(new SQLParameterMarkerExpression(0))));
-        insertStatement.getValues().add(new InsertValue(Collections.<SQLExpression>singletonList(new SQLNumberExpression(100))));
-        insertStatement.getValues().add(new InsertValue(Collections.<SQLExpression>singletonList(new SQLTextExpression("value"))));
-        insertStatement.getValues().add(new InsertValue(Collections.<SQLExpression>singletonList(new SQLIgnoreExpression("ignored value"))));
+        insertStatement.getValues().add(new InsertValue(Collections.<ExpressionSegment>singletonList(new ParameterMarkerExpressionSegment(1, 2, 0))));
+        insertStatement.getValues().add(new InsertValue(Collections.<ExpressionSegment>singletonList(new LiteralExpressionSegment(1, 2, 100))));
+        insertStatement.getValues().add(new InsertValue(Collections.<ExpressionSegment>singletonList(new LiteralExpressionSegment(1, 2, "value"))));
+        insertStatement.getValues().add(new InsertValue(Collections.<ExpressionSegment>singletonList(new CommonExpressionSegment(1, 2, "ignored value"))));
         when(shardingRule.findGenerateKeyColumnName("tbl")).thenReturn(Optional.of("id"));
         Optional<GeneratedKey> actual = GeneratedKey.getGenerateKey(shardingRule, Collections.<Object>singletonList(1), insertStatement);
         assertTrue(actual.isPresent());

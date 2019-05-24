@@ -25,6 +25,7 @@ import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResul
 import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
 import org.apache.shardingsphere.core.parse.sql.context.expression.SQLExpression;
 import org.apache.shardingsphere.core.parse.sql.context.expression.SQLParameterMarkerExpression;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
@@ -136,7 +137,7 @@ public final class EncryptSQLRewriter implements SQLRewriter {
     }
     
     private void appendInsertSetAddItemsPlaceholder(final SQLBuilder sqlBuilder, final InsertSetAddItemsToken insertSetAddItemsToken, final InsertOptimizeResult insertOptimizeResult) {
-        List<SQLExpression> columnValues = new LinkedList<>();
+        List<ExpressionSegment> columnValues = new LinkedList<>();
         for (String each : insertSetAddItemsToken.getColumnNames()) {
             columnValues.add(insertOptimizeResult.getUnits().get(0).getColumnSQLExpression(each));
         }

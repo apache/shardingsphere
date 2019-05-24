@@ -28,6 +28,13 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegme
 public interface ComplexExpressionSegment extends ExpressionSegment {
     
     /**
+     * Get text.
+     * 
+     * @return text
+     */
+    String getText();
+    
+    /**
      * Get SQL expression.
      *
      * @param sql SQL text

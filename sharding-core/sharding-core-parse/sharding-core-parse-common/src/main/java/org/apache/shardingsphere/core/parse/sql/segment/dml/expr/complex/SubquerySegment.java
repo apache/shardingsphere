@@ -35,7 +35,9 @@ public final class SubquerySegment implements SelectItemSegment, ComplexExpressi
     private final int startIndex;
     
     private final int stopIndex;
-
+    
+    private final String text;
+    
     @Override
     public SQLExpression getSQLExpression(final String sql) {
         return new SQLIgnoreExpression(sql.substring(startIndex, stopIndex + 1));

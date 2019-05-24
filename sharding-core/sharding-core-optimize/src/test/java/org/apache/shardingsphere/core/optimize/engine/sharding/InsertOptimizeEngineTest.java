@@ -25,12 +25,13 @@ import org.apache.shardingsphere.core.parse.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLExpression;
 import org.apache.shardingsphere.core.parse.sql.context.expression.SQLNumberExpression;
 import org.apache.shardingsphere.core.parse.sql.context.expression.SQLParameterMarkerExpression;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLTextExpression;
 import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.sql.context.table.Table;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.token.impl.InsertValuesToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.SelectItemsToken;
@@ -127,7 +128,7 @@ public final class InsertOptimizeEngineTest {
         insertValuesStatementWithPlaceHolder.getRouteCondition().getOrConditions().add(andCondition2);
         insertValuesStatementWithPlaceHolder.getColumnNames().add("user_id");
         insertValuesStatementWithPlaceHolder.getColumnNames().add("status");
-        InsertValue insertValue = new InsertValue(Arrays.<SQLExpression>asList(new SQLParameterMarkerExpression(0), new SQLParameterMarkerExpression(1)));
+        InsertValue insertValue = new InsertValue(Arrays.<ExpressionSegment>asList(new ParameterMarkerExpressionSegment(1, 2, 0), new ParameterMarkerExpressionSegment(3, 4, 1)));
         insertValuesStatementWithPlaceHolder.getValues().add(insertValue);
         insertValuesStatementWithPlaceHolder.getValues().add(insertValue);
     }
@@ -146,7 +147,7 @@ public final class InsertOptimizeEngineTest {
         insertValuesStatementWithPlaceHolderWithEncrypt.getRouteCondition().getOrConditions().add(andCondition2);
         insertValuesStatementWithPlaceHolderWithEncrypt.getColumnNames().add("user_id");
         insertValuesStatementWithPlaceHolderWithEncrypt.getColumnNames().add("status");
-        InsertValue insertValue = new InsertValue(Arrays.<SQLExpression>asList(new SQLParameterMarkerExpression(0), new SQLParameterMarkerExpression(1)));
+        InsertValue insertValue = new InsertValue(Arrays.<ExpressionSegment>asList(new ParameterMarkerExpressionSegment(1, 2, 0), new ParameterMarkerExpressionSegment(3, 4, 1)));
         insertValuesStatementWithPlaceHolderWithEncrypt.getValues().add(insertValue);
         insertValuesStatementWithPlaceHolderWithEncrypt.getValues().add(insertValue);
     }
@@ -303,7 +304,8 @@ public final class InsertOptimizeEngineTest {
         generatedKey.getGeneratedKeys().add(1);
         insertValuesStatementWithoutPlaceHolderWithQueryEncrypt.getColumnNames().add("user_id");
         insertValuesStatementWithoutPlaceHolderWithQueryEncrypt.getColumnNames().add("status");
-        insertValuesStatementWithoutPlaceHolderWithQueryEncrypt.getValues().add(new InsertValue(Arrays.asList(new SQLNumberExpression(12), new SQLTextExpression("a"))));
+        insertValuesStatementWithoutPlaceHolderWithQueryEncrypt.getValues().add(
+                new InsertValue(Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(1, 2, 12), new LiteralExpressionSegment(3, 4, "a"))));
         OptimizeResult actual = new InsertOptimizeEngine(shardingRule, insertValuesStatementWithoutPlaceHolderWithQueryEncrypt, Collections.emptyList(), generatedKey).optimize();
         assertThat(actual.getShardingConditions().getShardingConditions().size(), is(1));
         assertTrue(actual.getInsertOptimizeResult().isPresent());
@@ -318,7 +320,7 @@ public final class InsertOptimizeEngineTest {
         generatedKey.getGeneratedKeys().add(1);
         insertValuesStatementWithoutPlaceHolder.getColumnNames().add("user_id");
         insertValuesStatementWithoutPlaceHolder.getColumnNames().add("status");
-        insertValuesStatementWithoutPlaceHolder.getValues().add(new InsertValue(Arrays.asList(new SQLNumberExpression(12), new SQLTextExpression("a"))));
+        insertValuesStatementWithoutPlaceHolder.getValues().add(new InsertValue(Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(1, 2, 12), new LiteralExpressionSegment(3, 4, "a"))));
         OptimizeResult actual = new InsertOptimizeEngine(shardingRule, insertValuesStatementWithoutPlaceHolder, Collections.emptyList(), generatedKey).optimize();
         assertThat(actual.getShardingConditions().getShardingConditions().size(), is(1));
         assertTrue(actual.getInsertOptimizeResult().isPresent());
@@ -331,7 +333,8 @@ public final class InsertOptimizeEngineTest {
     public void assertOptimizeInsertSetWithPlaceHolderWithGeneratedKey() {
         GeneratedKey generatedKey = new GeneratedKey("order_id");
         generatedKey.getGeneratedKeys().add(1);
-        insertSetStatementWithPlaceHolder.getValues().add(new InsertValue(Arrays.<SQLExpression>asList(new SQLParameterMarkerExpression(0), new SQLParameterMarkerExpression(1))));
+        insertSetStatementWithPlaceHolder.getValues().add(
+                new InsertValue(Arrays.<ExpressionSegment>asList(new ParameterMarkerExpressionSegment(1, 2, 0), new ParameterMarkerExpressionSegment(3, 4, 1))));
         OptimizeResult actual = new InsertOptimizeEngine(shardingRule, insertSetStatementWithPlaceHolder, insertSetParameters, generatedKey).optimize();
         assertThat(actual.getShardingConditions().getShardingConditions().size(), is(1));
         assertTrue(actual.getInsertOptimizeResult().isPresent());
@@ -346,7 +349,7 @@ public final class InsertOptimizeEngineTest {
     public void assertOptimizeInsertSetWithPlaceHolderWithGeneratedKeyWithQueryEncrypt() {
         GeneratedKey generatedKey = new GeneratedKey("order_id");
         generatedKey.getGeneratedKeys().add(1);
-        InsertValue insertValue = new InsertValue(Arrays.<SQLExpression>asList(new SQLParameterMarkerExpression(0), new SQLParameterMarkerExpression(1)));
+        InsertValue insertValue = new InsertValue(Arrays.<ExpressionSegment>asList(new ParameterMarkerExpressionSegment(1, 2, 0), new ParameterMarkerExpressionSegment(3, 4, 1)));
         insertSetStatementWithPlaceHolderWithQueryEncrypt.getValues().add(insertValue);
         OptimizeResult actual = new InsertOptimizeEngine(shardingRule, insertSetStatementWithPlaceHolderWithQueryEncrypt, insertSetParameters, generatedKey).optimize();
         assertThat(actual.getShardingConditions().getShardingConditions().size(), is(1));
@@ -363,7 +366,7 @@ public final class InsertOptimizeEngineTest {
     public void assertOptimizeInsertSetWithoutPlaceHolderWithGeneratedKey() {
         GeneratedKey generatedKey = new GeneratedKey("order_id");
         generatedKey.getGeneratedKeys().add(1);
-        insertSetStatementWithoutPlaceHolder.getValues().add(new InsertValue(Arrays.asList(new SQLNumberExpression(12), new SQLTextExpression("a"))));
+        insertSetStatementWithoutPlaceHolder.getValues().add(new InsertValue(Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(1, 2, 12), new LiteralExpressionSegment(3, 4, "a"))));
         OptimizeResult actual = new InsertOptimizeEngine(shardingRule, insertSetStatementWithoutPlaceHolder, Collections.emptyList(), generatedKey).optimize();
         assertThat(actual.getShardingConditions().getShardingConditions().size(), is(1));
         assertTrue(actual.getInsertOptimizeResult().isPresent());
@@ -376,7 +379,8 @@ public final class InsertOptimizeEngineTest {
     public void assertOptimizeInsertSetWithoutPlaceHolderWithGeneratedKeyWithEncrypt() {
         GeneratedKey generatedKey = new GeneratedKey("order_id");
         generatedKey.getGeneratedKeys().add(1);
-        insertSetStatementWithoutPlaceHolderWithEncrypt.getValues().add(new InsertValue(Arrays.asList(new SQLNumberExpression(12), new SQLTextExpression("a"))));
+        insertSetStatementWithoutPlaceHolderWithEncrypt.getValues().add(
+                new InsertValue(Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(1, 2, 12), new LiteralExpressionSegment(3, 4, "a"))));
         OptimizeResult actual = new InsertOptimizeEngine(shardingRule, insertSetStatementWithoutPlaceHolderWithEncrypt, Collections.emptyList(), generatedKey).optimize();
         assertThat(actual.getShardingConditions().getShardingConditions().size(), is(1));
         assertTrue(actual.getInsertOptimizeResult().isPresent());

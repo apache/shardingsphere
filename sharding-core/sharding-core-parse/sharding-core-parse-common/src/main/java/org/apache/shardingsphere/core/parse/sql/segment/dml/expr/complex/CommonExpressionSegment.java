@@ -35,6 +35,8 @@ public final class CommonExpressionSegment implements ComplexExpressionSegment {
     
     private final int stopIndex;
     
+    private final String text;
+    
     @Override
     public SQLExpression getSQLExpression(final String sql) {
         return new SQLIgnoreExpression(sql.substring(startIndex, stopIndex + 1));
