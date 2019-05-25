@@ -25,7 +25,7 @@ import org.apache.shardingsphere.core.parse.filler.api.EncryptRuleAwareFiller;
 import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.filler.api.ShardingRuleAwareFiller;
 import org.apache.shardingsphere.core.parse.filler.api.ShardingTableMetaDataAwareFiller;
-import org.apache.shardingsphere.core.parse.rule.registry.ParsingRuleRegistry;
+import org.apache.shardingsphere.core.parse.rule.registry.ParseRuleRegistry;
 import org.apache.shardingsphere.core.parse.rule.registry.statement.SQLStatementRule;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
@@ -44,7 +44,7 @@ import java.util.Collection;
  */
 public final class SQLStatementFillerEngine {
     
-    private final ParsingRuleRegistry parsingRuleRegistry;
+    private final ParseRuleRegistry parseRuleRegistry;
     
     private final DatabaseType databaseType;
     
@@ -54,9 +54,9 @@ public final class SQLStatementFillerEngine {
     
     private final ShardingTableMetaData shardingTableMetaData;
     
-    public SQLStatementFillerEngine(final ParsingRuleRegistry parsingRuleRegistry, 
+    public SQLStatementFillerEngine(final ParseRuleRegistry parseRuleRegistry, 
                                     final DatabaseType databaseType, final String sql, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
-        this.parsingRuleRegistry = parsingRuleRegistry;
+        this.parseRuleRegistry = parseRuleRegistry;
         this.databaseType = databaseType;
         this.sql = sql;
         this.rule = rule;
@@ -75,7 +75,7 @@ public final class SQLStatementFillerEngine {
         SQLStatement result = rule.getSqlStatementClass().newInstance();
         result.setLogicSQL(sql);
         for (SQLSegment each : sqlSegments) {
-            Optional<SQLSegmentFiller> filler = parsingRuleRegistry.findSQLSegmentFiller(databaseType, each.getClass());
+            Optional<SQLSegmentFiller> filler = parseRuleRegistry.findSQLSegmentFiller(databaseType, each.getClass());
             if (filler.isPresent()) {
                 doFill(each, result, filler.get());
             }

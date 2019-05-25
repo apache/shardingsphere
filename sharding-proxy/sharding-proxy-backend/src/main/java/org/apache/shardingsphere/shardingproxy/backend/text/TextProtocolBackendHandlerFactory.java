@@ -20,8 +20,10 @@ package org.apache.shardingsphere.shardingproxy.backend.text;
 import com.google.common.base.Optional;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.constant.SQLType;
-import org.apache.shardingsphere.core.parse.SQLJudgeEngine;
+import org.apache.shardingsphere.core.parse.SQLParseEngine;
+import org.apache.shardingsphere.core.parse.rule.registry.MasterSlaveParseRuleRegistry;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.statement.ShowDatabasesStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.statement.UseStatement;
@@ -56,11 +58,12 @@ public final class TextProtocolBackendHandlerFactory {
     /**
      * Create new instance of text protocol backend handler.
      *
+     * @param databaseType database type
      * @param sql SQL to be executed
      * @param backendConnection backend connection
      * @return instance of text protocol backend handler
      */
-    public static TextProtocolBackendHandler newInstance(final String sql, final BackendConnection backendConnection) {
+    public static TextProtocolBackendHandler newInstance(final DatabaseType databaseType, final String sql, final BackendConnection backendConnection) {
         if (sql.toUpperCase().startsWith(ShardingCTLBackendHandlerFactory.SCTL)) {
             return ShardingCTLBackendHandlerFactory.newInstance(sql, backendConnection);
         }
@@ -72,7 +75,7 @@ public final class TextProtocolBackendHandlerFactory {
         if (AUTO_COMMIT.contains(sql.toUpperCase())) {
             return backendConnection.getStateHandler().isInTransaction() ? new TransactionBackendHandler(TransactionOperationType.COMMIT, backendConnection) : new SkipBackendHandler();
         }
-        SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
+        SQLStatement sqlStatement = new SQLParseEngine(MasterSlaveParseRuleRegistry.getInstance(), databaseType, sql, null, null).parse();
         return SQLType.DAL == sqlStatement.getType() ? createDALBackendHandler(sqlStatement, sql, backendConnection) : new QueryBackendHandler(sql, backendConnection);
     }
     

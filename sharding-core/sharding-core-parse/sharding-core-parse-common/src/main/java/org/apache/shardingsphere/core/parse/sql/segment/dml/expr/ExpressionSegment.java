@@ -23,6 +23,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
  * Expression segment.
  *
  * @author duhongjun
+ * @author panjuan
  */
 public interface ExpressionSegment extends SQLSegment {
 }

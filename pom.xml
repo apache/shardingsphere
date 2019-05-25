@@ -65,6 +65,7 @@
         
         <javax.transaction.version>1.1</javax.transaction.version>
         <atomikos.version>4.0.6</atomikos.version>
+        <seata.version>0.5.1</seata.version>
         
         <curator.version>2.10.0</curator.version>
         <opentracing.version>0.30.0</opentracing.version>
@@ -192,6 +193,19 @@
                 <groupId>com.atomikos</groupId>
                 <artifactId>transactions-jdbc</artifactId>
                 <version>${atomikos.version}</version>
+            </dependency>
+    
+            <dependency>
+                <groupId>io.seata</groupId>
+                <artifactId>seata-rm-datasource</artifactId>
+                <version>${seata.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.seata</groupId>
+                <artifactId>seata-tm</artifactId>
+                <version>${seata.version}</version>
+                <scope>provided</scope>
             </dependency>
 
             <dependency>

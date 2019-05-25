@@ -25,11 +25,9 @@ import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.constant.ShardingOperator;
 import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.core.parse.old.lexer.token.Symbol;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLExpression;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLNumberExpression;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLParameterMarkerExpression;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLTextExpression;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -65,44 +63,42 @@ public class Condition {
         operator = null;
     }
     
-    public Condition(final Column column, final SQLExpression sqlExpression) {
+    public Condition(final Column column, final ExpressionSegment expressionSegment) {
         this(column, ShardingOperator.EQUAL);
-        init(sqlExpression, 0);
+        init(expressionSegment, 0);
     }
     
-    public Condition(final Column column, final String compareOperator, final SQLExpression sqlExpression) {
+    public Condition(final Column column, final String compareOperator, final ExpressionSegment expressionSegment) {
         this.column = column;
         this.compareOperator = compareOperator;
-        if (Symbol.EQ.getLiterals().equals(compareOperator)) {
+        if ("=".equals(compareOperator)) {
             operator = ShardingOperator.EQUAL;
         } else {
             operator = null;
         }
-        init(sqlExpression, 0);
+        init(expressionSegment, 0);
     }
     
-    public Condition(final Column column, final SQLExpression beginSQLExpression, final SQLExpression endSQLExpression) {
+    public Condition(final Column column, final ExpressionSegment beginExpressionSegment, final ExpressionSegment endExpressionSegment) {
         this(column, ShardingOperator.BETWEEN);
-        init(beginSQLExpression, 0);
-        init(endSQLExpression, 1);
+        init(beginExpressionSegment, 0);
+        init(endExpressionSegment, 1);
     }
     
-    public Condition(final Column column, final List<SQLExpression> sqlExpressions) {
+    public Condition(final Column column, final List<ExpressionSegment> expressionSegments) {
         this(column, ShardingOperator.IN);
         int count = 0;
-        for (SQLExpression each : sqlExpressions) {
+        for (ExpressionSegment each : expressionSegments) {
             init(each, count);
             count++;
         }
     }
     
-    private void init(final SQLExpression sqlExpression, final int position) {
-        if (sqlExpression instanceof SQLParameterMarkerExpression) {
-            positionIndexMap.put(position, ((SQLParameterMarkerExpression) sqlExpression).getIndex());
-        } else if (sqlExpression instanceof SQLTextExpression) {
-            positionValueMap.put(position, ((SQLTextExpression) sqlExpression).getText());
-        } else if (sqlExpression instanceof SQLNumberExpression) {
-            positionValueMap.put(position, (Comparable) ((SQLNumberExpression) sqlExpression).getNumber());
+    private void init(final ExpressionSegment expressionSegment, final int position) {
+        if (expressionSegment instanceof ParameterMarkerExpressionSegment) {
+            positionIndexMap.put(position, ((ParameterMarkerExpressionSegment) expressionSegment).getParameterMarkerIndex());
+        } else if (expressionSegment instanceof LiteralExpressionSegment) {
+            positionValueMap.put(position, (Comparable<?>) ((LiteralExpressionSegment) expressionSegment).getLiterals());
         }
     }
     

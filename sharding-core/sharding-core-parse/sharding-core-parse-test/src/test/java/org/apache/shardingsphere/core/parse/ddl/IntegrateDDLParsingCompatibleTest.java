@@ -29,6 +29,7 @@ import org.apache.shardingsphere.core.parse.integrate.asserts.ParserResultSetLoa
 import org.apache.shardingsphere.core.parse.integrate.asserts.SQLStatementAssert;
 import org.apache.shardingsphere.core.parse.integrate.engine.AbstractBaseIntegrateSQLParsingTest;
 import org.apache.shardingsphere.core.parse.parser.SQLParserFactory;
+import org.apache.shardingsphere.core.parse.rule.registry.ShardingParseRuleRegistry;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.SQLCasesLoader;
 import org.junit.Test;
@@ -84,8 +85,7 @@ public final class IntegrateDDLParsingCompatibleTest extends AbstractBaseIntegra
         if (DatabaseType.H2 == databaseType) {
             execDatabaseType = DatabaseType.MySQL;
         }
-        new SQLStatementAssert(new SQLParseEngine(
-                execDatabaseType, sql, AbstractBaseIntegrateSQLParsingTest.getShardingRule(), 
+        new SQLStatementAssert(new SQLParseEngine(ShardingParseRuleRegistry.getInstance(), execDatabaseType, sql, AbstractBaseIntegrateSQLParsingTest.getShardingRule(), 
                 AbstractBaseIntegrateSQLParsingTest.getShardingTableMetaData()).parse(), sqlCaseId, sqlCaseType, sqlCasesLoader, parserResultSetLoader, execDatabaseType).assertSQLStatement();
     }
 }

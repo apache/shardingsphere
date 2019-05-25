@@ -17,19 +17,17 @@
 
 package org.apache.shardingsphere.core.parse.integrate.asserts.insert;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.integrate.asserts.SQLStatementAssertMessage;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.insert.ExpectedAssignment;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLExpression;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLIgnoreExpression;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLNumberExpression;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLParameterMarkerExpression;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLTextExpression;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.complex.ComplexExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 
-import lombok.RequiredArgsConstructor;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 @RequiredArgsConstructor
 public final class AssignmentAssert {
@@ -44,7 +42,7 @@ public final class AssignmentAssert {
      * @param actual actual assignment
      * @param expected expected assignment
      */
-    public void assertAssignment(final SQLExpression actual, final ExpectedAssignment expected) {
+    public void assertAssignment(final ExpressionSegment actual, final ExpectedAssignment expected) {
         if (SQLCaseType.Placeholder == sqlCaseType) {
             assertThat(assertMessage.getFullAssertMessage("SQL expression type for placeholder error: "), actual.getClass().getSimpleName(), is(expected.getTypeForPlaceholder()));
             assertThat(assertMessage.getFullAssertMessage("SQL expression text for placeholder error: "), getText(actual), is(expected.getTextForPlaceholder()));
@@ -54,18 +52,15 @@ public final class AssignmentAssert {
         }
     }
     
-    private String getText(final SQLExpression expression) {
-        if (expression instanceof SQLParameterMarkerExpression) {
-            return "" + ((SQLParameterMarkerExpression) expression).getIndex();
+    private String getText(final ExpressionSegment expressionSegment) {
+        if (expressionSegment instanceof ParameterMarkerExpressionSegment) {
+            return "" + ((ParameterMarkerExpressionSegment) expressionSegment).getParameterMarkerIndex();
         }
-        if (expression instanceof SQLTextExpression) {
-            return ((SQLTextExpression) expression).getText();
+        if (expressionSegment instanceof LiteralExpressionSegment) {
+            return ((LiteralExpressionSegment) expressionSegment).getLiterals().toString();
         }
-        if (expression instanceof SQLNumberExpression) {
-            return "" + ((SQLNumberExpression) expression).getNumber();
-        }
-        if (expression instanceof SQLIgnoreExpression) {
-            return ((SQLIgnoreExpression) expression).getExpression();
+        if (expressionSegment instanceof ComplexExpressionSegment) {
+            return ((ComplexExpressionSegment) expressionSegment).getText();
         }
         return "";
     }

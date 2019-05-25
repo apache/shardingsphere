@@ -454,3 +454,7 @@ ENABLE
 DISABLE
     : D I S A B L E
     ;
+
+CALL
+    : C A L L
+    ;

@@ -17,15 +17,13 @@
 
 package org.apache.shardingsphere.core.parse.parser;
 
-import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.core.constant.DatabaseType;
-import org.apache.shardingsphere.core.parse.exception.SQLParsingUnsupportedException;
-import org.apache.shardingsphere.core.parse.rule.registry.EncryptParsingRuleRegistry;
-import org.apache.shardingsphere.core.parse.rule.registry.ParsingRuleRegistry;
+import org.apache.shardingsphere.core.parse.exception.SQLParsingException;
+import org.apache.shardingsphere.core.parse.rule.registry.ParseRuleRegistry;
 import org.apache.shardingsphere.core.parse.rule.registry.statement.SQLStatementRule;
 
 /**
@@ -36,7 +34,7 @@ import org.apache.shardingsphere.core.parse.rule.registry.statement.SQLStatement
 @RequiredArgsConstructor
 public final class SQLParserEngine {
     
-    private final ParsingRuleRegistry parsingRuleRegistry;
+    private final ParseRuleRegistry parseRuleRegistry;
     
     private final DatabaseType databaseType;
     
@@ -50,15 +48,12 @@ public final class SQLParserEngine {
     public SQLAST parse() {
         ParseTree parseTree = SQLParserFactory.newInstance(databaseType, sql).execute().getChild(0);
         if (parseTree instanceof ErrorNode) {
-            throw new SQLParsingUnsupportedException(String.format("Unsupported SQL of `%s`", sql));
+            throw new SQLParsingException(String.format("Unsupported SQL of `%s`", sql));
         }
-        Optional<SQLStatementRule> sqlStatementRule = parsingRuleRegistry.findSQLStatementRule(databaseType, parseTree.getClass().getSimpleName());
-        if (sqlStatementRule.isPresent()) {
-            return new SQLAST((ParserRuleContext) parseTree, sqlStatementRule.get());
+        SQLStatementRule sqlStatementRule = parseRuleRegistry.getSQLStatementRule(databaseType, parseTree.getClass().getSimpleName());
+        if (null == sqlStatementRule) {
+            throw new SQLParsingException(String.format("Unsupported SQL of `%s`", sql));
         }
-        if (parsingRuleRegistry instanceof EncryptParsingRuleRegistry) {
-            return new SQLAST((ParserRuleContext) parseTree);
-        }
-        throw new SQLParsingUnsupportedException(String.format("Unsupported SQL of `%s`", sql));
+        return new SQLAST((ParserRuleContext) parseTree, sqlStatementRule);
     }
 }

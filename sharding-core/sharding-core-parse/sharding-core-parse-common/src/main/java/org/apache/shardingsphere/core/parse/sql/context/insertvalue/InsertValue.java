@@ -20,8 +20,8 @@ package org.apache.shardingsphere.core.parse.sql.context.insertvalue;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLExpression;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLParameterMarkerExpression;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 
 import java.util.Collection;
 
@@ -35,7 +35,7 @@ import java.util.Collection;
 @ToString
 public final class InsertValue {
     
-    private final Collection<SQLExpression> assignments;
+    private final Collection<ExpressionSegment> assignments;
     
     /**
      * Get parameters count.
@@ -44,8 +44,8 @@ public final class InsertValue {
      */
     public int getParametersCount() {
         int result = 0;
-        for (SQLExpression each : assignments) {
-            if (each instanceof SQLParameterMarkerExpression) {
+        for (ExpressionSegment each : assignments) {
+            if (each instanceof ParameterMarkerExpressionSegment) {
                 result++;
             }
         }

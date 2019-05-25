@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.parse.sql.segment.dml.column;
 import com.google.common.base.Optional;
 import lombok.Getter;
 import org.apache.shardingsphere.core.parse.constant.QuoteCharacter;
-import org.apache.shardingsphere.core.parse.old.lexer.token.Symbol;
 import org.apache.shardingsphere.core.parse.sql.segment.OwnerAvailable;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
@@ -60,7 +59,7 @@ public class ColumnSegment implements SQLSegment, PredicateRightValue, OwnerAvai
      * @return qualified name
      */
     public final String getQualifiedName() {
-        return null == owner ? name : owner.getName() + Symbol.DOT.getLiterals() + name;
+        return null == owner ? name : owner.getName() + "." + name;
     }
     
     @Override

@@ -19,11 +19,9 @@ package org.apache.shardingsphere.core.optimize.result;
 
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResult;
-import org.apache.shardingsphere.core.optimize.result.insert.InsertType;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLExpression;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLNumberExpression;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLParameterMarkerExpression;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLTextExpression;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -31,34 +29,22 @@ import static org.junit.Assert.assertThat;
 
 public final class InsertOptimizeResultTest {
     
-    private InsertOptimizeResult setInsertOptimizeResult = new InsertOptimizeResult(InsertType.SET, Lists.newArrayList("id", "value", "status"));
-    
-    private InsertOptimizeResult valuesInsertOptimizeResult = new InsertOptimizeResult(InsertType.VALUES, Lists.newArrayList("id", "value", "status"));
+    private InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(Lists.newArrayList("id", "value", "status"));
     
     @Test
     public void assertAddUnitWithSet() {
-        SQLExpression[] expressions = {new SQLNumberExpression(1), new SQLParameterMarkerExpression(1), new SQLTextExpression("test")};
+        ExpressionSegment[] expressions = {new LiteralExpressionSegment(0, 0, 1), new ParameterMarkerExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, "test")};
         Object[] parameters = {"parameter"};
-        setInsertOptimizeResult.addUnit(expressions, parameters, 1);
-        assertThat(setInsertOptimizeResult.getColumnNames().size(), is(3));
-        assertThat(setInsertOptimizeResult.getType(), is(InsertType.SET));
-        assertThat(setInsertOptimizeResult.getUnits().get(0).getValues(), is(expressions));
-        assertThat(setInsertOptimizeResult.getUnits().get(0).getParameters()[0], is((Object) "parameter"));
-        assertThat(setInsertOptimizeResult.getUnits().get(0).getDataNodes().size(), is(0));
-        assertThat(setInsertOptimizeResult.getUnits().get(0).getColumnValue("value"), is((Object) "parameter"));
-        assertThat(setInsertOptimizeResult.getUnits().get(0).getColumnValue("status"), is((Object) "test"));
-        assertThat(setInsertOptimizeResult.getUnits().get(0).toString(), is("id = 1, value = ?, status = 'test'"));
-        setInsertOptimizeResult.getUnits().get(0).setColumnValue("id", 2);
-        assertThat(setInsertOptimizeResult.getUnits().get(0).getColumnValue("id"), is((Object) 2));
-        setInsertOptimizeResult.getUnits().get(0).setColumnValue("value", "parameter1");
-        assertThat(setInsertOptimizeResult.getUnits().get(0).getColumnValue("value"), is((Object) "parameter1"));
-    }
-    
-    @Test
-    public void assertAddUnitWithValues() {
-        SQLExpression[] expressions = {new SQLNumberExpression(1), new SQLParameterMarkerExpression(1), new SQLTextExpression("test")};
-        Object[] parameters = {"parameter"};
-        valuesInsertOptimizeResult.addUnit(expressions, parameters, 1);
-        assertThat(valuesInsertOptimizeResult.getUnits().get(0).toString(), is("(1, ?, 'test')"));
+        insertOptimizeResult.addUnit(expressions, parameters, 1);
+        assertThat(insertOptimizeResult.getColumnNames().size(), is(3));
+        assertThat(insertOptimizeResult.getUnits().get(0).getValues(), is(expressions));
+        assertThat(insertOptimizeResult.getUnits().get(0).getParameters()[0], is((Object) "parameter"));
+        assertThat(insertOptimizeResult.getUnits().get(0).getDataNodes().size(), is(0));
+        assertThat(insertOptimizeResult.getUnits().get(0).getColumnValue("value"), is((Object) "parameter"));
+        assertThat(insertOptimizeResult.getUnits().get(0).getColumnValue("status"), is((Object) "test"));
+        insertOptimizeResult.getUnits().get(0).setColumnValue("id", 2);
+        assertThat(insertOptimizeResult.getUnits().get(0).getColumnValue("id"), is((Object) 2));
+        insertOptimizeResult.getUnits().get(0).setColumnValue("value", "parameter1");
+        assertThat(insertOptimizeResult.getUnits().get(0).getColumnValue("value"), is((Object) "parameter1"));
     }
 }

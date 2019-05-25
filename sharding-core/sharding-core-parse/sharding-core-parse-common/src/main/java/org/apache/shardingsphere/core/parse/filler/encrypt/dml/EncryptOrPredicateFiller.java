@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.parse.filler.encrypt.dml;
 import com.google.common.base.Optional;
 import lombok.Setter;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parse.exception.SQLParsingUnsupportedException;
+import org.apache.shardingsphere.core.parse.exception.SQLParsingException;
 import org.apache.shardingsphere.core.parse.filler.api.EncryptRuleAwareFiller;
 import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.filler.api.ShardingTableMetaDataAwareFiller;
@@ -91,7 +91,7 @@ public final class EncryptOrPredicateFiller implements SQLSegmentFiller<OrPredic
 
     private Optional<Condition> createCondition(final PredicateSegment predicateSegment, final Column column) {
         if (predicateSegment.getRightValue() instanceof PredicateBetweenRightValue) {
-            throw new SQLParsingUnsupportedException("The SQL clause 'BETWEEN...AND...' is unsupported in encrypt rule.");
+            throw new SQLParsingException("The SQL clause 'BETWEEN...AND...' is unsupported in encrypt rule.");
         }
         if (predicateSegment.getRightValue() instanceof PredicateCompareRightValue) {
             PredicateCompareRightValue compareRightValue = (PredicateCompareRightValue) predicateSegment.getRightValue();

@@ -21,13 +21,12 @@ import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.encryptor.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.parse.constant.QuoteCharacter;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLExpression;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLNumberExpression;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLParameterMarkerExpression;
 import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.sql.context.table.Table;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.parse.sql.token.impl.InsertSetToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.InsertValuesToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.TableToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
@@ -77,7 +76,6 @@ public final class EncryptInsertOptimizeEngineTest {
         assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getParameters().length, is(2));
         assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getParameters()[0], is((Object) 1));
         assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getParameters()[1], is((Object) 2));
-        assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).toString(), is("(?, ?)"));
     
     }
     
@@ -88,7 +86,7 @@ public final class EncryptInsertOptimizeEngineTest {
         result.addSQLToken(new InsertValuesToken(21, 46));
         result.getColumnNames().add("col1");
         result.getColumnNames().add("col2");
-        result.getValues().add(new InsertValue(Arrays.<SQLExpression>asList(new SQLParameterMarkerExpression(0), new SQLParameterMarkerExpression(1))));
+        result.getValues().add(new InsertValue(Arrays.<ExpressionSegment>asList(new ParameterMarkerExpressionSegment(1, 2, 0), new ParameterMarkerExpressionSegment(3, 4, 1))));
         return result;
     }
     
@@ -105,7 +103,6 @@ public final class EncryptInsertOptimizeEngineTest {
         assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getColumnValue("col2"), is((Object) 2));
         assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getColumnValue("query1"), is((Object) 1));
         assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getColumnValue("query2"), is((Object) 2));
-        assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).toString(), is("(1, 2, 1, 2)"));
         
     }
     
@@ -116,7 +113,7 @@ public final class EncryptInsertOptimizeEngineTest {
         result.addSQLToken(new InsertValuesToken(27, 52));
         result.getColumnNames().add("col1");
         result.getColumnNames().add("col2");
-        result.getValues().add(new InsertValue(Arrays.<SQLExpression>asList(new SQLNumberExpression(1), new SQLNumberExpression(2))));
+        result.getValues().add(new InsertValue(Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(1, 2, 1), new LiteralExpressionSegment(3, 4, 2))));
         return result;
     }
     
@@ -131,7 +128,6 @@ public final class EncryptInsertOptimizeEngineTest {
         assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getParameters().length, is(0));
         assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getColumnValue("col1"), is((Object) 1));
         assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getColumnValue("col2"), is((Object) 2));
-        assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).toString(), is("col1 = 1, col2 = 2"));
         
     }
     
@@ -139,10 +135,9 @@ public final class EncryptInsertOptimizeEngineTest {
         InsertStatement result = new InsertStatement();
         result.getTables().add(new Table("t_encrypt", null));
         result.addSQLToken(new TableToken(12, 20, "t_encrypt", QuoteCharacter.NONE));
-        result.addSQLToken(new InsertSetToken(12, 20));
         result.getColumnNames().add("col1");
         result.getColumnNames().add("col2");
-        result.getValues().add(new InsertValue(Arrays.<SQLExpression>asList(new SQLNumberExpression(1), new SQLNumberExpression(2))));
+        result.getValues().add(new InsertValue(Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(1, 2, 1), new LiteralExpressionSegment(3, 4, 2))));
         return result;
     }
     
@@ -159,7 +154,6 @@ public final class EncryptInsertOptimizeEngineTest {
         assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getParameters()[1], is((Object) 2));
         assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getParameters()[2], is((Object) 1));
         assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getParameters()[3], is((Object) 2));
-        assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).toString(), is("col1 = ?, col2 = ?, query1 = ?, query2 = ?"));
         
     }
     
@@ -167,10 +161,9 @@ public final class EncryptInsertOptimizeEngineTest {
         InsertStatement result = new InsertStatement();
         result.getTables().add(new Table("t_query_encrypt", null));
         result.addSQLToken(new TableToken(12, 26, "t_query_encrypt", QuoteCharacter.NONE));
-        result.addSQLToken(new InsertSetToken(12, 27));
         result.getColumnNames().add("col1");
         result.getColumnNames().add("col2");
-        result.getValues().add(new InsertValue(Arrays.<SQLExpression>asList(new SQLParameterMarkerExpression(0), new SQLParameterMarkerExpression(1))));
+        result.getValues().add(new InsertValue(Arrays.<ExpressionSegment>asList(new ParameterMarkerExpressionSegment(1, 2, 0), new ParameterMarkerExpressionSegment(3, 4, 1))));
         return result;
     }
 }

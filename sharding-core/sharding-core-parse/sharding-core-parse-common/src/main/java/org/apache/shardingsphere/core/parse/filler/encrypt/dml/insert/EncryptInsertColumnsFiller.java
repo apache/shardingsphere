@@ -73,17 +73,17 @@ public final class EncryptInsertColumnsFiller implements SQLSegmentFiller<Insert
     private InsertColumnsToken createInsertColumnsTokenFromMetaData(final InsertStatement insertStatement, final int startIndex) {
         InsertColumnsToken result = new InsertColumnsToken(startIndex, false);
         result.getColumns().addAll(insertStatement.getColumnNames());
-        fillQueryAssistedColumn(insertStatement, result);
+        fillWithQueryAssistedColumn(insertStatement, result);
         return result;
     }
     
     private InsertColumnsToken createInsertColumnsTokenFromSQL(final InsertStatement insertStatement, final int startIndex) {
         InsertColumnsToken result = new InsertColumnsToken(startIndex, true);
-        fillQueryAssistedColumn(insertStatement, result);
+        fillWithQueryAssistedColumn(insertStatement, result);
         return result;
     }
     
-    private void fillQueryAssistedColumn(final InsertStatement insertStatement, final InsertColumnsToken insertColumnsToken) {
+    private void fillWithQueryAssistedColumn(final InsertStatement insertStatement, final InsertColumnsToken insertColumnsToken) {
         for (String each : insertStatement.getColumnNames()) {
             Optional<String> assistedColumnName = encryptRule.getEncryptorEngine().getAssistedQueryColumn(insertStatement.getTables().getSingleTableName(), each);
             if (assistedColumnName.isPresent()) {
