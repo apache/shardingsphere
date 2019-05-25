@@ -23,6 +23,7 @@ import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.shardingproxy.backend.schema.EncryptSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.backend.schema.MasterSlaveSchema;
@@ -85,7 +86,13 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     }
     
     private ShardingRule getShardingRule(final LogicSchema logicSchema) {
-        return logicSchema instanceof MasterSlaveSchema ? ((MasterSlaveSchema) logicSchema).getDefaultShardingRule() : ((ShardingSchema) logicSchema).getShardingRule();
+        if (logicSchema instanceof ShardingSchema) {
+            return ((ShardingSchema) logicSchema).getShardingRule();
+        }
+        if (logicSchema instanceof MasterSlaveSchema) {
+            return ((MasterSlaveSchema) logicSchema).getDefaultShardingRule();
+        }
+        return ((EncryptSchema) logicSchema).getDefaultShardingRule();
     }
     
     private int getNumColumns(final SQLStatement sqlStatement) {
