@@ -64,14 +64,10 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
         return doTransparentRoute(sql);
     }
     
-    private SQLRouteResult doEncryptRoute(final String sql) {
-        
-    }
-    
-    private SQLRouteResult doTransparentRoute(final String sql) {
-        SQLRouteResult result = new SQLRouteResult(((MasterSlaveSchema) logicSchema).getParseEngine().parse(sql, false));
-        result.getRouteUnits().add(new RouteUnit(logicSchema.getDataSources().keySet().iterator().next(), new SQLUnit(sql, Collections.emptyList())));
-        return result;
+    private SQLRouteResult doShardingRoute(final String sql, final DatabaseType databaseType) {
+        SimpleQueryShardingEngine shardingEngine = new SimpleQueryShardingEngine(logicSchema.getShardingRule(), 
+                ShardingProxyContext.getInstance().getShardingProperties(), logicSchema.getMetaData(), databaseType, logicSchema.getParsingResultCache());
+        return shardingEngine.shard(sql, Collections.emptyList());
     }
     
     private SQLRouteResult doMasterSlaveRoute(final String sql) {
@@ -79,17 +75,26 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
         SQLRewriteEngine sqlRewriteEngine = new SQLRewriteEngine(sqlStatement);
         String rewriteSQL = sqlRewriteEngine.generateSQL().getSql();
         SQLRouteResult result = new SQLRouteResult(sqlStatement);
-        for (String each : new MasterSlaveRouter(((MasterSlaveSchema) logicSchema).getMasterSlaveRule(), ((MasterSlaveSchema) logicSchema).getParseEngine(), 
+        for (String each : new MasterSlaveRouter(((MasterSlaveSchema) logicSchema).getMasterSlaveRule(), ((MasterSlaveSchema) logicSchema).getParseEngine(),
                 SHARDING_PROXY_CONTEXT.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW)).route(rewriteSQL, false)) {
             result.getRouteUnits().add(new RouteUnit(each, new SQLUnit(rewriteSQL, Collections.emptyList())));
         }
         return result;
     }
     
-    private SQLRouteResult doShardingRoute(final String sql, final DatabaseType databaseType) {
-        SimpleQueryShardingEngine shardingEngine = new SimpleQueryShardingEngine(logicSchema.getShardingRule(), 
-                ShardingProxyContext.getInstance().getShardingProperties(), logicSchema.getMetaData(), databaseType, logicSchema.getParsingResultCache());
-        return shardingEngine.shard(sql, Collections.emptyList());
+    private SQLRouteResult doEncryptRoute(final String sql) {
+        SQLStatement sqlStatement = ((EncryptSchema) logicSchema).getEncryptSQLParseEntry().parse(sql, false);
+        SQLRewriteEngine sqlRewriteEngine = new SQLRewriteEngine(sqlStatement);
+        String rewriteSQL = sqlRewriteEngine.generateSQL().getSql();
+        SQLRouteResult result = new SQLRouteResult(sqlStatement);
+        result.getRouteUnits().add(new RouteUnit(logicSchema.getDataSources().keySet().iterator().next(), new SQLUnit(rewriteSQL, Collections.emptyList())));
+        return result;
+    }
+    
+    private SQLRouteResult doTransparentRoute(final String sql) {
+        SQLRouteResult result = new SQLRouteResult(((MasterSlaveSchema) logicSchema).getParseEngine().parse(sql, false));
+        result.getRouteUnits().add(new RouteUnit(logicSchema.getDataSources().keySet().iterator().next(), new SQLUnit(sql, Collections.emptyList())));
+        return result;
     }
     
     @Override

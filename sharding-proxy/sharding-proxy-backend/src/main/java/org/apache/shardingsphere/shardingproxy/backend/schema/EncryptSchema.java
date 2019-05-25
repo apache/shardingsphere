@@ -23,6 +23,7 @@ import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.parse.entry.EncryptSQLParseEntry;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
@@ -43,11 +44,14 @@ public final class EncryptSchema extends LogicSchema {
     
     private final ShardingRule shardingRule;
     
+    private final EncryptSQLParseEntry encryptSQLParseEntry;
+    
     public EncryptSchema(final String name, final Map<String, YamlDataSourceParameter> dataSources, final EncryptRuleConfiguration encryptRuleConfiguration) {
         super(name, dataSources);
         encryptRule = new EncryptRule(encryptRuleConfiguration);
         shardingRule = new ShardingRule(new ShardingRuleConfiguration(), getDataSources().keySet());
         metaData = createShardingMetaData();
+        encryptSQLParseEntry = new EncryptSQLParseEntry(LogicSchemas.getInstance().getDatabaseType(), encryptRule, metaData.getTable());
     }
     
     private ShardingMetaData createShardingMetaData() {
