@@ -32,9 +32,7 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrappe
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
-import org.apache.shardingsphere.shardingproxy.backend.schema.MasterSlaveSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSchema;
-import org.apache.shardingsphere.shardingproxy.backend.schema.TransparentSchema;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -99,12 +97,11 @@ public final class ProxySQLExecuteCallback extends SQLExecuteCallback<ExecuteRes
     
     private QueryResult createQueryResult(final ResultSet resultSet, final ConnectionMode connectionMode) {
         LogicSchema logicSchema = backendConnection.getLogicSchema();
-        if (logicSchema instanceof MasterSlaveSchema || logicSchema instanceof TransparentSchema) {
-            return connectionMode == ConnectionMode.MEMORY_STRICTLY ? new StreamQueryResult(resultSet) : new MemoryQueryResult(resultSet);
+        if (logicSchema instanceof ShardingSchema) {
+            ShardingRule shardingRule = logicSchema.getShardingRule();
+            return connectionMode == ConnectionMode.MEMORY_STRICTLY ? new StreamQueryResult(resultSet, shardingRule, shardingRule.getShardingEncryptorEngine()) : new MemoryQueryResult(resultSet, shardingRule, shardingRule.getShardingEncryptorEngine());
         }
-        ShardingRule shardingRule = ((ShardingSchema) logicSchema).getShardingRule();
-        return connectionMode == ConnectionMode.MEMORY_STRICTLY ? new StreamQueryResult(resultSet, shardingRule, shardingRule.getShardingEncryptorEngine()) 
-                : new MemoryQueryResult(resultSet, shardingRule, shardingRule.getShardingEncryptorEngine());
+        return connectionMode == ConnectionMode.MEMORY_STRICTLY ? new StreamQueryResult(resultSet) : new MemoryQueryResult(resultSet);
     }
     
     private long getGeneratedKey(final Statement statement) throws SQLException {
