@@ -15,5 +15,6 @@
 # limitations under the License.
 #
 
+org.apache.shardingsphere.core.strategy.keygen.LeafSegmentKeyGenerator
 org.apache.shardingsphere.core.strategy.keygen.SnowflakeShardingKeyGenerator
 org.apache.shardingsphere.core.strategy.keygen.UUIDShardingKeyGenerator

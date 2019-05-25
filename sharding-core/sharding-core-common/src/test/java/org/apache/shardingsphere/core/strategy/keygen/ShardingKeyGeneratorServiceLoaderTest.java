@@ -28,7 +28,12 @@ import static org.junit.Assert.assertThat;
 public final class ShardingKeyGeneratorServiceLoaderTest {
     
     private ShardingKeyGeneratorServiceLoader serviceLoader = new ShardingKeyGeneratorServiceLoader();
-    
+
+    @Test
+    public void assertNewLeafSegmentKeyGenerator() {
+        assertThat(serviceLoader.newService("LEAFSEGMENT", new Properties()), instanceOf(LeafSegmentKeyGenerator.class));
+    }
+
     @Test
     public void assertNewSnowflakeKeyGenerator() {
         assertThat(serviceLoader.newService("SNOWFLAKE", new Properties()), instanceOf(SnowflakeShardingKeyGenerator.class));
