@@ -22,6 +22,7 @@ import org.apache.shardingsphere.core.parse.entry.ShardingSQLParseEntry;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.shardingproxy.backend.schema.EncryptSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.MasterSlaveSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSchema;
@@ -69,6 +70,12 @@ public final class PostgreSQLComParseExecutor implements CommandExecutor {
     }
     
     private ShardingRule getShardingRule(final LogicSchema logicSchema) {
-        return logicSchema instanceof MasterSlaveSchema ? ((MasterSlaveSchema) logicSchema).getDefaultShardingRule() : ((ShardingSchema) logicSchema).getShardingRule();
+        if (logicSchema instanceof ShardingSchema) {
+            return ((ShardingSchema) logicSchema).getShardingRule();
+        }
+        if (logicSchema instanceof MasterSlaveSchema) {
+            return ((MasterSlaveSchema) logicSchema).getDefaultShardingRule();
+        }
+        return ((EncryptSchema) logicSchema).getDefaultShardingRule();
     }
 }
