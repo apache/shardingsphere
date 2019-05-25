@@ -18,9 +18,16 @@
 package org.apache.shardingsphere.shardingproxy.backend.schema;
 
 import lombok.Getter;
+import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
+import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
+import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
+import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
+
+import java.util.Map;
 
 /**
  * Encrypt schema.
@@ -35,4 +42,17 @@ public final class EncryptSchema extends LogicSchema {
     private final ShardingMetaData metaData;
     
     private final ShardingRule defaultShardingRule;
+    
+    public EncryptSchema(final String name, final Map<String, YamlDataSourceParameter> dataSources, final EncryptRuleConfiguration encryptRuleConfiguration) {
+        super(name, dataSources);
+        encryptRule = new EncryptRule(encryptRuleConfiguration);
+        defaultShardingRule = new ShardingRule(new ShardingRuleConfiguration(), getDataSources().keySet());
+        metaData = createShardingMetaData();
+    }
+    
+    private ShardingMetaData createShardingMetaData() {
+        ShardingDataSourceMetaData shardingDataSourceMetaData = new ShardingDataSourceMetaData(getDataSourceURLs(getDataSources()), defaultShardingRule, LogicSchemas.getInstance().getDatabaseType());
+        ShardingTableMetaData shardingTableMetaData = new ShardingTableMetaData(getTableMetaDataInitializer(shardingDataSourceMetaData).load(defaultShardingRule));
+        return new ShardingMetaData(shardingDataSourceMetaData, shardingTableMetaData);
+    }
 }
