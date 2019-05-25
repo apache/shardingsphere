@@ -41,18 +41,18 @@ public final class EncryptSchema extends LogicSchema {
     
     private final ShardingMetaData metaData;
     
-    private final ShardingRule defaultShardingRule;
+    private final ShardingRule shardingRule;
     
     public EncryptSchema(final String name, final Map<String, YamlDataSourceParameter> dataSources, final EncryptRuleConfiguration encryptRuleConfiguration) {
         super(name, dataSources);
         encryptRule = new EncryptRule(encryptRuleConfiguration);
-        defaultShardingRule = new ShardingRule(new ShardingRuleConfiguration(), getDataSources().keySet());
+        shardingRule = new ShardingRule(new ShardingRuleConfiguration(), getDataSources().keySet());
         metaData = createShardingMetaData();
     }
     
     private ShardingMetaData createShardingMetaData() {
-        ShardingDataSourceMetaData shardingDataSourceMetaData = new ShardingDataSourceMetaData(getDataSourceURLs(getDataSources()), defaultShardingRule, LogicSchemas.getInstance().getDatabaseType());
-        ShardingTableMetaData shardingTableMetaData = new ShardingTableMetaData(getTableMetaDataInitializer(shardingDataSourceMetaData).load(defaultShardingRule));
+        ShardingDataSourceMetaData shardingDataSourceMetaData = new ShardingDataSourceMetaData(getDataSourceURLs(getDataSources()), shardingRule, LogicSchemas.getInstance().getDatabaseType());
+        ShardingTableMetaData shardingTableMetaData = new ShardingTableMetaData(getTableMetaDataInitializer(shardingDataSourceMetaData).load(shardingRule));
         return new ShardingMetaData(shardingDataSourceMetaData, shardingTableMetaData);
     }
 }
