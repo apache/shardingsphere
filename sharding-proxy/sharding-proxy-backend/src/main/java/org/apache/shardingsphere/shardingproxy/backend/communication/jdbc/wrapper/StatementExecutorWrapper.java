@@ -21,6 +21,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.SimpleQueryShardingEngine;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import org.apache.shardingsphere.core.optimize.OptimizeEngineFactory;
+import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
 import org.apache.shardingsphere.core.route.RouteUnit;
@@ -37,6 +39,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collections;
+import java.util.LinkedList;
 
 /**
  * Executor wrapper for statement.
@@ -60,7 +63,7 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
             return doMasterSlaveRoute(sql);
         }
         if (logicSchema instanceof EncryptSchema) {
-            return doEncryptRoute(sql);
+            return doEncryptRoute(sql, databaseType);
         }
         return doTransparentRoute(sql);
     }
@@ -83,12 +86,13 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
         return result;
     }
     
-    private SQLRouteResult doEncryptRoute(final String sql) {
-        SQLStatement sqlStatement = ((EncryptSchema) logicSchema).getEncryptSQLParseEntry().parse(sql, false);
-        SQLRewriteEngine sqlRewriteEngine = new SQLRewriteEngine(sqlStatement);
-        String rewriteSQL = sqlRewriteEngine.generateSQL().getSql();
+    private SQLRouteResult doEncryptRoute(final String sql, final DatabaseType databaseType) {
+        EncryptSchema encryptSchema = (EncryptSchema) logicSchema;
+        SQLStatement sqlStatement = encryptSchema.getEncryptSQLParseEntry().parse(sql, false);
+        OptimizeResult optimizeResult = OptimizeEngineFactory.newInstance(encryptSchema.getEncryptRule(), sqlStatement, new LinkedList<>()).optimize();
+        SQLRewriteEngine sqlRewriteEngine = new SQLRewriteEngine(encryptSchema.getEncryptRule(), databaseType, sqlStatement, optimizeResult, new LinkedList<>());
         SQLRouteResult result = new SQLRouteResult(sqlStatement);
-        result.getRouteUnits().add(new RouteUnit(logicSchema.getDataSources().keySet().iterator().next(), new SQLUnit(rewriteSQL, Collections.emptyList())));
+        result.getRouteUnits().add(new RouteUnit(logicSchema.getDataSources().keySet().iterator().next(), new SQLUnit(sqlRewriteEngine.generateSQL().getSql(), Collections.emptyList())));
         return result;
     }
     
