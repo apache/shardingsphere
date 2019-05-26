@@ -42,6 +42,7 @@ import java.util.Collections;
  * Executor wrapper for statement.
  *
  * @author zhangliang
+ * @author pannjuan
  */
 @RequiredArgsConstructor
 public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
