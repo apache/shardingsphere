@@ -30,6 +30,7 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execut
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.ExecuteUpdateResponse;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapper.JDBCExecutorWrapper;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
+import org.apache.shardingsphere.shardingproxy.backend.schema.EncryptSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSchema;
@@ -99,7 +100,13 @@ public final class ProxySQLExecuteCallback extends SQLExecuteCallback<ExecuteRes
         LogicSchema logicSchema = backendConnection.getLogicSchema();
         if (logicSchema instanceof ShardingSchema) {
             ShardingRule shardingRule = logicSchema.getShardingRule();
-            return connectionMode == ConnectionMode.MEMORY_STRICTLY ? new StreamQueryResult(resultSet, shardingRule, shardingRule.getShardingEncryptorEngine()) : new MemoryQueryResult(resultSet, shardingRule, shardingRule.getShardingEncryptorEngine());
+            return connectionMode == ConnectionMode.MEMORY_STRICTLY ? new StreamQueryResult(resultSet, shardingRule, shardingRule.getShardingEncryptorEngine()) 
+                    : new MemoryQueryResult(resultSet, shardingRule, shardingRule.getShardingEncryptorEngine());
+        }
+        if (logicSchema instanceof EncryptSchema) {
+            EncryptSchema encryptSchema = (EncryptSchema) logicSchema;
+            return connectionMode == ConnectionMode.MEMORY_STRICTLY ? new StreamQueryResult(resultSet, encryptSchema.getShardingRule(), encryptSchema.getEncryptRule().getEncryptorEngine()) 
+                    : new MemoryQueryResult(resultSet, encryptSchema.getShardingRule(), encryptSchema.getEncryptRule().getEncryptorEngine());
         }
         return connectionMode == ConnectionMode.MEMORY_STRICTLY ? new StreamQueryResult(resultSet) : new MemoryQueryResult(resultSet);
     }
