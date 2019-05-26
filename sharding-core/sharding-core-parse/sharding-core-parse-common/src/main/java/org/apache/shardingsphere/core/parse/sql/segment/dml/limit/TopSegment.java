@@ -34,6 +34,8 @@ public final class TopSegment implements SelectItemSegment {
     
     private final int stopIndex;
     
+    private final String text;
+    
     private final LimitValueSegment top;
     
     private final String rowNumberAlias;

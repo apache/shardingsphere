@@ -38,6 +38,8 @@ public final class ShorthandSelectItemSegment implements SelectItemSegment, Owne
     
     private final int stopIndex;
     
+    private final String text;
+    
     private TableSegment owner;
     
     @Override

@@ -141,7 +141,7 @@ public final class ShardingSetAssignmentsFiller implements SQLSegmentFiller<SetA
     
     private void fillShardingCondition(final AndCondition andCondition, final String columnName, final String tableName, final SimpleExpressionSegment simpleExpressionSegment) {
         if (shardingRule.isShardingColumn(columnName, tableName)) {
-            andCondition.getConditions().add(new Condition(new Column(columnName, tableName), simpleExpressionSegment.getSQLExpression()));
+            andCondition.getConditions().add(new Condition(new Column(columnName, tableName), simpleExpressionSegment));
         }
     }
     

@@ -36,7 +36,7 @@ public final class ExpressionSelectItemSegment implements SelectItemSegment, Ali
     
     private final int stopIndex;
     
-    private final String expression;
+    private final String text;
     
     private String alias;
     

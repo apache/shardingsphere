@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.core.parse.sql.context.condition;
 
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLExpression;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLNumberExpression;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -32,14 +32,14 @@ public final class ConditionTest {
     
     @Test
     public void assertGetConditionValuesForEqual() {
-        List<Comparable<?>> actual = new Condition(new Column("test", "test"), new SQLNumberExpression(1)).getConditionValues(Collections.emptyList());
+        List<Comparable<?>> actual = new Condition(new Column("test", "test"), new LiteralExpressionSegment(0, 0, 1)).getConditionValues(Collections.emptyList());
         assertThat(actual.size(), is(1));
         assertThat((Integer) actual.get(0), is(1));
     }
     
     @Test
     public void assertGetConditionValuesForIn() {
-        List<Comparable<?>> actual = new Condition(new Column("test", "test"), Arrays.<SQLExpression>asList(new SQLNumberExpression(1), new SQLNumberExpression(2)))
+        List<Comparable<?>> actual = new Condition(new Column("test", "test"), Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 2)))
                 .getConditionValues(Collections.emptyList());
         assertThat(actual.size(), is(2));
         assertThat((Integer) actual.get(0), is(1));
@@ -48,7 +48,8 @@ public final class ConditionTest {
     
     @Test
     public void assertGetConditionValuesForBetween() {
-        List<Comparable<?>> actual = new Condition(new Column("test", "test"), new SQLNumberExpression(1), new SQLNumberExpression(2)).getConditionValues(Collections.emptyList());
+        List<Comparable<?>> actual = new Condition(
+                new Column("test", "test"), new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 2)).getConditionValues(Collections.emptyList());
         assertThat(actual.size(), is(2));
         assertThat((Integer) actual.get(0), is(1));
         assertThat((Integer) actual.get(1), is(2));
