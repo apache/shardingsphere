@@ -30,23 +30,7 @@
 #
 #dataSources:
 #  master_ds:
-#    url: jdbc:postgresql://127.0.0.1:5432/demo_ds_master?serverTimezone=UTC&useSSL=false
-#    username: postgres
-#    password: postgres
-#    connectionTimeoutMilliseconds: 30000
-#    idleTimeoutMilliseconds: 60000
-#    maxLifetimeMilliseconds: 1800000
-#    maxPoolSize: 50
-#  slave_ds_0:
-#    url: jdbc:postgresql://127.0.0.1:5432/demo_ds_slave_0?serverTimezone=UTC&useSSL=false
-#    username: postgres
-#    password: postgres
-#    connectionTimeoutMilliseconds: 30000
-#    idleTimeoutMilliseconds: 60000
-#    maxLifetimeMilliseconds: 1800000
-#    maxPoolSize: 50
-#  slave_ds_1:
-#    url: jdbc:postgresql://127.0.0.1:5432/demo_ds_slave_1?serverTimezone=UTC&useSSL=false
+#    url: jdbc:postgresql://127.0.0.1:5432/demo_ds?serverTimezone=UTC&useSSL=false
 #    username: postgres
 #    password: postgres
 #    connectionTimeoutMilliseconds: 30000
@@ -54,12 +38,16 @@
 #    maxLifetimeMilliseconds: 1800000
 #    maxPoolSize: 50
 #
-#masterSlaveRule:
-#  name: ms_ds
-#  masterDataSourceName: master_ds
-#  slaveDataSourceNames:
-#    - slave_ds_0
-#    - slave_ds_1
+#encryptRule:
+#  encryptors:
+#    encryptor_aes:
+#      type: aes
+#      qualifiedColumns: t_encrypt.pwd
+#      props:
+#        aes.key.value: 123456abc
+#    encryptor_md5:
+#          type: md5
+#          qualifiedColumns: t_encrypt.name
 
 ######################################################################################################
 #
@@ -67,37 +55,25 @@
 #
 ######################################################################################################
 
-#schemaName: master_slave_db
+#schemaName: encrypt_db
 #
 #dataSources:
 #  master_ds:
-#    url: jdbc:mysql://127.0.0.1:3306/demo_ds_master?serverTimezone=UTC&useSSL=false
+#    url: jdbc:mysql://127.0.0.1:3306/demo_ds?serverTimezone=UTC&useSSL=false
 #    username: root
 #    password:
 #    connectionTimeoutMilliseconds: 30000
 #    idleTimeoutMilliseconds: 60000
 #    maxLifetimeMilliseconds: 1800000
 #    maxPoolSize: 50
-#  slave_ds_0:
-#    url: jdbc:mysql://127.0.0.1:3306/demo_ds_slave_0?serverTimezone=UTC&useSSL=false
-#    username: root
-#    password:
-#    connectionTimeoutMilliseconds: 30000
-#    idleTimeoutMilliseconds: 60000
-#    maxLifetimeMilliseconds: 1800000
-#    maxPoolSize: 50
-#  slave_ds_1:
-#    url: jdbc:mysql://127.0.0.1:3306/demo_ds_slave_1?serverTimezone=UTC&useSSL=false
-#    username: root
-#    password:
-#    connectionTimeoutMilliseconds: 30000
-#    idleTimeoutMilliseconds: 60000
-#    maxLifetimeMilliseconds: 1800000
-#    maxPoolSize: 50
-#
-#masterSlaveRule:
-#  name: ms_ds
-#  masterDataSourceName: master_ds
-#  slaveDataSourceNames:
-#    - slave_ds_0
-#    - slave_ds_1
+#  
+#encryptRule:
+#  encryptors:
+#    encryptor_aes:
+#      type: aes
+#      qualifiedColumns: t_encrypt.pwd
+#      props:
+#        aes.key.value: 123456abc
+#    encryptor_md5:
+#          type: md5
+#          qualifiedColumns: t_encrypt.name
