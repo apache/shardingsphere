@@ -26,6 +26,7 @@ import org.apache.shardingsphere.core.metadata.ShardingMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.orchestration.internal.eventbus.ShardingOrchestrationEventBus;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
@@ -68,6 +69,14 @@ public abstract class LogicSchema {
      * @return sharding meta data.
      */
     public abstract ShardingMetaData getMetaData();
+    
+    /**
+     * Get Sharding rule.
+     * 
+     * @return sharding rule
+     */
+    // TODO : It is used in many places, but we can consider how to optimize it because of being irrational for logic schema.
+    public abstract ShardingRule getShardingRule();
     
     protected final Map<String, String> getDataSourceURLs(final Map<String, YamlDataSourceParameter> dataSourceParameters) {
         Map<String, String> result = new LinkedHashMap<>(dataSourceParameters.size(), 1);

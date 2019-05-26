@@ -18,32 +18,40 @@
 package org.apache.shardingsphere.shardingproxy.backend.schema;
 
 import lombok.Getter;
+import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.parse.entry.EncryptSQLParseEntry;
+import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 
 import java.util.Map;
 
 /**
- * Transparent schema.
+ * Encrypt schema.
  *
- * @author zhangyonglun
+ * @author panjuan
  */
 @Getter
-public final class TransparentSchema extends LogicSchema {
+public final class EncryptSchema extends LogicSchema {
+    
+    private final EncryptRule encryptRule;
     
     private final ShardingMetaData metaData;
     
     private final ShardingRule shardingRule;
     
-    public TransparentSchema(final String name, final Map<String, YamlDataSourceParameter> dataSources) {
+    private final EncryptSQLParseEntry encryptSQLParseEntry;
+    
+    public EncryptSchema(final String name, final Map<String, YamlDataSourceParameter> dataSources, final EncryptRuleConfiguration encryptRuleConfiguration) {
         super(name, dataSources);
-        // TODO we should remove it after none-sharding parsingEngine completed.
+        encryptRule = new EncryptRule(encryptRuleConfiguration);
         shardingRule = new ShardingRule(new ShardingRuleConfiguration(), getDataSources().keySet());
         metaData = createShardingMetaData();
+        encryptSQLParseEntry = new EncryptSQLParseEntry(LogicSchemas.getInstance().getDatabaseType(), encryptRule, metaData.getTable());
     }
     
     private ShardingMetaData createShardingMetaData() {
