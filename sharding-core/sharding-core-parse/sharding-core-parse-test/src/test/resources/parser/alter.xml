@@ -617,4 +617,119 @@
             <index-token start-index="12" stop-index="24" table-name="t_order" />
         </tokens>
     </parser-result>
+    
+    <parser-result sql-case-id="alter_table_with_row_level">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="12" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="alter_table_with_double_quota">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="12" table-name="t_order" left-delimiter="&quot;" right-delimiter="&quot;" length="9" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="alter_table_alter_column">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="12" table-name="t_order" length="7" />
+        </tokens>
+        <alter-table>
+            <update-columns>
+                <update-column origin-column-name="column4" name="column4" type="VARCHAR" />
+            </update-columns>
+        </alter-table>
+    </parser-result>
+    
+    <parser-result sql-case-id="alter_table_alter_columns">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="12" table-name="t_order" length="7" />
+        </tokens>
+        <alter-table>
+            <update-columns>
+                <update-column origin-column-name="column4" name="column4" type="VARCHAR" />
+                <update-column origin-column-name="column5" name="column5" type="VARCHAR" />
+                <update-column origin-column-name="column6" name="column6" type="VARCHAR" />
+            </update-columns>
+        </alter-table>
+    </parser-result>
+        
+    <parser-result sql-case-id="alter_table_add_foreign_key_with_cascade">
+        <tables>
+            <table name="t_order_item" />
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="12" table-name="t_order_item" length="12" />
+            <table-token start-index="86" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="alter_table_drop_constraints_postgresql">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="12" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="alter_table_rename_constraints">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="12" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="alter_table_rename_table">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="12" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="alter_table_rename_column">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="12" table-name="t_order" length="7" />
+        </tokens>
+        <alter-table>
+            <update-columns>
+                <update-column origin-column-name="user_id" name="user_id1" type="int"/>
+            </update-columns>
+        </alter-table>
+    </parser-result>
+    
+    <!--<parser-result sql-case-id="create_table_with_exist_index">-->
+        <!--<tables>-->
+            <!--<table name="t_order" />-->
+        <!--</tables>-->
+        <!--<tokens>-->
+            <!--<table-token start-index="12" table-name="t_order" length="7" />-->
+            <!--<index-token begin-position="48" table-name="order_index" />-->
+        <!--</tokens>-->
+        <!--<alter-table>-->
+            <!--<update-columns>-->
+                <!--<update-column origin-column-name="order_id" name="order_id" primary-key="true"/>-->
+            <!--</update-columns>-->
+        <!--</alter-table>-->
+    <!--</parser-result>-->
 </parser-result-sets>
