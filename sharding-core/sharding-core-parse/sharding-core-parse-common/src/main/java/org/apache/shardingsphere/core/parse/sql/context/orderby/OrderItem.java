@@ -88,15 +88,6 @@ public final class OrderItem {
     }
     
     /**
-     * Get column label.
-     *
-     * @return column label
-     */
-    public String getColumnLabel() {
-        return null == alias ? name : alias;
-    }
-    
-    /**
      * Get qualified name.
      *
      * @return qualified name

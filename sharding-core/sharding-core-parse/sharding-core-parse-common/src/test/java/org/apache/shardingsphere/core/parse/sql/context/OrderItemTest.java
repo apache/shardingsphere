@@ -30,25 +30,6 @@ import static org.junit.Assert.assertTrue;
 public final class OrderItemTest {
     
     @Test
-    public void assertGetColumnLabelWithoutAlias() {
-        OrderItem actualOrderItem = new OrderItem("column_name", OrderDirection.ASC, OrderDirection.ASC);
-        assertThat(actualOrderItem.getColumnLabel(), is("column_name"));
-    }
-    
-    @Test
-    public void assertGetColumnLabelWithAlias() {
-        OrderItem actualOrderItem = new OrderItem("column_name", OrderDirection.ASC, OrderDirection.ASC);
-        actualOrderItem.setAlias("column_alias");
-        assertThat(actualOrderItem.getColumnLabel(), is("column_alias"));
-    }
-    
-    @Test
-    public void assertGetColumnLabelWithIndex() {
-        OrderItem actualOrderItem = new OrderItem(1, OrderDirection.ASC, OrderDirection.ASC);
-        assertNull(actualOrderItem.getColumnLabel());
-    }
-    
-    @Test
     public void assertGetQualifiedNameWithoutName() {
         OrderItem actualOrderItem = new OrderItem(1, OrderDirection.ASC, OrderDirection.ASC);
         assertNull(actualOrderItem.getQualifiedName().orNull());
