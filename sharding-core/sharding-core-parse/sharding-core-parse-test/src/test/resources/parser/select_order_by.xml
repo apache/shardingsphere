@@ -48,7 +48,7 @@
             </encrypt-column-token>
         </tokens>
         <order-by-columns>
-            <order-by-column owner="o" name="order_id" alias="ORDER_BY_DERIVED_0" order-direction="DESC" />
+            <order-by-column owner="o" name="order_id" order-direction="DESC" />
             <order-by-column index="1" order-direction="ASC" />
         </order-by-columns>
         <encrypt-condition>
@@ -68,7 +68,7 @@
             <table-token start-index="40" table-name="t_order" length="7" />
         </tokens>
         <order-by-columns>
-            <order-by-column owner="o" name="order_id" alias="gen_order_id_" order-direction="ASC" />
+            <order-by-column owner="o" name="order_id" order-direction="ASC" />
         </order-by-columns>
     </parser-result>
     
@@ -91,7 +91,7 @@
         </tokens>
         <order-by-columns>
             <order-by-column owner="i" name="creation_date" order-direction="DESC" />
-            <order-by-column owner="o" name="order_id" alias="ORDER_BY_DERIVED_0" order-direction="DESC" />
+            <order-by-column owner="o" name="order_id" order-direction="DESC" />
             <order-by-column owner="i" name="item_id" order-direction="ASC" />
         </order-by-columns>
         <encrypt-condition>
@@ -112,7 +112,7 @@
             <table-token start-index="40" table-name="t_order" length="7" />
         </tokens>
         <order-by-columns>
-            <order-by-column owner="o" name="order_id" alias="gen_order_id_" order-direction="ASC" />
+            <order-by-column owner="o" name="order_id" order-direction="ASC" />
         </order-by-columns>
     </parser-result>
     
@@ -125,7 +125,7 @@
             <table-token start-index="40" table-name="t_order" length="7" />
         </tokens>
         <order-by-columns>
-            <order-by-column owner="o" name="order_id" alias="gen_order_id_" order-direction="ASC" />
+            <order-by-column owner="o" name="order_id" order-direction="ASC" />
         </order-by-columns>
     </parser-result>
     

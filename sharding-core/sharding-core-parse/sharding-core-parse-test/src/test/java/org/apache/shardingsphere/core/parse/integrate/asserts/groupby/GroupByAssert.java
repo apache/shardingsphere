@@ -57,6 +57,5 @@ public final class GroupByAssert {
         assertThat(assertMessage.getFullAssertMessage("Group by item name assertion error: "), actual.getName().orNull(), is(expected.getName()));
         assertThat(assertMessage.getFullAssertMessage("Group by item order direction assertion error: "), actual.getOrderDirection().name(), is(expected.getOrderDirection()));
         // TODO assert nullOrderDirection
-        assertThat(assertMessage.getFullAssertMessage("Group by item alias assertion error: "), actual.getAlias().orNull(), is(expected.getAlias()));
     }
 }

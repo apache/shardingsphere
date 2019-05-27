@@ -79,15 +79,6 @@ public final class OrderItem {
     }
     
     /**
-     * Get alias.
-     *
-     * @return alias
-     */
-    public Optional<String> getAlias() {
-        return Optional.fromNullable(alias);
-    }
-    
-    /**
      * Get qualified name.
      *
      * @return qualified name

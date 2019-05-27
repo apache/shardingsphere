@@ -49,7 +49,7 @@
             <group-by-column name="item_id" owner="i" order-direction="ASC" />
         </group-by-columns>
         <order-by-columns>
-            <order-by-column name="item_id" alias="ORDER_BY_DERIVED_0" owner="i" order-direction="DESC" />
+            <order-by-column name="item_id" owner="i" order-direction="DESC" />
         </order-by-columns>
         <limit offset="5" offset-index="4" row-count="3" row-count-index="5" />
     </parser-result>
@@ -86,7 +86,7 @@
             <group-by-column name="user_id" owner="i" order-direction="ASC" />
         </group-by-columns>
         <order-by-columns>
-            <order-by-column name="item_id" alias="ORDER_BY_DERIVED_0" owner="i" order-direction="DESC" />
+            <order-by-column name="item_id" owner="i" order-direction="DESC" />
         </order-by-columns>
         <limit offset="5" offset-index="4" row-count="3" row-count-index="5" />
     </parser-result>
@@ -184,7 +184,7 @@
             </and-condition>
         </or-condition>
         <group-by-columns>
-            <group-by-column name="user_id" alias="GROUP_BY_DERIVED_0" owner="i" order-direction="ASC" />
+            <group-by-column name="user_id" owner="i" order-direction="ASC" />
         </group-by-columns>
         <order-by-columns>
             <order-by-column name="item_id" owner="i" order-direction="DESC" />
@@ -221,7 +221,7 @@
             </and-condition>
         </or-condition>
         <group-by-columns>
-            <group-by-column name="user_id" alias="GROUP_BY_DERIVED_0" owner="i" order-direction="ASC" />
+            <group-by-column name="user_id" owner="i" order-direction="ASC" />
         </group-by-columns>
         <order-by-columns>
             <order-by-column name="item_id" owner="i" order-direction="DESC" />
@@ -261,7 +261,7 @@
             <group-by-column name="item_id" owner="i" order-direction="ASC" />
         </group-by-columns>
         <order-by-columns>
-            <order-by-column name="item_id" alias="ORDER_BY_DERIVED_0" owner="i" order-direction="DESC" />
+            <order-by-column name="item_id" owner="i" order-direction="DESC" />
         </order-by-columns>
         <limit offset="3" offset-index="5" row-count-index="4" row-count="5" />
     </parser-result>
@@ -296,10 +296,10 @@
             </and-condition>
         </or-condition>
         <group-by-columns>
-            <group-by-column name="user_id" alias="GROUP_BY_DERIVED_0" owner="i" order-direction="ASC" />
+            <group-by-column name="user_id" owner="i" order-direction="ASC" />
         </group-by-columns>
         <order-by-columns>
-            <order-by-column name="item_id" alias="ORDER_BY_DERIVED_0" owner="i" order-direction="DESC" />
+            <order-by-column name="item_id" owner="i" order-direction="DESC" />
         </order-by-columns>
         <limit offset="3" offset-index="5" row-count-index="4" row-count="5" />
     </parser-result>

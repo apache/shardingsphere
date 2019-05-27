@@ -58,6 +58,5 @@ public final class OrderByAssert {
         assertThat(assertMessage.getFullAssertMessage("Order by item order direction assertion error: "), actual.getOrderDirection().name(), is(expected.getOrderDirection()));
         // TODO assert nullOrderDirection
         assertThat(assertMessage.getFullAssertMessage("Order by item index assertion error: "), actual.getIndex(), is(expected.getIndex()));
-        assertThat(assertMessage.getFullAssertMessage("Order by item alias assertion error: "), actual.getAlias().orNull(), is(expected.getAlias()));
     }
 }
