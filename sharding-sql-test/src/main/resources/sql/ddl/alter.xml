@@ -21,7 +21,7 @@
     <sql-case id="alter_table_if_exists_only" value="ALTER TABLE IF EXISTS ONLY t_log ADD name varchar" db-types="PostgreSQL" />
     <sql-case id="alter_table_with_force" value="ALTER TABLE t_order FORCE" db-types="MySQL" />
     <sql-case id="alter_table_with_space" value="    ALTER TABLE
-        t_order" db-types="MySQL,Oracle,PostgreSQL" />
+        t_order" db-types="MySQL,Oracle" />
     <sql-case id="alter_table_with_back_quota" value="ALTER TABLE `t_order` FORCE" db-types="MySQL" />
     <sql-case id="alter_table_add_column" value="ALTER TABLE t_order ADD column4 VARCHAR(10)" db-types="MySQL,Oracle,PostgreSQL" />
     <sql-case id="alter_table_add_columns" value="ALTER TABLE t_order ADD column4 VARCHAR(10), ADD column5 VARCHAR(10), ADD column6 VARCHAR(10)" db-types="MySQL,PostgreSQL" />

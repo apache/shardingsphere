@@ -462,27 +462,7 @@
         <meta column-names="order_id,user_id,status,column1,column2,column3" column-types="NUMBER,NUMBER,VARCHAR2,VARCHAR2,VARCHAR2,VARCHAR2" />
     </parser-result>
     
-    <parser-result sql-case-id="create_table_with_inline_primary_key_oracle">
-        <tables>
-            <table name="t_order" />
-        </tables>
-        <tokens>
-            <table-token start-index="13" table-name="t_order" length="7" />
-        </tokens>
-        <meta column-names="order_id,user_id,status,column1,column2,column3" column-types="NUMBER,NUMBER,VARCHAR2,VARCHAR2,VARCHAR2,VARCHAR2" primary-key-columns="order_id" />
-    </parser-result>
-    
-    <parser-result sql-case-id="create_table_with_inline_unique_key_oracle">
-        <tables>
-            <table name="t_order" />
-        </tables>
-        <tokens>
-            <table-token start-index="13" table-name="t_order" length="7" />
-        </tokens>
-        <meta column-names="order_id,user_id,status,column1,column2,column3" column-types="NUMBER,NUMBER,VARCHAR2,VARCHAR2,VARCHAR2,VARCHAR2" />
-    </parser-result>
-    
-    <parser-result sql-case-id="create_table_with_inline_foreign_key_oracle">
+    <parser-result sql-case-id="create_table_with_inline_foreign_key_reference">
         <tables>
             <table name="t_order_item" />
             <table name="t_order" />
@@ -504,7 +484,7 @@
         <meta column-names="order_id,user_id,status,column1,column2,column3" column-types="NUMBER,NUMBER,VARCHAR2,VARCHAR2,VARCHAR2,VARCHAR2" />
     </parser-result>
     
-    <parser-result sql-case-id="create_table_with_inline_constraints_oracle">
+    <parser-result sql-case-id="create_table_with_inline_constraints_cascade">
         <tables>
             <table name="t_order_item" />
             <table name="t_order" />
@@ -514,46 +494,6 @@
             <table-token start-index="150" table-name="t_order" length="7" />
         </tokens>
         <meta column-names="item_id,order_id,user_id,status,column1,column2,column3" column-types="NUMBER,NUMBER,NUMBER,VARCHAR2,VARCHAR2,VARCHAR2,VARCHAR2" primary-key-columns="item_id" />
-    </parser-result>
-    
-    <parser-result sql-case-id="create_table_with_out_of_line_primary_key_oracle">
-        <tables>
-            <table name="t_order" />
-        </tables>
-        <tokens>
-            <table-token start-index="13" table-name="t_order" length="7" />
-        </tokens>
-        <meta column-names="order_id,user_id,status,column1,column2,column3" column-types="NUMBER,NUMBER,VARCHAR2,VARCHAR2,VARCHAR2,VARCHAR2" primary-key-columns="order_id" />
-    </parser-result>
-    
-    <parser-result sql-case-id="create_table_with_out_of_line_composite_primary_key_oracle">
-        <tables>
-            <table name="t_order" />
-        </tables>
-        <tokens>
-            <table-token start-index="13" table-name="t_order" length="7" />
-        </tokens>
-        <meta column-names="order_id,user_id,status,column1,column2,column3" column-types="NUMBER,NUMBER,VARCHAR2,VARCHAR2,VARCHAR2,VARCHAR2" primary-key-columns="order_id,user_id,status" />
-    </parser-result>
-    
-    <parser-result sql-case-id="create_table_with_out_of_line_unique_key_oracle">
-        <tables>
-            <table name="t_order" />
-        </tables>
-        <tokens>
-            <table-token start-index="13" table-name="t_order" length="7" />
-        </tokens>
-        <meta column-names="order_id,user_id,status,column1,column2,column3" column-types="NUMBER,NUMBER,VARCHAR2,VARCHAR2,VARCHAR2,VARCHAR2" />
-    </parser-result>
-    
-    <parser-result sql-case-id="create_table_with_out_of_line_composite_unique_key_oracle">
-        <tables>
-            <table name="t_order" />
-        </tables>
-        <tokens>
-            <table-token start-index="13" table-name="t_order" length="7" />
-        </tokens>
-        <meta column-names="order_id,user_id,status,column1,column2,column3" column-types="NUMBER,NUMBER,VARCHAR2,VARCHAR2,VARCHAR2,VARCHAR2" />
     </parser-result>
     
     <parser-result sql-case-id="create_table_with_out_of_line_foreign_key_oracle">
@@ -578,16 +518,6 @@
             <table-token start-index="249" table-name="t_order" length="7" />
         </tokens>
         <meta column-names="item_id,order_id,user_id,status,column1,column2,column3" column-types="NUMBER,NUMBER,NUMBER,VARCHAR2,VARCHAR2,VARCHAR2,VARCHAR2" />
-    </parser-result>
-    
-    <parser-result sql-case-id="create_table_with_out_of_line_check_oracle">
-        <tables>
-            <table name="t_order" />
-        </tables>
-        <tokens>
-            <table-token start-index="13" table-name="t_order" length="7" />
-        </tokens>
-        <meta column-names="order_id,user_id,status,column1,column2,column3" column-types="NUMBER,NUMBER,VARCHAR2,VARCHAR2,VARCHAR2,VARCHAR2" />
     </parser-result>
     
     <parser-result sql-case-id="create_table_with_out_of_line_constraints_oracle">
@@ -645,16 +575,6 @@
         </tokens>
     </parser-result>
     
-    <parser-result sql-case-id="create_unique_index">
-        <tables>
-            <table name="t_order" />
-        </tables>
-        <tokens>
-            <index-token start-index="20" stop-index="30" table-name="t_order"/>
-            <table-token start-index="35" table-name="t_order" length="7" />
-        </tokens>
-    </parser-result>
-    
     <parser-result sql-case-id="create_index_with_function">
         <tables>
             <table name="t_order" />
@@ -662,6 +582,120 @@
         <tokens>
             <index-token start-index="13" stop-index="28" table-name="t_order"/>
             <table-token start-index="33" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_table_with_double_quota">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="13" table-name="t_order" left-delimiter="&quot;" right-delimiter="&quot;" length="9" />
+        </tokens>
+        <meta column-names="order_id,user_id,status,column1,column2,column3" column-types="INTEGER,INTEGER,VARCHAR,VARCHAR,VARCHAR,VARCHAR" />
+    </parser-result>
+    
+    <parser-result sql-case-id="create_local_temporary_table">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="29" table-name="t_order" length="7" />
+        </tokens>
+        <meta column-names="order_id,user_id,status,column1,column2,column3" column-types="INTEGER,INTEGER,VARCHAR,VARCHAR,VARCHAR,VARCHAR" />
+    </parser-result>
+    
+    <parser-result sql-case-id="create_table_with_column_increment">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="13" table-name="t_order" length="7" />
+        </tokens>
+        <meta column-names="order_id,user_id,status,column1,column2,column3" column-types="INTEGER,INTEGER,VARCHAR,VARCHAR,VARCHAR,VARCHAR" />
+    </parser-result>
+    
+    <parser-result sql-case-id="create_table_with_range_partition">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="13" table-name="t_order" length="7" />
+        </tokens>
+        <meta column-names="order_id,user_id,status,column1,column2,column3" column-types="INTEGER,INTEGER,VARCHAR,VARCHAR,VARCHAR,VARCHAR" />
+    </parser-result>
+    
+    <!--<parser-result sql-case-id="create_table_like">-->
+        <!--<tables>-->
+            <!--<table name="t_order_bak" />-->
+            <!--<table name="t_order" />-->
+        <!--</tables>-->
+        <!--<tokens>-->
+            <!--<table-token start-index="13" table-name="t_order_bak" length="10" />-->
+            <!--<table-token start-index="31" table-name="t_order" length="7" />-->
+        <!--</tokens>-->
+        <!--<meta column-names="order_id,user_id,status,column1,column2,column3" column-types="INTEGER,INTEGER,VARCHAR,VARCHAR,VARCHAR,VARCHAR" />-->
+    <!--</parser-result>-->
+
+    <!--<parser-result sql-case-id="create_table_inherits">-->
+        <!--<tables>-->
+            <!--<table name="t_order_bak" />-->
+            <!--<table name="t_order" />-->
+        <!--</tables>-->
+        <!--<tokens>-->
+            <!--<table-token start-index="13" table-name="t_order_bak" length="10" />-->
+            <!--<table-token start-index="37" table-name="t_order" length="7" />-->
+        <!--</tokens>-->
+        <!--<meta column-names="order_id,user_id,status,column1,column2,column3" column-types="INTEGER,INTEGER,VARCHAR,VARCHAR,VARCHAR,VARCHAR" />-->
+    <!--</parser-result>-->
+    
+    <parser-result sql-case-id="create_index_with_double_quota">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <index-token start-index="13" stop-index="25" table-name="t_order"/>
+            <table-token start-index="30" table-name="t_order" left-delimiter="&quot;" right-delimiter="&quot;" length="9" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_index_with_double_quota_and_uescape">
+        <tables>
+            <table name="u&amp;t_order" />
+        </tables>
+        <tokens>
+            <index-token start-index="13" stop-index="53" table-name="u&amp;t_order"/>
+            <table-token start-index="58" table-name="u&amp;t_order" length="9" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_index_concurrently">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <index-token start-index="26" stop-index="36" table-name="t_order" />
+            <table-token start-index="41" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_index_if_not_exists">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <index-token start-index="27" stop-index="37" table-name="t_order" />
+            <table-token start-index="42" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_index_using_btree">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <index-token start-index="13" stop-index="23" table-name="t_order" />
+            <table-token start-index="28" table-name="t_order" length="7" />
         </tokens>
     </parser-result>
 </parser-result-sets>
