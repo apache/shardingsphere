@@ -19,10 +19,9 @@ package org.apache.shardingsphere.core.optimize.result;
 
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResult;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLExpression;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLNumberExpression;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLParameterMarkerExpression;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLTextExpression;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -32,10 +31,9 @@ public final class InsertOptimizeResultTest {
     
     private InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(Lists.newArrayList("id", "value", "status"));
     
-    
     @Test
     public void assertAddUnitWithSet() {
-        SQLExpression[] expressions = {new SQLNumberExpression(1), new SQLParameterMarkerExpression(1), new SQLTextExpression("test")};
+        ExpressionSegment[] expressions = {new LiteralExpressionSegment(0, 0, 1), new ParameterMarkerExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, "test")};
         Object[] parameters = {"parameter"};
         insertOptimizeResult.addUnit(expressions, parameters, 1);
         assertThat(insertOptimizeResult.getColumnNames().size(), is(3));

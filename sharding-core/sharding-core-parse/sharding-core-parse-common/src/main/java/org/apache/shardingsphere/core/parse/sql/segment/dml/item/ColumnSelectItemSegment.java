@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.parse.sql.segment.dml.item;
 
 import com.google.common.base.Optional;
+import lombok.Getter;
 import org.apache.shardingsphere.core.parse.sql.segment.AliasAvailable;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
@@ -29,10 +30,14 @@ import org.apache.shardingsphere.core.parse.util.SQLUtil;
  */
 public final class ColumnSelectItemSegment extends ColumnSegment implements SelectItemSegment, AliasAvailable {
     
+    @Getter
+    private final String text;
+    
     private String alias;
     
-    public ColumnSelectItemSegment(final ColumnSegment columnSegment) {
+    public ColumnSelectItemSegment(final String text, final ColumnSegment columnSegment) {
         super(columnSegment.getStartIndex(), columnSegment.getStopIndex(), columnSegment.getName());
+        this.text = text;
         if (columnSegment.getOwner().isPresent()) {
             setOwner(columnSegment.getOwner().get());
         }

@@ -15,19 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.context.expression;
+package org.apache.shardingsphere.core.parse.sql.segment.dml.order.item;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.constant.OrderDirection;
 
 /**
- * Ignored expression when SQL parsing.
- *
+ * Order by item segment for text.
+ * 
  * @author zhangliang
  */
-@RequiredArgsConstructor
-@Getter
-public final class SQLIgnoreExpression implements SQLExpression {
+public abstract class TextOrderByItemSegment extends OrderByItemSegment {
     
-    private final String expression;
+    public TextOrderByItemSegment(final int startIndex, final int stopIndex, final OrderDirection orderDirection, final OrderDirection nullOrderDirection) {
+        super(startIndex, stopIndex, orderDirection, nullOrderDirection);
+    }
+    
+    /**
+     * Get text.
+     * 
+     * @return text
+     */
+    public abstract String getText();
 }

@@ -19,10 +19,9 @@ package org.apache.shardingsphere.core.rewrite.placeholder;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLExpression;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLIgnoreExpression;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLNumberExpression;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLTextExpression;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.complex.ComplexExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 
 /**
  * Insert set encrypt value placeholder for rewrite.
@@ -33,16 +32,14 @@ import org.apache.shardingsphere.core.parse.sql.context.expression.SQLTextExpres
 @Getter
 public final class InsertSetEncryptValuePlaceholder implements ShardingPlaceholder {
     
-    private final SQLExpression encryptColumnValue;
+    private final ExpressionSegment encryptColumnValue;
     
     @Override
     public String toString() {
-        if (encryptColumnValue instanceof SQLTextExpression) {
-            return String.format("'%s'", ((SQLTextExpression) encryptColumnValue).getText());
-        } else if (encryptColumnValue instanceof SQLIgnoreExpression) {
-            return ((SQLIgnoreExpression) encryptColumnValue).getExpression();
-        } else {
-            return String.valueOf(((SQLNumberExpression) encryptColumnValue).getNumber());
+        if (encryptColumnValue instanceof LiteralExpressionSegment) {
+            Object literals = ((LiteralExpressionSegment) encryptColumnValue).getLiterals();
+            return literals instanceof String ? String.format("'%s'", literals) : literals.toString();
         }
+        return ((ComplexExpressionSegment) encryptColumnValue).getText();
     }
 }

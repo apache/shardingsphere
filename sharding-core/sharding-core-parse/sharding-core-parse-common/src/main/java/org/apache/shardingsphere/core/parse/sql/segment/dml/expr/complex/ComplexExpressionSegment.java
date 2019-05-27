@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.parse.sql.segment.dml.expr.complex;
 
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLExpression;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 
 /**
@@ -28,10 +27,9 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegme
 public interface ComplexExpressionSegment extends ExpressionSegment {
     
     /**
-     * Get SQL expression.
-     *
-     * @param sql SQL text
-     * @return SQL expression
+     * Get text.
+     * 
+     * @return text
      */
-    SQLExpression getSQLExpression(String sql);
+    String getText();
 }

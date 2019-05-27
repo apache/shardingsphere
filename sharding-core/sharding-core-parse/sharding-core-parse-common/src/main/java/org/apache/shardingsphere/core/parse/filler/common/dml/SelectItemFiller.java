@@ -106,7 +106,7 @@ public final class SelectItemFiller implements SQLSegmentFiller {
     }
     
     private void fillExpressionSelectItemSegment(final ExpressionSelectItemSegment selectItemSegment, final SelectStatement selectStatement) {
-        selectStatement.getItems().add(new CommonSelectItem(selectItemSegment.getExpression(), selectItemSegment.getAlias()));
+        selectStatement.getItems().add(new CommonSelectItem(selectItemSegment.getText(), selectItemSegment.getAlias()));
     }
     
     private void fillAggregationSelectItemSegment(final AggregationSelectItemSegment selectItemSegment, final SelectStatement selectStatement) {

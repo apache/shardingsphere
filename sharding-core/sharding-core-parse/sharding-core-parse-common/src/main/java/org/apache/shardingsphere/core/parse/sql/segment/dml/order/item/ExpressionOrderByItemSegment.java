@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.parse.sql.segment.dml.order.item;
 
 import lombok.Getter;
+import lombok.ToString;
 import org.apache.shardingsphere.core.constant.OrderDirection;
 
 /**
@@ -26,12 +27,18 @@ import org.apache.shardingsphere.core.constant.OrderDirection;
  * @author zhangliang
  */
 @Getter
-public final class ExpressionOrderByItemSegment extends OrderByItemSegment {
+@ToString(callSuper = true)
+public final class ExpressionOrderByItemSegment extends TextOrderByItemSegment {
     
     private final String expression;
     
     public ExpressionOrderByItemSegment(final int startIndex, final int stopIndex, final String expression, final OrderDirection orderDirection, final OrderDirection nullOrderDirection) {
         super(startIndex, stopIndex, orderDirection, nullOrderDirection);
         this.expression = expression;
+    }
+    
+    @Override
+    public String getText() {
+        return expression;
     }
 }

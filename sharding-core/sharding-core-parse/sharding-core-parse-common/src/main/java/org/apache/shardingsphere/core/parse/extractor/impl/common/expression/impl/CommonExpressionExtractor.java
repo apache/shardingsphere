@@ -34,6 +34,6 @@ public final class CommonExpressionExtractor implements OptionalSQLSegmentExtrac
     // TODO extract column name and value from expression
     @Override
     public Optional<CommonExpressionSegment> extract(final ParserRuleContext expressionNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
-        return Optional.of(new CommonExpressionSegment(expressionNode.getStart().getStartIndex(), expressionNode.getStop().getStopIndex()));
+        return Optional.of(new CommonExpressionSegment(expressionNode.getStart().getStartIndex(), expressionNode.getStop().getStopIndex(), expressionNode.getText()));
     }
 }

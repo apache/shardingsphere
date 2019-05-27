@@ -28,8 +28,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({
         TablesTest.class, 
         AggregationDistinctSelectItemTest.class, 
-        ConditionTest.class, 
-        OrderItemTest.class
+        ConditionTest.class 
 })
 public final class AllContextTests {
 }
