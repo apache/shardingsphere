@@ -20,7 +20,8 @@ package org.apache.shardingsphere.core.parse.integrate.asserts.orderby;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.integrate.asserts.SQLStatementAssertMessage;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.orderby.ExpectedOrderByColumn;
-import org.apache.shardingsphere.core.parse.sql.context.orderby.OrderItem;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrderByItemSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.OrderByItemSegment;
 
 import java.util.List;
 
@@ -43,18 +44,21 @@ public final class OrderByAssert {
      * @param actual actual order by items
      * @param expected expected order by items
      */
-    public void assertOrderByItems(final List<OrderItem> actual, final List<ExpectedOrderByColumn> expected) {
+    public void assertOrderByItems(final List<OrderByItemSegment> actual, final List<ExpectedOrderByColumn> expected) {
         assertThat(assertMessage.getFullAssertMessage("Order by items size error: "), actual.size(), is(expected.size()));
         int count = 0;
-        for (OrderItem each : actual) {
-            assertOrderByItem(each, expected.get(count));
+        for (OrderByItemSegment each : actual) {
+            if (each instanceof ColumnOrderByItemSegment) {
+                assertOrderByItem((ColumnOrderByItemSegment) each, expected.get(count));
+            }
             count++;
         }
     }
     
-    private void assertOrderByItem(final OrderItem actual, final ExpectedOrderByColumn expected) {
-        assertThat(assertMessage.getFullAssertMessage("Order by item owner assertion error: "), actual.getOwner().orNull(), is(expected.getOwner()));
-        assertThat(assertMessage.getFullAssertMessage("Order by item name assertion error: "), actual.getName().orNull(), is(expected.getName()));
+    private void assertOrderByItem(final ColumnOrderByItemSegment actual, final ExpectedOrderByColumn expected) {
+        assertThat(assertMessage.getFullAssertMessage("Order by item owner assertion error: "),
+                actual.getColumn().getOwner().isPresent() ? actual.getColumn().getOwner().get().getName() : null, is(expected.getOwner()));
+        assertThat(assertMessage.getFullAssertMessage("Order by item name assertion error: "), actual.getColumn().getName(), is(expected.getName()));
         assertThat(assertMessage.getFullAssertMessage("Order by item order direction assertion error: "), actual.getOrderDirection().name(), is(expected.getOrderDirection()));
         // TODO assert nullOrderDirection
         assertThat(assertMessage.getFullAssertMessage("Order by item index assertion error: "), actual.getIndex(), is(expected.getIndex()));

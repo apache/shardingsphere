@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.parse.filler.common.dml;
 
 import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.OrderBySegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 
@@ -32,9 +31,6 @@ public final class OrderByFiller implements SQLSegmentFiller<OrderBySegment> {
     
     @Override
     public void fill(final OrderBySegment sqlSegment, final SQLStatement sqlStatement) {
-        SelectStatement selectStatement = (SelectStatement) sqlStatement;
-        for (OrderByItemSegment each : sqlSegment.getOrderByItems()) {
-            selectStatement.getOrderByItems().add(new OrderItemBuilder(each).createOrderItem());
-        }
+        ((SelectStatement) sqlStatement).getOrderByItems().addAll(sqlSegment.getOrderByItems());
     }
 }
