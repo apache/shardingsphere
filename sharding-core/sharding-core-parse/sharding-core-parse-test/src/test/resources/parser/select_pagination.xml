@@ -245,7 +245,7 @@
             </and-condition>
         </or-condition>
         <order-by-columns>
-            <order-by-column name="item_id" alias="ORDER_BY_DERIVED_0" owner="i" order-direction="DESC" />
+            <order-by-column name="item_id" owner="i" order-direction="DESC" />
         </order-by-columns>
         <limit row-count="3" row-count-index="4" />
     </parser-result>
@@ -279,7 +279,7 @@
             </and-condition>
         </or-condition>
         <order-by-columns>
-            <order-by-column name="item_id" alias="ORDER_BY_DERIVED_0" owner="i" order-direction="DESC" />
+            <order-by-column name="item_id" owner="i" order-direction="DESC" />
         </order-by-columns>
         <limit offset="3" offset-index="5" row-count-index="4" row-count="5" />
     </parser-result>
@@ -313,7 +313,7 @@
             </and-condition>
         </or-condition>
         <order-by-columns>
-            <order-by-column name="item_id" alias="ORDER_BY_DERIVED_0" owner="i" order-direction="DESC" />
+            <order-by-column name="item_id" owner="i" order-direction="DESC" />
         </order-by-columns>
         <limit offset="3" offset-index="5" row-count-index="4" row-count="5" />
     </parser-result>

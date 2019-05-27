@@ -27,6 +27,7 @@ import org.apache.shardingsphere.core.parse.sql.context.condition.ParseCondition
 import org.apache.shardingsphere.core.parse.sql.context.orderby.OrderItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationSelectItem;
+import org.apache.shardingsphere.core.parse.sql.context.selectitem.CommonSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.DistinctSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.StarSelectItem;
@@ -99,7 +100,7 @@ public final class SelectOptimizer implements SQLStatementOptimizer {
         for (OrderItem each : orderItems) {
             if (!containsItem(selectStatement, each, shardingTableMetaData)) {
                 String alias = DerivedColumn.ORDER_BY_ALIAS.getDerivedColumnAlias(derivedColumnOffset++);
-                each.setAlias(alias);
+                selectStatement.getItems().add(new CommonSelectItem(each.getQualifiedName().get(), Optional.of(alias)));
                 selectItemsToken.getItems().add(each.getQualifiedName().get() + " AS " + alias + " ");
             }
         }
@@ -111,7 +112,7 @@ public final class SelectOptimizer implements SQLStatementOptimizer {
         for (OrderItem each : orderItems) {
             if (!containsItem(selectStatement, each, shardingTableMetaData)) {
                 String alias = DerivedColumn.GROUP_BY_ALIAS.getDerivedColumnAlias(derivedColumnOffset++);
-                each.setAlias(alias);
+                selectStatement.getItems().add(new CommonSelectItem(each.getQualifiedName().get(), Optional.of(alias)));
                 selectItemsToken.getItems().add(each.getQualifiedName().get() + " AS " + alias + " ");
             }
         }
@@ -162,11 +163,12 @@ public final class SelectOptimizer implements SQLStatementOptimizer {
             return false;
         }
         DistinctSelectItem distinctSelectItem = (DistinctSelectItem) selectItem;
-        return distinctSelectItem.getDistinctColumnLabels().contains(orderItem.getColumnLabel());
+        return distinctSelectItem.getDistinctColumnNames().contains(orderItem.getName().orNull());
     }
     
     private boolean isSameAlias(final SelectItem selectItem, final OrderItem orderItem) {
-        return selectItem.getAlias().isPresent() && orderItem.getAlias().isPresent() && selectItem.getAlias().get().equalsIgnoreCase(orderItem.getAlias().get());
+        return selectItem.getAlias().isPresent() && orderItem.getQualifiedName().isPresent()
+                && (orderItem.getQualifiedName().get().equalsIgnoreCase(selectItem.getAlias().get()) || orderItem.getQualifiedName().get().equalsIgnoreCase(selectItem.getExpression()));
     }
     
     private boolean isSameQualifiedName(final SelectItem selectItem, final OrderItem orderItem) {

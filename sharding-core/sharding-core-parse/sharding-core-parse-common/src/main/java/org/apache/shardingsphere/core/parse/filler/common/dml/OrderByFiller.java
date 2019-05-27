@@ -34,7 +34,7 @@ public final class OrderByFiller implements SQLSegmentFiller<OrderBySegment> {
     public void fill(final OrderBySegment sqlSegment, final SQLStatement sqlStatement) {
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
         for (OrderByItemSegment each : sqlSegment.getOrderByItems()) {
-            selectStatement.getOrderByItems().add(new OrderItemBuilder(selectStatement, each).createOrderItem());
+            selectStatement.getOrderByItems().add(new OrderItemBuilder(each).createOrderItem());
         }
     }
 }

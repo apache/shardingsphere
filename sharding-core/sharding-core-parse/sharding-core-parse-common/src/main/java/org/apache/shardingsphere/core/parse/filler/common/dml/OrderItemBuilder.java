@@ -25,7 +25,6 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrd
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.OrderByItemSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 
 /**
  * Order item builder.
@@ -34,8 +33,6 @@ import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
  */
 @RequiredArgsConstructor
 public final class OrderItemBuilder {
-    
-    private final SelectStatement selectStatement;
     
     private final OrderByItemSegment orderByItemSegment;
     
@@ -49,10 +46,10 @@ public final class OrderItemBuilder {
             return createOrderItem((IndexOrderByItemSegment) orderByItemSegment);
         }
         if (orderByItemSegment instanceof ColumnOrderByItemSegment) {
-            return createOrderItem(selectStatement, (ColumnOrderByItemSegment) orderByItemSegment);
+            return createOrderItem((ColumnOrderByItemSegment) orderByItemSegment);
         }
         if (orderByItemSegment instanceof ExpressionOrderByItemSegment) {
-            return createOrderItem(selectStatement, (ExpressionOrderByItemSegment) orderByItemSegment);
+            return createOrderItem((ExpressionOrderByItemSegment) orderByItemSegment);
         }
         throw new UnsupportedOperationException();
     }
@@ -61,24 +58,14 @@ public final class OrderItemBuilder {
         return new OrderItem(indexOrderByItemSegment.getColumnIndex(), indexOrderByItemSegment.getOrderDirection(), indexOrderByItemSegment.getNullOrderDirection());
     }
     
-    private OrderItem createOrderItem(final SelectStatement selectStatement, final ColumnOrderByItemSegment columnOrderByItemSegment) {
+    private OrderItem createOrderItem(final ColumnOrderByItemSegment columnOrderByItemSegment) {
         Optional<TableSegment> owner = columnOrderByItemSegment.getColumn().getOwner();
         String columnName = columnOrderByItemSegment.getColumn().getName();
-        OrderItem result = owner.isPresent() ? new OrderItem(owner.get().getName(), columnName, columnOrderByItemSegment.getOrderDirection(), columnOrderByItemSegment.getNullOrderDirection())
+        return owner.isPresent() ? new OrderItem(owner.get().getName(), columnName, columnOrderByItemSegment.getOrderDirection(), columnOrderByItemSegment.getNullOrderDirection())
                 : new OrderItem(columnName, columnOrderByItemSegment.getOrderDirection(), columnOrderByItemSegment.getNullOrderDirection());
-        Optional<String> alias = selectStatement.getAlias(columnOrderByItemSegment.getColumn().getQualifiedName());
-        if (alias.isPresent()) {
-            result.setAlias(alias.get());
-        }
-        return result;
     }
     
-    private OrderItem createOrderItem(final SelectStatement selectStatement, final ExpressionOrderByItemSegment expressionOrderByItemSegment) {
-        OrderItem result = new OrderItem(expressionOrderByItemSegment.getExpression(), expressionOrderByItemSegment.getOrderDirection(), expressionOrderByItemSegment.getNullOrderDirection());
-        Optional<String> alias = selectStatement.getAlias(expressionOrderByItemSegment.getExpression());
-        if (alias.isPresent()) {
-            result.setAlias(alias.get());
-        }
-        return result;
+    private OrderItem createOrderItem(final ExpressionOrderByItemSegment expressionOrderByItemSegment) {
+        return new OrderItem(expressionOrderByItemSegment.getExpression(), expressionOrderByItemSegment.getOrderDirection(), expressionOrderByItemSegment.getNullOrderDirection());
     }
 }

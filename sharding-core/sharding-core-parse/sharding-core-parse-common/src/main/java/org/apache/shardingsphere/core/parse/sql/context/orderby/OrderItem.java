@@ -49,8 +49,6 @@ public final class OrderItem {
     
     private String expression;
     
-    private String alias;
-    
     public OrderItem(final String name, final OrderDirection orderDirection, final OrderDirection nullOrderDirection) {
         this(null, name, orderDirection, nullOrderDirection);
     }
@@ -76,24 +74,6 @@ public final class OrderItem {
      */
     public Optional<String> getName() {
         return Optional.fromNullable(name);
-    }
-    
-    /**
-     * Get alias.
-     *
-     * @return alias
-     */
-    public Optional<String> getAlias() {
-        return Optional.fromNullable(alias);
-    }
-    
-    /**
-     * Get column label.
-     *
-     * @return column label
-     */
-    public String getColumnLabel() {
-        return null == alias ? name : alias;
     }
     
     /**
@@ -123,12 +103,7 @@ public final class OrderItem {
             return false;
         }
         OrderItem orderItem = (OrderItem) obj;
-        return orderDirection == orderItem.getOrderDirection() && (columnLabelEquals(orderItem) || qualifiedNameEquals(orderItem) || indexEquals(orderItem));
-    }
-    
-    private boolean columnLabelEquals(final OrderItem orderItem) {
-        String columnLabel = getColumnLabel();
-        return null != columnLabel && columnLabel.equalsIgnoreCase(orderItem.getColumnLabel());
+        return orderDirection == orderItem.getOrderDirection() && (qualifiedNameEquals(orderItem) || indexEquals(orderItem));
     }
     
     private boolean qualifiedNameEquals(final OrderItem orderItem) {
