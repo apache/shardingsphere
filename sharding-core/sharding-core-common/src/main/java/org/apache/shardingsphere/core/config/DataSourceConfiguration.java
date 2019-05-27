@@ -21,6 +21,7 @@ import com.google.common.base.CaseFormat;
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -41,6 +42,7 @@ import java.util.Map.Entry;
  */
 @RequiredArgsConstructor
 @Getter
+@EqualsAndHashCode(of = {"dataSourceClassName", "properties"})
 public final class DataSourceConfiguration {
     
     private static final String GETTER_PREFIX = "get";
