@@ -166,7 +166,8 @@ public final class SelectOptimizer implements SQLStatementOptimizer {
     }
     
     private boolean isSameAlias(final SelectItem selectItem, final OrderItem orderItem) {
-        return selectItem.getAlias().isPresent() && orderItem.getAlias().isPresent() && selectItem.getAlias().get().equalsIgnoreCase(orderItem.getAlias().get());
+        return selectItem.getAlias().isPresent() && orderItem.getQualifiedName().isPresent()
+                && (orderItem.getQualifiedName().get().equalsIgnoreCase(selectItem.getAlias().get()) || orderItem.getQualifiedName().get().equalsIgnoreCase(selectItem.getExpression()));
     }
     
     private boolean isSameQualifiedName(final SelectItem selectItem, final OrderItem orderItem) {
