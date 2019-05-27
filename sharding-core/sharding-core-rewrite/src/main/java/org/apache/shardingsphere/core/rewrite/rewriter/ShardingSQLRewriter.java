@@ -160,7 +160,7 @@ public final class ShardingSQLRewriter implements SQLRewriter {
         OrderByPlaceholder orderByPlaceholder = new OrderByPlaceholder();
         if (isRewrite()) {
             for (OrderItem each : selectStatement.getOrderByItems()) {
-                String columnLabel = Strings.isNullOrEmpty(each.getColumnLabel()) ? String.valueOf(each.getIndex()) : each.getColumnLabel();
+                String columnLabel = each.getQualifiedName().isPresent() ? each.getQualifiedName().get() : String.valueOf(each.getIndex());
                 orderByPlaceholder.getColumnLabels().add(columnLabel);
                 orderByPlaceholder.getOrderDirections().add(each.getOrderDirection());
             }

@@ -540,7 +540,7 @@ public final class ShardingSQLRewriterTest {
         selectStatement.setLogicSQL("SELECT x.id, x.name FROM table_x x GROUP BY x.id, x.name DESC");
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, DatabaseType.MySQL, routeResult, Collections.emptyList());
         assertThat(getSQLBuilder(rewriteEngine).toSQL(null, tableTokens), is(
-                "SELECT x.id, x.name FROM table_1 x GROUP BY x.id, x.name DESC ORDER BY id ASC,name DESC "));
+                "SELECT x.id, x.name FROM table_1 x GROUP BY x.id, x.name DESC ORDER BY x.id ASC,x.name DESC "));
     }
     
     @Test
