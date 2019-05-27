@@ -123,12 +123,7 @@ public final class OrderItem {
             return false;
         }
         OrderItem orderItem = (OrderItem) obj;
-        return orderDirection == orderItem.getOrderDirection() && (columnLabelEquals(orderItem) || qualifiedNameEquals(orderItem) || indexEquals(orderItem));
-    }
-    
-    private boolean columnLabelEquals(final OrderItem orderItem) {
-        String columnLabel = getColumnLabel();
-        return null != columnLabel && columnLabel.equalsIgnoreCase(orderItem.getColumnLabel());
+        return orderDirection == orderItem.getOrderDirection() && (qualifiedNameEquals(orderItem) || indexEquals(orderItem));
     }
     
     private boolean qualifiedNameEquals(final OrderItem orderItem) {

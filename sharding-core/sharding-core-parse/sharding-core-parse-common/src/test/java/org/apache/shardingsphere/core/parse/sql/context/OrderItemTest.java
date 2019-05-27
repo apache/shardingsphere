@@ -22,7 +22,6 @@ import org.apache.shardingsphere.core.parse.sql.context.orderby.OrderItem;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
@@ -86,15 +85,6 @@ public final class OrderItemTest {
     }
     
     @Test
-    public void assertEqualsWithSameColumnLabel() {
-        OrderItem orderItem1 = new OrderItem("column_name", OrderDirection.ASC, OrderDirection.ASC);
-        orderItem1.setAlias("column_alias");
-        OrderItem orderItem2 = new OrderItem("tbl", "column_name", OrderDirection.ASC, OrderDirection.ASC);
-        orderItem2.setAlias("column_alias");
-        assertThat(orderItem1, is(orderItem2));
-    }
-    
-    @Test
     public void assertEqualsWithSameQualifiedName() {
         OrderItem orderItem1 = new OrderItem("tbl", "column_name", OrderDirection.ASC, OrderDirection.ASC);
         orderItem1.setAlias("column_alias");
@@ -105,13 +95,5 @@ public final class OrderItemTest {
     @Test
     public void assertEqualsWithSameIndex() {
         assertTrue(new OrderItem(1, OrderDirection.ASC, OrderDirection.ASC).equals(new OrderItem(1, OrderDirection.ASC, OrderDirection.ASC)));
-    }
-    
-    @Test
-    public void assertNotEquals() {
-        OrderItem orderItem1 = new OrderItem("tbl", "column_name", OrderDirection.ASC, OrderDirection.ASC);
-        orderItem1.setAlias("column_alias");
-        OrderItem orderItem2 = new OrderItem("column_name", OrderDirection.ASC, OrderDirection.ASC);
-        assertThat(orderItem1, not(orderItem2));
     }
 }
