@@ -1,7 +1,8 @@
 +++
 toc = true
-title = "Read-write Splitting"
+title = "Read-write Split"
 weight = 2
+
 +++
 
 ## Not Use Spring
@@ -30,7 +31,7 @@ weight = 2
     masterDataSource.setPassword("");
     dataSourceMap.put("ds_master", masterDataSource);
     
-    // Configure first slave data source
+    // Configure the first slave data source
     BasicDataSource slaveDataSource1 = new BasicDataSource();
     slaveDataSource1.setDriverClassName("com.mysql.jdbc.Driver");
     slaveDataSource1.setUrl("jdbc:mysql://localhost:3306/ds_slave0");
@@ -38,7 +39,7 @@ weight = 2
     slaveDataSource1.setPassword("");
     dataSourceMap.put("ds_slave0", slaveDataSource1);
     
-    // Configure second slave data source
+    // Configure the second slave data source
     BasicDataSource slaveDataSource2 = new BasicDataSource();
     slaveDataSource2.setDriverClassName("com.mysql.jdbc.Driver");
     slaveDataSource2.setUrl("jdbc:mysql://localhost:3306/ds_slave1");
@@ -46,7 +47,7 @@ weight = 2
     slaveDataSource2.setPassword("");
     dataSourceMap.put("ds_slave1", slaveDataSource2);
     
-    // Configure read-write splitting rule
+    // Configure read-write split rule
     MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration("ds_master_slave", "ds_master", Arrays.asList("ds_slave0", "ds_slave1"));
     
     // Get data source
@@ -55,7 +56,7 @@ weight = 2
 
 ### Rule Configuration Based on Yaml
 
-To configure by yaml, similar with the configuration method of java codes:
+Or configure by yaml, similar to the configuration method above:
 
 ```yaml
 dataSources:
@@ -90,9 +91,7 @@ props:
 
 ### Use Native JDBC
 
-Configure objects with `MasterSlaveDataSourceFactory` to get `MasterSlaveDataSource`, which is realized by standard JDBC DataSource interface. 
-Or choose native JDBC to develop through DataSource; or use JPA, MyBatis and other ORM tools. 
-Take native JDBC for example:
+Configure objects with `MasterSlaveDataSourceFactory` to get `MasterSlaveDataSource`, which is realized by standard JDBC DataSource interface. Or choose native JDBC to develop through DataSource; or use JPA, MyBatis and other ORM tools. Take native JDBC for example:
 
 ```java
 DataSource dataSource = MasterSlaveDataSourceFactory.createDataSource(yamlFile);
@@ -163,8 +162,7 @@ spring.shardingsphere.props.sql.show=true
 
 #### Rule Configuration Based on Spring Boot + JNDI
 
-If you plan to use Sharding-JDBC in Application Server(such as Tomcat) with `Spring boot + JNDI`, `spring.shardingsphere.datasource.${datasourceName}.jndiName` can be used as an alternative to series of configuration of datasource. 
-For example:
+If you plan to use Sharding-JDBC in Application Server (such as Tomcat) with `Spring boot + JNDI`, `spring.shardingsphere.datasource.${datasourceName}.jndiName` can be used as an alternative to series of configuration of datasource. For example:
 ```properties
 spring.shardingsphere.datasource.names=master,slave0,slave1
 
