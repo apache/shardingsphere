@@ -54,6 +54,15 @@ shardingRule:
       keyGenerator:
         type: SNOWFLAKE
         column: order_item_id
+    t_supplier:
+      actualDataNodes: ds${0..1}.t_supplier
+      databaseStrategy:
+        inline:
+          shardingColumn: supplier_id
+          algorithmExpression: ds${supplier_id % 2}
+      keyGenerator:
+        type: SNOWFLAKE
+        column: supplier_id
   bindingTables:
     - t_order,t_order_item
   defaultDatabaseStrategy:
