@@ -15,27 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse;
+package org.apache.shardingsphere.core.parse.spi;
 
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.apache.shardingsphere.core.parse.autogen.SQLServerStatementLexer;
-import org.apache.shardingsphere.core.parse.spi.SQLParserEngine;
+import org.antlr.v4.runtime.Lexer;
+import org.apache.shardingsphere.core.parse.api.SQLParser;
 
 /**
- * SQL parser engine for SQLServer.
+ * SQL parser entry.
  *
  * @author zhangliang
  */
-public final class SQLServerParserEngine implements SQLParserEngine {
+public interface SQLParserEntry {
     
-    @Override
-    public String getDatabaseType() {
-        return "SQLServer";
-    }
+    /**
+     * Get database type.
+     * 
+     * @return database type
+     */
+    String getDatabaseType();
     
-    @Override
-    public SQLServerParser createSQLParser(final String sql) {
-        return new SQLServerParser(new CommonTokenStream(new SQLServerStatementLexer(CharStreams.fromString(sql))));
-    }
+    /**
+     * Get SQL lexer class type.
+     *
+     * @return SQL lexer class type
+     */
+    Class<? extends Lexer> getLexerClass();
+    
+    /**
+     * Get SQL parser class type.
+     * 
+     * @return SQL parser class type
+     */
+    Class<? extends SQLParser> getParserClass();
 }

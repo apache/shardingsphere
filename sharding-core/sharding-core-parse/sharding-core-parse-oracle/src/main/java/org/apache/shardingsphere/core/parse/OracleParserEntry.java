@@ -15,19 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.context.expression;
+package org.apache.shardingsphere.core.parse;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.antlr.v4.runtime.Lexer;
+import org.apache.shardingsphere.core.parse.api.SQLParser;
+import org.apache.shardingsphere.core.parse.autogen.OracleStatementLexer;
+import org.apache.shardingsphere.core.parse.spi.SQLParserEntry;
 
 /**
- * Parameter marker expression.
+ * SQL parser entry for Oracle.
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
-@Getter
-public final class SQLParameterMarkerExpression implements SQLExpression {
+public final class OracleParserEntry implements SQLParserEntry {
     
-    private final int index;
+    @Override
+    public String getDatabaseType() {
+        return "Oracle";
+    }
+    
+    @Override
+    public Class<? extends Lexer> getLexerClass() {
+        return OracleStatementLexer.class;
+    }
+    
+    @Override
+    public Class<? extends SQLParser> getParserClass() {
+        return OracleParser.class;
+    }
 }

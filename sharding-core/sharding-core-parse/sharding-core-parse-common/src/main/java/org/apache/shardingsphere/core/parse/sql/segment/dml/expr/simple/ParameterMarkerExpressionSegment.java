@@ -19,8 +19,6 @@ package org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLExpression;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLParameterMarkerExpression;
 
 /**
  * Parameter marker expression segment.
@@ -36,9 +34,4 @@ public final class ParameterMarkerExpressionSegment implements SimpleExpressionS
     private final int stopIndex;
     
     private final int parameterMarkerIndex;
-    
-    @Override
-    public SQLExpression getSQLExpression() {
-        return new SQLParameterMarkerExpression(parameterMarkerIndex);
-    } 
 }

@@ -19,11 +19,10 @@ package org.apache.shardingsphere.core.rewrite.placeholder;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLExpression;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLIgnoreExpression;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLNumberExpression;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLParameterMarkerExpression;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLTextExpression;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.complex.ComplexExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.core.rule.DataNode;
 
 import java.util.List;
@@ -38,7 +37,7 @@ public final class InsertValuePlaceholder implements ShardingPlaceholder {
     
     private final List<String> columnNames;
     
-    private final List<SQLExpression> columnValues;
+    private final List<ExpressionSegment> columnValues;
     
     @Getter
     private final List<DataNode> dataNodes;
@@ -55,15 +54,13 @@ public final class InsertValuePlaceholder implements ShardingPlaceholder {
     }
     
     private String getColumnValue(final int index) {
-        SQLExpression columnValue = columnValues.get(index);
-        if (columnValue instanceof SQLParameterMarkerExpression) {
+        ExpressionSegment columnValue = columnValues.get(index);
+        if (columnValue instanceof ParameterMarkerExpressionSegment) {
             return "?";
-        } else if (columnValue instanceof SQLTextExpression) {
-            return String.format("'%s'", ((SQLTextExpression) columnValue).getText());
-        } else if (columnValue instanceof SQLIgnoreExpression) {
-            return ((SQLIgnoreExpression) columnValue).getExpression();
-        } else {
-            return String.valueOf(((SQLNumberExpression) columnValue).getNumber());
+        } else if (columnValue instanceof LiteralExpressionSegment) {
+            Object literals = ((LiteralExpressionSegment) columnValue).getLiterals();
+            return literals instanceof String ? String.format("'%s'", ((LiteralExpressionSegment) columnValue).getLiterals()) : literals.toString();
         }
+        return ((ComplexExpressionSegment) columnValue).getText();
     }
 }

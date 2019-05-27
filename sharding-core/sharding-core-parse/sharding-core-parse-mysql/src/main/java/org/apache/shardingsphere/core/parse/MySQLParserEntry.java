@@ -15,19 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.context.expression;
+package org.apache.shardingsphere.core.parse;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.antlr.v4.runtime.Lexer;
+import org.apache.shardingsphere.core.parse.api.SQLParser;
+import org.apache.shardingsphere.core.parse.autogen.MySQLStatementLexer;
+import org.apache.shardingsphere.core.parse.spi.SQLParserEntry;
 
 /**
- * Ignored expression when SQL parsing.
+ * SQL parser entry for MySQL.
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
-@Getter
-public final class SQLIgnoreExpression implements SQLExpression {
+public final class MySQLParserEntry implements SQLParserEntry {
     
-    private final String expression;
+    @Override
+    public String getDatabaseType() {
+        return "MySQL";
+    }
+    
+    @Override
+    public Class<? extends Lexer> getLexerClass() {
+        return MySQLStatementLexer.class;
+    }
+    
+    @Override
+    public Class<? extends SQLParser> getParserClass() {
+        return MySQLParser.class;
+    }
 }

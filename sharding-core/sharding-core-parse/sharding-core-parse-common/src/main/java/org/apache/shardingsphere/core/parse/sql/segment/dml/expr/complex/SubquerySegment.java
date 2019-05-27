@@ -19,8 +19,6 @@ package org.apache.shardingsphere.core.parse.sql.segment.dml.expr.complex;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLExpression;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLIgnoreExpression;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemSegment;
 
 /**
@@ -35,9 +33,6 @@ public final class SubquerySegment implements SelectItemSegment, ComplexExpressi
     private final int startIndex;
     
     private final int stopIndex;
-
-    @Override
-    public SQLExpression getSQLExpression(final String sql) {
-        return new SQLIgnoreExpression(sql.substring(startIndex, stopIndex + 1));
-    }
+    
+    private final String text;
 }

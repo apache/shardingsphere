@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse;
+package org.apache.shardingsphere.core.parse.ddl;
 
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.ANTLRErrorListener;
@@ -23,15 +23,13 @@ import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
 import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.parse.api.SQLParser;
-import org.apache.shardingsphere.core.parse.integrate.asserts.AntlrParserResultSetLoader;
 import org.apache.shardingsphere.core.parse.integrate.asserts.ParserResultSetLoader;
 import org.apache.shardingsphere.core.parse.integrate.asserts.SQLStatementAssert;
 import org.apache.shardingsphere.core.parse.integrate.engine.AbstractBaseIntegrateSQLParsingTest;
-import org.apache.shardingsphere.core.parse.integrate.jaxb.root.ParserResult;
 import org.apache.shardingsphere.core.parse.parser.SQLParserFactory;
 import org.apache.shardingsphere.core.parse.rule.registry.ShardingParseRuleRegistry;
-import org.apache.shardingsphere.test.sql.AntlrSQLCasesLoader;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.SQLCasesLoader;
 import org.junit.Test;
@@ -46,11 +44,11 @@ import java.util.Collections;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
-public final class SQLParseEngineTest extends AbstractBaseIntegrateSQLParsingTest {
+public final class IntegrateDDLParsingCompatibleTest extends AbstractBaseIntegrateSQLParsingTest {
     
-    private static SQLCasesLoader sqlCasesLoader = AntlrSQLCasesLoader.getInstance();
+    private static SQLCasesLoader sqlCasesLoader = SQLCasesLoader.getInstance();
     
-    private static ParserResultSetLoader parserResultSetLoader = AntlrParserResultSetLoader.getInstance();
+    private static ParserResultSetLoader parserResultSetLoader = ParserResultSetLoader.getInstance();
     
     private final String sqlCaseId;
     
@@ -60,6 +58,8 @@ public final class SQLParseEngineTest extends AbstractBaseIntegrateSQLParsingTes
     
     @Parameters(name = "{0} ({2}) -> {1}")
     public static Collection<Object[]> getTestParameters() {
+        sqlCasesLoader.switchSQLCase("sql/ddl");
+        parserResultSetLoader.switchResult("prior_parser_for_antlr");
         return sqlCasesLoader.getSupportedSQLTestParameters(Arrays.<Enum>asList(DatabaseType.values()), DatabaseType.class);
     }
     
@@ -69,7 +69,7 @@ public final class SQLParseEngineTest extends AbstractBaseIntegrateSQLParsingTes
         SQLParser sqlParser = SQLParserFactory.newInstance(databaseType, sql);
         Method addErrorListener = sqlParser.getClass().getMethod("addErrorListener", ANTLRErrorListener.class);
         addErrorListener.invoke(sqlParser, new BaseErrorListener() {
-            
+        
             @Override
             public void syntaxError(final Recognizer<?, ?> recognizer, final Object offendingSymbol, final int line, final int charPositionInLine, final String msg, final RecognitionException ex) {
                 throw new RuntimeException();
@@ -80,19 +80,12 @@ public final class SQLParseEngineTest extends AbstractBaseIntegrateSQLParsingTes
     
     @Test
     public void assertSupportedSQL() {
-        ParserResult parserResult = null;
-        try {
-            parserResult = parserResultSetLoader.getParserResult(sqlCaseId);
-        } catch (final Exception ignored) {
+        String sql = sqlCasesLoader.getSupportedSQL(sqlCaseId, sqlCaseType, parserResultSetLoader.getParserResult(sqlCaseId).getParameters());
+        DatabaseType execDatabaseType = databaseType;
+        if (DatabaseType.H2 == databaseType) {
+            execDatabaseType = DatabaseType.MySQL;
         }
-        if (null != parserResult) {
-            String sql = sqlCasesLoader.getSupportedSQL(sqlCaseId, sqlCaseType, parserResult.getParameters());
-            DatabaseType execDatabaseType = databaseType;
-            if (DatabaseType.H2 == databaseType) {
-                execDatabaseType = DatabaseType.MySQL;
-            }
-            new SQLStatementAssert(new SQLParseEngine(ShardingParseRuleRegistry.getInstance(), execDatabaseType, sql, AbstractBaseIntegrateSQLParsingTest.getShardingRule(),
-                    AbstractBaseIntegrateSQLParsingTest.getShardingTableMetaData()).parse(), sqlCaseId, sqlCaseType, sqlCasesLoader, parserResultSetLoader, execDatabaseType).assertSQLStatement();
-        }
+        new SQLStatementAssert(new SQLParseEngine(ShardingParseRuleRegistry.getInstance(), execDatabaseType, sql, AbstractBaseIntegrateSQLParsingTest.getShardingRule(), 
+                AbstractBaseIntegrateSQLParsingTest.getShardingTableMetaData()).parse(), sqlCaseId, sqlCaseType, sqlCasesLoader, parserResultSetLoader, execDatabaseType).assertSQLStatement();
     }
 }

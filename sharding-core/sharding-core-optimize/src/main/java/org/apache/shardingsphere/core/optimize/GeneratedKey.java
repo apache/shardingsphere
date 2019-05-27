@@ -20,11 +20,10 @@ package org.apache.shardingsphere.core.optimize;
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLExpression;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLNumberExpression;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLParameterMarkerExpression;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLTextExpression;
 import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
@@ -73,26 +72,24 @@ public final class GeneratedKey {
     
     private static Optional<GeneratedKey> findGeneratedKey(final List<Object> parameters, final InsertStatement insertStatement, final String generateKeyColumnName) {
         GeneratedKey result = null;
-        for (SQLExpression each : findGenerateKeyExpressions(insertStatement, generateKeyColumnName)) {
+        for (ExpressionSegment each : findGenerateKeyExpressionSegments(insertStatement, generateKeyColumnName)) {
             if (null == result) {
                 result = new GeneratedKey(generateKeyColumnName);
             }
-            if (each instanceof SQLParameterMarkerExpression) {
-                result.getGeneratedKeys().add((Comparable<?>) parameters.get(((SQLParameterMarkerExpression) each).getIndex()));
-            } else if (each instanceof SQLNumberExpression) {
-                result.getGeneratedKeys().add((Comparable<?>) ((SQLNumberExpression) each).getNumber());
-            } else if (each instanceof SQLTextExpression) {
-                result.getGeneratedKeys().add(((SQLTextExpression) each).getText());
+            if (each instanceof ParameterMarkerExpressionSegment) {
+                result.getGeneratedKeys().add((Comparable<?>) parameters.get(((ParameterMarkerExpressionSegment) each).getParameterMarkerIndex()));
+            } else if (each instanceof LiteralExpressionSegment) {
+                result.getGeneratedKeys().add((Comparable<?>) ((LiteralExpressionSegment) each).getLiterals());
             }
         }
         return Optional.fromNullable(result);
     }
     
-    private static Collection<SQLExpression> findGenerateKeyExpressions(final InsertStatement insertStatement, final String generateKeyColumnName) {
-        Collection<SQLExpression> result = new LinkedList<>();
+    private static Collection<ExpressionSegment> findGenerateKeyExpressionSegments(final InsertStatement insertStatement, final String generateKeyColumnName) {
+        Collection<ExpressionSegment> result = new LinkedList<>();
         Collection<String> columnNames = getColumnNames(insertStatement, generateKeyColumnName);
         for (InsertValue each : insertStatement.getValues()) {
-            Optional<SQLExpression> generateKeyExpression = findGenerateKeyExpression(generateKeyColumnName, columnNames.iterator(), each);
+            Optional<ExpressionSegment> generateKeyExpression = findGenerateKeyExpressionSegment(generateKeyColumnName, columnNames.iterator(), each);
             if (generateKeyExpression.isPresent()) {
                 result.add(generateKeyExpression.get());
             }
@@ -109,10 +106,9 @@ public final class GeneratedKey {
         return result;
     }
     
-    private static Optional<SQLExpression> findGenerateKeyExpression(final String generateKeyColumnName, final Iterator<String> columnNames, final InsertValue insertValue) {
-        for (SQLExpression each : insertValue.getAssignments()) {
-            String columnName = columnNames.next();
-            if (generateKeyColumnName.equalsIgnoreCase(columnName)) {
+    private static Optional<ExpressionSegment> findGenerateKeyExpressionSegment(final String generateKeyColumnName, final Iterator<String> columnNames, final InsertValue insertValue) {
+        for (ExpressionSegment each : insertValue.getAssignments()) {
+            if (generateKeyColumnName.equalsIgnoreCase(columnNames.next())) {
                 return Optional.of(each);
             }
         }

@@ -19,9 +19,6 @@ package org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLExpression;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLNumberExpression;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLTextExpression;
 
 /**
  * Literal expression segment.
@@ -39,9 +36,4 @@ public final class LiteralExpressionSegment implements SimpleExpressionSegment {
     private final int stopIndex;
     
     private final Object literals;
-    
-    @Override
-    public SQLExpression getSQLExpression() {
-        return literals instanceof Number ? new SQLNumberExpression((Number) literals) : new SQLTextExpression(literals.toString());
-    } 
 }
