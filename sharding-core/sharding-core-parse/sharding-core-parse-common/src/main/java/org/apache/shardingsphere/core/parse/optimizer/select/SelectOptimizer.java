@@ -27,6 +27,7 @@ import org.apache.shardingsphere.core.parse.sql.context.condition.ParseCondition
 import org.apache.shardingsphere.core.parse.sql.context.orderby.OrderItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationSelectItem;
+import org.apache.shardingsphere.core.parse.sql.context.selectitem.CommonSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.DistinctSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.StarSelectItem;
@@ -100,6 +101,7 @@ public final class SelectOptimizer implements SQLStatementOptimizer {
             if (!containsItem(selectStatement, each, shardingTableMetaData)) {
                 String alias = DerivedColumn.ORDER_BY_ALIAS.getDerivedColumnAlias(derivedColumnOffset++);
                 each.setAlias(alias);
+                selectStatement.getItems().add(new CommonSelectItem(each.getQualifiedName().get(), Optional.of(alias)));
                 selectItemsToken.getItems().add(each.getQualifiedName().get() + " AS " + alias + " ");
             }
         }
@@ -112,6 +114,7 @@ public final class SelectOptimizer implements SQLStatementOptimizer {
             if (!containsItem(selectStatement, each, shardingTableMetaData)) {
                 String alias = DerivedColumn.GROUP_BY_ALIAS.getDerivedColumnAlias(derivedColumnOffset++);
                 each.setAlias(alias);
+                selectStatement.getItems().add(new CommonSelectItem(each.getQualifiedName().get(), Optional.of(alias)));
                 selectItemsToken.getItems().add(each.getQualifiedName().get() + " AS " + alias + " ");
             }
         }

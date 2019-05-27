@@ -229,10 +229,34 @@ public final class SelectStatement extends DQLStatement {
             if (-1 != each.getIndex()) {
                 continue;
             }
-            Preconditions.checkState(columnLabelIndexMap.containsKey(each.getColumnLabel()), "Can't find index: %s", each);
-            if (columnLabelIndexMap.containsKey(each.getColumnLabel())) {
-                each.setIndex(columnLabelIndexMap.get(each.getColumnLabel()));
+            Optional<String> alias = findAlias(each);
+            String columnLabel = alias.isPresent() ? alias.get() : getOrderItemText(each);
+            Preconditions.checkState(columnLabelIndexMap.containsKey(columnLabel), "Can't find index: %s", each);
+            if (columnLabelIndexMap.containsKey(columnLabel)) {
+                each.setIndex(columnLabelIndexMap.get(columnLabel));
             }
         }
+    }
+    
+    private Optional<String> findAlias(final OrderItem orderItem) {
+        Optional<String> result;
+        if (orderItem.getQualifiedName().isPresent()) {
+            result = getAlias(orderItem.getQualifiedName().get());
+        } else if (null != orderItem.getExpression()) {
+            result = getAlias(orderItem.getExpression());
+        } else {
+            result = Optional.absent();
+        }
+        return result;
+    }
+    
+    private String getOrderItemText(final OrderItem orderItem) {
+        if (orderItem.isIndex()) {
+            return null;
+        }
+        if (orderItem.getName().isPresent()) {
+            return orderItem.getName().get();
+        }
+        return orderItem.getExpression();
     }
 }
