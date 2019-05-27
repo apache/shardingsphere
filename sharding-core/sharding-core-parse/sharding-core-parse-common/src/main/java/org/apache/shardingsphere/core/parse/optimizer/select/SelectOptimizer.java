@@ -162,7 +162,7 @@ public final class SelectOptimizer implements SQLStatementOptimizer {
             return false;
         }
         DistinctSelectItem distinctSelectItem = (DistinctSelectItem) selectItem;
-        return distinctSelectItem.getDistinctColumnLabels().contains(orderItem.getColumnLabel());
+        return distinctSelectItem.getDistinctColumnNames().contains(orderItem.getName().orNull());
     }
     
     private boolean isSameAlias(final SelectItem selectItem, final OrderItem orderItem) {
