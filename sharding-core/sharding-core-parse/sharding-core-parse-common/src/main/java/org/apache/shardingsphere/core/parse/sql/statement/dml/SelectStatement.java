@@ -31,13 +31,9 @@ import org.apache.shardingsphere.core.parse.sql.context.selectitem.DistinctSelec
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.StarSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.table.Table;
-import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
-import org.apache.shardingsphere.core.parse.sql.token.impl.OffsetToken;
-import org.apache.shardingsphere.core.parse.sql.token.impl.RowCountToken;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -237,99 +233,6 @@ public final class SelectStatement extends DQLStatement {
             if (columnLabelIndexMap.containsKey(each.getColumnLabel())) {
                 each.setIndex(columnLabelIndexMap.get(each.getColumnLabel()));
             }
-        }
-    }
-    
-    /**
-     * Set subquery statement.
-     * 
-     * @param subqueryStatement subquery statement
-     */
-    public void setSubqueryStatement(final SelectStatement subqueryStatement) {
-        this.subqueryStatement = subqueryStatement;
-        setParametersIndex(subqueryStatement.getParametersIndex());
-    }
-    
-    /**
-     * Judge contains subquery statement or not.
-     * 
-     * @return contains subquery statement or not
-     */
-    public boolean containsSubquery() {
-        return null != subqueryStatement;
-    }
-    
-    /**
-     * Merge subquery statement if contains.
-     * 
-     * @return Select select statement
-     */
-    public SelectStatement mergeSubqueryStatement() {
-        SelectStatement result = processLimitForSubquery();
-        processItems(result);
-        processOrderByItems(result);
-        result.setParametersIndex(getParametersIndex());
-        return result;
-    }
-    
-    private SelectStatement processLimitForSubquery() {
-        SelectStatement result = this;
-        List<SQLToken> limitSQLTokens = getLimitTokens(result);
-        Limit limit = result.getLimit();
-        while (result.containsSubquery()) {
-            result = result.subqueryStatement;
-            limitSQLTokens.addAll(getLimitTokens(result));
-            if (null == result.getLimit()) {
-                continue;
-            }
-            if (null == limit) {
-                limit = result.getLimit();
-            }
-            if (null != result.getLimit().getRowCount()) {
-                limit.setRowCount(result.getLimit().getRowCount());
-            }
-            if (null != result.getLimit().getOffset()) {
-                limit.setOffset(result.getLimit().getOffset());
-            }
-        }
-        resetLimitTokens(result, limitSQLTokens);
-        result.setLimit(limit);
-        return result;
-    }
-    
-    private List<SQLToken> getLimitTokens(final SelectStatement selectStatement) {
-        List<SQLToken> result = new LinkedList<>();
-        for (SQLToken each : selectStatement.getSQLTokens()) {
-            if (each instanceof RowCountToken || each instanceof OffsetToken) {
-                result.add(each);
-            }
-        }
-        return result;
-    }
-    
-    private void resetLimitTokens(final SelectStatement selectStatement, final List<SQLToken> limitSQLTokens) {
-        List<SQLToken> sqlTokens = selectStatement.getSQLTokens();
-        Iterator<SQLToken> sqlTokenIterator = sqlTokens.iterator();
-        while (sqlTokenIterator.hasNext()) {
-            SQLToken each = sqlTokenIterator.next();
-            if (each instanceof RowCountToken || each instanceof OffsetToken) {
-                sqlTokenIterator.remove();
-            }
-        }
-        sqlTokens.addAll(limitSQLTokens);
-    }
-    
-    private void processItems(final SelectStatement subqueryStatement) {
-        if (!containStar) {
-            subqueryStatement.getItems().clear();
-            subqueryStatement.getItems().addAll(getItems());
-        }
-    }
-    
-    private void processOrderByItems(final SelectStatement subqueryStatement) {
-        if (!containStar) {
-            subqueryStatement.getOrderByItems().clear();
-            subqueryStatement.getGroupByItems().clear();
         }
     }
 }
