@@ -127,6 +127,20 @@ public abstract class AbstractOrchestrationDataSource extends AbstractUnsupporte
         return result;
     }
     
+    private synchronized Map<String, DataSourceConfiguration> getModifiedDataSources(final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
+        Map<String, DataSourceConfiguration> result = new LinkedHashMap<>();
+        for (Entry<String, DataSourceConfiguration> entry : dataSourceConfigurations.entrySet()) {
+            if (isModifiedDataSource(entry)) {
+                result.put(entry.getKey(), entry.getValue());
+            }
+        }
+        return result;
+    }
+    
+    private synchronized boolean isModifiedDataSource(final Entry<String, DataSourceConfiguration> dataSourceNameAndConfig) {
+        return dataSourceConfigurations.containsKey(dataSourceNameAndConfig.getKey()) && dataSourceConfigurations.get(dataSourceNameAndConfig.getKey()).equals(dataSourceNameAndConfig.getValue());
+    }
+    
     protected final synchronized List<String> getDeletedDataSources(final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
         List<String> result = new LinkedList<>(this.dataSourceConfigurations.keySet());
         result.removeAll(dataSourceConfigurations.keySet());
@@ -141,19 +155,5 @@ public abstract class AbstractOrchestrationDataSource extends AbstractUnsupporte
                 return !AbstractOrchestrationDataSource.this.dataSourceConfigurations.containsKey(input.getKey());
             }
         });
-    }
-    
-    private synchronized Map<String, DataSourceConfiguration> getModifiedDataSources(final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
-        Map<String, DataSourceConfiguration> result = new LinkedHashMap<>();
-        for (Entry<String, DataSourceConfiguration> entry : dataSourceConfigurations.entrySet()) {
-            if (isModifiedDataSource(entry)) {
-                result.put(entry.getKey(), entry.getValue());
-            }
-        }
-        return result;
-    }
-    
-    private synchronized boolean isModifiedDataSource(final Entry<String, DataSourceConfiguration> dataSourceNameAndConfig) {
-        return dataSourceConfigurations.containsKey(dataSourceNameAndConfig.getKey()) && dataSourceConfigurations.get(dataSourceNameAndConfig.getKey()).equals(dataSourceNameAndConfig.getValue());
     }
 }
