@@ -28,12 +28,17 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment
  * @author panjuan
  */
 @Getter
-public final class ColumnOrderByItemSegment extends OrderByItemSegment {
+public final class ColumnOrderByItemSegment extends TextOrderByItemSegment {
     
     private final ColumnSegment column;
     
     public ColumnOrderByItemSegment(final int startIndex, final int stopIndex, final ColumnSegment column, final OrderDirection orderDirection, final OrderDirection nullOrderDirection) {
         super(startIndex, stopIndex, orderDirection, nullOrderDirection);
         this.column = column;
+    }
+    
+    @Override
+    public String getText() {
+        return column.getQualifiedName();
     }
 }
