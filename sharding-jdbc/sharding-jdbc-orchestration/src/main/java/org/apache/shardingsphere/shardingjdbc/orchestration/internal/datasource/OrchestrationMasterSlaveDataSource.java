@@ -26,6 +26,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.api.config.RuleConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.LoadBalanceStrategyConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.core.constant.ShardingConstant;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.orchestration.config.OrchestrationConfiguration;
@@ -102,9 +103,10 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
     @Subscribe
     @SneakyThrows
     public final synchronized void renew(final DataSourceChangedEvent dataSourceChangedEvent) {
-        dataSource.close();
-        dataSource = new MasterSlaveDataSource(
-                DataSourceConverter.getDataSourceMap(dataSourceChangedEvent.getDataSourceConfigurations()), dataSource.getMasterSlaveRule(), dataSource.getShardingProperties().getProps());
+        Map<String, DataSourceConfiguration> dataSourceConfigurations = dataSourceChangedEvent.getDataSourceConfigurations();
+        dataSource.close(getDeletedDataSources(dataSourceConfigurations));
+        dataSource = new MasterSlaveDataSource(getChangedDataSources(dataSource.getDataSourceMap(), 
+                dataSourceConfigurations), dataSource.getMasterSlaveRule(), dataSource.getShardingProperties().getProps());
     }
     
     /**

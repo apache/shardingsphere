@@ -33,6 +33,7 @@ import org.apache.shardingsphere.orchestration.internal.registry.state.event.Cir
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.circuit.datasource.CircuitBreakerDataSource;
+import org.apache.shardingsphere.shardingjdbc.orchestration.internal.util.DataSourceConverter;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
@@ -116,23 +117,33 @@ public abstract class AbstractOrchestrationDataSource extends AbstractUnsupporte
         this.dataSourceConfigurations.putAll(dataSourceConfigurations.get(ShardingConstant.LOGIC_SCHEMA_NAME));
     }
     
-    protected final synchronized List<String> getDeletedDataSources(final Map<String, DataSourceConfiguration> changedDataSourceConfigurations) {
-        List<String> result = new LinkedList<>(dataSourceConfigurations.keySet());
-        result.removeAll(changedDataSourceConfigurations.keySet());
+    protected final synchronized Map<String, DataSource> getChangedDataSources(final Map<String, DataSource> oldDataSources, final Map<String, DataSourceConfiguration> newDataSources) {
+        Map<String, DataSource> result = new LinkedHashMap<>(oldDataSources);
+        Map<String, DataSourceConfiguration> modifiedDataSources = getModifiedDataSources(newDataSources);
+        result.keySet().removeAll(getDeletedDataSources(newDataSources));
+        result.keySet().removeAll(modifiedDataSources.keySet());
+        result.putAll(DataSourceConverter.getDataSourceMap(modifiedDataSources));
+        result.putAll(DataSourceConverter.getDataSourceMap(getAddedDataSources(newDataSources)));
         return result;
     }
     
-    protected final synchronized Map<String, DataSourceConfiguration> getAddedDataSources(final Map<String, DataSourceConfiguration> changedDataSourceConfigurations) {
-        return Maps.filterEntries(changedDataSourceConfigurations, new Predicate<Entry<String, DataSourceConfiguration>>() {
+    protected final synchronized List<String> getDeletedDataSources(final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
+        List<String> result = new LinkedList<>(this.dataSourceConfigurations.keySet());
+        result.removeAll(dataSourceConfigurations.keySet());
+        return result;
+    }
+    
+    private synchronized Map<String, DataSourceConfiguration> getAddedDataSources(final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
+        return Maps.filterEntries(dataSourceConfigurations, new Predicate<Entry<String, DataSourceConfiguration>>() {
             
             @Override
             public boolean apply(final Entry<String, DataSourceConfiguration> input) {
-                return !dataSourceConfigurations.containsKey(input.getKey());
+                return !AbstractOrchestrationDataSource.this.dataSourceConfigurations.containsKey(input.getKey());
             }
         });
     }
     
-    protected final synchronized Map<String, DataSourceConfiguration> getModifiedDataSources(final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
+    private synchronized Map<String, DataSourceConfiguration> getModifiedDataSources(final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
         Map<String, DataSourceConfiguration> result = new LinkedHashMap<>();
         for (Entry<String, DataSourceConfiguration> entry : dataSourceConfigurations.entrySet()) {
             if (isModifiedDataSource(entry)) {
