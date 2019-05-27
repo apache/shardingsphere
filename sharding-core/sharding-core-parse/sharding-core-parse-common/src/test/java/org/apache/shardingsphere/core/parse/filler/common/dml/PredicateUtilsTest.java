@@ -43,7 +43,7 @@ public class PredicateUtilsTest {
     @Test
     public void testCreateInConditionOne() {
         Vector<ExpressionSegment> vector = new Vector<>();
-        vector.add(new SubquerySegment((-32), (-32)));
+        vector.add(new SubquerySegment(-32, -32, "test"));
         Column column = new Column(null, "");
 
         assertEquals(Optional.<Condition>absent(), PredicateUtils.createInCondition(new PredicateInRightValue(vector), column));
