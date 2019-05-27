@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -37,7 +39,10 @@ import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -109,5 +114,21 @@ public abstract class AbstractOrchestrationDataSource extends AbstractUnsupporte
             final Map<String, Map<String, DataSourceConfiguration>> dataSourceConfigurations, final Map<String, RuleConfiguration> schemaRuleMap, final Properties props) {
         shardingOrchestrationFacade.init(dataSourceConfigurations, schemaRuleMap, null, props);
         this.dataSourceConfigurations.putAll(dataSourceConfigurations.get(ShardingConstant.LOGIC_SCHEMA_NAME));
+    }
+    
+    protected final synchronized List<String> getDeletedDataSources(final Map<String, DataSourceConfiguration> changedDataSourceConfigurations) {
+        List<String> result = new LinkedList<>(dataSourceConfigurations.keySet());
+        result.removeAll(changedDataSourceConfigurations.keySet());
+        return result;
+    }
+    
+    protected final synchronized Map<String, DataSourceConfiguration> getAddedDataSources(final Map<String, DataSourceConfiguration> changedDataSourceConfigurations) {
+        return Maps.filterEntries(changedDataSourceConfigurations, new Predicate<Entry<String, DataSourceConfiguration>>() {
+            
+            @Override
+            public boolean apply(final Entry<String, DataSourceConfiguration> input) {
+                return !dataSourceConfigurations.containsKey(input.getKey());
+            }
+        });
     }
 }
