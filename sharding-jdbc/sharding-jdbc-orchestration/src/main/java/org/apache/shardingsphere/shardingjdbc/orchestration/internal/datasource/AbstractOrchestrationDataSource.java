@@ -22,6 +22,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.api.config.RuleConfiguration;
 import org.apache.shardingsphere.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.core.constant.ShardingConstant;
 import org.apache.shardingsphere.orchestration.internal.eventbus.ShardingOrchestrationEventBus;
@@ -37,6 +38,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Properties;
 import java.util.logging.Logger;
 
 /**
@@ -98,8 +100,14 @@ public abstract class AbstractOrchestrationDataSource extends AbstractUnsupporte
         isCircuitBreak = circuitStateChangedEvent.isCircuitBreak();
     }
     
-    protected void initShardingOrchestrationFacade() {
+    protected final void initShardingOrchestrationFacade() {
         shardingOrchestrationFacade.init();
         dataSourceConfigurations.putAll(shardingOrchestrationFacade.getConfigService().loadDataSourceConfigurations(ShardingConstant.LOGIC_SCHEMA_NAME));
+    }
+    
+    protected final void initShardingOrchestrationFacade(
+            final Map<String, Map<String, DataSourceConfiguration>> dataSourceConfigurations, final Map<String, RuleConfiguration> schemaRuleMap, final Properties props) {
+        shardingOrchestrationFacade.init(dataSourceConfigurations, schemaRuleMap, null, props);
+        this.dataSourceConfigurations.putAll(dataSourceConfigurations.get(ShardingConstant.LOGIC_SCHEMA_NAME));
     }
 }
