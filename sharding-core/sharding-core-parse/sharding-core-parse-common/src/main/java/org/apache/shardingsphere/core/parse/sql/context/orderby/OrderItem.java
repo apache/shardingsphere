@@ -49,8 +49,6 @@ public final class OrderItem {
     
     private String expression;
     
-    private String alias;
-    
     public OrderItem(final String name, final OrderDirection orderDirection, final OrderDirection nullOrderDirection) {
         this(null, name, orderDirection, nullOrderDirection);
     }

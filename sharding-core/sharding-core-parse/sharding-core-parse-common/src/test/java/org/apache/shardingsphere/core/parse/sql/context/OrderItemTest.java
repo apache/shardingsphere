@@ -35,20 +35,6 @@ public final class OrderItemTest {
         assertNull(actualOrderItem.getQualifiedName().orNull());
     }
     
-    @Test
-    public void assertGetColumnLabelWithOutOwner() {
-        OrderItem actualOrderItem = new OrderItem("column_name", OrderDirection.ASC, OrderDirection.ASC);
-        actualOrderItem.setAlias("column_alias");
-        assertThat(actualOrderItem.getQualifiedName().orNull(), is("column_name"));
-    }
-    
-    @Test
-    public void assertGetColumnLabelWithOwner() {
-        OrderItem actualOrderItem = new OrderItem("tbl", "column_name", OrderDirection.ASC, OrderDirection.ASC);
-        actualOrderItem.setAlias("column_alias");
-        assertThat(actualOrderItem.getQualifiedName().orNull(), is("tbl.column_name"));
-    }
-    
     @SuppressWarnings("ObjectEqualsNull")
     @Test
     public void assertEqualsWithNull() {
@@ -68,7 +54,6 @@ public final class OrderItemTest {
     @Test
     public void assertEqualsWithSameQualifiedName() {
         OrderItem orderItem1 = new OrderItem("tbl", "column_name", OrderDirection.ASC, OrderDirection.ASC);
-        orderItem1.setAlias("column_alias");
         OrderItem orderItem2 = new OrderItem("tbl", "column_name", OrderDirection.ASC, OrderDirection.ASC);
         assertThat(orderItem1, is(orderItem2));
     }

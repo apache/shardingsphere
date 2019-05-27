@@ -100,7 +100,6 @@ public final class SelectOptimizer implements SQLStatementOptimizer {
         for (OrderItem each : orderItems) {
             if (!containsItem(selectStatement, each, shardingTableMetaData)) {
                 String alias = DerivedColumn.ORDER_BY_ALIAS.getDerivedColumnAlias(derivedColumnOffset++);
-                each.setAlias(alias);
                 selectStatement.getItems().add(new CommonSelectItem(each.getQualifiedName().get(), Optional.of(alias)));
                 selectItemsToken.getItems().add(each.getQualifiedName().get() + " AS " + alias + " ");
             }
@@ -113,7 +112,6 @@ public final class SelectOptimizer implements SQLStatementOptimizer {
         for (OrderItem each : orderItems) {
             if (!containsItem(selectStatement, each, shardingTableMetaData)) {
                 String alias = DerivedColumn.GROUP_BY_ALIAS.getDerivedColumnAlias(derivedColumnOffset++);
-                each.setAlias(alias);
                 selectStatement.getItems().add(new CommonSelectItem(each.getQualifiedName().get(), Optional.of(alias)));
                 selectItemsToken.getItems().add(each.getQualifiedName().get() + " AS " + alias + " ");
             }
