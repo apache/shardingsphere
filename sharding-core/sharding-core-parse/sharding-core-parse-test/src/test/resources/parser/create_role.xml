@@ -29,4 +29,5 @@
     <parser-result sql-case-id="create_role_with_roles" />
     <parser-result sql-case-id="create_role_with_option" />
     <parser-result sql-case-id="create_role_with_options"  />
+    <parser-result sql-case-id="create_role_authorization"  />
 </parser-result-sets>

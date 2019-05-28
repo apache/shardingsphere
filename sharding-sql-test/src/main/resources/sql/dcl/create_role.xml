@@ -29,4 +29,5 @@
     <sql-case id="create_role_with_roles" value="CREATE ROLE role1 WITH ROLE role2, role3" db-types="PostgreSQL" />
     <sql-case id="create_role_with_option" value="CREATE ROLE role1 WITH SUPERUSER" db-types="PostgreSQL" />
     <sql-case id="create_role_with_options" value="CREATE ROLE role1 WITH CREATEDB CREATEROLE" db-types="PostgreSQL" />
+    <sql-case id="create_role_authorization" value="CREATE ROLE role1 AUTHORIZATION authorization" db-types="SQLServer" />
 </sql-cases>
