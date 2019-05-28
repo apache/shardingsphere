@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.xa.manager.atomikos;
+package org.apache.shardingsphere.transaction.xa.bitronix.manager;
 
-import com.atomikos.icatch.config.UserTransactionService;
-import com.atomikos.icatch.config.UserTransactionServiceImp;
-import com.atomikos.icatch.jta.UserTransactionManager;
+import bitronix.tm.BitronixTransactionManager;
+import bitronix.tm.TransactionManagerServices;
+import bitronix.tm.resource.ResourceRegistrar;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
 import org.apache.shardingsphere.transaction.xa.spi.XATransactionManager;
@@ -28,44 +28,43 @@ import javax.sql.XADataSource;
 import javax.transaction.TransactionManager;
 
 /**
- * Atomikos XA transaction manager.
+ * Bitronix sharding transaction manager.
  *
  * @author zhaojun
  */
-public final class AtomikosTransactionManager implements XATransactionManager {
+public final class BitronixXATransactionManager implements XATransactionManager {
     
-    private final UserTransactionManager transactionManager = new UserTransactionManager();
-    
-    private final UserTransactionService userTransactionService = new UserTransactionServiceImp();
+    private final BitronixTransactionManager bitronixTransactionManager = TransactionManagerServices.getTransactionManager();
     
     @Override
     public void init() {
-        userTransactionService.init();
     }
     
+    @SneakyThrows
     @Override
     public void registerRecoveryResource(final String dataSourceName, final XADataSource xaDataSource) {
-        userTransactionService.registerResource(new AtomikosXARecoverableResource(dataSourceName, xaDataSource));
+        ResourceRegistrar.register(new BitronixRecoveryResource(dataSourceName, xaDataSource));
     }
     
+    @SneakyThrows
     @Override
     public void removeRecoveryResource(final String dataSourceName, final XADataSource xaDataSource) {
-        userTransactionService.removeResource(new AtomikosXARecoverableResource(dataSourceName, xaDataSource));
+        ResourceRegistrar.unregister(new BitronixRecoveryResource(dataSourceName, xaDataSource));
     }
     
-    @Override
     @SneakyThrows
-    public void enlistResource(final SingleXAResource xaResource) {
-        transactionManager.getTransaction().enlistResource(xaResource);
+    @Override
+    public void enlistResource(final SingleXAResource singleXAResource) {
+        bitronixTransactionManager.getTransaction().enlistResource(singleXAResource);
     }
     
     @Override
     public TransactionManager getTransactionManager() {
-        return transactionManager;
+        return bitronixTransactionManager;
     }
     
     @Override
     public void close() {
-        userTransactionService.shutdown(true);
+        bitronixTransactionManager.shutdown();
     }
 }

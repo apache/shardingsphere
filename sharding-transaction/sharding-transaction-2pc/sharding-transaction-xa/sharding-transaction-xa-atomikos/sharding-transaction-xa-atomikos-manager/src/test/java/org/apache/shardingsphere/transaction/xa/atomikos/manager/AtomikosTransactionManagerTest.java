@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.xa.manager.atomikos;
+package org.apache.shardingsphere.transaction.xa.atomikos.manager;
 
 import com.atomikos.icatch.config.UserTransactionService;
 import com.atomikos.icatch.jta.UserTransactionManager;
-import org.apache.shardingsphere.transaction.xa.fixture.ReflectiveUtil;
+import org.apache.shardingsphere.transaction.xa.atomikos.manager.fixture.ReflectiveUtil;
 import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
