@@ -63,4 +63,8 @@
     <parser-result sql-case-id="alter_all_users_reset_config" />
     <parser-result sql-case-id="alter_user_reset_config_in_database" />
     <parser-result sql-case-id="alter_user_reset_all_config" />
+    <parser-result sql-case-id="alter_user_set_password" />
+    <parser-result sql-case-id="alter_user_set_login" />
+    <parser-result sql-case-id="alter_user_set_default_schema" />
+    <parser-result sql-case-id="alter_user_rename" />
 </parser-result-sets>
