@@ -34,10 +34,14 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 65
 
-shardingRule:  
+shardingRule:
   tables:
-    t_order: 
+    t_order:
       actualDataNodes: ds${0..1}.t_order${0..1}
+      databaseStrategy:
+        inline:
+          shardingColumn: user_id
+          algorithmExpression: ds${user_id % 2}
       tableStrategy: 
         inline:
           shardingColumn: order_id
@@ -47,6 +51,10 @@ shardingRule:
         columnn: order_id
     t_order_item:
       actualDataNodes: ds${0..1}.t_order_item${0..1}
+      databaseStrategy:
+        inline:
+          shardingColumn: user_id
+          algorithmExpression: ds${user_id % 2}
       tableStrategy:
         inline:
           shardingColumn: order_id
@@ -56,10 +64,6 @@ shardingRule:
         column: order_item_id
   bindingTables:
     - t_order,t_order_item
-  defaultDatabaseStrategy:
-    inline:
-      shardingColumn: user_id
-      algorithmExpression: ds${user_id % 2}
   defaultTableStrategy:
     none:
 ```
