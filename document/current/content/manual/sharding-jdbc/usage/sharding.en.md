@@ -18,14 +18,13 @@ weight = 1
 
 ### Rule Configuration Based on Java
 
-Database sharding and table sharding of Sharding-JDBC configure descriptions according to rules. 
-The following example is two databases plus two tables configurations, whose databases take module and split according to order_id, tables take module and split according to order_id.
+Sharding database and table of Sharding-JDBC configure descriptions according to rules. The following example is the configuration of two databases plus two tables, whose databases take module and split according to order_id, tables take module and split according to order_id.
 
 ```java
     // Configure actual data sources
     Map<String, DataSource> dataSourceMap = new HashMap<>();
     
-    // Configure first data source
+    // Configure the first data source
     BasicDataSource dataSource1 = new BasicDataSource();
     dataSource1.setDriverClassName("com.mysql.jdbc.Driver");
     dataSource1.setUrl("jdbc:mysql://localhost:3306/ds0");
@@ -33,7 +32,7 @@ The following example is two databases plus two tables configurations, whose dat
     dataSource1.setPassword("");
     dataSourceMap.put("ds0", dataSource1);
     
-    // Configure second data source
+    // Configure the second data source
     BasicDataSource dataSource2 = new BasicDataSource();
     dataSource2.setDriverClassName("com.mysql.jdbc.Driver");
     dataSource2.setUrl("jdbc:mysql://localhost:3306/ds1");
@@ -41,7 +40,7 @@ The following example is two databases plus two tables configurations, whose dat
     dataSource2.setPassword("");
     dataSourceMap.put("ds1", dataSource2);
     
-    // Configure table rule for Order
+    // Configure Order table rules
     TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
     orderTableRuleConfig.setLogicTable("t_order");
     orderTableRuleConfig.setActualDataNodes("ds${0..1}.t_order${0..1}");
@@ -50,11 +49,11 @@ The following example is two databases plus two tables configurations, whose dat
     orderTableRuleConfig.setDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "ds${user_id % 2}"));
     orderTableRuleConfig.setTableShardingStrategyConfig(new InlineShardingStrategyConfiguration("order_id", "t_order${order_id % 2}"));
     
-    // Configure sharding rule
+    // Configure sharding rules
     ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
     shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
     
-    // Configure table rule for order_item
+    // Omit order_item table rule configuration
     // ...
     
     // Get data source
@@ -63,7 +62,7 @@ The following example is two databases plus two tables configurations, whose dat
 
 ### Rule Configuration Based on Yaml
 
-Or use Yaml to configure, similar to above configurations:
+Or use Yaml to configure, similar to configurations above:
 
 ```yaml
 dataSources:
@@ -108,9 +107,7 @@ shardingRule:
 
 ### Use Native JDBC
 
-Configure objects with `ShardingDataSourceFactory` or `YamlShardingDataSourceFactory` to get `ShardingDataSource`, which is realized by standard JDBC DataSource interface. 
-Or choose native JDBC to develop through DataSource; or use JPA, MyBatis and other ORM tools. 
-Take native JDBC for example:
+Configure objects with `ShardingDataSourceFactory` or `YamlShardingDataSourceFactory` to get `ShardingDataSource`, which is realized by standard JDBC DataSource. Or choose native JDBC to develop through DataSource; or use JPA, MyBatis and other ORM tools. Take native JDBC for example:
 
 ```java
 DataSource dataSource = ShardingDataSourceFactory.createDataSource(yamlFile);
@@ -180,8 +177,8 @@ spring.shardingsphere.sharding.tables.t_order_item.table-strategy.inline.algorit
 
 #### Rule Configuration Based on Spring Boot + JNDI
 
-If you plan to use Sharding-JDBC in Application Server(such as Tomcat) with `Spring boot + JNDI`, `spring.shardingsphere.datasource.${datasourceName}.jndiName` can be used as an alternative to series of configuration of datasource. 
-For example:
+If you plan to use Sharding-JDBC in Application Server (such as Tomcat) with `Spring boot + JNDI`, `spring.shardingsphere.datasource.${datasourceName}.jndiName` can be used as an alternative to series of configuration of datasource. For example:
+
 ```properties
 spring.shardingsphere.datasource.names=ds0,ds1
 
@@ -249,6 +246,4 @@ Inject DataSource to use; or configure DataSource in JPA, Hibernate or MyBatis t
 private DataSource dataSource;
 ```
 
-Rule configurations include data source configuration, table rule configuration, database sharding strategy and table sharding strategy. 
-All these are the simplest configuration methods, and the practical use can be more flexible, like multiple sharding keys, table rule configuration bound directly with sharding strategies, etc. 
-For more detailed configurations, please refer to [Configuration Manual](https://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/configuration/).
+Rule configurations include data source configuration, table rule configuration, database sharding strategy and table sharding strategy. All these are the simplest configuration methods, and the practical use can be more flexible, like multiple sharding keys, table rule configuration bound directly with sharding strategies, etc. For more detailed configurations, please refer to [Configuration Manual](https://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/configuration/).

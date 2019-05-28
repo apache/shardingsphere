@@ -6,25 +6,19 @@ weight = 3
 
 ## Introduction
 
-ShardingSphere uses `ThreadLocal` to manage sharding key value or hint route. 
-Users can program to add sharding conditions to `HintManager`, and the condition only take effect within the current thread. 
-Main application situations of Hint:
+ShardingSphere uses `ThreadLocal` to manage sharding key value or Hint route. Users can program to add sharding values to `HintManager`, and those values only take effect within the current thread. Main applications of Hint:
 
-1. Sharding field does not exist in SQL or database table structure, but in external business logic. 
-So users can operate data according to external sharding results designated by hint.
+1. Sharding fields are not in SQL or table structure, but in external business logic.
 
-2. Force to do some data operations in the master database.
+2. Some operations forced to do in the master database.
 
-## Data Sharding Based on Hint
+## Sharding Based on Hint
 
-### configuration
+### Hint Configuration
 
-It needs to use `HintManager` along with sharding strategy configurations when using hint to enforce data sharding. 
-If `DatabaseShardingStrategy` is configured with hint sharding algorithms, users can use `HintManager` to inject sharding database results. 
-In a similar way, if `TableShardingStrategy` is configured with hint sharding algorithms, users can also use `HintManager` to inject sharding table results. 
-So it is necessary to configure hint sharding algorithms before using hint.
+Hint algorithms require users to implement the interface of `org.apache.shardingsphere.api.sharding.hint.HintShardingAlgorithm`. If ShardingSphere finds `TableRule` in LogicTable has used Hint, it will acquire sharding values from `HintManager` to route.
 
-Here are codes to refer to:
+Take the following configurations for reference:
 
 ```yaml
 shardingRule:
@@ -50,60 +44,71 @@ shardingRule:
       sql.show: true
 ```
 
-### Instantiation
+### Get HintManager
 
 ```java
 HintManager hintManager = HintManager.getInstance();
 ```
 
-### Add Sharding Key Value
+### Add Sharding Value
 
 - Use `hintManager.addDatabaseShardingValue` to add sharding key value of data source.
 - Use `hintManager.addTableShardingValue` to add sharding key value of table.
 
-> Users can use `hintManager.setDatabaseShardingValue` to add shards in hint route to some certain sharding database without sharding tables. 
-In this way, SQL parsing and rewriting phase will be skipped and the overall enforcement efficiency can be enhanced.
+> Users can use `hintManager.setDatabaseShardingValue` to add shardings in hint route to some certain sharding database without sharding tables. After that, SQL parse and rewrite phase will be skipped and the overall enforcement efficiency can be enhanced.
 
-### Clean sharding columns and sharding values
+### Clean Sharding Values
 
-Sharding keys are saved in `ThreadLocal`, so it is necessary to use `hintManager.close()` to clear the content in `ThreadLocal`.
+Sharding values are saved in `ThreadLocal`, so it is necessary to use `hintManager.close()` to clean `ThreadLocal`.
 
-__`HintManager` is implemented with `AutoCloseable` interface. Recommend to use `try with resource` to automatically close it.__
+**`HintManager` has implemented `AutoCloseable`. We recommend to close it automatically with `try with resource`.**
 
-### Code example:
+### Codes:
 
 ```java
-String sql = "SELECT * FROM t_order";
-        
-try (
-        HintManager hintManager = HintManager.getInstance();
-        Connection conn = dataSource.getConnection();
-        PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
-    hintManager.addDatabaseShardingValue("t_order", "user_id", 1);
-    hintManager.addTableShardingValue("t_order", "order_id", 2);
-    try (ResultSet rs = preparedStatement.executeQuery()) {
-        while (rs.next()) {
-            ...
+// Sharding database and table with hintManager.
+        String sql = "SELECT * FROM t_order";
+        try (HintManager hintManager = HintManager.getInstance();
+             Connection conn = dataSource.getConnection();
+             PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+            hintManager.addDatabaseShardingValue("t_order", 1);
+            hintManager.addTableShardingValue("t_order", 2);
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                while (rs.next()) {
+                    // ...
+                }
+            }
         }
-    }
-}
+
+// Sharding database and one database route with hintManger.
+        String sql = "SELECT * FROM t_order";
+        try (HintManager hintManager = HintManager.getInstance();
+             Connection conn = dataSource.getConnection();
+             PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+            hintManager.setDatabaseShardingValue(3);
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                while (rs.next()) {
+                    // ...
+                }
+            }
+        }
 ```
 
 ## Forcible Master Database Route Based on Hint
 
-### Instantiation
+### Get HintManager 
 
-Be the same as data sharding based on hint.
+Be the same as sharding based on hint.
 
 ### Configure Master Database Route
 
 - Use `hintManager.setMasterRouteOnly` to configure master database route.
 
-### Clear Sharding Key Value
+### Clean Sharding Value
 
 Be the same as data sharding based on hint.
 
-### Code example:
+### Codes:
 
 ```java
 String sql = "SELECT * FROM t_order";
@@ -119,3 +124,7 @@ try (
     }
 }
 ```
+
+### Example
+
+[hint-example](https://github.com/apache/incubator-shardingsphere-example/tree/dev/sharding-jdbc-example/hint-example)
