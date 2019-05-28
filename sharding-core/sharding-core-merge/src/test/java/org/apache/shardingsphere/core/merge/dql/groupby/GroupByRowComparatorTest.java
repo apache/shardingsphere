@@ -21,7 +21,7 @@ import org.apache.shardingsphere.core.constant.OrderDirection;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.dql.common.MemoryQueryResultRow;
 import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
-import org.apache.shardingsphere.core.parse.sql.context.orderby.OrderItem;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.junit.Test;
 
@@ -43,8 +43,10 @@ public final class GroupByRowComparatorTest {
         MemoryQueryResultRow o1 = new MemoryQueryResultRow(mockQueryResult("1", "2"));
         MemoryQueryResultRow o2 = new MemoryQueryResultRow(mockQueryResult("3", "4"));
         SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getOrderByItems().addAll(Arrays.asList(new OrderItem(1, OrderDirection.ASC, OrderDirection.ASC), new OrderItem(2, OrderDirection.ASC, OrderDirection.ASC)));
-        selectStatement.getGroupByItems().addAll(Arrays.asList(new OrderItem(1, OrderDirection.DESC, OrderDirection.ASC), new OrderItem(2, OrderDirection.DESC, OrderDirection.ASC)));
+        selectStatement.getOrderByItems().addAll(Arrays.asList(
+                new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC), new IndexOrderByItemSegment(0, 0, 2, OrderDirection.ASC, OrderDirection.ASC)));
+        selectStatement.getGroupByItems().addAll(Arrays.asList(
+                new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC), new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC)));
         GroupByRowComparator groupByRowComparator = new GroupByRowComparator(selectStatement);
         assertTrue(groupByRowComparator.compare(o1, o2) < 0);
     }
@@ -54,8 +56,10 @@ public final class GroupByRowComparatorTest {
         MemoryQueryResultRow o1 = new MemoryQueryResultRow(mockQueryResult("1", "2"));
         MemoryQueryResultRow o2 = new MemoryQueryResultRow(mockQueryResult("3", "4"));
         SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getOrderByItems().addAll(Arrays.asList(new OrderItem(1, OrderDirection.DESC, OrderDirection.ASC), new OrderItem(2, OrderDirection.DESC, OrderDirection.ASC)));
-        selectStatement.getGroupByItems().addAll(Arrays.asList(new OrderItem(1, OrderDirection.ASC, OrderDirection.ASC), new OrderItem(2, OrderDirection.ASC, OrderDirection.ASC)));
+        selectStatement.getOrderByItems().addAll(Arrays.asList(
+                new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC), new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC)));
+        selectStatement.getGroupByItems().addAll(Arrays.asList(
+                new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC), new IndexOrderByItemSegment(0, 0, 2, OrderDirection.ASC, OrderDirection.ASC)));
         GroupByRowComparator groupByRowComparator = new GroupByRowComparator(selectStatement);
         assertTrue(groupByRowComparator.compare(o1, o2) > 0);
     }
@@ -65,8 +69,10 @@ public final class GroupByRowComparatorTest {
         MemoryQueryResultRow o1 = new MemoryQueryResultRow(mockQueryResult("1", "2"));
         MemoryQueryResultRow o2 = new MemoryQueryResultRow(mockQueryResult("1", "2"));
         SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getOrderByItems().addAll(Arrays.asList(new OrderItem(1, OrderDirection.ASC, OrderDirection.ASC), new OrderItem(2, OrderDirection.DESC, OrderDirection.ASC)));
-        selectStatement.getGroupByItems().addAll(Arrays.asList(new OrderItem(1, OrderDirection.DESC, OrderDirection.ASC), new OrderItem(2, OrderDirection.ASC, OrderDirection.ASC)));
+        selectStatement.getOrderByItems().addAll(Arrays.asList(
+                new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC), new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC)));
+        selectStatement.getGroupByItems().addAll(Arrays.asList(
+                new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC), new IndexOrderByItemSegment(0, 0, 2, OrderDirection.ASC, OrderDirection.ASC)));
         GroupByRowComparator groupByRowComparator = new GroupByRowComparator(selectStatement);
         assertThat(groupByRowComparator.compare(o1, o2), is(0));
     }
@@ -76,7 +82,8 @@ public final class GroupByRowComparatorTest {
         MemoryQueryResultRow o1 = new MemoryQueryResultRow(mockQueryResult("1", "2"));
         MemoryQueryResultRow o2 = new MemoryQueryResultRow(mockQueryResult("3", "4"));
         SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getGroupByItems().addAll(Arrays.asList(new OrderItem(1, OrderDirection.ASC, OrderDirection.ASC), new OrderItem(2, OrderDirection.ASC, OrderDirection.ASC)));
+        selectStatement.getGroupByItems().addAll(Arrays.asList(
+                new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC), new IndexOrderByItemSegment(0, 0, 2, OrderDirection.ASC, OrderDirection.ASC)));
         GroupByRowComparator groupByRowComparator = new GroupByRowComparator(selectStatement);
         assertTrue(groupByRowComparator.compare(o1, o2) < 0);
     }
@@ -86,7 +93,8 @@ public final class GroupByRowComparatorTest {
         MemoryQueryResultRow o1 = new MemoryQueryResultRow(mockQueryResult("1", "2"));
         MemoryQueryResultRow o2 = new MemoryQueryResultRow(mockQueryResult("3", "4"));
         SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getGroupByItems().addAll(Arrays.asList(new OrderItem(1, OrderDirection.DESC, OrderDirection.ASC), new OrderItem(2, OrderDirection.DESC, OrderDirection.ASC)));
+        selectStatement.getGroupByItems().addAll(Arrays.asList(
+                new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC), new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC)));
         GroupByRowComparator groupByRowComparator = new GroupByRowComparator(selectStatement);
         assertTrue(groupByRowComparator.compare(o1, o2) > 0);
     }
@@ -96,7 +104,8 @@ public final class GroupByRowComparatorTest {
         MemoryQueryResultRow o1 = new MemoryQueryResultRow(mockQueryResult("1", "2"));
         MemoryQueryResultRow o2 = new MemoryQueryResultRow(mockQueryResult("1", "2"));
         SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getGroupByItems().addAll(Arrays.asList(new OrderItem(1, OrderDirection.ASC, OrderDirection.ASC), new OrderItem(2, OrderDirection.DESC, OrderDirection.ASC)));
+        selectStatement.getGroupByItems().addAll(Arrays.asList(
+                new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC), new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC)));
         GroupByRowComparator groupByRowComparator = new GroupByRowComparator(selectStatement);
         assertThat(groupByRowComparator.compare(o1, o2), is(0));
     }

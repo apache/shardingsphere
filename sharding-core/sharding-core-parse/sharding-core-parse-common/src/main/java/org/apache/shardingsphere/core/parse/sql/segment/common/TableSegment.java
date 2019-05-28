@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.parse.sql.segment.common;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
+import lombok.ToString;
 import org.apache.shardingsphere.core.parse.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.sql.segment.AliasAvailable;
 import org.apache.shardingsphere.core.parse.sql.segment.OwnerAvailable;
@@ -33,6 +34,7 @@ import org.apache.shardingsphere.core.parse.util.SQLUtil;
  * @author zhangliang
  */
 @Getter
+@ToString
 public final class TableSegment implements SQLSegment, OwnerAvailable, AliasAvailable {
     
     private final int startIndex;

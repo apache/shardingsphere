@@ -24,13 +24,17 @@ import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.parse.sql.context.condition.ParseCondition;
 import org.apache.shardingsphere.core.parse.sql.context.limit.Limit;
-import org.apache.shardingsphere.core.parse.sql.context.orderby.OrderItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.DistinctSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.StarSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.table.Table;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrderByItemSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ExpressionOrderByItemSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.IndexOrderByItemSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.OrderByItemSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.TextOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 import java.util.Collection;
@@ -61,9 +65,9 @@ public final class SelectStatement extends DQLStatement {
     
     private final Set<SelectItem> items = new LinkedHashSet<>();
     
-    private final List<OrderItem> groupByItems = new LinkedList<>();
+    private final List<OrderByItemSegment> groupByItems = new LinkedList<>();
     
-    private final List<OrderItem> orderByItems = new LinkedList<>();
+    private final List<OrderByItemSegment> orderByItems = new LinkedList<>();
     
     private Limit limit;
     
@@ -224,13 +228,13 @@ public final class SelectStatement extends DQLStatement {
         }
     }
     
-    private void setIndexForOrderItem(final Map<String, Integer> columnLabelIndexMap, final List<OrderItem> orderItems) {
-        for (OrderItem each : orderItems) {
-            if (-1 != each.getIndex()) {
+    private void setIndexForOrderItem(final Map<String, Integer> columnLabelIndexMap, final List<OrderByItemSegment> orderItems) {
+        for (OrderByItemSegment each : orderItems) {
+            if (each instanceof IndexOrderByItemSegment) {
                 continue;
             }
-            Optional<String> alias = findAlias(each);
-            String columnLabel = alias.isPresent() ? alias.get() : getOrderItemText(each);
+            Optional<String> alias = getAlias(((TextOrderByItemSegment) each).getText());
+            String columnLabel = alias.isPresent() ? alias.get() : getOrderItemText((TextOrderByItemSegment) each);
             Preconditions.checkState(columnLabelIndexMap.containsKey(columnLabel), "Can't find index: %s", each);
             if (columnLabelIndexMap.containsKey(columnLabel)) {
                 each.setIndex(columnLabelIndexMap.get(columnLabel));
@@ -238,25 +242,8 @@ public final class SelectStatement extends DQLStatement {
         }
     }
     
-    private Optional<String> findAlias(final OrderItem orderItem) {
-        Optional<String> result;
-        if (orderItem.getQualifiedName().isPresent()) {
-            result = getAlias(orderItem.getQualifiedName().get());
-        } else if (null != orderItem.getExpression()) {
-            result = getAlias(orderItem.getExpression());
-        } else {
-            result = Optional.absent();
-        }
-        return result;
-    }
-    
-    private String getOrderItemText(final OrderItem orderItem) {
-        if (orderItem.isIndex()) {
-            return null;
-        }
-        if (orderItem.getName().isPresent()) {
-            return orderItem.getName().get();
-        }
-        return orderItem.getExpression();
+    private String getOrderItemText(final TextOrderByItemSegment orderByItemSegment) {
+        return orderByItemSegment instanceof ColumnOrderByItemSegment
+                ? ((ColumnOrderByItemSegment) orderByItemSegment).getColumn().getName() : ((ExpressionOrderByItemSegment) orderByItemSegment).getExpression();
     }
 }

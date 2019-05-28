@@ -30,11 +30,13 @@ import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
 import org.apache.shardingsphere.core.parse.sql.context.limit.Limit;
 import org.apache.shardingsphere.core.parse.sql.context.limit.LimitValue;
-import org.apache.shardingsphere.core.parse.sql.context.orderby.OrderItem;
 import org.apache.shardingsphere.core.parse.sql.context.table.Table;
+import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
@@ -419,8 +421,10 @@ public final class ShardingSQLRewriterTest {
         selectStatement.setLimit(new Limit());
         selectStatement.getLimit().setOffset(new LimitValue(2, -1, true));
         selectStatement.getLimit().setRowCount(new LimitValue(2, -1, false));
-        selectStatement.getOrderByItems().add(new OrderItem("x", "id", OrderDirection.ASC, OrderDirection.ASC));
-        selectStatement.getGroupByItems().add(new OrderItem("x", "id", OrderDirection.DESC, OrderDirection.ASC));
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, "id");
+        columnSegment.setOwner(new TableSegment(0, 0, "x"));
+        selectStatement.getOrderByItems().add(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.ASC, OrderDirection.ASC));
+        selectStatement.getGroupByItems().add(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.DESC, OrderDirection.ASC));
         selectStatement.addSQLToken(new TableToken(17, 23, "table_x", QuoteCharacter.NONE));
         selectStatement.addSQLToken(new OffsetToken(33, 33, 2));
         selectStatement.addSQLToken(new RowCountToken(36, 36, 2));
@@ -440,8 +444,10 @@ public final class ShardingSQLRewriterTest {
         selectStatement.addSQLToken(new TableToken(68, 74, "table_x", QuoteCharacter.NONE));
         selectStatement.addSQLToken(new OffsetToken(119, 119, 2));
         selectStatement.addSQLToken(new RowCountToken(98, 98, 4));
-        selectStatement.getOrderByItems().add(new OrderItem("x", "id", OrderDirection.ASC, OrderDirection.ASC));
-        selectStatement.getGroupByItems().add(new OrderItem("x", "id", OrderDirection.DESC, OrderDirection.ASC));
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, "id");
+        columnSegment.setOwner(new TableSegment(0, 0, "x"));
+        selectStatement.getOrderByItems().add(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.ASC, OrderDirection.ASC));
+        selectStatement.getGroupByItems().add(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.DESC, OrderDirection.ASC));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(selectStatement.getLimit());
         routeResult.setRoutingResult(new RoutingResult());
@@ -460,8 +466,10 @@ public final class ShardingSQLRewriterTest {
         selectStatement.addSQLToken(new TableToken(85, 91, "table_x", QuoteCharacter.NONE));
         selectStatement.addSQLToken(new OffsetToken(123, 123, 2));
         selectStatement.addSQLToken(new RowCountToken(26, 26, 4));
-        selectStatement.getOrderByItems().add(new OrderItem("x", "id", OrderDirection.ASC, OrderDirection.ASC));
-        selectStatement.getGroupByItems().add(new OrderItem("x", "id", OrderDirection.DESC, OrderDirection.ASC));
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, "id");
+        columnSegment.setOwner(new TableSegment(0, 0, "x"));
+        selectStatement.getOrderByItems().add(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.ASC, OrderDirection.ASC));
+        selectStatement.getGroupByItems().add(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.DESC, OrderDirection.ASC));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(selectStatement.getLimit());
         routeResult.setRoutingResult(new RoutingResult());
@@ -530,8 +538,12 @@ public final class ShardingSQLRewriterTest {
     @Test
     public void assertRewriteForDerivedOrderBy() {
         selectStatement.setGroupByLastIndex(60);
-        selectStatement.getOrderByItems().add(new OrderItem("x", "id", OrderDirection.ASC, OrderDirection.ASC));
-        selectStatement.getOrderByItems().add(new OrderItem("x", "name", OrderDirection.DESC, OrderDirection.ASC));
+        ColumnSegment columnSegment1 = new ColumnSegment(0, 0, "id");
+        columnSegment1.setOwner(new TableSegment(0, 0, "x"));
+        ColumnSegment columnSegment2 = new ColumnSegment(0, 0, "name");
+        columnSegment2.setOwner(new TableSegment(0, 0, "x"));
+        selectStatement.getOrderByItems().add(new ColumnOrderByItemSegment(0, 0, columnSegment1, OrderDirection.ASC, OrderDirection.ASC));
+        selectStatement.getOrderByItems().add(new ColumnOrderByItemSegment(0, 0, columnSegment2, OrderDirection.DESC, OrderDirection.ASC));
         selectStatement.addSQLToken(new TableToken(25, 31, "table_x", QuoteCharacter.NONE));
         selectStatement.addSQLToken(new OrderByToken(61));
         routeResult = new SQLRouteResult(selectStatement);
