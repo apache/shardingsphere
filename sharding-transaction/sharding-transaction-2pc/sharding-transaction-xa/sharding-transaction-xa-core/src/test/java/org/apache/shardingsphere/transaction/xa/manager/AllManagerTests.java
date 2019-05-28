@@ -17,15 +17,11 @@
 
 package org.apache.shardingsphere.transaction.xa.manager;
 
-import org.apache.shardingsphere.transaction.xa.manager.atomikos.AtomikosTransactionManagerTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({
-        AtomikosTransactionManagerTest.class,
-        XATransactionManagerLoaderTest.class
-})
+@SuiteClasses(XATransactionManagerLoaderTest.class)
 public final class AllManagerTests {
 }
