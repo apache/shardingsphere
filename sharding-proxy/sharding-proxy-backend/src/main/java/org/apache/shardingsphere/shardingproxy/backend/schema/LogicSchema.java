@@ -111,8 +111,7 @@ public abstract class LogicSchema {
         if (!name.equals(dataSourceChangedEvent.getShardingSchemaName())) {
             return;
         }
-        backendDataSource.close();
-        backendDataSource = new JDBCBackendDataSource(DataSourceConverter.getDataSourceParameterMap(dataSourceChangedEvent.getDataSourceConfigurations()));
+        backendDataSource.renew(DataSourceConverter.getDataSourceParameterMap(dataSourceChangedEvent.getDataSourceConfigurations()));
     }
     
     /**
