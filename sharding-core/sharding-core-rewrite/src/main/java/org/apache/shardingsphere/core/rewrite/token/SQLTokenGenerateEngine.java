@@ -20,6 +20,8 @@ package org.apache.shardingsphere.core.rewrite.token;
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
+import org.apache.shardingsphere.core.rewrite.token.generator.CollectionSQLTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.token.generator.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.SQLTokenGenerator;
 import org.apache.shardingsphere.core.rule.BaseRule;
 
@@ -48,9 +50,13 @@ public abstract class SQLTokenGenerateEngine<T extends BaseRule> {
     public final List<SQLToken> generateSQLTokens(final SQLStatement sqlStatement, final T rule) {
         List<SQLToken> result = new LinkedList<>(sqlStatement.getSQLTokens());
         for (SQLTokenGenerator each : getSQLTokenGenerators()) {
-            Optional<? extends SQLToken> sqlToken = each.generateSQLToken(sqlStatement, rule);
-            if (sqlToken.isPresent()) {
-                result.add(sqlToken.get());
+            if (each instanceof OptionalSQLTokenGenerator) {
+                Optional<? extends SQLToken> sqlToken = ((OptionalSQLTokenGenerator) each).generateSQLToken(sqlStatement, rule);
+                if (sqlToken.isPresent()) {
+                    result.add(sqlToken.get());
+                }
+            } else {
+                result.addAll(((CollectionSQLTokenGenerator) each).generateSQLTokens(sqlStatement, rule));
             }
         }
         Collections.sort(result);

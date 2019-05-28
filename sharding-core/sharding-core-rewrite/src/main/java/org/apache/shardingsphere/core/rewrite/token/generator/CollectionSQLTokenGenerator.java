@@ -17,27 +17,27 @@
 
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
-import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.core.rewrite.token.pojo.OrderByToken;
-import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
+import org.apache.shardingsphere.core.rule.BaseRule;
+
+import java.util.Collection;
 
 /**
- * Order by token generator.
+ * SQL token generator for collection.
  *
  * @author zhangliang
+ * 
+ * @param <T> type of rule 
  */
-public final class OrderByTokenGenerator implements OptionalSQLTokenGenerator<ShardingRule> {
+public interface CollectionSQLTokenGenerator<T extends BaseRule> extends SQLTokenGenerator {
     
-    @Override
-    public Optional<OrderByToken> generateSQLToken(final SQLStatement sqlStatement, final ShardingRule rule) {
-        if (!(sqlStatement instanceof SelectStatement)) {
-            return Optional.absent();
-        }
-        if (!((SelectStatement) sqlStatement).getGroupByItems().isEmpty() && ((SelectStatement) sqlStatement).getOrderByItems().isEmpty()) {
-            return Optional.of(new OrderByToken(((SelectStatement) sqlStatement).getGroupByLastIndex() + 1));
-        }
-        return Optional.absent();
-    }
+    /**
+     * Generate SQL tokens.
+     * 
+     * @param sqlStatement SQL statement
+     * @param rule rule
+     * @return SQL tokens
+     */
+    Collection<? extends SQLToken> generateSQLTokens(SQLStatement sqlStatement, T rule);
 }

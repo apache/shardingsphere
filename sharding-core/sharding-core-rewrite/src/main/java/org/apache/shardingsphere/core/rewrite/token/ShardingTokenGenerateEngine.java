@@ -20,6 +20,7 @@ package org.apache.shardingsphere.core.rewrite.token;
 import org.apache.shardingsphere.core.rewrite.token.generator.OrderByTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.SQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.SelectItemsTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.token.generator.TableTokenGenerator;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Collection;
@@ -35,6 +36,7 @@ public final class ShardingTokenGenerateEngine extends SQLTokenGenerateEngine<Sh
     private static final Collection<SQLTokenGenerator> SQL_TOKEN_GENERATORS = new LinkedList<>();
     
     static {
+        SQL_TOKEN_GENERATORS.add(new TableTokenGenerator());
         SQL_TOKEN_GENERATORS.add(new SelectItemsTokenGenerator());
         SQL_TOKEN_GENERATORS.add(new OrderByTokenGenerator());
     }

@@ -18,13 +18,11 @@
 package org.apache.shardingsphere.core.parse.filler.dal;
 
 import lombok.Setter;
-import org.apache.shardingsphere.core.parse.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.filler.api.ShardingRuleAwareFiller;
 import org.apache.shardingsphere.core.parse.sql.context.table.Table;
 import org.apache.shardingsphere.core.parse.sql.segment.dal.ShowLikeSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.token.impl.TableToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
@@ -41,7 +39,6 @@ public final class MySQLShowLikeFiller implements SQLSegmentFiller<ShowLikeSegme
     public void fill(final ShowLikeSegment sqlSegment, final SQLStatement sqlStatement) {
         String pattern = sqlSegment.getPattern();
         if (shardingRule.findTableRule(pattern).isPresent() || shardingRule.isBroadcastTable(pattern)) {
-            sqlStatement.addSQLToken(new TableToken(sqlSegment.getStartIndex(), sqlSegment.getStopIndex(), pattern, QuoteCharacter.NONE));
             sqlStatement.getTables().add(new Table(pattern, null));
         }
     }

@@ -15,12 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.token.generator;
+package org.apache.shardingsphere.core.parse.sql.segment;
+
+import org.apache.shardingsphere.core.parse.constant.QuoteCharacter;
 
 /**
- * SQL token generator.
+ * Table available.
  *
  * @author zhangliang
  */
-public interface SQLTokenGenerator {
+public interface TableAvailable extends SQLSegment {
+    
+    /**
+     * Get table name.
+     *
+     * @return table name
+     */
+    String getTableName();
+    
+    /**
+     * Get table quote character.
+     *
+     * @return table quote character
+     */
+    QuoteCharacter getTableQuoteCharacter();
 }

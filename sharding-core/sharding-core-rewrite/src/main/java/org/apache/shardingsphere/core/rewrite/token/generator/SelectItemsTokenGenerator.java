@@ -37,7 +37,7 @@ import java.util.LinkedList;
  *
  * @author zhangliang
  */
-public final class SelectItemsTokenGenerator implements SQLTokenGenerator<ShardingRule> {
+public final class SelectItemsTokenGenerator implements OptionalSQLTokenGenerator<ShardingRule> {
     
     @Override
     public Optional<SelectItemsToken> generateSQLToken(final SQLStatement sqlStatement, final ShardingRule rule) {

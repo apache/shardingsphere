@@ -23,20 +23,22 @@ import com.google.common.base.Optional;
  * Owner available.
  *
  * @author zhangliang
+ * 
+ * @param <T> type of SQL segment
  */
-public interface OwnerAvailable {
+public interface OwnerAvailable<T extends SQLSegment> {
     
     /**
      * Get owner.
      *
      * @return owner
      */
-    Optional<? extends SQLSegment> getOwner();
+    Optional<T> getOwner();
     
     /**
      * Set owner.
      *
      * @param owner owner
      */
-    void setOwner(SQLSegment owner);
+    void setOwner(T owner);
 }
