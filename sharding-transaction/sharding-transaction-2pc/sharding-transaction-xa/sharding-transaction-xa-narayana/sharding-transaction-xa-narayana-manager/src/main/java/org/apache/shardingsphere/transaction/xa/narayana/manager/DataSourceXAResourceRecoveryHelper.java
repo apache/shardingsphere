@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.xa.manager.narayana;
+package org.apache.shardingsphere.transaction.xa.narayana.manager;
 
 import com.arjuna.ats.jta.recovery.XAResourceRecoveryHelper;
 import lombok.extern.slf4j.Slf4j;
