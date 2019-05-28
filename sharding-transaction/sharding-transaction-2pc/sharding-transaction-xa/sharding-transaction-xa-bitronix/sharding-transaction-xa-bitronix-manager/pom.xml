@@ -26,6 +26,6 @@
         <version>4.0.0-RC2-SNAPSHOT</version>
     </parent>
     <artifactId>sharding-transaction-xa-bitronix-manager</artifactId>
-    <name>${project.name}</name>
+    <name>${project.artifactId}</name>
 </project>
 
