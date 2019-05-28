@@ -278,4 +278,22 @@
     <parser-result sql-case-id="grant_usage_on_type" />
     <parser-result sql-case-id="grant_usage_on_types" />
     <parser-result sql-case-id="grant_roles" />
+    
+    <parser-result sql-case-id="grant_select_on_table">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="16" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="grant_select_to_users">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="27" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
 </parser-result-sets>

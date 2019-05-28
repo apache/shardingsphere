@@ -26,12 +26,12 @@
     <sql-case id="grant_user_on_db_and_table" value="GRANT ALL ON sharding_db.t_order TO 'user_dev'@'localhost'" db-types="MySQL" />
     <sql-case id="grant_user_with_hostname" value="GRANT select, update ON t_order TO 'user_dev'@'localhost'" db-types="MySQL" />
     <sql-case id="grant_select" value="GRANT SELECT ON *.* TO user1" db-types="MySQL" />
-    <sql-case id="grant_select_column" value="GRANT SELECT (order_id) ON ds_0.t_order TO user1" db-types="MySQL" />
+    <sql-case id="grant_select_column" value="GRANT SELECT (order_id) ON ds_0.t_order TO user1" db-types="MySQL,SQLServer" />
     <sql-case id="grant_select_to_local_user" value="GRANT SELECT ON *.* TO 'user1'@'localhost'" db-types="MySQL" />
     <sql-case id="grant_crud" value="GRANT INSERT, SELECT, UPDATE, DELETE ON *.* TO user1" db-types="MySQL" />
     <sql-case id="grant_all" value="GRANT ALL PRIVILEGES ON *.* TO user1" db-types="MySQL" />
     <sql-case id="grant_all_on_schema" value="GRANT ALL PRIVILEGES ON ds_0.* TO user1" db-types="MySQL,PostgreSQL" />
-    <sql-case id="grant_all_on_table" value="GRANT ALL PRIVILEGES ON ds_0.t_order TO user1" db-types="MySQL,PostgreSQL" />
+    <sql-case id="grant_all_on_table" value="GRANT ALL PRIVILEGES ON ds_0.t_order TO user1" db-types="MySQL,PostgreSQL,SQLServer" />
     <sql-case id="grant_role_to_user" value="GRANT role1 TO user1" db-types="MySQL" />
     <sql-case id="grant_roles_to_users" value="GRANT role1, role2 TO user1, user2" db-types="MySQL,Oracle" />
     <sql-case id="grant_system_privilege" value="GRANT CREATE SESSION TO user1" db-types="Oracle" />
@@ -39,7 +39,7 @@
     <sql-case id="grant_all_system_privileges" value="GRANT ALL PRIVILEGES TO user1" db-types="Oracle" />
     <sql-case id="grant_system_privilege_to_users" value="GRANT CREATE SESSION TO user1, user2" db-types="Oracle" />
     <sql-case id="grant_object_privilege" value="GRANT SELECT ON ds_0.t_order TO user1" db-types="Oracle" />
-    <sql-case id="grant_object_privileges" value="GRANT INSERT, SELECT, UPDATE, DELETE ON ds_0.t_order TO user1" db-types="Oracle" />
+    <sql-case id="grant_object_privileges" value="GRANT INSERT, SELECT, UPDATE, DELETE ON ds_0.t_order TO user1" db-types="Oracle,SQLServer" />
     <sql-case id="grant_all_object_privileges" value="GRANT ALL PRIVILEGES ON ds_0.t_order TO user1" db-types="Oracle" />
     <sql-case id="grant_object_privilege_to_users" value="GRANT SELECT ON ds_0.t_order TO user1, user2" db-types="Oracle" />
     <sql-case id="grant_object_privilege_column" value="GRANT SELECT (order_id) ON ds_0.t_order TO user1" db-types="Oracle" />
@@ -113,4 +113,6 @@
     <sql-case id="grant_usage_on_type" value="GRANT USAGE ON TYPE type1 TO role1" db-types="PostgreSQL" />
     <sql-case id="grant_usage_on_types" value="GRANT USAGE ON TYPE type1, type2 TO role1" db-types="PostgreSQL" />
     <sql-case id="grant_roles" value="GRANT role1, role2 TO role3, role4" db-types="PostgreSQL" />
+    <sql-case id="grant_select_on_table" value="GRANT SELECT ON t_order TO user1" db-types="SQLServer" />
+    <sql-case id="grant_select_to_users" value="GRANT SELECT (order_id) ON t_order TO user1, user2" db-types="SQLServer" />
 </sql-cases>
