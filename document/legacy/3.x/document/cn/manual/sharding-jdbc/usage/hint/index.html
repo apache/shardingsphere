@@ -1569,10 +1569,6 @@ Hint方式主要使用场景：</p>
         tableStrategy:
           hint:
             algorithmClassName: io.shardingsphere.userAlgo.HintAlgorithm
-  defaultDatabaseStrategy:
-    inline:
-      shardingColumn: user_id
-      algorithmExpression: demo_ds_${user_id % 2}
   defaultTableStrategy:
     none:
   defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator

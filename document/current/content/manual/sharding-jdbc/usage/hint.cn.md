@@ -29,14 +29,10 @@ shardingRule:
         actualDataNodes: demo_ds_${0..1}.t_order_${0..1}
         databaseStrategy:
           hint:
-            algorithmClassName: yourHintShardingAlgorithm
+            algorithmClassName: org.apache.shardingsphere.userAlgo.HintAlgorithm
         tableStrategy:
           hint:
-            algorithmClassName: yourHintShardingAlgorithm
-  defaultDatabaseStrategy:
-    inline:
-      shardingColumn: user_id
-      algorithmExpression: demo_ds_${user_id % 2}
+            algorithmClassName: org.apache.shardingsphere.userAlgo.HintAlgorithm
   defaultTableStrategy:
     none:
   defaultKeyGenerator:

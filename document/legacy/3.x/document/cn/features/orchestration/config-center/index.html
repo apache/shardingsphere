@@ -1613,6 +1613,10 @@ ds_1: !!io.shardingsphere.orchestration.yaml.YamlDataSourceConfiguration
 <pre><code class="language-yaml">tables:
   t_order:
     actualDataNodes: ds_$-&gt;{0..1}.t_order_$-&gt;{0..1}
+    databaseStrategy:
+      inline:
+        algorithmExpression: ds_$-&gt;{user_id % 2}
+        shardingColumn: user_id
     keyGeneratorColumnName: order_id
     logicTable: t_order
     tableStrategy:
@@ -1621,6 +1625,10 @@ ds_1: !!io.shardingsphere.orchestration.yaml.YamlDataSourceConfiguration
         shardingColumn: order_id
   t_order_item:
     actualDataNodes: ds_$-&gt;{0..1}.t_order_item_$-&gt;{0..1}
+    databaseStrategy:
+      inline:
+        algorithmExpression: ds_$-&gt;{user_id % 2}
+        shardingColumn: user_id
     keyGeneratorColumnName: order_item_id
     logicTable: t_order_item
     tableStrategy:
@@ -1633,10 +1641,6 @@ broadcastTables:
   - t_config
   
 defaultDataSourceName: ds_0
-defaultDatabaseStrategy:
-  inline:
-    algorithmExpression: ds_$-&gt;{user_id % 2}
-    shardingColumn: user_id
     
 masterSlaveRules: {}
 </code></pre>

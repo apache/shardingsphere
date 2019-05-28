@@ -463,6 +463,9 @@ tables:
     
   t_order: 
     actualTables: t_order_${0..1}
+    databaseStrategy:
+      shardingColumns: none
+      algorithmClassName: com.dangdang.ddframe.rdb.sharding.api.strategy.database.NoneDatabaseShardingAlgorithm
     tableStrategy: &amp;table001
       shardingColumns: order_id
       algorithmExpression: t_order_${order_id.longValue() % 2}
@@ -470,15 +473,14 @@ tables:
   #绑定表中其余的表的策略与t_order的策略相同
   t_order_item:
     actualTables: t_order_item_${0..1}
+    databaseStrategy:
+      shardingColumns: none
+      algorithmClassName: com.dangdang.ddframe.rdb.sharding.api.strategy.database.NoneDatabaseShardingAlgorithm
     tableStrategy: *table001
 
 bindingTables:
   - tableNames: t_order,t_order_item
   - tableNames: ...
-
-defaultDatabaseStrategy:
-  shardingColumns: none
-  algorithmClassName: com.dangdang.ddframe.rdb.sharding.api.strategy.database.NoneDatabaseShardingAlgorithm
 
 props:
   sql.show: false
