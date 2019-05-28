@@ -101,8 +101,11 @@ public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSo
     public final synchronized void renew(final DataSourceChangedEvent dataSourceChangedEvent) {
         Map<String, DataSourceConfiguration> dataSourceConfigurations = dataSourceChangedEvent.getDataSourceConfigurations();
         dataSource.close(getDeletedDataSources(dataSourceConfigurations));
+        dataSource.close(getModifiedDataSources(dataSourceConfigurations).keySet());
         dataSource = new ShardingDataSource(getChangedDataSources(dataSource.getDataSourceMap(), dataSourceConfigurations), 
                 dataSource.getShardingContext().getShardingRule(), dataSource.getShardingContext().getShardingProperties().getProps());
+        getDataSourceConfigurations().clear();
+        getDataSourceConfigurations().putAll(dataSourceConfigurations);
     }
     
     /**

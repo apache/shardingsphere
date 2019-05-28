@@ -105,8 +105,11 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
     public final synchronized void renew(final DataSourceChangedEvent dataSourceChangedEvent) {
         Map<String, DataSourceConfiguration> dataSourceConfigurations = dataSourceChangedEvent.getDataSourceConfigurations();
         dataSource.close(getDeletedDataSources(dataSourceConfigurations));
+        dataSource.close(getModifiedDataSources(dataSourceConfigurations).keySet());
         dataSource = new MasterSlaveDataSource(getChangedDataSources(dataSource.getDataSourceMap(), 
                 dataSourceConfigurations), dataSource.getMasterSlaveRule(), dataSource.getShardingProperties().getProps());
+        getDataSourceConfigurations().clear();
+        getDataSourceConfigurations().putAll(dataSourceConfigurations);
     }
     
     /**
