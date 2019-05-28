@@ -26,5 +26,5 @@
     <sql-case id="truncate_table_with_quota" value="TRUNCATE TABLE &quot;t_order&quot;" db-types="Oracle" />
     <sql-case id="truncate_table_with_double_quota" value="TRUNCATE TABLE &quot;t_order&quot;" db-types="PostgreSQL" />
     <sql-case id="truncate_tables" value="TRUNCATE TABLE t_order_item, t_order" db-types="PostgreSQL" />
-    <sql-case id="truncate_table_with_asterisk" value="TRUNCATE TABLE t_order *" db-types="PostgreSQL" />
+    <sql-case id="truncate_table_with_asterisk" value="TRUNCATE TABLE t_order *" db-types="PostgreSQL" />	
 </sql-cases>
