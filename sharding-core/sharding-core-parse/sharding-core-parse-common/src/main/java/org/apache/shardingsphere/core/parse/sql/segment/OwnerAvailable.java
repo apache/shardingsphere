@@ -26,7 +26,7 @@ import com.google.common.base.Optional;
  * 
  * @param <T> type of SQL segment
  */
-public interface OwnerAvailable<T extends SQLSegment> {
+public interface OwnerAvailable<T extends SQLSegment> extends SQLSegment {
     
     /**
      * Get owner.
