@@ -46,10 +46,16 @@
     <sql-case id="create_role_with_container" value="CREATE USER user1 IDENTIFIED BY password CONTAINER = ALL" />
     <sql-case id="create_user_with_quota_option" value="CREATE USER user1 IDENTIFIED BY password QUOTA 1M ON tablespace1" />
     <sql-case id="create_user_with_password_expire_lock" value="CREATE USER user1 IDENTIFIED BY password PASSWORD EXPIRE ACCOUNT LOCK" />
-    <sql-case id="create_user_postgresql" value="CREATE USER user1" db-types="PostgreSQL" />
+    <sql-case id="create_user_only_with_name" value="CREATE USER user1" db-types="PostgreSQL,SQLServer" />
     <sql-case id="create_user_with_role_postgresql" value="CREATE USER user1 WITH ROLE role1" db-types="PostgreSQL" />
     <sql-case id="create_user_with_roles_postgresql" value="CREATE USER user1 WITH ROLE role1, role2" db-types="PostgreSQL" />
     <sql-case id="create_user_with_password_postgresql" value="CREATE USER user1 WITH ENCRYPTED PASSWORD 'password'" db-types="PostgreSQL" />
     <sql-case id="create_user_with_option_postgresql" value="CREATE USER user1 WITH SUPERUSER" db-types="PostgreSQL" />
     <sql-case id="create_user_with_options_postgresql" value="CREATE USER user1 WITH CREATEDB CREATEROLE" db-types="PostgreSQL" />
+    <sql-case id="create_user_with_login" value="CREATE USER user1 FROM LOGIN login1" db-types="SQLServer" />
+    <sql-case id="create_user_with_schema" value="CREATE USER user1 WITH DEFAULT_SCHEMA = schema" db-types="SQLServer" />
+    <sql-case id="create_user_with_no_login" value="CREATE USER user1 WITHOUT LOGIN" db-types="SQLServer" />
+    <!--<sql-case id="create_login_with_windows" value="CREATE LOGIN [domain\login1]" db-types="SQLServer" />-->
+    <sql-case id="create_user_with_certificate" value="CREATE USER user1 FROM CERTIFICATE certificate" db-types="SQLServer" />
+    <sql-case id="create_user_with_asym_key" value="CREATE USER user1 FROM ASYMMETRIC KEY asym_key" db-types="SQLServer" />
 </sql-cases>

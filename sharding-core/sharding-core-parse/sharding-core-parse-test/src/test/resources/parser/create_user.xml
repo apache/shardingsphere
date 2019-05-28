@@ -46,10 +46,15 @@
     <parser-result sql-case-id="create_role_with_container" />
     <parser-result sql-case-id="create_user_with_quota_option" />
     <parser-result sql-case-id="create_user_with_password_expire_lock" />
-    <parser-result sql-case-id="create_user_postgresql" />
+    <parser-result sql-case-id="create_user_only_with_name" />
     <parser-result sql-case-id="create_user_with_role_postgresql" />
     <parser-result sql-case-id="create_user_with_roles_postgresql" />
     <parser-result sql-case-id="create_user_with_password_postgresql" />
     <parser-result sql-case-id="create_user_with_option_postgresql" />
     <parser-result sql-case-id="create_user_with_options_postgresql" />
+    <parser-result sql-case-id="create_user_with_login" />
+    <parser-result sql-case-id="create_user_with_schema" />
+    <parser-result sql-case-id="create_user_with_no_login" />
+    <parser-result sql-case-id="create_user_with_certificate" />
+    <parser-result sql-case-id="create_user_with_asym_key" />
 </parser-result-sets>
