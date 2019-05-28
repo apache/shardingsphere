@@ -192,4 +192,33 @@
             <index-token start-index="24" stop-index="34" table-name="t_order" />
         </tokens>
     </parser-result>
+    
+    <parser-result sql-case-id="drop_table_with_bracket">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="11" table-name="t_order" left-delimiter="[" right-delimiter="]" length="9" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="drop_index_with_bracket">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <index-token start-index="11" stop-index="23" table-name="t_order" />
+            <table-token start-index="28" table-name="t_order" left-delimiter="[" right-delimiter="]" length="9" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="drop_index_if_exists_on_table">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <index-token start-index="21" stop-index="31" table-name="t_order" />
+            <table-token start-index="36" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
 </parser-result-sets>
