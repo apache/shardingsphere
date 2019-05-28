@@ -149,7 +149,7 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
     
     @Override
     public void close() throws Exception {
-        if (dataSources.isEmpty()) {
+        if (null == dataSources) {
             return;
         }
         close(dataSources.keySet());
