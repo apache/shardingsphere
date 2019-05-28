@@ -25,4 +25,49 @@
             <table-token start-index="15" table-name="t_order" length="7" />
         </tokens>
     </parser-result>
+    
+    <parser-result sql-case-id="deny_select">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="15" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="deny_select_column">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="26" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="deny_select_to_users">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="26" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="deny_crud">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="39" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="deny_all">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="23" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
 </parser-result-sets>
