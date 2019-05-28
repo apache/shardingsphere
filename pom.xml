@@ -68,6 +68,7 @@
         <seata.version>0.5.1</seata.version>
         <narayana.version>5.9.1.Final</narayana.version>
         <jboss-transaction-spi.version>7.6.0.Final</jboss-transaction-spi.version>
+        <btm.version>2.1.3</btm.version>
         
         <curator.version>2.10.0</curator.version>
         <opentracing.version>0.30.0</opentracing.version>
@@ -213,6 +214,13 @@
                 <groupId>org.jboss</groupId>
                 <artifactId>jboss-transaction-spi</artifactId>
                 <version>${jboss-transaction-spi.version}</version>
+                <scope>provided</scope>
+            </dependency>
+    
+            <dependency>
+                <groupId>org.codehaus.btm</groupId>
+                <artifactId>btm</artifactId>
+                <version>${btm.version}</version>
                 <scope>provided</scope>
             </dependency>
     
