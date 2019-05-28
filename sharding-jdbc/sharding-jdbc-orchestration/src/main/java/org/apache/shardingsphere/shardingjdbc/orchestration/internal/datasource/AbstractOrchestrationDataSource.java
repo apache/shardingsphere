@@ -127,7 +127,7 @@ public abstract class AbstractOrchestrationDataSource extends AbstractUnsupporte
         return result;
     }
     
-    private synchronized Map<String, DataSourceConfiguration> getModifiedDataSources(final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
+    protected final synchronized Map<String, DataSourceConfiguration> getModifiedDataSources(final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
         Map<String, DataSourceConfiguration> result = new LinkedHashMap<>();
         for (Entry<String, DataSourceConfiguration> entry : dataSourceConfigurations.entrySet()) {
             if (isModifiedDataSource(entry)) {
