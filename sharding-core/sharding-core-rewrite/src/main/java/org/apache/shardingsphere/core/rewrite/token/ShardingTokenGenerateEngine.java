@@ -17,25 +17,20 @@
 
 package org.apache.shardingsphere.core.rewrite.token;
 
-import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
 import org.apache.shardingsphere.core.rewrite.token.generator.OrderByTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.SQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.SelectItemsTokenGenerator;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * SQL token generator for sharding.
  *
  * @author zhangliang
  */
-public final class ShardingTokenGenerateEngine implements SQLTokenGenerateEngine<ShardingRule> {
+public final class ShardingTokenGenerateEngine extends SQLTokenGenerateEngine<ShardingRule> {
     
     private static final Collection<SQLTokenGenerator> SQL_TOKEN_GENERATORS = new LinkedList<>();
     
@@ -44,17 +39,8 @@ public final class ShardingTokenGenerateEngine implements SQLTokenGenerateEngine
         SQL_TOKEN_GENERATORS.add(new OrderByTokenGenerator());
     }
     
-    @SuppressWarnings("unchecked")
     @Override
-    public List<SQLToken> generateSQLTokens(final SQLStatement sqlStatement, final ShardingRule shardingRule) {
-        List<SQLToken> result = new LinkedList<>(sqlStatement.getSQLTokens());
-        for (SQLTokenGenerator each : SQL_TOKEN_GENERATORS) {
-            Optional<? extends SQLToken> sqlToken = each.generateSQLToken(sqlStatement, shardingRule);
-            if (sqlToken.isPresent()) {
-                result.add(sqlToken.get());
-            }
-        }
-        Collections.sort(result);
-        return result;
+    protected Collection<SQLTokenGenerator> getSQLTokenGenerators() {
+        return SQL_TOKEN_GENERATORS;
     }
 }
