@@ -37,10 +37,6 @@ shardingRule:
         tableStrategy:
           hint:
             algorithmClassName: org.apache.shardingsphere.userAlgo.HintAlgorithm
-  defaultDatabaseStrategy:
-    inline:
-      shardingColumn: user_id
-      algorithmExpression: demo_ds_${user_id % 2}
   defaultTableStrategy:
     none:
   defaultKeyGenerator:
