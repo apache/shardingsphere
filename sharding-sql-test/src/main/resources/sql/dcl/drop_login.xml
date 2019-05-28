@@ -16,7 +16,6 @@
   ~ limitations under the License.
   -->
 
-<sql-cases db-types="SQLServer" namespace="sqlserver.dcl.dropUser">
-    <sql-case id="drop_user" value="DROP USER user1" />
-    <sql-case id="drop_user_if_exists" value="DROP USER IF EXISTS user1" />
+<sql-cases>
+    <sql-case id="drop_login" value="DROP LOGIN login1" db-types="SQLServer" />
 </sql-cases>

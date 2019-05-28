@@ -16,6 +16,6 @@
   ~ limitations under the License.
   -->
 
-<sql-cases db-types="SQLServer" namespace="sqlserver.dcl.dropLogin">
-    <sql-case id="drop_login" value="DROP LOGIN login1" />
-</sql-cases>
+<parser-result-sets>
+    <parser-result sql-case-id="drop_login" />
+</parser-result-sets>
