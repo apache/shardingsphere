@@ -20,14 +20,37 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <packaging>pom</packaging>
-    <modules>
-        <module>sharding-transaction-xa-atomikos-manager</module>
-    </modules>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>sharding-transaction-xa</artifactId>
         <version>4.0.0-RC2-SNAPSHOT</version>
     </parent>
     <artifactId>sharding-transaction-xa-atomikos</artifactId>
+    <name>${project.artifactId}</name>
+    <packaging>pom</packaging>
+    
+    <modules>
+        <module>sharding-transaction-xa-atomikos-manager</module>
+    </modules>
+    
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>sharding-transaction-xa-spi</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.atomikos</groupId>
+            <artifactId>transactions</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.atomikos</groupId>
+            <artifactId>transactions-jta</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.atomikos</groupId>
+            <artifactId>transactions-jdbc</artifactId>
+        </dependency>
+    </dependencies>
 </project>
+

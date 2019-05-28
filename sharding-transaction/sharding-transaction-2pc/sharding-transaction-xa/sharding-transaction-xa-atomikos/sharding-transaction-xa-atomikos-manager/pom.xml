@@ -26,4 +26,6 @@
         <version>4.0.0-RC2-SNAPSHOT</version>
     </parent>
     <artifactId>sharding-transaction-xa-atomikos-manager</artifactId>
+    <name>${project.artifactId}</name>
 </project>
+
