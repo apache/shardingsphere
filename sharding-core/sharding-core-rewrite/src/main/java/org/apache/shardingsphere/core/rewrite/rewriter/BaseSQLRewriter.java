@@ -24,6 +24,8 @@ import org.apache.shardingsphere.core.parse.sql.token.Substitutable;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
 
+import java.util.List;
+
 /**
  * Base SQL rewriter.
  *
@@ -34,7 +36,9 @@ public final class BaseSQLRewriter implements SQLRewriter {
     
     private final SQLStatement sqlStatement;
     
-    private int tokenCount;
+    private final List<SQLToken> sqlTokens;
+    
+    private int currentSQLTokenIndex;
     
     /**
      * Is to rewrite or not.
@@ -42,7 +46,7 @@ public final class BaseSQLRewriter implements SQLRewriter {
      * @return rewrite or not
      */
     public boolean isToRewriteSQLTokens() {
-        return !sqlStatement.getSQLTokens().isEmpty();
+        return !sqlTokens.isEmpty();
     }
     
     /**
@@ -57,9 +61,9 @@ public final class BaseSQLRewriter implements SQLRewriter {
     @Override
     public void rewrite(final SQLBuilder sqlBuilder, final ParameterBuilder parameterBuilder, final SQLToken sqlToken) {
         String originalSQL = sqlStatement.getLogicSQL();
-        int stopIndex = sqlStatement.getSQLTokens().size() - 1 == tokenCount ? originalSQL.length() : sqlStatement.getSQLTokens().get(tokenCount + 1).getStartIndex();
+        int stopIndex = sqlTokens.size() - 1 == currentSQLTokenIndex ? originalSQL.length() : sqlTokens.get(currentSQLTokenIndex + 1).getStartIndex();
         sqlBuilder.appendLiterals(originalSQL.substring(getStartIndex(sqlToken) > originalSQL.length() ? originalSQL.length() : getStartIndex(sqlToken), stopIndex));
-        tokenCount++;
+        currentSQLTokenIndex++;
     }
     
     private int getStartIndex(final SQLToken sqlToken) {
@@ -72,6 +76,6 @@ public final class BaseSQLRewriter implements SQLRewriter {
      * @param sqlBuilder sql builder
      */
     public void rewriteInitialLiteral(final SQLBuilder sqlBuilder) {
-        sqlBuilder.appendLiterals(sqlStatement.getLogicSQL().substring(0, sqlStatement.getSQLTokens().get(0).getStartIndex()));
+        sqlBuilder.appendLiterals(sqlStatement.getLogicSQL().substring(0, sqlTokens.get(0).getStartIndex()));
     }
 }

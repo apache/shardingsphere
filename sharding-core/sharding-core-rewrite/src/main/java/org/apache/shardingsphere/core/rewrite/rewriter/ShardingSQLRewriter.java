@@ -20,7 +20,8 @@ package org.apache.shardingsphere.core.rewrite.rewriter;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.parse.sql.context.limit.Limit;
-import org.apache.shardingsphere.core.parse.sql.context.orderby.OrderItem;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.OrderByItemSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.TextOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
@@ -159,8 +160,8 @@ public final class ShardingSQLRewriter implements SQLRewriter {
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
         OrderByPlaceholder orderByPlaceholder = new OrderByPlaceholder();
         if (isRewrite()) {
-            for (OrderItem each : selectStatement.getOrderByItems()) {
-                String columnLabel = Strings.isNullOrEmpty(each.getColumnLabel()) ? String.valueOf(each.getIndex()) : each.getColumnLabel();
+            for (OrderByItemSegment each : selectStatement.getOrderByItems()) {
+                String columnLabel = each instanceof TextOrderByItemSegment ? ((TextOrderByItemSegment) each).getText() : String.valueOf(each.getIndex());
                 orderByPlaceholder.getColumnLabels().add(columnLabel);
                 orderByPlaceholder.getOrderDirections().add(each.getOrderDirection());
             }

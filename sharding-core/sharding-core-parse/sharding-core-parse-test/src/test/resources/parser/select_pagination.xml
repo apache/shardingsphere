@@ -225,11 +225,6 @@
         <tokens>
             <table-token start-index="146" table-name="t_order" length="7" />
             <table-token start-index="167" table-name="t_order_item" length="12" />
-            <items-token begin-position="141">
-                <items>
-                    <item>i.item_id AS ORDER_BY_DERIVED_0 </item>
-                </items>
-            </items-token>
             <row-count-token begin-position="363" row-count="3"/>
         </tokens>
         <or-condition>
@@ -245,7 +240,7 @@
             </and-condition>
         </or-condition>
         <order-by-columns>
-            <order-by-column name="item_id" alias="ORDER_BY_DERIVED_0" owner="i" order-direction="DESC" />
+            <order-by-column name="item_id" owner="i" order-direction="DESC" />
         </order-by-columns>
         <limit row-count="3" row-count-index="4" />
     </parser-result>
@@ -258,11 +253,6 @@
         <tokens>
             <table-token start-index="146" table-name="t_order" length="7" />
             <table-token start-index="167" table-name="t_order_item" length="12" />
-            <items-token begin-position="141">
-                <items>
-                    <item>i.item_id AS ORDER_BY_DERIVED_0 </item>
-                </items>
-            </items-token>
             <offset-token begin-position="386" offset="3" />
             <row-count-token begin-position="363" row-count="5" />
         </tokens>
@@ -279,7 +269,7 @@
             </and-condition>
         </or-condition>
         <order-by-columns>
-            <order-by-column name="item_id" alias="ORDER_BY_DERIVED_0" owner="i" order-direction="DESC" />
+            <order-by-column name="item_id" owner="i" order-direction="DESC" />
         </order-by-columns>
         <limit offset="3" offset-index="5" row-count-index="4" row-count="5" />
     </parser-result>
@@ -292,11 +282,6 @@
         <tokens>
             <table-token start-index="146" table-name="t_order" length="7" />
             <table-token start-index="167" table-name="t_order_item" length="12" />
-            <items-token begin-position="141">
-                <items>
-                    <item>i.item_id AS ORDER_BY_DERIVED_0 </item>
-                </items>
-            </items-token>
             <offset-token begin-position="387" offset="3" />
             <row-count-token begin-position="363" row-count="5" />
         </tokens>
@@ -313,7 +298,7 @@
             </and-condition>
         </or-condition>
         <order-by-columns>
-            <order-by-column name="item_id" alias="ORDER_BY_DERIVED_0" owner="i" order-direction="DESC" />
+            <order-by-column name="item_id" owner="i" order-direction="DESC" />
         </order-by-columns>
         <limit offset="3" offset-index="5" row-count-index="4" row-count="5" />
     </parser-result>

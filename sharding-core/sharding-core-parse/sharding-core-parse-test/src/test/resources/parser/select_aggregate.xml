@@ -107,12 +107,6 @@
         </tables>
         <tokens>
             <table-token start-index="40" table-name="t_order" length="7" />
-            <items-token begin-position="35">
-                <items>
-                    <item>COUNT(user_id) AS AVG_DERIVED_COUNT_0 </item>
-                    <item>SUM(user_id) AS AVG_DERIVED_SUM_0 </item>
-                </items>
-            </items-token>
         </tokens>
         <select-items>
             <aggregation-select-items>

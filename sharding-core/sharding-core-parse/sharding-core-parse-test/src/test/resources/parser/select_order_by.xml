@@ -38,17 +38,12 @@
         <tokens>
             <table-token start-index="16" table-name="t_order" length="7" />
             <table-token start-index="27" table-name="t_order_item" length="12" />
-            <items-token begin-position="11">
-                <items>
-                    <item>o.order_id AS ORDER_BY_DERIVED_0 </item>
-                </items>
-            </items-token>
             <encrypt-column-token start-index-for-placeholder="76" stop-index-for-placeholder="92" start-index-for-literal="76" stop-index-for-literal="92" is-in-where="true">
                <column table-name="t_order" name="status"/>
             </encrypt-column-token>
         </tokens>
         <order-by-columns>
-            <order-by-column owner="o" name="order_id" alias="ORDER_BY_DERIVED_0" order-direction="DESC" />
+            <order-by-column owner="o" name="order_id" order-direction="DESC" />
             <order-by-column index="1" order-direction="ASC" />
         </order-by-columns>
         <encrypt-condition>
@@ -68,7 +63,7 @@
             <table-token start-index="40" table-name="t_order" length="7" />
         </tokens>
         <order-by-columns>
-            <order-by-column owner="o" name="order_id" alias="gen_order_id_" order-direction="ASC" />
+            <order-by-column owner="o" name="order_id" order-direction="ASC" />
         </order-by-columns>
     </parser-result>
     
@@ -80,18 +75,13 @@
         <tokens>
             <table-token start-index="16" table-name="t_order" length="7" />
             <table-token start-index="27" table-name="t_order_item" length="12" />
-            <items-token begin-position="11">
-                <items>
-                    <item>o.order_id AS ORDER_BY_DERIVED_0 </item>
-                </items>
-            </items-token>
             <encrypt-column-token start-index-for-placeholder="76" stop-index-for-placeholder="92" start-index-for-literal="76" stop-index-for-literal="92" is-in-where="true">
                <column table-name="t_order" name="status"/>
             </encrypt-column-token>
         </tokens>
         <order-by-columns>
             <order-by-column owner="i" name="creation_date" order-direction="DESC" />
-            <order-by-column owner="o" name="order_id" alias="ORDER_BY_DERIVED_0" order-direction="DESC" />
+            <order-by-column owner="o" name="order_id" order-direction="DESC" />
             <order-by-column owner="i" name="item_id" order-direction="ASC" />
         </order-by-columns>
         <encrypt-condition>
@@ -112,7 +102,7 @@
             <table-token start-index="40" table-name="t_order" length="7" />
         </tokens>
         <order-by-columns>
-            <order-by-column owner="o" name="order_id" alias="gen_order_id_" order-direction="ASC" />
+            <order-by-column owner="o" name="order_id" order-direction="ASC" />
         </order-by-columns>
     </parser-result>
     
@@ -125,7 +115,7 @@
             <table-token start-index="40" table-name="t_order" length="7" />
         </tokens>
         <order-by-columns>
-            <order-by-column owner="o" name="order_id" alias="gen_order_id_" order-direction="ASC" />
+            <order-by-column owner="o" name="order_id" order-direction="ASC" />
         </order-by-columns>
     </parser-result>
     

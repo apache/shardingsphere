@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.parse.sql.segment.dml.column;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
+import lombok.ToString;
 import org.apache.shardingsphere.core.parse.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.sql.segment.OwnerAvailable;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
@@ -34,6 +35,7 @@ import org.apache.shardingsphere.core.parse.util.SQLUtil;
  * @author panjuan
  */
 @Getter
+@ToString
 public class ColumnSegment implements SQLSegment, PredicateRightValue, OwnerAvailable {
     
     private final int startIndex;

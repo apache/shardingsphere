@@ -23,14 +23,9 @@
         </tables>
         <tokens>
             <table-token start-index="38" table-name="t_order" length="7" />
-            <items-token begin-position="33">
-                <items>
-                    <item>o.order_id AS ORDER_BY_DERIVED_0 </item>
-                </items>
-            </items-token>
         </tokens>
         <order-by-columns>
-            <order-by-column owner="o" name="order_id" alias="ORDER_BY_DERIVED_0" order-direction="ASC" />
+            <order-by-column owner="o" name="order_id" order-direction="ASC" />
         </order-by-columns>
     </parser-result>
     
@@ -42,7 +37,7 @@
             <table-token start-index="51" table-name="t_order_item" left-delimiter="`" right-delimiter="`" length="14" />
         </tokens>
         <order-by-columns>
-            <order-by-column name="DATE(i.creation_date)" order-direction="DESC" alias="creation_date"/>
+            <order-by-column name="DATE(i.creation_date)" order-direction="DESC" />
         </order-by-columns>
     </parser-result>
     
