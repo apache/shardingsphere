@@ -32,6 +32,7 @@ import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -148,20 +149,31 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
     
     @Override
     public void close() throws Exception {
-        if (null != dataSources) {
-            closeDataSource(dataSources);
+        if (dataSources.isEmpty()) {
+            return;
+        }
+        close(dataSources.keySet());
+    }
+    
+    /**
+     * Close dataSource.
+     * 
+     * @param dataSourceNames data source names
+     * @throws Exception exception
+     */
+    public void close(final Collection<String> dataSourceNames) throws Exception {
+        for (String each :dataSourceNames) {
+            close(dataSources.get(each));
         }
         shardingTransactionManagerEngine.close();
     }
     
-    private void closeDataSource(final Map<String, DataSource> dataSourceMap) {
-        for (DataSource each : dataSourceMap.values()) {
-            try {
-                Method method = each.getClass().getDeclaredMethod("close");
-                method.setAccessible(true);
-                method.invoke(each);
-            } catch (final ReflectiveOperationException ignored) {
-            }
+    private void close(final DataSource dataSource) { 
+        try { 
+            Method method = dataSource.getClass().getDeclaredMethod("close");
+            method.setAccessible(true);
+            method.invoke(dataSource); 
+        } catch (final ReflectiveOperationException ignored) {
         }
     }
 }
