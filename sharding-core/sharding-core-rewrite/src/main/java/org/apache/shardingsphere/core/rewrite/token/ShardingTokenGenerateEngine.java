@@ -20,8 +20,9 @@ package org.apache.shardingsphere.core.rewrite.token;
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
-import org.apache.shardingsphere.core.rewrite.token.impl.OrderByTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.token.impl.SelectItemsTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.token.generator.OrderByTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.token.generator.SQLTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.token.generator.SelectItemsTokenGenerator;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Collection;

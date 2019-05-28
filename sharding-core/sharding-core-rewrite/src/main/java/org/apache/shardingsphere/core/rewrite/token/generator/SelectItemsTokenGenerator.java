@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.token.impl;
+package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
@@ -27,7 +27,6 @@ import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.sql.token.impl.SelectItemsToken;
-import org.apache.shardingsphere.core.rewrite.token.SQLTokenGenerator;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Collection;

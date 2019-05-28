@@ -15,28 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.token;
+package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
-import org.apache.shardingsphere.core.rule.BaseRule;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.core.parse.sql.token.impl.OrderByToken;
+import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
- * SQL token generator.
+ * Order by token generator.
  *
  * @author zhangliang
- * 
- * @param <T> type of rule 
  */
-public interface SQLTokenGenerator<T extends BaseRule> {
+public final class OrderByTokenGenerator implements SQLTokenGenerator<ShardingRule> {
     
-    /**
-     * Generate SQL token.
-     * 
-     * @param sqlStatement SQL statement
-     * @param rule rule
-     * @return SQL token
-     */
-    Optional<? extends SQLToken> generateSQLToken(SQLStatement sqlStatement, T rule);
+    @Override
+    public Optional<OrderByToken> generateSQLToken(final SQLStatement sqlStatement, final ShardingRule rule) {
+        if (!(sqlStatement instanceof SelectStatement)) {
+            return Optional.absent();
+        }
+        if (!((SelectStatement) sqlStatement).getGroupByItems().isEmpty() && ((SelectStatement) sqlStatement).getOrderByItems().isEmpty()) {
+            return Optional.of(new OrderByToken(((SelectStatement) sqlStatement).getGroupByLastIndex() + 1));
+        }
+        return Optional.absent();
+    }
 }
