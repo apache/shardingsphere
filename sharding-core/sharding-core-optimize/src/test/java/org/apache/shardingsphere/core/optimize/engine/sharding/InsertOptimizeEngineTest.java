@@ -156,8 +156,7 @@ public final class InsertOptimizeEngineTest {
         insertValuesStatementWithoutPlaceHolder.setParametersIndex(0);
         insertValuesStatementWithoutPlaceHolder.addSQLToken(new TableToken(12, 20, "t_order", QuoteCharacter.NONE));
         insertValuesStatementWithoutPlaceHolder.addSQLToken(new InsertValuesToken(27, 52));
-        SelectItemsToken selectItemsToken = new SelectItemsToken(34);
-        selectItemsToken.getItems().add("order_id");
+        SelectItemsToken selectItemsToken = new SelectItemsToken(34, Collections.singletonList("order_id"));
         insertValuesStatementWithoutPlaceHolder.addSQLToken(selectItemsToken);
         AndCondition andCondition = new AndCondition();
         andCondition.getConditions().add(new Condition(new Column("user_id", "t_order"), new LiteralExpressionSegment(0, 0, 12)));
@@ -170,8 +169,7 @@ public final class InsertOptimizeEngineTest {
         insertValuesStatementWithoutPlaceHolderWithQueryEncrypt.setParametersIndex(0);
         insertValuesStatementWithoutPlaceHolderWithQueryEncrypt.addSQLToken(new TableToken(12, 26, "t_encrypt_query", QuoteCharacter.NONE));
         insertValuesStatementWithoutPlaceHolderWithQueryEncrypt.addSQLToken(new InsertValuesToken(27, 52));
-        SelectItemsToken selectItemsToken = new SelectItemsToken(34);
-        selectItemsToken.getItems().add("order_id");
+        SelectItemsToken selectItemsToken = new SelectItemsToken(34, Collections.singletonList("order_id"));
         insertValuesStatementWithoutPlaceHolderWithQueryEncrypt.addSQLToken(selectItemsToken);
         AndCondition andCondition = new AndCondition();
         andCondition.getConditions().add(new Condition(new Column("user_id", "t_encrypt_query"), new LiteralExpressionSegment(0, 0, 12)));

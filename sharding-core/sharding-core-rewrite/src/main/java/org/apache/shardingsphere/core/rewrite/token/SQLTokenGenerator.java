@@ -17,27 +17,26 @@
 
 package org.apache.shardingsphere.core.rewrite.token;
 
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
 import org.apache.shardingsphere.core.rule.BaseRule;
-
-import java.util.List;
 
 /**
  * SQL token generator.
  *
  * @author zhangliang
+ * 
+ * @param <T> type of rule 
  */
-public interface SQLTokenGenerator {
+public interface SQLTokenGenerator<T extends BaseRule> {
     
     /**
-     * Generate SQL tokens.
+     * Generate SQL token.
      * 
      * @param sqlStatement SQL statement
      * @param rule rule
-     * @param shardingTableMetaData sharding table meta data
-     * @return SQL tokens
+     * @return SQL token
      */
-    List<SQLToken> generateSQLTokens(SQLStatement sqlStatement, BaseRule rule, ShardingTableMetaData shardingTableMetaData);
+    Optional<? extends SQLToken> generateSQLToken(SQLStatement sqlStatement, T rule);
 }

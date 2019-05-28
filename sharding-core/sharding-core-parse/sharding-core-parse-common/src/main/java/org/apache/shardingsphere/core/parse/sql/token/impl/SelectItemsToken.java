@@ -19,13 +19,11 @@ package org.apache.shardingsphere.core.parse.sql.token.impl;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.parse.sql.token.Attachable;
 import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Collection;
 
 /**
  * Select items token.
@@ -38,12 +36,10 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 public final class SelectItemsToken extends SQLToken implements Attachable {
     
-    @Setter
-    private boolean isFirstOfItemsSpecial;
+    private final Collection<String> items;
     
-    private final List<String> items = new LinkedList<>();
-    
-    public SelectItemsToken(final int startIndex) {
+    public SelectItemsToken(final int startIndex, final Collection<String> items) {
         super(startIndex);
+        this.items = items;
     }
 }

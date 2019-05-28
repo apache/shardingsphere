@@ -15,56 +15,46 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.token;
+package org.apache.shardingsphere.core.rewrite.token.impl;
 
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.DerivedCommonSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
-import org.apache.shardingsphere.core.parse.sql.token.impl.OrderByToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.SelectItemsToken;
-import org.apache.shardingsphere.core.rule.BaseRule;
+import org.apache.shardingsphere.core.rewrite.token.SQLTokenGenerator;
+import org.apache.shardingsphere.core.rule.ShardingRule;
 
-import java.util.Collections;
+import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
- * SQL token generator for sharding.
+ * Select items token generator.
  *
  * @author zhangliang
  */
-public final class ShardingTokenGenerator implements SQLTokenGenerator {
+public final class SelectItemsTokenGenerator implements SQLTokenGenerator<ShardingRule> {
     
     @Override
-    public List<SQLToken> generateSQLTokens(final SQLStatement sqlStatement, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
-        List<SQLToken> result = new LinkedList<>(sqlStatement.getSQLTokens());
-        if (sqlStatement instanceof SelectStatement) {
-            Optional<SelectItemsToken> selectItemsToken = generateSelectItemsToken((SelectStatement) sqlStatement);
-            if (selectItemsToken.isPresent()) {
-                result.add(selectItemsToken.get());
-            }
-            Optional<OrderByToken> orderByToken = generateOrderByToken((SelectStatement) sqlStatement);
-            if (orderByToken.isPresent()) {
-                result.add(orderByToken.get());
-            }
+    public Optional<SelectItemsToken> generateSQLToken(final SQLStatement sqlStatement, final ShardingRule rule) {
+        if (!(sqlStatement instanceof SelectStatement)) {
+            return Optional.absent();
         }
-        Collections.sort(result);
-        return result;
+        Collection<String> derivedItemTexts = getDerivedItemTexts((SelectStatement) sqlStatement);
+        return derivedItemTexts.isEmpty() ? Optional.<SelectItemsToken>absent()
+                : Optional.of(new SelectItemsToken(((SelectStatement) sqlStatement).getSelectListStopIndex() + 1 + " ".length(), derivedItemTexts));
     }
     
-    private Optional<SelectItemsToken> generateSelectItemsToken(final SelectStatement selectStatement) {
-        SelectItemsToken result = new SelectItemsToken(selectStatement.getSelectListStopIndex() + 1 + " ".length());
-        for (SelectItem each : selectStatement.getItems()) {
+    private Collection<String> getDerivedItemTexts(final SelectStatement sqlStatement) {
+        Collection<String> result = new LinkedList<>();
+        for (SelectItem each : sqlStatement.getItems()) {
             if (each instanceof AggregationSelectItem && !((AggregationSelectItem) each).getDerivedAggregationSelectItems().isEmpty()) {
-                result.getItems().addAll(Lists.transform(((AggregationSelectItem) each).getDerivedAggregationSelectItems(), new Function<AggregationSelectItem, String>() {
+                result.addAll(Lists.transform(((AggregationSelectItem) each).getDerivedAggregationSelectItems(), new Function<AggregationSelectItem, String>() {
                     
                     @Override
                     public String apply(final AggregationSelectItem input) {
@@ -72,21 +62,14 @@ public final class ShardingTokenGenerator implements SQLTokenGenerator {
                     }
                 }));
             } else if (each instanceof DerivedCommonSelectItem) {
-                result.getItems().add(getDerivedItemText(each));
+                result.add(getDerivedItemText(each));
             }
         }
-        return result.getItems().isEmpty() ? Optional.<SelectItemsToken>absent() : Optional.of(result);
+        return result;
     }
     
     private String getDerivedItemText(final SelectItem selectItem) {
         Preconditions.checkState(selectItem.getAlias().isPresent());
         return selectItem.getExpression() + " AS " + selectItem.getAlias().get() + " ";
-    }
-    
-    private Optional<OrderByToken> generateOrderByToken(final SelectStatement selectStatement) {
-        if (!selectStatement.getGroupByItems().isEmpty() && selectStatement.getOrderByItems().isEmpty()) {
-            return Optional.of(new OrderByToken(selectStatement.getGroupByLastIndex() + 1));
-        }
-        return Optional.absent();
     }
 }

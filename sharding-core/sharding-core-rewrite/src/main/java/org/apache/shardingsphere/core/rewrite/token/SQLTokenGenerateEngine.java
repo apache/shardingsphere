@@ -15,32 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.placeholder;
+package org.apache.shardingsphere.core.rewrite.token;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
+import org.apache.shardingsphere.core.rule.BaseRule;
 
-import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Select items placeholder for rewrite.
+ * SQL token generator.
  *
- * @author panjuan
+ * @author zhangliang
+ * 
+ * @param <T> type of rule 
  */
-@RequiredArgsConstructor
-@Getter
-public final class SelectItemsPlaceholder implements ShardingPlaceholder {
+public interface SQLTokenGenerateEngine<T extends BaseRule> {
     
-    private final List<String> items = new LinkedList<>();
-    
-    @Override
-    public String toString() {
-        StringBuilder result = new StringBuilder();
-        for (String item : items) {
-            result.append(", ");
-            result.append(item);
-        }
-        return result.toString();
-    }
+    /**
+     * Generate SQL tokens.
+     * 
+     * @param sqlStatement SQL statement
+     * @param rule rule
+     * @return SQL tokens
+     */
+    List<SQLToken> generateSQLTokens(SQLStatement sqlStatement, T rule);
 }
