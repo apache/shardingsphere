@@ -26,7 +26,7 @@ import org.apache.shardingsphere.core.parse.sql.context.selectitem.DerivedCommon
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.core.parse.sql.token.impl.SelectItemsToken;
+import org.apache.shardingsphere.core.rewrite.token.pojo.SelectItemsToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Collection;
