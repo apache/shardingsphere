@@ -19,9 +19,9 @@ package org.apache.shardingsphere.core.config;
 
 import com.google.common.base.CaseFormat;
 import com.google.common.base.Joiner;
+import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -42,7 +42,6 @@ import java.util.Map.Entry;
  */
 @RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode(of = {"dataSourceClassName", "properties"})
 public final class DataSourceConfiguration {
     
     private static final String GETTER_PREFIX = "get";
@@ -125,5 +124,31 @@ public final class DataSourceConfiguration {
             }
         }
         return Optional.absent();
+    }
+    
+    @Override
+    public boolean equals(final Object obj) {
+        return this == obj || null != obj && getClass() == obj.getClass() && equalsByProperties((DataSourceConfiguration) obj);
+    }
+    
+    private boolean equalsByProperties(final DataSourceConfiguration dataSourceConfiguration) {
+        if (!this.dataSourceClassName.equals(dataSourceConfiguration.getDataSourceClassName())) {
+            return false;
+        }
+        for (Entry<String, Object> entry : properties.entrySet()) {
+            if (!String.valueOf(entry.getValue()).equals(String.valueOf(dataSourceConfiguration.getProperties().get(entry.getKey())))) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    @Override
+    public int hashCode() {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Entry<String, Object> entry : properties.entrySet()) {
+            stringBuilder.append(entry.getKey()).append(entry.getValue().toString());
+        }
+        return Objects.hashCode(dataSourceClassName, stringBuilder.toString());
     }
 }
