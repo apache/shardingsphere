@@ -89,14 +89,28 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
     
     @Override
     public void close() throws Exception {
-        for (DataSource each : dataSourceMap.values()) {
-            try {
-                Method method = each.getClass().getDeclaredMethod("close");
-                method.setAccessible(true);
-                method.invoke(each);
-            } catch (final ReflectiveOperationException ignored) {
-            }
+        close(dataSourceMap.keySet());
+    }
+    
+    /**
+     * Close dataSources.
+     * 
+     * @param dataSourceNames data source names
+     * @throws Exception exception
+     */
+    public void close(final Collection<String> dataSourceNames) throws Exception {
+        for (String each : dataSourceNames) {
+            close(dataSourceMap.get(each));
         }
         shardingTransactionManagerEngine.close();
+    }
+    
+    private void close(final DataSource dataSource) {
+        try {
+            Method method = dataSource.getClass().getDeclaredMethod("close");
+            method.setAccessible(true);
+            method.invoke(dataSource);
+        } catch (final ReflectiveOperationException ignored) {
+        }
     }
 }
