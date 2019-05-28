@@ -1572,10 +1572,6 @@ Similarly, if configuring TableShardingStrategy with hint strategy, you can inje
         tableStrategy:
           hint:
             algorithmClassName: io.shardingsphere.userAlgo.HintAlgorithm
-  defaultDatabaseStrategy:
-    inline:
-      shardingColumn: user_id
-      algorithmExpression: demo_ds_${user_id % 2}
   defaultTableStrategy:
     none:
   defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
