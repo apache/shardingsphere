@@ -38,8 +38,6 @@ public final class TokenAssert {
     
     private final InsertValuesTokenAssert insertValuesTokenAssert;
     
-    private final OrderByTokenAssert orderByTokenAssert;
-    
     private final OffsetTokenAssert offsetTokenAssert;
     
     private final RowCountTokenAssert rowCountTokenAssert;
@@ -56,7 +54,6 @@ public final class TokenAssert {
         tableTokenAssert = new TableTokenAssert(assertMessage);
         indexTokenAssert = new IndexTokenAssert(assertMessage);
         insertValuesTokenAssert = new InsertValuesTokenAssert(assertMessage);
-        orderByTokenAssert = new OrderByTokenAssert(sqlCaseType, assertMessage);
         offsetTokenAssert = new OffsetTokenAssert(sqlCaseType, assertMessage);
         rowCountTokenAssert = new RowCountTokenAssert(sqlCaseType, assertMessage);
         aggregationDistinctTokenAssert = new AggregationDistinctTokenAssert(assertMessage);
@@ -75,7 +72,6 @@ public final class TokenAssert {
         tableTokenAssert.assertTableTokens(actual, expected);
         indexTokenAssert.assertIndexToken(actual, expected);
         insertValuesTokenAssert.assertInsertValuesToken(actual, expected);
-        orderByTokenAssert.assertOrderByToken(actual, expected);
         offsetTokenAssert.assertOffsetToken(actual, expected);
         rowCountTokenAssert.assertRowCountToken(actual, expected);
         aggregationDistinctTokenAssert.assertAggregationDistinctTokens(actual, expected);

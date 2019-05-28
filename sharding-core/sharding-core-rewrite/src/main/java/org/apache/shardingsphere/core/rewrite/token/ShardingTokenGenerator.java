@@ -28,6 +28,7 @@ import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
+import org.apache.shardingsphere.core.parse.sql.token.impl.OrderByToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.SelectItemsToken;
 import org.apache.shardingsphere.core.rule.BaseRule;
 
@@ -49,6 +50,10 @@ public final class ShardingTokenGenerator implements SQLTokenGenerator {
             Optional<SelectItemsToken> selectItemsToken = generateSelectItemsToken((SelectStatement) sqlStatement);
             if (selectItemsToken.isPresent()) {
                 result.add(selectItemsToken.get());
+            }
+            Optional<OrderByToken> orderByToken = generateOrderByToken((SelectStatement) sqlStatement);
+            if (orderByToken.isPresent()) {
+                result.add(orderByToken.get());
             }
         }
         Collections.sort(result);
@@ -76,5 +81,12 @@ public final class ShardingTokenGenerator implements SQLTokenGenerator {
     private String getDerivedItemText(final SelectItem selectItem) {
         Preconditions.checkState(selectItem.getAlias().isPresent());
         return selectItem.getExpression() + " AS " + selectItem.getAlias().get() + " ";
+    }
+    
+    private Optional<OrderByToken> generateOrderByToken(final SelectStatement selectStatement) {
+        if (!selectStatement.getGroupByItems().isEmpty() && selectStatement.getOrderByItems().isEmpty()) {
+            return Optional.of(new OrderByToken(selectStatement.getGroupByLastIndex() + 1));
+        }
+        return Optional.absent();
     }
 }

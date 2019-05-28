@@ -148,7 +148,6 @@
         <tokens>
             <table-token start-index="36" table-name="t_order" length="7" />
             <table-token start-index="51" table-name="t_order_item" length="12" />
-            <order-by-token placeholder-begin-position="194" literal-begin-position="195" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -235,7 +234,6 @@
         </tables>
         <tokens>
             <table-token start-index="91" table-name="t_order_item" left-delimiter="`" right-delimiter="`" length="14" />
-            <order-by-token placeholder-begin-position="178" literal-begin-position="184" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -264,7 +262,6 @@
         </tables>
         <tokens>
             <table-token start-index="58" table-name="t_order" length="7" />
-            <order-by-token placeholder-begin-position="80" literal-begin-position="80" />
         </tokens>
         <select-items>
             <aggregation-select-items>
