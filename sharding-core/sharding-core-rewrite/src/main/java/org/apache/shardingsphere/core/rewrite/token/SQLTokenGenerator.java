@@ -22,7 +22,7 @@ import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
 import org.apache.shardingsphere.core.rule.BaseRule;
 
-import java.util.Collection;
+import java.util.List;
 
 /**
  * SQL token generator.
@@ -39,5 +39,5 @@ public interface SQLTokenGenerator {
      * @param shardingTableMetaData sharding table meta data
      * @return SQL tokens
      */
-    Collection<SQLToken> generateSQLTokens(SQLStatement sqlStatement, BaseRule rule, ShardingTableMetaData shardingTableMetaData);
+    List<SQLToken> generateSQLTokens(SQLStatement sqlStatement, BaseRule rule, ShardingTableMetaData shardingTableMetaData);
 }

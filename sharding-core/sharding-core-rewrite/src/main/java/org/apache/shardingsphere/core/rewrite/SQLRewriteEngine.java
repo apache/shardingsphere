@@ -70,7 +70,7 @@ public final class SQLRewriteEngine {
     
     private final ParameterBuilder parameterBuilder;
     
-    private final Collection<SQLToken> sqlTokens = new LinkedList<>();
+    private final List<SQLToken> sqlTokens = new LinkedList<>();
     
     public SQLRewriteEngine(final ShardingRule shardingRule, final DatabaseType databaseType, 
                             final ShardingTableMetaData shardingTableMetaData, final SQLRouteResult sqlRouteResult, final List<Object> parameters) {
@@ -99,7 +99,7 @@ public final class SQLRewriteEngine {
     }
     
     private void pattern(final OptimizeResult optimizeResult) {
-        BaseSQLRewriter baseSQLRewriter = new BaseSQLRewriter(sqlStatement);
+        BaseSQLRewriter baseSQLRewriter = new BaseSQLRewriter(sqlStatement, sqlTokens);
         if (baseSQLRewriter.isToRewriteSQLTokens()) {
             rewrite(baseSQLRewriter, new ShardingSQLRewriter(getShardingRule(), sqlStatement.getLogicSQL(), databaseType, sqlStatement, sqlRouteResult), 
                     new EncryptSQLRewriter(getShardingEncryptorEngine(), sqlStatement, optimizeResult));

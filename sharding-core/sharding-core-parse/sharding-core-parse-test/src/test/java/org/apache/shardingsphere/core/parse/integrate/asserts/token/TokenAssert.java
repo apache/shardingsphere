@@ -36,8 +36,6 @@ public final class TokenAssert {
     
     private final IndexTokenAssert indexTokenAssert;
     
-    private final SelectItemsTokenAssert itemsTokenAssert;
-    
     private final InsertValuesTokenAssert insertValuesTokenAssert;
     
     private final OrderByTokenAssert orderByTokenAssert;
@@ -57,7 +55,6 @@ public final class TokenAssert {
     public TokenAssert(final SQLCaseType sqlCaseType, final SQLStatementAssertMessage assertMessage, final DatabaseType databaseType) {
         tableTokenAssert = new TableTokenAssert(assertMessage);
         indexTokenAssert = new IndexTokenAssert(assertMessage);
-        itemsTokenAssert = new SelectItemsTokenAssert(assertMessage);
         insertValuesTokenAssert = new InsertValuesTokenAssert(assertMessage);
         orderByTokenAssert = new OrderByTokenAssert(sqlCaseType, assertMessage);
         offsetTokenAssert = new OffsetTokenAssert(sqlCaseType, assertMessage);
@@ -77,7 +74,6 @@ public final class TokenAssert {
     public void assertTokens(final Collection<SQLToken> actual, final ExpectedTokens expected) {
         tableTokenAssert.assertTableTokens(actual, expected);
         indexTokenAssert.assertIndexToken(actual, expected);
-        itemsTokenAssert.assertSelectItemsToken(actual, expected);
         insertValuesTokenAssert.assertInsertValuesToken(actual, expected);
         orderByTokenAssert.assertOrderByToken(actual, expected);
         offsetTokenAssert.assertOffsetToken(actual, expected);

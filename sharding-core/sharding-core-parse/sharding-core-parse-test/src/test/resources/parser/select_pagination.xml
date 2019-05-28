@@ -225,11 +225,6 @@
         <tokens>
             <table-token start-index="146" table-name="t_order" length="7" />
             <table-token start-index="167" table-name="t_order_item" length="12" />
-            <items-token begin-position="141">
-                <items>
-                    <item>i.item_id AS ORDER_BY_DERIVED_0 </item>
-                </items>
-            </items-token>
             <row-count-token begin-position="363" row-count="3"/>
         </tokens>
         <or-condition>
@@ -258,11 +253,6 @@
         <tokens>
             <table-token start-index="146" table-name="t_order" length="7" />
             <table-token start-index="167" table-name="t_order_item" length="12" />
-            <items-token begin-position="141">
-                <items>
-                    <item>i.item_id AS ORDER_BY_DERIVED_0 </item>
-                </items>
-            </items-token>
             <offset-token begin-position="386" offset="3" />
             <row-count-token begin-position="363" row-count="5" />
         </tokens>
@@ -292,11 +282,6 @@
         <tokens>
             <table-token start-index="146" table-name="t_order" length="7" />
             <table-token start-index="167" table-name="t_order_item" length="12" />
-            <items-token begin-position="141">
-                <items>
-                    <item>i.item_id AS ORDER_BY_DERIVED_0 </item>
-                </items>
-            </items-token>
             <offset-token begin-position="387" offset="3" />
             <row-count-token begin-position="363" row-count="5" />
         </tokens>

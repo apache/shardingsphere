@@ -526,11 +526,6 @@
         <!--</tables>-->
         <!--<tokens>-->
             <!--<table-token start-index="12" table-name="t_order_item" length="12" />-->
-            <!--<items-token begin-position="65">-->
-                <!--<items>-->
-                    <!--<item>item_id</item>-->
-                <!--</items>-->
-            <!--</items-token>-->
             <!--<insert-values-token begin-position="74" table-name="t_order_item"/>-->
         <!--</tokens>-->
         <!--<or-condition>-->

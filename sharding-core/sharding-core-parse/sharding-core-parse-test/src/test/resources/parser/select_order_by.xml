@@ -38,11 +38,6 @@
         <tokens>
             <table-token start-index="16" table-name="t_order" length="7" />
             <table-token start-index="27" table-name="t_order_item" length="12" />
-            <items-token begin-position="11">
-                <items>
-                    <item>o.order_id AS ORDER_BY_DERIVED_0 </item>
-                </items>
-            </items-token>
             <encrypt-column-token start-index-for-placeholder="76" stop-index-for-placeholder="92" start-index-for-literal="76" stop-index-for-literal="92" is-in-where="true">
                <column table-name="t_order" name="status"/>
             </encrypt-column-token>
@@ -80,11 +75,6 @@
         <tokens>
             <table-token start-index="16" table-name="t_order" length="7" />
             <table-token start-index="27" table-name="t_order_item" length="12" />
-            <items-token begin-position="11">
-                <items>
-                    <item>o.order_id AS ORDER_BY_DERIVED_0 </item>
-                </items>
-            </items-token>
             <encrypt-column-token start-index-for-placeholder="76" stop-index-for-placeholder="92" start-index-for-literal="76" stop-index-for-literal="92" is-in-where="true">
                <column table-name="t_order" name="status"/>
             </encrypt-column-token>

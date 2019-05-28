@@ -15,28 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.integrate.jaxb.token;
+package org.apache.shardingsphere.core.parse.sql.context.selectitem;
 
-import lombok.Getter;
-import lombok.Setter;
+import com.google.common.base.Optional;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import java.util.LinkedList;
-import java.util.List;
-
-@Getter
-@Setter
-@XmlAccessorType(XmlAccessType.FIELD)
-public final class ExpectedItemsToken {
+/**
+ * Derived common select item.
+ *
+ * @author zhangliang
+ */
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
+public final class DerivedCommonSelectItem extends CommonSelectItem {
     
-    @XmlAttribute(name = "begin-position")
-    private int beginPosition;
-    
-    @XmlElementWrapper(name = "items")
-    @XmlElement(name = "item")
-    private List<String> items = new LinkedList<>();
+    public DerivedCommonSelectItem(final String expression, final Optional<String> alias) {
+        super(expression, alias);
+    }
 }
