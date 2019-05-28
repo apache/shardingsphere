@@ -35,4 +35,7 @@
     <parser-result sql-case-id="alter_all_roles_reset_config" />
     <parser-result sql-case-id="alter_role_reset_config_in_database"  />
     <parser-result sql-case-id="alter_role_reset_all_config" />
+    <parser-result sql-case-id="alter_role_add_member" />
+    <parser-result sql-case-id="alter_role_drop_member"  />
+    <parser-result sql-case-id="alter_role_rename" />
 </parser-result-sets>

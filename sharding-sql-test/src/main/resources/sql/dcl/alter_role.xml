@@ -35,4 +35,7 @@
     <sql-case id="alter_all_roles_reset_config" value="ALTER ROLE ALL RESET client_min_messages" db-types="PostgreSQL" />
     <sql-case id="alter_role_reset_config_in_database" value="ALTER ROLE role1 IN DATABASE ds_0 RESET client_min_messages" db-types="PostgreSQL" />
     <sql-case id="alter_role_reset_all_config" value="ALTER ROLE role1 RESET ALL" db-types="PostgreSQL" />
+    <sql-case id="alter_role_add_member" value="ALTER ROLE role1 ADD MEMBER member1" db-types="SQLServer" />
+    <sql-case id="alter_role_drop_member" value="ALTER ROLE role1_bak DROP MEMBER member1" db-types="SQLServer" />
+    <sql-case id="alter_role_rename" value="ALTER ROLE role1_bak WITH NAME = role1" db-types="SQLServer" />
 </sql-cases>
