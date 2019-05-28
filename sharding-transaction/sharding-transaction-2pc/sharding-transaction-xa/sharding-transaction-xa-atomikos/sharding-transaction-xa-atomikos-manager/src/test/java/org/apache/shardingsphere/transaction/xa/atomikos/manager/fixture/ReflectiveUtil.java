@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.xa.manager.atomikos.fixture;
+package org.apache.shardingsphere.transaction.xa.atomikos.manager.fixture;
 
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;

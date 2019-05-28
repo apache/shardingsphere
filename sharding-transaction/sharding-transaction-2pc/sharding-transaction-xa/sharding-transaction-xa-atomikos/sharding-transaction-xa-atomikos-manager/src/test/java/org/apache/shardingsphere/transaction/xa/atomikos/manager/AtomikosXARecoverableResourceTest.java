@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.xa.manager.atomikos;
+package org.apache.shardingsphere.transaction.xa.atomikos.manager;
 
 import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
 import org.junit.Before;
