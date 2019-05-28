@@ -83,32 +83,36 @@ It refers to sharding configuration, including sharding + read-write split confi
 tables:
   t_order:
     actualDataNodes: ds_$->{0..1}.t_order_$->{0..1}
+    databaseStrategy:
+      inline:
+        shardingColumn: user_id
+        algorithmExpression: ds_$->{user_id % 2}
     keyGenerator:
       column: order_id
     logicTable: t_order
     tableStrategy:
       inline:
-        algorithmExpression: t_order_$->{order_id % 2}
         shardingColumn: order_id
+        algorithmExpression: t_order_$->{order_id % 2}
   t_order_item:
     actualDataNodes: ds_$->{0..1}.t_order_item_$->{0..1}
+    databaseStrategy:
+      inline:
+        shardingColumn: user_id
+        algorithmExpression: ds_$->{user_id % 2}
     keyGenerator:
       column: order_item_id
     logicTable: t_order_item
     tableStrategy:
       inline:
-        algorithmExpression: t_order_item_$->{order_id % 2}
         shardingColumn: order_id
+        algorithmExpression: t_order_item_$->{order_id % 2}
 bindingTables:
   - t_order,t_order_item
 broadcastTables:
   - t_config
   
 defaultDataSourceName: ds_0
-defaultDatabaseStrategy:
-  inline:
-    algorithmExpression: ds_$->{user_id % 2}
-    shardingColumn: user_id
     
 masterSlaveRules: {}
 ```
