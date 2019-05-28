@@ -51,12 +51,16 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
     
     private Map<String, DataSource> dataSources;
     
+    @Getter
+    private final Map<String, YamlDataSourceParameter> dataSourceParameters; 
+    
     private JDBCBackendDataSourceFactory dataSourceFactory = JDBCRawBackendDataSourceFactory.getInstance();
     
     @Getter
     private ShardingTransactionManagerEngine shardingTransactionManagerEngine = new ShardingTransactionManagerEngine();
     
     public JDBCBackendDataSource(final Map<String, YamlDataSourceParameter> dataSourceParameters) {
+        this.dataSourceParameters = dataSourceParameters;
         createDataSourceMap(dataSourceParameters);
     }
     
@@ -152,6 +156,7 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
         if (null == dataSources) {
             return;
         }
+        dataSourceParameters.clear();
         close(dataSources.keySet());
     }
     
