@@ -52,14 +52,14 @@ public class LeafSegmentKeyGeneratorTest {
     @SneakyThrows
     public void assertGenerateKeyWithSingleThread(){
         Properties properties = new Properties();
-        properties.setProperty("serverList","127.0.0.1:2182");
+        properties.setProperty("serverList","127.0.0.1:2181");
         properties.setProperty("initialValue","100001");
         properties.setProperty("step","3");
         leafSegmentKeyGenerator.setProperties(properties);
         String tableName="/test_table_name1";
         List<Comparable<?>> expected = Arrays.<Comparable<?>>asList(100001L,100002L,100003L,100004L,100005L,100006L,100007L,100008L,100009L,100010L);
         List<Comparable<?>> actual = new ArrayList<>();
-        TestingServer server = new TestingServer(2182,true);
+        TestingServer server = new TestingServer(2181,true);
         for (int i = 0; i < 10; i++) {
             actual.add(leafSegmentKeyGenerator.generateKey(tableName));
         }
@@ -74,13 +74,13 @@ public class LeafSegmentKeyGeneratorTest {
         ExecutorService executor = Executors.newFixedThreadPool(threadNumber);
         int taskNumber = threadNumber << 2;
         Properties properties = new Properties();
-        properties.setProperty("serverList","127.0.0.1:2183");
+        properties.setProperty("serverList","127.0.0.1:2181");
         properties.setProperty("initialValue","100001");
         properties.setProperty("step","3");
         leafSegmentKeyGenerator.setProperties(properties);
         final String tableName="/test_table_name2";
         Set<Comparable<?>> actual = new HashSet<>();
-        TestingServer server = new TestingServer(2183,true);
+        TestingServer server = new TestingServer(2181,true);
         for (int i = 0; i < taskNumber; i++) {
             actual.add(executor.submit(new Callable<Comparable<?>>() {
 
@@ -98,12 +98,12 @@ public class LeafSegmentKeyGeneratorTest {
     @SneakyThrows
     public void assertSetStepFailureWhenNegative() throws Exception{
         Properties properties = new Properties();
-        properties.setProperty("serverList","127.0.0.1:2184");
+        properties.setProperty("serverList","127.0.0.1:2181");
         properties.setProperty("initialValue","100001");
         properties.setProperty("step", String.valueOf(-1L));
         leafSegmentKeyGenerator.setProperties(properties);
         final String tableName="/test_table_name3";
-        TestingServer server = new TestingServer(2184,true);
+        TestingServer server = new TestingServer(2181,true);
         leafSegmentKeyGenerator.generateKey(tableName);
         server.close();
     }
@@ -112,12 +112,12 @@ public class LeafSegmentKeyGeneratorTest {
     @SneakyThrows
     public void assertSetInitialValueFailureWhenNegative() {
         Properties properties = new Properties();
-        properties.setProperty("serverList","127.0.0.1:2185");
+        properties.setProperty("serverList","127.0.0.1:2181");
         properties.setProperty("step","3");
         properties.setProperty("initialValue", String.valueOf(-1L));
         leafSegmentKeyGenerator.setProperties(properties);
         final String tableName="/test_table_name4";
-        TestingServer server = new TestingServer(2185,true);
+        TestingServer server = new TestingServer(2181,true);
         leafSegmentKeyGenerator.generateKey(tableName);
         server.close();
     }
@@ -131,7 +131,7 @@ public class LeafSegmentKeyGeneratorTest {
         properties.setProperty("serverList", "192.168.123:90999");
         leafSegmentKeyGenerator.setProperties(properties);
         final String tableName="/test_table_name5";
-        TestingServer server = new TestingServer(2186,true);
+        TestingServer server = new TestingServer(2181,true);
         leafSegmentKeyGenerator.generateKey(tableName);
         server.close();
     }
@@ -145,7 +145,7 @@ public class LeafSegmentKeyGeneratorTest {
         properties.setProperty("serverList", "267.168.123:8088");
         leafSegmentKeyGenerator.setProperties(properties);
         final String tableName="/test_table_name6";
-        TestingServer server = new TestingServer(2187,true);
+        TestingServer server = new TestingServer(2181,true);
         leafSegmentKeyGenerator.generateKey(tableName);
         server.close();
     }
