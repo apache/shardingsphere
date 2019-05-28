@@ -190,7 +190,7 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
         Map<String, YamlDataSourceParameter> modifiedDataSources = getModifiedDataSources(dataSourceParameters);
         close(deletedDataSources);
         close(modifiedDataSources.keySet());
-        dataSources = getChangedDataSources(deletedDataSources, modifiedDataSources);
+        dataSources = getChangedDataSources(deletedDataSources, getAddedDataSources(dataSourceParameters), modifiedDataSources);
         this.dataSourceParameters.clear();
         this.dataSourceParameters.putAll(dataSourceParameters);
         shardingTransactionManagerEngine.close();
@@ -214,15 +214,15 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
     }
     
     private synchronized boolean isModifiedDataSource(final Entry<String, YamlDataSourceParameter> dataSourceNameAndParameters) {
-        return dataSourceParameters.containsKey(dataSourceNameAndParameters.getKey()) && dataSourceParameters.get(dataSourceNameAndParameters.getKey()).equals(dataSourceNameAndParameters.getValue());
+        return dataSourceParameters.containsKey(dataSourceNameAndParameters.getKey()) && !dataSourceParameters.get(dataSourceNameAndParameters.getKey()).equals(dataSourceNameAndParameters.getValue());
     }
     
-    private synchronized Map<String, DataSource> getChangedDataSources(final List<String> deletedDataSources, final Map<String, YamlDataSourceParameter> modifiedDataSources) {
+    private synchronized Map<String, DataSource> getChangedDataSources(final List<String> deletedDataSources, final Map<String, YamlDataSourceParameter> addedDataSources, final Map<String, YamlDataSourceParameter> modifiedDataSources) {
         Map<String, DataSource> result = new LinkedHashMap<>(dataSources);
         result.keySet().removeAll(deletedDataSources);
         result.keySet().removeAll(modifiedDataSources.keySet());
         result.putAll(createDataSources(modifiedDataSources));
-        result.putAll(createDataSources(getAddedDataSources(dataSourceParameters)));
+        result.putAll(createDataSources(getAddedDataSources(addedDataSources)));
         return result;
     }
     
