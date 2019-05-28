@@ -32,7 +32,7 @@ import java.util.TreeSet;
  * 
  * @author zhangliang
  */
-@ToString
+@ToString(of = "tables")
 public final class Tables {
     
     private final List<Table> tables = new ArrayList<>();
