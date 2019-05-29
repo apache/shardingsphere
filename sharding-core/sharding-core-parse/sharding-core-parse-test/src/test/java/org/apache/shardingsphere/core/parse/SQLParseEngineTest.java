@@ -17,21 +17,23 @@
 
 package org.apache.shardingsphere.core.parse;
 
-import lombok.RequiredArgsConstructor;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+
 import org.antlr.v4.runtime.ANTLRErrorListener;
 import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.parse.api.SQLParser;
-import org.apache.shardingsphere.core.parse.integrate.asserts.AntlrParserResultSetLoader;
 import org.apache.shardingsphere.core.parse.integrate.asserts.ParserResultSetLoader;
 import org.apache.shardingsphere.core.parse.integrate.asserts.SQLStatementAssert;
 import org.apache.shardingsphere.core.parse.integrate.engine.AbstractBaseIntegrateSQLParsingTest;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.root.ParserResult;
 import org.apache.shardingsphere.core.parse.parser.SQLParserFactory;
 import org.apache.shardingsphere.core.parse.rule.registry.ShardingParseRuleRegistry;
-import org.apache.shardingsphere.test.sql.AntlrSQLCasesLoader;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.SQLCasesLoader;
 import org.junit.Test;
@@ -39,18 +41,15 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
+import lombok.RequiredArgsConstructor;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
 public final class SQLParseEngineTest extends AbstractBaseIntegrateSQLParsingTest {
     
-    private static SQLCasesLoader sqlCasesLoader = AntlrSQLCasesLoader.getInstance();
+    private static SQLCasesLoader sqlCasesLoader = SQLCasesLoader.getInstance();
     
-    private static ParserResultSetLoader parserResultSetLoader = AntlrParserResultSetLoader.getInstance();
+    private static ParserResultSetLoader parserResultSetLoader = ParserResultSetLoader.getInstance();
     
     private final String sqlCaseId;
     
