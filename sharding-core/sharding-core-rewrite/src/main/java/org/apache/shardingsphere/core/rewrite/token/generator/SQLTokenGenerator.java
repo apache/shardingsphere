@@ -15,14 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.token;
-
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
-import org.apache.shardingsphere.core.rule.BaseRule;
-
-import java.util.List;
+package org.apache.shardingsphere.core.rewrite.token.generator;
 
 /**
  * SQL token generator.
@@ -30,14 +23,4 @@ import java.util.List;
  * @author zhangliang
  */
 public interface SQLTokenGenerator {
-    
-    /**
-     * Generate SQL tokens.
-     * 
-     * @param sqlStatement SQL statement
-     * @param rule rule
-     * @param shardingTableMetaData sharding table meta data
-     * @return SQL tokens
-     */
-    List<SQLToken> generateSQLTokens(SQLStatement sqlStatement, BaseRule rule, ShardingTableMetaData shardingTableMetaData);
 }

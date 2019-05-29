@@ -28,9 +28,11 @@ import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
 import org.apache.shardingsphere.core.parse.sql.context.condition.ParseCondition;
 import org.apache.shardingsphere.core.parse.sql.context.table.Tables;
+import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.EncryptColumnToken;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -48,6 +50,8 @@ import java.util.List;
 public abstract class AbstractSQLStatement implements SQLStatement {
     
     private final SQLType type;
+    
+    private final Collection<SQLSegment> sqlSegments = new LinkedList<>();
     
     private final Tables tables = new Tables();
     

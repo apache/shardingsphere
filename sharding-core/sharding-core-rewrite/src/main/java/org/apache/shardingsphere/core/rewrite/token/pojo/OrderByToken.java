@@ -15,35 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.token.impl;
+package org.apache.shardingsphere.core.rewrite.token.pojo;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
 import org.apache.shardingsphere.core.parse.sql.token.Attachable;
 import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
 
-import java.util.LinkedList;
-import java.util.List;
-
 /**
- * Select items token.
+ * Order by token.
  *
  * @author zhangliang
  * @author panjuan
  */
-@Getter
-@ToString
-@EqualsAndHashCode(callSuper = true)
-public final class SelectItemsToken extends SQLToken implements Attachable {
+public final class OrderByToken extends SQLToken implements Attachable {
     
-    @Setter
-    private boolean isFirstOfItemsSpecial;
-    
-    private final List<String> items = new LinkedList<>();
-    
-    public SelectItemsToken(final int startIndex) {
+    public OrderByToken(final int startIndex) {
         super(startIndex);
     }
 }

@@ -19,7 +19,9 @@ package org.apache.shardingsphere.core.parse.sql.segment.dal;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.parse.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.TableAvailable;
 
 /**
  * Show like segment.
@@ -28,11 +30,21 @@ import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShowLikeSegment implements SQLSegment {
+public final class ShowLikeSegment implements SQLSegment, TableAvailable {
     
     private final int startIndex;
     
     private final int stopIndex;
     
     private final String pattern;
+    
+    @Override
+    public String getTableName() {
+        return pattern;
+    }
+    
+    @Override
+    public QuoteCharacter getTableQuoteCharacter() {
+        return QuoteCharacter.NONE;
+    }
 }

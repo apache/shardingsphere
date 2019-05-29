@@ -19,10 +19,8 @@ package org.apache.shardingsphere.core.parse.filler.common.dml;
 
 import com.google.common.base.Optional;
 import lombok.Setter;
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.constant.DerivedColumn;
 import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.filler.api.ShardingTableMetaDataAwareFiller;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.DistinctSelectItem;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.SelectItemsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.AggregationDistinctSelectItemSegment;
@@ -45,15 +43,13 @@ import java.util.Set;
  * @author duhongjun
  */
 @Setter
-public final class SelectItemsFiller implements SQLSegmentFiller<SelectItemsSegment>, ShardingTableMetaDataAwareFiller {
-    
-    private ShardingTableMetaData shardingTableMetaData;
+public final class SelectItemsFiller implements SQLSegmentFiller<SelectItemsSegment> {
     
     private SelectItemFiller selectItemFiller;
     
     @Override
     public void fill(final SelectItemsSegment sqlSegment, final SQLStatement sqlStatement) {
-        selectItemFiller = new SelectItemFiller(shardingTableMetaData);
+        selectItemFiller = new SelectItemFiller();
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
         selectStatement.getSQLTokens().add(new SelectItemPrefixToken(sqlSegment.getStartIndex()));
         selectStatement.setSelectListStopIndex(sqlSegment.getStopIndex());

@@ -15,31 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.filler.dal;
+package org.apache.shardingsphere.core.rewrite.token.generator;
 
-import lombok.Setter;
-import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.filler.api.ShardingRuleAwareFiller;
-import org.apache.shardingsphere.core.parse.sql.context.table.Table;
-import org.apache.shardingsphere.core.parse.sql.segment.dal.ShowLikeSegment;
+import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.core.rewrite.token.pojo.OrderByToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Show like filler for MySQL.
+ * Order by token generator.
  *
  * @author zhangliang
  */
-@Setter
-public final class MySQLShowLikeFiller implements SQLSegmentFiller<ShowLikeSegment>, ShardingRuleAwareFiller {
-    
-    private ShardingRule shardingRule;
+public final class OrderByTokenGenerator implements OptionalSQLTokenGenerator<ShardingRule> {
     
     @Override
-    public void fill(final ShowLikeSegment sqlSegment, final SQLStatement sqlStatement) {
-        String pattern = sqlSegment.getPattern();
-        if (shardingRule.findTableRule(pattern).isPresent() || shardingRule.isBroadcastTable(pattern)) {
-            sqlStatement.getTables().add(new Table(pattern, null));
+    public Optional<OrderByToken> generateSQLToken(final SQLStatement sqlStatement, final ShardingRule rule) {
+        if (!(sqlStatement instanceof SelectStatement)) {
+            return Optional.absent();
         }
+        if (!((SelectStatement) sqlStatement).getGroupByItems().isEmpty() && ((SelectStatement) sqlStatement).getOrderByItems().isEmpty()) {
+            return Optional.of(new OrderByToken(((SelectStatement) sqlStatement).getGroupByLastIndex() + 1));
+        }
+        return Optional.absent();
     }
 }

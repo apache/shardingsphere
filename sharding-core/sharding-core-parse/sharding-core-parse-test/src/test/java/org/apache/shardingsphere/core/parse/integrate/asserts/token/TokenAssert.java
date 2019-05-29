@@ -32,8 +32,6 @@ import java.util.Collection;
  */
 public final class TokenAssert {
     
-    private final TableTokenAssert tableTokenAssert;
-    
     private final IndexTokenAssert indexTokenAssert;
     
     private final InsertValuesTokenAssert insertValuesTokenAssert;
@@ -51,7 +49,6 @@ public final class TokenAssert {
     private final DatabaseType databaseType;
     
     public TokenAssert(final SQLCaseType sqlCaseType, final SQLStatementAssertMessage assertMessage, final DatabaseType databaseType) {
-        tableTokenAssert = new TableTokenAssert(assertMessage);
         indexTokenAssert = new IndexTokenAssert(assertMessage);
         insertValuesTokenAssert = new InsertValuesTokenAssert(assertMessage);
         offsetTokenAssert = new OffsetTokenAssert(sqlCaseType, assertMessage);
@@ -69,7 +66,7 @@ public final class TokenAssert {
      * @param expected expected tokens
      */
     public void assertTokens(final Collection<SQLToken> actual, final ExpectedTokens expected) {
-        tableTokenAssert.assertTableTokens(actual, expected);
+        // TODO do not assert table token, will assert table segment in future
         indexTokenAssert.assertIndexToken(actual, expected);
         insertValuesTokenAssert.assertInsertValuesToken(actual, expected);
         offsetTokenAssert.assertOffsetToken(actual, expected);

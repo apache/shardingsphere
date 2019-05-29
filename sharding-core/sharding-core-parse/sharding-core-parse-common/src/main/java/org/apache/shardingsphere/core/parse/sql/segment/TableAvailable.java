@@ -15,20 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.token.impl;
+package org.apache.shardingsphere.core.parse.sql.segment;
 
-import org.apache.shardingsphere.core.parse.sql.token.Attachable;
-import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
+import org.apache.shardingsphere.core.parse.constant.QuoteCharacter;
 
 /**
- * Order by token.
+ * Table available.
  *
  * @author zhangliang
- * @author panjuan
  */
-public final class OrderByToken extends SQLToken implements Attachable {
+public interface TableAvailable extends SQLSegment {
     
-    public OrderByToken(final int startIndex) {
-        super(startIndex);
-    }
+    /**
+     * Get table name.
+     *
+     * @return table name
+     */
+    String getTableName();
+    
+    /**
+     * Get table quote character.
+     *
+     * @return table quote character
+     */
+    QuoteCharacter getTableQuoteCharacter();
 }

@@ -19,11 +19,13 @@ package org.apache.shardingsphere.core.parse.sql.segment.common;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.parse.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.sql.segment.AliasAvailable;
 import org.apache.shardingsphere.core.parse.sql.segment.OwnerAvailable;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.TableAvailable;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 /**
@@ -35,7 +37,7 @@ import org.apache.shardingsphere.core.parse.util.SQLUtil;
  */
 @Getter
 @ToString
-public final class TableSegment implements SQLSegment, OwnerAvailable, AliasAvailable {
+public final class TableSegment implements SQLSegment, TableAvailable, OwnerAvailable<SchemaSegment>, AliasAvailable {
     
     private final int startIndex;
     
@@ -45,6 +47,7 @@ public final class TableSegment implements SQLSegment, OwnerAvailable, AliasAvai
     
     private final QuoteCharacter quoteCharacter;
     
+    @Setter
     private SchemaSegment owner;
     
     private String alias;
@@ -62,13 +65,18 @@ public final class TableSegment implements SQLSegment, OwnerAvailable, AliasAvai
     }
     
     @Override
-    public Optional<SchemaSegment> getOwner() {
-        return Optional.fromNullable(owner);
+    public String getTableName() {
+        return name;
     }
     
     @Override
-    public void setOwner(final SQLSegment owner) {
-        this.owner = (SchemaSegment) owner;
+    public QuoteCharacter getTableQuoteCharacter() {
+        return quoteCharacter;
+    }
+    
+    @Override
+    public Optional<SchemaSegment> getOwner() {
+        return Optional.fromNullable(owner);
     }
     
     @Override

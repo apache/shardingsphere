@@ -15,32 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.placeholder;
+package org.apache.shardingsphere.core.rewrite.token.pojo;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.ToString;
+import org.apache.shardingsphere.core.parse.sql.token.Attachable;
+import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Collection;
 
 /**
- * Select items placeholder for rewrite.
+ * Select items token.
  *
+ * @author zhangliang
  * @author panjuan
  */
-@RequiredArgsConstructor
 @Getter
-public final class SelectItemsPlaceholder implements ShardingPlaceholder {
+@ToString
+@EqualsAndHashCode(callSuper = true)
+public final class SelectItemsToken extends SQLToken implements Attachable {
     
-    private final List<String> items = new LinkedList<>();
+    private final Collection<String> items;
     
-    @Override
-    public String toString() {
-        StringBuilder result = new StringBuilder();
-        for (String item : items) {
-            result.append(", ");
-            result.append(item);
-        }
-        return result.toString();
+    public SelectItemsToken(final int startIndex, final Collection<String> items) {
+        super(startIndex);
+        this.items = items;
     }
 }

@@ -74,6 +74,7 @@ public final class SQLStatementFillerEngine {
     public SQLStatement fill(final Collection<SQLSegment> sqlSegments, final SQLStatementRule rule) {
         SQLStatement result = rule.getSqlStatementClass().newInstance();
         result.setLogicSQL(sql);
+        result.getSqlSegments().addAll(sqlSegments);
         for (SQLSegment each : sqlSegments) {
             Optional<SQLSegmentFiller> filler = parseRuleRegistry.findSQLSegmentFiller(databaseType, each.getClass());
             if (filler.isPresent()) {
@@ -86,10 +87,10 @@ public final class SQLStatementFillerEngine {
     @SuppressWarnings("unchecked")
     private void doFill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final SQLSegmentFiller filler) {
         if (filler instanceof ShardingRuleAwareFiller) {
-            ((ShardingRuleAwareFiller) filler).setShardingRule((ShardingRule) this.rule);
+            ((ShardingRuleAwareFiller) filler).setShardingRule((ShardingRule) rule);
         }
         if (filler instanceof EncryptRuleAwareFiller) {
-            ((EncryptRuleAwareFiller) filler).setEncryptRule((EncryptRule) this.rule);
+            ((EncryptRuleAwareFiller) filler).setEncryptRule((EncryptRule) rule);
         }
         if (filler instanceof ShardingTableMetaDataAwareFiller) {
             ((ShardingTableMetaDataAwareFiller) filler).setShardingTableMetaData(shardingTableMetaData);
