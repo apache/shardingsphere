@@ -36,21 +36,21 @@ import java.util.LinkedList;
 public final class AggregationDistinctTokenGenerator implements CollectionSQLTokenGenerator<ShardingRule> {
     
     @Override
-    public Collection<AggregationDistinctToken> generateSQLTokens(final SQLStatement sqlStatement, final ShardingRule rule) {
+    public Collection<AggregationDistinctToken> generateSQLTokens(final SQLStatement sqlStatement, final ShardingRule shardingRule) {
         Collection<AggregationDistinctToken> result = new LinkedList<>();
         for (SQLSegment each : sqlStatement.getSqlSegments()) {
             if (each instanceof AggregationDistinctSelectItemSegment) {
-                result.add(getAggregationDistinctToken((AggregationDistinctSelectItemSegment) each));
+                result.add(createAggregationDistinctToken((AggregationDistinctSelectItemSegment) each));
             }
         }
         return result;
     }
     
-    private AggregationDistinctToken getAggregationDistinctToken(final AggregationDistinctSelectItemSegment selectItemSegment) {
+    private AggregationDistinctToken createAggregationDistinctToken(final AggregationDistinctSelectItemSegment segment) {
         Optional<String> derivedAlias = Optional.absent();
-        if (DerivedColumn.isDerivedColumn(selectItemSegment.getAlias().get())) {
-            derivedAlias = Optional.of(selectItemSegment.getAlias().get());
+        if (DerivedColumn.isDerivedColumn(segment.getAlias().get())) {
+            derivedAlias = Optional.of(segment.getAlias().get());
         }
-        return new AggregationDistinctToken(selectItemSegment.getStartIndex(), selectItemSegment.getStopIndex(), selectItemSegment.getDistinctExpression(), derivedAlias);
+        return new AggregationDistinctToken(segment.getStartIndex(), segment.getStopIndex(), segment.getDistinctExpression(), derivedAlias);
     }
 }
