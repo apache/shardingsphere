@@ -110,17 +110,6 @@ public final class SQLRewriteEngine {
         }
     }
     
-    private ShardingEncryptorEngine getShardingEncryptorEngine() {
-        if (null == baseRule) {
-            return null;
-        }
-        return baseRule instanceof ShardingRule ? ((ShardingRule) baseRule).getShardingEncryptorEngine() : ((EncryptRule) baseRule).getEncryptorEngine();
-    }
-    
-    private ShardingRule getShardingRule() {
-        return baseRule instanceof ShardingRule ? (ShardingRule) baseRule : null;
-    }
-    
     private void rewrite(final BaseSQLRewriter baseSQLRewriter, final ShardingSQLRewriter shardingSQLRewriter, final EncryptSQLRewriter encryptSQLRewriter) {
         baseSQLRewriter.rewriteInitialLiteral(sqlBuilder);
         for (SQLToken each : sqlTokens) {
@@ -128,6 +117,17 @@ public final class SQLRewriteEngine {
             encryptSQLRewriter.rewrite(sqlBuilder, parameterBuilder, each);
             baseSQLRewriter.rewrite(sqlBuilder, parameterBuilder, each);
         }
+    }
+    
+    private ShardingRule getShardingRule() {
+        return baseRule instanceof ShardingRule ? (ShardingRule) baseRule : null;
+    }
+    
+    private ShardingEncryptorEngine getShardingEncryptorEngine() {
+        if (null == baseRule) {
+            return null;
+        }
+        return baseRule instanceof ShardingRule ? ((ShardingRule) baseRule).getShardingEncryptorEngine() : ((EncryptRule) baseRule).getEncryptorEngine();
     }
     
     /**

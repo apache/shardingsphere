@@ -51,9 +51,9 @@ public final class BaseSQLRewriter implements SQLRewriter {
     
     @Override
     public void rewrite(final SQLBuilder sqlBuilder, final ParameterBuilder parameterBuilder, final SQLToken sqlToken) {
-        String originalSQL = sqlStatement.getLogicSQL();
-        int stopIndex = sqlTokens.size() - 1 == currentSQLTokenIndex ? originalSQL.length() : sqlTokens.get(currentSQLTokenIndex + 1).getStartIndex();
-        sqlBuilder.appendLiterals(originalSQL.substring(getStartIndex(sqlToken) > originalSQL.length() ? originalSQL.length() : getStartIndex(sqlToken), stopIndex));
+        String logicSQL = sqlStatement.getLogicSQL();
+        int stopIndex = sqlTokens.size() - 1 == currentSQLTokenIndex ? logicSQL.length() : sqlTokens.get(currentSQLTokenIndex + 1).getStartIndex();
+        sqlBuilder.appendLiterals(logicSQL.substring(getStartIndex(sqlToken) > logicSQL.length() ? logicSQL.length() : getStartIndex(sqlToken), stopIndex));
         currentSQLTokenIndex++;
     }
     
