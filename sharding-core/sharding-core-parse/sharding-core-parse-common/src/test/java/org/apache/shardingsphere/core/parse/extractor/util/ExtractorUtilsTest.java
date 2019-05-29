@@ -32,7 +32,6 @@ import org.junit.Test;
  */
 public class ExtractorUtilsTest {
 
-
     @Test
     public void testGetAllDescendantNodesUsingNullParserRuleContextChild() {
         ParserRuleContext parserRuleContext = new ParserRuleContext();
@@ -42,6 +41,4 @@ public class ExtractorUtilsTest {
         assertEquals(0, collection.size());
         assertFalse(collection.contains(parserRuleContext));
     }
-
-
 }

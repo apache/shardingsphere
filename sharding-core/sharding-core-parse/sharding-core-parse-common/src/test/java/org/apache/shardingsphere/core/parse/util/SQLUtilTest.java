@@ -34,22 +34,18 @@ public class SQLUtilTest {
         assertThat(SQLUtil.getExactlyValue("'xxx'"), is("xxx"));
     }
 
-
     @Test
     public void testGetExactlyExpressionUsingAndReturningNull() {
         assertNull(SQLUtil.getExactlyExpression(null));
     }
-
 
     @Test
     public void testGetExactlyExpressionUsingAndReturningEmptyString() {
         assertEquals("", SQLUtil.getExactlyExpression(""));
     }
 
-
     @Test
     public void testGetExactlyValueUsingNull() {
         assertNull(SQLUtil.getExactlyValue(null));
     }
-
 }
