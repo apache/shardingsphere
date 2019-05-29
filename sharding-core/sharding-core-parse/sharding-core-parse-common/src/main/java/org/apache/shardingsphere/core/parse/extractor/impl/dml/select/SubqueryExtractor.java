@@ -35,6 +35,6 @@ public final class SubqueryExtractor implements OptionalSQLSegmentExtractor {
     @Override
     public Optional<SubquerySegment> extract(final ParserRuleContext subqueryNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         return RuleName.SUBQUERY.getName().equals(subqueryNode.getClass().getSimpleName())
-                ? Optional.of(new SubquerySegment(subqueryNode.getStart().getStartIndex(), subqueryNode.getStop().getStopIndex())) : Optional.<SubquerySegment>absent();
+                ? Optional.of(new SubquerySegment(subqueryNode.getStart().getStartIndex(), subqueryNode.getStop().getStopIndex(), subqueryNode.getText())) : Optional.<SubquerySegment>absent();
     }
 }

@@ -17,14 +17,14 @@
 
 grammar MySQLStatement;
 
-import Symbol, Comments, DMLStatement, DDLStatement, TCLStatement, DCLStatement, DALStatement;
+import Symbol, Comments, DMLStatement, DDLStatement, TCLStatement, DCLStatement, DALStatement, StoreProcedure;
 
 execute
     : (select
     | insert
-    | replace
     | update
     | delete
+    | replace
     | createTable
     | alterTable
     | dropTable
@@ -57,5 +57,6 @@ execute
     | showCreateTable
     | showOther
     | setVariable
+    | call
     ) SEMI_?
     ;

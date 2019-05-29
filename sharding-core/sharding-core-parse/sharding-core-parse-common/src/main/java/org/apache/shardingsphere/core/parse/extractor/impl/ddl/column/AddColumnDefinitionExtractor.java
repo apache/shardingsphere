@@ -52,7 +52,7 @@ public class AddColumnDefinitionExtractor implements CollectionSQLSegmentExtract
         for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(addColumnNode, RuleName.COLUMN_DEFINITION)) {
             Optional<ColumnDefinitionSegment> columnDefinitionSegment = columnDefinitionExtractor.extract(each, parameterMarkerIndexes);
             if (columnDefinitionSegment.isPresent()) {
-                AddColumnDefinitionSegment addColumnDefinitionSegment = new AddColumnDefinitionSegment(columnDefinitionSegment.get());
+                AddColumnDefinitionSegment addColumnDefinitionSegment = new AddColumnDefinitionSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), columnDefinitionSegment.get());
                 postExtractColumnDefinition(addColumnNode, addColumnDefinitionSegment, parameterMarkerIndexes);
                 result.add(addColumnDefinitionSegment);
             }

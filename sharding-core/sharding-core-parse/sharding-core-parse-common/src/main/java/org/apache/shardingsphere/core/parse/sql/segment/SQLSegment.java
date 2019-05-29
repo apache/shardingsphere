@@ -18,9 +18,23 @@
 package org.apache.shardingsphere.core.parse.sql.segment;
 
 /**
- *  SQL segment.
+ * SQL segment.
  * 
  * @author zhangliang
  */
 public interface SQLSegment {
+    
+    /**
+     * Get start index.
+     *
+     * @return start index
+     */
+    int getStartIndex();
+    
+    /**
+     * Get stop index.
+     *
+     * @return stop index
+     */
+    int getStopIndex();
 }

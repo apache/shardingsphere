@@ -153,7 +153,7 @@ public final class SnowflakeShardingKeyGeneratorTest {
     public void assertSetWorkerIdFailureWhenTooMuch() {
         SnowflakeShardingKeyGenerator keyGenerator = new SnowflakeShardingKeyGenerator();
         Properties properties = new Properties();
-        properties.setProperty("worker.id", String.valueOf(-Long.MAX_VALUE));
+        properties.setProperty("worker.id", String.valueOf(Long.MIN_VALUE));
         keyGenerator.setProperties(properties);
         keyGenerator.generateKey();
     }

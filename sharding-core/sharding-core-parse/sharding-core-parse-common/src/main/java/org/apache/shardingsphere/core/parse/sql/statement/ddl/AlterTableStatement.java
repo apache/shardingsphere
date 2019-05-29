@@ -50,17 +50,6 @@ public final class AlterTableStatement extends DDLStatement {
     
     private boolean dropPrimaryKey;
     
-    private String newTableName;
-    
-    /**
-     * Get new table name.
-     * 
-     * @return new table name
-     */
-    public Optional<String> getNewTableName() {
-        return Optional.fromNullable(newTableName);
-    }
-    
     /**
      * Find column definition.
      *

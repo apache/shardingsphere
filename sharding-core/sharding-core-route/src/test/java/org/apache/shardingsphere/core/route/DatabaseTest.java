@@ -125,8 +125,8 @@ public final class DatabaseTest {
         assertThat(actual.getRoutingResult().getRoutingUnits().size(), is(2));
     }
     
-    private void assertTarget(final String originSql, final String targetDataSource) {
-        SQLRouteResult actual = new StatementRoutingEngine(shardingRule, mock(ShardingMetaData.class), DatabaseType.MySQL, new ParsingResultCache()).route(originSql);
+    private void assertTarget(final String originalSQL, final String targetDataSource) {
+        SQLRouteResult actual = new StatementRoutingEngine(shardingRule, mock(ShardingMetaData.class), DatabaseType.MySQL, new ParsingResultCache()).route(originalSQL);
         assertThat(actual.getRoutingResult().getRoutingUnits().size(), is(1));
         assertThat(actual.getRoutingResult().getDataSourceNames(), hasItems(targetDataSource));
     }

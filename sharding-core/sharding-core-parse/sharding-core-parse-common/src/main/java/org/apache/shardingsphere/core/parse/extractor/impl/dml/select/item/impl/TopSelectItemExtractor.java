@@ -24,10 +24,12 @@ import org.apache.shardingsphere.core.parse.extractor.api.OptionalSQLSegmentExtr
 import org.apache.shardingsphere.core.parse.extractor.impl.common.expression.ExpressionExtractor;
 import org.apache.shardingsphere.core.parse.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.sql.context.limit.LimitValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.LimitValueSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.NumberLiteralLimitValueSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.ParameterMarkerLimitValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.TopSegment;
 
 import java.util.Map;
@@ -50,18 +52,21 @@ public final class TopSelectItemExtractor implements OptionalSQLSegmentExtractor
         ParserRuleContext topExprNode = ExtractorUtils.getFirstChildNode(topNode.get(), RuleName.EXPR);
         Optional<? extends ExpressionSegment> topExpr = expressionExtractor.extract(topExprNode, parameterMarkerIndexes);
         Preconditions.checkState(topExpr.isPresent());
-        Optional<LimitValue> limitValue = createLimitValue(topExpr.get());
-        Preconditions.checkState(limitValue.isPresent());
+        Optional<LimitValueSegment> limitValueSegment = createLimitValueSegment(topExpr.get());
+        Preconditions.checkState(limitValueSegment.isPresent());
         ParserRuleContext rowNumberAliasNode = ExtractorUtils.getFirstChildNode(topNode.get().getParent(), RuleName.ALIAS);
-        return Optional.of(new TopSegment(limitValue.get(), topExpr.get().getStartIndex(), topExpr.get().getStopIndex(), rowNumberAliasNode.getText()));
+        return Optional.of(
+                new TopSegment(topNode.get().getStart().getStartIndex(), topNode.get().getStop().getStopIndex(), topNode.get().getText(), limitValueSegment.get(), rowNumberAliasNode.getText()));
     }
     
-    private Optional<LimitValue> createLimitValue(final ExpressionSegment topExpr) {
+    private Optional<LimitValueSegment> createLimitValueSegment(final ExpressionSegment topExpr) {
         if (topExpr instanceof ParameterMarkerExpressionSegment) {
-            return Optional.of(new LimitValue(-1, ((ParameterMarkerExpressionSegment) topExpr).getParameterMarkerIndex(), false));
+            return Optional.<LimitValueSegment>of(
+                    new ParameterMarkerLimitValueSegment(topExpr.getStartIndex(), topExpr.getStopIndex(), ((ParameterMarkerExpressionSegment) topExpr).getParameterMarkerIndex()));
         }
         if (topExpr instanceof LiteralExpressionSegment && ((LiteralExpressionSegment) topExpr).getLiterals() instanceof Number) {
-            return Optional.of(new LimitValue(((Number) ((LiteralExpressionSegment) topExpr).getLiterals()).intValue(), -1, false));
+            return Optional.<LimitValueSegment>of(
+                    new NumberLiteralLimitValueSegment(topExpr.getStartIndex(), topExpr.getStopIndex(), ((Number) ((LiteralExpressionSegment) topExpr).getLiterals()).intValue()));
         }
         return Optional.absent();
     }

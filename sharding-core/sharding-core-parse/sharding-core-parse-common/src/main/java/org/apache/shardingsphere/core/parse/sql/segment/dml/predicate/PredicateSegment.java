@@ -32,9 +32,11 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.Pred
 @Getter
 public final class PredicateSegment implements SQLSegment {
     
+    private final int startIndex;
+    
+    private final int stopIndex;
+    
     private final ColumnSegment column;
     
     private final PredicateRightValue rightValue;
-    
-    private final int stopIndex;
 }

@@ -19,8 +19,9 @@ package org.apache.shardingsphere.core.parse.sql.segment.ddl.index;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.parse.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
-import org.apache.shardingsphere.core.parse.sql.token.impl.IndexToken;
+import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 /**
  * Index segment.
@@ -31,5 +32,18 @@ import org.apache.shardingsphere.core.parse.sql.token.impl.IndexToken;
 @Getter
 public final class IndexSegment implements SQLSegment {
     
-    private final IndexToken token;
+    private final int startIndex;
+    
+    private final int stopIndex;
+    
+    private final String indexName;
+    
+    private final QuoteCharacter quoteCharacter;
+    
+    public IndexSegment(final int startIndex, final int stopIndex, final String indexName) {
+        this.startIndex = startIndex;
+        this.stopIndex = stopIndex;
+        this.indexName = SQLUtil.getExactlyValue(indexName);
+        quoteCharacter = QuoteCharacter.getQuoteCharacter(indexName);
+    }
 }

@@ -19,8 +19,9 @@ package org.apache.shardingsphere.core.parse;
 
 import org.apache.shardingsphere.core.parse.constant.AllConstantTests;
 import org.apache.shardingsphere.core.parse.hook.SPIParsingHookTest;
-import org.apache.shardingsphere.core.parse.old.lexer.AllLexerTests;
-import org.apache.shardingsphere.core.parse.sql.AllSQLTests;
+import org.apache.shardingsphere.core.parse.rule.AllRuleTests;
+import org.apache.shardingsphere.core.parse.rule.registry.ParseRuleRegistryTest;
+import org.apache.shardingsphere.core.parse.sql.context.AllContextTests;
 import org.apache.shardingsphere.core.parse.util.SQLUtilTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -29,11 +30,11 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
         AllConstantTests.class,
-        AllLexerTests.class,
+        AllRuleTests.class,
         SQLUtilTest.class,
-        AllSQLTests.class,
-        SQLJudgeEngineTest.class, 
-        SPIParsingHookTest.class
+        AllContextTests.class,
+        SPIParsingHookTest.class,
+        ParseRuleRegistryTest.class
 })
 public final class AllParseTests {
 }

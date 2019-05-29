@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.route.router.masterslave;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.constant.SQLType;
-import org.apache.shardingsphere.core.parse.SQLJudgeEngine;
+import org.apache.shardingsphere.core.parse.entry.MasterSlaveSQLParseEntry;
 import org.apache.shardingsphere.core.route.SQLLogger;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 
@@ -39,17 +39,20 @@ public final class MasterSlaveRouter {
     
     private final MasterSlaveRule masterSlaveRule;
     
+    private final MasterSlaveSQLParseEntry parseEngine;
+    
     private final boolean showSQL;
     
     /**
      * Route Master slave.
      *
      * @param sql SQL
+     * @param useCache use cache or not
      * @return data source names
      */
     // TODO for multiple masters may return more than one data source
-    public Collection<String> route(final String sql) {
-        Collection<String> result = route(new SQLJudgeEngine(sql).judge().getType());
+    public Collection<String> route(final String sql, final boolean useCache) {
+        Collection<String> result = route(parseEngine.parse(sql, useCache).getType());
         if (showSQL) {
             SQLLogger.logSQL(sql, result);
         }

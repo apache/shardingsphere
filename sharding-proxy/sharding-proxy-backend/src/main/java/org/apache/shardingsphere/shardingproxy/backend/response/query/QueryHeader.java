@@ -52,7 +52,7 @@ public final class QueryHeader {
     public QueryHeader(final ResultSetMetaData resultSetMetaData, final LogicSchema logicSchema, final int columnIndex) throws SQLException {
         this.schema = logicSchema.getName();
         if (logicSchema instanceof ShardingSchema) {
-            Collection<String> tableNames = ((ShardingSchema) logicSchema).getShardingRule().getLogicTableNames(resultSetMetaData.getTableName(columnIndex));
+            Collection<String> tableNames = logicSchema.getShardingRule().getLogicTableNames(resultSetMetaData.getTableName(columnIndex));
             this.table = tableNames.isEmpty() ? "" : tableNames.iterator().next();
         } else {
             this.table = resultSetMetaData.getTableName(columnIndex);

@@ -25,7 +25,7 @@ import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
-import org.apache.shardingsphere.core.parse.EncryptSQLParseEngine;
+import org.apache.shardingsphere.core.parse.entry.EncryptSQLParseEntry;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
@@ -51,14 +51,14 @@ import java.util.logging.Logger;
  */
 @Getter
 public class EncryptDataSource extends AbstractUnsupportedOperationDataSource implements AutoCloseable {
-
-    private final DataSource dataSource;
     
-    private final EncryptRule encryptRule;
+    private final DataSource dataSource;
     
     private final DatabaseType databaseType;
     
-    private final EncryptSQLParseEngine encryptSQLParseEngine;
+    private final EncryptRule encryptRule;
+    
+    private final EncryptSQLParseEntry parseEngine;
     
     @Setter
     private PrintWriter logWriter = new PrintWriter(System.out);
@@ -66,9 +66,9 @@ public class EncryptDataSource extends AbstractUnsupportedOperationDataSource im
     @SneakyThrows
     public EncryptDataSource(final DataSource dataSource, final EncryptRuleConfiguration encryptRuleConfiguration) {
         this.dataSource = dataSource;
-        encryptRule = new EncryptRule(encryptRuleConfiguration);
         databaseType = getDatabaseType();
-        encryptSQLParseEngine = new EncryptSQLParseEngine(databaseType, encryptRule, createEncryptTableMetaData());
+        encryptRule = new EncryptRule(encryptRuleConfiguration);
+        parseEngine = new EncryptSQLParseEntry(databaseType, encryptRule, createEncryptTableMetaData());
     }
     
     @SneakyThrows
@@ -122,7 +122,7 @@ public class EncryptDataSource extends AbstractUnsupportedOperationDataSource im
     @Override
     @SneakyThrows
     public EncryptConnection getConnection() {
-        return new EncryptConnection(dataSource.getConnection(), encryptRule, databaseType, encryptSQLParseEngine);
+        return new EncryptConnection(databaseType, dataSource.getConnection(), encryptRule, parseEngine);
     }
     
     @Override

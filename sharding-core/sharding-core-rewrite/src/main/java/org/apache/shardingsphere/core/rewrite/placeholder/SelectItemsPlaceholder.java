@@ -32,20 +32,14 @@ import java.util.List;
 @Getter
 public final class SelectItemsPlaceholder implements ShardingPlaceholder {
     
-    private final boolean isFirstOfItemsSpecial;
-    
     private final List<String> items = new LinkedList<>();
     
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
-        for (int i = 0; i < items.size(); i++) {
-            if (isFirstOfItemsSpecial && 0 == i) {
-                result.append(items.get(i));
-            } else {
-                result.append(", ");
-                result.append(items.get(i));
-            }
+        for (String item : items) {
+            result.append(", ");
+            result.append(item);
         }
         return result.toString();
     }

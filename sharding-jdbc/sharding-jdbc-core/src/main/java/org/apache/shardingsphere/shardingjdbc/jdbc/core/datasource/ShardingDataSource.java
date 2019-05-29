@@ -27,6 +27,7 @@ import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Properties;
 
@@ -66,6 +67,12 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
     @Override
     public final void close() throws Exception {
         super.close();
+        shardingContext.close();
+    }
+    
+    @Override
+    public final void close(final Collection<String> dataSourceNames) throws Exception {
+        super.close(dataSourceNames);
         shardingContext.close();
     }
 }

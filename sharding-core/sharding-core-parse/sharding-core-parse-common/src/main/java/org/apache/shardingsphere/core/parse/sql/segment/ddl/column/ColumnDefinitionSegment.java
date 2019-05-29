@@ -31,6 +31,11 @@ import org.apache.shardingsphere.core.parse.util.SQLUtil;
 @Setter
 public final class ColumnDefinitionSegment implements SQLSegment {
     
+    // TODO fix startIndex & stopIndex
+    private final int startIndex = 0;
+    
+    private final int stopIndex = 0;
+    
     private String columnName;
     
     private String dataType;

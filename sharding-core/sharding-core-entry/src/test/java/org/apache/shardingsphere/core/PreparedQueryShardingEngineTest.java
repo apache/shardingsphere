@@ -22,6 +22,7 @@ import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
 import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
 import org.apache.shardingsphere.core.route.PreparedStatementRoutingEngine;
+import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.junit.Before;
 import org.junit.Test;
@@ -62,7 +63,9 @@ public final class PreparedQueryShardingEngineTest extends BaseShardingEngineTes
     }
     
     protected void assertShard() {
-        when(routingEngine.route(getParameters())).thenReturn(createSQLRouteResult());
+        SQLRouteResult sqlRouteResult = createSQLRouteResult();
+        sqlRouteResult.getSqlStatement().setLogicSQL("SELECT ?");
+        when(routingEngine.route(getParameters())).thenReturn(sqlRouteResult);
         assertSQLRouteResult(shardingEngine.shard(getSql(), getParameters()));
     }
     

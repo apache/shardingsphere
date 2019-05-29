@@ -24,8 +24,8 @@
         <insert-columns-and-values column-names="id,status">
             <insert-values>
                 <insert-value>
-                    <assignment type-for-placeholder="SQLParameterMarkerExpression" text-for-placeholder="0" type-for-literal="SQLNumberExpression" text-for-literal="1"/>
-                    <assignment type-for-placeholder="SQLParameterMarkerExpression" text-for-placeholder="1" type-for-literal="SQLTextExpression" text-for-literal="valid"/>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="0" type-for-literal="LiteralExpressionSegment" text-for-literal="1"/>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="1" type-for-literal="LiteralExpressionSegment" text-for-literal="valid"/>
                 </insert-value>
             </insert-values>
         </insert-columns-and-values>
@@ -37,10 +37,10 @@
         <insert-columns-and-values column-names="id,name,mobile,status">
             <insert-values>
                 <insert-value>
-                    <assignment type-for-placeholder="SQLParameterMarkerExpression" text-for-placeholder="0" type-for-literal="SQLNumberExpression" text-for-literal="1"/>
-                    <assignment type-for-placeholder="SQLParameterMarkerExpression" text-for-placeholder="1" type-for-literal="SQLTextExpression" text-for-literal="jack"/>
-                    <assignment type-for-placeholder="SQLParameterMarkerExpression" text-for-placeholder="2" type-for-literal="SQLTextExpression" text-for-literal="13333333333"/>
-                    <assignment type-for-placeholder="SQLParameterMarkerExpression" text-for-placeholder="3" type-for-literal="SQLTextExpression" text-for-literal="valid"/>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="0" type-for-literal="LiteralExpressionSegment" text-for-literal="1"/>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="1" type-for-literal="LiteralExpressionSegment" text-for-literal="jack"/>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="2" type-for-literal="LiteralExpressionSegment" text-for-literal="13333333333"/>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="3" type-for-literal="LiteralExpressionSegment" text-for-literal="valid"/>
                 </insert-value>
             </insert-values>
         </insert-columns-and-values>
@@ -52,10 +52,10 @@
         <insert-columns-and-values column-names="id,name,mobile,status">
             <insert-values>
                 <insert-value>
-                    <assignment type-for-placeholder="SQLParameterMarkerExpression" text-for-placeholder="0" type-for-literal="SQLNumberExpression" text-for-literal="1"/>
-                    <assignment type-for-placeholder="SQLIgnoreExpression" text-for-placeholder="upper(?)" type-for-literal="SQLIgnoreExpression" text-for-literal="upper('jack')"/>
-                    <assignment type-for-placeholder="SQLParameterMarkerExpression" text-for-placeholder="2" type-for-literal="SQLTextExpression" text-for-literal="13333333333"/>
-                    <assignment type-for-placeholder="SQLParameterMarkerExpression" text-for-placeholder="3" type-for-literal="SQLTextExpression" text-for-literal="valid"/>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="0" type-for-literal="LiteralExpressionSegment" text-for-literal="1"/>
+                    <assignment type-for-placeholder="CommonExpressionSegment" text-for-placeholder="upper(?)" type-for-literal="CommonExpressionSegment" text-for-literal="upper('jack')"/>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="2" type-for-literal="LiteralExpressionSegment" text-for-literal="13333333333"/>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="3" type-for-literal="LiteralExpressionSegment" text-for-literal="valid"/>
                 </insert-value>
             </insert-values>
         </insert-columns-and-values>

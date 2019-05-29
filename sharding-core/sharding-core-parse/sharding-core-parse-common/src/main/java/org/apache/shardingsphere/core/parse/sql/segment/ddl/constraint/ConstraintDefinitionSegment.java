@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.parse.sql.segment.ddl.constraint;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 
 import java.util.Collection;
@@ -28,8 +29,13 @@ import java.util.LinkedHashSet;
  *
  * @author duhongjun
  */
+@RequiredArgsConstructor
 @Getter
 public final class ConstraintDefinitionSegment implements SQLSegment {
+    
+    private final int startIndex;
+    
+    private final int stopIndex;
     
     private final Collection<String> primaryKeyColumnNames = new LinkedHashSet<>();
 }

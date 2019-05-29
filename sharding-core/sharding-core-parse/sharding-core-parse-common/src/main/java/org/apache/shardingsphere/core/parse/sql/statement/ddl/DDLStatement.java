@@ -17,38 +17,23 @@
 
 package org.apache.shardingsphere.core.parse.sql.statement.ddl;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.core.constant.SQLType;
-import org.apache.shardingsphere.core.parse.old.lexer.token.DefaultKeyword;
-import org.apache.shardingsphere.core.parse.old.lexer.token.Keyword;
-import org.apache.shardingsphere.core.parse.old.lexer.token.TokenType;
 import org.apache.shardingsphere.core.parse.sql.statement.AbstractSQLStatement;
-
-import java.util.Arrays;
-import java.util.Collection;
 
 /**
  * DDL statement.
  *
  * @author zhangliang
  */
+@Getter
+@Setter
 public class DDLStatement extends AbstractSQLStatement {
     
-    private static final Collection<Keyword> PRIMARY_STATEMENT_PREFIX = Arrays.<Keyword>asList(DefaultKeyword.CREATE, DefaultKeyword.ALTER, DefaultKeyword.DROP, DefaultKeyword.TRUNCATE);
-    
-    private static final Collection<Keyword> NOT_SECONDARY_STATEMENT_PREFIX = Arrays.<Keyword>asList(DefaultKeyword.LOGIN, DefaultKeyword.USER, DefaultKeyword.ROLE);
+    private String indexName;
     
     public DDLStatement() {
         super(SQLType.DDL);
-    }
-    
-    /**
-     * Is DDL statement.
-     *
-     * @param primaryTokenType primary token type
-     * @param secondaryTokenType secondary token type
-     * @return is DDL or not
-     */
-    public static boolean isDDL(final TokenType primaryTokenType, final TokenType secondaryTokenType) {
-        return PRIMARY_STATEMENT_PREFIX.contains(primaryTokenType) && !NOT_SECONDARY_STATEMENT_PREFIX.contains(secondaryTokenType);
     }
 }

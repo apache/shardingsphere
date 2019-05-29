@@ -20,8 +20,8 @@ package org.apache.shardingsphere.core.parse.sql.segment.dml.item;
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.core.parse.sql.segment.OwnerAvailable;
-import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
 
 /**
@@ -32,21 +32,19 @@ import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShorthandSelectItemSegment implements SelectItemSegment, OwnerAvailable {
+@Setter
+public final class ShorthandSelectItemSegment implements SelectItemSegment, OwnerAvailable<TableSegment> {
     
     private final int startIndex;
     
     private final int stopIndex;
+    
+    private final String text;
     
     private TableSegment owner;
     
     @Override
     public Optional<TableSegment> getOwner() {
         return Optional.fromNullable(owner);
-    }
-    
-    @Override
-    public void setOwner(final SQLSegment owner) {
-        this.owner = (TableSegment) owner;
     }
 }

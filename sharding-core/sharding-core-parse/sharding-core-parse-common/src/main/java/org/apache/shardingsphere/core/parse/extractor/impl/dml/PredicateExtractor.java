@@ -29,7 +29,7 @@ import org.apache.shardingsphere.core.parse.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.AndPredicateSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.OrPredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateBetweenRightValue;
@@ -132,29 +132,30 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
             Optional<ColumnSegment> leftColumn = columnExtractor.extract(leftColumnNode.get(), parameterMarkerIndexes);
             Optional<ColumnSegment> rightColumn = columnExtractor.extract(rightColumnNode.get(), parameterMarkerIndexes);
             Preconditions.checkState(leftColumn.isPresent() && rightColumn.isPresent());
-            return Optional.of(new PredicateSegment(leftColumn.get(), rightColumn.get(), booleanPrimaryNode.getStop().getStopIndex()));
+            return Optional.of(new PredicateSegment(booleanPrimaryNode.getStart().getStartIndex(), booleanPrimaryNode.getStop().getStopIndex(), leftColumn.get(), rightColumn.get()));
         }
         Optional<ColumnSegment> column = columnExtractor.extract(exprNode, parameterMarkerIndexes);
         Preconditions.checkState(column.isPresent());
         ParserRuleContext valueNode = leftColumnNode.isPresent()
                 ? (ParserRuleContext) comparisonOperatorNode.get().getParent().getChild(2) : (ParserRuleContext) comparisonOperatorNode.get().getParent().getChild(0);
         Optional<? extends ExpressionSegment> sqlExpression = expressionExtractor.extract(valueNode, parameterMarkerIndexes);
-        return sqlExpression.isPresent() ? Optional.of(new PredicateSegment(column.get(), 
-                new PredicateCompareRightValue(comparisonOperatorNode.get().getText(), sqlExpression.get()), booleanPrimaryNode.getStop().getStopIndex())) : Optional.<PredicateSegment>absent();
+        return sqlExpression.isPresent() ? Optional.of(new PredicateSegment(booleanPrimaryNode.getStart().getStartIndex(), booleanPrimaryNode.getStop().getStopIndex(), column.get(), 
+                new PredicateCompareRightValue(comparisonOperatorNode.get().getText(), sqlExpression.get()))) : Optional.<PredicateSegment>absent();
     }
     
     private Optional<PredicateSegment> extractBetweenPredicate(final ParserRuleContext predicateNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes, final ColumnSegment column) {
         Optional<? extends ExpressionSegment> betweenSQLExpression = expressionExtractor.extract((ParserRuleContext) predicateNode.getChild(2), parameterMarkerIndexes);
         Optional<? extends ExpressionSegment> andSQLExpression = expressionExtractor.extract((ParserRuleContext) predicateNode.getChild(4), parameterMarkerIndexes);
         return betweenSQLExpression.isPresent() && andSQLExpression.isPresent()
-                ? Optional.of(new PredicateSegment(column, new PredicateBetweenRightValue(betweenSQLExpression.get(), andSQLExpression.get()), predicateNode.getStop().getStopIndex()))
+                ? Optional.of(new PredicateSegment(
+                        predicateNode.getStart().getStartIndex(), predicateNode.getStop().getStopIndex(), column, new PredicateBetweenRightValue(betweenSQLExpression.get(), andSQLExpression.get())))
                 : Optional.<PredicateSegment>absent();
     }
     
     private Optional<PredicateSegment> extractInPredicate(final ParserRuleContext predicateNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes, final ColumnSegment column) {
         Collection<ExpressionSegment> sqlExpressions = extractInExpressionSegments(predicateNode, parameterMarkerIndexes);
         return sqlExpressions.isEmpty() ? Optional.<PredicateSegment>absent()
-                : Optional.of(new PredicateSegment(column, new PredicateInRightValue(sqlExpressions), predicateNode.getStop().getStopIndex()));
+                : Optional.of(new PredicateSegment(predicateNode.getStart().getStartIndex(), predicateNode.getStop().getStopIndex(), column, new PredicateInRightValue(sqlExpressions)));
     }
     
     private Collection<ExpressionSegment> extractInExpressionSegments(final ParserRuleContext predicateNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
@@ -174,7 +175,7 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
     
     private OrPredicateSegment getOrPredicateSegment(final PredicateSegment predicate) {
         OrPredicateSegment result = new OrPredicateSegment();
-        AndPredicateSegment andPredicate = new AndPredicateSegment();
+        AndPredicate andPredicate = new AndPredicate();
         andPredicate.getPredicates().add(predicate);
         result.getAndPredicates().add(andPredicate);
         return result;
@@ -188,16 +189,16 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
             return leftPredicate;
         }
         OrPredicateSegment result = new OrPredicateSegment();
-        for (AndPredicateSegment eachLeftPredicate : leftPredicate.getAndPredicates()) {
-            for (AndPredicateSegment eachRightPredicate : rightPredicate.getAndPredicates()) {
-                result.getAndPredicates().add(getAndPredicateSegment(eachLeftPredicate, eachRightPredicate));
+        for (AndPredicate eachLeftPredicate : leftPredicate.getAndPredicates()) {
+            for (AndPredicate eachRightPredicate : rightPredicate.getAndPredicates()) {
+                result.getAndPredicates().add(getAndPredicate(eachLeftPredicate, eachRightPredicate));
             }
         }
         return result;
     }
     
-    private AndPredicateSegment getAndPredicateSegment(final AndPredicateSegment leftPredicate, final AndPredicateSegment rightPredicate) {
-        AndPredicateSegment result = new AndPredicateSegment();
+    private AndPredicate getAndPredicate(final AndPredicate leftPredicate, final AndPredicate rightPredicate) {
+        AndPredicate result = new AndPredicate();
         result.getPredicates().addAll(leftPredicate.getPredicates());
         result.getPredicates().addAll(rightPredicate.getPredicates());
         return result;

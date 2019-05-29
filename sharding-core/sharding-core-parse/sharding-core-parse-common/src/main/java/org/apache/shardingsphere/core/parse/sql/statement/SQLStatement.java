@@ -21,8 +21,10 @@ import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.constant.SQLType;
 import org.apache.shardingsphere.core.parse.sql.context.condition.ParseCondition;
 import org.apache.shardingsphere.core.parse.sql.context.table.Tables;
+import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -38,6 +40,13 @@ public interface SQLStatement {
      * @return SQL type
      */
     SQLType getType();
+    
+    /**
+     * Get SQL segments.
+     * 
+     * @return SQL segments
+     */
+    Collection<SQLSegment> getSqlSegments();
     
     /**
      * Get tables.

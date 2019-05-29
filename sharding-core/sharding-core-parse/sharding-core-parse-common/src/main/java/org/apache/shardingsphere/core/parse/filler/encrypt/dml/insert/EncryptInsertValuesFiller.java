@@ -17,40 +17,40 @@
 
 package org.apache.shardingsphere.core.parse.filler.encrypt.dml.insert;
 
+import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLExpression;
 import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.InsertValuesSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.complex.ComplexExpressionSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.SimpleExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
-
-import java.util.LinkedList;
-import java.util.List;
+import org.apache.shardingsphere.core.parse.sql.token.impl.InsertValuesToken;
 
 /**
  * Insert values filler for encrypt.
  *
  * @author zhangliang
+ * @author panjuan
  */
 public final class EncryptInsertValuesFiller implements SQLSegmentFiller<InsertValuesSegment> {
     
     @Override
     public void fill(final InsertValuesSegment sqlSegment, final SQLStatement sqlStatement) {
         InsertStatement insertStatement = (InsertStatement) sqlStatement;
-        InsertValue insertValue = getInsertValue(sqlSegment, insertStatement.getLogicSQL());
+        InsertValue insertValue = new InsertValue(sqlSegment.getValues());
         insertStatement.getValues().add(insertValue);
         insertStatement.setParametersIndex(insertStatement.getParametersIndex() + insertValue.getParametersCount());
+        fillWithInsertValuesToken(sqlSegment, insertStatement);
     }
     
-    private InsertValue getInsertValue(final InsertValuesSegment sqlSegment, final String sql) {
-        List<SQLExpression> columnValues = new LinkedList<>();
-        for (ExpressionSegment each : sqlSegment.getValues()) {
-            SQLExpression sqlExpression = each instanceof SimpleExpressionSegment ? ((SimpleExpressionSegment) each).getSQLExpression() : ((ComplexExpressionSegment) each).getSQLExpression(sql);
-            columnValues.add(sqlExpression);
+    private void fillWithInsertValuesToken(final InsertValuesSegment sqlSegment, final InsertStatement insertStatement) {
+        Optional<InsertValuesToken> insertValuesToken = insertStatement.findSQLToken(InsertValuesToken.class);
+        if (insertValuesToken.isPresent()) {
+            int startIndex = insertValuesToken.get().getStartIndex() < sqlSegment.getStartIndex() ? insertValuesToken.get().getStartIndex() : sqlSegment.getStartIndex();
+            int stopIndex = insertValuesToken.get().getStopIndex() > sqlSegment.getStopIndex() ? insertValuesToken.get().getStopIndex() : sqlSegment.getStopIndex();
+            insertStatement.getSQLTokens().remove(insertValuesToken.get());
+            insertStatement.getSQLTokens().add(new InsertValuesToken(startIndex, stopIndex));
+        } else {
+            insertStatement.getSQLTokens().add(new InsertValuesToken(sqlSegment.getStartIndex(), sqlSegment.getStopIndex()));
         }
-        return new InsertValue(columnValues);
     }
 }

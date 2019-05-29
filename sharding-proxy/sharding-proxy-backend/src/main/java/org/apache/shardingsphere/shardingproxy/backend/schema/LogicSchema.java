@@ -26,6 +26,7 @@ import org.apache.shardingsphere.core.metadata.ShardingMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.orchestration.internal.eventbus.ShardingOrchestrationEventBus;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
@@ -48,15 +49,12 @@ public abstract class LogicSchema {
     
     private final String name;
     
-    private final Map<String, YamlDataSourceParameter> dataSources;
-    
     private final ParsingResultCache parsingResultCache;
     
     private JDBCBackendDataSource backendDataSource;
     
     public LogicSchema(final String name, final Map<String, YamlDataSourceParameter> dataSources) {
         this.name = name;
-        this.dataSources = dataSources;
         parsingResultCache = new ParsingResultCache();
         backendDataSource = new JDBCBackendDataSource(dataSources);
         ShardingOrchestrationEventBus.getInstance().register(this);
@@ -68,6 +66,23 @@ public abstract class LogicSchema {
      * @return sharding meta data.
      */
     public abstract ShardingMetaData getMetaData();
+    
+    /**
+     * Get Sharding rule.
+     * 
+     * @return sharding rule
+     */
+    // TODO : It is used in many places, but we can consider how to optimize it because of being irrational for logic schema.
+    public abstract ShardingRule getShardingRule();
+    
+    /**
+     * Get data source parameters.
+     * 
+     * @return data source parameters
+     */
+    public Map<String, YamlDataSourceParameter> getDataSources() {
+        return backendDataSource.getDataSourceParameters();
+    }
     
     protected final Map<String, String> getDataSourceURLs(final Map<String, YamlDataSourceParameter> dataSourceParameters) {
         Map<String, String> result = new LinkedHashMap<>(dataSourceParameters.size(), 1);
@@ -96,10 +111,7 @@ public abstract class LogicSchema {
         if (!name.equals(dataSourceChangedEvent.getShardingSchemaName())) {
             return;
         }
-        backendDataSource.close();
-        dataSources.clear();
-        dataSources.putAll(DataSourceConverter.getDataSourceParameterMap(dataSourceChangedEvent.getDataSourceConfigurations()));
-        backendDataSource = new JDBCBackendDataSource(dataSources);
+        backendDataSource.renew(DataSourceConverter.getDataSourceParameterMap(dataSourceChangedEvent.getDataSourceConfigurations()));
     }
     
     /**

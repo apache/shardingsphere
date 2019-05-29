@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.transaction.xa.manager;
 
-import org.apache.shardingsphere.transaction.xa.manager.atomikos.AtomikosTransactionManager;
+import org.apache.shardingsphere.transaction.xa.atomikos.manager.AtomikosTransactionManager;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;

@@ -45,6 +45,8 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
     
     private static final String TABLE_NAME = "TABLE_NAME";
     
+    private static final String INDEX_NAME = "INDEX_NAME";
+    
     private final int type;
     
     private final int concurrency;
@@ -82,8 +84,9 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
         ArrayList<DatabaseMetaDataObject> result = Lists.newArrayList();
         Set<DatabaseMetaDataObject> removeDuplicationSet = new HashSet<>();
         int tableNameColumnIndex = columnLabelIndexMap.containsKey(TABLE_NAME) ? columnLabelIndexMap.get(TABLE_NAME) : -1;
+        int indexNameColumnIndex = columnLabelIndexMap.containsKey(INDEX_NAME) ? columnLabelIndexMap.get(INDEX_NAME) : -1;
         while (resultSet.next()) {
-            DatabaseMetaDataObject databaseMetaDataObject = generateDatabaseMetaDataObject(tableNameColumnIndex, resultSet);
+            DatabaseMetaDataObject databaseMetaDataObject = generateDatabaseMetaDataObject(tableNameColumnIndex, indexNameColumnIndex, resultSet);
             if (!removeDuplicationSet.contains(databaseMetaDataObject)) {
                 result.add(databaseMetaDataObject);
                 removeDuplicationSet.add(databaseMetaDataObject);
@@ -92,13 +95,17 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
         return result.iterator();
     }
     
-    private DatabaseMetaDataObject generateDatabaseMetaDataObject(final int tableNameColumnIndex, final ResultSet resultSet) throws SQLException {
+    private DatabaseMetaDataObject generateDatabaseMetaDataObject(final int tableNameColumnIndex, final int indexNameColumnIndex, final ResultSet resultSet) throws SQLException {
         DatabaseMetaDataObject result = new DatabaseMetaDataObject(resultSetMetaData.getColumnCount());
         for (int i = 1; i <= columnLabelIndexMap.size(); i++) {
             if (tableNameColumnIndex == i) {
                 String tableName = resultSet.getString(i);
                 Collection<String> logicTableNames = shardingRule.getLogicTableNames(tableName);
-                result.addObject(0 == logicTableNames.size() ? tableName : logicTableNames.iterator().next());
+                result.addObject(logicTableNames.isEmpty() ? tableName : logicTableNames.iterator().next());
+            } else if (indexNameColumnIndex == i) {
+                String tableName = resultSet.getString(tableNameColumnIndex);
+                String indexName = resultSet.getString(i);
+                result.addObject(indexName.endsWith(tableName) ? indexName.substring(0, indexName.indexOf(tableName) - 1) : indexName);
             } else {
                 result.addObject(resultSet.getObject(i));
             }

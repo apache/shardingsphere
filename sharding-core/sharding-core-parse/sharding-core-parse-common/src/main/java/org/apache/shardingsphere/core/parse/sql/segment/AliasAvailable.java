@@ -24,7 +24,7 @@ import com.google.common.base.Optional;
  *
  * @author zhangliang
  */
-public interface AliasAvailable {
+public interface AliasAvailable extends SQLSegment {
     
     /**
      * Get alias.

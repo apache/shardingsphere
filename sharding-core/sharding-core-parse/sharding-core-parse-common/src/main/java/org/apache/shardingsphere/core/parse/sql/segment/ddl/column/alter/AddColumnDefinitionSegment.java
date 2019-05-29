@@ -35,6 +35,10 @@ import org.apache.shardingsphere.core.parse.sql.segment.ddl.column.position.Colu
 @Setter
 public final class AddColumnDefinitionSegment implements SQLSegment {
     
+    private final int startIndex;
+    
+    private final int stopIndex;
+    
     private final ColumnDefinitionSegment columnDefinition;
     
     private ColumnPositionSegment columnPosition;
