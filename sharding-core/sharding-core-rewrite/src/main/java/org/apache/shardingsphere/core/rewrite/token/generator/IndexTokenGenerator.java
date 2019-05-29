@@ -49,19 +49,19 @@ public final class IndexTokenGenerator implements CollectionSQLTokenGenerator<Sh
         return result;
     }
     
-    private Optional<IndexToken> createIndexToken(final SQLStatement sqlStatement, final ShardingRule shardingRule, final IndexSegment indexSegment) {
-        Optional<String> tableName = getTableNameOfIndex(sqlStatement, shardingRule, indexSegment);
+    private Optional<IndexToken> createIndexToken(final SQLStatement sqlStatement, final ShardingRule shardingRule, final IndexSegment segment) {
+        Optional<String> tableName = findTableNameOfIndex(sqlStatement, shardingRule, segment);
         return tableName.isPresent()
-                ? Optional.of(new IndexToken(indexSegment.getStartIndex(), indexSegment.getStopIndex(), indexSegment.getIndexName(), indexSegment.getQuoteCharacter(), tableName.get()))
+                ? Optional.of(new IndexToken(segment.getStartIndex(), segment.getStopIndex(), segment.getIndexName(), segment.getQuoteCharacter(), tableName.get()))
                 : Optional.<IndexToken>absent();
     }
     
-    private Optional<String> getTableNameOfIndex(final SQLStatement sqlStatement, final ShardingRule shardingRule, final IndexSegment indexSegment) {
+    private Optional<String> findTableNameOfIndex(final SQLStatement sqlStatement, final ShardingRule shardingRule, final IndexSegment segment) {
         if (sqlStatement.getTables().isSingleTable()) {
             return Optional.of(sqlStatement.getTables().getSingleTableName());
         }
         for (TableRule each : shardingRule.getTableRules()) {
-            if (indexSegment.getIndexName().equalsIgnoreCase(each.getLogicIndex())) {
+            if (segment.getIndexName().equalsIgnoreCase(each.getLogicIndex())) {
                 return Optional.of(each.getLogicTable());
             }
         }

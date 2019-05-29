@@ -40,7 +40,7 @@ import java.util.LinkedList;
 public final class SelectItemsTokenGenerator implements OptionalSQLTokenGenerator<ShardingRule> {
     
     @Override
-    public Optional<SelectItemsToken> generateSQLToken(final SQLStatement sqlStatement, final ShardingRule rule) {
+    public Optional<SelectItemsToken> generateSQLToken(final SQLStatement sqlStatement, final ShardingRule shardingRule) {
         if (!(sqlStatement instanceof SelectStatement)) {
             return Optional.absent();
         }
