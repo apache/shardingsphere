@@ -603,7 +603,6 @@
         </select-items>
         <tokens>
             <table-token start-index="37" table-name="t_order" length="7" />
-            <aggregation-distinct-token start-index="7" stop-index="28" column-name="order_id" alias="s" />
         </tokens>
     </parser-result>
 
@@ -618,7 +617,6 @@
         </select-items>
         <tokens>
             <table-token start-index="39" table-name="t_order" length="7" />
-            <aggregation-distinct-token start-index="7" stop-index="30" column-name="order_id" alias="c" />
         </tokens>
     </parser-result>
         
@@ -636,7 +634,6 @@
         </select-items>
         <tokens>
             <table-token start-index="35" table-name="t_order" length="7" />
-            <aggregation-distinct-token start-index="7" stop-index="28" column-name="order_id" alias="AGGREGATION_DISTINCT_DERIVED_0" />
         </tokens>
     </parser-result>
     
@@ -652,8 +649,6 @@
         </select-items>
         <tokens>
             <table-token start-index="61" table-name="t_order" length="7" />
-            <aggregation-distinct-token start-index="7" stop-index="30" column-name="order_id" alias="AGGREGATION_DISTINCT_DERIVED_0" />
-            <aggregation-distinct-token start-index="33" stop-index="54" column-name="order_id" alias="AGGREGATION_DISTINCT_DERIVED_1" />
         </tokens>
     </parser-result>
     
@@ -674,7 +669,6 @@
         </order-by-columns>
         <tokens>
             <table-token start-index="49" table-name="t_order" length="7" />
-            <aggregation-distinct-token start-index="17" stop-index="40" column-name="order_id" alias="c" />
         </tokens>
     </parser-result>
     
@@ -695,7 +689,6 @@
         </order-by-columns>
         <tokens>
             <table-token start-index="49" table-name="t_order" length="7" />
-            <aggregation-distinct-token start-index="7" stop-index="30" column-name="order_id" alias="c" />
         </tokens>
     </parser-result>
     
@@ -729,7 +722,6 @@
         </select-items>
         <tokens>
             <table-token start-index="49" table-name="t_order" length="7" />
-            <aggregation-distinct-token start-index="7" stop-index="40" column-name="user_id+order_id" alias="c" />
         </tokens>
     </parser-result>
     
@@ -746,8 +738,6 @@
         </select-items>
         <tokens>
             <table-token start-index="77" table-name="t_order" length="7" />
-            <aggregation-distinct-token start-index="7" stop-index="28" column-name="order_id" alias="AGGREGATION_DISTINCT_DERIVED_0" />
-            <aggregation-distinct-token start-index="30" stop-index="53" column-name="order_id" alias="AGGREGATION_DISTINCT_DERIVED_1" />
         </tokens>
     </parser-result>
     
