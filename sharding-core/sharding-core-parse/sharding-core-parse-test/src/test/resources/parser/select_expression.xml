@@ -23,11 +23,6 @@
         </tables>
         <tokens>
             <table-token start-index="38" table-name="t_order" length="7" />
-            <items-token begin-position="33">
-                <items>
-                    <item>o.order_id AS ORDER_BY_DERIVED_0 </item>
-                </items>
-            </items-token>
         </tokens>
         <order-by-columns>
             <order-by-column owner="o" name="order_id" order-direction="ASC" />

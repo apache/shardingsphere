@@ -24,9 +24,8 @@ import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.constant.DerivedColumn;
 import org.apache.shardingsphere.core.parse.optimizer.SQLStatementOptimizer;
 import org.apache.shardingsphere.core.parse.sql.context.condition.ParseCondition;
-import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationSelectItem;
-import org.apache.shardingsphere.core.parse.sql.context.selectitem.CommonSelectItem;
+import org.apache.shardingsphere.core.parse.sql.context.selectitem.DerivedCommonSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.DistinctSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.StarSelectItem;
@@ -37,8 +36,6 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.OrderByIt
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.TextOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.core.parse.sql.token.impl.OrderByToken;
-import org.apache.shardingsphere.core.parse.sql.token.impl.SelectItemsToken;
 
 import java.util.List;
 
@@ -58,20 +55,16 @@ public final class SelectOptimizer implements SQLStatementOptimizer {
     }
     
     private void appendDerivedColumns(final SelectStatement selectStatement, final ShardingTableMetaData shardingTableMetaData) {
-        SelectItemsToken selectItemsToken = new SelectItemsToken(selectStatement.getSelectListStopIndex() + 1 + " ".length());
-        appendAvgDerivedColumns(selectItemsToken, selectStatement);
+        appendAvgDerivedColumns(selectStatement);
         if (!selectStatement.getOrderByItems().isEmpty()) {
-            appendDerivedOrderColumns(selectItemsToken, selectStatement.getOrderByItems(), selectStatement, shardingTableMetaData);
+            appendDerivedOrderColumns(selectStatement.getOrderByItems(), selectStatement, shardingTableMetaData);
         }
         if (!selectStatement.getGroupByItems().isEmpty()) {
-            appendDerivedGroupColumns(selectItemsToken, selectStatement.getGroupByItems(), selectStatement, shardingTableMetaData);
-        }
-        if (!selectItemsToken.getItems().isEmpty()) {
-            selectStatement.addSQLToken(selectItemsToken);
+            appendDerivedGroupColumns(selectStatement.getGroupByItems(), selectStatement, shardingTableMetaData);
         }
     }
     
-    private void appendAvgDerivedColumns(final SelectItemsToken selectItemsToken, final SelectStatement selectStatement) {
+    private void appendAvgDerivedColumns(final SelectStatement selectStatement) {
         int derivedColumnOffset = 0;
         for (SelectItem each : selectStatement.getItems()) {
             if (!isAverageSelectItem(each)) {
@@ -85,10 +78,6 @@ public final class SelectOptimizer implements SQLStatementOptimizer {
             avgItem.getDerivedAggregationSelectItems().add(countItem);
             avgItem.getDerivedAggregationSelectItems().add(sumItem);
             // TODO replace avg to constant, avoid calculate useless avg
-            if (!(avgItem instanceof AggregationDistinctSelectItem)) {
-                selectItemsToken.getItems().add(countItem.getExpression() + " AS " + countAlias + " ");
-                selectItemsToken.getItems().add(sumItem.getExpression() + " AS " + sumAlias + " ");
-            }
             derivedColumnOffset++;
         }
     }
@@ -97,26 +86,22 @@ public final class SelectOptimizer implements SQLStatementOptimizer {
         return each instanceof AggregationSelectItem && AggregationType.AVG == ((AggregationSelectItem) each).getType();
     }
     
-    private void appendDerivedOrderColumns(final SelectItemsToken selectItemsToken,
-                                           final List<OrderByItemSegment> orderItems, final SelectStatement selectStatement, final ShardingTableMetaData shardingTableMetaData) {
+    private void appendDerivedOrderColumns(final List<OrderByItemSegment> orderItems, final SelectStatement selectStatement, final ShardingTableMetaData shardingTableMetaData) {
         int derivedColumnOffset = 0;
         for (OrderByItemSegment each : orderItems) {
             if (!containsItem(selectStatement, each, shardingTableMetaData)) {
                 String alias = DerivedColumn.ORDER_BY_ALIAS.getDerivedColumnAlias(derivedColumnOffset++);
-                selectStatement.getItems().add(new CommonSelectItem(((TextOrderByItemSegment) each).getText(), Optional.of(alias)));
-                selectItemsToken.getItems().add(((TextOrderByItemSegment) each).getText() + " AS " + alias + " ");
+                selectStatement.getItems().add(new DerivedCommonSelectItem(((TextOrderByItemSegment) each).getText(), Optional.of(alias)));
             }
         }
     }
     
-    private void appendDerivedGroupColumns(final SelectItemsToken selectItemsToken, 
-                                           final List<OrderByItemSegment> orderItems, final SelectStatement selectStatement, final ShardingTableMetaData shardingTableMetaData) {
+    private void appendDerivedGroupColumns(final List<OrderByItemSegment> orderItems, final SelectStatement selectStatement, final ShardingTableMetaData shardingTableMetaData) {
         int derivedColumnOffset = 0;
         for (OrderByItemSegment each : orderItems) {
             if (!containsItem(selectStatement, each, shardingTableMetaData)) {
                 String alias = DerivedColumn.GROUP_BY_ALIAS.getDerivedColumnAlias(derivedColumnOffset++);
-                selectStatement.getItems().add(new CommonSelectItem(((TextOrderByItemSegment) each).getText(), Optional.of(alias)));
-                selectItemsToken.getItems().add(((TextOrderByItemSegment) each).getText() + " AS " + alias + " ");
+                selectStatement.getItems().add(new DerivedCommonSelectItem(((TextOrderByItemSegment) each).getText(), Optional.of(alias)));
             }
         }
     }
@@ -185,7 +170,6 @@ public final class SelectOptimizer implements SQLStatementOptimizer {
     private void appendDerivedOrderBy(final SelectStatement selectStatement) {
         if (!selectStatement.getGroupByItems().isEmpty() && selectStatement.getOrderByItems().isEmpty()) {
             selectStatement.getOrderByItems().addAll(selectStatement.getGroupByItems());
-            selectStatement.addSQLToken(new OrderByToken(selectStatement.getGroupByLastIndex() + 1));
         }
     }
     

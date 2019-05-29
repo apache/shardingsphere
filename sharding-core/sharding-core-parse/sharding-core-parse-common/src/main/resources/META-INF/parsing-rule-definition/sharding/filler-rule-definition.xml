@@ -18,7 +18,6 @@
 
 <filler-rule-definition>
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment" filler-class="org.apache.shardingsphere.core.parse.filler.sharding.ShardingTableFiller" />
-    <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment" filler-class="org.apache.shardingsphere.core.parse.filler.sharding.ShardingColumnFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.sql.segment.ddl.index.IndexSegment" filler-class="org.apache.shardingsphere.core.parse.filler.sharding.ShardingIndexFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment" filler-class="org.apache.shardingsphere.core.parse.filler.sharding.dml.insert.ShardingInsertColumnsFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.sql.segment.dml.InsertValuesSegment" filler-class="org.apache.shardingsphere.core.parse.filler.sharding.dml.insert.ShardingInsertValuesFiller" />

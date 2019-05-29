@@ -74,7 +74,6 @@
         </tables>
         <tokens>
             <table-token start-index="64" table-name="t_order_item" length="12" />
-            <order-by-token placeholder-begin-position="94" literal-begin-position="94" />
         </tokens>
         <aggregation-select-items>
             <aggregation-select-item type="COUNT" inner-expression="(1)" alias="order_items_count" />

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.rewrite;
 
 import com.google.common.base.Optional;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
@@ -28,6 +29,7 @@ import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
 import org.apache.shardingsphere.core.rewrite.rewriter.BaseSQLRewriter;
 import org.apache.shardingsphere.core.rewrite.rewriter.EncryptSQLRewriter;
 import org.apache.shardingsphere.core.rewrite.rewriter.ShardingSQLRewriter;
+import org.apache.shardingsphere.core.rewrite.token.ShardingTokenGenerateEngine;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.SQLUnit;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
@@ -38,8 +40,10 @@ import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.strategy.encrypt.ShardingEncryptorEngine;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -50,7 +54,7 @@ import java.util.Map;
  *
  * @author panjuan
  */
-@RequiredArgsConstructor
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLRewriteEngine {
     
     private final BaseRule baseRule;
@@ -65,23 +69,35 @@ public final class SQLRewriteEngine {
     
     private final ParameterBuilder parameterBuilder;
     
+    private final List<SQLToken> sqlTokens = new LinkedList<>();
+    
     public SQLRewriteEngine(final ShardingRule shardingRule, final DatabaseType databaseType, final SQLRouteResult sqlRouteResult, final List<Object> parameters) {
         this(shardingRule, databaseType, sqlRouteResult, sqlRouteResult.getSqlStatement(), new SQLBuilder(), new ParameterBuilder(parameters));
+        sqlTokens.addAll(generateSQLTokens(shardingRule));
         pattern(sqlRouteResult.getOptimizeResult());
     }
     
     public SQLRewriteEngine(final EncryptRule encryptRule, final DatabaseType databaseType, final SQLStatement sqlStatement, final OptimizeResult optimizeResult, final List<Object> parameters) {
         this(encryptRule, databaseType, null, sqlStatement, new SQLBuilder(), new ParameterBuilder(parameters));
+        sqlTokens.addAll(generateSQLTokens(encryptRule));
         pattern(optimizeResult);
     }
     
     public SQLRewriteEngine(final SQLStatement sqlStatement) {
         this(null, null, null, sqlStatement, new SQLBuilder(), new ParameterBuilder(Collections.emptyList()));
+        sqlTokens.addAll(generateSQLTokens(null));
         pattern(null);
     }
     
+    private Collection<SQLToken> generateSQLTokens(final BaseRule baseRule) {
+        if (baseRule instanceof ShardingRule) {
+            return new ShardingTokenGenerateEngine().generateSQLTokens(sqlStatement, (ShardingRule) baseRule);
+        }
+        return sqlStatement.getSQLTokens();
+    }
+    
     private void pattern(final OptimizeResult optimizeResult) {
-        BaseSQLRewriter baseSQLRewriter = new BaseSQLRewriter(sqlStatement);
+        BaseSQLRewriter baseSQLRewriter = new BaseSQLRewriter(sqlStatement, sqlTokens);
         if (baseSQLRewriter.isToRewriteSQLTokens()) {
             rewrite(baseSQLRewriter, new ShardingSQLRewriter(getShardingRule(), sqlStatement.getLogicSQL(), databaseType, sqlStatement, sqlRouteResult), 
                     new EncryptSQLRewriter(getShardingEncryptorEngine(), sqlStatement, optimizeResult));
@@ -103,7 +119,7 @@ public final class SQLRewriteEngine {
     
     private void rewrite(final BaseSQLRewriter baseSQLRewriter, final ShardingSQLRewriter shardingSQLRewriter, final EncryptSQLRewriter encryptSQLRewriter) {
         baseSQLRewriter.rewriteInitialLiteral(sqlBuilder);
-        for (SQLToken each : sqlStatement.getSQLTokens()) {
+        for (SQLToken each : sqlTokens) {
             shardingSQLRewriter.rewrite(sqlBuilder, parameterBuilder, each);
             encryptSQLRewriter.rewrite(sqlBuilder, parameterBuilder, each);
             baseSQLRewriter.rewrite(sqlBuilder, parameterBuilder, each);

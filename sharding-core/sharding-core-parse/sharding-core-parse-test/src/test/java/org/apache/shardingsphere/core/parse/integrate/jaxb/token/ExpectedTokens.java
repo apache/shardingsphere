@@ -37,9 +37,6 @@ public final class ExpectedTokens {
     @XmlElement(name = "index-token")
     private List<ExpectedIndexToken> indexTokens = new LinkedList<>();
     
-    @XmlElement(name = "items-token")
-    private ExpectedItemsToken itemsToken;
-    
     @XmlElement(name = "generated-key-token")
     private ExpectedGeneratedKeyToken generatedKeyToken;
     
@@ -48,9 +45,6 @@ public final class ExpectedTokens {
     
     @XmlElement(name = "insert-set-token")
     private ExpectedInsertSetToken insertSetToken;
-    
-    @XmlElement(name = "order-by-token")
-    private ExpectedOrderByToken orderByToken;
     
     @XmlElement(name = "offset-token")
     private ExpectedOffsetToken offsetToken;
