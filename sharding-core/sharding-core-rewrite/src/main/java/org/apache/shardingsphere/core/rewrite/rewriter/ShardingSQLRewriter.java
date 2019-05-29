@@ -26,16 +26,13 @@ import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.AggregationDistinctToken;
-import org.apache.shardingsphere.core.parse.sql.token.impl.InsertColumnsToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.OffsetToken;
-import org.apache.shardingsphere.core.parse.sql.token.impl.RemoveToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.RowCountToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.SelectItemPrefixToken;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
 import org.apache.shardingsphere.core.rewrite.placeholder.AggregationDistinctPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.IndexPlaceholder;
-import org.apache.shardingsphere.core.rewrite.placeholder.InsertColumnsPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.LimitOffsetPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.LimitRowCountPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.OrderByPlaceholder;
@@ -86,8 +83,6 @@ public final class ShardingSQLRewriter implements SQLRewriter {
             appendIndexPlaceholder(sqlBuilder, (IndexToken) sqlToken);
         } else if (sqlToken instanceof SelectItemsToken) {
             appendSelectItemsPlaceholder(sqlBuilder, (SelectItemsToken) sqlToken);
-        } else if (sqlToken instanceof InsertColumnsToken) {
-            appendInsertColumnsPlaceholder(sqlBuilder, (InsertColumnsToken) sqlToken);
         } else if (sqlToken instanceof RowCountToken) {
             appendLimitRowCountPlaceholder(sqlBuilder, (RowCountToken) sqlToken);
         } else if (sqlToken instanceof OffsetToken) {
@@ -96,8 +91,6 @@ public final class ShardingSQLRewriter implements SQLRewriter {
             appendOrderByPlaceholder(sqlBuilder);
         } else if (sqlToken instanceof AggregationDistinctToken) {
             appendAggregationDistinctPlaceholder(sqlBuilder, (AggregationDistinctToken) sqlToken);
-        } else if (sqlToken instanceof RemoveToken) {
-            return;
         }
     }
     
@@ -125,12 +118,6 @@ public final class ShardingSQLRewriter implements SQLRewriter {
             selectItemsPlaceholder.getItems().addAll(selectItemsToken.getItems());
             sqlBuilder.appendPlaceholder(selectItemsPlaceholder);
         }
-    }
-    
-    private void appendInsertColumnsPlaceholder(final SQLBuilder sqlBuilder, final InsertColumnsToken insertColumnsToken) {
-        InsertColumnsPlaceholder columnsPlaceholder = new InsertColumnsPlaceholder(insertColumnsToken.isPartColumns());
-        columnsPlaceholder.getColumns().addAll(insertColumnsToken.getColumns());
-        sqlBuilder.appendPlaceholder(columnsPlaceholder);
     }
     
     private void appendLimitRowCountPlaceholder(final SQLBuilder sqlBuilder, final RowCountToken rowCountToken) {

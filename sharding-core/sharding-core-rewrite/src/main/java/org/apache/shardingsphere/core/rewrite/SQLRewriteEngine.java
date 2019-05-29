@@ -87,7 +87,7 @@ public final class SQLRewriteEngine {
         parameterBuilder = new ParameterBuilder(parameters);
         sqlTokens = generateSQLTokens(encryptRule);
         baseSQLRewriter = new BaseSQLRewriter(sqlStatement, sqlTokens);
-        shardingSQLRewriter = new ShardingSQLRewriter(null, sqlStatement.getLogicSQL(), DatabaseType.MySQL, sqlStatement, null);
+        shardingSQLRewriter = null;
         encryptSQLRewriter = new EncryptSQLRewriter(encryptRule.getEncryptorEngine(), sqlStatement, optimizeResult);
         pattern();
     }
