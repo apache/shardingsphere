@@ -47,7 +47,7 @@ import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Sharding SQL rewriter.
+ * SQL rewriter for sharding.
  * 
  * @author zhangliang
  * @author maxiaoguang

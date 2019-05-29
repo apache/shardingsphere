@@ -26,6 +26,7 @@ import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
 import org.apache.shardingsphere.core.rewrite.rewriter.BaseSQLRewriter;
 import org.apache.shardingsphere.core.rewrite.rewriter.EncryptSQLRewriter;
+import org.apache.shardingsphere.core.rewrite.rewriter.SQLRewriter;
 import org.apache.shardingsphere.core.rewrite.rewriter.ShardingSQLRewriter;
 import org.apache.shardingsphere.core.rewrite.token.MasterSlaveTokenGenerateEngine;
 import org.apache.shardingsphere.core.rewrite.token.ShardingTokenGenerateEngine;
@@ -40,6 +41,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -64,9 +66,7 @@ public final class SQLRewriteEngine {
     
     private final BaseSQLRewriter baseSQLRewriter;
     
-    private final ShardingSQLRewriter shardingSQLRewriter;
-    
-    private final EncryptSQLRewriter encryptSQLRewriter;
+    private final List<SQLRewriter> sqlRewriters = new LinkedList<>();
     
     public SQLRewriteEngine(final ShardingRule shardingRule, final DatabaseType databaseType, final SQLRouteResult sqlRouteResult, final List<Object> parameters) {
         baseRule = shardingRule;
@@ -75,8 +75,8 @@ public final class SQLRewriteEngine {
         parameterBuilder = new ParameterBuilder(parameters);
         sqlTokens = generateSQLTokens(shardingRule);
         baseSQLRewriter = new BaseSQLRewriter(sqlStatement, sqlTokens);
-        shardingSQLRewriter = new ShardingSQLRewriter(shardingRule, sqlStatement.getLogicSQL(), databaseType, sqlStatement, sqlRouteResult);
-        encryptSQLRewriter = new EncryptSQLRewriter(shardingRule.getShardingEncryptorEngine(), sqlStatement, sqlRouteResult.getOptimizeResult());
+        sqlRewriters.add(new ShardingSQLRewriter(shardingRule, sqlStatement.getLogicSQL(), databaseType, sqlStatement, sqlRouteResult));
+        sqlRewriters.add(new EncryptSQLRewriter(shardingRule.getShardingEncryptorEngine(), sqlStatement, sqlRouteResult.getOptimizeResult()));
         pattern();
     }
     
@@ -87,8 +87,7 @@ public final class SQLRewriteEngine {
         parameterBuilder = new ParameterBuilder(parameters);
         sqlTokens = generateSQLTokens(encryptRule);
         baseSQLRewriter = new BaseSQLRewriter(sqlStatement, sqlTokens);
-        shardingSQLRewriter = null;
-        encryptSQLRewriter = new EncryptSQLRewriter(encryptRule.getEncryptorEngine(), sqlStatement, optimizeResult);
+        sqlRewriters.add(new EncryptSQLRewriter(encryptRule.getEncryptorEngine(), sqlStatement, optimizeResult));
         pattern();
     }
     
@@ -99,8 +98,6 @@ public final class SQLRewriteEngine {
         parameterBuilder = new ParameterBuilder(Collections.emptyList());
         sqlTokens = generateSQLTokens(null);
         baseSQLRewriter = new BaseSQLRewriter(sqlStatement, sqlTokens);
-        shardingSQLRewriter = null;
-        encryptSQLRewriter = null;
         pattern();
     }
     
@@ -125,11 +122,8 @@ public final class SQLRewriteEngine {
     private void rewrite() {
         baseSQLRewriter.rewriteInitialLiteral(sqlBuilder);
         for (SQLToken each : sqlTokens) {
-            if (null != shardingSQLRewriter) {
-                shardingSQLRewriter.rewrite(sqlBuilder, parameterBuilder, each);
-            }
-            if (null != encryptSQLRewriter) {
-                encryptSQLRewriter.rewrite(sqlBuilder, parameterBuilder, each);
+            for (SQLRewriter sqlRewriter : sqlRewriters) {
+                sqlRewriter.rewrite(sqlBuilder, parameterBuilder, each);
             }
             baseSQLRewriter.rewrite(sqlBuilder, parameterBuilder, each);
         }
