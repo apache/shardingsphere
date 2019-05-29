@@ -64,7 +64,7 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
         if (logicSchema instanceof MasterSlaveSchema) {
             return doMasterSlaveRoute(sql);
         }
-        return doEncryptRoute(sql, databaseType);
+        return doEncryptRoute(sql);
     }
     
     private SQLRouteResult doShardingRoute(final String sql, final DatabaseType databaseType) {
@@ -85,11 +85,11 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
         return result;
     }
     
-    private SQLRouteResult doEncryptRoute(final String sql, final DatabaseType databaseType) {
+    private SQLRouteResult doEncryptRoute(final String sql) {
         EncryptSchema encryptSchema = (EncryptSchema) logicSchema;
         SQLStatement sqlStatement = encryptSchema.getEncryptSQLParseEntry().parse(sql, true);
         OptimizeResult optimizeResult = OptimizeEngineFactory.newInstance(encryptSchema.getEncryptRule(), sqlStatement, parameters).optimize();
-        SQLRewriteEngine sqlRewriteEngine = new SQLRewriteEngine(encryptSchema.getEncryptRule(), databaseType, sqlStatement, optimizeResult, parameters);
+        SQLRewriteEngine sqlRewriteEngine = new SQLRewriteEngine(encryptSchema.getEncryptRule(), sqlStatement, optimizeResult, parameters);
         SQLRouteResult result = new SQLRouteResult(sqlStatement);
         result.getRouteUnits().add(new RouteUnit(logicSchema.getDataSources().keySet().iterator().next(), new SQLUnit(sqlRewriteEngine.generateSQL().getSql(), parameters)));
         return result;
