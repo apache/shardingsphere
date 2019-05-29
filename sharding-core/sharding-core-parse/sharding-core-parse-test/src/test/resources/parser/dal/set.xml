@@ -16,8 +16,18 @@
   ~ limitations under the License.
   -->
 
-<sql-cases>
-    <sql-case id="rename_user" value="RENAME USER 'user_dev'@'localhost' TO 'user_dev'@'127.0.0.1'" db-types="MySQL" />
-    <sql-case id="rename_users" value="RENAME USER user1_bak TO user1, user2_bak TO user2" db-types="MySQL" />
-    
-</sql-cases>
+<parser-result-sets>
+    <parser-result sql-case-id="set_param_equals" />
+    <parser-result sql-case-id="set_param_to" />
+    <parser-result sql-case-id="set_param_session" />
+    <parser-result sql-case-id="set_param_local" />
+    <parser-result sql-case-id="set_param_default" />
+    <parser-result sql-case-id="set_timezone_zero" />
+    <parser-result sql-case-id="set_timezone_positive" />
+    <parser-result sql-case-id="set_timezone_negative" />
+    <parser-result sql-case-id="set_timezone_double" />
+    <parser-result sql-case-id="set_timezone_default" />
+    <parser-result sql-case-id="set_timezone_local" />
+    <parser-result sql-case-id="set_timezone_session" />
+    <parser-result sql-case-id="set_timezone_local" />
+</parser-result-sets>

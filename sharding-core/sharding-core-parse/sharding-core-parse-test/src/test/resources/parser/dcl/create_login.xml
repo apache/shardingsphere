@@ -16,8 +16,12 @@
   ~ limitations under the License.
   -->
 
-<sql-cases>
-    <sql-case id="rename_user" value="RENAME USER 'user_dev'@'localhost' TO 'user_dev'@'127.0.0.1'" db-types="MySQL" />
-    <sql-case id="rename_users" value="RENAME USER user1_bak TO user1, user2_bak TO user2" db-types="MySQL" />
-    
-</sql-cases>
+<parser-result-sets>
+    <parser-result sql-case-id="create_login_with_password"/>
+    <parser-result sql-case-id="create_login_with_hashed_password"/>
+    <parser-result sql-case-id="create_login_with_default_database"/>
+    <parser-result sql-case-id="create_login_with_expired_password"/>
+    <parser-result sql-case-id="create_login_to_credential"/>
+    <parser-result sql-case-id="create_login_with_certificate"/>
+    <parser-result sql-case-id="create_login_with_asym_key"/>
+</parser-result-sets>

@@ -16,8 +16,12 @@
   ~ limitations under the License.
   -->
 
-<sql-cases>
-    <sql-case id="rename_user" value="RENAME USER 'user_dev'@'localhost' TO 'user_dev'@'127.0.0.1'" db-types="MySQL" />
-    <sql-case id="rename_users" value="RENAME USER user1_bak TO user1, user2_bak TO user2" db-types="MySQL" />
-    
-</sql-cases>
+<parser-result-sets>
+    <parser-result sql-case-id="set_role" />
+    <parser-result sql-case-id="set_roles" />
+    <parser-result sql-case-id="set_none_role" />
+    <parser-result sql-case-id="set_default_role" />
+    <parser-result sql-case-id="set_all_role" />
+    <parser-result sql-case-id="set_all_expect_role" />
+    <parser-result sql-case-id="set_all_expect_roles" />
+</parser-result-sets>

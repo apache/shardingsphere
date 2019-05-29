@@ -17,7 +17,11 @@
   -->
 
 <sql-cases>
-    <sql-case id="rename_user" value="RENAME USER 'user_dev'@'localhost' TO 'user_dev'@'127.0.0.1'" db-types="MySQL" />
-    <sql-case id="rename_users" value="RENAME USER user1_bak TO user1, user2_bak TO user2" db-types="MySQL" />
-    
+    <sql-case id="set_role" value="SET ROLE role1" db-types="MySQL" />
+    <sql-case id="set_roles" value="SET ROLE role1, role2" db-types="MySQL" />
+    <sql-case id="set_none_role" value="SET ROLE NONE" db-types="MySQL" />
+    <sql-case id="set_default_role" value="SET ROLE DEFAULT" db-types="MySQL" />
+    <sql-case id="set_all_role" value="SET ROLE ALL" db-types="MySQL" />
+    <sql-case id="set_all_expect_role" value="SET ROLE ALL EXCEPT role1" db-types="MySQL" />
+    <sql-case id="set_all_expect_roles" value="SET ROLE ALL EXCEPT role1, role2" db-types="MySQL" />
 </sql-cases>
