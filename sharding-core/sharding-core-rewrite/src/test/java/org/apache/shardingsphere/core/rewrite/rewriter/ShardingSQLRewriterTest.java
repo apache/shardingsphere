@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.core.rewrite.rewriter;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.core.constant.AggregationType;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.constant.OrderDirection;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
@@ -36,13 +36,13 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.item.AggregationDistinctSelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.core.parse.sql.token.impl.AggregationDistinctToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.EncryptColumnToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.IndexToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.InsertColumnsToken;
@@ -887,8 +887,12 @@ public final class ShardingSQLRewriterTest {
         SelectItemPrefixToken selectItemPrefixToken = new SelectItemPrefixToken(7);
         selectItemPrefixToken.setToAppendDistinct(true);
         selectStatement.addSQLToken(selectItemPrefixToken);
-        selectStatement.addSQLToken(new AggregationDistinctToken(7, 24, "id", Optional.<String>absent()));
-        selectStatement.addSQLToken(new AggregationDistinctToken(27, 42, "id", Optional.<String>absent()));
+        AggregationDistinctSelectItemSegment selectItemSegment1 = new AggregationDistinctSelectItemSegment(7, 24, "DISTINCT id", AggregationType.COUNT, 12, "id");
+        selectItemSegment1.setAlias("a");
+        AggregationDistinctSelectItemSegment selectItemSegment2 = new AggregationDistinctSelectItemSegment(27, 42, "DISTINCT id", AggregationType.SUM, 30, "id");
+        selectItemSegment2.setAlias("b");
+        selectStatement.getSqlSegments().add(selectItemSegment1);
+        selectStatement.getSqlSegments().add(selectItemSegment2);
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(selectStatement.getLimit());
         routeResult.setRoutingResult(new RoutingResult());
