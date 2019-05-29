@@ -41,15 +41,6 @@ public final class BaseSQLRewriter implements SQLRewriter {
     private int currentSQLTokenIndex;
     
     /**
-     * Is to rewrite or not.
-     * 
-     * @return rewrite or not
-     */
-    public boolean isToRewriteSQLTokens() {
-        return !sqlTokens.isEmpty();
-    }
-    
-    /**
      * rewrite original literal.
      *
      * @param sqlBuilder sql builder

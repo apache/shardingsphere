@@ -102,11 +102,11 @@ public final class SQLRewriteEngine {
     
     private void pattern(final OptimizeResult optimizeResult) {
         BaseSQLRewriter baseSQLRewriter = new BaseSQLRewriter(sqlStatement, sqlTokens);
-        if (baseSQLRewriter.isToRewriteSQLTokens()) {
-            rewrite(baseSQLRewriter, new ShardingSQLRewriter(getShardingRule(), sqlStatement.getLogicSQL(), databaseType, sqlStatement, sqlRouteResult), 
-                    new EncryptSQLRewriter(getShardingEncryptorEngine(), sqlStatement, optimizeResult));
-        } else {
+        if (sqlTokens.isEmpty()) {
             baseSQLRewriter.rewrite(sqlBuilder);
+        } else {
+            rewrite(baseSQLRewriter, new ShardingSQLRewriter(getShardingRule(), sqlStatement.getLogicSQL(), databaseType, sqlStatement, sqlRouteResult),
+                    new EncryptSQLRewriter(getShardingEncryptorEngine(), sqlStatement, optimizeResult));
         }
     }
     
