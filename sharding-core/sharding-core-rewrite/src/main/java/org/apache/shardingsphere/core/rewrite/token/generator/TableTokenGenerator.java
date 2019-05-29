@@ -29,7 +29,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemSegme
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.ShorthandSelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.core.parse.sql.token.impl.TableToken;
+import org.apache.shardingsphere.core.rewrite.token.pojo.TableToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Collection;
