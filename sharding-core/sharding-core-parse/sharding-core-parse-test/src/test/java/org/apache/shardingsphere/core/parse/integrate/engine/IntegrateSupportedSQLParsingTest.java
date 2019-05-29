@@ -18,18 +18,27 @@
 package org.apache.shardingsphere.core.parse.integrate.engine;
 
 import lombok.RequiredArgsConstructor;
+
+import org.antlr.v4.runtime.ANTLRErrorListener;
+import org.antlr.v4.runtime.BaseErrorListener;
+import org.antlr.v4.runtime.RecognitionException;
+import org.antlr.v4.runtime.Recognizer;
 import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.core.parse.api.SQLParser;
 import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
 import org.apache.shardingsphere.core.parse.entry.ShardingSQLParseEntry;
 import org.apache.shardingsphere.core.parse.integrate.asserts.ParserResultSetLoader;
 import org.apache.shardingsphere.core.parse.integrate.asserts.SQLStatementAssert;
+import org.apache.shardingsphere.core.parse.parser.SQLParserFactory;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.SQLCasesLoader;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -49,10 +58,23 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
     
     @Parameters(name = "{0} ({2}) -> {1}")
     public static Collection<Object[]> getTestParameters() {
-        sqlCasesLoader.switchSQLCase("sql");
-        parserResultSetLoader.switchResult("parser");
         assertThat(sqlCasesLoader.countAllSupportedSQLCases(), is(parserResultSetLoader.countAllParserTestCases()));
         return sqlCasesLoader.getSupportedSQLTestParameters(Arrays.<Enum>asList(DatabaseType.values()), DatabaseType.class);
+    }
+    
+    @Test
+    public void parsingSupportedSQL() throws Exception {
+        String sql = sqlCasesLoader.getSupportedSQL(sqlCaseId, sqlCaseType, Collections.emptyList());
+        SQLParser sqlParser = SQLParserFactory.newInstance(databaseType, sql);
+        Method addErrorListener = sqlParser.getClass().getMethod("addErrorListener", ANTLRErrorListener.class);
+        addErrorListener.invoke(sqlParser, new BaseErrorListener() {
+            
+            @Override
+            public void syntaxError(final Recognizer<?, ?> recognizer, final Object offendingSymbol, final int line, final int charPositionInLine, final String msg, final RecognitionException ex) {
+                throw new RuntimeException();
+            }
+        });
+        sqlParser.execute();
     }
     
     @Test
