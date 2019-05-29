@@ -53,15 +53,6 @@ public class ParserResultSetLoader {
         return INSTANCE;
     }
     
-    /**
-     * Switch result.
-     * 
-     * @param dirName dir name
-     */
-    public void switchResult(final String dirName) {
-        parserResultMap = loadParserResultSet(dirName);
-    }
-    
     protected Map<String, ParserResult> loadParserResultSet(final String dirName) {
         URL url = ParserResultSetLoader.class.getClassLoader().getResource(dirName);
         Preconditions.checkNotNull(url, "Cannot found parser test cases.");
