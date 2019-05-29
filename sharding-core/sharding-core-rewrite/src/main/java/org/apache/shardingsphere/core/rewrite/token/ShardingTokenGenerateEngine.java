@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.rewrite.token;
 
 import org.apache.shardingsphere.core.rewrite.token.generator.IndexTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.OrderByTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.token.generator.RemoveTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.SQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.SelectItemsTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.TableTokenGenerator;
@@ -41,6 +42,7 @@ public final class ShardingTokenGenerateEngine extends SQLTokenGenerateEngine<Sh
         SQL_TOKEN_GENERATORS.add(new SelectItemsTokenGenerator());
         SQL_TOKEN_GENERATORS.add(new OrderByTokenGenerator());
         SQL_TOKEN_GENERATORS.add(new IndexTokenGenerator());
+        SQL_TOKEN_GENERATORS.add(new RemoveTokenGenerator());
     }
     
     @Override

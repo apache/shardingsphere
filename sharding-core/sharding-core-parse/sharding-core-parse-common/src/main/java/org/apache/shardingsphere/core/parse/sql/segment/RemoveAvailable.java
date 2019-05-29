@@ -15,23 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.segment.dal;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.sql.segment.RemoveAvailable;
-import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
+package org.apache.shardingsphere.core.parse.sql.segment;
 
 /**
- * From schema segment.
+ * Remove available.
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
-@Getter
-public final class FromSchemaSegment implements SQLSegment, RemoveAvailable {
-    
-    private final int startIndex;
-    
-    private final int stopIndex;
+public interface RemoveAvailable extends SQLSegment {
 }

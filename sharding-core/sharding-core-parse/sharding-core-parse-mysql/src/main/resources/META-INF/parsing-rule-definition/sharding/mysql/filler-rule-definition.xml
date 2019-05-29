@@ -18,6 +18,5 @@
 
 <filler-rule-definition>
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.sql.segment.tcl.AutoCommitSegment" filler-class="org.apache.shardingsphere.core.parse.filler.tcl.MySQLAutoCommitFiller" />
-    <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.sql.segment.dal.FromSchemaSegment" filler-class="org.apache.shardingsphere.core.parse.filler.dal.MySQLFromSchemaFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.sql.segment.dal.ShowLikeSegment" filler-class="org.apache.shardingsphere.core.parse.filler.dal.MySQLShowLikeFiller" />
 </filler-rule-definition>

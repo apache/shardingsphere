@@ -15,23 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.segment.dal;
+package org.apache.shardingsphere.core.rewrite.token.generator;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.sql.segment.RemoveAvailable;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
+import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.sql.token.impl.RemoveToken;
+import org.apache.shardingsphere.core.rule.ShardingRule;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * From schema segment.
+ * Remove token generator.
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
-@Getter
-public final class FromSchemaSegment implements SQLSegment, RemoveAvailable {
+public final class RemoveTokenGenerator implements CollectionSQLTokenGenerator<ShardingRule> {
     
-    private final int startIndex;
-    
-    private final int stopIndex;
+    @Override
+    public Collection<RemoveToken> generateSQLTokens(final SQLStatement sqlStatement, final ShardingRule shardingRule) {
+        Collection<RemoveToken> result = new LinkedList<>();
+        for (SQLSegment each : sqlStatement.getSqlSegments()) {
+            if (each instanceof RemoveAvailable) {
+                result.add(new RemoveToken(each.getStartIndex(), each.getStopIndex()));
+            }
+        }
+        return result;
+    }
 }

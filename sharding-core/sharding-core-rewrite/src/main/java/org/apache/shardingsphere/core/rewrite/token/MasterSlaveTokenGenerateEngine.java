@@ -15,22 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.filler.dal;
+package org.apache.shardingsphere.core.rewrite.token;
 
-import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.sql.segment.dal.FromSchemaSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.token.impl.RemoveToken;
+import org.apache.shardingsphere.core.rewrite.token.generator.RemoveTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.token.generator.SQLTokenGenerator;
+import org.apache.shardingsphere.core.rule.ShardingRule;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * From schema filler for MySQL.
+ * SQL token generator for master-slave.
  *
  * @author zhangliang
  */
-public final class MySQLFromSchemaFiller implements SQLSegmentFiller<FromSchemaSegment> {
+public final class MasterSlaveTokenGenerateEngine extends SQLTokenGenerateEngine<ShardingRule> {
+    
+    private static final Collection<SQLTokenGenerator> SQL_TOKEN_GENERATORS = new LinkedList<>();
+    
+    static {
+        SQL_TOKEN_GENERATORS.add(new RemoveTokenGenerator());
+    }
     
     @Override
-    public void fill(final FromSchemaSegment sqlSegment, final SQLStatement sqlStatement) {
-        sqlStatement.addSQLToken(new RemoveToken(sqlSegment.getStartIndex(), sqlSegment.getStopIndex()));
+    protected Collection<SQLTokenGenerator> getSQLTokenGenerators() {
+        return SQL_TOKEN_GENERATORS;
     }
 }

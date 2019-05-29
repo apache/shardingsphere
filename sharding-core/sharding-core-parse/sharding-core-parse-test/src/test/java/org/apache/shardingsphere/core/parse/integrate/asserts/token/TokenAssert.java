@@ -42,8 +42,6 @@ public final class TokenAssert {
     
     private final EncryptColumnTokenAssert encryptColumnTokenAssert;
     
-    private final RemoveTokenAssert removeTokenAssert;
-    
     private final DatabaseType databaseType;
     
     public TokenAssert(final SQLCaseType sqlCaseType, final SQLStatementAssertMessage assertMessage, final DatabaseType databaseType) {
@@ -52,7 +50,6 @@ public final class TokenAssert {
         rowCountTokenAssert = new RowCountTokenAssert(sqlCaseType, assertMessage);
         aggregationDistinctTokenAssert = new AggregationDistinctTokenAssert(assertMessage);
         encryptColumnTokenAssert = new EncryptColumnTokenAssert(sqlCaseType, assertMessage);
-        removeTokenAssert = new RemoveTokenAssert(assertMessage);
         this.databaseType = databaseType;
     }
     
@@ -71,6 +68,5 @@ public final class TokenAssert {
         if (DatabaseType.MySQL == databaseType) {
             encryptColumnTokenAssert.assertEncryptColumnsToken(actual, expected);
         }
-        removeTokenAssert.assertRemoveTokens(actual, expected);
     }
 }
