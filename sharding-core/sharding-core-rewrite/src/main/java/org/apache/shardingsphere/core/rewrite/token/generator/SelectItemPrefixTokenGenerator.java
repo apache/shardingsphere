@@ -22,7 +22,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.SelectItemsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.AggregationDistinctSelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.core.parse.sql.token.impl.SelectItemPrefixToken;
+import org.apache.shardingsphere.core.rewrite.token.pojo.SelectItemPrefixToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
