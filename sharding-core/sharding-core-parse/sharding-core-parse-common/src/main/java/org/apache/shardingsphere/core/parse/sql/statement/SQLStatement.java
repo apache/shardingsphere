@@ -128,4 +128,13 @@ public interface SQLStatement {
      * @return SQL segment
      */
     <T extends SQLSegment> Optional<T> findSQLSegment(Class<T> sqlSegmentType);
+    
+    /**
+     * Find SQL segments.
+     * 
+     * @param sqlSegmentType SQL segment type
+     * @param <T> type of SQL segment
+     * @return SQL segments
+     */
+    <T extends SQLSegment> Collection<T> findSQLSegments(Class<T> sqlSegmentType);
 }
