@@ -41,7 +41,6 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.TopSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.sql.token.impl.RowCountToken;
-import org.apache.shardingsphere.core.parse.sql.token.impl.SelectItemPrefixToken;
 
 /**
  * Select item filler.
@@ -108,7 +107,6 @@ public final class SelectItemFiller implements SQLSegmentFiller<SelectItemSegmen
     private void fillAggregationDistinctSelectItemSegment(final AggregationDistinctSelectItemSegment selectItemSegment, final SelectStatement selectStatement) {
         selectStatement.getItems().add(new AggregationDistinctSelectItem(selectItemSegment.getType(), selectStatement.getLogicSQL().substring(selectItemSegment.getInnerExpressionStartIndex(), 
                 selectItemSegment.getStopIndex() + 1), selectItemSegment.getAlias(), selectItemSegment.getDistinctExpression()));
-        setSelectItemPrefixToken(selectStatement);
     }
     
     private void fillSubquerySegment(final SubquerySegment subquerySegment, final SQLStatement sqlStatement) {
@@ -128,12 +126,5 @@ public final class SelectItemFiller implements SQLSegmentFiller<SelectItemSegmen
     private LimitValue getTopValueSegment(final LimitValueSegment topValueSegment) {
         return topValueSegment instanceof ParameterMarkerLimitValueSegment ? new LimitValue(-1, ((ParameterMarkerLimitValueSegment) topValueSegment).getParameterIndex(), false)
                 : new LimitValue(((NumberLiteralLimitValueSegment) topValueSegment).getValue(), -1, false);
-    }
-    
-    private void setSelectItemPrefixToken(final SelectStatement selectStatement) {
-        Optional<SelectItemPrefixToken> selectItemPrefixToken = selectStatement.findSQLToken(SelectItemPrefixToken.class);
-        if (selectItemPrefixToken.isPresent()) {
-            selectItemPrefixToken.get().setToAppendDistinct(true);
-        }
     }
 }
