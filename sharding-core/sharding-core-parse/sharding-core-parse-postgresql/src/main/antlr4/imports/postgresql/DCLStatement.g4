@@ -61,8 +61,7 @@ privilegeType_
     ;
 
 onObjectClause_
-    : TABLE? tableNames
-    | DATABASE
+    : DATABASE 
     | SCHEMA
     | DOMAIN
     | FOREIGN
@@ -73,8 +72,9 @@ onObjectClause_
     | LANGUAGE
     | LARGE OBJECT
     | TABLESPACE
-    | TYPE
+    | TYPE 
     | SEQUENCE
+    | TABLE? tableNames
     ;
 
 createUser

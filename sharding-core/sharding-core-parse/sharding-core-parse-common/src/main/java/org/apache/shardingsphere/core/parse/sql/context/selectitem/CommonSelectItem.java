@@ -32,7 +32,7 @@ import lombok.ToString;
 @Getter
 @EqualsAndHashCode
 @ToString
-public final class CommonSelectItem implements SelectItem {
+public class CommonSelectItem implements SelectItem {
     
     private final String expression;
     

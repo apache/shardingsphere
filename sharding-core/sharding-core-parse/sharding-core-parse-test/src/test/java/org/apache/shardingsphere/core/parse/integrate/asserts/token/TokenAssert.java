@@ -32,39 +32,21 @@ import java.util.Collection;
  */
 public final class TokenAssert {
     
-    private final TableTokenAssert tableTokenAssert;
-    
-    private final IndexTokenAssert indexTokenAssert;
-    
-    private final SelectItemsTokenAssert itemsTokenAssert;
-    
     private final InsertValuesTokenAssert insertValuesTokenAssert;
-    
-    private final OrderByTokenAssert orderByTokenAssert;
     
     private final OffsetTokenAssert offsetTokenAssert;
     
     private final RowCountTokenAssert rowCountTokenAssert;
     
-    private final AggregationDistinctTokenAssert aggregationDistinctTokenAssert;
-    
     private final EncryptColumnTokenAssert encryptColumnTokenAssert;
-    
-    private final RemoveTokenAssert removeTokenAssert;
     
     private final DatabaseType databaseType;
     
     public TokenAssert(final SQLCaseType sqlCaseType, final SQLStatementAssertMessage assertMessage, final DatabaseType databaseType) {
-        tableTokenAssert = new TableTokenAssert(assertMessage);
-        indexTokenAssert = new IndexTokenAssert(assertMessage);
-        itemsTokenAssert = new SelectItemsTokenAssert(assertMessage);
         insertValuesTokenAssert = new InsertValuesTokenAssert(assertMessage);
-        orderByTokenAssert = new OrderByTokenAssert(sqlCaseType, assertMessage);
         offsetTokenAssert = new OffsetTokenAssert(sqlCaseType, assertMessage);
         rowCountTokenAssert = new RowCountTokenAssert(sqlCaseType, assertMessage);
-        aggregationDistinctTokenAssert = new AggregationDistinctTokenAssert(assertMessage);
         encryptColumnTokenAssert = new EncryptColumnTokenAssert(sqlCaseType, assertMessage);
-        removeTokenAssert = new RemoveTokenAssert(assertMessage);
         this.databaseType = databaseType;
     }
     
@@ -75,17 +57,12 @@ public final class TokenAssert {
      * @param expected expected tokens
      */
     public void assertTokens(final Collection<SQLToken> actual, final ExpectedTokens expected) {
-        tableTokenAssert.assertTableTokens(actual, expected);
-        indexTokenAssert.assertIndexToken(actual, expected);
-        itemsTokenAssert.assertSelectItemsToken(actual, expected);
+        // TODO do not assert table token and index, will assert table segment in future
         insertValuesTokenAssert.assertInsertValuesToken(actual, expected);
-        orderByTokenAssert.assertOrderByToken(actual, expected);
         offsetTokenAssert.assertOffsetToken(actual, expected);
         rowCountTokenAssert.assertRowCountToken(actual, expected);
-        aggregationDistinctTokenAssert.assertAggregationDistinctTokens(actual, expected);
         if (DatabaseType.MySQL == databaseType) {
             encryptColumnTokenAssert.assertEncryptColumnsToken(actual, expected);
         }
-        removeTokenAssert.assertRemoveTokens(actual, expected);
     }
 }

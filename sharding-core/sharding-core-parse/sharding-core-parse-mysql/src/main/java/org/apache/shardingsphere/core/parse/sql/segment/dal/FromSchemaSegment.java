@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.parse.sql.segment.dal;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.parse.sql.segment.RemoveAvailable;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 
 /**
@@ -28,7 +29,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
  */
 @RequiredArgsConstructor
 @Getter
-public final class FromSchemaSegment implements SQLSegment {
+public final class FromSchemaSegment implements SQLSegment, RemoveAvailable {
     
     private final int startIndex;
     

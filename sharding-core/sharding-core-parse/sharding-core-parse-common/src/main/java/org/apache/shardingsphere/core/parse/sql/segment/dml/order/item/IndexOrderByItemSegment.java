@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.parse.sql.segment.dml.order.item;
 
 import lombok.Getter;
+import lombok.ToString;
 import org.apache.shardingsphere.core.constant.OrderDirection;
 
 /**
@@ -27,6 +28,7 @@ import org.apache.shardingsphere.core.constant.OrderDirection;
  * @author panjuan
  */
 @Getter
+@ToString(callSuper = true)
 public final class IndexOrderByItemSegment extends OrderByItemSegment {
     
     private final int columnIndex;
@@ -34,5 +36,6 @@ public final class IndexOrderByItemSegment extends OrderByItemSegment {
     public IndexOrderByItemSegment(final int startIndex, final int stopIndex, final int columnIndex, final OrderDirection orderDirection, final OrderDirection nullOrderDirection) {
         super(startIndex, stopIndex, orderDirection, nullOrderDirection);
         this.columnIndex = columnIndex;
+        setIndex(columnIndex);
     }
 }

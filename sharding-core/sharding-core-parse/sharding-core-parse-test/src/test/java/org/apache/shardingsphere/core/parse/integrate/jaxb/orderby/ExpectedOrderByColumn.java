@@ -38,9 +38,6 @@ public final class ExpectedOrderByColumn {
     @XmlAttribute
     private Integer index = -1;
     
-    @XmlAttribute
-    private String alias;
-    
     @XmlAttribute(name = "order-direction") 
     private String orderDirection;
 }

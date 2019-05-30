@@ -22,6 +22,7 @@
 #   
 # If you want to use master-slave, please refer to this file; 
 # if you want to use sharding, please refer to the config-sharding.yaml.
+# if you want to use sharding, please refer to the config-encrypt.yaml.
 # 
 ######################################################################################################
 #

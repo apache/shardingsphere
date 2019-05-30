@@ -19,8 +19,6 @@ package org.apache.shardingsphere.core.parse.filler.common.dml;
 
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parse.constant.DerivedColumn;
 import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.sql.context.limit.Limit;
 import org.apache.shardingsphere.core.parse.sql.context.limit.LimitValue;
@@ -28,14 +26,13 @@ import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationDi
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.CommonSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.StarSelectItem;
-import org.apache.shardingsphere.core.parse.sql.context.table.Table;
-import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.complex.SubquerySegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.AggregationDistinctSelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.AggregationSelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.ColumnSelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.ExpressionSelectItemSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.ShorthandSelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.LimitValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.NumberLiteralLimitValueSegment;
@@ -43,10 +40,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.ParameterMarke
 import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.TopSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.core.parse.sql.token.impl.AggregationDistinctToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.RowCountToken;
-import org.apache.shardingsphere.core.parse.sql.token.impl.SelectItemPrefixToken;
-import org.apache.shardingsphere.core.parse.sql.token.impl.TableToken;
 
 /**
  * Select item filler.
@@ -55,12 +49,10 @@ import org.apache.shardingsphere.core.parse.sql.token.impl.TableToken;
  * @author panjuan
  */
 @RequiredArgsConstructor
-public final class SelectItemFiller implements SQLSegmentFiller {
-    
-    private final ShardingTableMetaData shardingTableMetaData;
+public final class SelectItemFiller implements SQLSegmentFiller<SelectItemSegment> {
     
     @Override
-    public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement) {
+    public void fill(final SelectItemSegment sqlSegment, final SQLStatement sqlStatement) {
         if (!(sqlStatement instanceof SelectStatement)) {
             return;
         }
@@ -93,12 +85,6 @@ public final class SelectItemFiller implements SQLSegmentFiller {
         selectStatement.setContainStar(true);
         Optional<TableSegment> owner = selectItemSegment.getOwner();
         selectStatement.getItems().add(new StarSelectItem(owner.isPresent() ? owner.get().getName() : null));
-        if (owner.isPresent()) {
-            Optional<Table> table = selectStatement.getTables().find(owner.get().getName());
-            if (table.isPresent() && !table.get().getAlias().isPresent() && shardingTableMetaData.containsTable(table.get().getName())) {
-                selectStatement.addSQLToken(new TableToken(selectItemSegment.getStartIndex(), owner.get().getStopIndex(), owner.get().getName(), owner.get().getQuoteCharacter()));
-            }
-        }
     }
     
     private void fillColumnSelectItemSegment(final ColumnSelectItemSegment selectItemSegment, final SelectStatement selectStatement) {
@@ -121,12 +107,6 @@ public final class SelectItemFiller implements SQLSegmentFiller {
     private void fillAggregationDistinctSelectItemSegment(final AggregationDistinctSelectItemSegment selectItemSegment, final SelectStatement selectStatement) {
         selectStatement.getItems().add(new AggregationDistinctSelectItem(selectItemSegment.getType(), selectStatement.getLogicSQL().substring(selectItemSegment.getInnerExpressionStartIndex(), 
                 selectItemSegment.getStopIndex() + 1), selectItemSegment.getAlias(), selectItemSegment.getDistinctExpression()));
-        Optional<String> derivedAlias = Optional.absent();
-        if (DerivedColumn.isDerivedColumn(selectItemSegment.getAlias().get())) {
-            derivedAlias = Optional.of(selectItemSegment.getAlias().get());
-        }
-        selectStatement.getSQLTokens().add(new AggregationDistinctToken(selectItemSegment.getStartIndex(), selectItemSegment.getStopIndex(), selectItemSegment.getDistinctExpression(), derivedAlias));
-        setSelectItemPrefixToken(selectStatement);
     }
     
     private void fillSubquerySegment(final SubquerySegment subquerySegment, final SQLStatement sqlStatement) {
@@ -146,12 +126,5 @@ public final class SelectItemFiller implements SQLSegmentFiller {
     private LimitValue getTopValueSegment(final LimitValueSegment topValueSegment) {
         return topValueSegment instanceof ParameterMarkerLimitValueSegment ? new LimitValue(-1, ((ParameterMarkerLimitValueSegment) topValueSegment).getParameterIndex(), false)
                 : new LimitValue(((NumberLiteralLimitValueSegment) topValueSegment).getValue(), -1, false);
-    }
-    
-    private void setSelectItemPrefixToken(final SelectStatement selectStatement) {
-        Optional<SelectItemPrefixToken> selectItemPrefixToken = selectStatement.findSQLToken(SelectItemPrefixToken.class);
-        if (selectItemPrefixToken.isPresent()) {
-            selectItemPrefixToken.get().setToAppendDistinct(true);
-        }
     }
 }

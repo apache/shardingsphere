@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.merge.dql.common.MemoryQueryResultRow;
 import org.apache.shardingsphere.core.merge.dql.orderby.CompareUtil;
-import org.apache.shardingsphere.core.parse.sql.context.orderby.OrderItem;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 
 import java.util.Comparator;
@@ -45,8 +45,8 @@ public final class GroupByRowComparator implements Comparator<MemoryQueryResultR
         return compare(o1, o2, selectStatement.getGroupByItems());
     }
     
-    private int compare(final MemoryQueryResultRow o1, final MemoryQueryResultRow o2, final List<OrderItem> orderItems) {
-        for (OrderItem each : orderItems) {
+    private int compare(final MemoryQueryResultRow o1, final MemoryQueryResultRow o2, final List<OrderByItemSegment> orderItems) {
+        for (OrderByItemSegment each : orderItems) {
             Object orderValue1 = o1.getCell(each.getIndex());
             Preconditions.checkState(null == orderValue1 || orderValue1 instanceof Comparable, "Order by value must implements Comparable");
             Object orderValue2 = o2.getCell(each.getIndex());

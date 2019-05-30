@@ -17,57 +17,22 @@
 
 package org.apache.shardingsphere.core.parse.filler.sharding;
 
-import com.google.common.base.Optional;
-import lombok.Setter;
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.filler.api.ShardingRuleAwareFiller;
-import org.apache.shardingsphere.core.parse.filler.api.ShardingTableMetaDataAwareFiller;
 import org.apache.shardingsphere.core.parse.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.token.impl.IndexToken;
-import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.core.rule.TableRule;
+import org.apache.shardingsphere.core.parse.sql.statement.ddl.DDLStatement;
 
 /**
  * Index filler for sharding.
  *
  * @author zhangliang
  */
-@Setter
-public final class ShardingIndexFiller implements SQLSegmentFiller<IndexSegment>, ShardingRuleAwareFiller, ShardingTableMetaDataAwareFiller {
-    
-    private ShardingRule shardingRule;
-    
-    private ShardingTableMetaData shardingTableMetaData;
+public final class ShardingIndexFiller implements SQLSegmentFiller<IndexSegment> {
     
     @Override
     public void fill(final IndexSegment sqlSegment, final SQLStatement sqlStatement) {
-        Optional<String> tableName = getTableNameOfIndex(sqlSegment.getIndexName(), sqlStatement);
-        if (tableName.isPresent()) {
-            sqlStatement.getSQLTokens().add(new IndexToken(sqlSegment.getStartIndex(), sqlSegment.getStopIndex(), sqlSegment.getIndexName(), sqlSegment.getQuoteCharacter(), tableName.get()));
+        if (sqlStatement instanceof DDLStatement) {
+            ((DDLStatement) sqlStatement).setIndexName(sqlSegment.getIndexName());
         }
-    }
-    
-    private Optional<String> getTableNameOfIndex(final String indexName, final SQLStatement sqlStatement) {
-        if (sqlStatement.getTables().isSingleTable()) {
-            return Optional.of(sqlStatement.getTables().getSingleTableName());
-        }
-        for (String each : sqlStatement.getTables().getTableNames()) {
-            if (containsIndex(indexName, each)) {
-                return Optional.of(each);
-            }
-        }
-        for (String each : shardingTableMetaData.getTables().keySet()) {
-            if (containsIndex(indexName, each)) {
-                return Optional.of(each);
-            }
-        }
-        return Optional.absent();
-    }
-    
-    private boolean containsIndex(final String indexName, final String tableName) {
-        Optional<TableRule> tableRule = shardingRule.findTableRule(tableName);
-        return tableRule.isPresent() && indexName.equalsIgnoreCase(tableRule.get().getLogicIndex());
     }
 }

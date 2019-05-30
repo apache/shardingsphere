@@ -21,8 +21,12 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
 import org.apache.shardingsphere.core.parse.sql.token.Substitutable;
+import org.apache.shardingsphere.core.parse.sql.token.impl.InsertColumnsToken;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
+import org.apache.shardingsphere.core.rewrite.placeholder.InsertColumnsPlaceholder;
+
+import java.util.List;
 
 /**
  * Base SQL rewriter.
@@ -34,21 +38,14 @@ public final class BaseSQLRewriter implements SQLRewriter {
     
     private final SQLStatement sqlStatement;
     
-    private int tokenCount;
+    private final List<SQLToken> sqlTokens;
+    
+    private int currentSQLTokenIndex;
     
     /**
-     * Is to rewrite or not.
-     * 
-     * @return rewrite or not
-     */
-    public boolean isToRewriteSQLTokens() {
-        return !sqlStatement.getSQLTokens().isEmpty();
-    }
-    
-    /**
-     * rewrite original literal.
+     * Rewrite original literal.
      *
-     * @param sqlBuilder sql builder
+     * @param sqlBuilder SQL builder
      */
     public void rewrite(final SQLBuilder sqlBuilder) {
         sqlBuilder.appendLiterals(sqlStatement.getLogicSQL());
@@ -56,10 +53,23 @@ public final class BaseSQLRewriter implements SQLRewriter {
     
     @Override
     public void rewrite(final SQLBuilder sqlBuilder, final ParameterBuilder parameterBuilder, final SQLToken sqlToken) {
-        String originalSQL = sqlStatement.getLogicSQL();
-        int stopIndex = sqlStatement.getSQLTokens().size() - 1 == tokenCount ? originalSQL.length() : sqlStatement.getSQLTokens().get(tokenCount + 1).getStartIndex();
-        sqlBuilder.appendLiterals(originalSQL.substring(getStartIndex(sqlToken) > originalSQL.length() ? originalSQL.length() : getStartIndex(sqlToken), stopIndex));
-        tokenCount++;
+        if (sqlToken instanceof InsertColumnsToken) {
+            appendInsertColumnsPlaceholder(sqlBuilder, (InsertColumnsToken) sqlToken);
+        }
+        appendLiteral(sqlBuilder, sqlToken);
+    }
+    
+    private void appendInsertColumnsPlaceholder(final SQLBuilder sqlBuilder, final InsertColumnsToken insertColumnsToken) {
+        InsertColumnsPlaceholder columnsPlaceholder = new InsertColumnsPlaceholder(insertColumnsToken.isPartColumns());
+        columnsPlaceholder.getColumns().addAll(insertColumnsToken.getColumns());
+        sqlBuilder.appendPlaceholder(columnsPlaceholder);
+    }
+    
+    private void appendLiteral(final SQLBuilder sqlBuilder, final SQLToken sqlToken) {
+        String logicSQL = sqlStatement.getLogicSQL();
+        int stopIndex = sqlTokens.size() - 1 == currentSQLTokenIndex ? logicSQL.length() : sqlTokens.get(currentSQLTokenIndex + 1).getStartIndex();
+        sqlBuilder.appendLiterals(logicSQL.substring(getStartIndex(sqlToken) > logicSQL.length() ? logicSQL.length() : getStartIndex(sqlToken), stopIndex));
+        currentSQLTokenIndex++;
     }
     
     private int getStartIndex(final SQLToken sqlToken) {
@@ -69,9 +79,9 @@ public final class BaseSQLRewriter implements SQLRewriter {
     /**
      * rewrite initial literal.
      *
-     * @param sqlBuilder sql builder
+     * @param sqlBuilder SQL builder
      */
     public void rewriteInitialLiteral(final SQLBuilder sqlBuilder) {
-        sqlBuilder.appendLiterals(sqlStatement.getLogicSQL().substring(0, sqlStatement.getSQLTokens().get(0).getStartIndex()));
+        sqlBuilder.appendLiterals(sqlStatement.getLogicSQL().substring(0, sqlTokens.get(0).getStartIndex()));
     }
 }

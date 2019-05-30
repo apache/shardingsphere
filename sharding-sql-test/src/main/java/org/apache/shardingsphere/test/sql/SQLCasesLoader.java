@@ -69,15 +69,6 @@ public class SQLCasesLoader {
         return INSTANCE;
     }
     
-    /**
-     * Switch SQL case.
-     * 
-     * @param path path
-     */
-    public void switchSQLCase(final String path) {
-        supportedSQLCaseMap = loadSQLCases(path);
-    }
-    
     @SneakyThrows
     protected static Map<String, SQLCase> loadSQLCases(final String path) {
         File file = new File(SQLCasesLoader.class.getProtectionDomain().getCodeSource().getLocation().getPath());

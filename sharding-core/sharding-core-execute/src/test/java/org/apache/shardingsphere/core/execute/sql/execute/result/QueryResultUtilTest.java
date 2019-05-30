@@ -61,8 +61,9 @@ public class QueryResultUtilTest {
     @SneakyThrows
     public void assertGetValueByBit() {
         when(resultSetMetaData.getColumnType(1)).thenReturn(Types.BIT);
-        when(resultSet.getBoolean(1)).thenReturn(true);
-        assertTrue((boolean) QueryResultUtil.getValue(resultSet, 1));
+        byte[] bytes = {1};
+        when(resultSet.getBytes(1)).thenReturn(bytes);
+        assertThat((byte[]) QueryResultUtil.getValue(resultSet, 1), is(bytes));
     }
     
     @Test

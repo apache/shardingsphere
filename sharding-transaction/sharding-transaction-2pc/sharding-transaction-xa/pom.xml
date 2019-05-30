@@ -30,5 +30,8 @@
     <modules>
         <module>sharding-transaction-xa-spi</module>
         <module>sharding-transaction-xa-core</module>
+        <module>sharding-transaction-xa-atomikos</module>
+        <module>sharding-transaction-xa-narayana</module>
+        <module>sharding-transaction-xa-bitronix</module>
     </modules>
 </project>
