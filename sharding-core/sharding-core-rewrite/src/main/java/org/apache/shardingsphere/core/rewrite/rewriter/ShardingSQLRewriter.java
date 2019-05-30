@@ -79,7 +79,7 @@ public final class ShardingSQLRewriter implements SQLRewriter {
     @Override
     public void rewrite(final SQLBuilder sqlBuilder, final ParameterBuilder parameterBuilder, final SQLToken sqlToken) {
         if (sqlToken instanceof SelectItemPrefixToken) {
-            appendSelectItemPrefixPlaceholder(sqlBuilder, (SelectItemPrefixToken) sqlToken);
+            appendSelectItemPrefixPlaceholder(sqlBuilder);
         } else if (sqlToken instanceof TableToken) {
             appendTablePlaceholder(sqlBuilder, (TableToken) sqlToken);
         } else if (sqlToken instanceof IndexToken) {
@@ -101,8 +101,8 @@ public final class ShardingSQLRewriter implements SQLRewriter {
         }
     }
     
-    private void appendSelectItemPrefixPlaceholder(final SQLBuilder sqlBuilder, final SelectItemPrefixToken selectItemPrefixToken) {
-        if (selectItemPrefixToken.isToAppendDistinct() && isRewrite()) {
+    private void appendSelectItemPrefixPlaceholder(final SQLBuilder sqlBuilder) {
+        if (isRewrite()) {
             sqlBuilder.appendPlaceholder(new SelectItemPrefixPlaceholder());
         }
     }
