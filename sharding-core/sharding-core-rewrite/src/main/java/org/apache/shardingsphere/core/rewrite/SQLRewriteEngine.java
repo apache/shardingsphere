@@ -18,19 +18,14 @@
 package org.apache.shardingsphere.core.rewrite;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.constant.DatabaseType;
-import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
 import org.apache.shardingsphere.core.rewrite.rewriter.BaseSQLRewriter;
-import org.apache.shardingsphere.core.rewrite.rewriter.EncryptSQLRewriter;
 import org.apache.shardingsphere.core.rewrite.rewriter.SQLRewriter;
-import org.apache.shardingsphere.core.rewrite.rewriter.ShardingSQLRewriter;
 import org.apache.shardingsphere.core.rewrite.token.MasterSlaveTokenGenerateEngine;
 import org.apache.shardingsphere.core.rewrite.token.ShardingTokenGenerateEngine;
-import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.SQLUnit;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.route.type.TableUnit;
@@ -39,7 +34,6 @@ import org.apache.shardingsphere.core.rule.BindingTableRule;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -65,29 +59,22 @@ public final class SQLRewriteEngine {
     
     private final BaseSQLRewriter baseSQLRewriter;
     
-    private final List<SQLRewriter> sqlRewriters;
-    
-    public SQLRewriteEngine(final ShardingRule shardingRule, final DatabaseType databaseType, final SQLRouteResult sqlRouteResult, final List<Object> parameters) {
+    public SQLRewriteEngine(final ShardingRule shardingRule, final SQLStatement sqlStatement, final List<Object> parameters) {
         baseRule = shardingRule;
-        sqlStatement = sqlRouteResult.getSqlStatement();
+        this.sqlStatement = sqlStatement;
         sqlTokens = new ShardingTokenGenerateEngine().generateSQLTokens(sqlStatement, shardingRule);
         sqlBuilder = new SQLBuilder();
         parameterBuilder = new ParameterBuilder(parameters);
         baseSQLRewriter = new BaseSQLRewriter(sqlStatement, sqlTokens);
-        sqlRewriters = Arrays.asList(new ShardingSQLRewriter(shardingRule, databaseType, sqlRouteResult),
-                new EncryptSQLRewriter(shardingRule.getShardingEncryptorEngine(), sqlStatement, sqlRouteResult.getOptimizeResult()));
-        pattern();
     }
     
-    public SQLRewriteEngine(final EncryptRule encryptRule, final SQLStatement sqlStatement, final OptimizeResult optimizeResult, final List<Object> parameters) {
+    public SQLRewriteEngine(final EncryptRule encryptRule, final SQLStatement sqlStatement, final List<Object> parameters) {
         baseRule = encryptRule;
         this.sqlStatement = sqlStatement;
         sqlTokens = sqlStatement.getSQLTokens();
         sqlBuilder = new SQLBuilder();
         parameterBuilder = new ParameterBuilder(parameters);
         baseSQLRewriter = new BaseSQLRewriter(sqlStatement, sqlTokens);
-        sqlRewriters = Collections.<SQLRewriter>singletonList(new EncryptSQLRewriter(encryptRule.getEncryptorEngine(), sqlStatement, optimizeResult));
-        pattern();
     }
     
     public SQLRewriteEngine(final SQLStatement sqlStatement) {
@@ -97,19 +84,18 @@ public final class SQLRewriteEngine {
         sqlBuilder = new SQLBuilder();
         parameterBuilder = new ParameterBuilder(Collections.emptyList());
         baseSQLRewriter = new BaseSQLRewriter(sqlStatement, sqlTokens);
-        sqlRewriters = Collections.emptyList();
-        pattern();
     }
     
-    private void pattern() {
+    /**
+     * Initialize SQL rewrite engine.
+     * 
+     * @param sqlRewriters SQL rewriters
+     */
+    public void init(final SQLRewriter... sqlRewriters) {
         if (sqlTokens.isEmpty()) {
             baseSQLRewriter.rewrite(sqlBuilder);
-        } else {
-            rewrite();
+            return;
         }
-    }
-    
-    private void rewrite() {
         baseSQLRewriter.rewriteInitialLiteral(sqlBuilder);
         for (SQLToken each : sqlTokens) {
             for (SQLRewriter sqlRewriter : sqlRewriters) {
