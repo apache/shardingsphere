@@ -25,8 +25,6 @@ import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SelectItemPrefixToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
-import java.util.Collection;
-
 /**
  * Select item prefix token generator.
  *
@@ -39,10 +37,10 @@ public final class SelectItemPrefixTokenGenerator implements OptionalSQLTokenGen
         if (!(sqlStatement instanceof SelectStatement)) {
             return Optional.absent();
         }
-        Collection<AggregationDistinctSelectItemSegment> distinctSelectItemSegments = sqlStatement.findSQLSegments(AggregationDistinctSelectItemSegment.class);
-        Collection<SelectItemsSegment> selectItemsSegments = sqlStatement.findSQLSegments(SelectItemsSegment.class);
-        if (!(distinctSelectItemSegments.isEmpty() || selectItemsSegments.isEmpty())) {
-            return Optional.of(new SelectItemPrefixToken(selectItemsSegments.iterator().next().getStartIndex()));
+        Optional<AggregationDistinctSelectItemSegment> distinctSelectItemSegment = sqlStatement.findSQLSegment(AggregationDistinctSelectItemSegment.class);
+        Optional<SelectItemsSegment> selectItemsSegment = sqlStatement.findSQLSegment(SelectItemsSegment.class);
+        if (distinctSelectItemSegment.isPresent() && selectItemsSegment.isPresent()) {
+            return Optional.of(new SelectItemPrefixToken(selectItemsSegment.get().getStartIndex()));
         }
         return Optional.absent();
     }

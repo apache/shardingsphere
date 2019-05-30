@@ -121,11 +121,11 @@ public interface SQLStatement {
     void setLogicSQL(String logicTable);
     
     /**
-     * Find SQL segments.
-     * 
+     * Find SQL segment.
+     *
      * @param sqlSegmentType SQL segment type
      * @param <T> type of SQL segment
-     * @return SQL segments
+     * @return SQL segment
      */
-    <T extends SQLSegment> Collection<T> findSQLSegments(Class<T> sqlSegmentType);
+    <T extends SQLSegment> Optional<T> findSQLSegment(Class<T> sqlSegmentType);
 }
