@@ -58,11 +58,11 @@ public final class SQLRewriteEngine {
     
     private final SQLStatement sqlStatement;
     
+    private final List<SQLToken> sqlTokens;
+    
     private final SQLBuilder sqlBuilder;
     
     private final ParameterBuilder parameterBuilder;
-    
-    private final List<SQLToken> sqlTokens;
     
     private final BaseSQLRewriter baseSQLRewriter;
     
@@ -71,9 +71,9 @@ public final class SQLRewriteEngine {
     public SQLRewriteEngine(final ShardingRule shardingRule, final DatabaseType databaseType, final SQLRouteResult sqlRouteResult, final List<Object> parameters) {
         baseRule = shardingRule;
         sqlStatement = sqlRouteResult.getSqlStatement();
+        sqlTokens = new ShardingTokenGenerateEngine().generateSQLTokens(sqlStatement, shardingRule);
         sqlBuilder = new SQLBuilder();
         parameterBuilder = new ParameterBuilder(parameters);
-        sqlTokens = generateSQLTokens(shardingRule);
         baseSQLRewriter = new BaseSQLRewriter(sqlStatement, sqlTokens);
         sqlRewriters.add(new ShardingSQLRewriter(shardingRule, sqlStatement.getLogicSQL(), databaseType, sqlStatement, sqlRouteResult));
         sqlRewriters.add(new EncryptSQLRewriter(shardingRule.getShardingEncryptorEngine(), sqlStatement, sqlRouteResult.getOptimizeResult()));
@@ -83,9 +83,9 @@ public final class SQLRewriteEngine {
     public SQLRewriteEngine(final EncryptRule encryptRule, final SQLStatement sqlStatement, final OptimizeResult optimizeResult, final List<Object> parameters) {
         baseRule = encryptRule;
         this.sqlStatement = sqlStatement;
+        sqlTokens = sqlStatement.getSQLTokens();
         sqlBuilder = new SQLBuilder();
         parameterBuilder = new ParameterBuilder(parameters);
-        sqlTokens = generateSQLTokens(encryptRule);
         baseSQLRewriter = new BaseSQLRewriter(sqlStatement, sqlTokens);
         sqlRewriters.add(new EncryptSQLRewriter(encryptRule.getEncryptorEngine(), sqlStatement, optimizeResult));
         pattern();
@@ -94,21 +94,11 @@ public final class SQLRewriteEngine {
     public SQLRewriteEngine(final SQLStatement sqlStatement) {
         baseRule = null;
         this.sqlStatement = sqlStatement;
+        sqlTokens = new MasterSlaveTokenGenerateEngine().generateSQLTokens(sqlStatement, null);
         sqlBuilder = new SQLBuilder();
         parameterBuilder = new ParameterBuilder(Collections.emptyList());
-        sqlTokens = generateSQLTokens(null);
         baseSQLRewriter = new BaseSQLRewriter(sqlStatement, sqlTokens);
         pattern();
-    }
-    
-    private List<SQLToken> generateSQLTokens(final BaseRule baseRule) {
-        if (baseRule instanceof ShardingRule) {
-            return new ShardingTokenGenerateEngine().generateSQLTokens(sqlStatement, (ShardingRule) baseRule);
-        }
-        if (null == baseRule) {
-            return new MasterSlaveTokenGenerateEngine().generateSQLTokens(sqlStatement, null);
-        }
-        return sqlStatement.getSQLTokens();
     }
     
     private void pattern() {
