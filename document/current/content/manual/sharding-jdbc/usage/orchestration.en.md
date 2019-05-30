@@ -4,8 +4,7 @@ title = "Orchestration"
 weight = 4
 +++
 
-The use of orchestration function requires to designate a registry center, in which all the configurations are saved. 
-Users can either use local configurations to cover registry center configurations or read configurations from registry center only.
+Using orchestration requires designating a registry center, in which all the configurations are saved. Users can either use local configurations to cover registry center configurations or read configurations from registry center.
 
 ## Not Use Spring
 
@@ -36,12 +35,12 @@ Users can either use local configurations to cover registry center configuration
     // Configure dataSourceMap and shardingRuleConfig
     // ...
 
-    // Configure registry center of registry
+    // Configure registry center
     RegistryCenterConfiguration regConfig = new RegistryCenterConfiguration();
     regConfig.setServerLists("localhost:2181");
     regConfig.setNamespace("sharding-sphere-orchestration");
 
-    // Configure orchestration configuration
+    // Configure orchestration
     OrchestrationConfiguration orchConfig = new OrchestrationConfiguration("orchestration-sharding-data-source", regConfig, false);
 
     // Get data source
@@ -50,7 +49,7 @@ Users can either use local configurations to cover registry center configuration
 
 ### Rule Configuration Based on Yaml
 
-Or use Yaml to configure, similar as  above configurations:
+Or use Yaml to configure, similar as above configurations:
 
 ```yaml
 orchestration:
@@ -65,7 +64,7 @@ orchestration:
     DataSource dataSource = YamlOrchestrationShardingDataSourceFactory.createDataSource(yamlFile);
 ```
 
-## Using spring
+## Using Spring
 
 ### Introduce Maven Dependency
 
@@ -77,14 +76,14 @@ orchestration:
     <version>${sharding-sphere.version}</version>
 </dependency>
 
-<!--If you want to use zookeeper, please use the artifactId below.-->
+<!--If you want to use zookeeper, please add the Maven below.-->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
     <version>${sharding-sphere.version}</version>
 </dependency>
 
-<!--If you want to use etcd, please use the artifactId below.-->
+<!--If you want to use etcd, please add the Maven below.-->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-orchestration-reg-etcd</artifactId>
@@ -100,14 +99,14 @@ orchestration:
     <version>${sharding-sphere.version}</version>
 </dependency>
 
-<!--If you want to use zookeeper, please use the artifactId below.-->
+<!--If you want to use zookeeper, please add the Maven below.-->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
     <version>${sharding-sphere.version}</version>
 </dependency>
 
-<!--If you want to use etcd, please use the artifactId below.-->
+<!--If you want to use etcd, please add the Maven below.-->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-orchestration-reg-etcd</artifactId>
@@ -141,4 +140,4 @@ spring.shardingsphere.orchestration.registry.namespace=sharding-jdbc-orchestrati
 </beans>
 ```
 
-For more detailed configurations, please refer to [Configuration Manual](http://shardingsphere.apache.org/document/current/cn/manual/sharding-jdbc/configuration/).
+For detailed configurations, please refer to [Configuration Manual](http://shardingsphere.apache.org/document/current/cn/manual/sharding-jdbc/configuration/).
