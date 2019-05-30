@@ -39,18 +39,17 @@ import org.apache.shardingsphere.core.rule.BindingTableRule;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 /**
  * SQL rewrite engine.
  * 
- * <p>Rewrite logic SQL to actual SQL.</p>
- *
  * @author panjuan
+ * @author zhangliang
  */
 public final class SQLRewriteEngine {
     
@@ -66,7 +65,7 @@ public final class SQLRewriteEngine {
     
     private final BaseSQLRewriter baseSQLRewriter;
     
-    private final List<SQLRewriter> sqlRewriters = new LinkedList<>();
+    private final List<SQLRewriter> sqlRewriters;
     
     public SQLRewriteEngine(final ShardingRule shardingRule, final DatabaseType databaseType, final SQLRouteResult sqlRouteResult, final List<Object> parameters) {
         baseRule = shardingRule;
@@ -75,8 +74,8 @@ public final class SQLRewriteEngine {
         sqlBuilder = new SQLBuilder();
         parameterBuilder = new ParameterBuilder(parameters);
         baseSQLRewriter = new BaseSQLRewriter(sqlStatement, sqlTokens);
-        sqlRewriters.add(new ShardingSQLRewriter(shardingRule, sqlStatement.getLogicSQL(), databaseType, sqlStatement, sqlRouteResult));
-        sqlRewriters.add(new EncryptSQLRewriter(shardingRule.getShardingEncryptorEngine(), sqlStatement, sqlRouteResult.getOptimizeResult()));
+        sqlRewriters = Arrays.asList(new ShardingSQLRewriter(shardingRule, sqlStatement.getLogicSQL(), databaseType, sqlStatement, sqlRouteResult),
+                new EncryptSQLRewriter(shardingRule.getShardingEncryptorEngine(), sqlStatement, sqlRouteResult.getOptimizeResult()));
         pattern();
     }
     
@@ -87,7 +86,7 @@ public final class SQLRewriteEngine {
         sqlBuilder = new SQLBuilder();
         parameterBuilder = new ParameterBuilder(parameters);
         baseSQLRewriter = new BaseSQLRewriter(sqlStatement, sqlTokens);
-        sqlRewriters.add(new EncryptSQLRewriter(encryptRule.getEncryptorEngine(), sqlStatement, optimizeResult));
+        sqlRewriters = Collections.<SQLRewriter>singletonList(new EncryptSQLRewriter(encryptRule.getEncryptorEngine(), sqlStatement, optimizeResult));
         pattern();
     }
     
@@ -98,6 +97,7 @@ public final class SQLRewriteEngine {
         sqlBuilder = new SQLBuilder();
         parameterBuilder = new ParameterBuilder(Collections.emptyList());
         baseSQLRewriter = new BaseSQLRewriter(sqlStatement, sqlTokens);
+        sqlRewriters = Collections.emptyList();
         pattern();
     }
     
