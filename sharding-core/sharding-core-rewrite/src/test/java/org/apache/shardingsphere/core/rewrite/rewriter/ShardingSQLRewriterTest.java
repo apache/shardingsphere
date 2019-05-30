@@ -32,6 +32,7 @@ import org.apache.shardingsphere.core.parse.sql.context.limit.Limit;
 import org.apache.shardingsphere.core.parse.sql.context.limit.LimitValue;
 import org.apache.shardingsphere.core.parse.sql.context.table.Table;
 import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.SelectItemsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
@@ -49,7 +50,6 @@ import org.apache.shardingsphere.core.parse.sql.token.impl.InsertValuesToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.OffsetToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.RemoveToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.RowCountToken;
-import org.apache.shardingsphere.core.parse.sql.token.impl.SelectItemPrefixToken;
 import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
@@ -884,9 +884,10 @@ public final class ShardingSQLRewriterTest {
     @Test
     public void assertSelectInWithAggregationDistinct() {
         selectStatement.addSQLToken(new TableToken(49, 55, "table_z", QuoteCharacter.NONE));
-        SelectItemPrefixToken selectItemPrefixToken = new SelectItemPrefixToken(7);
-        selectItemPrefixToken.setToAppendDistinct(true);
-        selectStatement.addSQLToken(selectItemPrefixToken);
+//        SelectItemPrefixToken selectItemPrefixToken = new SelectItemPrefixToken(7);
+//        selectItemPrefixToken.setToAppendDistinct(true);
+//        selectStatement.addSQLToken(selectItemPrefixToken);
+        selectStatement.getSqlSegments().add(new SelectItemsSegment(7, 44, false));
         AggregationDistinctSelectItemSegment selectItemSegment1 = new AggregationDistinctSelectItemSegment(7, 24, "DISTINCT id", AggregationType.COUNT, 12, "id");
         selectItemSegment1.setAlias("a");
         AggregationDistinctSelectItemSegment selectItemSegment2 = new AggregationDistinctSelectItemSegment(27, 42, "DISTINCT id", AggregationType.SUM, 30, "id");
