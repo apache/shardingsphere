@@ -38,8 +38,6 @@ public final class TokenAssert {
     
     private final RowCountTokenAssert rowCountTokenAssert;
     
-    private final AggregationDistinctTokenAssert aggregationDistinctTokenAssert;
-    
     private final EncryptColumnTokenAssert encryptColumnTokenAssert;
     
     private final DatabaseType databaseType;
@@ -48,7 +46,6 @@ public final class TokenAssert {
         insertValuesTokenAssert = new InsertValuesTokenAssert(assertMessage);
         offsetTokenAssert = new OffsetTokenAssert(sqlCaseType, assertMessage);
         rowCountTokenAssert = new RowCountTokenAssert(sqlCaseType, assertMessage);
-        aggregationDistinctTokenAssert = new AggregationDistinctTokenAssert(assertMessage);
         encryptColumnTokenAssert = new EncryptColumnTokenAssert(sqlCaseType, assertMessage);
         this.databaseType = databaseType;
     }
@@ -64,7 +61,6 @@ public final class TokenAssert {
         insertValuesTokenAssert.assertInsertValuesToken(actual, expected);
         offsetTokenAssert.assertOffsetToken(actual, expected);
         rowCountTokenAssert.assertRowCountToken(actual, expected);
-        aggregationDistinctTokenAssert.assertAggregationDistinctTokens(actual, expected);
         if (DatabaseType.MySQL == databaseType) {
             encryptColumnTokenAssert.assertEncryptColumnsToken(actual, expected);
         }

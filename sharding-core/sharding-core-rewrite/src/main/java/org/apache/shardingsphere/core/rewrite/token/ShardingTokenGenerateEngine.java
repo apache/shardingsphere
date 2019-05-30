@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.core.rewrite.token;
 
+import org.apache.shardingsphere.core.rewrite.token.generator.AggregationDistinctTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.IndexTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.OrderByTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.RemoveTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.SQLTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.token.generator.SelectItemPrefixTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.SelectItemsTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.TableTokenGenerator;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -38,9 +40,11 @@ public final class ShardingTokenGenerateEngine extends SQLTokenGenerateEngine<Sh
     private static final Collection<SQLTokenGenerator> SQL_TOKEN_GENERATORS = new LinkedList<>();
     
     static {
+        SQL_TOKEN_GENERATORS.add(new SelectItemPrefixTokenGenerator());
         SQL_TOKEN_GENERATORS.add(new TableTokenGenerator());
         SQL_TOKEN_GENERATORS.add(new SelectItemsTokenGenerator());
         SQL_TOKEN_GENERATORS.add(new OrderByTokenGenerator());
+        SQL_TOKEN_GENERATORS.add(new AggregationDistinctTokenGenerator());
         SQL_TOKEN_GENERATORS.add(new IndexTokenGenerator());
         SQL_TOKEN_GENERATORS.add(new RemoveTokenGenerator());
     }

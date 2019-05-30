@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.token.impl;
+package org.apache.shardingsphere.core.rewrite.token.pojo;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
@@ -32,14 +32,14 @@ public final class AggregationDistinctToken extends SQLToken implements Substitu
     
     private String columnName;
     
-    private Optional<String> alias;
+    private Optional<String> derivedAlias;
     
     private final int stopIndex;
     
-    public AggregationDistinctToken(final int startIndex, final int stopIndex, final String columnName, final Optional<String> alias) {
+    public AggregationDistinctToken(final int startIndex, final int stopIndex, final String columnName, final Optional<String> derivedAlias) {
         super(startIndex);
         this.columnName = columnName;
-        this.alias = alias;
+        this.derivedAlias = derivedAlias;
         this.stopIndex = stopIndex;
     }
 }

@@ -25,10 +25,9 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.OrderByIt
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.TextOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
-import org.apache.shardingsphere.core.parse.sql.token.impl.AggregationDistinctToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.OffsetToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.RowCountToken;
-import org.apache.shardingsphere.core.parse.sql.token.impl.SelectItemPrefixToken;
+import org.apache.shardingsphere.core.rewrite.token.pojo.SelectItemPrefixToken;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
 import org.apache.shardingsphere.core.rewrite.placeholder.AggregationDistinctPlaceholder;
@@ -39,6 +38,7 @@ import org.apache.shardingsphere.core.rewrite.placeholder.OrderByPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.SelectItemPrefixPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.SelectItemsPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.TablePlaceholder;
+import org.apache.shardingsphere.core.rewrite.token.pojo.AggregationDistinctToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.IndexToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.OrderByToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SelectItemsToken;
@@ -65,7 +65,7 @@ public final class ShardingSQLRewriter implements SQLRewriter {
     @Override
     public void rewrite(final SQLBuilder sqlBuilder, final ParameterBuilder parameterBuilder, final SQLToken sqlToken) {
         if (sqlToken instanceof SelectItemPrefixToken) {
-            appendSelectItemPrefixPlaceholder(sqlBuilder, (SelectItemPrefixToken) sqlToken);
+            appendSelectItemPrefixPlaceholder(sqlBuilder);
         } else if (sqlToken instanceof TableToken) {
             appendTablePlaceholder(sqlBuilder, (TableToken) sqlToken);
         } else if (sqlToken instanceof IndexToken) {
@@ -83,8 +83,8 @@ public final class ShardingSQLRewriter implements SQLRewriter {
         }
     }
     
-    private void appendSelectItemPrefixPlaceholder(final SQLBuilder sqlBuilder, final SelectItemPrefixToken selectItemPrefixToken) {
-        if (selectItemPrefixToken.isToAppendDistinct() && isRewrite()) {
+    private void appendSelectItemPrefixPlaceholder(final SQLBuilder sqlBuilder) {
+        if (isRewrite()) {
             sqlBuilder.appendPlaceholder(new SelectItemPrefixPlaceholder());
         }
     }
@@ -149,7 +149,7 @@ public final class ShardingSQLRewriter implements SQLRewriter {
         if (!isRewrite()) {
             sqlBuilder.appendLiterals(sqlRouteResult.getSqlStatement().getLogicSQL().substring(distinctToken.getStartIndex(), distinctToken.getStopIndex() + 1));
         } else {
-            sqlBuilder.appendPlaceholder(new AggregationDistinctPlaceholder(distinctToken.getColumnName().toLowerCase(), distinctToken.getAlias()));
+            sqlBuilder.appendPlaceholder(new AggregationDistinctPlaceholder(distinctToken.getColumnName().toLowerCase(), distinctToken.getDerivedAlias()));
         }
     }
     
