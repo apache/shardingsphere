@@ -28,6 +28,7 @@ import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.TreeCache;
 import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
 import org.apache.curator.framework.recipes.cache.TreeCacheListener;
+import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.utils.CloseableUtils;
 import org.apache.shardingsphere.orchestration.reg.api.RegistryCenter;
@@ -289,5 +290,28 @@ public final class CuratorZookeeperRegistryCenter implements RegistryCenter {
     @Override
     public String getType() {
         return "zookeeper";
+    }
+
+    public InterProcessMutex initLock(String key){
+        InterProcessMutex lock = new InterProcessMutex(client, key);
+        return lock;
+    }
+
+
+    public boolean tryLock(final InterProcessMutex lock){
+        try{
+            return lock.acquire(5,TimeUnit.SECONDS);
+        }catch (Exception ex){
+            CuratorZookeeperExceptionHandler.handleException(ex);
+            return Boolean.FALSE;
+        }
+    }
+
+    public void tryRelease(final InterProcessMutex lock){
+        try{
+            lock.release();
+        }catch (Exception ex){
+            CuratorZookeeperExceptionHandler.handleException(ex);
+        }
     }
 }
