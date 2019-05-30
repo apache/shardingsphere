@@ -54,6 +54,7 @@ public class QueryResultUtil {
         ResultSetMetaData metaData = resultSet.getMetaData();
         switch (metaData.getColumnType(columnIndex)) {
             case Types.BIT:
+                return resultSet.getBytes(columnIndex);
             case Types.BOOLEAN:
                 return resultSet.getBoolean(columnIndex);
             case Types.TINYINT:
