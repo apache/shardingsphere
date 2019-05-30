@@ -31,7 +31,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 public final class OrderByTokenGenerator implements OptionalSQLTokenGenerator<ShardingRule> {
     
     @Override
-    public Optional<OrderByToken> generateSQLToken(final SQLStatement sqlStatement, final ShardingRule rule) {
+    public Optional<OrderByToken> generateSQLToken(final SQLStatement sqlStatement, final ShardingRule shardingRule) {
         if (!(sqlStatement instanceof SelectStatement)) {
             return Optional.absent();
         }

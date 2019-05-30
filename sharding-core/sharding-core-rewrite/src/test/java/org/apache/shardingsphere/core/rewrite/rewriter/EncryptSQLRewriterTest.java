@@ -184,6 +184,6 @@ public final class EncryptSQLRewriterTest {
     private SQLUnit getSQLUnit(final String sql, final List<Object> parameters) {
         SQLStatement sqlStatement = encryptSQLParseEngine.parse(sql, false);
         OptimizeResult optimizeResult = OptimizeEngineFactory.newInstance(encryptRule, sqlStatement, parameters).optimize();
-        return new SQLRewriteEngine(encryptRule, databaseType, sqlStatement, optimizeResult, parameters).generateSQL();
+        return new SQLRewriteEngine(encryptRule, sqlStatement, optimizeResult, parameters).generateSQL();
     }
 }

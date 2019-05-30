@@ -31,9 +31,9 @@ public interface SQLRewriter {
     /**
      * Rewrite.
      *
-     * @param sqlBuilder sql builder
+     * @param sqlBuilder SQL builder
      * @param parameterBuilder parameter builder
-     * @param sqlToken sql token
+     * @param sqlToken SQL token
      */
     void rewrite(SQLBuilder sqlBuilder, ParameterBuilder parameterBuilder, SQLToken sqlToken);
 }

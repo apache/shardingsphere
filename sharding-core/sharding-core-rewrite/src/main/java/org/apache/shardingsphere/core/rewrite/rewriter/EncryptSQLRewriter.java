@@ -59,7 +59,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Encrypt SQL rewriter.
+ * SQL rewriter encrypt.
  * 
  * @author panjuan
  */
