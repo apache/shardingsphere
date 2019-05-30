@@ -163,3 +163,23 @@ ShardingSphere uses snowflake algorithms as the default distributed auto-augment
 But the last four numbers of snowflake algorithm are incremental value within one millisecond. Thus, if concurrency degree in one millisecond is not high,  the last four numbers are likely to be zero, which explains why the rate of even end number is higher.
 
 In 3.1.0 version, the problem of ending with even numbers has been totally solved, please refer to: https://github.com/sharding-sphere/sharding-sphere/issues/1617
+
+#### 13. In Windows environment,when cloning ShardingSphere source code through Git, why prompt filename too long and how to solve it?
+
+Answer:
+
+To ensure the readability of source code,the ShardingSphere Coding Specification requires that the naming of classes,methods and variables be literal and avoid abbreviations,which may result in  Some source files have long names. 
+
+Since the Git version of Windows is compiled using msys,it uses the old version of Windows Api,limiting the file name to no more than 260 characters. 
+
+The solutions are as follows: 
+
+Open cmd.exe (you need to add git to environment variables) and execute the following command: 
+```
+git config --global core.longpaths true
+```
+
+Reference material:
+
+https://docs.microsoft.com/zh-cn/windows/desktop/FileIO/naming-a-file
+https://ourcodeworld.com/articles/read/109/how-to-solve-filename-too-long-error-in-git-powershell-and-github-application-for-windows
