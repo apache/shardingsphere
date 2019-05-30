@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.core.rewrite.rewriter;
 
 import com.google.common.base.Strings;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.parse.sql.context.limit.Limit;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.TextOrderByItemSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.AggregationDistinctToken;
@@ -53,25 +53,14 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
  * @author maxiaoguang
  * @author panjuan
  */
+@RequiredArgsConstructor
 public final class ShardingSQLRewriter implements SQLRewriter {
     
     private final ShardingRule shardingRule;
     
-    private final String originalSQL;
-    
     private final DatabaseType databaseType;
     
     private final SQLRouteResult sqlRouteResult;
-    
-    private final SQLStatement sqlStatement;
-    
-    public ShardingSQLRewriter(final ShardingRule shardingRule, final String originalSQL, final DatabaseType databaseType, final SQLStatement sqlStatement, final SQLRouteResult sqlRouteResult) {
-        this.shardingRule = shardingRule;
-        this.originalSQL = originalSQL;
-        this.databaseType = databaseType;
-        this.sqlRouteResult = sqlRouteResult;
-        this.sqlStatement = sqlStatement;
-    }
     
     @Override
     public void rewrite(final SQLBuilder sqlBuilder, final ParameterBuilder parameterBuilder, final SQLToken sqlToken) {
@@ -121,7 +110,7 @@ public final class ShardingSQLRewriter implements SQLRewriter {
     }
     
     private void appendLimitRowCountPlaceholder(final SQLBuilder sqlBuilder, final RowCountToken rowCountToken) {
-        SelectStatement selectStatement = (SelectStatement) sqlStatement;
+        SelectStatement selectStatement = (SelectStatement) sqlRouteResult.getSqlStatement();
         sqlBuilder.appendPlaceholder(new LimitRowCountPlaceholder(getRowCount(rowCountToken, isRewrite(), selectStatement, sqlRouteResult.getLimit())));
     }
     
@@ -144,7 +133,7 @@ public final class ShardingSQLRewriter implements SQLRewriter {
     }
     
     private void appendOrderByPlaceholder(final SQLBuilder sqlBuilder) {
-        SelectStatement selectStatement = (SelectStatement) sqlStatement;
+        SelectStatement selectStatement = (SelectStatement) sqlRouteResult.getSqlStatement();
         OrderByPlaceholder orderByPlaceholder = new OrderByPlaceholder();
         if (isRewrite()) {
             for (OrderByItemSegment each : selectStatement.getOrderByItems()) {
@@ -158,7 +147,7 @@ public final class ShardingSQLRewriter implements SQLRewriter {
     
     private void appendAggregationDistinctPlaceholder(final SQLBuilder sqlBuilder, final AggregationDistinctToken distinctToken) {
         if (!isRewrite()) {
-            sqlBuilder.appendLiterals(originalSQL.substring(distinctToken.getStartIndex(), distinctToken.getStopIndex() + 1));
+            sqlBuilder.appendLiterals(sqlRouteResult.getSqlStatement().getLogicSQL().substring(distinctToken.getStartIndex(), distinctToken.getStopIndex() + 1));
         } else {
             sqlBuilder.appendPlaceholder(new AggregationDistinctPlaceholder(distinctToken.getColumnName().toLowerCase(), distinctToken.getAlias()));
         }

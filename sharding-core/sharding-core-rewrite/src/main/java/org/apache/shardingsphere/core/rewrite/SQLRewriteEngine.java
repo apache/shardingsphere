@@ -74,7 +74,7 @@ public final class SQLRewriteEngine {
         sqlBuilder = new SQLBuilder();
         parameterBuilder = new ParameterBuilder(parameters);
         baseSQLRewriter = new BaseSQLRewriter(sqlStatement, sqlTokens);
-        sqlRewriters = Arrays.asList(new ShardingSQLRewriter(shardingRule, sqlStatement.getLogicSQL(), databaseType, sqlStatement, sqlRouteResult),
+        sqlRewriters = Arrays.asList(new ShardingSQLRewriter(shardingRule, databaseType, sqlRouteResult),
                 new EncryptSQLRewriter(shardingRule.getShardingEncryptorEngine(), sqlStatement, sqlRouteResult.getOptimizeResult()));
         pattern();
     }
