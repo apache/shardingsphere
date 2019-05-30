@@ -116,4 +116,15 @@ public abstract class AbstractSQLStatement implements SQLStatement {
         }
         throw new ShardingException("Index Out Of Bounds For sqlTokens.");
     }
+    
+    @Override
+    @SuppressWarnings("unchecked")
+    public final <T extends SQLSegment> Optional<T> findSQLSegment(final Class<T> sqlSegmentType) {
+        for (SQLSegment each : sqlSegments) {
+            if (each.getClass().equals(sqlSegmentType)) {
+                return Optional.of((T) each);
+            }
+        }
+        return Optional.absent();
+    }
 }
