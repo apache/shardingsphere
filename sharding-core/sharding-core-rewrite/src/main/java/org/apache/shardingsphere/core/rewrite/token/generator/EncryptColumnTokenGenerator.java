@@ -65,7 +65,7 @@ public final class EncryptColumnTokenGenerator implements CollectionSQLTokenGene
             return result;
         }
         for (Condition each : sqlStatement.getEncryptCondition().getOrConditions().get(0).getConditions()) {
-            result.add(new EncryptColumnToken(each.getColumnSegment().getStartIndex(), each.getColumnSegment().getStopIndex(), each.getColumn(), true));
+            result.add(new EncryptColumnToken(each.getPredicateSegment().getStartIndex(), each.getPredicateSegment().getStopIndex(), each.getColumn(), true));
         }
         return result;
     }
