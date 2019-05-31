@@ -25,6 +25,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.constant.ShardingOperator;
 import org.apache.shardingsphere.core.exception.ShardingException;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -49,6 +50,8 @@ public class Condition {
     
     private final Column column;
     
+    private final ColumnSegment columnSegment;
+    
     private final ShardingOperator operator;
     
     @Setter
@@ -61,15 +64,17 @@ public class Condition {
     protected Condition() {
         column = null;
         operator = null;
+        columnSegment = null;
     }
     
-    public Condition(final Column column, final ExpressionSegment expressionSegment) {
-        this(column, ShardingOperator.EQUAL);
+    public Condition(final Column column, final ColumnSegment columnSegment, final ExpressionSegment expressionSegment) {
+        this(column, columnSegment, ShardingOperator.EQUAL);
         init(expressionSegment, 0);
     }
     
-    public Condition(final Column column, final String compareOperator, final ExpressionSegment expressionSegment) {
+    public Condition(final Column column, final ColumnSegment columnSegment, final String compareOperator, final ExpressionSegment expressionSegment) {
         this.column = column;
+        this.columnSegment = columnSegment;
         this.compareOperator = compareOperator;
         if ("=".equals(compareOperator)) {
             operator = ShardingOperator.EQUAL;
@@ -79,14 +84,14 @@ public class Condition {
         init(expressionSegment, 0);
     }
     
-    public Condition(final Column column, final ExpressionSegment beginExpressionSegment, final ExpressionSegment endExpressionSegment) {
-        this(column, ShardingOperator.BETWEEN);
+    public Condition(final Column column, final ColumnSegment columnSegment, final ExpressionSegment beginExpressionSegment, final ExpressionSegment endExpressionSegment) {
+        this(column, columnSegment, ShardingOperator.BETWEEN);
         init(beginExpressionSegment, 0);
         init(endExpressionSegment, 1);
     }
     
-    public Condition(final Column column, final List<ExpressionSegment> expressionSegments) {
-        this(column, ShardingOperator.IN);
+    public Condition(final Column column, final ColumnSegment columnSegment, final List<ExpressionSegment> expressionSegments) {
+        this(column, columnSegment, ShardingOperator.IN);
         int count = 0;
         for (ExpressionSegment each : expressionSegments) {
             init(each, count);
