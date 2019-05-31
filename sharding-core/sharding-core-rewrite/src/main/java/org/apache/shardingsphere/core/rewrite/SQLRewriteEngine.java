@@ -37,6 +37,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -63,7 +64,7 @@ public final class SQLRewriteEngine {
     public SQLRewriteEngine(final ShardingRule shardingRule, final SQLStatement sqlStatement, final List<Object> parameters) {
         baseRule = shardingRule;
         this.sqlStatement = sqlStatement;
-        sqlTokens = new ShardingTokenGenerateEngine().generateSQLTokens(sqlStatement, shardingRule);
+        sqlTokens = createSQLTokens(shardingRule, sqlStatement);
         sqlBuilder = new SQLBuilder();
         parameterBuilder = new ParameterBuilder(parameters);
         baseSQLRewriter = new BaseSQLRewriter(sqlStatement, sqlTokens);
@@ -72,7 +73,7 @@ public final class SQLRewriteEngine {
     public SQLRewriteEngine(final EncryptRule encryptRule, final SQLStatement sqlStatement, final List<Object> parameters) {
         baseRule = encryptRule;
         this.sqlStatement = sqlStatement;
-        sqlTokens = new EncryptTokenGenerateEngine().generateSQLTokens(sqlStatement, encryptRule);
+        sqlTokens = createSQLTokens(encryptRule, sqlStatement);
         sqlBuilder = new SQLBuilder();
         parameterBuilder = new ParameterBuilder(parameters);
         baseSQLRewriter = new BaseSQLRewriter(sqlStatement, sqlTokens);
@@ -81,10 +82,25 @@ public final class SQLRewriteEngine {
     public SQLRewriteEngine(final SQLStatement sqlStatement) {
         baseRule = null;
         this.sqlStatement = sqlStatement;
-        sqlTokens = new MasterSlaveTokenGenerateEngine().generateSQLTokens(sqlStatement, null);
+        sqlTokens = createSQLTokens(null, sqlStatement);
         sqlBuilder = new SQLBuilder();
         parameterBuilder = new ParameterBuilder(Collections.emptyList());
         baseSQLRewriter = new BaseSQLRewriter(sqlStatement, sqlTokens);
+    }
+    
+    private List<SQLToken> createSQLTokens(final BaseRule baseRule, final SQLStatement sqlStatement) {
+        List<SQLToken> result = new LinkedList<>(sqlStatement.getSQLTokens());
+        if (baseRule instanceof ShardingRule) {
+            ShardingRule shardingRule = (ShardingRule) baseRule;
+            result.addAll(new ShardingTokenGenerateEngine().generateSQLTokens(sqlStatement, shardingRule));
+            result.addAll(new EncryptTokenGenerateEngine().generateSQLTokens(sqlStatement, shardingRule.getEncryptRule()));
+        } else if (baseRule instanceof EncryptRule) {
+            result.addAll(new EncryptTokenGenerateEngine().generateSQLTokens(sqlStatement, (EncryptRule) baseRule));
+        } else {
+            result.addAll(new MasterSlaveTokenGenerateEngine().generateSQLTokens(sqlStatement, null));
+        }
+        Collections.sort(result);
+        return result;
     }
     
     /**
