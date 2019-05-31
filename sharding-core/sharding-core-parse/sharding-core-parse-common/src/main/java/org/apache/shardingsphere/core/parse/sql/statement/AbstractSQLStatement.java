@@ -96,15 +96,15 @@ public abstract class AbstractSQLStatement implements SQLStatement {
      */
     public Optional<Condition> getEncryptCondition(final EncryptColumnToken encryptColumnToken) {
         for (Condition each : encryptCondition.findConditions(encryptColumnToken.getColumn())) {
-            if (isSameColumnIndex(each.getColumnSegment(), encryptColumnToken)) {
+            if (isSameIndexes(each.getPredicateSegment(), encryptColumnToken)) {
                 return Optional.of(each);
             }
         }
         return Optional.absent();
     }
     
-    private boolean isSameColumnIndex(final ColumnSegment columnSegment, final EncryptColumnToken encryptColumnToken) {
-        return columnSegment.getStartIndex() == encryptColumnToken.getStartIndex() && columnSegment.getStopIndex() == encryptColumnToken.getStopIndex();
+    private boolean isSameIndexes(final ColumnSegment predicateSegment, final EncryptColumnToken encryptColumnToken) {
+        return predicateSegment.getStartIndex() == encryptColumnToken.getStartIndex() && predicateSegment.getStopIndex() == encryptColumnToken.getStopIndex();
     }
     
     @Override
