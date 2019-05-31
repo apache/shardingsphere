@@ -93,10 +93,10 @@ public final class SQLRewriteEngine {
      */
     public void init(final SQLRewriter... sqlRewriters) {
         if (sqlTokens.isEmpty()) {
-            baseSQLRewriter.rewrite(sqlBuilder);
+            baseSQLRewriter.appendWholeSQL(sqlBuilder);
             return;
         }
-        baseSQLRewriter.rewriteInitialLiteral(sqlBuilder);
+        baseSQLRewriter.appendInitialLiteral(sqlBuilder);
         for (SQLToken each : sqlTokens) {
             for (SQLRewriter sqlRewriter : sqlRewriters) {
                 sqlRewriter.rewrite(sqlBuilder, parameterBuilder, each);
