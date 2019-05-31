@@ -94,7 +94,7 @@ public final class PredicateUtils {
      * 
      * @param compareRightValue right value of compare operator
      * @param column column
-     * @param predicateSegment column segment
+     * @param predicateSegment predicate segment
      * @return condition
      */
     public static Optional<Condition> createCompareCondition(final PredicateCompareRightValue compareRightValue, final Column column, final PredicateSegment predicateSegment) {
@@ -107,7 +107,7 @@ public final class PredicateUtils {
      *
      * @param inRightValue right value of IN operator
      * @param column column
-     * @param predicateSegment column segment
+     * @param predicateSegment predicate segment
      * @return condition
      */
     public static Optional<Condition> createInCondition(final PredicateInRightValue inRightValue, final Column column, final PredicateSegment predicateSegment) {
@@ -127,7 +127,7 @@ public final class PredicateUtils {
      * 
      * @param betweenRightValue right value of BETWEEN operator
      * @param column column
-     * @param predicateSegment column segment
+     * @param predicateSegment predicate segment
      * @return condition
      */
     public static Optional<Condition> createBetweenCondition(final PredicateBetweenRightValue betweenRightValue, final Column column, final PredicateSegment predicateSegment) {
