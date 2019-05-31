@@ -15,38 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rule;
+package org.apache.shardingsphere.core.rewrite.token;
 
-import lombok.Getter;
-import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
-import org.apache.shardingsphere.core.strategy.encrypt.ShardingEncryptorEngine;
+import org.apache.shardingsphere.core.rewrite.token.generator.EncryptColumnTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.token.generator.SQLTokenGenerator;
+import org.apache.shardingsphere.core.rule.EncryptRule;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Encrypt rule.
+ * SQL token generator for encrypt.
  *
  * @author panjuan
  */
-@Getter
-public final class EncryptRule implements BaseRule {
+public final class EncryptTokenGenerateEngine extends SQLTokenGenerateEngine<EncryptRule> {
     
-    private final ShardingEncryptorEngine encryptorEngine;
+    private static final Collection<SQLTokenGenerator> SQL_TOKEN_GENERATORS = new LinkedList<>();
     
-    public EncryptRule() {
-        encryptorEngine = new ShardingEncryptorEngine();
+    static {
+        SQL_TOKEN_GENERATORS.add(new EncryptColumnTokenGenerator());
     }
     
-    public EncryptRule(final EncryptRuleConfiguration encryptRuleConfiguration) {
-        encryptorEngine = new ShardingEncryptorEngine(encryptRuleConfiguration);
-    }
-    
-    /**
-     * Get encrypt table names.
-     * 
-     * @return encrypt table names
-     */
-    public Collection<String> getEncryptTableNames() {
-        return encryptorEngine.getEncryptTableNames();
+    @Override
+    protected Collection<SQLTokenGenerator> getSQLTokenGenerators() {
+        return SQL_TOKEN_GENERATORS;
     }
 }

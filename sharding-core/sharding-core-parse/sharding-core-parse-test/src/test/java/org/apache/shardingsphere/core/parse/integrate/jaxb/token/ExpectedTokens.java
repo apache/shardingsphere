@@ -54,7 +54,4 @@ public final class ExpectedTokens {
     
     @XmlElement(name = "insert-column-token")
     private ExpectedInsertColumnToken insertColumnToken;
-    
-    @XmlElement(name = "encrypt-column-token")
-    private List<ExpectedEncryptColumnToken> encryptColumnTokens = new LinkedList<>();
 }

@@ -114,7 +114,7 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
             result += 1;
         }
         if (isNeededToAppendQueryAssistedColumn()) {
-            result += shardingRule.getShardingEncryptorEngine().getAssistedQueryColumnCount(insertStatement.getTables().getSingleTableName());
+            result += shardingRule.getEncryptRule().getEncryptorEngine().getAssistedQueryColumnCount(insertStatement.getTables().getSingleTableName());
         }
         return result;
     }
@@ -154,14 +154,14 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
     }
     
     private boolean isNeededToAppendQueryAssistedColumn() {
-        return shardingRule.getShardingEncryptorEngine().isHasShardingQueryAssistedEncryptor(insertStatement.getTables().getSingleTableName());
+        return shardingRule.getEncryptRule().getEncryptorEngine().isHasShardingQueryAssistedEncryptor(insertStatement.getTables().getSingleTableName());
     }
     
     private void fillWithQueryAssistedColumn(final InsertOptimizeResult insertOptimizeResult, final int insertOptimizeResultIndex) {
         Collection<String> assistedColumnNames = new LinkedList<>();
         for (String each : insertOptimizeResult.getColumnNames()) {
             InsertOptimizeResultUnit unit = insertOptimizeResult.getUnits().get(insertOptimizeResultIndex);
-            Optional<String> assistedColumnName = shardingRule.getShardingEncryptorEngine().getAssistedQueryColumn(insertStatement.getTables().getSingleTableName(), each);
+            Optional<String> assistedColumnName = shardingRule.getEncryptRule().getEncryptorEngine().getAssistedQueryColumn(insertStatement.getTables().getSingleTableName(), each);
             if (assistedColumnName.isPresent()) {
                 assistedColumnNames.add(assistedColumnName.get());
                 fillInsertOptimizeResultUnit(unit, (Comparable<?>) unit.getColumnValue(each));

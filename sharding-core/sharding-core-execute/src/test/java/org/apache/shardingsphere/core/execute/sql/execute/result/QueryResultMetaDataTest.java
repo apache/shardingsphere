@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.execute.sql.execute.result;
 
 import com.google.common.base.Optional;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.core.strategy.encrypt.ShardingEncryptorEngine;
@@ -48,7 +49,7 @@ public class QueryResultMetaDataTest {
     public void setUp() {
         ResultSetMetaData resultSetMetaData = getResultMetaData();
         ShardingRule shardingRule = getShardingRule();
-        queryResultMetaData = new QueryResultMetaData(resultSetMetaData, shardingRule, shardingRule.getShardingEncryptorEngine());
+        queryResultMetaData = new QueryResultMetaData(resultSetMetaData, shardingRule, shardingRule.getEncryptRule().getEncryptorEngine());
     }
     
     @SuppressWarnings("unchecked")
@@ -57,7 +58,9 @@ public class QueryResultMetaDataTest {
         ShardingEncryptorEngine shardingEncryptorEngine = mock(ShardingEncryptorEngine.class);
         when(shardingEncryptorEngine.getShardingEncryptor(anyString(), anyString())).thenReturn(Optional.of(shardingEncryptor));
         ShardingRule result = mock(ShardingRule.class);
-        when(result.getShardingEncryptorEngine()).thenReturn(shardingEncryptorEngine);
+        EncryptRule encryptRule = mock(EncryptRule.class);
+        when(encryptRule.getEncryptorEngine()).thenReturn(shardingEncryptorEngine);
+        when(result.getEncryptRule()).thenReturn(encryptRule);
         when(result.getLogicTableNames(anyString())).thenReturn(Collections.<String>emptyList());
         when(result.findTableRuleByActualTable("table")).thenReturn(Optional.<TableRule>absent());
         return result;

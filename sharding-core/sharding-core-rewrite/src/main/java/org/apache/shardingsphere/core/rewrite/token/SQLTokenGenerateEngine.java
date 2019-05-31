@@ -26,7 +26,6 @@ import org.apache.shardingsphere.core.rewrite.token.generator.SQLTokenGenerator;
 import org.apache.shardingsphere.core.rule.BaseRule;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -48,7 +47,7 @@ public abstract class SQLTokenGenerateEngine<T extends BaseRule> {
      */
     @SuppressWarnings("unchecked")
     public final List<SQLToken> generateSQLTokens(final SQLStatement sqlStatement, final T rule) {
-        List<SQLToken> result = new LinkedList<>(sqlStatement.getSQLTokens());
+        List<SQLToken> result = new LinkedList<>();
         for (SQLTokenGenerator each : getSQLTokenGenerators()) {
             if (each instanceof OptionalSQLTokenGenerator) {
                 Optional<? extends SQLToken> sqlToken = ((OptionalSQLTokenGenerator) each).generateSQLToken(sqlStatement, rule);
@@ -59,9 +58,7 @@ public abstract class SQLTokenGenerateEngine<T extends BaseRule> {
                 result.addAll(((CollectionSQLTokenGenerator) each).generateSQLTokens(sqlStatement, rule));
             }
         }
-        Collections.sort(result);
         return result;
     }
-    
     protected abstract Collection<SQLTokenGenerator> getSQLTokenGenerators();
 }
