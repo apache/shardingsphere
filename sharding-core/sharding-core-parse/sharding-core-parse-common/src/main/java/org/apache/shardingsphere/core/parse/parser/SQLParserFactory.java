@@ -52,11 +52,23 @@ public final class SQLParserFactory {
      */
     public static SQLParser newInstance(final DatabaseType databaseType, final String sql) {
         for (SQLParserEntry each : NewInstanceServiceLoader.newServiceInstances(SQLParserEntry.class)) {
-            if (DatabaseType.valueOf(each.getDatabaseType()) == databaseType) {
+            if (isCurrentDatabaseType(databaseType, each)) {
                 return createSQLParser(sql, each);
             }
         }
         throw new UnsupportedOperationException(String.format("Cannot support database type '%s'", databaseType));
+    }
+    
+    private static boolean isCurrentDatabaseType(final DatabaseType databaseType, final SQLParserEntry sqlParserEntry) {
+        if (DatabaseType.valueOf(sqlParserEntry.getDatabaseType()) == databaseType) {
+            return true;
+        }
+        for (String each : sqlParserEntry.getDatabaseTypeAliases()) {
+            if (DatabaseType.valueOf(each) == databaseType) {
+                return true;
+            }
+        }
+        return false;
     }
     
     @SneakyThrows
