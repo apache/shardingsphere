@@ -24,7 +24,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.Assignmen
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.token.impl.EncryptColumnToken;
-import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.rule.EncryptRule;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -34,26 +34,26 @@ import java.util.LinkedList;
  *
  * @author panjuan
  */
-public final class EncryptColumnTokenGenerator implements CollectionSQLTokenGenerator<ShardingRule> {
+public final class EncryptColumnTokenGenerator implements CollectionSQLTokenGenerator<EncryptRule> {
     
     @Override
-    public Collection<EncryptColumnToken> generateSQLTokens(final SQLStatement sqlStatement, final ShardingRule shardingRule) {
+    public Collection<EncryptColumnToken> generateSQLTokens(final SQLStatement sqlStatement, final EncryptRule encryptRule) {
         Collection<EncryptColumnToken> result = new LinkedList<>();
         for (SQLSegment each : sqlStatement.getSqlSegments()) {
             if (each instanceof SetAssignmentsSegment) {
-                result.addAll(createEncryptColumnTokensFromSetAssignment(sqlStatement, shardingRule, (SetAssignmentsSegment) each));
+                result.addAll(createEncryptColumnTokensFromSetAssignment(sqlStatement, encryptRule, (SetAssignmentsSegment) each));
             }
         }
         result.addAll(createEncryptColumnTokensFromWhereCondition(sqlStatement));
         return result;
     }
     
-    private Collection<EncryptColumnToken> createEncryptColumnTokensFromSetAssignment(final SQLStatement sqlStatement, final ShardingRule shardingRule, final SetAssignmentsSegment segment) {
+    private Collection<EncryptColumnToken> createEncryptColumnTokensFromSetAssignment(final SQLStatement sqlStatement, final EncryptRule encryptRule, final SetAssignmentsSegment segment) {
         Collection<EncryptColumnToken> result = new LinkedList<>();
         for (AssignmentSegment each : segment.getAssignments()) {
             Column column = new Column(each.getColumn().getName(), sqlStatement.getTables().getSingleTableName());
-            if (shardingRule.getShardingEncryptorEngine().getShardingEncryptor(column.getTableName(), column.getName()).isPresent()) {
-                result.add(new EncryptColumnToken(each.getColumn().getStartIndex(), each.getValue().getStopIndex(), column, false));
+            if (encryptRule.getEncryptorEngine().getShardingEncryptor(column.getTableName(), column.getName()).isPresent()) {
+                result.add(new EncryptColumnToken(each.getColumn().getStartIndex(), each.getStopIndex(), column, false));
             }
         }
         return result;
