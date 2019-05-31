@@ -30,6 +30,9 @@ import org.apache.shardingsphere.core.parse.api.SQLParser;
 import org.apache.shardingsphere.core.parse.spi.SQLParserEntry;
 import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
 
+import java.util.Collection;
+import java.util.HashSet;
+
 /**
  * SQL parser factory.
  * 
@@ -39,8 +42,22 @@ import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLParserFactory {
     
+    private static final Collection<String> DATABASE_TYPES = new HashSet<>();
+    
     static {
         NewInstanceServiceLoader.register(SQLParserEntry.class);
+        for (SQLParserEntry each : NewInstanceServiceLoader.newServiceInstances(SQLParserEntry.class)) {
+            DATABASE_TYPES.add(each.getDatabaseType());
+        }
+    }
+    
+    /**
+     * Get add on database types.
+     * 
+     * @return add on database types
+     */
+    public static Collection<String> getAddOnDatabaseTypes() {
+        return DATABASE_TYPES;
     }
     
     /** 

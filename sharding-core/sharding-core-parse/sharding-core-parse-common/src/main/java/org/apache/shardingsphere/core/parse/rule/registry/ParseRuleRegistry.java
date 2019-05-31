@@ -20,6 +20,7 @@ package org.apache.shardingsphere.core.parse.rule.registry;
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
+import org.apache.shardingsphere.core.parse.parser.SQLParserFactory;
 import org.apache.shardingsphere.core.parse.rule.jaxb.entity.extractor.ExtractorRuleDefinitionEntity;
 import org.apache.shardingsphere.core.parse.rule.jaxb.entity.filler.FillerRuleDefinitionEntity;
 import org.apache.shardingsphere.core.parse.rule.jaxb.loader.RuleDefinitionFileConstant;
@@ -61,11 +62,10 @@ public abstract class ParseRuleRegistry {
         ExtractorRuleDefinitionEntity generalExtractorRuleEntity = extractorRuleLoader.load(RuleDefinitionFileConstant.getExtractorRuleDefinitionFile());
         FillerRuleDefinitionEntity generalFillerRuleEntity = fillerRuleLoader.load(RuleDefinitionFileConstant.getFillerRuleDefinitionFile());
         FillerRuleDefinitionEntity featureGeneralFillerRuleEntity = fillerRuleLoader.load(RuleDefinitionFileConstant.getFillerRuleDefinitionFile(getType()));
-        for (DatabaseType each : DatabaseType.values()) {
-            if (DatabaseType.H2 != each) {
-                fillerRuleDefinitions.put(each, createFillerRuleDefinition(generalFillerRuleEntity, featureGeneralFillerRuleEntity, each));
-                sqlStatementRuleDefinitions.put(each, createSQLStatementRuleDefinition(generalExtractorRuleEntity, each));
-            }
+        for (String each : SQLParserFactory.getAddOnDatabaseTypes()) {
+            DatabaseType databaseType = DatabaseType.valueOf(each);
+            fillerRuleDefinitions.put(databaseType, createFillerRuleDefinition(generalFillerRuleEntity, featureGeneralFillerRuleEntity, databaseType));
+            sqlStatementRuleDefinitions.put(databaseType, createSQLStatementRuleDefinition(generalExtractorRuleEntity, databaseType));
         }
     }
     
