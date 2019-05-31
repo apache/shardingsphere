@@ -41,6 +41,7 @@ import java.util.List;
  * Predicate utils.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PredicateUtils {
