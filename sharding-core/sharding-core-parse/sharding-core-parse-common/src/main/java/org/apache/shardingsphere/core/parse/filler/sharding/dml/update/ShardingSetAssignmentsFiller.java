@@ -151,8 +151,6 @@ public final class ShardingSetAssignmentsFiller implements SQLSegmentFiller<SetA
     private void fillUpdate(final SetAssignmentsSegment sqlSegment, final UpdateStatement updateStatement) {
         String tableName = updateStatement.getTables().getSingleTableName();
         for (AssignmentSegment each : sqlSegment.getAssignments()) {
-            Column column = new Column(each.getColumn().getName(), tableName);
-            updateStatement.getAssignments().put(column, each.getValue());
             fillEncryptCondition(each, tableName, updateStatement);
         }
     }
