@@ -53,7 +53,7 @@ public class PredicateUtilsTest {
         Stack<ExpressionSegment> stack = new Stack<ExpressionSegment>();
         stack.add(new ParameterMarkerExpressionSegment(-3652, -3652, 0));
         assertEquals("Optional.of(Condition(column=Column(name=!fE3s*#0- ece4_ :, tableName=!fE3s*#0- ece4_ :), " 
-                        + "columnSegment=null, operator=IN, compareOperator=null, positionValueMap={}, positionIndexMap={0=0}))",
+                        + "predicateSegment=null, operator=IN, compareOperator=null, positionValueMap={}, positionIndexMap={0=0}))",
                 PredicateUtils.createInCondition(new PredicateInRightValue(stack), column, null).toString()
         );
     }
@@ -63,7 +63,7 @@ public class PredicateUtilsTest {
         ParameterMarkerExpressionSegment parameterMarkerExpressionSegment = new ParameterMarkerExpressionSegment(0, 0, 0);
         PredicateCompareRightValue predicateCompareRightValue = new PredicateCompareRightValue("Z}4,%s6+6mvg{", parameterMarkerExpressionSegment);
         Column column = new Column("Z}4,%s6+6mvg{ a", "Z}4,%s6+6mvg{");
-        assertEquals("Optional.of(Condition(column=Column(name=Z}4,%s6+6mvg{ a, tableName=Z}4,%s6+6mvg{), columnSegment=null, " 
+        assertEquals("Optional.of(Condition(column=Column(name=Z}4,%s6+6mvg{ a, tableName=Z}4,%s6+6mvg{), predicateSegment=null, " 
                         + "operator=EQUAL, compareOperator=null, positionValueMap={}, positionIndexMap={0=0}))",
                 PredicateUtils.createCompareCondition(predicateCompareRightValue, column, null).toString());
     }
