@@ -17,8 +17,11 @@
 
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
-import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.OrPredicateSegment;
+import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
+import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
+import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.token.impl.EncryptColumnToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -36,30 +39,34 @@ public final class EncryptColumnTokenGenerator implements CollectionSQLTokenGene
     @Override
     public Collection<EncryptColumnToken> generateSQLTokens(final SQLStatement sqlStatement, final ShardingRule shardingRule) {
         Collection<EncryptColumnToken> result = new LinkedList<>();
-        Optional<OrPredicateSegment> orPredicateSegments = sqlStatement.findSQLSegment(OrPredicateSegment.class);
-        if (sqlStatement.getEncryptCondition().getOrConditions().isEmpty() || !orPredicateSegments.isPresent()) {
-            return result;
+        for (SQLSegment each : sqlStatement.getSqlSegments()) {
+            if (each instanceof SetAssignmentsSegment) {
+                result.addAll(createEncryptColumnTokensFromSetAssignment(sqlStatement, shardingRule, (SetAssignmentsSegment) each));
+            }
+        }
+        result.addAll(createEncryptColumnTokensFromWhereCondition(sqlStatement));
+        return result;
+    }
+    
+    private Collection<EncryptColumnToken> createEncryptColumnTokensFromSetAssignment(final SQLStatement sqlStatement, final ShardingRule shardingRule, final SetAssignmentsSegment segment) {
+        Collection<EncryptColumnToken> result = new LinkedList<>();
+        for (AssignmentSegment each : segment.getAssignments()) {
+            Column column = new Column(each.getColumn().getName(), sqlStatement.getTables().getSingleTableName());
+            if (shardingRule.getShardingEncryptorEngine().getShardingEncryptor(column.getTableName(), column.getName()).isPresent()) {
+                result.add(new EncryptColumnToken(each.getColumn().getStartIndex(), each.getValue().getStopIndex(), column, false));
+            }
         }
         return result;
     }
     
-//    private Collection<EncryptColumnToken> createEncryptColumnTokens(final OrPredicateSegment segment, final AndCondition andCondition) {
-//        for (int i = 0; i < andCondition.getConditions().size(); i++) {
-//            
-//        }
-//    }
-//    
-//    private List<PredicateSegment> getPredicateSegments(final OrPredicateSegment segment) {
-//        final List<PredicateSegment> result = new LinkedList<>();
-//        for (AndPredicate andPredicate : segment.getAndPredicates()) {
-//            result.addAll(Collections2.filter(andPredicate.getPredicates(), new Predicate<PredicateSegment>() {
-//                
-//                @Override
-//                public boolean apply(final PredicateSegment input) {
-//                    return !result.contains(input);
-//                }
-//            }));
-//        }
-//        return result;
-//    }
+    private Collection<EncryptColumnToken> createEncryptColumnTokensFromWhereCondition(final SQLStatement sqlStatement) {
+        Collection<EncryptColumnToken> result = new LinkedList<>();
+        if (sqlStatement.getEncryptCondition().getOrConditions().isEmpty()) {
+            return result;
+        }
+        for (Condition each : sqlStatement.getEncryptCondition().getOrConditions().get(0).getConditions()) {
+            result.add(new EncryptColumnToken(each.getColumnSegment().getStartIndex(), each.getColumnSegment().getStopIndex(), each.getColumn(), true));
+        }
+        return result;
+    }
 }
