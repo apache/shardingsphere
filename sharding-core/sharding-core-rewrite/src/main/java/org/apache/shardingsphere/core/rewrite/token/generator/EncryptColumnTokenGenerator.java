@@ -23,6 +23,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.token.impl.EncryptColumnToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
@@ -41,15 +42,18 @@ public final class EncryptColumnTokenGenerator implements CollectionSQLTokenGene
         Collection<EncryptColumnToken> result = new LinkedList<>();
         for (SQLSegment each : sqlStatement.getSqlSegments()) {
             if (each instanceof SetAssignmentsSegment) {
-                result.addAll(createEncryptColumnTokensFromSetAssignment(sqlStatement, encryptRule, (SetAssignmentsSegment) each));
+                result.addAll(createFromUpdateSetAssignment(sqlStatement, encryptRule, (SetAssignmentsSegment) each));
             }
         }
-        result.addAll(createEncryptColumnTokensFromWhereCondition(sqlStatement));
+        result.addAll(createFromWhereCondition(sqlStatement));
         return result;
     }
     
-    private Collection<EncryptColumnToken> createEncryptColumnTokensFromSetAssignment(final SQLStatement sqlStatement, final EncryptRule encryptRule, final SetAssignmentsSegment segment) {
+    private Collection<EncryptColumnToken> createFromUpdateSetAssignment(final SQLStatement sqlStatement, final EncryptRule encryptRule, final SetAssignmentsSegment segment) {
         Collection<EncryptColumnToken> result = new LinkedList<>();
+        if (sqlStatement instanceof InsertStatement) {
+            return result;
+        }
         for (AssignmentSegment each : segment.getAssignments()) {
             Column column = new Column(each.getColumn().getName(), sqlStatement.getTables().getSingleTableName());
             if (encryptRule.getEncryptorEngine().getShardingEncryptor(column.getTableName(), column.getName()).isPresent()) {
@@ -59,7 +63,7 @@ public final class EncryptColumnTokenGenerator implements CollectionSQLTokenGene
         return result;
     }
     
-    private Collection<EncryptColumnToken> createEncryptColumnTokensFromWhereCondition(final SQLStatement sqlStatement) {
+    private Collection<EncryptColumnToken> createFromWhereCondition(final SQLStatement sqlStatement) {
         Collection<EncryptColumnToken> result = new LinkedList<>();
         if (sqlStatement.getEncryptCondition().getOrConditions().isEmpty()) {
             return result;
