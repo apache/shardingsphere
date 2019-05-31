@@ -50,7 +50,7 @@ import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.core.parse.sql.token.impl.InsertColumnsToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.InsertValuesToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.OffsetToken;
-import org.apache.shardingsphere.core.parse.sql.token.impl.RemoveToken;
+import org.apache.shardingsphere.core.rewrite.token.pojo.RemoveToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.RowCountToken;
 import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
