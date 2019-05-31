@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
-import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
+import com.google.common.base.Optional;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.OrPredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.rewrite.token.pojo.AggregationDistinctToken;
+import org.apache.shardingsphere.core.parse.sql.token.impl.EncryptColumnToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Collection;
@@ -34,16 +34,32 @@ import java.util.LinkedList;
 public final class EncryptColumnTokenGenerator implements CollectionSQLTokenGenerator<ShardingRule> {
     
     @Override
-    public Collection<AggregationDistinctToken> generateSQLTokens(final SQLStatement sqlStatement, final ShardingRule shardingRule) {
-        Collection<AggregationDistinctToken> result = new LinkedList<>();
-        if (sqlStatement.getEncryptCondition().getOrConditions().isEmpty()) {
+    public Collection<EncryptColumnToken> generateSQLTokens(final SQLStatement sqlStatement, final ShardingRule shardingRule) {
+        Collection<EncryptColumnToken> result = new LinkedList<>();
+        Optional<OrPredicateSegment> orPredicateSegments = sqlStatement.findSQLSegment(OrPredicateSegment.class);
+        if (sqlStatement.getEncryptCondition().getOrConditions().isEmpty() || !orPredicateSegments.isPresent()) {
             return result;
-        }
-        for (SQLSegment each : sqlStatement.getSqlSegments()) {
-            if (each instanceof PredicateSegment) {
-            }
         }
         return result;
     }
     
+//    private Collection<EncryptColumnToken> createEncryptColumnTokens(final OrPredicateSegment segment, final AndCondition andCondition) {
+//        for (int i = 0; i < andCondition.getConditions().size(); i++) {
+//            
+//        }
+//    }
+//    
+//    private List<PredicateSegment> getPredicateSegments(final OrPredicateSegment segment) {
+//        final List<PredicateSegment> result = new LinkedList<>();
+//        for (AndPredicate andPredicate : segment.getAndPredicates()) {
+//            result.addAll(Collections2.filter(andPredicate.getPredicates(), new Predicate<PredicateSegment>() {
+//                
+//                @Override
+//                public boolean apply(final PredicateSegment input) {
+//                    return !result.contains(input);
+//                }
+//            }));
+//        }
+//        return result;
+//    }
 }
