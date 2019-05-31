@@ -44,7 +44,7 @@ import java.util.Map.Entry;
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-@EqualsAndHashCode
+@EqualsAndHashCode(exclude = {"columnSegment"})
 @ToString
 public class Condition {
     

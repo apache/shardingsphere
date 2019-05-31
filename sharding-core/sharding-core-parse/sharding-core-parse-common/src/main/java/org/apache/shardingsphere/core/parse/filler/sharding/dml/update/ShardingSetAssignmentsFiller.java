@@ -30,6 +30,7 @@ import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
 import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.SimpleExpressionSegment;
@@ -52,6 +53,7 @@ import java.util.List;
  * Set assignments filler.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @Setter
 public final class ShardingSetAssignmentsFiller implements SQLSegmentFiller<SetAssignmentsSegment>, ShardingRuleAwareFiller, ShardingTableMetaDataAwareFiller {
@@ -82,7 +84,7 @@ public final class ShardingSetAssignmentsFiller implements SQLSegmentFiller<SetA
         List<ExpressionSegment> columnValues = new LinkedList<>();
         for (AssignmentSegment each : sqlSegment.getAssignments()) {
             if (each.getValue() instanceof SimpleExpressionSegment) {
-                fillShardingCondition(andCondition, columnNames.next(), insertStatement.getTables().getSingleTableName(), (SimpleExpressionSegment) each.getValue());
+                fillShardingCondition(andCondition, columnNames.next(), insertStatement.getTables().getSingleTableName(), each.getColumn(), (SimpleExpressionSegment) each.getValue());
             }
             columnValues.add(each.getValue());
             fillWithInsertSetEncryptValueToken(insertStatement, each, each.getValue());
@@ -139,9 +141,10 @@ public final class ShardingSetAssignmentsFiller implements SQLSegmentFiller<SetA
         return insertStatement.getColumnNames().size() - assistedQueryColumnCount;
     }
     
-    private void fillShardingCondition(final AndCondition andCondition, final String columnName, final String tableName, final SimpleExpressionSegment simpleExpressionSegment) {
+    private void fillShardingCondition(final AndCondition andCondition, 
+                                       final String columnName, final String tableName, final ColumnSegment columnSegment, final SimpleExpressionSegment simpleExpressionSegment) {
         if (shardingRule.isShardingColumn(columnName, tableName)) {
-            andCondition.getConditions().add(new Condition(new Column(columnName, tableName), simpleExpressionSegment));
+            andCondition.getConditions().add(new Condition(new Column(columnName, tableName), columnSegment, simpleExpressionSegment));
         }
     }
     

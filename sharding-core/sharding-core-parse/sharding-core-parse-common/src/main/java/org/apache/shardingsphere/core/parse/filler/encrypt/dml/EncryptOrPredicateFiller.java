@@ -95,10 +95,11 @@ public final class EncryptOrPredicateFiller implements SQLSegmentFiller<OrPredic
         }
         if (predicateSegment.getRightValue() instanceof PredicateCompareRightValue) {
             PredicateCompareRightValue compareRightValue = (PredicateCompareRightValue) predicateSegment.getRightValue();
-            return isOperatorSupportedWithEncrypt(compareRightValue.getOperator()) ? PredicateUtils.createCompareCondition(compareRightValue, column) : Optional.<Condition>absent();
+            return isOperatorSupportedWithEncrypt(compareRightValue.getOperator()) 
+                    ? PredicateUtils.createCompareCondition(compareRightValue, column, predicateSegment.getColumn()) : Optional.<Condition>absent();
         }
         if (predicateSegment.getRightValue() instanceof PredicateInRightValue) {
-            return PredicateUtils.createInCondition((PredicateInRightValue) predicateSegment.getRightValue(), column);
+            return PredicateUtils.createInCondition((PredicateInRightValue) predicateSegment.getRightValue(), column, predicateSegment.getColumn());
         }
         return Optional.absent();
     }
