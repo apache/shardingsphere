@@ -25,6 +25,7 @@ import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
 import org.apache.shardingsphere.core.parse.sql.context.table.Table;
 import org.apache.shardingsphere.core.parse.sql.context.table.Tables;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.SimpleExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
@@ -94,10 +95,12 @@ public final class PredicateUtils {
      * 
      * @param compareRightValue right value of compare operator
      * @param column column
+     * @param columnSegment column segment
      * @return condition
      */
-    public static Optional<Condition> createCompareCondition(final PredicateCompareRightValue compareRightValue, final Column column) {
-        return compareRightValue.getExpression() instanceof SimpleExpressionSegment ? Optional.of(new Condition(column, compareRightValue.getExpression())) : Optional.<Condition>absent();
+    public static Optional<Condition> createCompareCondition(final PredicateCompareRightValue compareRightValue, final Column column, final ColumnSegment columnSegment) {
+        return compareRightValue.getExpression() instanceof SimpleExpressionSegment 
+                ? Optional.of(new Condition(column, columnSegment, compareRightValue.getExpression())) : Optional.<Condition>absent();
     }
     
     /**
@@ -105,9 +108,10 @@ public final class PredicateUtils {
      *
      * @param inRightValue right value of IN operator
      * @param column column
+     * @param columnSegment column segment
      * @return condition
      */
-    public static Optional<Condition> createInCondition(final PredicateInRightValue inRightValue, final Column column) {
+    public static Optional<Condition> createInCondition(final PredicateInRightValue inRightValue, final Column column, final ColumnSegment columnSegment) {
         List<ExpressionSegment> expressionSegments = new LinkedList<>();
         for (ExpressionSegment each : inRightValue.getSqlExpressions()) {
             if (each instanceof SimpleExpressionSegment) {
@@ -116,7 +120,7 @@ public final class PredicateUtils {
                 return Optional.absent();
             }
         }
-        return expressionSegments.isEmpty() ? Optional.<Condition>absent() : Optional.of(new Condition(column, expressionSegments));
+        return expressionSegments.isEmpty() ? Optional.<Condition>absent() : Optional.of(new Condition(column, columnSegment, expressionSegments));
     }
     
     /**
@@ -124,10 +128,11 @@ public final class PredicateUtils {
      * 
      * @param betweenRightValue right value of BETWEEN operator
      * @param column column
+     * @param columnSegment column segment
      * @return condition
      */
-    public static Optional<Condition> createBetweenCondition(final PredicateBetweenRightValue betweenRightValue, final Column column) {
+    public static Optional<Condition> createBetweenCondition(final PredicateBetweenRightValue betweenRightValue, final Column column, final ColumnSegment columnSegment) {
         return betweenRightValue.getBetweenExpression() instanceof SimpleExpressionSegment && betweenRightValue.getAndExpression() instanceof SimpleExpressionSegment
-                ? Optional.of(new Condition(column, betweenRightValue.getBetweenExpression(), betweenRightValue.getAndExpression())) : Optional.<Condition>absent();
+                ? Optional.of(new Condition(column, columnSegment, betweenRightValue.getBetweenExpression(), betweenRightValue.getAndExpression())) : Optional.<Condition>absent();
     }
 }
