@@ -35,7 +35,6 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.Pred
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateCompareRightValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateInRightValue;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.token.impl.EncryptColumnToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.strategy.encrypt.ShardingEncryptorEngine;
 
@@ -85,7 +84,6 @@ public final class EncryptOrPredicateFiller implements SQLSegmentFiller<OrPredic
                 andCondition = sqlStatement.getEncryptCondition().getOrConditions().get(0);
             }
             andCondition.getConditions().add(condition.get());
-            sqlStatement.getSQLTokens().add(new EncryptColumnToken(predicateSegment.getColumn().getStartIndex(), predicateSegment.getStopIndex(), column, true));
         }
     }
 
@@ -96,10 +94,10 @@ public final class EncryptOrPredicateFiller implements SQLSegmentFiller<OrPredic
         if (predicateSegment.getRightValue() instanceof PredicateCompareRightValue) {
             PredicateCompareRightValue compareRightValue = (PredicateCompareRightValue) predicateSegment.getRightValue();
             return isOperatorSupportedWithEncrypt(compareRightValue.getOperator()) 
-                    ? PredicateUtils.createCompareCondition(compareRightValue, column, predicateSegment.getColumn()) : Optional.<Condition>absent();
+                    ? PredicateUtils.createCompareCondition(compareRightValue, column, predicateSegment) : Optional.<Condition>absent();
         }
         if (predicateSegment.getRightValue() instanceof PredicateInRightValue) {
-            return PredicateUtils.createInCondition((PredicateInRightValue) predicateSegment.getRightValue(), column, predicateSegment.getColumn());
+            return PredicateUtils.createInCondition((PredicateInRightValue) predicateSegment.getRightValue(), column, predicateSegment);
         }
         return Optional.absent();
     }

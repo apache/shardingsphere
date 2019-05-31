@@ -79,7 +79,7 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
     
     private EncryptOrPredicateFiller createEncryptOrPredicateFiller() {
         EncryptOrPredicateFiller result = new EncryptOrPredicateFiller();
-        result.setEncryptorEngine(shardingRule.getShardingEncryptorEngine());
+        result.setEncryptorEngine(shardingRule.getEncryptRule().getEncryptorEngine());
         result.setShardingTableMetaData(shardingTableMetaData);
         return result;
     }
@@ -111,13 +111,13 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
         if (predicateSegment.getRightValue() instanceof PredicateCompareRightValue) {
             PredicateCompareRightValue compareRightValue = (PredicateCompareRightValue) predicateSegment.getRightValue();
             return isOperatorSupportedWithSharding(compareRightValue.getOperator()) 
-                    ? PredicateUtils.createCompareCondition(compareRightValue, column, predicateSegment.getColumn()) : Optional.<Condition>absent();
+                    ? PredicateUtils.createCompareCondition(compareRightValue, column, predicateSegment) : Optional.<Condition>absent();
         }
         if (predicateSegment.getRightValue() instanceof PredicateInRightValue) {
-            return PredicateUtils.createInCondition((PredicateInRightValue) predicateSegment.getRightValue(), column, predicateSegment.getColumn());
+            return PredicateUtils.createInCondition((PredicateInRightValue) predicateSegment.getRightValue(), column, predicateSegment);
         }
         if (predicateSegment.getRightValue() instanceof PredicateBetweenRightValue) {
-            return PredicateUtils.createBetweenCondition((PredicateBetweenRightValue) predicateSegment.getRightValue(), column, predicateSegment.getColumn());
+            return PredicateUtils.createBetweenCondition((PredicateBetweenRightValue) predicateSegment.getRightValue(), column, predicateSegment);
         }
         return Optional.absent();
     }
