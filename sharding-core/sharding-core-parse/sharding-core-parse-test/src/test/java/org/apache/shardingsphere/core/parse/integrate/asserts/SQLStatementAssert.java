@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.parse.integrate.asserts;
 
-import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.parse.integrate.asserts.condition.ConditionAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.groupby.GroupByAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.index.IndexAssert;
@@ -71,14 +70,14 @@ public final class SQLStatementAssert {
     
     private final AlterTableAssert alterTableAssert;
     
-    private final DatabaseType databaseType;
+    private final String databaseType;
     
-    public SQLStatementAssert(final SQLStatement actual, final String sqlCaseId, final SQLCaseType sqlCaseType, final DatabaseType databaseType) {
+    public SQLStatementAssert(final SQLStatement actual, final String sqlCaseId, final SQLCaseType sqlCaseType, final String databaseType) {
         this(actual, sqlCaseId, sqlCaseType, SQLCasesLoader.getInstance(), ParserResultSetLoader.getInstance(), databaseType);
     }
     
     public SQLStatementAssert(final SQLStatement actual, final String sqlCaseId, 
-                              final SQLCaseType sqlCaseType, final SQLCasesLoader sqlLoader, final ParserResultSetLoader parserResultSetLoader, final DatabaseType databaseType) {
+                              final SQLCaseType sqlCaseType, final SQLCasesLoader sqlLoader, final ParserResultSetLoader parserResultSetLoader, final String databaseType) {
         SQLStatementAssertMessage assertMessage = new SQLStatementAssertMessage(sqlLoader, parserResultSetLoader, sqlCaseId, sqlCaseType);
         this.actual = actual;
         expected = parserResultSetLoader.getParserResult(sqlCaseId);
@@ -101,7 +100,7 @@ public final class SQLStatementAssert {
     public void assertSQLStatement() {
         tableAssert.assertTables(actual.getTables(), expected.getTables());
         conditionAssert.assertConditions(actual.getRouteCondition(), expected.getOrCondition());
-        if (DatabaseType.MySQL == databaseType) {
+        if ("MySQL".equals(databaseType)) {
             conditionAssert.assertConditions(actual.getEncryptCondition(), expected.getEncryptCondition());
         }
         tokenAssert.assertTokens(actual.getSQLTokens(), expected.getTokens());

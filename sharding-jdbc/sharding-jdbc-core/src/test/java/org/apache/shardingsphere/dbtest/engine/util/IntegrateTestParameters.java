@@ -19,7 +19,6 @@ package org.apache.shardingsphere.dbtest.engine.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.constant.SQLType;
 import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.parse.rule.registry.MasterSlaveParseRuleRegistry;
@@ -31,7 +30,6 @@ import org.apache.shardingsphere.dbtest.env.IntegrateTestEnvironment;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.SQLCasesLoader;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -61,9 +59,9 @@ public final class IntegrateTestParameters {
         // TODO sqlCasesLoader size should eq integrateTestCasesLoader size
         // assertThat(sqlCasesLoader.countAllSupportedSQLCases(), is(integrateTestCasesLoader.countAllDataSetTestCases()));
         Collection<Object[]> result = new LinkedList<>();
-        for (Object[] each : sqlCasesLoader.getSupportedSQLTestParameters(Arrays.<Enum>asList(DatabaseType.values()), DatabaseType.class)) {
+        for (Object[] each : sqlCasesLoader.getSupportedSQLTestParameters()) {
             String sqlCaseId = each[0].toString();
-            DatabaseType databaseType = (DatabaseType) each[1];
+            String databaseType = each[1].toString();
             SQLCaseType caseType = (SQLCaseType) each[2];
             if (sqlType != new SQLParseEngine(MasterSlaveParseRuleRegistry.getInstance(), 
                     databaseType, sqlCasesLoader.getSupportedSQL(sqlCaseId, SQLCaseType.Placeholder, Collections.emptyList()), null, null).parse().getType()) {
@@ -79,7 +77,7 @@ public final class IntegrateTestParameters {
         return result;
     }
     
-    private static Collection<Object[]> getParametersWithAssertion(final DatabaseType databaseType, final SQLCaseType caseType, final IntegrateTestCase integrateTestCase) {
+    private static Collection<Object[]> getParametersWithAssertion(final String databaseType, final SQLCaseType caseType, final IntegrateTestCase integrateTestCase) {
         Collection<Object[]> result = new LinkedList<>();
         for (IntegrateTestCaseAssertion each : integrateTestCase.getIntegrateTestCaseAssertions()) {
             result.addAll(getParametersWithAssertion(integrateTestCase, each, databaseType, caseType));
@@ -88,7 +86,7 @@ public final class IntegrateTestParameters {
     }
     
     private static Collection<Object[]> getParametersWithAssertion(
-            final IntegrateTestCase integrateTestCase, final IntegrateTestCaseAssertion assertion, final DatabaseType databaseType, final SQLCaseType caseType) {
+            final IntegrateTestCase integrateTestCase, final IntegrateTestCaseAssertion assertion, final String databaseType, final SQLCaseType caseType) {
         Collection<Object[]> result = new LinkedList<>();
         for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
             Object[] data = new Object[6];
@@ -113,9 +111,9 @@ public final class IntegrateTestParameters {
         // TODO sqlCasesLoader size should eq integrateTestCasesLoader size
         // assertThat(sqlCasesLoader.countAllSupportedSQLCases(), is(integrateTestCasesLoader.countAllDataSetTestCases()));
         Collection<Object[]> result = new LinkedList<>();
-        for (Object[] each : sqlCasesLoader.getSupportedSQLTestParameters(Arrays.<Enum>asList(DatabaseType.values()), DatabaseType.class)) {
+        for (Object[] each : sqlCasesLoader.getSupportedSQLTestParameters()) {
             String sqlCaseId = each[0].toString();
-            DatabaseType databaseType = (DatabaseType) each[1];
+            String databaseType = each[1].toString();
             SQLCaseType caseType = (SQLCaseType) each[2];
             if (sqlType != new SQLParseEngine(MasterSlaveParseRuleRegistry.getInstance(), 
                     databaseType, sqlCasesLoader.getSupportedSQL(sqlCaseId, SQLCaseType.Placeholder, Collections.emptyList()), null, null).parse().getType()) {
@@ -135,7 +133,7 @@ public final class IntegrateTestParameters {
         return result;
     }
     
-    private static Collection<Object[]> getParametersWithCase(final DatabaseType databaseType, final IntegrateTestCase integrateTestCase) {
+    private static Collection<Object[]> getParametersWithCase(final String databaseType, final IntegrateTestCase integrateTestCase) {
         Collection<Object[]> result = new LinkedList<>();
         for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
             Object[] data = new Object[4];

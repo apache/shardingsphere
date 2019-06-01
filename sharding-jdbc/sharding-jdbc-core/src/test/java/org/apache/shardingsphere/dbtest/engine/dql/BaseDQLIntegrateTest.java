@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.dbtest.engine.dql;
 
-import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.dbtest.cases.assertion.dql.DQLIntegrateTestCaseAssertion;
 import org.apache.shardingsphere.dbtest.cases.dataset.DataSet;
 import org.apache.shardingsphere.dbtest.cases.dataset.metadata.DataSetColumn;
@@ -45,6 +44,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -67,14 +67,14 @@ public abstract class BaseDQLIntegrateTest extends SingleIntegrateTest {
     @BeforeClass
     public static void insertData() throws IOException, JAXBException, SQLException, ParseException {
         createDatabasesAndTables();
-        for (DatabaseType each : DatabaseType.values()) {
+        for (String each : Arrays.asList("H2", "MySQL", "PostgreSQL", "Oracle", "SQLServer")) {
             if (IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(each)) {
                 insertData(each);
             }
         }
     }
     
-    private static void insertData(final DatabaseType databaseType) throws SQLException, ParseException, IOException, JAXBException {
+    private static void insertData(final String databaseType) throws SQLException, ParseException, IOException, JAXBException {
         for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
             new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(each), createDataSourceMap(databaseType, each)).initialize();
         }
@@ -82,7 +82,7 @@ public abstract class BaseDQLIntegrateTest extends SingleIntegrateTest {
     
     @AfterClass
     public static void clearData() throws IOException, JAXBException, SQLException {
-        for (DatabaseType each : DatabaseType.values()) {
+        for (String each : Arrays.asList("H2", "MySQL", "PostgreSQL", "Oracle", "SQLServer")) {
             if (IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(each)) {
                 clearData(each);
             }
@@ -90,13 +90,13 @@ public abstract class BaseDQLIntegrateTest extends SingleIntegrateTest {
         dropDatabases();
     }
     
-    private static void clearData(final DatabaseType databaseType) throws SQLException, IOException, JAXBException {
+    private static void clearData(final String databaseType) throws SQLException, IOException, JAXBException {
         for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
             new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(each), createDataSourceMap(databaseType, each)).clear();
         }
     }
     
-    private static Map<String, DataSource> createDataSourceMap(final DatabaseType databaseType, final String shardingRuleType) throws IOException, JAXBException {
+    private static Map<String, DataSource> createDataSourceMap(final String databaseType, final String shardingRuleType) throws IOException, JAXBException {
         Collection<String> dataSourceNames = SchemaEnvironmentManager.getDataSourceNames(shardingRuleType);
         Map<String, DataSource> result = new HashMap<>(dataSourceNames.size(), 1);
         for (String each : dataSourceNames) {

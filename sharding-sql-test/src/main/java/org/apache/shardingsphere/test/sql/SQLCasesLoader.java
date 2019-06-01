@@ -28,13 +28,12 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -204,59 +203,52 @@ public class SQLCasesLoader {
     /**
      * Get test parameters for junit parameterized test case for supported SQL.
      *
-     * @param allDatabaseTypes all database types
-     * @param enumType enum type
      * @return test parameters for junit parameterized test case for supported SQL
      */
-    public Collection<Object[]> getSupportedSQLTestParameters(final Collection<? extends Enum> allDatabaseTypes, final Class<? extends Enum> enumType) {
-        return getTestParameters(supportedSQLCaseMap, allDatabaseTypes, enumType);
+    public Collection<Object[]> getSupportedSQLTestParameters() {
+        return getTestParameters(supportedSQLCaseMap);
     }
     
     /**
      * Get test parameters for junit parameterized test case for unsupported SQL.
      *
-     * @param allDatabaseTypes all database types
-     * @param enumType enum type
      * @return test parameters for junit parameterized test case for unsupported SQL
      */
-    public Collection<Object[]> getUnsupportedSQLTestParameters(final Collection<? extends Enum> allDatabaseTypes, final Class<? extends Enum> enumType) {
-        return getTestParameters(unsupportedSQLCaseMap, allDatabaseTypes, enumType);
+    public Collection<Object[]> getUnsupportedSQLTestParameters() {
+        return getTestParameters(unsupportedSQLCaseMap);
     }
     
     /**
      * Get test parameters for junit parameterized test case for sql parsing error SQL.
      *
-     * @param allDatabaseTypes all database types
-     * @param enumType enum type
      * @return test parameters for junit parameterized test case for parsing error SQL
      */
-    public Collection<Object[]> getSQLParsingErrorTestParameters(final Collection<? extends Enum> allDatabaseTypes, final Class<? extends Enum> enumType) {
-        return getTestParameters(parseErrorSQLCaseMap, allDatabaseTypes, enumType);
+    public Collection<Object[]> getSQLParsingErrorTestParameters() {
+        return getTestParameters(parseErrorSQLCaseMap);
     }
     
-    private Collection<Object[]> getTestParameters(final Map<String, SQLCase> sqlCaseMap, final Collection<? extends Enum> allDatabaseTypes, final Class<? extends Enum> enumType) {
+    private Collection<Object[]> getTestParameters(final Map<String, SQLCase> sqlCaseMap) {
         Collection<Object[]> result = new LinkedList<>();
         for (SQLCase each : sqlCaseMap.values()) {
-            result.addAll(getTestParameters(allDatabaseTypes, enumType, each));
+            result.addAll(getTestParameters(each));
         }
         return result;
     }
     
-    private Collection<Object[]> getTestParameters(final Collection<? extends Enum> allDatabaseTypes, final Class<? extends Enum> enumType, final SQLCase sqlCase) {
+    private Collection<Object[]> getTestParameters(final SQLCase sqlCase) {
         Collection<Object[]> result = new LinkedList<>();
         for (SQLCaseType each : SQLCaseType.values()) {
             if (each == SQLCaseType.Placeholder && !Strings.isNullOrEmpty(sqlCase.getSqlType()) && !("dql".equals(sqlCase.getSqlType()) || "dml".equals(sqlCase.getSqlType()))) {
                 continue;
             }
-            result.addAll(getTestParameters(sqlCase, allDatabaseTypes, enumType, each));
+            result.addAll(getTestParameters(sqlCase, each));
         }
         return result;
     }
     
-    private static Collection<Object[]> getTestParameters(
-            final SQLCase sqlCase, final Collection<? extends Enum> allDatabaseTypes, final Class<? extends Enum> enumType, final SQLCaseType sqlCaseType) {
+    private static Collection<Object[]> getTestParameters(final SQLCase sqlCase, final SQLCaseType sqlCaseType) {
         Collection<Object[]> result = new LinkedList<>();
-        for (Enum each : getDatabaseTypes(sqlCase.getDatabaseTypes(), allDatabaseTypes, enumType)) {
+        for (String each : getDatabaseTypes(sqlCase.getDatabaseTypes())) {
             Object[] parameters = new Object[3];
             parameters[0] = sqlCase.getId();
             parameters[1] = each;
@@ -267,15 +259,15 @@ public class SQLCasesLoader {
     }
     
     @SuppressWarnings("unchecked")
-    private static Collection<? extends Enum> getDatabaseTypes(final String databaseTypes, final Collection<? extends Enum> allDatabaseTypes, final Class<? extends Enum> enumType) {
+    private static Collection<String> getDatabaseTypes(final String databaseTypes) {
         if (Strings.isNullOrEmpty(databaseTypes)) {
-            return allDatabaseTypes;
+            return getALlDatabaseTypes();
         }
-        Set<Enum> result = new HashSet<>(allDatabaseTypes.size());
-        for (String each : databaseTypes.split(",")) {
-            result.add(Enum.valueOf(enumType, each));
-        }
-        return result;
+        return Arrays.asList(databaseTypes.split(","));
+    }
+    
+    private static Collection<String> getALlDatabaseTypes() {
+        return Arrays.asList("H2", "MySQL", "PostgreSQL", "Oracle", "SQLServer");
     }
     
     /**

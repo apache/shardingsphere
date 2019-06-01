@@ -60,7 +60,7 @@ public final class EncryptSQLRewriterTest {
         parameters = new LinkedList<>();
         parameters.add(1);
         parameters.add(2);
-        encryptSQLParseEngine = new EncryptSQLParseEntry(databaseType, encryptRule, createShardingTableMetaData());
+        encryptSQLParseEngine = new EncryptSQLParseEntry(databaseType.name(), encryptRule, createShardingTableMetaData());
     }
     
     private EncryptRuleConfiguration createEncryptRuleConfiguration() {

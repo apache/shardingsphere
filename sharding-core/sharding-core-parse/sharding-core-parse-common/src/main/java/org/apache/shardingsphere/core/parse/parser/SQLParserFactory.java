@@ -25,7 +25,6 @@ import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.TokenStream;
-import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.parse.api.SQLParser;
 import org.apache.shardingsphere.core.parse.spi.SQLParserEntry;
 import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
@@ -94,7 +93,7 @@ public final class SQLParserFactory {
      * @param sql SQL
      * @return SQL parser
      */
-    public static SQLParser newInstance(final DatabaseType databaseType, final String sql) {
+    public static SQLParser newInstance(final String databaseType, final String sql) {
         for (SQLParserEntry each : NewInstanceServiceLoader.newServiceInstances(SQLParserEntry.class)) {
             if (isCurrentDatabaseType(databaseType, each)) {
                 return createSQLParser(sql, each);
@@ -103,12 +102,12 @@ public final class SQLParserFactory {
         throw new UnsupportedOperationException(String.format("Cannot support database type '%s'", databaseType));
     }
     
-    private static boolean isCurrentDatabaseType(final DatabaseType databaseType, final SQLParserEntry sqlParserEntry) {
-        if (DatabaseType.valueOf(sqlParserEntry.getDatabaseType()) == databaseType) {
+    private static boolean isCurrentDatabaseType(final String databaseType, final SQLParserEntry sqlParserEntry) {
+        if (sqlParserEntry.getDatabaseType().equals(databaseType)) {
             return true;
         }
         for (String each : sqlParserEntry.getDatabaseTypeAliases()) {
-            if (DatabaseType.valueOf(each) == databaseType) {
+            if (each.equals(databaseType)) {
                 return true;
             }
         }

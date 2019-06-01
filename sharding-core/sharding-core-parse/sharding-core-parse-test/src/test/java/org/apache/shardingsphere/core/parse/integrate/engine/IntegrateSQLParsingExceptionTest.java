@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.parse.integrate.engine;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
 import org.apache.shardingsphere.core.parse.entry.ShardingSQLParseEntry;
 import org.apache.shardingsphere.core.parse.exception.SQLParsingException;
@@ -27,7 +26,6 @@ import org.apache.shardingsphere.test.sql.SQLCasesLoader;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -38,13 +36,13 @@ public final class IntegrateSQLParsingExceptionTest extends AbstractBaseIntegrat
     
     private final String sqlCaseId;
     
-    private final DatabaseType databaseType;
+    private final String databaseType;
     
     private final SQLCaseType sqlCaseType;
     
     @Parameters(name = "{0} ({2}) -> {1}")
     public static Collection<Object[]> getTestParameters() {
-        return sqlCasesLoader.getSQLParsingErrorTestParameters(Arrays.<Enum>asList(DatabaseType.values()), DatabaseType.class);
+        return sqlCasesLoader.getSQLParsingErrorTestParameters();
     }
     
     @Test(expected = SQLParsingException.class)

@@ -85,12 +85,12 @@ public abstract class BaseIntegrateTest {
         }
     }
     
-    protected final String getExpectedDataFile(final String path, final String shardingRuleType, final DatabaseType databaseType, final String expectedDataFile) {
+    protected final String getExpectedDataFile(final String path, final String shardingRuleType, final String databaseType, final String expectedDataFile) {
         if (null == expectedDataFile) {
             return null;
         }
         String prefix = path.substring(0, path.lastIndexOf(File.separator));
-        String result = Joiner.on("/").join(prefix, "dataset", shardingRuleType, databaseType.toString().toLowerCase(), expectedDataFile);
+        String result = Joiner.on("/").join(prefix, "dataset", shardingRuleType, databaseType.toLowerCase(), expectedDataFile);
         if (new File(result).exists()) {
             return result;
         }
@@ -144,7 +144,7 @@ public abstract class BaseIntegrateTest {
     private Map<String, DataSourceMetaData> getDataSourceMetaDataMap() throws SQLException {
         Map<String, DataSourceMetaData> result = new LinkedHashMap<>();
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            result.put(entry.getKey(), DataSourceMetaDataFactory.newInstance(databaseTypeEnvironment.getDatabaseType(), getDataSourceURL(entry.getValue())));
+            result.put(entry.getKey(), DataSourceMetaDataFactory.newInstance(DatabaseType.valueOf(databaseTypeEnvironment.getDatabaseType()), getDataSourceURL(entry.getValue())));
         }
         return result;
     }

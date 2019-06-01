@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.core.parse.filler;
 
 import com.google.common.base.Optional;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.filler.api.EncryptRuleAwareFiller;
 import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
@@ -42,26 +42,18 @@ import java.util.Collection;
  * @author panjuan
  * @author duhongjun
  */
+@RequiredArgsConstructor
 public final class SQLStatementFillerEngine {
     
     private final ParseRuleRegistry parseRuleRegistry;
     
-    private final DatabaseType databaseType;
+    private final String databaseType;
     
     private final String sql;
     
     private final BaseRule rule;
     
     private final ShardingTableMetaData shardingTableMetaData;
-    
-    public SQLStatementFillerEngine(final ParseRuleRegistry parseRuleRegistry, 
-                                    final DatabaseType databaseType, final String sql, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
-        this.parseRuleRegistry = parseRuleRegistry;
-        this.databaseType = databaseType;
-        this.sql = sql;
-        this.rule = rule;
-        this.shardingTableMetaData = shardingTableMetaData;
-    }
     
     /**
      * Fill SQL statement.

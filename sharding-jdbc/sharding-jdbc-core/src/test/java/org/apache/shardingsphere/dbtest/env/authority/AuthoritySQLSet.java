@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.dbtest.env.authority;
 
 import com.google.common.base.Splitter;
-import org.apache.shardingsphere.core.constant.DatabaseType;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -55,7 +54,7 @@ public final class AuthoritySQLSet {
      * @param databaseType database type
      * @return create user sqls
      */
-    public Collection<String> getCreateUserSQLs(final DatabaseType databaseType) {
+    public Collection<String> getCreateUserSQLs(final String databaseType) {
         return getDatabaseTypes().contains(databaseType) ? useCreateSQLs : Collections.<String>emptyList();
     }
     
@@ -65,15 +64,11 @@ public final class AuthoritySQLSet {
      * @param databaseType database type
      * @return create user sqls
      */
-    public Collection<String> getDropUserSQLs(final DatabaseType databaseType) {
+    public Collection<String> getDropUserSQLs(final String databaseType) {
         return getDatabaseTypes().contains(databaseType) ? useDropSQLs : Collections.<String>emptyList();
     }
     
-    private Collection<DatabaseType> getDatabaseTypes() {
-        Collection<DatabaseType> result = new LinkedList<>();
-        for (String each : Splitter.on(",").trimResults().splitToList(databaseTypes)) {
-            result.add(DatabaseType.valueOf(each));
-        }
-        return result;
+    private Collection<String> getDatabaseTypes() {
+        return Splitter.on(",").trimResults().splitToList(databaseTypes);
     }
 }
