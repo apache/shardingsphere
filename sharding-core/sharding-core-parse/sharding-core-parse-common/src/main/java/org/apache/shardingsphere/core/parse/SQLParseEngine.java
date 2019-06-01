@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.parse;
 
-import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.extractor.SQLSegmentsExtractorEngine;
 import org.apache.shardingsphere.core.parse.filler.SQLStatementFillerEngine;
@@ -47,7 +46,7 @@ public final class SQLParseEngine {
     
     private final SQLStatementOptimizerEngine optimizerEngine;
     
-    public SQLParseEngine(final ParseRuleRegistry parseRuleRegistry, final DatabaseType databaseType, final String sql, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
+    public SQLParseEngine(final ParseRuleRegistry parseRuleRegistry, final String databaseType, final String sql, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
         parserEngine = new SQLParserEngine(parseRuleRegistry, databaseType, sql);
         extractorEngine = new SQLSegmentsExtractorEngine();
         fillerEngine = new SQLStatementFillerEngine(parseRuleRegistry, databaseType, sql, rule, shardingTableMetaData);

@@ -20,7 +20,6 @@ package org.apache.shardingsphere.dbtest.env.schema;
 import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.dbtest.env.EnvironmentPath;
 import org.apache.shardingsphere.dbtest.env.IntegrateTestEnvironment;
 import org.apache.shardingsphere.dbtest.env.datasource.DataSourceUtil;
@@ -69,7 +68,7 @@ public final class SchemaEnvironmentManager {
      */
     public static void createDatabase(final String shardingRuleType) throws IOException, JAXBException, SQLException {
         SchemaEnvironment databaseInitialization = unmarshal(EnvironmentPath.getDatabaseEnvironmentResourceFile(shardingRuleType));
-        for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseTypes()) {
+        for (String each : IntegrateTestEnvironment.getInstance().getDatabaseTypes()) {
             DataSource dataSource = DataSourceUtil.createDataSource(each, null);
             try (
                     Connection connection = dataSource.getConnection();
@@ -88,7 +87,7 @@ public final class SchemaEnvironmentManager {
      */
     public static void dropDatabase(final String shardingRuleType) throws IOException, JAXBException {
         SchemaEnvironment databaseInitialization = unmarshal(EnvironmentPath.getDatabaseEnvironmentResourceFile(shardingRuleType));
-        for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseTypes()) {
+        for (String each : IntegrateTestEnvironment.getInstance().getDatabaseTypes()) {
             DataSource dataSource = DataSourceUtil.createDataSource(each, null);
             try (
                     Connection connection = dataSource.getConnection();
@@ -106,11 +105,11 @@ public final class SchemaEnvironmentManager {
         }
     }
     
-    private static Collection<String> generateCreateDatabaseSQLs(final DatabaseType databaseType, final List<String> databases) {
-        if (DatabaseType.H2 == databaseType) {
+    private static Collection<String> generateCreateDatabaseSQLs(final String databaseType, final List<String> databases) {
+        if ("H2".equals(databaseType)) {
             return Collections.emptyList();
         }
-        String sql = DatabaseType.Oracle == databaseType ? "CREATE SCHEMA %s" : "CREATE DATABASE %s";
+        String sql = "Oracle".equals(databaseType) ? "CREATE SCHEMA %s" : "CREATE DATABASE %s";
         Collection<String> result = new LinkedList<>();
         for (String each : databases) {
             result.add(String.format(sql, each));
@@ -118,11 +117,11 @@ public final class SchemaEnvironmentManager {
         return result;
     }
     
-    private static Collection<String> generateDropDatabaseSQLs(final DatabaseType databaseType, final List<String> databases) {
-        if (DatabaseType.H2 == databaseType) {
+    private static Collection<String> generateDropDatabaseSQLs(final String databaseType, final List<String> databases) {
+        if ("H2".equals(databaseType)) {
             return Collections.emptyList();
         }
-        String sql = DatabaseType.Oracle == databaseType ? "DROP SCHEMA %s" : "DROP DATABASE IF EXISTS %s";
+        String sql = "Oracle".equals(databaseType) ? "DROP SCHEMA %s" : "DROP DATABASE IF EXISTS %s";
         Collection<String> result = new LinkedList<>();
         for (String each : databases) {
             result.add(String.format(sql, each));
@@ -139,13 +138,13 @@ public final class SchemaEnvironmentManager {
      * @throws SQLException SQL exception
      */
     public static void createTable(final String shardingRuleType) throws JAXBException, IOException, SQLException {
-        for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseTypes()) {
+        for (String each : IntegrateTestEnvironment.getInstance().getDatabaseTypes()) {
             SchemaEnvironment databaseEnvironmentSchema = unmarshal(EnvironmentPath.getDatabaseEnvironmentResourceFile(shardingRuleType));
             createTable(databaseEnvironmentSchema, each);
         }
     }
     
-    private static void createTable(final SchemaEnvironment databaseEnvironmentSchema, final DatabaseType databaseType) throws SQLException {
+    private static void createTable(final SchemaEnvironment databaseEnvironmentSchema, final String databaseType) throws SQLException {
         for (String each : databaseEnvironmentSchema.getDatabases()) {
             DataSource dataSource = DataSourceUtil.createDataSource(databaseType, each);
             try (Connection connection = dataSource.getConnection();
@@ -163,13 +162,13 @@ public final class SchemaEnvironmentManager {
      * @throws IOException IO exception
      */
     public static void dropTable(final String shardingRuleType) throws JAXBException, IOException {
-        for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseTypes()) {
+        for (String each : IntegrateTestEnvironment.getInstance().getDatabaseTypes()) {
             SchemaEnvironment databaseEnvironmentSchema = unmarshal(EnvironmentPath.getDatabaseEnvironmentResourceFile(shardingRuleType));
             dropTable(databaseEnvironmentSchema, each);
         }
     }
     
-    private static void dropTable(final SchemaEnvironment databaseEnvironmentSchema, final DatabaseType databaseType) {
+    private static void dropTable(final SchemaEnvironment databaseEnvironmentSchema, final String databaseType) {
         for (String each : databaseEnvironmentSchema.getDatabases()) {
             DataSource dataSource = DataSourceUtil.createDataSource(databaseType, each);
             try (Connection connection = dataSource.getConnection();

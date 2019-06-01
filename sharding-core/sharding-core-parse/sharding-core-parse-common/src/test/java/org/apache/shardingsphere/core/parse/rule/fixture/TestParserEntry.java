@@ -15,27 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.token.impl;
+package org.apache.shardingsphere.core.parse.rule.fixture;
 
-import lombok.Getter;
-import lombok.ToString;
-import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
-import org.apache.shardingsphere.core.parse.sql.token.Substitutable;
+import org.antlr.v4.runtime.Lexer;
+import org.apache.shardingsphere.core.parse.api.SQLParser;
+import org.apache.shardingsphere.core.parse.spi.SQLParserEntry;
 
-/**
- * Remove token.
- *
- * @author zhangliang
- * @author panjuan
- */
-@Getter
-@ToString
-public final class RemoveToken extends SQLToken implements Substitutable {
+import java.util.Collection;
+import java.util.Collections;
+
+public final class TestParserEntry implements SQLParserEntry {
     
-    private final int stopIndex;
+    @Override
+    public String getDatabaseType() {
+        return "MySQL";
+    }
     
-    public RemoveToken(final int startIndex, final int stopIndex) {
-        super(startIndex);
-        this.stopIndex = stopIndex;
+    @Override
+    public Collection<String> getDatabaseTypeAliases() {
+        return Collections.emptyList();
+    }
+    
+    @Override
+    public Class<? extends Lexer> getLexerClass() {
+        return null;
+    }
+    
+    @Override
+    public Class<? extends SQLParser> getParserClass() {
+        return null;
     }
 }

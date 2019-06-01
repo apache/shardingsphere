@@ -19,7 +19,6 @@ package org.apache.shardingsphere.dbtest.env;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.constant.DatabaseType;
 
 /**
  * Database type environment.
@@ -30,12 +29,12 @@ import org.apache.shardingsphere.core.constant.DatabaseType;
 @Getter
 public final class DatabaseTypeEnvironment {
     
-    private final DatabaseType databaseType;
+    private final String databaseType;
     
     private final boolean isEnabled;
     
     @Override
     public String toString() {
-        return databaseType.name() + (isEnabled ? ":Enabled" : ":Disabled");
+        return databaseType + (isEnabled ? ":Enabled" : ":Disabled");
     }
 }

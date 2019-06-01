@@ -26,21 +26,11 @@
         <tables>
             <table name="t_encrypt" />
         </tables>
-        <tokens>
-            <encrypt-column-token start-index-for-placeholder="21" stop-index-for-placeholder="28" start-index-for-literal="21" stop-index-for-literal="32" is-in-where="false">
-                <column table-name="t_encrypt" name="name"/>
-            </encrypt-column-token>
-        </tokens>
     </parser-result>
     <parser-result sql-case-id="update_with_one_encrypt_column_in_where" parameters="'invalid', 'tom'">
         <tables>
             <table name="t_encrypt" />
         </tables>
-        <tokens>
-            <encrypt-column-token start-index-for-placeholder="38" stop-index-for-placeholder="45" start-index-for-literal="46" stop-index-for-literal="57" is-in-where="true">
-                <column table-name="t_encrypt" name="name"/>
-            </encrypt-column-token>
-        </tokens>
         <encrypt-condition>
             <and-condition>
                 <condition column-name="name" table-name="t_encrypt" operator="EQUAL">
@@ -53,14 +43,6 @@
         <tables>
             <table name="t_encrypt" />
         </tables>
-        <tokens>
-            <encrypt-column-token start-index-for-placeholder="21" stop-index-for-placeholder="30" start-index-for-literal="21" stop-index-for-literal="41" is-in-where="false">
-                <column table-name="t_encrypt" name="mobile"/>
-            </encrypt-column-token>
-            <encrypt-column-token start-index-for-placeholder="50" stop-index-for-placeholder="57" start-index-for-literal="69" stop-index-for-literal="80" is-in-where="true">
-                <column table-name="t_encrypt" name="name"/>
-            </encrypt-column-token>
-        </tokens>
         <encrypt-condition>
             <and-condition>
                 <condition column-name="name" table-name="t_encrypt" operator="EQUAL">
@@ -73,12 +55,6 @@
         <tables>
             <table name="t_encrypt"/>
         </tables>
-        <tokens>
-            <encrypt-column-token start-index-for-placeholder="21" stop-index-for-placeholder="30"
-                                  start-index-for-literal="21" stop-index-for-literal="41" is-in-where="false">
-                <column table-name="t_encrypt" name="mobile"/>
-            </encrypt-column-token>
-        </tokens>
     </parser-result>
     <parser-result sql-case-id="update_with_encrypt_column_in_function" parameters="'1333333333', 'invalid', 'tom'">
         <tables>
@@ -89,12 +65,6 @@
         <tables>
             <table name="t_encrypt"/>
         </tables>
-        <tokens>
-            <encrypt-column-token start-index-for-placeholder="59" stop-index-for-placeholder="68"
-                                  start-index-for-literal="67" stop-index-for-literal="87" is-in-where="true">
-                <column table-name="t_encrypt" name="mobile"/>
-            </encrypt-column-token>
-        </tokens>
         <encrypt-condition>
             <and-condition>
                 <condition column-name="mobile" table-name="t_encrypt" operator="EQUAL">

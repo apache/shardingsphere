@@ -15,9 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql;
+package org.apache.shardingsphere.core.rewrite.token.pojo;
 
-public enum DatabaseTypeEnum {
+import lombok.Getter;
+import lombok.ToString;
+import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
+import org.apache.shardingsphere.core.parse.sql.token.Substitutable;
+
+/**
+ * Remove token.
+ *
+ * @author zhangliang
+ * @author panjuan
+ */
+@Getter
+@ToString
+public final class RemoveToken extends SQLToken implements Substitutable {
     
-    H2, MySQL, Oracle, SQLServer, PostgreSQL
+    private final int stopIndex;
+    
+    public RemoveToken(final int startIndex, final int stopIndex) {
+        super(startIndex);
+        this.stopIndex = stopIndex;
+    }
 }

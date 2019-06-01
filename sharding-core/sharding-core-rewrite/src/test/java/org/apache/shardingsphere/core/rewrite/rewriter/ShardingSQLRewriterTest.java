@@ -33,22 +33,24 @@ import org.apache.shardingsphere.core.parse.sql.context.limit.LimitValue;
 import org.apache.shardingsphere.core.parse.sql.context.table.Table;
 import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.SelectItemsSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.AggregationDistinctSelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrderByItemSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.core.parse.sql.token.impl.EncryptColumnToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.InsertColumnsToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.InsertValuesToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.OffsetToken;
-import org.apache.shardingsphere.core.parse.sql.token.impl.RemoveToken;
+import org.apache.shardingsphere.core.rewrite.token.pojo.RemoveToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.RowCountToken;
 import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
@@ -551,7 +553,7 @@ public final class ShardingSQLRewriterTest {
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, routeResult.getSqlStatement(), parameters);
         rewriteEngine.init(
                 new ShardingSQLRewriter(shardingRule, DatabaseType.MySQL, routeResult), 
-                new EncryptSQLRewriter(shardingRule.getShardingEncryptorEngine(), routeResult.getSqlStatement(), routeResult.getOptimizeResult()));
+                new EncryptSQLRewriter(shardingRule.getEncryptRule().getEncryptorEngine(), routeResult.getSqlStatement(), routeResult.getOptimizeResult()));
         RoutingUnit routingUnit = new RoutingUnit("db0");
         routingUnit.getTableUnits().add(new TableUnit("table_x", "table_x"));
         assertThat(rewriteEngine.generateSQL(routingUnit).getSql(), is("SELECT table_x.id, x.name FROM table_x x, table_y y WHERE table_x.id=? AND x.name=?"));
@@ -771,9 +773,9 @@ public final class ShardingSQLRewriterTest {
         parameters.add("x");
         Column column = new Column("id", "table_z");
         selectStatement.addSQLToken(new TableToken(15, 21, "table_z", QuoteCharacter.NONE));
-        selectStatement.addSQLToken(new EncryptColumnToken(29, 32, column, true));
         selectStatement.getEncryptCondition().getOrConditions().add(new AndCondition());
-        selectStatement.getEncryptCondition().getOrConditions().get(0).getConditions().add(new Condition(column, new ParameterMarkerExpressionSegment(0, 0, 0)));
+        selectStatement.getEncryptCondition().getOrConditions().get(0).getConditions().add(new Condition(column, 
+                new PredicateSegment(29, 32, null, null), new ParameterMarkerExpressionSegment(0, 0, 0)));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(selectStatement.getLimit());
         routeResult.setRoutingResult(new RoutingResult());
@@ -785,14 +787,13 @@ public final class ShardingSQLRewriterTest {
     
     @Test
     public void assertSelectInWithShardingEncryptor() {
-        Column column = new Column("id", "table_z");
         selectStatement.addSQLToken(new TableToken(15, 21, "table_z", QuoteCharacter.NONE));
-        selectStatement.addSQLToken(new EncryptColumnToken(29, 39, column, true));
         selectStatement.getEncryptCondition().getOrConditions().add(new AndCondition());
         List<ExpressionSegment> expressionSegments = new LinkedList<>();
         expressionSegments.add(new LiteralExpressionSegment(0, 0, 3));
         expressionSegments.add(new LiteralExpressionSegment(0, 0, 5));
-        selectStatement.getEncryptCondition().getOrConditions().get(0).getConditions().add(new Condition(column, expressionSegments));
+        Column column = new Column("id", "table_z");
+        selectStatement.getEncryptCondition().getOrConditions().get(0).getConditions().add(new Condition(column, new PredicateSegment(29, 39, null, null), expressionSegments));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(selectStatement.getLimit());
         routeResult.setRoutingResult(new RoutingResult());
@@ -807,17 +808,15 @@ public final class ShardingSQLRewriterTest {
         List<Object> parameters = new ArrayList<>(2);
         parameters.add(1);
         parameters.add(2);
-        Column column = new Column("id", "table_z");
         selectStatement.addSQLToken(new TableToken(15, 21, "table_z", QuoteCharacter.NONE));
-        selectStatement.addSQLToken(new EncryptColumnToken(29, 40, column, true));
-        selectStatement.addSQLToken(new EncryptColumnToken(45, 50, column, true));
         selectStatement.getEncryptCondition().getOrConditions().add(new AndCondition());
         selectStatement.getEncryptCondition().getOrConditions().add(new AndCondition());
         List<ExpressionSegment> expressionSegments = new LinkedList<>();
         expressionSegments.add(new ParameterMarkerExpressionSegment(0, 0, 0));
         expressionSegments.add(new ParameterMarkerExpressionSegment(0, 0, 1));
-        selectStatement.getEncryptCondition().getOrConditions().get(0).getConditions().add(new Condition(column, expressionSegments));
-        selectStatement.getEncryptCondition().getOrConditions().get(1).getConditions().add(new Condition(column, new LiteralExpressionSegment(0, 0, 3)));
+        Column column = new Column("id", "table_z");
+        selectStatement.getEncryptCondition().getOrConditions().get(0).getConditions().add(new Condition(column, new PredicateSegment(29, 40, null, null), expressionSegments));
+        selectStatement.getEncryptCondition().getOrConditions().get(0).getConditions().add(new Condition(column, new PredicateSegment(45, 50, null, null), new LiteralExpressionSegment(0, 0, 3)));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(selectStatement.getLimit());
         routeResult.setRoutingResult(new RoutingResult());
@@ -835,9 +834,9 @@ public final class ShardingSQLRewriterTest {
         parameters.add("k");
         Column column = new Column("id", "table_k");
         selectStatement.addSQLToken(new TableToken(15, 21, "table_k", QuoteCharacter.NONE));
-        selectStatement.addSQLToken(new EncryptColumnToken(29, 32, column, true));
         selectStatement.getEncryptCondition().getOrConditions().add(new AndCondition());
-        selectStatement.getEncryptCondition().getOrConditions().get(0).getConditions().add(new Condition(column, new ParameterMarkerExpressionSegment(0, 0, 0)));
+        selectStatement.getEncryptCondition().getOrConditions().get(0).getConditions().add(new Condition(column, 
+                new PredicateSegment(29, 32, null, null), new ParameterMarkerExpressionSegment(0, 0, 0)));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(selectStatement.getLimit());
         routeResult.setRoutingResult(new RoutingResult());
@@ -849,14 +848,13 @@ public final class ShardingSQLRewriterTest {
     
     @Test
     public void assertSelectInWithQueryAssistedShardingEncryptor() {
-        Column column = new Column("id", "table_k");
         selectStatement.addSQLToken(new TableToken(15, 21, "table_k", QuoteCharacter.NONE));
-        selectStatement.addSQLToken(new EncryptColumnToken(29, 39, column, true));
         selectStatement.getEncryptCondition().getOrConditions().add(new AndCondition());
         List<ExpressionSegment> expressionSegments = new LinkedList<>();
         expressionSegments.add(new LiteralExpressionSegment(0, 0, 3));
         expressionSegments.add(new LiteralExpressionSegment(0, 0, 5));
-        selectStatement.getEncryptCondition().getOrConditions().get(0).getConditions().add(new Condition(column, expressionSegments));
+        Column column = new Column("id", "table_k");
+        selectStatement.getEncryptCondition().getOrConditions().get(0).getConditions().add(new Condition(column, new PredicateSegment(29, 39, null, null), expressionSegments));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(selectStatement.getLimit());
         routeResult.setRoutingResult(new RoutingResult());
@@ -868,13 +866,14 @@ public final class ShardingSQLRewriterTest {
     
     @Test
     public void assertUpdateWithShardingEncryptor() {
-        Column column = new Column("id", "table_z");
+        updateStatement.getTables().add(new Table("table_z", ""));
         updateStatement.addSQLToken(new TableToken(7, 13, "table_z", QuoteCharacter.NONE));
-        updateStatement.addSQLToken(new EncryptColumnToken(19, 24, column, false));
+        SetAssignmentsSegment setAssignmentsSegment = new SetAssignmentsSegment(15, 24, Collections.singleton(new AssignmentSegment(19, 24, new ColumnSegment(19, 20, "id"), null)));
+        updateStatement.getSqlSegments().add(setAssignmentsSegment);
+        Column column = new Column("id", "table_z");
         updateStatement.getAssignments().put(column, new LiteralExpressionSegment(0, 0, 1));
-        updateStatement.addSQLToken(new EncryptColumnToken(32, 37, column, true));
         updateStatement.getEncryptCondition().getOrConditions().add(new AndCondition());
-        updateStatement.getEncryptCondition().getOrConditions().get(0).getConditions().add(new Condition(column, new LiteralExpressionSegment(0, 0, 2)));
+        updateStatement.getEncryptCondition().getOrConditions().get(0).getConditions().add(new Condition(column, new PredicateSegment(32, 37, null, null), new LiteralExpressionSegment(0, 0, 2)));
         routeResult = new SQLRouteResult(updateStatement);
         routeResult.setRoutingResult(new RoutingResult());
         updateStatement.setLogicSQL("UPDATE table_z SET id = 1 WHERE id = 2");
@@ -885,9 +884,6 @@ public final class ShardingSQLRewriterTest {
     @Test
     public void assertSelectInWithAggregationDistinct() {
         selectStatement.addSQLToken(new TableToken(49, 55, "table_z", QuoteCharacter.NONE));
-//        SelectItemPrefixToken selectItemPrefixToken = new SelectItemPrefixToken(7);
-//        selectItemPrefixToken.setToAppendDistinct(true);
-//        selectStatement.addSQLToken(selectItemPrefixToken);
         selectStatement.getSqlSegments().add(new SelectItemsSegment(7, 44, false));
         AggregationDistinctSelectItemSegment selectItemSegment1 = new AggregationDistinctSelectItemSegment(7, 24, "DISTINCT id", AggregationType.COUNT, 12, "id");
         selectItemSegment1.setAlias("a");
@@ -907,7 +903,7 @@ public final class ShardingSQLRewriterTest {
         SQLRewriteEngine result = new SQLRewriteEngine(shardingRule, routeResult.getSqlStatement(), parameters);
         result.init(
                 new ShardingSQLRewriter(shardingRule, databaseType, routeResult),
-                new EncryptSQLRewriter(shardingRule.getShardingEncryptorEngine(), routeResult.getSqlStatement(), routeResult.getOptimizeResult()));
+                new EncryptSQLRewriter(shardingRule.getEncryptRule().getEncryptorEngine(), routeResult.getSqlStatement(), routeResult.getOptimizeResult()));
         return result;
     }
 }

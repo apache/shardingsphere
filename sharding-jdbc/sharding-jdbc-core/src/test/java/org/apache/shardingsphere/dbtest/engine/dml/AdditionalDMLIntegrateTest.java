@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.dbtest.engine.dml;
 
-import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.constant.SQLType;
 import org.apache.shardingsphere.dbtest.cases.assertion.dml.DMLIntegrateTestCaseAssertion;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.SQLValue;
@@ -88,7 +87,7 @@ public final class AdditionalDMLIntegrateTest extends BaseDMLIntegrateTest {
     @Test
     public void assertExecuteUpdateWithColumnIndexes() throws JAXBException, IOException, SQLException, ParseException {
         // TODO fix masterslave
-        if (!getDatabaseTypeEnvironment().isEnabled() || DatabaseType.PostgreSQL == getDatabaseTypeEnvironment().getDatabaseType() || "masterslave".equals(getShardingRuleType())) {
+        if (!getDatabaseTypeEnvironment().isEnabled() || "PostgreSQL".equals(getDatabaseTypeEnvironment().getDatabaseType()) || "masterslave".equals(getShardingRuleType())) {
             return;
         }
         int actualUpdateCount;
@@ -116,7 +115,7 @@ public final class AdditionalDMLIntegrateTest extends BaseDMLIntegrateTest {
     @Test
     public void assertExecuteUpdateWithColumnNames() throws JAXBException, IOException, SQLException, ParseException {
         // TODO fix masterslave
-        if (!getDatabaseTypeEnvironment().isEnabled() || DatabaseType.PostgreSQL == getDatabaseTypeEnvironment().getDatabaseType() || "masterslave".equals(getShardingRuleType())) {
+        if (!getDatabaseTypeEnvironment().isEnabled() || "PostgreSQL".equals(getDatabaseTypeEnvironment().getDatabaseType()) || "masterslave".equals(getShardingRuleType())) {
             return;
         }
         int actualUpdateCount;
@@ -206,7 +205,7 @@ public final class AdditionalDMLIntegrateTest extends BaseDMLIntegrateTest {
     @Test
     public void assertExecuteWithColumnIndexes() throws JAXBException, IOException, SQLException, ParseException {
         // TODO fix masterslave
-        if (!getDatabaseTypeEnvironment().isEnabled() || DatabaseType.PostgreSQL == getDatabaseTypeEnvironment().getDatabaseType() || "masterslave".equals(getShardingRuleType())) {
+        if (!getDatabaseTypeEnvironment().isEnabled() || "PostgreSQL".equals(getDatabaseTypeEnvironment().getDatabaseType()) || "masterslave".equals(getShardingRuleType())) {
             return;
         }
         int actualUpdateCount;
@@ -236,7 +235,7 @@ public final class AdditionalDMLIntegrateTest extends BaseDMLIntegrateTest {
     @Test
     public void assertExecuteWithColumnNames() throws JAXBException, IOException, SQLException, ParseException {
         // TODO fix masterslave
-        if (!getDatabaseTypeEnvironment().isEnabled() || DatabaseType.PostgreSQL == getDatabaseTypeEnvironment().getDatabaseType() || "masterslave".equals(getShardingRuleType())) {
+        if (!getDatabaseTypeEnvironment().isEnabled() || "PostgreSQL".equals(getDatabaseTypeEnvironment().getDatabaseType()) || "masterslave".equals(getShardingRuleType())) {
             return;
         }
         int actualUpdateCount;

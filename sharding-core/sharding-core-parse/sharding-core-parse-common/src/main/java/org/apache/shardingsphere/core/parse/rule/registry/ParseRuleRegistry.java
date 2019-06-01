@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.core.parse.rule.registry;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
+import org.apache.shardingsphere.core.parse.parser.SQLParserFactory;
 import org.apache.shardingsphere.core.parse.rule.jaxb.entity.extractor.ExtractorRuleDefinitionEntity;
 import org.apache.shardingsphere.core.parse.rule.jaxb.entity.filler.FillerRuleDefinitionEntity;
 import org.apache.shardingsphere.core.parse.rule.jaxb.loader.RuleDefinitionFileConstant;
@@ -49,9 +49,9 @@ public abstract class ParseRuleRegistry {
     
     private final SQLStatementRuleDefinitionEntityLoader statementRuleLoader = new SQLStatementRuleDefinitionEntityLoader();
     
-    private final Map<DatabaseType, FillerRuleDefinition> fillerRuleDefinitions = new HashMap<>();
+    private final Map<String, FillerRuleDefinition> fillerRuleDefinitions = new HashMap<>();
     
-    private final Map<DatabaseType, SQLStatementRuleDefinition> sqlStatementRuleDefinitions = new HashMap<>();
+    private final Map<String, SQLStatementRuleDefinition> sqlStatementRuleDefinitions = new HashMap<>();
     
     public ParseRuleRegistry() {
         initParseRuleDefinition();
@@ -61,21 +61,19 @@ public abstract class ParseRuleRegistry {
         ExtractorRuleDefinitionEntity generalExtractorRuleEntity = extractorRuleLoader.load(RuleDefinitionFileConstant.getExtractorRuleDefinitionFile());
         FillerRuleDefinitionEntity generalFillerRuleEntity = fillerRuleLoader.load(RuleDefinitionFileConstant.getFillerRuleDefinitionFile());
         FillerRuleDefinitionEntity featureGeneralFillerRuleEntity = fillerRuleLoader.load(RuleDefinitionFileConstant.getFillerRuleDefinitionFile(getType()));
-        for (DatabaseType each : DatabaseType.values()) {
-            if (DatabaseType.H2 != each) {
-                fillerRuleDefinitions.put(each, createFillerRuleDefinition(generalFillerRuleEntity, featureGeneralFillerRuleEntity, each));
-                sqlStatementRuleDefinitions.put(each, createSQLStatementRuleDefinition(generalExtractorRuleEntity, each));
-            }
+        for (String each : SQLParserFactory.getAddOnDatabaseTypes()) {
+            fillerRuleDefinitions.put(each, createFillerRuleDefinition(generalFillerRuleEntity, featureGeneralFillerRuleEntity, each));
+            sqlStatementRuleDefinitions.put(each, createSQLStatementRuleDefinition(generalExtractorRuleEntity, each));
         }
     }
     
     private FillerRuleDefinition createFillerRuleDefinition(final FillerRuleDefinitionEntity generalFillerRuleEntity,
-                                                            final FillerRuleDefinitionEntity featureGeneralFillerRuleEntity, final DatabaseType databaseType) {
+                                                            final FillerRuleDefinitionEntity featureGeneralFillerRuleEntity, final String databaseType) {
         return new FillerRuleDefinition(
                 generalFillerRuleEntity, featureGeneralFillerRuleEntity, fillerRuleLoader.load(RuleDefinitionFileConstant.getFillerRuleDefinitionFile(getType(), databaseType)));
     }
     
-    private SQLStatementRuleDefinition createSQLStatementRuleDefinition(final ExtractorRuleDefinitionEntity generalExtractorRuleEntity, final DatabaseType databaseType) {
+    private SQLStatementRuleDefinition createSQLStatementRuleDefinition(final ExtractorRuleDefinitionEntity generalExtractorRuleEntity, final String databaseType) {
         ExtractorRuleDefinition extractorRuleDefinition = new ExtractorRuleDefinition(
                 generalExtractorRuleEntity, extractorRuleLoader.load(RuleDefinitionFileConstant.getExtractorRuleDefinitionFile(getType(), databaseType)));
         return new SQLStatementRuleDefinition(statementRuleLoader.load(RuleDefinitionFileConstant.getSQLStatementRuleDefinitionFile(getType(), databaseType)), extractorRuleDefinition);
@@ -95,8 +93,8 @@ public abstract class ParseRuleRegistry {
      * @param contextClassName context class name
      * @return SQL statement rule
      */
-    public SQLStatementRule getSQLStatementRule(final DatabaseType databaseType, final String contextClassName) {
-        return sqlStatementRuleDefinitions.get(DatabaseType.H2 == databaseType ? DatabaseType.MySQL : databaseType).getSQLStatementRule(contextClassName);
+    public SQLStatementRule getSQLStatementRule(final String databaseType, final String contextClassName) {
+        return sqlStatementRuleDefinitions.get(getCurrentDatabaseType(databaseType)).getSQLStatementRule(contextClassName);
     }
     
     /**
@@ -106,7 +104,11 @@ public abstract class ParseRuleRegistry {
      * @param sqlSegmentClass SQL segment class
      * @return SQL segment rule
      */
-    public Optional<SQLSegmentFiller> findSQLSegmentFiller(final DatabaseType databaseType, final Class<? extends SQLSegment> sqlSegmentClass) {
-        return Optional.fromNullable(fillerRuleDefinitions.get(DatabaseType.H2 == databaseType ? DatabaseType.MySQL : databaseType).getFiller(sqlSegmentClass));
+    public Optional<SQLSegmentFiller> findSQLSegmentFiller(final String databaseType, final Class<? extends SQLSegment> sqlSegmentClass) {
+        return Optional.fromNullable(fillerRuleDefinitions.get(getCurrentDatabaseType(databaseType)).getFiller(sqlSegmentClass));
+    }
+    
+    private String getCurrentDatabaseType(final String databaseType) {
+        return SQLParserFactory.isDatabaseAlias(databaseType) ? SQLParserFactory.getAddOnDatabaseType(databaseType) : databaseType;
     }
 }

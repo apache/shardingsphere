@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.parse.integrate.asserts.token;
 
-import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.parse.integrate.asserts.SQLStatementAssertMessage;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.token.ExpectedTokens;
 import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
@@ -38,16 +37,10 @@ public final class TokenAssert {
     
     private final RowCountTokenAssert rowCountTokenAssert;
     
-    private final EncryptColumnTokenAssert encryptColumnTokenAssert;
-    
-    private final DatabaseType databaseType;
-    
-    public TokenAssert(final SQLCaseType sqlCaseType, final SQLStatementAssertMessage assertMessage, final DatabaseType databaseType) {
+    public TokenAssert(final SQLCaseType sqlCaseType, final SQLStatementAssertMessage assertMessage) {
         insertValuesTokenAssert = new InsertValuesTokenAssert(assertMessage);
         offsetTokenAssert = new OffsetTokenAssert(sqlCaseType, assertMessage);
         rowCountTokenAssert = new RowCountTokenAssert(sqlCaseType, assertMessage);
-        encryptColumnTokenAssert = new EncryptColumnTokenAssert(sqlCaseType, assertMessage);
-        this.databaseType = databaseType;
     }
     
     /**
@@ -61,8 +54,5 @@ public final class TokenAssert {
         insertValuesTokenAssert.assertInsertValuesToken(actual, expected);
         offsetTokenAssert.assertOffsetToken(actual, expected);
         rowCountTokenAssert.assertRowCountToken(actual, expected);
-        if (DatabaseType.MySQL == databaseType) {
-            encryptColumnTokenAssert.assertEncryptColumnsToken(actual, expected);
-        }
     }
 }

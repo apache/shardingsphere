@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.parse.sql.context.limit;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.parse.exception.SQLParsingException;
 import org.apache.shardingsphere.core.util.NumberUtil;
 
@@ -67,7 +66,7 @@ public final class Limit {
      * @param isFetchAll is fetch all data or not
      * @param databaseType database type
      */
-    public void processParameters(final List<Object> parameters, final boolean isFetchAll, final DatabaseType databaseType) {
+    public void processParameters(final List<Object> parameters, final boolean isFetchAll, final String databaseType) {
         fill(parameters);
         rewrite(parameters, isFetchAll, databaseType);
     }
@@ -88,7 +87,7 @@ public final class Limit {
         }
     }
     
-    private void rewrite(final List<Object> parameters, final boolean isFetchAll, final DatabaseType databaseType) {
+    private void rewrite(final List<Object> parameters, final boolean isFetchAll, final String databaseType) {
         int rewriteOffset = 0;
         int rewriteRowCount;
         if (isFetchAll) {
@@ -112,7 +111,7 @@ public final class Limit {
      * @param databaseType database type
      * @return is need rewrite row count or not
      */
-    public boolean isNeedRewriteRowCount(final DatabaseType databaseType) {
-        return DatabaseType.MySQL == databaseType || DatabaseType.PostgreSQL == databaseType || DatabaseType.H2 == databaseType;
+    public boolean isNeedRewriteRowCount(final String databaseType) {
+        return "MySQL".equals(databaseType) || "PostgreSQL".equals(databaseType) || "H2".equals(databaseType);
     }
 }

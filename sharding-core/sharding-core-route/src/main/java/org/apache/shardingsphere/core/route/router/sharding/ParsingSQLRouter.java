@@ -75,7 +75,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
     public SQLStatement parse(final String logicSQL, final boolean useCache) {
         parsingHook.start(logicSQL);
         try {
-            SQLStatement result = new ShardingSQLParseEntry(databaseType, shardingRule, shardingMetaData.getTable(), parsingResultCache).parse(logicSQL, useCache);
+            SQLStatement result = new ShardingSQLParseEntry(databaseType.name(), shardingRule, shardingMetaData.getTable(), parsingResultCache).parse(logicSQL, useCache);
             parsingHook.finishSuccess(result, shardingMetaData.getTable());
             return result;
             // CHECKSTYLE:OFF
@@ -188,7 +188,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
     private Limit getProcessedLimit(final List<Object> parameters, final SelectStatement selectStatement) {
         boolean isNeedFetchAll = (!selectStatement.getGroupByItems().isEmpty() || !selectStatement.getAggregationSelectItems().isEmpty()) && !selectStatement.isSameGroupByAndOrderByItems();
         Limit result = cloneLimit(selectStatement.getLimit());
-        result.processParameters(parameters, isNeedFetchAll, databaseType);
+        result.processParameters(parameters, isNeedFetchAll, databaseType.name());
         return result;
     }
     

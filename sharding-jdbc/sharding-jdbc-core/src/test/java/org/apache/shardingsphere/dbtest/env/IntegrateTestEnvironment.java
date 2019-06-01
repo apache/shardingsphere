@@ -43,9 +43,9 @@ public final class IntegrateTestEnvironment {
     
     private final Collection<String> shardingRuleTypes;
     
-    private final Collection<DatabaseType> databaseTypes;
+    private final Collection<String> databaseTypes;
     
-    private final Map<DatabaseType, DatabaseEnvironment> databaseEnvironments;
+    private final Map<String, DatabaseEnvironment> databaseEnvironments;
     
     private IntegrateTestEnvironment() {
         Properties prop = new Properties();
@@ -58,27 +58,27 @@ public final class IntegrateTestEnvironment {
         shardingRuleTypes = Splitter.on(",").trimResults().splitToList(prop.getProperty("sharding.rule.type"));
         databaseTypes = new LinkedList<>();
         for (String each : prop.getProperty("databases", DatabaseType.H2.name()).split(",")) {
-            databaseTypes.add(DatabaseType.valueOf(each.trim()));
+            databaseTypes.add(each.trim());
         }
         databaseEnvironments = new HashMap<>(databaseTypes.size(), 1);
-        for (DatabaseType each : databaseTypes) {
+        for (String each : databaseTypes) {
             switch (each) {
-                case H2:
+                case "H2":
                     databaseEnvironments.put(each, new DatabaseEnvironment(each, "", 0, "sa", ""));
                     break;
-                case MySQL:
+                case "MySQL":
                     databaseEnvironments.put(each, new DatabaseEnvironment(each, prop.getProperty("mysql.host", "127.0.0.1"), Integer.parseInt(prop.getProperty("mysql.port", "3306")),
                             prop.getProperty("mysql.username", "root"), prop.getProperty("mysql.password", "")));
                     break;
-                case PostgreSQL:
+                case "PostgreSQL":
                     databaseEnvironments.put(each, new DatabaseEnvironment(each, prop.getProperty("postgresql.host", "127.0.0.1"), Integer.parseInt(prop.getProperty("postgresql.port", "5432")),
                             prop.getProperty("postgresql.username", "postgres"), prop.getProperty("postgresql.password", "")));
                     break;
-                case SQLServer:
+                case "SQLServer":
                     databaseEnvironments.put(each, new DatabaseEnvironment(each, prop.getProperty("sqlserver.host", "127.0.0.1"), Integer.parseInt(prop.getProperty("sqlserver.port", "1433")),
                             prop.getProperty("sqlserver.username", "sa"), prop.getProperty("sqlserver.password", "Jdbc1234")));
                     break;
-                case Oracle:
+                case "Oracle":
                     databaseEnvironments.put(each, new DatabaseEnvironment(each, prop.getProperty("oracle.host", "127.0.0.1"), Integer.parseInt(prop.getProperty("oracle.port", "1521")),
                             prop.getProperty("oracle.username", "jdbc"), prop.getProperty("oracle.password", "jdbc")));
                     break;

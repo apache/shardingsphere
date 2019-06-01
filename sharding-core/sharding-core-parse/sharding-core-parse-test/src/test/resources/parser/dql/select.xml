@@ -318,9 +318,6 @@
         <tokens>
             <table-token start-index="16" table-name="t_order" length="7" />
             <table-token start-index="31" table-name="t_order_item" length="12" />
-            <encrypt-column-token start-index-for-placeholder="208" stop-index-for-placeholder="219" start-index-for-literal="209" stop-index-for-literal="225" is-in-where="true">
-               <column table-name="t_order" name="status"/>
-            </encrypt-column-token>
         </tokens>
         <or-condition>
             <and-condition>
@@ -354,9 +351,6 @@
         <tokens>
             <table-token start-index="16" table-name="t_order" length="7" />
             <table-token start-index="31" table-name="t_order_item" length="12" />
-            <encrypt-column-token start-index-for-placeholder="199" stop-index-for-placeholder="210" start-index-for-literal="200" stop-index-for-literal="216" is-in-where="true">
-               <column table-name="t_order" name="status"/>
-            </encrypt-column-token>
         </tokens>
         <or-condition>
             <and-condition>
@@ -756,9 +750,6 @@
         </tables>
         <tokens>
             <table-token start-index="14" table-name="t_order" length="7" />
-            <encrypt-column-token start-index-for-placeholder="28" stop-index-for-placeholder="38" start-index-for-literal="28" stop-index-for-literal="38" is-in-where="true">
-               <column table-name="t_order" name="status"/>
-            </encrypt-column-token>
         </tokens>
         <encrypt-condition>
             <and-condition>
@@ -775,9 +766,6 @@
         </tables>
         <tokens>
             <table-token start-index="14" table-name="t_order" length="7" />
-            <encrypt-column-token start-index-for-placeholder="28" stop-index-for-placeholder="38" start-index-for-literal="28" stop-index-for-literal="38" is-in-where="true">
-               <column table-name="t_order" name="status"/>
-            </encrypt-column-token>
         </tokens>
         <encrypt-condition>
             <and-condition>
@@ -794,9 +782,6 @@
         </tables>
         <tokens>
             <table-token start-index="83" table-name="t_order" length="7" />
-            <encrypt-column-token start-index-for-placeholder="97" stop-index-for-placeholder="106" start-index-for-literal="97" stop-index-for-literal="106" is-in-where="true">
-               <column table-name="t_order" name="status"/>
-            </encrypt-column-token>
         </tokens>
         <encrypt-condition>
             <and-condition>
@@ -813,9 +798,6 @@
         </tables>
         <tokens>
             <table-token start-index="78" table-name="t_order" length="7" />
-            <encrypt-column-token start-index-for-placeholder="92" stop-index-for-placeholder="101" start-index-for-literal="92" stop-index-for-literal="101" is-in-where="true">
-               <column table-name="t_order" name="status"/>
-            </encrypt-column-token>
         </tokens>
         <encrypt-condition>
             <and-condition>

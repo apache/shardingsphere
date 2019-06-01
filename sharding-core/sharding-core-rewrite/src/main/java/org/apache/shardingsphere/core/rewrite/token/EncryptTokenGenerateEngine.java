@@ -15,32 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse;
+package org.apache.shardingsphere.core.rewrite.token;
 
-import org.antlr.v4.runtime.Lexer;
-import org.apache.shardingsphere.core.parse.api.SQLParser;
-import org.apache.shardingsphere.core.parse.autogen.MySQLStatementLexer;
-import org.apache.shardingsphere.core.parse.spi.SQLParserEntry;
+import org.apache.shardingsphere.core.rewrite.token.generator.EncryptColumnTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.token.generator.SQLTokenGenerator;
+import org.apache.shardingsphere.core.rule.EncryptRule;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * SQL parser entry for H2.
+ * SQL token generator for encrypt.
  *
- * @author zhangliang
+ * @author panjuan
  */
-public final class H2ParserEntry implements SQLParserEntry {
+public final class EncryptTokenGenerateEngine extends SQLTokenGenerateEngine<EncryptRule> {
     
-    @Override
-    public String getDatabaseType() {
-        return "H2";
+    private static final Collection<SQLTokenGenerator> SQL_TOKEN_GENERATORS = new LinkedList<>();
+    
+    static {
+        SQL_TOKEN_GENERATORS.add(new EncryptColumnTokenGenerator());
     }
     
     @Override
-    public Class<? extends Lexer> getLexerClass() {
-        return MySQLStatementLexer.class;
-    }
-    
-    @Override
-    public Class<? extends SQLParser> getParserClass() {
-        return MySQLParser.class;
+    protected Collection<SQLTokenGenerator> getSQLTokenGenerators() {
+        return SQL_TOKEN_GENERATORS;
     }
 }
