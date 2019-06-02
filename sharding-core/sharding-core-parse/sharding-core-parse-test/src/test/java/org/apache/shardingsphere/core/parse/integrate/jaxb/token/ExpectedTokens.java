@@ -46,9 +46,6 @@ public final class ExpectedTokens {
     @XmlElement(name = "insert-set-token")
     private ExpectedInsertSetToken insertSetToken;
     
-    @XmlElement(name = "offset-token")
-    private ExpectedOffsetToken offsetToken;
-    
     @XmlElement(name = "row-count-token")
     private ExpectedRowCountToken rowCountToken;
     

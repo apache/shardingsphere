@@ -25,7 +25,6 @@
         <tokens>
             <table-token start-index="16" table-name="t_order" length="7" />
             <table-token start-index="31" table-name="t_order_item" length="12" />
-            <offset-token begin-position="188" offset="5" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -81,7 +80,6 @@
         <tokens>
             <table-token start-index="16" table-name="t_order" left-delimiter="`" right-delimiter="`" length="9" />
             <table-token start-index="33" table-name="t_order_item" left-delimiter="`" right-delimiter="`" length="14" />
-            <offset-token begin-position="195" offset="5" />
             <row-count-token begin-position="198" row-count="3" />
         </tokens>
         <or-condition>
@@ -138,7 +136,6 @@
         <tokens>
             <table-token start-index="16" table-name="t_order" length="7" />
             <table-token start-index="31" table-name="t_order_item" length="12" />
-            <offset-token begin-position="188" offset="5" />
             <row-count-token begin-position="196" row-count="3" />
         </tokens>
         <or-condition>
@@ -167,7 +164,6 @@
         <tokens>
             <table-token start-index="167" table-name="t_order" length="7" />
             <table-token start-index="182" table-name="t_order_item" length="12" />
-            <offset-token begin-position="338" offset="6" />
             <row-count-token begin-position="27" row-count="3" />
         </tokens>
         <or-condition>
@@ -196,7 +192,6 @@
         <tokens>
             <table-token start-index="167" table-name="t_order" length="7" />
             <table-token start-index="182" table-name="t_order_item" length="12" />
-            <offset-token begin-position="339" offset="6" />
             <row-count-token begin-position="27" row-count="3" />
         </tokens>
         <or-condition>
@@ -253,7 +248,6 @@
         <tokens>
             <table-token start-index="146" table-name="t_order" length="7" />
             <table-token start-index="167" table-name="t_order_item" length="12" />
-            <offset-token begin-position="386" offset="3" />
             <row-count-token begin-position="363" row-count="5" />
         </tokens>
         <or-condition>
@@ -282,7 +276,6 @@
         <tokens>
             <table-token start-index="146" table-name="t_order" length="7" />
             <table-token start-index="167" table-name="t_order_item" length="12" />
-            <offset-token begin-position="387" offset="3" />
             <row-count-token begin-position="363" row-count="5" />
         </tokens>
         <or-condition>
