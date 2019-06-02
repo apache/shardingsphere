@@ -53,7 +53,7 @@ public final class OffsetTokenGenerator implements OptionalSQLTokenGenerator<Sha
     
     private boolean isExistedOfLimitRowNum(final SelectStatement sqlStatement) {
         Limit limit = sqlStatement.getLimit();
-        return null != limit && null != limit.getOffset();
+        return null != limit && null != limit.getOffset() && -1 != limit.getOffset().getValue();
     }
     
     private boolean isExistedOfNumberOffset(final SQLStatement sqlStatement) {

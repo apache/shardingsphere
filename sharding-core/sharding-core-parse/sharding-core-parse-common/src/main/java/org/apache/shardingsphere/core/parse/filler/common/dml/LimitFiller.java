@@ -26,7 +26,6 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.NumberLiteralL
 import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.ParameterMarkerLimitValueSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.core.parse.sql.token.impl.OffsetToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.RowCountToken;
 
 /**
@@ -62,7 +61,6 @@ public final class LimitFiller implements SQLSegmentFiller<LimitSegment> {
         if (offsetSegment instanceof NumberLiteralLimitValueSegment) {
             int value = ((NumberLiteralLimitValueSegment) offsetSegment).getValue();
             selectStatement.getLimit().setOffset(new LimitValue(value, -1, offsetSegment, false));
-            selectStatement.getSQLTokens().add(new OffsetToken(offsetSegment.getStartIndex(), offsetSegment.getStopIndex(), value));
         } else {
             selectStatement.getLimit().setOffset(new LimitValue(-1, ((ParameterMarkerLimitValueSegment) offsetSegment).getParameterIndex(), offsetSegment, false));
         }
