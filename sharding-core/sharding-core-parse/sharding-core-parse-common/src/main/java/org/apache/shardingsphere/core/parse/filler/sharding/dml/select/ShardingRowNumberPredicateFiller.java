@@ -31,7 +31,6 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateS
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateCompareRightValue;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.core.parse.sql.token.impl.RowCountToken;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -103,15 +102,9 @@ public final class ShardingRowNumberPredicateFiller implements SQLSegmentFiller<
             switch (((PredicateCompareRightValue) each.getRightValue()).getOperator()) {
                 case "<":
                     limit.setRowCount(createLimitValue(expression, false));
-                    if (-1 != limit.getRowCount().getValue()) {
-                        selectStatement.addSQLToken(new RowCountToken(expression.getStartIndex(), expression.getStopIndex(), limit.getRowCount().getValue()));
-                    }
                     break;
                 case "<=":
                     limit.setRowCount(createLimitValue(expression, true));
-                    if (-1 != limit.getRowCount().getValue()) {
-                        selectStatement.addSQLToken(new RowCountToken(expression.getStartIndex(), expression.getStopIndex(), limit.getRowCount().getValue()));
-                    }
                     break;
                 case ">":
                     limit.setOffset(createLimitValue(expression, false));

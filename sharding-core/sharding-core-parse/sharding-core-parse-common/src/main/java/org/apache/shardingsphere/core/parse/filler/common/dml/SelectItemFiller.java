@@ -40,7 +40,6 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.ParameterMarke
 import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.TopSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.core.parse.sql.token.impl.RowCountToken;
 
 /**
  * Select item filler.
@@ -117,9 +116,6 @@ public final class SelectItemFiller implements SQLSegmentFiller<SelectItemSegmen
         Limit limit = new Limit();
         limit.setRowCount(getTopValueSegment(topSegment.getTop()));
         selectStatement.setLimit(limit);
-        if (-1 != limit.getRowCount().getValue()) {
-            selectStatement.addSQLToken(new RowCountToken(topSegment.getTop().getStartIndex(), topSegment.getTop().getStopIndex(), limit.getRowCount().getValue()));
-        }
         selectStatement.getItems().add(new CommonSelectItem("rownum", Optional.of(topSegment.getRowNumberAlias())));
     }
     
