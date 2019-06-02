@@ -25,7 +25,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.LimitValueSegm
 import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.NumberLiteralLimitValueSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.core.parse.sql.token.impl.OffsetToken;
+import org.apache.shardingsphere.core.rewrite.token.pojo.OffsetToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
