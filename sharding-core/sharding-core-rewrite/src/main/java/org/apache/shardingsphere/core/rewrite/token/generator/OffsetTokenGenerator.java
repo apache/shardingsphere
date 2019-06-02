@@ -18,6 +18,11 @@
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Optional;
+import org.apache.shardingsphere.core.parse.sql.context.limit.Limit;
+import org.apache.shardingsphere.core.parse.sql.context.limit.LimitValue;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.LimitSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.LimitValueSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.NumberLiteralLimitValueSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.sql.token.impl.OffsetToken;
@@ -35,6 +40,24 @@ public final class OffsetTokenGenerator implements OptionalSQLTokenGenerator<Sha
         if (!(sqlStatement instanceof SelectStatement)) {
             return Optional.absent();
         }
+        if (isExistedOfNumberOffset(sqlStatement)) {
+            LimitValueSegment offset = sqlStatement.findSQLSegment(LimitSegment.class).get().getOffset().get();
+            return Optional.of(new OffsetToken(offset.getStartIndex(), offset.getStopIndex(), ((NumberLiteralLimitValueSegment) offset).getValue()));
+        }
+        if (isExistedOfLimitRowNum((SelectStatement) sqlStatement)) {
+            LimitValue offset = ((SelectStatement) sqlStatement).getLimit().getOffset();
+            return Optional.of(new OffsetToken(offset.getSqlSegment().getStartIndex(), offset.getSqlSegment().getStopIndex(), offset.getValue()));
+        }
         return Optional.absent();
+    }
+    
+    private boolean isExistedOfLimitRowNum(final SelectStatement sqlStatement) {
+        Limit limit = sqlStatement.getLimit();
+        return null != limit && null != limit.getOffset();
+    }
+    
+    private boolean isExistedOfNumberOffset(final SQLStatement sqlStatement) {
+        Optional<LimitSegment> limitSegment = sqlStatement.findSQLSegment(LimitSegment.class);
+        return limitSegment.isPresent() && limitSegment.get().getOffset().isPresent() && limitSegment.get().getOffset().get() instanceof NumberLiteralLimitValueSegment;
     }
 }
