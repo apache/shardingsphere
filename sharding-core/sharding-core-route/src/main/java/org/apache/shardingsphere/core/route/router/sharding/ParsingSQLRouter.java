@@ -198,7 +198,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
             result.setOffset(new LimitValue(limit.getOffset().getValue(), limit.getOffset().getIndex(), limit.getOffset().getSqlSegment(), limit.getOffset().isBoundOpened()));
         }
         if (null != limit.getRowCount()) {
-            result.setRowCount(new LimitValue(limit.getRowCount().getValue(), limit.getRowCount().getIndex(), limit.getOffset().getSqlSegment(), limit.getRowCount().isBoundOpened()));
+            result.setRowCount(new LimitValue(limit.getRowCount().getValue(), limit.getRowCount().getIndex(), limit.getRowCount().getSqlSegment(), limit.getRowCount().isBoundOpened()));
         }
         return result; 
     }
