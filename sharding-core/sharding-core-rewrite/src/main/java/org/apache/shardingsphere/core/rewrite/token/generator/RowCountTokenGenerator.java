@@ -29,11 +29,11 @@ import org.apache.shardingsphere.core.rewrite.token.pojo.OffsetToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Offset token generator.
+ * Row count token generator.
  *
  * @author panjuan
  */
-public final class OffsetTokenGenerator implements OptionalSQLTokenGenerator<ShardingRule> {
+public final class RowCountTokenGenerator implements OptionalSQLTokenGenerator<ShardingRule> {
     
     @Override
     public Optional<OffsetToken> generateSQLToken(final SQLStatement sqlStatement, final ShardingRule shardingRule) {
