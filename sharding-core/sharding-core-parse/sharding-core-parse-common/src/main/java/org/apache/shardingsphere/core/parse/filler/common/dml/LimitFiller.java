@@ -51,20 +51,20 @@ public final class LimitFiller implements SQLSegmentFiller<LimitSegment> {
     private void fillRowCount(final LimitValueSegment rowCountSegment, final SelectStatement selectStatement) {
         if (rowCountSegment instanceof NumberLiteralLimitValueSegment) {
             int value = ((NumberLiteralLimitValueSegment) rowCountSegment).getValue();
-            selectStatement.getLimit().setRowCount(new LimitValue(value, -1, false));
+            selectStatement.getLimit().setRowCount(new LimitValue(value, -1, rowCountSegment, false));
             selectStatement.getSQLTokens().add(new RowCountToken(rowCountSegment.getStartIndex(), rowCountSegment.getStopIndex(), value));
         } else {
-            selectStatement.getLimit().setRowCount(new LimitValue(-1, ((ParameterMarkerLimitValueSegment) rowCountSegment).getParameterIndex(), false));
+            selectStatement.getLimit().setRowCount(new LimitValue(-1, ((ParameterMarkerLimitValueSegment) rowCountSegment).getParameterIndex(), rowCountSegment, false));
         }
     }
     
     private void fillOffset(final LimitValueSegment offsetSegment, final SelectStatement selectStatement) {
         if (offsetSegment instanceof NumberLiteralLimitValueSegment) {
             int value = ((NumberLiteralLimitValueSegment) offsetSegment).getValue();
-            selectStatement.getLimit().setOffset(new LimitValue(value, -1, false));
+            selectStatement.getLimit().setOffset(new LimitValue(value, -1, offsetSegment, false));
             selectStatement.getSQLTokens().add(new OffsetToken(offsetSegment.getStartIndex(), offsetSegment.getStopIndex(), value));
         } else {
-            selectStatement.getLimit().setOffset(new LimitValue(-1, ((ParameterMarkerLimitValueSegment) offsetSegment).getParameterIndex(), false));
+            selectStatement.getLimit().setOffset(new LimitValue(-1, ((ParameterMarkerLimitValueSegment) offsetSegment).getParameterIndex(), offsetSegment, false));
         }
     }
 }

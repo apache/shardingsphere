@@ -134,7 +134,7 @@ public final class ShardingRowNumberPredicateFiller implements SQLSegmentFiller<
     }
     
     private LimitValue createLimitValue(final ExpressionSegment expression, final boolean boundOpened) {
-        return expression instanceof ParameterMarkerExpressionSegment ? new LimitValue(-1, ((ParameterMarkerExpressionSegment) expression).getParameterMarkerIndex(), boundOpened)
-                : new LimitValue(((Number) ((LiteralExpressionSegment) expression).getLiterals()).intValue(), -1, boundOpened);
+        return expression instanceof ParameterMarkerExpressionSegment ? new LimitValue(-1, ((ParameterMarkerExpressionSegment) expression).getParameterMarkerIndex(), expression, boundOpened)
+                : new LimitValue(((Number) ((LiteralExpressionSegment) expression).getLiterals()).intValue(), -1, expression, boundOpened);
     }
 }
