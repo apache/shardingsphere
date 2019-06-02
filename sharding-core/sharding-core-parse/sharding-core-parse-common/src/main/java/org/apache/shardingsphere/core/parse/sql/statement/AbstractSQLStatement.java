@@ -24,13 +24,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.constant.SQLType;
-import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
 import org.apache.shardingsphere.core.parse.sql.context.condition.ParseCondition;
 import org.apache.shardingsphere.core.parse.sql.context.table.Tables;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
-import org.apache.shardingsphere.core.parse.sql.token.impl.EncryptColumnToken;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -86,25 +83,6 @@ public abstract class AbstractSQLStatement implements SQLStatement {
     public final List<SQLToken> getSQLTokens() {
         Collections.sort(sqlTokens);
         return sqlTokens;
-    }
-    
-    /**
-     * Get encrypt condition.
-     * 
-     * @param encryptColumnToken encrypt column token
-     * @return encrypt condition
-     */
-    public Optional<Condition> getEncryptCondition(final EncryptColumnToken encryptColumnToken) {
-        for (Condition each : encryptCondition.findConditions(encryptColumnToken.getColumn())) {
-            if (isSameIndexes(each.getPredicateSegment(), encryptColumnToken)) {
-                return Optional.of(each);
-            }
-        }
-        return Optional.absent();
-    }
-    
-    private boolean isSameIndexes(final PredicateSegment predicateSegment, final EncryptColumnToken encryptColumnToken) {
-        return predicateSegment.getStartIndex() == encryptColumnToken.getStartIndex() && predicateSegment.getStopIndex() == encryptColumnToken.getStopIndex();
     }
     
     @Override

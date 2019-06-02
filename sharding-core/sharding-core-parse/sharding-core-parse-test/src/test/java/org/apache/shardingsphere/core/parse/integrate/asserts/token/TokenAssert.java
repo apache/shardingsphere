@@ -33,14 +33,8 @@ public final class TokenAssert {
     
     private final InsertValuesTokenAssert insertValuesTokenAssert;
     
-    private final OffsetTokenAssert offsetTokenAssert;
-    
-    private final RowCountTokenAssert rowCountTokenAssert;
-    
     public TokenAssert(final SQLCaseType sqlCaseType, final SQLStatementAssertMessage assertMessage) {
         insertValuesTokenAssert = new InsertValuesTokenAssert(assertMessage);
-        offsetTokenAssert = new OffsetTokenAssert(sqlCaseType, assertMessage);
-        rowCountTokenAssert = new RowCountTokenAssert(sqlCaseType, assertMessage);
     }
     
     /**
@@ -52,7 +46,5 @@ public final class TokenAssert {
     public void assertTokens(final Collection<SQLToken> actual, final ExpectedTokens expected) {
         // TODO do not assert table token and index, will assert table segment in future
         insertValuesTokenAssert.assertInsertValuesToken(actual, expected);
-        offsetTokenAssert.assertOffsetToken(actual, expected);
-        rowCountTokenAssert.assertRowCountToken(actual, expected);
     }
 }

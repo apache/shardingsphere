@@ -71,7 +71,7 @@ public final class RowNumberDecoratorMergedResultTest {
     @Test
     public void assertNextForSkipAll() throws SQLException {
         Limit limit = new Limit();
-        limit.setOffset(new LimitValue(Integer.MAX_VALUE, -1, true));
+        limit.setOffset(new LimitValue(Integer.MAX_VALUE, -1, null, true));
         routeResult.setLimit(limit);
         mergeEngine = new DQLMergeEngine(DatabaseType.Oracle, routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
@@ -92,8 +92,8 @@ public final class RowNumberDecoratorMergedResultTest {
     @Test
     public void assertNextForRowCountBoundOpenedFalse() throws SQLException {
         Limit limit = new Limit();
-        limit.setOffset(new LimitValue(2, -1, true));
-        limit.setRowCount(new LimitValue(4, -1, false));
+        limit.setOffset(new LimitValue(2, -1, null, true));
+        limit.setRowCount(new LimitValue(4, -1, null, false));
         routeResult.setLimit(limit);
         mergeEngine = new DQLMergeEngine(DatabaseType.Oracle, routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
@@ -105,8 +105,8 @@ public final class RowNumberDecoratorMergedResultTest {
     @Test
     public void assertNextForRowCountBoundOpenedTrue() throws SQLException {
         Limit limit = new Limit();
-        limit.setOffset(new LimitValue(2, -1, true));
-        limit.setRowCount(new LimitValue(4, -1, true));
+        limit.setOffset(new LimitValue(2, -1, null, true));
+        limit.setRowCount(new LimitValue(4, -1, null, true));
         routeResult.setLimit(limit);
         mergeEngine = new DQLMergeEngine(DatabaseType.Oracle, routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();

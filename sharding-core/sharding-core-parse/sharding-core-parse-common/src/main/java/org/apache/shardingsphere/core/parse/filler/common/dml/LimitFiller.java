@@ -26,8 +26,6 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.NumberLiteralL
 import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.ParameterMarkerLimitValueSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.core.parse.sql.token.impl.OffsetToken;
-import org.apache.shardingsphere.core.parse.sql.token.impl.RowCountToken;
 
 /**
  * Limit filler.
@@ -51,20 +49,18 @@ public final class LimitFiller implements SQLSegmentFiller<LimitSegment> {
     private void fillRowCount(final LimitValueSegment rowCountSegment, final SelectStatement selectStatement) {
         if (rowCountSegment instanceof NumberLiteralLimitValueSegment) {
             int value = ((NumberLiteralLimitValueSegment) rowCountSegment).getValue();
-            selectStatement.getLimit().setRowCount(new LimitValue(value, -1, false));
-            selectStatement.getSQLTokens().add(new RowCountToken(rowCountSegment.getStartIndex(), rowCountSegment.getStopIndex(), value));
+            selectStatement.getLimit().setRowCount(new LimitValue(value, -1, rowCountSegment, false));
         } else {
-            selectStatement.getLimit().setRowCount(new LimitValue(-1, ((ParameterMarkerLimitValueSegment) rowCountSegment).getParameterIndex(), false));
+            selectStatement.getLimit().setRowCount(new LimitValue(-1, ((ParameterMarkerLimitValueSegment) rowCountSegment).getParameterIndex(), rowCountSegment, false));
         }
     }
     
     private void fillOffset(final LimitValueSegment offsetSegment, final SelectStatement selectStatement) {
         if (offsetSegment instanceof NumberLiteralLimitValueSegment) {
             int value = ((NumberLiteralLimitValueSegment) offsetSegment).getValue();
-            selectStatement.getLimit().setOffset(new LimitValue(value, -1, false));
-            selectStatement.getSQLTokens().add(new OffsetToken(offsetSegment.getStartIndex(), offsetSegment.getStopIndex(), value));
+            selectStatement.getLimit().setOffset(new LimitValue(value, -1, offsetSegment, false));
         } else {
-            selectStatement.getLimit().setOffset(new LimitValue(-1, ((ParameterMarkerLimitValueSegment) offsetSegment).getParameterIndex(), false));
+            selectStatement.getLimit().setOffset(new LimitValue(-1, ((ParameterMarkerLimitValueSegment) offsetSegment).getParameterIndex(), offsetSegment, false));
         }
     }
 }

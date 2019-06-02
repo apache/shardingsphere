@@ -71,7 +71,7 @@ public final class TopAndRowNumberDecoratorMergedResultTest {
     @Test
     public void assertNextForSkipAll() throws SQLException {
         Limit limit = new Limit();
-        limit.setOffset(new LimitValue(Integer.MAX_VALUE, -1, true));
+        limit.setOffset(new LimitValue(Integer.MAX_VALUE, -1, null, true));
         routeResult.setLimit(limit);
         mergeEngine = new DQLMergeEngine(DatabaseType.SQLServer, routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
@@ -81,7 +81,7 @@ public final class TopAndRowNumberDecoratorMergedResultTest {
     @Test
     public void assertNextWithoutOffsetWithRowCount() throws SQLException {
         Limit limit = new Limit();
-        limit.setRowCount(new LimitValue(5, -1, false));
+        limit.setRowCount(new LimitValue(5, -1, null, false));
         routeResult.setLimit(limit);
         mergeEngine = new DQLMergeEngine(DatabaseType.SQLServer, routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
@@ -94,7 +94,7 @@ public final class TopAndRowNumberDecoratorMergedResultTest {
     @Test
     public void assertNextWithOffsetWithoutRowCount() throws SQLException {
         Limit limit = new Limit();
-        limit.setOffset(new LimitValue(2, -1, true));
+        limit.setOffset(new LimitValue(2, -1, null, true));
         routeResult.setLimit(limit);
         mergeEngine = new DQLMergeEngine(DatabaseType.SQLServer, routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
@@ -107,8 +107,8 @@ public final class TopAndRowNumberDecoratorMergedResultTest {
     @Test
     public void assertNextWithOffsetBoundOpenedFalse() throws SQLException {
         Limit limit = new Limit();
-        limit.setOffset(new LimitValue(2, -1, false));
-        limit.setRowCount(new LimitValue(4, -1, false));
+        limit.setOffset(new LimitValue(2, -1, null, false));
+        limit.setRowCount(new LimitValue(4, -1, null, false));
         routeResult.setLimit(limit);
         mergeEngine = new DQLMergeEngine(DatabaseType.SQLServer, routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
@@ -120,8 +120,8 @@ public final class TopAndRowNumberDecoratorMergedResultTest {
     @Test
     public void assertNextWithOffsetBoundOpenedTrue() throws SQLException {
         Limit limit = new Limit();
-        limit.setOffset(new LimitValue(2, -1, true));
-        limit.setRowCount(new LimitValue(4, -1, false));
+        limit.setOffset(new LimitValue(2, -1, null, true));
+        limit.setRowCount(new LimitValue(4, -1, null, false));
         routeResult.setLimit(limit);
         mergeEngine = new DQLMergeEngine(DatabaseType.SQLServer, routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
