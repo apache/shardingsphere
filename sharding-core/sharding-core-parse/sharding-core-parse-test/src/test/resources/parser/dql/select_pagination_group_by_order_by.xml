@@ -25,7 +25,6 @@
         <tokens>
             <table-token start-index="22" table-name="t_order" length="7" />
             <table-token start-index="37" table-name="t_order_item" length="12" />
-            <row-count-token begin-position="215" row-count="3" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -56,7 +55,6 @@
         <tokens>
             <table-token start-index="22" table-name="t_order" length="7" />
             <table-token start-index="37" table-name="t_order_item" length="12" />
-            <row-count-token begin-position="215" row-count="3" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -87,7 +85,6 @@
         <tokens>
             <table-token start-index="165" table-name="t_order" length="7" />
             <table-token start-index="180" table-name="t_order_item" length="12" />
-            <row-count-token begin-position="26" row-count="3" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -118,7 +115,6 @@
         <tokens>
             <table-token start-index="167" table-name="t_order" length="7" />
             <table-token start-index="182" table-name="t_order_item" length="12" />
-            <row-count-token begin-position="27" row-count="3" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -149,7 +145,6 @@
         <tokens>
             <table-token start-index="165" table-name="t_order" length="7" />
             <table-token start-index="180" table-name="t_order_item" length="12" />
-            <row-count-token begin-position="26" row-count="3" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -180,7 +175,6 @@
         <tokens>
             <table-token start-index="167" table-name="t_order" length="7" />
             <table-token start-index="182" table-name="t_order_item" length="12" />
-            <row-count-token begin-position="27" row-count="3" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -211,7 +205,6 @@
         <tokens>
             <table-token start-index="146" table-name="t_order" length="7" />
             <table-token start-index="167" table-name="t_order_item" length="12" />
-            <row-count-token begin-position="382" row-count="5" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -242,7 +235,6 @@
         <tokens>
             <table-token start-index="146" table-name="t_order" length="7" />
             <table-token start-index="167" table-name="t_order_item" length="12" />
-            <row-count-token begin-position="382" row-count="5" />
         </tokens>
         <or-condition>
             <and-condition>
