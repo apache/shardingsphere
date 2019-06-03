@@ -31,7 +31,6 @@ import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
 import org.apache.shardingsphere.core.parse.sql.context.limit.Limit;
 import org.apache.shardingsphere.core.parse.sql.context.limit.LimitValue;
 import org.apache.shardingsphere.core.parse.sql.context.table.Table;
-import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.SelectItemsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
@@ -41,6 +40,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegme
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.AggregationDistinctSelectItemSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.LimitValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
@@ -352,10 +352,10 @@ public final class ShardingSQLRewriterTest {
     
     @Test
     public void assertRewriteForLimit() {
-        SQLSegment offsetSQLSegment = mock(SQLSegment.class);
+        LimitValueSegment offsetSQLSegment = mock(LimitValueSegment.class);
         when(offsetSQLSegment.getStartIndex()).thenReturn(33);
         when(offsetSQLSegment.getStopIndex()).thenReturn(33);
-        SQLSegment rowCountSQLSegment = mock(SQLSegment.class);
+        LimitValueSegment rowCountSQLSegment = mock(LimitValueSegment.class);
         when(rowCountSQLSegment.getStartIndex()).thenReturn(36);
         when(rowCountSQLSegment.getStopIndex()).thenReturn(36);
         selectStatement.setLimit(new Limit());
@@ -372,10 +372,10 @@ public final class ShardingSQLRewriterTest {
     
     @Test
     public void assertRewriteForRowNum() {
-        SQLSegment offsetSQLSegment = mock(SQLSegment.class);
+        LimitValueSegment offsetSQLSegment = mock(LimitValueSegment.class);
         when(offsetSQLSegment.getStartIndex()).thenReturn(119);
         when(offsetSQLSegment.getStopIndex()).thenReturn(119);
-        SQLSegment rowCountSQLSegment = mock(SQLSegment.class);
+        LimitValueSegment rowCountSQLSegment = mock(LimitValueSegment.class);
         when(rowCountSQLSegment.getStartIndex()).thenReturn(98);
         when(rowCountSQLSegment.getStopIndex()).thenReturn(98);
         selectStatement.setLimit(new Limit());
@@ -393,10 +393,10 @@ public final class ShardingSQLRewriterTest {
     
     @Test
     public void assertRewriteForTopAndRowNumber() {
-        SQLSegment offsetSQLSegment = mock(SQLSegment.class);
+        LimitValueSegment offsetSQLSegment = mock(LimitValueSegment.class);
         when(offsetSQLSegment.getStartIndex()).thenReturn(123);
         when(offsetSQLSegment.getStopIndex()).thenReturn(123);
-        SQLSegment rowCountSQLSegment = mock(SQLSegment.class);
+        LimitValueSegment rowCountSQLSegment = mock(LimitValueSegment.class);
         when(rowCountSQLSegment.getStartIndex()).thenReturn(26);
         when(rowCountSQLSegment.getStopIndex()).thenReturn(26);
         selectStatement.setLimit(new Limit());
@@ -414,10 +414,10 @@ public final class ShardingSQLRewriterTest {
     
     @Test
     public void assertRewriteForLimitForMemoryGroupBy() {
-        SQLSegment offsetSQLSegment = mock(SQLSegment.class);
+        LimitValueSegment offsetSQLSegment = mock(LimitValueSegment.class);
         when(offsetSQLSegment.getStartIndex()).thenReturn(33);
         when(offsetSQLSegment.getStopIndex()).thenReturn(33);
-        SQLSegment rowCountSQLSegment = mock(SQLSegment.class);
+        LimitValueSegment rowCountSQLSegment = mock(LimitValueSegment.class);
         when(rowCountSQLSegment.getStartIndex()).thenReturn(36);
         when(rowCountSQLSegment.getStopIndex()).thenReturn(36);
         selectStatement.setLimit(new Limit());
@@ -438,10 +438,10 @@ public final class ShardingSQLRewriterTest {
     
     @Test
     public void assertRewriteForRowNumForMemoryGroupBy() {
-        SQLSegment offsetSQLSegment = mock(SQLSegment.class);
+        LimitValueSegment offsetSQLSegment = mock(LimitValueSegment.class);
         when(offsetSQLSegment.getStartIndex()).thenReturn(119);
         when(offsetSQLSegment.getStopIndex()).thenReturn(119);
-        SQLSegment rowCountSQLSegment = mock(SQLSegment.class);
+        LimitValueSegment rowCountSQLSegment = mock(LimitValueSegment.class);
         when(rowCountSQLSegment.getStartIndex()).thenReturn(98);
         when(rowCountSQLSegment.getStopIndex()).thenReturn(98);
         selectStatement.setLimit(new Limit());
@@ -463,10 +463,10 @@ public final class ShardingSQLRewriterTest {
     
     @Test
     public void assertRewriteForTopAndRowNumberForMemoryGroupBy() {
-        SQLSegment offsetSQLSegment = mock(SQLSegment.class);
+        LimitValueSegment offsetSQLSegment = mock(LimitValueSegment.class);
         when(offsetSQLSegment.getStartIndex()).thenReturn(123);
         when(offsetSQLSegment.getStopIndex()).thenReturn(123);
-        SQLSegment rowCountSQLSegment = mock(SQLSegment.class);
+        LimitValueSegment rowCountSQLSegment = mock(LimitValueSegment.class);
         when(rowCountSQLSegment.getStartIndex()).thenReturn(26);
         when(rowCountSQLSegment.getStopIndex()).thenReturn(26);
         selectStatement.setLimit(new Limit());
@@ -488,10 +488,10 @@ public final class ShardingSQLRewriterTest {
     
     @Test
     public void assertRewriteForLimitForNotRewriteLimit() {
-        SQLSegment offsetSQLSegment = mock(SQLSegment.class);
+        LimitValueSegment offsetSQLSegment = mock(LimitValueSegment.class);
         when(offsetSQLSegment.getStartIndex()).thenReturn(33);
         when(offsetSQLSegment.getStopIndex()).thenReturn(33);
-        SQLSegment rowCountSQLSegment = mock(SQLSegment.class);
+        LimitValueSegment rowCountSQLSegment = mock(LimitValueSegment.class);
         when(rowCountSQLSegment.getStartIndex()).thenReturn(36);
         when(rowCountSQLSegment.getStopIndex()).thenReturn(36);
         selectStatement.setLimit(new Limit());
@@ -510,10 +510,10 @@ public final class ShardingSQLRewriterTest {
     
     @Test
     public void assertRewriteForRowNumForNotRewriteLimit() {
-        SQLSegment offsetSQLSegment = mock(SQLSegment.class);
+        LimitValueSegment offsetSQLSegment = mock(LimitValueSegment.class);
         when(offsetSQLSegment.getStartIndex()).thenReturn(119);
         when(offsetSQLSegment.getStopIndex()).thenReturn(119);
-        SQLSegment rowCountSQLSegment = mock(SQLSegment.class);
+        LimitValueSegment rowCountSQLSegment = mock(LimitValueSegment.class);
         when(rowCountSQLSegment.getStartIndex()).thenReturn(98);
         when(rowCountSQLSegment.getStopIndex()).thenReturn(98);
         selectStatement.setLimit(new Limit());
@@ -533,10 +533,10 @@ public final class ShardingSQLRewriterTest {
     
     @Test
     public void assertRewriteForTopAndRowNumberForNotRewriteLimit() {
-        SQLSegment offsetSQLSegment = mock(SQLSegment.class);
+        LimitValueSegment offsetSQLSegment = mock(LimitValueSegment.class);
         when(offsetSQLSegment.getStartIndex()).thenReturn(123);
         when(offsetSQLSegment.getStopIndex()).thenReturn(123);
-        SQLSegment rowCountSQLSegment = mock(SQLSegment.class);
+        LimitValueSegment rowCountSQLSegment = mock(LimitValueSegment.class);
         when(rowCountSQLSegment.getStartIndex()).thenReturn(26);
         when(rowCountSQLSegment.getStopIndex()).thenReturn(26);
         selectStatement.setLimit(new Limit());

@@ -46,7 +46,7 @@ public final class RowCountTokenGenerator implements OptionalSQLTokenGenerator<S
         }
         if (isExistedOfLimitRowNum((SelectStatement) sqlStatement)) {
             LimitValue rowCount = ((SelectStatement) sqlStatement).getLimit().getRowCount();
-            return Optional.of(new RowCountToken(rowCount.getSqlSegment().getStartIndex(), rowCount.getSqlSegment().getStopIndex(), rowCount.getValue()));
+            return Optional.of(new RowCountToken(rowCount.getLimitValueSegment().getStartIndex(), rowCount.getLimitValueSegment().getStopIndex(), rowCount.getValue()));
         }
         return Optional.absent();
     }

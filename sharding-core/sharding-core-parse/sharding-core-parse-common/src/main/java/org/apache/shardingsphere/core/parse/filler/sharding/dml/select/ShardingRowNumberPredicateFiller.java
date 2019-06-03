@@ -25,6 +25,9 @@ import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.LimitValueSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.NumberLiteralLimitValueSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.ParameterMarkerLimitValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.OrPredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
@@ -120,7 +123,15 @@ public final class ShardingRowNumberPredicateFiller implements SQLSegmentFiller<
     }
     
     private LimitValue createLimitValue(final ExpressionSegment expression, final boolean boundOpened) {
-        return expression instanceof ParameterMarkerExpressionSegment ? new LimitValue(-1, ((ParameterMarkerExpressionSegment) expression).getParameterMarkerIndex(), expression, boundOpened)
-                : new LimitValue(((Number) ((LiteralExpressionSegment) expression).getLiterals()).intValue(), -1, expression, boundOpened);
+        return expression instanceof ParameterMarkerExpressionSegment
+                ? new LimitValue(-1, ((ParameterMarkerExpressionSegment) expression).getParameterMarkerIndex(), createLimitValueSegment(expression), boundOpened)
+                : new LimitValue(((Number) ((LiteralExpressionSegment) expression).getLiterals()).intValue(), -1, createLimitValueSegment(expression), boundOpened);
+    }
+    
+    private LimitValueSegment createLimitValueSegment(final ExpressionSegment expression) {
+        if (expression instanceof LiteralExpressionSegment) {
+            return new NumberLiteralLimitValueSegment(expression.getStartIndex(), expression.getStopIndex(), (Integer) ((LiteralExpressionSegment) expression).getLiterals());
+        }
+        return new ParameterMarkerLimitValueSegment(expression.getStartIndex(), expression.getStopIndex(), ((ParameterMarkerExpressionSegment) expression).getParameterMarkerIndex());
     }
 }
