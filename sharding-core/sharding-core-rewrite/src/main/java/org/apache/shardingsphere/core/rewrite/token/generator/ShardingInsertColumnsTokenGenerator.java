@@ -23,36 +23,50 @@ import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.token.impl.InsertColumnsToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
+import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Insert columns token generator.
+ * Sharding insert columns token generator.
  *
  * @author panjuan
  */
-public final class ShardingInsertColumnsTokenGenerator implements OptionalSQLTokenGenerator<EncryptRule> {
+public final class ShardingInsertColumnsTokenGenerator implements OptionalSQLTokenGenerator<ShardingRule> {
     
     @Override
-    public Optional<InsertColumnsToken> generateSQLToken(final SQLStatement sqlStatement, final EncryptRule encryptRule) {
+    public Optional<InsertColumnsToken> generateSQLToken(final SQLStatement sqlStatement, final ShardingRule shardingRule) {
         Optional<InsertColumnsSegment> insertColumnsSegment = sqlStatement.findSQLSegment(InsertColumnsSegment.class);
         if (!(sqlStatement instanceof InsertStatement && insertColumnsSegment.isPresent())) {
             return Optional.absent();
         }
-        return Optional.of(createInsertColumnsToken((InsertStatement) sqlStatement, insertColumnsSegment.get(), encryptRule));
+        return Optional.of(createInsertColumnsToken((InsertStatement) sqlStatement, insertColumnsSegment.get(), shardingRule));
     }
     
-    private InsertColumnsToken createInsertColumnsToken(final InsertStatement insertStatement, final InsertColumnsSegment segment, final EncryptRule encryptRule) {
-        InsertColumnsToken result;
-        if (segment.getColumns().isEmpty()) {
-            result = new InsertColumnsToken(segment.getStopIndex(), false);
-            result.getColumns().addAll(insertStatement.getColumnNames());
-        } else {
-            result = new InsertColumnsToken(segment.getStopIndex(), true);
-        }
-        fillWithQueryAssistedColumn(insertStatement, encryptRule, result);
+    private InsertColumnsToken createInsertColumnsToken(final InsertStatement insertStatement, final InsertColumnsSegment segment, final ShardingRule shardingRule) {
+        InsertColumnsToken result = createInsertColumnsToken(insertStatement, segment);
+        fillWithGeneratedKeyColumn(result, insertStatement, shardingRule);
+        fillWithQueryAssistedColumn(result, insertStatement, shardingRule.getEncryptRule());
         return result;
     }
     
-    private void fillWithQueryAssistedColumn(final InsertStatement insertStatement, final EncryptRule encryptRule, final InsertColumnsToken insertColumnsToken) {
+    private InsertColumnsToken createInsertColumnsToken(final InsertStatement insertStatement, final InsertColumnsSegment segment) {
+        if (!segment.getColumns().isEmpty()) {
+            return new InsertColumnsToken(segment.getStopIndex(), true);
+        }
+        InsertColumnsToken result = new InsertColumnsToken(segment.getStopIndex(), false);
+        result.getColumns().addAll(insertStatement.getColumnNames());
+        return result;
+    }
+    
+    private void fillWithGeneratedKeyColumn(final InsertColumnsToken insertColumnsToken, final InsertStatement insertStatement, final ShardingRule shardingRule) {
+        String tableName = insertStatement.getTables().getSingleTableName();
+        Optional<String> generateKeyColumn = shardingRule.findGenerateKeyColumnName(tableName);
+        Optional<String> generatedKeyColumn = generateKeyColumn.isPresent() && !insertStatement.getColumnNames().contains(generateKeyColumn.get()) ? generateKeyColumn : Optional.<String>absent();
+        if (generatedKeyColumn.isPresent()) {
+            insertColumnsToken.getColumns().add(generatedKeyColumn.get());
+        }
+    }
+    
+    private void fillWithQueryAssistedColumn(final InsertColumnsToken insertColumnsToken, final InsertStatement insertStatement, final EncryptRule encryptRule) {
         for (String each : insertStatement.getColumnNames()) {
             Optional<String> assistedColumnName = encryptRule.getEncryptorEngine().getAssistedQueryColumn(insertStatement.getTables().getSingleTableName(), each);
             if (assistedColumnName.isPresent()) {
