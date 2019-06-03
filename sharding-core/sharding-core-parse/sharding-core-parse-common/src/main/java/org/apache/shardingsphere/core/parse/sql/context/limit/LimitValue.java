@@ -39,6 +39,4 @@ public final class LimitValue {
     private int index;
     
     private LimitValueSegment limitValueSegment;
-    
-    private boolean boundOpened;
 }

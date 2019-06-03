@@ -41,6 +41,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralE
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.AggregationDistinctSelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.LimitValueSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.NumberLiteralLimitValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
@@ -85,8 +86,6 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public final class ShardingSQLRewriterTest {
     
@@ -352,15 +351,11 @@ public final class ShardingSQLRewriterTest {
     
     @Test
     public void assertRewriteForLimit() {
-        LimitValueSegment offsetSQLSegment = mock(LimitValueSegment.class);
-        when(offsetSQLSegment.getStartIndex()).thenReturn(33);
-        when(offsetSQLSegment.getStopIndex()).thenReturn(33);
-        LimitValueSegment rowCountSQLSegment = mock(LimitValueSegment.class);
-        when(rowCountSQLSegment.getStartIndex()).thenReturn(36);
-        when(rowCountSQLSegment.getStopIndex()).thenReturn(36);
+        LimitValueSegment offsetSQLSegment = new NumberLiteralLimitValueSegment(33, 33, 2, true);
+        LimitValueSegment rowCountSQLSegment = new NumberLiteralLimitValueSegment(36, 36, 2, false);
         selectStatement.setLimit(new Limit());
-        selectStatement.getLimit().setOffset(new LimitValue(2, -1, offsetSQLSegment, true));
-        selectStatement.getLimit().setRowCount(new LimitValue(2, -1, rowCountSQLSegment, false));
+        selectStatement.getLimit().setOffset(new LimitValue(2, -1, offsetSQLSegment));
+        selectStatement.getLimit().setRowCount(new LimitValue(2, -1, rowCountSQLSegment));
         selectStatement.addSQLToken(new TableToken(17, 23, "table_x", QuoteCharacter.NONE));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(selectStatement.getLimit());
@@ -372,15 +367,11 @@ public final class ShardingSQLRewriterTest {
     
     @Test
     public void assertRewriteForRowNum() {
-        LimitValueSegment offsetSQLSegment = mock(LimitValueSegment.class);
-        when(offsetSQLSegment.getStartIndex()).thenReturn(119);
-        when(offsetSQLSegment.getStopIndex()).thenReturn(119);
-        LimitValueSegment rowCountSQLSegment = mock(LimitValueSegment.class);
-        when(rowCountSQLSegment.getStartIndex()).thenReturn(98);
-        when(rowCountSQLSegment.getStopIndex()).thenReturn(98);
+        LimitValueSegment offsetSQLSegment = new NumberLiteralLimitValueSegment(119, 119, 2, true);
+        LimitValueSegment rowCountSQLSegment = new NumberLiteralLimitValueSegment(98, 98, 4, false);
         selectStatement.setLimit(new Limit());
-        selectStatement.getLimit().setOffset(new LimitValue(2, -1, offsetSQLSegment, true));
-        selectStatement.getLimit().setRowCount(new LimitValue(4, -1, rowCountSQLSegment, false));
+        selectStatement.getLimit().setOffset(new LimitValue(2, -1, offsetSQLSegment));
+        selectStatement.getLimit().setRowCount(new LimitValue(4, -1, rowCountSQLSegment));
         selectStatement.addSQLToken(new TableToken(68, 74, "table_x", QuoteCharacter.NONE));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(selectStatement.getLimit());
@@ -393,15 +384,11 @@ public final class ShardingSQLRewriterTest {
     
     @Test
     public void assertRewriteForTopAndRowNumber() {
-        LimitValueSegment offsetSQLSegment = mock(LimitValueSegment.class);
-        when(offsetSQLSegment.getStartIndex()).thenReturn(123);
-        when(offsetSQLSegment.getStopIndex()).thenReturn(123);
-        LimitValueSegment rowCountSQLSegment = mock(LimitValueSegment.class);
-        when(rowCountSQLSegment.getStartIndex()).thenReturn(26);
-        when(rowCountSQLSegment.getStopIndex()).thenReturn(26);
+        LimitValueSegment offsetSQLSegment = new NumberLiteralLimitValueSegment(123, 123, 2, true);
+        LimitValueSegment rowCountSQLSegment = new NumberLiteralLimitValueSegment(26, 26, 4, false);
         selectStatement.setLimit(new Limit());
-        selectStatement.getLimit().setOffset(new LimitValue(2, -1, offsetSQLSegment, true));
-        selectStatement.getLimit().setRowCount(new LimitValue(4, -1, rowCountSQLSegment, false));
+        selectStatement.getLimit().setOffset(new LimitValue(2, -1, offsetSQLSegment));
+        selectStatement.getLimit().setRowCount(new LimitValue(4, -1, rowCountSQLSegment));
         selectStatement.addSQLToken(new TableToken(85, 91, "table_x", QuoteCharacter.NONE));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(selectStatement.getLimit());
@@ -414,15 +401,11 @@ public final class ShardingSQLRewriterTest {
     
     @Test
     public void assertRewriteForLimitForMemoryGroupBy() {
-        LimitValueSegment offsetSQLSegment = mock(LimitValueSegment.class);
-        when(offsetSQLSegment.getStartIndex()).thenReturn(33);
-        when(offsetSQLSegment.getStopIndex()).thenReturn(33);
-        LimitValueSegment rowCountSQLSegment = mock(LimitValueSegment.class);
-        when(rowCountSQLSegment.getStartIndex()).thenReturn(36);
-        when(rowCountSQLSegment.getStopIndex()).thenReturn(36);
+        LimitValueSegment offsetSQLSegment = new NumberLiteralLimitValueSegment(33, 33, 2, true);
+        LimitValueSegment rowCountSQLSegment = new NumberLiteralLimitValueSegment(36, 36, 2, false);
         selectStatement.setLimit(new Limit());
-        selectStatement.getLimit().setOffset(new LimitValue(2, -1, offsetSQLSegment, true));
-        selectStatement.getLimit().setRowCount(new LimitValue(2, -1, rowCountSQLSegment, false));
+        selectStatement.getLimit().setOffset(new LimitValue(2, -1, offsetSQLSegment));
+        selectStatement.getLimit().setRowCount(new LimitValue(2, -1, rowCountSQLSegment));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, "id");
         columnSegment.setOwner(new TableSegment(0, 0, "x"));
         selectStatement.getOrderByItems().add(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.ASC, OrderDirection.ASC));
@@ -438,15 +421,11 @@ public final class ShardingSQLRewriterTest {
     
     @Test
     public void assertRewriteForRowNumForMemoryGroupBy() {
-        LimitValueSegment offsetSQLSegment = mock(LimitValueSegment.class);
-        when(offsetSQLSegment.getStartIndex()).thenReturn(119);
-        when(offsetSQLSegment.getStopIndex()).thenReturn(119);
-        LimitValueSegment rowCountSQLSegment = mock(LimitValueSegment.class);
-        when(rowCountSQLSegment.getStartIndex()).thenReturn(98);
-        when(rowCountSQLSegment.getStopIndex()).thenReturn(98);
+        LimitValueSegment offsetSQLSegment = new NumberLiteralLimitValueSegment(119, 119, 2, true);
+        LimitValueSegment rowCountSQLSegment = new NumberLiteralLimitValueSegment(98, 98, 4, false);
         selectStatement.setLimit(new Limit());
-        selectStatement.getLimit().setOffset(new LimitValue(2, -1, offsetSQLSegment, true));
-        selectStatement.getLimit().setRowCount(new LimitValue(4, -1, rowCountSQLSegment, false));
+        selectStatement.getLimit().setOffset(new LimitValue(2, -1, offsetSQLSegment));
+        selectStatement.getLimit().setRowCount(new LimitValue(4, -1, rowCountSQLSegment));
         selectStatement.addSQLToken(new TableToken(68, 74, "table_x", QuoteCharacter.NONE));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, "id");
         columnSegment.setOwner(new TableSegment(0, 0, "x"));
@@ -463,15 +442,11 @@ public final class ShardingSQLRewriterTest {
     
     @Test
     public void assertRewriteForTopAndRowNumberForMemoryGroupBy() {
-        LimitValueSegment offsetSQLSegment = mock(LimitValueSegment.class);
-        when(offsetSQLSegment.getStartIndex()).thenReturn(123);
-        when(offsetSQLSegment.getStopIndex()).thenReturn(123);
-        LimitValueSegment rowCountSQLSegment = mock(LimitValueSegment.class);
-        when(rowCountSQLSegment.getStartIndex()).thenReturn(26);
-        when(rowCountSQLSegment.getStopIndex()).thenReturn(26);
+        LimitValueSegment offsetSQLSegment = new NumberLiteralLimitValueSegment(123, 123, 2, true);
+        LimitValueSegment rowCountSQLSegment = new NumberLiteralLimitValueSegment(26, 26, 4, false);
         selectStatement.setLimit(new Limit());
-        selectStatement.getLimit().setOffset(new LimitValue(2, -1, offsetSQLSegment, true));
-        selectStatement.getLimit().setRowCount(new LimitValue(4, -1, rowCountSQLSegment, false));
+        selectStatement.getLimit().setOffset(new LimitValue(2, -1, offsetSQLSegment));
+        selectStatement.getLimit().setRowCount(new LimitValue(4, -1, rowCountSQLSegment));
         selectStatement.addSQLToken(new TableToken(85, 91, "table_x", QuoteCharacter.NONE));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, "id");
         columnSegment.setOwner(new TableSegment(0, 0, "x"));
@@ -488,15 +463,11 @@ public final class ShardingSQLRewriterTest {
     
     @Test
     public void assertRewriteForLimitForNotRewriteLimit() {
-        LimitValueSegment offsetSQLSegment = mock(LimitValueSegment.class);
-        when(offsetSQLSegment.getStartIndex()).thenReturn(33);
-        when(offsetSQLSegment.getStopIndex()).thenReturn(33);
-        LimitValueSegment rowCountSQLSegment = mock(LimitValueSegment.class);
-        when(rowCountSQLSegment.getStartIndex()).thenReturn(36);
-        when(rowCountSQLSegment.getStopIndex()).thenReturn(36);
+        LimitValueSegment offsetSQLSegment = new NumberLiteralLimitValueSegment(33, 33, 2, true);
+        LimitValueSegment rowCountSQLSegment = new NumberLiteralLimitValueSegment(36, 36, 2, false);
         selectStatement.setLimit(new Limit());
-        selectStatement.getLimit().setOffset(new LimitValue(2, -1, offsetSQLSegment, true));
-        selectStatement.getLimit().setRowCount(new LimitValue(2, -1, rowCountSQLSegment, false));
+        selectStatement.getLimit().setOffset(new LimitValue(2, -1, offsetSQLSegment));
+        selectStatement.getLimit().setRowCount(new LimitValue(2, -1, rowCountSQLSegment));
         selectStatement.addSQLToken(new TableToken(17, 23, "table_x", QuoteCharacter.NONE));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(selectStatement.getLimit());
@@ -510,15 +481,11 @@ public final class ShardingSQLRewriterTest {
     
     @Test
     public void assertRewriteForRowNumForNotRewriteLimit() {
-        LimitValueSegment offsetSQLSegment = mock(LimitValueSegment.class);
-        when(offsetSQLSegment.getStartIndex()).thenReturn(119);
-        when(offsetSQLSegment.getStopIndex()).thenReturn(119);
-        LimitValueSegment rowCountSQLSegment = mock(LimitValueSegment.class);
-        when(rowCountSQLSegment.getStartIndex()).thenReturn(98);
-        when(rowCountSQLSegment.getStopIndex()).thenReturn(98);
+        LimitValueSegment offsetSQLSegment = new NumberLiteralLimitValueSegment(119, 119, 2, true);
+        LimitValueSegment rowCountSQLSegment = new NumberLiteralLimitValueSegment(98, 98, 4, false);
         selectStatement.setLimit(new Limit());
-        selectStatement.getLimit().setOffset(new LimitValue(2, -1, offsetSQLSegment, true));
-        selectStatement.getLimit().setRowCount(new LimitValue(4, -1, rowCountSQLSegment, false));
+        selectStatement.getLimit().setOffset(new LimitValue(2, -1, offsetSQLSegment));
+        selectStatement.getLimit().setRowCount(new LimitValue(4, -1, rowCountSQLSegment));
         selectStatement.addSQLToken(new TableToken(68, 74, "table_x", QuoteCharacter.NONE));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(selectStatement.getLimit());
@@ -533,15 +500,11 @@ public final class ShardingSQLRewriterTest {
     
     @Test
     public void assertRewriteForTopAndRowNumberForNotRewriteLimit() {
-        LimitValueSegment offsetSQLSegment = mock(LimitValueSegment.class);
-        when(offsetSQLSegment.getStartIndex()).thenReturn(123);
-        when(offsetSQLSegment.getStopIndex()).thenReturn(123);
-        LimitValueSegment rowCountSQLSegment = mock(LimitValueSegment.class);
-        when(rowCountSQLSegment.getStartIndex()).thenReturn(26);
-        when(rowCountSQLSegment.getStopIndex()).thenReturn(26);
+        LimitValueSegment offsetSQLSegment = new NumberLiteralLimitValueSegment(123, 123, 2, true);
+        LimitValueSegment rowCountSQLSegment = new NumberLiteralLimitValueSegment(26, 26, 4, false);
         selectStatement.setLimit(new Limit());
-        selectStatement.getLimit().setOffset(new LimitValue(2, -1, offsetSQLSegment, true));
-        selectStatement.getLimit().setRowCount(new LimitValue(4, -1, rowCountSQLSegment, false));
+        selectStatement.getLimit().setOffset(new LimitValue(2, -1, offsetSQLSegment));
+        selectStatement.getLimit().setRowCount(new LimitValue(4, -1, rowCountSQLSegment));
         selectStatement.addSQLToken(new TableToken(85, 91, "table_x", QuoteCharacter.NONE));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(selectStatement.getLimit());

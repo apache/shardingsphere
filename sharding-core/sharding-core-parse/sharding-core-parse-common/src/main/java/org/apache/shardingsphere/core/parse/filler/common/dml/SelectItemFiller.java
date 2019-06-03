@@ -120,7 +120,7 @@ public final class SelectItemFiller implements SQLSegmentFiller<SelectItemSegmen
     }
     
     private LimitValue getTopValueSegment(final LimitValueSegment topValueSegment) {
-        return topValueSegment instanceof ParameterMarkerLimitValueSegment ? new LimitValue(-1, ((ParameterMarkerLimitValueSegment) topValueSegment).getParameterIndex(), topValueSegment, false)
-                : new LimitValue(((NumberLiteralLimitValueSegment) topValueSegment).getValue(), -1, topValueSegment, false);
+        return topValueSegment instanceof ParameterMarkerLimitValueSegment ? new LimitValue(-1, ((ParameterMarkerLimitValueSegment) topValueSegment).getParameterIndex(), topValueSegment)
+                : new LimitValue(((NumberLiteralLimitValueSegment) topValueSegment).getValue(), -1, topValueSegment);
     }
 }

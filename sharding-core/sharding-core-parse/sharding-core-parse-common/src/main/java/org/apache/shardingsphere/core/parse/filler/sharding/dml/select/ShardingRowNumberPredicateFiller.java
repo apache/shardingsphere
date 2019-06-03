@@ -124,14 +124,14 @@ public final class ShardingRowNumberPredicateFiller implements SQLSegmentFiller<
     
     private LimitValue createLimitValue(final ExpressionSegment expression, final boolean boundOpened) {
         return expression instanceof ParameterMarkerExpressionSegment
-                ? new LimitValue(-1, ((ParameterMarkerExpressionSegment) expression).getParameterMarkerIndex(), createLimitValueSegment(expression), boundOpened)
-                : new LimitValue(((Number) ((LiteralExpressionSegment) expression).getLiterals()).intValue(), -1, createLimitValueSegment(expression), boundOpened);
+                ? new LimitValue(-1, ((ParameterMarkerExpressionSegment) expression).getParameterMarkerIndex(), createLimitValueSegment(expression, boundOpened))
+                : new LimitValue(((Number) ((LiteralExpressionSegment) expression).getLiterals()).intValue(), -1, createLimitValueSegment(expression, boundOpened));
     }
     
-    private LimitValueSegment createLimitValueSegment(final ExpressionSegment expression) {
+    private LimitValueSegment createLimitValueSegment(final ExpressionSegment expression, final boolean boundOpened) {
         if (expression instanceof LiteralExpressionSegment) {
-            return new NumberLiteralLimitValueSegment(expression.getStartIndex(), expression.getStopIndex(), (Integer) ((LiteralExpressionSegment) expression).getLiterals());
+            return new NumberLiteralLimitValueSegment(expression.getStartIndex(), expression.getStopIndex(), (Integer) ((LiteralExpressionSegment) expression).getLiterals(), boundOpened);
         }
-        return new ParameterMarkerLimitValueSegment(expression.getStartIndex(), expression.getStopIndex(), ((ParameterMarkerExpressionSegment) expression).getParameterMarkerIndex());
+        return new ParameterMarkerLimitValueSegment(expression.getStartIndex(), expression.getStopIndex(), ((ParameterMarkerExpressionSegment) expression).getParameterMarkerIndex(), boundOpened);
     }
 }
