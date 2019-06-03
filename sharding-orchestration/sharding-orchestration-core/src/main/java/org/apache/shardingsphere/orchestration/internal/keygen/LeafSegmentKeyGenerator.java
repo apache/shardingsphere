@@ -21,6 +21,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.SneakyThrows;
 import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import org.apache.shardingsphere.orchestration.reg.zookeeper.curator.CuratorZookeeperRegistryCenter;
@@ -127,6 +128,7 @@ public final class LeafSegmentKeyGenerator implements ShardingKeyGenerator {
         });
     }
 
+    @SneakyThrows
     private long incrementCacheId(final String leafKey, final long step) {
         InterProcessMutex lock = leafRegistryCenter.initLock(leafKey);
         long result = Long.MIN_VALUE;
@@ -138,22 +140,14 @@ public final class LeafSegmentKeyGenerator implements ShardingKeyGenerator {
         return result;
     }
 
+    @SneakyThrows
     private void tryPutCacheId(final long id) {
-        try {
-            cacheIdQueue.put(id);
-        } catch (Exception ex) {
-            Thread.currentThread().interrupt();
-        }
+        cacheIdQueue.put(id);
     }
 
+    @SneakyThrows
     private long tryTakeCacheId() {
-        long id = Long.MIN_VALUE;
-        try {
-            id = cacheIdQueue.take();
-        } catch (Exception ex) {
-            Thread.currentThread().interrupt();
-        }
-        return id;
+        return cacheIdQueue.take();
     }
 
     private long updateCacheIdInCenter(final String leafKey, final long step) {

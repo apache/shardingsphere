@@ -21,6 +21,7 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.SneakyThrows;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.api.ACLProvider;
@@ -308,13 +309,9 @@ public final class CuratorZookeeperRegistryCenter implements RegistryCenter {
      * @param lock lock of key
      * @return get the lock or not
      */
+    @SneakyThrows
     public boolean tryLock(final InterProcessMutex lock) {
-        try {
-            return lock.acquire(5, TimeUnit.SECONDS);
-        } catch (Exception ex) {
-            CuratorZookeeperExceptionHandler.handleException(ex);
-            return Boolean.FALSE;
-        }
+        return lock.acquire(5, TimeUnit.SECONDS);
     }
 
     /**
@@ -322,12 +319,9 @@ public final class CuratorZookeeperRegistryCenter implements RegistryCenter {
      *
      * @param lock lock of key
      */
+    @SneakyThrows
     public void tryRelease(final InterProcessMutex lock) {
-        try {
-            lock.release();
-        } catch (Exception ex) {
-            CuratorZookeeperExceptionHandler.handleException(ex);
-        }
+        lock.release();
     }
 
 }
