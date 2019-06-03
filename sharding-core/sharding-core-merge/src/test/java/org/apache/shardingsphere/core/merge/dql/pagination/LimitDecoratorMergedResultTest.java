@@ -65,7 +65,7 @@ public final class LimitDecoratorMergedResultTest {
         }
         SelectStatement selectStatement = new SelectStatement();
         routeResult = new SQLRouteResult(selectStatement);
-        routeResult.setLimit(selectStatement.getLimit());
+        routeResult.setLimit(new Limit());
     }
     
     @Test

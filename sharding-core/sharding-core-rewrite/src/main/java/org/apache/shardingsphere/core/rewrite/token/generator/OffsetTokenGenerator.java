@@ -18,9 +18,6 @@
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.parse.sql.context.limit.Limit;
-import org.apache.shardingsphere.core.parse.sql.context.limit.LimitValue;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.LimitSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.LimitValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.NumberLiteralLimitValueSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
@@ -40,24 +37,17 @@ public final class OffsetTokenGenerator implements OptionalSQLTokenGenerator<Sha
         if (!(sqlStatement instanceof SelectStatement)) {
             return Optional.absent();
         }
-        if (isExistedOfNumberOffset(sqlStatement)) {
-            LimitValueSegment offset = sqlStatement.findSQLSegment(LimitSegment.class).get().getOffset().get();
-            return Optional.of(new OffsetToken(offset.getStartIndex(), offset.getStopIndex(), ((NumberLiteralLimitValueSegment) offset).getValue()));
-        }
-        if (isExistedOfLimitRowNum((SelectStatement) sqlStatement)) {
-            LimitValue offset = ((SelectStatement) sqlStatement).getLimit().getOffset();
-            return Optional.of(new OffsetToken(offset.getLimitValueSegment().getStartIndex(), offset.getLimitValueSegment().getStopIndex(), offset.getValue()));
-        }
-        return Optional.absent();
+        Optional<LimitValueSegment> offsetSegment = getLiteralOffsetSegment((SelectStatement) sqlStatement);
+        return offsetSegment.isPresent()
+                ? Optional.of(new OffsetToken(offsetSegment.get().getStartIndex(), offsetSegment.get().getStopIndex(), ((NumberLiteralLimitValueSegment) offsetSegment.get()).getValue()))
+                : Optional.<OffsetToken>absent();
     }
     
-    private boolean isExistedOfLimitRowNum(final SelectStatement sqlStatement) {
-        Limit limit = sqlStatement.getLimit();
-        return null != limit && null != limit.getOffset() && -1 != limit.getOffset().getValue();
+    private Optional<LimitValueSegment> getLiteralOffsetSegment(final SelectStatement selectStatement) {
+        return isLiteralOffset(selectStatement) ? selectStatement.getLimit().getOffset() : Optional.<LimitValueSegment>absent();
     }
     
-    private boolean isExistedOfNumberOffset(final SQLStatement sqlStatement) {
-        Optional<LimitSegment> limitSegment = sqlStatement.findSQLSegment(LimitSegment.class);
-        return limitSegment.isPresent() && limitSegment.get().getOffset().isPresent() && limitSegment.get().getOffset().get() instanceof NumberLiteralLimitValueSegment;
+    private boolean isLiteralOffset(final SelectStatement selectStatement) {
+        return null != selectStatement.getLimit() && selectStatement.getLimit().getOffset().isPresent() && selectStatement.getLimit().getOffset().get() instanceof NumberLiteralLimitValueSegment;
     }
 }
