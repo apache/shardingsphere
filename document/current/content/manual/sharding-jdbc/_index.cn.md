@@ -31,7 +31,6 @@ Sharding-JDBC的优势在于对Java应用的友好度。
 
 ## 内部结构
 
-
 ![配置领域模型类图](https://shardingsphere.apache.org/document/current/img/config_domain.png)
 
 #### 黄色部分
