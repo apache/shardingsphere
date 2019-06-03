@@ -15,23 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.integrate.jaxb.token;
+package org.apache.shardingsphere.core.rewrite.token.pojo;
 
 import lombok.Getter;
-import lombok.Setter;
+import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
+import org.apache.shardingsphere.core.parse.sql.token.Substitutable;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-
+/**
+ * Offset token for limit.
+ *
+ * @author zhangliang
+ * @author panjuan
+ */
 @Getter
-@Setter
-@XmlAccessorType(XmlAccessType.FIELD)
-public final class ExpectedRowCountToken {
+public final class OffsetToken extends SQLToken implements Substitutable {
     
-    @XmlAttribute(name = "begin-position")
-    private int beginPosition;
+    private final int offset;
     
-    @XmlAttribute(name = "row-count")
-    private int rowCount;
+    private final int stopIndex;
+    
+    public OffsetToken(final int startIndex, final int stopIndex, final int offset) {
+        super(startIndex);
+        this.offset = offset;
+        this.stopIndex = stopIndex;
+    }
 }

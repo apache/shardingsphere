@@ -29,8 +29,8 @@ public final class ParameterMarkerLimitValueSegment extends LimitValueSegment {
     
     private final int parameterIndex;
     
-    public ParameterMarkerLimitValueSegment(final int startIndex, final int stopIndex, final int parameterIndex) {
-        super(startIndex, stopIndex);
+    public ParameterMarkerLimitValueSegment(final int startIndex, final int stopIndex, final int parameterIndex, final boolean boundOpened) {
+        super(startIndex, stopIndex, boundOpened);
         this.parameterIndex = parameterIndex;
     }
 }

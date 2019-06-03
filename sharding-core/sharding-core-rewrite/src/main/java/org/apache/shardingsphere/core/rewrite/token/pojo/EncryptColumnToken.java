@@ -15,23 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.integrate.jaxb.token;
+package org.apache.shardingsphere.core.rewrite.token.pojo;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.ToString;
+import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
+import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
+import org.apache.shardingsphere.core.parse.sql.token.Substitutable;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-
+/**
+ * Encrypt column token.
+ *
+ * @author panjuan
+ */
 @Getter
-@Setter
-@XmlAccessorType(XmlAccessType.FIELD)
-public final class ExpectedOffsetToken {
+@ToString
+public final class EncryptColumnToken extends SQLToken implements Substitutable {
     
-    @XmlAttribute(name = "begin-position")
-    private int beginPosition;
+    private final Column column;
     
-    @XmlAttribute(name = "offset")
-    private int offset;
+    private final boolean isInWhere;
+    
+    private final int stopIndex;
+    
+    public EncryptColumnToken(final int startIndex, final int stopIndex, final Column column, final boolean isInWhere) {
+        super(startIndex);
+        this.column = column;
+        this.isInWhere = isInWhere;
+        this.stopIndex = stopIndex;
+    }
 }
