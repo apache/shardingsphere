@@ -34,8 +34,7 @@ import java.util.concurrent.SynchronousQueue;
 /**
  * Created by Jason on 2019/4/28.
  */
-public class LeafSegmentKeyGenerator implements ShardingKeyGenerator {
-
+public final class LeafSegmentKeyGenerator implements ShardingKeyGenerator {
 
     private static final String TYPE = "LEAFSEGMENT";
 
@@ -49,7 +48,7 @@ public class LeafSegmentKeyGenerator implements ShardingKeyGenerator {
 
     private static final String INITIAL_VALUE = "1";
 
-    private static final float THRESHOLD=0.5F;
+    private static final float THRESHOLD = 0.5F;
 
     private boolean isInitialized = Boolean.FALSE;
 
@@ -66,7 +65,6 @@ public class LeafSegmentKeyGenerator implements ShardingKeyGenerator {
     @Getter
     @Setter
     private Properties properties = new Properties();
-
 
     @Override
     public String getType() {
@@ -85,114 +83,116 @@ public class LeafSegmentKeyGenerator implements ShardingKeyGenerator {
         return id;
     }
 
-    private void initLeafSegmentKeyGenerator(final String leafKey){
+    private void initLeafSegmentKeyGenerator(final String leafKey) {
         leafRegistryCenter = new CuratorZookeeperRegistryCenter();
         RegistryCenterConfiguration leafConfiguration = getRegistryCenterConfiguration();
         leafRegistryCenter.init(leafConfiguration);
-        if(leafRegistryCenter.isExisted(leafKey)){
-            id = incrementCacheId(leafKey,getStep());
-        }else{
+        if (leafRegistryCenter.isExisted(leafKey)) {
+            id = incrementCacheId(leafKey, getStep());
+        } else {
             id = getInitialValue();
-            leafRegistryCenter.persist(leafKey,String.valueOf(id));
+            leafRegistryCenter.persist(leafKey, String.valueOf(id));
         }
         incrementCacheIdExecutor = Executors.newSingleThreadExecutor();
         cacheIdQueue = new SynchronousQueue<>();
         step = getStep();
     }
 
-
-    private long generateKeyWhenLeafKeyStoredInCenter(final String leafKey){
+    private long generateKeyWhenLeafKeyStoredInCenter(final String leafKey) {
         ++id;
-        if(((id%step) >= (step*THRESHOLD-1)) && cacheIdQueue.isEmpty()){
-            incrementCacheIdAsynchronous(leafKey,step);
+        if (((id % step) >= (step * THRESHOLD - 1)) && cacheIdQueue.isEmpty()) {
+            incrementCacheIdAsynchronous(leafKey, step);
         }
-        if((id%step) == (step-1)){
+        if ((id % step) == (step - 1)) {
             id = tryTakeCacheId();
         }
         return id;
     }
 
-    private RegistryCenterConfiguration getRegistryCenterConfiguration(){
-        RegistryCenterConfiguration registryCenterConfiguration = new RegistryCenterConfiguration(TYPE,properties);
+    private RegistryCenterConfiguration getRegistryCenterConfiguration() {
+        RegistryCenterConfiguration registryCenterConfiguration = new RegistryCenterConfiguration(TYPE, properties);
         registryCenterConfiguration.setNamespace(NAMESPACE);
         registryCenterConfiguration.setServerLists(getServerList());
         registryCenterConfiguration.setDigest(getDigest());
         return registryCenterConfiguration;
     }
 
-    private void incrementCacheIdAsynchronous(final String leafKey,final long step){
+    private void incrementCacheIdAsynchronous(final String leafKey, final long step) {
         incrementCacheIdExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                long id = incrementCacheId(leafKey,step);
+                long id = incrementCacheId(leafKey, step);
                 tryPutCacheId(id);
             }
         });
     }
 
-    private long incrementCacheId(final String leafKey,final long step){
+    private long incrementCacheId(final String leafKey, final long step) {
         InterProcessMutex lock = leafRegistryCenter.initLock(leafKey);
-        long result=Long.MIN_VALUE;
+        long result = Long.MIN_VALUE;
         boolean lockIsAcquired = leafRegistryCenter.tryLock(lock);
-        if ( lockIsAcquired ) {
+        if (lockIsAcquired) {
             result = updateCacheIdInCenter(leafKey, step);
             leafRegistryCenter.tryRelease(lock);
         }
-        return  result;
+        return result;
     }
 
-
-    private void tryPutCacheId(long id){
-        try{
+    private void tryPutCacheId(final long id) {
+        try {
             cacheIdQueue.put(id);
-        }catch (Exception ex){
+        } catch (Exception ex) {
             Thread.currentThread().interrupt();
         }
     }
 
-    private long tryTakeCacheId(){
+    private long tryTakeCacheId() {
         long id = Long.MIN_VALUE;
-        try{
+        try {
             id = cacheIdQueue.take();
-        }catch (Exception ex){
+        } catch (Exception ex) {
             Thread.currentThread().interrupt();
         }
         return id;
     }
 
-    private long updateCacheIdInCenter(final String leafKey,final long step){
-        long cacheId = Long.parseLong(leafRegistryCenter.getDirectly(leafKey));
-        long result = cacheId+step;
+    private long updateCacheIdInCenter(final String leafKey, final long step) {
+        String cacheIdInString = leafRegistryCenter.getDirectly(leafKey);
+        if (Strings.isNullOrEmpty(cacheIdInString)) {
+            return Long.MIN_VALUE;
+        }
+        long cacheId = Long.parseLong(cacheIdInString);
+        long result = cacheId + step;
         leafRegistryCenter.update(leafKey, String.valueOf(result));
         return result;
     }
 
-    private long getStep(){
-        long step = Long.parseLong(properties.getProperty("step",STEP));
+    private long getStep() {
+        long step = Long.parseLong(properties.getProperty("step", STEP));
         Preconditions.checkArgument(step > 0L && step < Long.MAX_VALUE);
         return step;
     }
 
-    private long getInitialValue(){
-        long initialValue = Long.parseLong(properties.getProperty("initialValue",INITIAL_VALUE));
+    private long getInitialValue() {
+        long initialValue = Long.parseLong(properties.getProperty("initialValue", INITIAL_VALUE));
         Preconditions.checkArgument(initialValue >= 0L && initialValue < Long.MAX_VALUE);
         return initialValue;
     }
 
-    private String getLeafKey(){
+    private String getLeafKey() {
         String leafKey = properties.getProperty("leaf.key");
         Preconditions.checkArgument(!Strings.isNullOrEmpty(leafKey));
         Preconditions.checkArgument(leafKey.matches(REGULAR_PATTERN));
-        return SLANTING_BAR+leafKey;
+        return SLANTING_BAR + leafKey;
     }
 
-    private String getServerList(){
+    private String getServerList() {
         String serverList = properties.getProperty("serverList");
         Preconditions.checkArgument(!Strings.isNullOrEmpty(serverList));
         return serverList;
     }
 
-    private String getDigest(){
+    private String getDigest() {
         return properties.getProperty("digest");
     }
 

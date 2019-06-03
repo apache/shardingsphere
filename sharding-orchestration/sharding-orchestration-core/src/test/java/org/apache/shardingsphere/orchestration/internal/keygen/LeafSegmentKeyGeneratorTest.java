@@ -19,7 +19,6 @@ package org.apache.shardingsphere.orchestration.internal.keygen;
 
 import lombok.SneakyThrows;
 import org.apache.curator.test.TestingServer;
-import org.apache.shardingsphere.orchestration.reg.exception.RegistryCenterException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -130,23 +129,39 @@ public class LeafSegmentKeyGeneratorTest {
         int threadNumber = Runtime.getRuntime().availableProcessors() << 1;
         ExecutorService executor = Executors.newFixedThreadPool(threadNumber);
         int taskNumber = threadNumber << 2;
-        Properties properties = new Properties();
-        properties.setProperty("serverList","127.0.0.1:2181");
-        properties.setProperty("initialValue","100001");
-        properties.setProperty("step","3");
-        properties.setProperty("digest","user1:98");
-        properties.setProperty("leaf.key","test_table_4");
-        leafSegmentKeyGenerator.setProperties(properties);
-        Set<Comparable<?>> actual = new HashSet<>();
+        Properties propertiesBefore = new Properties();
+        propertiesBefore.setProperty("serverList","127.0.0.1:2181");
+        propertiesBefore.setProperty("initialValue","100001");
+        propertiesBefore.setProperty("step","3");
+        propertiesBefore.setProperty("digest","user2:1231");
+        propertiesBefore.setProperty("leaf.key","test_table_3");
+        leafSegmentKeyGenerator.setProperties(propertiesBefore);
+        Set<Comparable<?>> actualBefore = new HashSet<>();
         for (int i = 0; i < taskNumber; i++) {
-            actual.add(executor.submit(new Callable<Comparable<?>>() {
+            actualBefore.add(executor.submit(new Callable<Comparable<?>>() {
                 @Override
                 public Comparable<?> call() {
                     return leafSegmentKeyGenerator.generateKey();
                 }
             }).get());
         }
-        assertThat(actual.size(), is(taskNumber));
+        Properties propertiesAfter = new Properties();
+        propertiesAfter.setProperty("serverList","127.0.0.1:2181");
+        propertiesAfter.setProperty("initialValue","100001");
+        propertiesAfter.setProperty("step","3");
+        propertiesAfter.setProperty("digest","user2:98");
+        propertiesAfter.setProperty("leaf.key","test_table_4");
+        leafSegmentKeyGenerator.setProperties(propertiesAfter);
+        Set<Comparable<?>> actualAfter = new HashSet<>();
+        for (int i = 0; i < taskNumber; i++) {
+            actualAfter.add(executor.submit(new Callable<Comparable<?>>() {
+                @Override
+                public Comparable<?> call() {
+                    return leafSegmentKeyGenerator.generateKey();
+                }
+            }).get());
+        }
+        assertThat(actualAfter.size(), is(taskNumber));
     }
 
     @Test
@@ -198,7 +213,7 @@ public class LeafSegmentKeyGeneratorTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void assertSetStepFailureWhenNegative(){
+    public void assertSetStepFailureWhenNegative() {
         Properties properties = new Properties();
         properties.setProperty("serverList","127.0.0.1:2181");
         properties.setProperty("step", String.valueOf(-1L));
@@ -210,7 +225,7 @@ public class LeafSegmentKeyGeneratorTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void assertSetStepFailureWhenZero(){
+    public void assertSetStepFailureWhenZero() {
         Properties properties = new Properties();
         properties.setProperty("serverList","127.0.0.1:2181");
         properties.setProperty("step", String.valueOf(0L));
@@ -222,7 +237,7 @@ public class LeafSegmentKeyGeneratorTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void assertSetStepFailureWhenTooMuch(){
+    public void assertSetStepFailureWhenTooMuch() {
         Properties properties = new Properties();
         properties.setProperty("serverList","127.0.0.1:2181");
         properties.setProperty("step", String.valueOf(Long.MAX_VALUE));

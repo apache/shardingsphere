@@ -28,6 +28,7 @@ import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.TreeCache;
 import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
 import org.apache.curator.framework.recipes.cache.TreeCacheListener;
+import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.utils.CloseableUtils;
 import org.apache.shardingsphere.orchestration.reg.api.RegistryCenter;
@@ -244,11 +245,11 @@ public final class CuratorZookeeperRegistryCenter implements RegistryCenter {
     private ChangedType getChangedType(final TreeCacheEvent event) {
         switch (event.getType()) {
             case NODE_UPDATED:
-                return DataChangedEvent.ChangedType.UPDATED;
+                return ChangedType.UPDATED;
             case NODE_REMOVED:
-                return DataChangedEvent.ChangedType.DELETED;
+                return ChangedType.DELETED;
             default:
-                return DataChangedEvent.ChangedType.IGNORED;
+                return ChangedType.IGNORED;
         }
     }
     
@@ -290,4 +291,43 @@ public final class CuratorZookeeperRegistryCenter implements RegistryCenter {
     public String getType() {
         return "zookeeper";
     }
+
+    /**
+     * Initialize the lock of the key.
+     *
+     * @param key key of data
+     * @return the lock of the key
+     */
+    public InterProcessMutex initLock(final String key) {
+        return new InterProcessMutex(client, key);
+    }
+
+    /**
+     * Try to get the lock of the key.
+     *
+     * @param lock lock of key
+     * @return get the lock or not
+     */
+    public boolean tryLock(final InterProcessMutex lock) {
+        try {
+            return lock.acquire(5, TimeUnit.SECONDS);
+        } catch (Exception ex) {
+            CuratorZookeeperExceptionHandler.handleException(ex);
+            return Boolean.FALSE;
+        }
+    }
+
+    /**
+     * Try to release the lock of the key.
+     *
+     * @param lock lock of key
+     */
+    public void tryRelease(final InterProcessMutex lock) {
+        try {
+            lock.release();
+        } catch (Exception ex) {
+            CuratorZookeeperExceptionHandler.handleException(ex);
+        }
+    }
+
 }
