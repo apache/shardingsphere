@@ -242,15 +242,15 @@ public final class CuratorZookeeperRegistryCenter implements RegistryCenter {
             }
         });
     }
-    
+
     private ChangedType getChangedType(final TreeCacheEvent event) {
         switch (event.getType()) {
             case NODE_UPDATED:
-                return ChangedType.UPDATED;
+                return DataChangedEvent.ChangedType.UPDATED;
             case NODE_REMOVED:
-                return ChangedType.DELETED;
+                return DataChangedEvent.ChangedType.DELETED;
             default:
-                return ChangedType.IGNORED;
+                return DataChangedEvent.ChangedType.IGNORED;
         }
     }
     
