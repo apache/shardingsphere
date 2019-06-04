@@ -537,9 +537,6 @@ public final class ShardingSQLRewriterTest {
         List<Object> parameters = new ArrayList<>(2);
         parameters.add(1);
         parameters.add("x");
-        selectStatement.addSQLToken(new TableToken(7, 13, "table_x", QuoteCharacter.NONE));
-        selectStatement.addSQLToken(new TableToken(31, 37, "table_x", QuoteCharacter.NONE));
-        selectStatement.addSQLToken(new TableToken(58, 64, "table_x", QuoteCharacter.NONE));
         selectStatement.getTables().add(new Table("table_x", "x"));
         selectStatement.getTables().add(new Table("table_y", "y"));
         routeResult = new SQLRouteResult(selectStatement);

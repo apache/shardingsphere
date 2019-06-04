@@ -21,7 +21,6 @@ import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.parse.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
-import org.apache.shardingsphere.core.parse.sql.token.Substitutable;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 /**

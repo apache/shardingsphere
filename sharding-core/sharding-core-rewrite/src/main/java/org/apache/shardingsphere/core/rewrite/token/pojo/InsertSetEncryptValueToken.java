@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.rewrite.token.pojo;
 
 import lombok.Getter;
 import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
-import org.apache.shardingsphere.core.parse.sql.token.Substitutable;
 
 /**
  * Insert set encrypt value token.
