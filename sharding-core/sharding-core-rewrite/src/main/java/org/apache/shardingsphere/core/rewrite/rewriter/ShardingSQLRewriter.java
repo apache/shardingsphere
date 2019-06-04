@@ -20,12 +20,10 @@ package org.apache.shardingsphere.core.rewrite.rewriter;
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.DatabaseType;
-import org.apache.shardingsphere.core.parse.sql.context.limit.Limit;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.TextOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
-import org.apache.shardingsphere.core.rewrite.token.pojo.OffsetToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.RowCountToken;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
@@ -39,11 +37,13 @@ import org.apache.shardingsphere.core.rewrite.placeholder.SelectItemsPlaceholder
 import org.apache.shardingsphere.core.rewrite.placeholder.TablePlaceholder;
 import org.apache.shardingsphere.core.rewrite.token.pojo.AggregationDistinctToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.IndexToken;
+import org.apache.shardingsphere.core.rewrite.token.pojo.OffsetToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.OrderByToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SelectItemPrefixToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SelectItemsToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.TableToken;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
+import org.apache.shardingsphere.core.route.limit.Limit;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**

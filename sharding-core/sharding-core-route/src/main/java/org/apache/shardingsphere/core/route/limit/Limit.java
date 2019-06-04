@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.context.limit;
+package org.apache.shardingsphere.core.route.limit;
 
 import lombok.Getter;
 import lombok.Setter;

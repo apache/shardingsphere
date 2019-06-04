@@ -33,10 +33,10 @@ import org.apache.shardingsphere.core.merge.dql.orderby.OrderByStreamMergedResul
 import org.apache.shardingsphere.core.merge.dql.pagination.LimitDecoratorMergedResult;
 import org.apache.shardingsphere.core.merge.dql.pagination.RowNumberDecoratorMergedResult;
 import org.apache.shardingsphere.core.merge.dql.pagination.TopAndRowNumberDecoratorMergedResult;
-import org.apache.shardingsphere.core.parse.sql.context.limit.Limit;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
+import org.apache.shardingsphere.core.route.limit.Limit;
 
 import java.sql.SQLException;
 import java.util.ArrayList;

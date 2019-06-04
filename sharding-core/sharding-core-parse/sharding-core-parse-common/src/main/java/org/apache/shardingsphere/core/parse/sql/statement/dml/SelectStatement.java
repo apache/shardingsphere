@@ -55,6 +55,12 @@ import java.util.Set;
 @ToString(callSuper = true, exclude = "parentStatement")
 public final class SelectStatement extends DQLStatement {
     
+    private final Set<SelectItem> items = new LinkedHashSet<>();
+    
+    private final List<OrderByItemSegment> groupByItems = new LinkedList<>();
+    
+    private final List<OrderByItemSegment> orderByItems = new LinkedList<>();
+    
     private boolean containStar;
     
     private int firstSelectItemStartIndex;
@@ -62,12 +68,6 @@ public final class SelectStatement extends DQLStatement {
     private int selectListStopIndex;
     
     private int groupByLastIndex;
-    
-    private final Set<SelectItem> items = new LinkedHashSet<>();
-    
-    private final List<OrderByItemSegment> groupByItems = new LinkedList<>();
-    
-    private final List<OrderByItemSegment> orderByItems = new LinkedList<>();
     
     private LimitSegment limit;
     
