@@ -32,12 +32,16 @@ import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
 import org.apache.shardingsphere.core.parse.entry.ShardingSQLParseEntry;
 import org.apache.shardingsphere.core.parse.hook.ParsingHook;
 import org.apache.shardingsphere.core.parse.hook.SPIParsingHook;
-import org.apache.shardingsphere.core.parse.sql.context.limit.Limit;
-import org.apache.shardingsphere.core.parse.sql.context.limit.LimitValue;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.LimitSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.LimitValueSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.NumberLiteralLimitValueSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.ParameterMarkerLimitValueSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
+import org.apache.shardingsphere.core.route.limit.Limit;
+import org.apache.shardingsphere.core.route.limit.LimitValue;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 import org.apache.shardingsphere.core.rule.BindingTableRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -187,19 +191,26 @@ public final class ParsingSQLRouter implements ShardingRouter {
     
     private Limit getProcessedLimit(final List<Object> parameters, final SelectStatement selectStatement) {
         boolean isNeedFetchAll = (!selectStatement.getGroupByItems().isEmpty() || !selectStatement.getAggregationSelectItems().isEmpty()) && !selectStatement.isSameGroupByAndOrderByItems();
-        Limit result = cloneLimit(selectStatement.getLimit());
+        Limit result = createLimit(selectStatement.getLimit());
         result.processParameters(parameters, isNeedFetchAll, databaseType.name());
         return result;
     }
     
-    private Limit cloneLimit(final Limit limit) {
+    private Limit createLimit(final LimitSegment limitSegment) {
         Limit result = new Limit();
-        if (null != limit.getOffset()) {
-            result.setOffset(new LimitValue(limit.getOffset().getValue(), limit.getOffset().getIndex(), limit.getOffset().getSqlSegment(), limit.getOffset().isBoundOpened()));
+        if (limitSegment.getOffset().isPresent()) {
+            result.setOffset(createLimitValue(limitSegment.getOffset().get()));
         }
-        if (null != limit.getRowCount()) {
-            result.setRowCount(new LimitValue(limit.getRowCount().getValue(), limit.getRowCount().getIndex(), limit.getRowCount().getSqlSegment(), limit.getRowCount().isBoundOpened()));
+        if (limitSegment.getRowCount().isPresent()) {
+            result.setRowCount(createLimitValue(limitSegment.getRowCount().get()));
         }
         return result; 
+    }
+    
+    private LimitValue createLimitValue(final LimitValueSegment limitValueSegment) {
+        if (limitValueSegment instanceof ParameterMarkerLimitValueSegment) {
+            return new LimitValue(-1, ((ParameterMarkerLimitValueSegment) limitValueSegment).getParameterIndex(), limitValueSegment);
+        }
+        return new LimitValue(((NumberLiteralLimitValueSegment) limitValueSegment).getValue(), -1, limitValueSegment);
     }
 }

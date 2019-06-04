@@ -19,12 +19,14 @@ package org.apache.shardingsphere.core.parse.filler.sharding.dml.select;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.sql.context.limit.Limit;
-import org.apache.shardingsphere.core.parse.sql.context.limit.LimitValue;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.LimitSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.LimitValueSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.NumberLiteralLimitValueSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.ParameterMarkerLimitValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.OrPredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
@@ -96,31 +98,34 @@ public final class ShardingRowNumberPredicateFiller implements SQLSegmentFiller<
     }
     
     private void fillLimit(final SelectStatement selectStatement, final Collection<PredicateSegment> rowNumberPredicates) {
-        Limit limit = new Limit();
+        LimitValueSegment rowCount = null;
+        LimitValueSegment offset = null;
         for (PredicateSegment each : rowNumberPredicates) {
             ExpressionSegment expression = ((PredicateCompareRightValue) each.getRightValue()).getExpression();
             switch (((PredicateCompareRightValue) each.getRightValue()).getOperator()) {
                 case "<":
-                    limit.setRowCount(createLimitValue(expression, false));
+                    rowCount = createLimitValueSegment(expression, false);
                     break;
                 case "<=":
-                    limit.setRowCount(createLimitValue(expression, true));
+                    rowCount = createLimitValueSegment(expression, true);
                     break;
                 case ">":
-                    limit.setOffset(createLimitValue(expression, false));
+                    offset = createLimitValueSegment(expression, false);
                     break;
                 case ">=":
-                    limit.setOffset(createLimitValue(expression, true));
+                    offset = createLimitValueSegment(expression, true);
                     break;
                 default:
                     break;
             }
         }
-        selectStatement.setLimit(limit);
+        selectStatement.setLimit(new LimitSegment(-1, -1, rowCount, offset));
     }
     
-    private LimitValue createLimitValue(final ExpressionSegment expression, final boolean boundOpened) {
-        return expression instanceof ParameterMarkerExpressionSegment ? new LimitValue(-1, ((ParameterMarkerExpressionSegment) expression).getParameterMarkerIndex(), expression, boundOpened)
-                : new LimitValue(((Number) ((LiteralExpressionSegment) expression).getLiterals()).intValue(), -1, expression, boundOpened);
+    private LimitValueSegment createLimitValueSegment(final ExpressionSegment expression, final boolean boundOpened) {
+        if (expression instanceof LiteralExpressionSegment) {
+            return new NumberLiteralLimitValueSegment(expression.getStartIndex(), expression.getStopIndex(), (Integer) ((LiteralExpressionSegment) expression).getLiterals(), boundOpened);
+        }
+        return new ParameterMarkerLimitValueSegment(expression.getStartIndex(), expression.getStopIndex(), ((ParameterMarkerExpressionSegment) expression).getParameterMarkerIndex(), boundOpened);
     }
 }

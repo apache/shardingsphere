@@ -18,9 +18,6 @@
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.parse.sql.context.limit.Limit;
-import org.apache.shardingsphere.core.parse.sql.context.limit.LimitValue;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.LimitSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.LimitValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.NumberLiteralLimitValueSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
@@ -40,24 +37,17 @@ public final class RowCountTokenGenerator implements OptionalSQLTokenGenerator<S
         if (!(sqlStatement instanceof SelectStatement)) {
             return Optional.absent();
         }
-        if (isExistedOfNumberRowCount(sqlStatement)) {
-            LimitValueSegment rowCount = sqlStatement.findSQLSegment(LimitSegment.class).get().getRowCount().get();
-            return Optional.of(new RowCountToken(rowCount.getStartIndex(), rowCount.getStopIndex(), ((NumberLiteralLimitValueSegment) rowCount).getValue()));
-        }
-        if (isExistedOfLimitRowNum((SelectStatement) sqlStatement)) {
-            LimitValue rowCount = ((SelectStatement) sqlStatement).getLimit().getRowCount();
-            return Optional.of(new RowCountToken(rowCount.getSqlSegment().getStartIndex(), rowCount.getSqlSegment().getStopIndex(), rowCount.getValue()));
-        }
-        return Optional.absent();
+        Optional<LimitValueSegment> rowCountSegment = getLiteralRowCountSegment((SelectStatement) sqlStatement);
+        return rowCountSegment.isPresent()
+                ? Optional.of(new RowCountToken(rowCountSegment.get().getStartIndex(), rowCountSegment.get().getStopIndex(), ((NumberLiteralLimitValueSegment) rowCountSegment.get()).getValue()))
+                : Optional.<RowCountToken>absent();
     }
     
-    private boolean isExistedOfLimitRowNum(final SelectStatement sqlStatement) {
-        Limit limit = sqlStatement.getLimit();
-        return null != limit && null != limit.getRowCount() && -1 != limit.getRowCount().getValue();
+    private Optional<LimitValueSegment> getLiteralRowCountSegment(final SelectStatement selectStatement) {
+        return isLiteralRowCount(selectStatement) ? selectStatement.getLimit().getRowCount() : Optional.<LimitValueSegment>absent();
     }
     
-    private boolean isExistedOfNumberRowCount(final SQLStatement sqlStatement) {
-        Optional<LimitSegment> limitSegment = sqlStatement.findSQLSegment(LimitSegment.class);
-        return limitSegment.isPresent() && limitSegment.get().getRowCount().isPresent() && limitSegment.get().getRowCount().get() instanceof NumberLiteralLimitValueSegment;
+    private boolean isLiteralRowCount(final SelectStatement selectStatement) {
+        return null != selectStatement.getLimit() && selectStatement.getLimit().getRowCount().isPresent() && selectStatement.getLimit().getRowCount().get() instanceof NumberLiteralLimitValueSegment;
     }
 }

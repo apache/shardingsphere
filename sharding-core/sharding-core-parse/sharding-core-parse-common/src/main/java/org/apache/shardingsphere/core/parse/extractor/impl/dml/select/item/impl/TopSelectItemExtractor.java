@@ -62,11 +62,11 @@ public final class TopSelectItemExtractor implements OptionalSQLSegmentExtractor
     private Optional<LimitValueSegment> createLimitValueSegment(final ExpressionSegment topExpr) {
         if (topExpr instanceof ParameterMarkerExpressionSegment) {
             return Optional.<LimitValueSegment>of(
-                    new ParameterMarkerLimitValueSegment(topExpr.getStartIndex(), topExpr.getStopIndex(), ((ParameterMarkerExpressionSegment) topExpr).getParameterMarkerIndex()));
+                    new ParameterMarkerLimitValueSegment(topExpr.getStartIndex(), topExpr.getStopIndex(), ((ParameterMarkerExpressionSegment) topExpr).getParameterMarkerIndex(), false));
         }
         if (topExpr instanceof LiteralExpressionSegment && ((LiteralExpressionSegment) topExpr).getLiterals() instanceof Number) {
             return Optional.<LimitValueSegment>of(
-                    new NumberLiteralLimitValueSegment(topExpr.getStartIndex(), topExpr.getStopIndex(), ((Number) ((LiteralExpressionSegment) topExpr).getLiterals()).intValue()));
+                    new NumberLiteralLimitValueSegment(topExpr.getStartIndex(), topExpr.getStopIndex(), ((Number) ((LiteralExpressionSegment) topExpr).getLiterals()).intValue(), false));
         }
         return Optional.absent();
     }

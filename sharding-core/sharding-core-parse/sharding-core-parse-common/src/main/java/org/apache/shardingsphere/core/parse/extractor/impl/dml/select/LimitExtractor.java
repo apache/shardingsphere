@@ -65,11 +65,12 @@ public final class LimitExtractor implements OptionalSQLSegmentExtractor {
     private LimitValueSegment extractLimitValue(final ParserRuleContext limitValueNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParameterMarkerExpressionSegment> parameterMarkerExpression = parameterMarkerExpressionExtractor.extract(limitValueNode, parameterMarkerIndexes);
         if (parameterMarkerExpression.isPresent()) {
-            return new ParameterMarkerLimitValueSegment(limitValueNode.getStart().getStartIndex(), limitValueNode.getStop().getStopIndex(), parameterMarkerExpression.get().getParameterMarkerIndex());
+            return new ParameterMarkerLimitValueSegment(
+                    limitValueNode.getStart().getStartIndex(), limitValueNode.getStop().getStopIndex(), parameterMarkerExpression.get().getParameterMarkerIndex(), false);
         }
         Optional<ParserRuleContext> numberLiteralsNode = ExtractorUtils.findFirstChildNode(limitValueNode, RuleName.NUMBER_LITERALS);
         Preconditions.checkState(numberLiteralsNode.isPresent());
         return new NumberLiteralLimitValueSegment(
-                limitValueNode.getStart().getStartIndex(), limitValueNode.getStop().getStopIndex(), NumberUtil.getExactlyNumber(numberLiteralsNode.get().getText(), 10).intValue());
+                limitValueNode.getStart().getStartIndex(), limitValueNode.getStop().getStopIndex(), NumberUtil.getExactlyNumber(numberLiteralsNode.get().getText(), 10).intValue(), false);
     }
 }
