@@ -43,7 +43,7 @@
         <module>sharding-sql-test</module>
         
         <module>sharding-distribution</module>
-        <module>sharding-integrate-test</module>
+        <module>sharding-integration-test</module>
     </modules>
     
     <properties>

@@ -29,6 +29,6 @@
         <artifactId>shardingsphere</artifactId>
         <version>4.0.0-RC2-SNAPSHOT</version>
     </parent>
-    <artifactId>sharding-integrate-test</artifactId>
+    <artifactId>sharding-integration-test</artifactId>
     <name>${project.name}</name>
 </project>
