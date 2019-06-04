@@ -40,14 +40,14 @@ import java.util.Collections;
 
 import static org.junit.Assert.assertTrue;
 
-public final class AdditionalDQLIntegrateTest extends BaseDQLIntegrateTest {
+public final class AdditionalDQLIT extends BaseDQLIT {
     
     private static IntegrateTestEnvironment integrateTestEnvironment = IntegrateTestEnvironment.getInstance();
     
     private final DQLIntegrateTestCaseAssertion assertion;
     
-    public AdditionalDQLIntegrateTest(final String sqlCaseId, final String path, final DQLIntegrateTestCaseAssertion assertion, final String shardingRuleType,
-                                      final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException, SQLException, ParseException {
+    public AdditionalDQLIT(final String sqlCaseId, final String path, final DQLIntegrateTestCaseAssertion assertion, final String shardingRuleType,
+                           final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException, SQLException, ParseException {
         super(sqlCaseId, path, assertion, shardingRuleType, databaseTypeEnvironment, caseType);
         this.assertion = assertion;
     }

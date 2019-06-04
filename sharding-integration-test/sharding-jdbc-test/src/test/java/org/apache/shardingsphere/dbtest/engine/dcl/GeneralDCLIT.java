@@ -32,10 +32,10 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Collection;
 
-public final class GeneralDCLIntegrateTest extends BaseDCLIntegrateTest {
+public final class GeneralDCLIT extends BaseDCLIT {
     
-    public GeneralDCLIntegrateTest(final String sqlCaseId, final String path, final DCLIntegrateTestCaseAssertion assertion, final String shardingRuleType,
-                                   final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException, SQLException, ParseException {
+    public GeneralDCLIT(final String sqlCaseId, final String path, final DCLIntegrateTestCaseAssertion assertion, final String shardingRuleType,
+                        final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException, SQLException, ParseException {
         super(sqlCaseId, path, assertion, shardingRuleType, databaseTypeEnvironment, caseType);
     }
     

@@ -34,12 +34,12 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Collection;
 
-public final class GeneralDDLIntegrateTest extends BaseDDLIntegrateTest {
+public final class GeneralDDLIT extends BaseDDLIT {
     
     private final DDLIntegrateTestCaseAssertion assertion;
     
-    public GeneralDDLIntegrateTest(final String sqlCaseId, final String path, final DDLIntegrateTestCaseAssertion assertion, final String shardingRuleType,
-                                   final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException, SQLException, ParseException {
+    public GeneralDDLIT(final String sqlCaseId, final String path, final DDLIntegrateTestCaseAssertion assertion, final String shardingRuleType,
+                        final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException, SQLException, ParseException {
         super(sqlCaseId, path, assertion, shardingRuleType, databaseTypeEnvironment, caseType);
         this.assertion = assertion;
     }

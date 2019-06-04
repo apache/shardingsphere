@@ -51,7 +51,7 @@ import java.util.TimeZone;
 
 @RunWith(Parameterized.class)
 @Getter(AccessLevel.PROTECTED)
-public abstract class BaseIntegrateTest {
+public abstract class BaseIT {
     
     private static IntegrateTestEnvironment integrateTestEnvironment = IntegrateTestEnvironment.getInstance();
     
@@ -71,7 +71,7 @@ public abstract class BaseIntegrateTest {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
     }
     
-    public BaseIntegrateTest(final String shardingRuleType, final DatabaseTypeEnvironment databaseTypeEnvironment) throws IOException, JAXBException, SQLException {
+    public BaseIT(final String shardingRuleType, final DatabaseTypeEnvironment databaseTypeEnvironment) throws IOException, JAXBException, SQLException {
         this.shardingRuleType = shardingRuleType;
         this.databaseTypeEnvironment = databaseTypeEnvironment;
         if (databaseTypeEnvironment.isEnabled()) {

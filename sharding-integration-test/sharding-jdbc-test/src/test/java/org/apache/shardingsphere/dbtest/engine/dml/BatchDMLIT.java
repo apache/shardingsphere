@@ -20,7 +20,7 @@ package org.apache.shardingsphere.dbtest.engine.dml;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCase;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCaseAssertion;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.SQLValue;
-import org.apache.shardingsphere.dbtest.engine.BatchIntegrateTest;
+import org.apache.shardingsphere.dbtest.engine.BatchIT;
 import org.apache.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import org.junit.Test;
 
@@ -34,12 +34,12 @@ import java.text.ParseException;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class BatchDMLIntegrateTest extends BatchIntegrateTest {
+public final class BatchDMLIT extends BatchIT {
     
     private final IntegrateTestCase integrateTestCase;
     
-    public BatchDMLIntegrateTest(final String sqlCaseId, final IntegrateTestCase integrateTestCase, 
-                                 final String shardingRuleType, final DatabaseTypeEnvironment databaseTypeEnvironment) throws IOException, JAXBException, SQLException {
+    public BatchDMLIT(final String sqlCaseId, final IntegrateTestCase integrateTestCase,
+                      final String shardingRuleType, final DatabaseTypeEnvironment databaseTypeEnvironment) throws IOException, JAXBException, SQLException {
         super(sqlCaseId, integrateTestCase, shardingRuleType, databaseTypeEnvironment);
         this.integrateTestCase = integrateTestCase;
     }

@@ -35,7 +35,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Getter(AccessLevel.PROTECTED)
-public abstract class SingleIntegrateTest extends BaseIntegrateTest {
+public abstract class SingleIT extends BaseIT {
     
     private static IntegrateTestEnvironment integrateTestEnvironment = IntegrateTestEnvironment.getInstance();
     
@@ -49,8 +49,8 @@ public abstract class SingleIntegrateTest extends BaseIntegrateTest {
     
     private final String expectedDataFile;
     
-    public SingleIntegrateTest(final String sqlCaseId, final String path, final IntegrateTestCaseAssertion assertion, final String shardingRuleType,
-                               final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) 
+    public SingleIT(final String sqlCaseId, final String path, final IntegrateTestCaseAssertion assertion, final String shardingRuleType,
+                    final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType)
             throws IOException, JAXBException, SQLException, ParseException {
         super(shardingRuleType, databaseTypeEnvironment);
         this.assertion = assertion;

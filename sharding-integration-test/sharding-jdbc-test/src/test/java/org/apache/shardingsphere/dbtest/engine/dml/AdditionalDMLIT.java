@@ -39,14 +39,14 @@ import java.util.Collections;
 
 import static org.junit.Assert.assertFalse;
 
-public final class AdditionalDMLIntegrateTest extends BaseDMLIntegrateTest {
+public final class AdditionalDMLIT extends BaseDMLIT {
     
     private static IntegrateTestEnvironment integrateTestEnvironment = IntegrateTestEnvironment.getInstance();
     
     private final DMLIntegrateTestCaseAssertion assertion;
     
-    public AdditionalDMLIntegrateTest(final String sqlCaseId, final String path, final DMLIntegrateTestCaseAssertion assertion, final String shardingRuleType,
-                                      final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException, SQLException, ParseException {
+    public AdditionalDMLIT(final String sqlCaseId, final String path, final DMLIntegrateTestCaseAssertion assertion, final String shardingRuleType,
+                           final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException, SQLException, ParseException {
         super(sqlCaseId, path, assertion, shardingRuleType, databaseTypeEnvironment, caseType);
         this.assertion = assertion;
     }
