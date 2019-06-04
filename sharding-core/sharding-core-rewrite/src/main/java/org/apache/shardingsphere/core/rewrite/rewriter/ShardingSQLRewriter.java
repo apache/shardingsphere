@@ -24,7 +24,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.OrderByIt
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.TextOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
-import org.apache.shardingsphere.core.parse.sql.token.impl.InsertGeneratedKeyToken;
+import org.apache.shardingsphere.core.rewrite.token.pojo.InsertGeneratedKeyToken;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertGeneratedKeyPlaceholder;
 import org.apache.shardingsphere.core.rewrite.token.pojo.OffsetToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.RowCountToken;
