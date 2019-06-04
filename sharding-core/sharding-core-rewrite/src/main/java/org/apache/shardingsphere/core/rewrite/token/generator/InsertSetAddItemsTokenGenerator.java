@@ -22,7 +22,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.Assignmen
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.parse.sql.token.impl.InsertSetAddItemsToken;
+import org.apache.shardingsphere.core.parse.sql.token.impl.InsertSetAddAssistedColumnsToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
 import java.util.ArrayList;
@@ -38,7 +38,7 @@ import java.util.List;
 public final class InsertSetAddItemsTokenGenerator implements OptionalSQLTokenGenerator<EncryptRule> {
     
     @Override
-    public Optional<InsertSetAddItemsToken> generateSQLToken(final SQLStatement sqlStatement, final EncryptRule encryptRule) {
+    public Optional<InsertSetAddAssistedColumnsToken> generateSQLToken(final SQLStatement sqlStatement, final EncryptRule encryptRule) {
         Optional<SetAssignmentsSegment> setAssignmentsSegment = sqlStatement.findSQLSegment(SetAssignmentsSegment.class);
         if (!(sqlStatement instanceof InsertStatement && setAssignmentsSegment.isPresent())) {
             return Optional.absent();
@@ -46,13 +46,13 @@ public final class InsertSetAddItemsTokenGenerator implements OptionalSQLTokenGe
         return createInsertSetAddItemsToken((InsertStatement) sqlStatement, encryptRule, setAssignmentsSegment.get());
     }
     
-    private Optional<InsertSetAddItemsToken> createInsertSetAddItemsToken(final InsertStatement insertStatement, final EncryptRule encryptRule, final SetAssignmentsSegment segment) {
+    private Optional<InsertSetAddAssistedColumnsToken> createInsertSetAddItemsToken(final InsertStatement insertStatement, final EncryptRule encryptRule, final SetAssignmentsSegment segment) {
         Collection<String> columnNames = getQueryAssistedColumn(insertStatement, encryptRule);
         if (columnNames.isEmpty()) {
             return Optional.absent();
         }
         List<AssignmentSegment> assignments = new ArrayList<>(segment.getAssignments());
-        return Optional.of(new InsertSetAddItemsToken(assignments.get(assignments.size() - 1).getStopIndex() + 1, columnNames));
+        return Optional.of(new InsertSetAddAssistedColumnsToken(assignments.get(assignments.size() - 1).getStopIndex() + 1, columnNames));
     }
     
     private Collection<String> getQueryAssistedColumn(final InsertStatement insertStatement, final EncryptRule encryptRule) {

@@ -29,11 +29,11 @@ import java.util.Collection;
  * @author panjuan
  */
 @Getter
-public final class InsertSetAddItemsToken extends SQLToken implements Attachable {
+public final class InsertSetAddAssistedColumnsToken extends SQLToken implements Attachable {
     
     private final Collection<String> columnNames;
     
-    public InsertSetAddItemsToken(final int startIndex, final Collection<String> columnNames) {
+    public InsertSetAddAssistedColumnsToken(final int startIndex, final Collection<String> columnNames) {
         super(startIndex);
         this.columnNames = columnNames;
     }
