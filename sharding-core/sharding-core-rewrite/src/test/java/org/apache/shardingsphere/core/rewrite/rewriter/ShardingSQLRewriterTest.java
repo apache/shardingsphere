@@ -547,7 +547,7 @@ public final class ShardingSQLRewriterTest {
         selectStatement.setLogicSQL("SELECT table_x.id, x.name FROM table_x x, table_y y WHERE table_x.id=? AND x.name=?");
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, routeResult.getSqlStatement(), parameters);
         rewriteEngine.init(
-                new ShardingSQLRewriter(shardingRule, DatabaseType.MySQL, routeResult), 
+                new ShardingSQLRewriter(shardingRule, DatabaseType.MySQL, routeResult, null), 
                 new EncryptSQLRewriter(shardingRule.getEncryptRule().getEncryptorEngine(), routeResult.getSqlStatement(), routeResult.getOptimizeResult()));
         RoutingUnit routingUnit = new RoutingUnit("db0");
         routingUnit.getTableUnits().add(new TableUnit("table_x", "table_x"));
@@ -868,6 +868,29 @@ public final class ShardingSQLRewriterTest {
     }
     
     @Test
+    public void assertInsertWithQueryAssistedShardingEncryptor() {
+        insertStatement.getColumnNames().add("name");
+        ColumnSegment columnSegment = new ColumnSegment(26, 29, "name");
+        LiteralExpressionSegment expressionSegment = new LiteralExpressionSegment(33, 34, 10);
+        insertStatement.getSqlSegments().add(new SetAssignmentsSegment(22, 34, Collections.singleton(new AssignmentSegment(22, 34, columnSegment, expressionSegment))));
+        insertStatement.getTables().add(new Table("table_w", null));
+        insertStatement.addSQLToken(new TableToken(12, 20, "`table_w`", QuoteCharacter.BACK_QUOTE));
+        InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(Arrays.asList("name", "id", "query_name"));
+        ExpressionSegment[] expressionSegments = {new LiteralExpressionSegment(0, 0, 10), new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 10)};
+        insertOptimizeResult.addUnit(expressionSegments, new Object[0], 0);
+        insertOptimizeResult.getUnits().get(0).getDataNodes().add(new DataNode("db0.table_1"));
+        RoutingUnit routingUnit = new RoutingUnit("db0");
+        routingUnit.getTableUnits().add(new TableUnit("table_w", "table_1"));
+        routeResult = new SQLRouteResult(insertStatement);
+        routeResult.setOptimizeResult(new OptimizeResult(insertOptimizeResult));
+        routeResult.setRoutingResult(new RoutingResult());
+        insertStatement.setLogicSQL("INSERT INTO `table_w` set name = 10 ON DUPLICATE KEY UPDATE name = VALUES(name)");
+        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(DatabaseType.MySQL, Collections.emptyList());
+        assertThat(getSQLBuilder(rewriteEngine).toSQL(routingUnit, tableTokens), 
+                is("INSERT INTO `table_w` set name = 'encryptValue', id = 1, query_name = 'assistedEncryptValue' ON DUPLICATE KEY UPDATE name = VALUES(name)"));
+    }
+    
+    @Test
     public void assertSelectInWithAggregationDistinct() {
         selectStatement.addSQLToken(new TableToken(49, 55, "table_z", QuoteCharacter.NONE));
         selectStatement.getSqlSegments().add(new SelectItemsSegment(7, 44, false));
@@ -887,7 +910,7 @@ public final class ShardingSQLRewriterTest {
     private SQLRewriteEngine createSQLRewriteEngine(final DatabaseType databaseType, final List<Object> parameters) {
         SQLRewriteEngine result = new SQLRewriteEngine(shardingRule, routeResult.getSqlStatement(), parameters);
         result.init(
-                new ShardingSQLRewriter(shardingRule, databaseType, routeResult),
+                new ShardingSQLRewriter(shardingRule, databaseType, routeResult, routeResult.getOptimizeResult()),
                 new EncryptSQLRewriter(shardingRule.getEncryptRule().getEncryptorEngine(), routeResult.getSqlStatement(), routeResult.getOptimizeResult()));
         return result;
     }
