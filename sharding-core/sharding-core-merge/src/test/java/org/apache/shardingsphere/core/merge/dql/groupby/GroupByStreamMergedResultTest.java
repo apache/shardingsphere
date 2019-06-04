@@ -30,7 +30,6 @@ import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationSe
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
-import org.apache.shardingsphere.core.route.limit.Limit;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -83,7 +82,6 @@ public final class GroupByStreamMergedResultTest {
         selectStatement.getGroupByItems().add(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, OrderDirection.ASC));
         selectStatement.getOrderByItems().add(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, OrderDirection.ASC));
         routeResult = new SQLRouteResult(selectStatement);
-        routeResult.setLimit(new Limit());
     }
     
     private ResultSet mockResultSet() throws SQLException {

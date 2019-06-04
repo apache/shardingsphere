@@ -125,7 +125,6 @@ public final class ShardingSQLRewriterTest {
     @Test
     public void assertRewriteWithoutChange() {
         routeResult = new SQLRouteResult(selectStatement);
-        routeResult.setLimit(new Limit());
         routeResult.setRoutingResult(new RoutingResult());
         selectStatement.setLogicSQL("SELECT table_y.id FROM table_y WHERE table_y.id=?");
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(DatabaseType.MySQL, Collections.<Object>singletonList(1));
@@ -141,7 +140,6 @@ public final class ShardingSQLRewriterTest {
         selectStatement.addSQLToken(new TableToken(31, 37, "table_x", QuoteCharacter.NONE));
         selectStatement.addSQLToken(new TableToken(47, 53, "table_x", QuoteCharacter.NONE));
         routeResult = new SQLRouteResult(selectStatement);
-        routeResult.setLimit(new Limit());
         routeResult.setRoutingResult(new RoutingResult());
         selectStatement.setLogicSQL("SELECT table_x.id, x.name FROM table_x x WHERE table_x.id=? AND x.name=?");
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(DatabaseType.MySQL, parameters);
@@ -154,7 +152,6 @@ public final class ShardingSQLRewriterTest {
         SelectItemsToken selectItemsToken = new SelectItemsToken(12, Arrays.asList("x.id as GROUP_BY_DERIVED_0", "x.name as ORDER_BY_DERIVED_0"));
         selectStatement.addSQLToken(selectItemsToken);
         routeResult = new SQLRouteResult(selectStatement);
-        routeResult.setLimit(new Limit());
         routeResult.setRoutingResult(new RoutingResult());
         selectStatement.setLogicSQL("SELECT x.age FROM table_x x GROUP BY x.id ORDER BY x.name");
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(DatabaseType.MySQL, Collections.emptyList());
@@ -168,7 +165,6 @@ public final class ShardingSQLRewriterTest {
         SelectItemsToken selectItemsToken = new SelectItemsToken(17, Arrays.asList("COUNT(x.age) as AVG_DERIVED_COUNT_0", "SUM(x.age) as AVG_DERIVED_SUM_0"));
         selectStatement.addSQLToken(selectItemsToken);
         routeResult = new SQLRouteResult(selectStatement);
-        routeResult.setLimit(new Limit());
         routeResult.setRoutingResult(new RoutingResult());
         selectStatement.setLogicSQL("SELECT AVG(x.age) FROM table_x x");
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(DatabaseType.MySQL, Collections.emptyList());
