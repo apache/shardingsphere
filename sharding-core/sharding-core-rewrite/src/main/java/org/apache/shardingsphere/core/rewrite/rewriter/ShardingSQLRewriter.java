@@ -25,6 +25,8 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.OrderByIt
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.TextOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
+import org.apache.shardingsphere.core.parse.sql.token.impl.InsertGeneratedKeyToken;
+import org.apache.shardingsphere.core.rewrite.placeholder.InsertGeneratedKeyPlaceholder;
 import org.apache.shardingsphere.core.rewrite.token.pojo.OffsetToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.RowCountToken;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
@@ -80,6 +82,8 @@ public final class ShardingSQLRewriter implements SQLRewriter {
             appendOrderByPlaceholder(sqlBuilder);
         } else if (sqlToken instanceof AggregationDistinctToken) {
             appendAggregationDistinctPlaceholder(sqlBuilder, (AggregationDistinctToken) sqlToken);
+        } else if (sqlToken instanceof InsertGeneratedKeyToken) {
+            appendInsertGeneratedKeyPlaceholder(sqlBuilder, (InsertGeneratedKeyToken) sqlToken);
         }
     }
     
@@ -151,6 +155,10 @@ public final class ShardingSQLRewriter implements SQLRewriter {
         } else {
             sqlBuilder.appendPlaceholder(new AggregationDistinctPlaceholder(distinctToken.getColumnName().toLowerCase(), distinctToken.getDerivedAlias()));
         }
+    }
+    
+    private void appendInsertGeneratedKeyPlaceholder(final SQLBuilder sqlBuilder, final InsertGeneratedKeyToken insertGeneratedKeyToken) {
+        sqlBuilder.appendPlaceholder(new InsertGeneratedKeyPlaceholder(insertGeneratedKeyToken.getColumn(), insertGeneratedKeyToken.isToAddCloseParenthesis()));
     }
     
     private boolean isRewrite() {
