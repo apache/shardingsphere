@@ -60,8 +60,7 @@ public final class BaseSQLRewriter implements SQLRewriter {
     }
     
     private void appendInsertColumnsPlaceholder(final SQLBuilder sqlBuilder, final InsertColumnsToken insertColumnsToken) {
-        InsertColumnsPlaceholder columnsPlaceholder = new InsertColumnsPlaceholder(insertColumnsToken.isPartColumns());
-        columnsPlaceholder.getColumns().addAll(insertColumnsToken.getColumns());
+        InsertColumnsPlaceholder columnsPlaceholder = new InsertColumnsPlaceholder(insertColumnsToken.getColumns(), insertColumnsToken.isToAppendParenthesis());
         sqlBuilder.appendPlaceholder(columnsPlaceholder);
     }
     
