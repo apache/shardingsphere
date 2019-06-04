@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.token.impl;
+package org.apache.shardingsphere.core.rewrite.token.pojo;
 
 import lombok.Getter;
 import org.apache.shardingsphere.core.parse.sql.token.Attachable;
