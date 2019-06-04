@@ -504,6 +504,7 @@
                         <argLine>-Xmx1024m -XX:MaxPermSize=256m</argLine>
                         <excludes>
                             <exclude>**/*Tests.java</exclude>
+                            <exclude>**/*Integrate*.java</exclude>
                         </excludes>
                     </configuration>
                 </plugin>
