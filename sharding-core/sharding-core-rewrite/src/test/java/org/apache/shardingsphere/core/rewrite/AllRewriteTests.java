@@ -18,8 +18,9 @@
 package org.apache.shardingsphere.core.rewrite;
 
 import org.apache.shardingsphere.core.rewrite.builder.SQLBuilderTest;
-import org.apache.shardingsphere.core.rewrite.rewriter.ShardingSQLRewriterTest;
 import org.apache.shardingsphere.core.rewrite.placeholder.AllPlaceholderTests;
+import org.apache.shardingsphere.core.rewrite.rewriter.EncryptSQLRewriterTest;
+import org.apache.shardingsphere.core.rewrite.rewriter.ShardingSQLRewriterTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -28,6 +29,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({
         SQLBuilderTest.class, 
         ShardingSQLRewriterTest.class,
+        EncryptSQLRewriterTest.class,
         AllPlaceholderTests.class
     })
 public final class AllRewriteTests {
