@@ -221,14 +221,14 @@ public final class StandardRoutingEngine implements RoutingEngine {
     private void reviseInsertOptimizeResult(final ShardingCondition shardingCondition, final Collection<DataNode> dataNodes) {
         if (sqlStatement instanceof InsertStatement) {
             for (InsertOptimizeResultUnit each : optimizeResult.getInsertOptimizeResult().get().getUnits()) {
-                if (isQualifiedInsertOptimizeResult(each, shardingCondition)) {
+                if (isQualifiedInsertOptimizeResultUnit(each, shardingCondition)) {
                     each.getDataNodes().addAll(dataNodes);
                 }
             }
         }
     }
     
-    private boolean isQualifiedInsertOptimizeResult(final InsertOptimizeResultUnit unit, final ShardingCondition shardingCondition) {
+    private boolean isQualifiedInsertOptimizeResultUnit(final InsertOptimizeResultUnit unit, final ShardingCondition shardingCondition) {
         for (RouteValue each : shardingCondition.getShardingValues()) {
             Object columnValue = unit.getColumnValue(each.getColumnName());
             if (!columnValue.equals(((ListRouteValue) each).getValues().iterator().next())) {
