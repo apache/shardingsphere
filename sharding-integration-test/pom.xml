@@ -44,11 +44,6 @@
                             <goal>integration-test</goal>
                             <goal>verify</goal>
                         </goals>
-                        <configuration>
-                            <includes>
-                                <include>**/*Integrate*Test.java</include>
-                            </includes>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
