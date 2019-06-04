@@ -35,7 +35,7 @@ import java.util.List;
  *
  * @author panjuan
  */
-public final class InsertSetAddItemsTokenGenerator implements OptionalSQLTokenGenerator<EncryptRule> {
+public final class InsertSetAddAssistedColumnsTokenGenerator implements OptionalSQLTokenGenerator<EncryptRule> {
     
     @Override
     public Optional<InsertSetAddAssistedColumnsToken> generateSQLToken(final SQLStatement sqlStatement, final EncryptRule encryptRule) {
