@@ -21,6 +21,7 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.SneakyThrows;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.api.ACLProvider;
@@ -28,6 +29,7 @@ import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.TreeCache;
 import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
 import org.apache.curator.framework.recipes.cache.TreeCacheListener;
+import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.utils.CloseableUtils;
 import org.apache.shardingsphere.orchestration.reg.api.RegistryCenter;
@@ -290,4 +292,36 @@ public final class CuratorZookeeperRegistryCenter implements RegistryCenter {
     public String getType() {
         return "zookeeper";
     }
+
+    /**
+     * Initialize the lock of the key.
+     *
+     * @param key key of data
+     * @return the lock of the key
+     */
+    public InterProcessMutex initLock(final String key) {
+        return new InterProcessMutex(client, key);
+    }
+
+    /**
+     * Try to get the lock of the key.
+     *
+     * @param lock lock of key
+     * @return get the lock or not
+     */
+    @SneakyThrows
+    public boolean tryLock(final InterProcessMutex lock) {
+        return lock.acquire(5, TimeUnit.SECONDS);
+    }
+
+    /**
+     * Try to release the lock of the key.
+     *
+     * @param lock lock of key
+     */
+    @SneakyThrows
+    public void tryRelease(final InterProcessMutex lock) {
+        lock.release();
+    }
+
 }
