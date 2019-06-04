@@ -40,9 +40,6 @@ public final class ExpectedTokens {
     @XmlElement(name = "generated-key-token")
     private ExpectedGeneratedKeyToken generatedKeyToken;
     
-    @XmlElement(name = "insert-values-token")
-    private ExpectedInsertValuesToken insertValuesToken;
-    
     @XmlElement(name = "insert-set-token")
     private ExpectedInsertSetToken insertSetToken;
     
