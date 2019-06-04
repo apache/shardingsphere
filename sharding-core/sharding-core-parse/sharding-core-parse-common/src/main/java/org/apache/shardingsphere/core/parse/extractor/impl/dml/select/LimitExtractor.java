@@ -49,17 +49,17 @@ public final class LimitExtractor implements OptionalSQLSegmentExtractor {
         Optional<ParserRuleContext> limitNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.LIMIT_CLAUSE);
         return limitNode.isPresent()
                 ? Optional.of(new LimitSegment(limitNode.get().getStart().getStartIndex(), limitNode.get().getStop().getStopIndex(),
-                        extractRowCount(limitNode.get(), parameterMarkerIndexes).orNull(), extractOffset(limitNode.get(), parameterMarkerIndexes).orNull())) : Optional.<LimitSegment>absent();
-    }
-    
-    private Optional<LimitValueSegment> extractRowCount(final ParserRuleContext limitNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
-        Optional<ParserRuleContext> rowCountNode = ExtractorUtils.findFirstChildNode(limitNode, RuleName.LIMIT_ROW_COUNT);
-        return rowCountNode.isPresent() ? Optional.of(extractLimitValue(rowCountNode.get(), parameterMarkerIndexes)) : Optional.<LimitValueSegment>absent();
+                extractOffset(limitNode.get(), parameterMarkerIndexes).orNull(), extractRowCount(limitNode.get(), parameterMarkerIndexes).orNull())) : Optional.<LimitSegment>absent();
     }
     
     private Optional<LimitValueSegment> extractOffset(final ParserRuleContext limitNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> offsetNode = ExtractorUtils.findFirstChildNode(limitNode, RuleName.LIMIT_OFFSET);
         return offsetNode.isPresent() ? Optional.of(extractLimitValue(offsetNode.get(), parameterMarkerIndexes)) : Optional.<LimitValueSegment>absent();
+    }
+    
+    private Optional<LimitValueSegment> extractRowCount(final ParserRuleContext limitNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
+        Optional<ParserRuleContext> rowCountNode = ExtractorUtils.findFirstChildNode(limitNode, RuleName.LIMIT_ROW_COUNT);
+        return rowCountNode.isPresent() ? Optional.of(extractLimitValue(rowCountNode.get(), parameterMarkerIndexes)) : Optional.<LimitValueSegment>absent();
     }
     
     private LimitValueSegment extractLimitValue(final ParserRuleContext limitValueNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
