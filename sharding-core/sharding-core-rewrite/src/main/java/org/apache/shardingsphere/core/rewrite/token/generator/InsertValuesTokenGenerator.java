@@ -21,7 +21,7 @@ import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.parse.sql.token.impl.InsertValuesToken;
+import org.apache.shardingsphere.core.rewrite.token.pojo.InsertValuesToken;
 import org.apache.shardingsphere.core.rule.BaseRule;
 
 import java.util.Collection;
