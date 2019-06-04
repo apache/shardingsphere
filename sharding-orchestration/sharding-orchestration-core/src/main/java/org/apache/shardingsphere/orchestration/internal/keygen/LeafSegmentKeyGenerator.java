@@ -33,7 +33,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.SynchronousQueue;
 
 /**
- * Created by Jason on 2019/4/28.
+ * Key generator implemented by leaf segment algorithms.
+ *
+ * @author wangguangyuan
  */
 public final class LeafSegmentKeyGenerator implements ShardingKeyGenerator {
 
@@ -111,11 +113,11 @@ public final class LeafSegmentKeyGenerator implements ShardingKeyGenerator {
     }
 
     private RegistryCenterConfiguration getRegistryCenterConfiguration() {
-        RegistryCenterConfiguration registryCenterConfiguration = new RegistryCenterConfiguration(TYPE, properties);
-        registryCenterConfiguration.setNamespace(NAMESPACE);
-        registryCenterConfiguration.setServerLists(getServerList());
-        registryCenterConfiguration.setDigest(getDigest());
-        return registryCenterConfiguration;
+        RegistryCenterConfiguration result = new RegistryCenterConfiguration(TYPE, properties);
+        result.setNamespace(NAMESPACE);
+        result.setServerLists(getServerList());
+        result.setDigest(getDigest());
+        return result;
     }
 
     private void incrementCacheIdAsynchronous(final String leafKey, final long step) {
@@ -162,15 +164,15 @@ public final class LeafSegmentKeyGenerator implements ShardingKeyGenerator {
     }
 
     private long getStep() {
-        long step = Long.parseLong(properties.getProperty("step", STEP));
+        long result = Long.parseLong(properties.getProperty("step", STEP));
         Preconditions.checkArgument(step > 0L && step < Long.MAX_VALUE);
-        return step;
+        return result;
     }
 
     private long getInitialValue() {
-        long initialValue = Long.parseLong(properties.getProperty("initialValue", INITIAL_VALUE));
-        Preconditions.checkArgument(initialValue >= 0L && initialValue < Long.MAX_VALUE);
-        return initialValue;
+        long result = Long.parseLong(properties.getProperty("initialValue", INITIAL_VALUE));
+        Preconditions.checkArgument(result >= 0L && result < Long.MAX_VALUE);
+        return result;
     }
 
     private String getLeafKey() {
@@ -181,9 +183,9 @@ public final class LeafSegmentKeyGenerator implements ShardingKeyGenerator {
     }
 
     private String getServerList() {
-        String serverList = properties.getProperty("serverList");
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(serverList));
-        return serverList;
+        String result = properties.getProperty("serverList");
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(result));
+        return result;
     }
 
     private String getDigest() {
