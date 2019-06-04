@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
 import org.apache.shardingsphere.core.parse.sql.token.Substitutable;
-import org.apache.shardingsphere.core.parse.sql.token.impl.InsertColumnsToken;
+import org.apache.shardingsphere.core.rewrite.token.pojo.InsertColumnsToken;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertColumnsPlaceholder;
@@ -60,8 +60,7 @@ public final class BaseSQLRewriter implements SQLRewriter {
     }
     
     private void appendInsertColumnsPlaceholder(final SQLBuilder sqlBuilder, final InsertColumnsToken insertColumnsToken) {
-        InsertColumnsPlaceholder columnsPlaceholder = new InsertColumnsPlaceholder(insertColumnsToken.isPartColumns());
-        columnsPlaceholder.getColumns().addAll(insertColumnsToken.getColumns());
+        InsertColumnsPlaceholder columnsPlaceholder = new InsertColumnsPlaceholder(insertColumnsToken.getColumns(), insertColumnsToken.isToAppendParenthesis());
         sqlBuilder.appendPlaceholder(columnsPlaceholder);
     }
     

@@ -15,33 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.token.impl;
+package org.apache.shardingsphere.core.rewrite.placeholder;
 
-import lombok.EqualsAndHashCode;
+import com.google.common.base.Joiner;
 import lombok.Getter;
-import lombok.ToString;
-import org.apache.shardingsphere.core.parse.sql.token.Attachable;
-import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
+import lombok.RequiredArgsConstructor;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Collection;
 
 /**
- * Insert columns token.
+ * Insert assisted columns placeholder for rewrite.
  *
  * @author panjuan
  */
+@RequiredArgsConstructor
 @Getter
-@ToString
-@EqualsAndHashCode(callSuper = true)
-public final class InsertColumnsToken extends SQLToken implements Attachable {
+public final class InsertAssistedColumnsPlaceholder implements ShardingPlaceholder {
     
-    private boolean isPartColumns;
+    private final Collection<String> columns;
     
-    private final List<String> columns = new LinkedList<>();
+    private final boolean isToAppendCloseParenthesis;
     
-    public InsertColumnsToken(final int startIndex, final boolean isPartColumns) {
-        super(startIndex);
-        this.isPartColumns = isPartColumns;
+    @Override
+    public String toString() {
+        if (columns.isEmpty()) {
+            return "";
+        }
+        if (isToAppendCloseParenthesis) {
+            return String.format(", %s)", Joiner.on(", ").join(columns));
+        }
+        return String.format(", %s", Joiner.on(", ").join(columns));
     }
 }

@@ -15,28 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.token.impl;
+package org.apache.shardingsphere.core.rewrite.token.pojo;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.ToString;
+import org.apache.shardingsphere.core.parse.sql.token.Attachable;
 import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
-import org.apache.shardingsphere.core.parse.sql.token.Substitutable;
+
+import java.util.Collection;
 
 /**
- * Row count token for limit.
+ * Insert columns token.
  *
- * @author zhangliang
  * @author panjuan
  */
 @Getter
-public final class RowCountToken extends SQLToken implements Substitutable {
+@ToString
+@EqualsAndHashCode(callSuper = true)
+public final class InsertColumnsToken extends SQLToken implements Attachable {
     
-    private final int rowCount;
+    private final Collection<String> columns;
     
-    private final int stopIndex;
+    private boolean isToAppendParenthesis;
     
-    public RowCountToken(final int startIndex, final int stopIndex, final int rowCount) {
+    public InsertColumnsToken(final int startIndex, final Collection<String> columns, final boolean isToAppendParenthesis) {
         super(startIndex);
-        this.rowCount = rowCount;
-        this.stopIndex = stopIndex;
+        this.columns = columns;
+        this.isToAppendParenthesis = isToAppendParenthesis;
     }
 }

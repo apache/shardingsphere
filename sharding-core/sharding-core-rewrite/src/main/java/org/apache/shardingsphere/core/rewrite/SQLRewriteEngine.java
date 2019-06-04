@@ -24,6 +24,7 @@ import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
 import org.apache.shardingsphere.core.rewrite.rewriter.BaseSQLRewriter;
 import org.apache.shardingsphere.core.rewrite.rewriter.SQLRewriter;
+import org.apache.shardingsphere.core.rewrite.token.BaseTokenGenerateEngine;
 import org.apache.shardingsphere.core.rewrite.token.EncryptTokenGenerateEngine;
 import org.apache.shardingsphere.core.rewrite.token.MasterSlaveTokenGenerateEngine;
 import org.apache.shardingsphere.core.rewrite.token.ShardingTokenGenerateEngine;
@@ -90,6 +91,7 @@ public final class SQLRewriteEngine {
     
     private List<SQLToken> createSQLTokens(final BaseRule baseRule, final SQLStatement sqlStatement) {
         List<SQLToken> result = new LinkedList<>(sqlStatement.getSQLTokens());
+        result.addAll(new BaseTokenGenerateEngine().generateSQLTokens(sqlStatement, baseRule));
         if (baseRule instanceof ShardingRule) {
             ShardingRule shardingRule = (ShardingRule) baseRule;
             result.addAll(new ShardingTokenGenerateEngine().generateSQLTokens(sqlStatement, shardingRule));

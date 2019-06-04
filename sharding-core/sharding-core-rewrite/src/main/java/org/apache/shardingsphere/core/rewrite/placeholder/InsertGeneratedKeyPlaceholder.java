@@ -17,33 +17,30 @@
 
 package org.apache.shardingsphere.core.rewrite.placeholder;
 
-import com.google.common.base.Joiner;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Collection;
-
 /**
- * Insert columns placeholder for rewrite.
+ * Insert generated key placeholder for rewrite.
  *
  * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
-public final class InsertColumnsPlaceholder implements ShardingPlaceholder {
+public final class InsertGeneratedKeyPlaceholder implements ShardingPlaceholder {
     
-    private final Collection<String> columns;
+    private final String column;
     
     private final boolean isToAppendCloseParenthesis;
     
     @Override
     public String toString() {
-        if (columns.isEmpty()) {
+        if (null == column) {
             return "";
         }
         if (isToAppendCloseParenthesis) {
-            return String.format("(%s)", Joiner.on(", ").join(columns));
+            return String.format(", %s)", column);
         }
-        return String.format("(%s", Joiner.on(", ").join(columns));
+        return String.format(", %s", column);
     }
 }

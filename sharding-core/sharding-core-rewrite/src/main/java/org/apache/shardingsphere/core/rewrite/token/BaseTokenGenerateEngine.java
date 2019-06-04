@@ -17,26 +17,24 @@
 
 package org.apache.shardingsphere.core.rewrite.token;
 
-import org.apache.shardingsphere.core.rewrite.token.generator.EncryptColumnTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.token.generator.InsertAssistedColumnsTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.token.generator.InsertColumnsTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.SQLTokenGenerator;
-import org.apache.shardingsphere.core.rule.EncryptRule;
+import org.apache.shardingsphere.core.rule.BaseRule;
 
 import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * SQL token generator for encrypt.
+ * SQL token generator for common.
  *
  * @author panjuan
  */
-public final class EncryptTokenGenerateEngine extends SQLTokenGenerateEngine<EncryptRule> {
+public final class BaseTokenGenerateEngine extends SQLTokenGenerateEngine<BaseRule> {
     
     private static final Collection<SQLTokenGenerator> SQL_TOKEN_GENERATORS = new LinkedList<>();
     
     static {
-        SQL_TOKEN_GENERATORS.add(new EncryptColumnTokenGenerator());
-        SQL_TOKEN_GENERATORS.add(new InsertAssistedColumnsTokenGenerator());
+        SQL_TOKEN_GENERATORS.add(new InsertColumnsTokenGenerator());
     }
     
     @Override

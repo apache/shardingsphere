@@ -15,35 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.placeholder;
+package org.apache.shardingsphere.core.rewrite.token.pojo;
 
-import com.google.common.base.Joiner;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-import java.util.Collection;
+import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
+import org.apache.shardingsphere.core.parse.sql.token.Substitutable;
 
 /**
- * Insert columns placeholder for rewrite.
+ * Row count token for limit.
  *
+ * @author zhangliang
  * @author panjuan
  */
-@RequiredArgsConstructor
 @Getter
-public final class InsertColumnsPlaceholder implements ShardingPlaceholder {
+public final class RowCountToken extends SQLToken implements Substitutable {
     
-    private final Collection<String> columns;
+    private final int rowCount;
     
-    private final boolean isToAppendCloseParenthesis;
+    private final int stopIndex;
     
-    @Override
-    public String toString() {
-        if (columns.isEmpty()) {
-            return "";
-        }
-        if (isToAppendCloseParenthesis) {
-            return String.format("(%s)", Joiner.on(", ").join(columns));
-        }
-        return String.format("(%s", Joiner.on(", ").join(columns));
+    public RowCountToken(final int startIndex, final int stopIndex, final int rowCount) {
+        super(startIndex);
+        this.rowCount = rowCount;
+        this.stopIndex = stopIndex;
     }
 }

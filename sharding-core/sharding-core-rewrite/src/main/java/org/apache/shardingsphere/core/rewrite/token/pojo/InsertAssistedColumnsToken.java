@@ -15,35 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.placeholder;
+package org.apache.shardingsphere.core.rewrite.token.pojo;
 
-import com.google.common.base.Joiner;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.ToString;
+import org.apache.shardingsphere.core.parse.sql.token.Attachable;
+import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
 
 import java.util.Collection;
 
 /**
- * Insert columns placeholder for rewrite.
+ * Insert assisted columns token.
  *
  * @author panjuan
  */
-@RequiredArgsConstructor
 @Getter
-public final class InsertColumnsPlaceholder implements ShardingPlaceholder {
+@ToString
+@EqualsAndHashCode(callSuper = true)
+public final class InsertAssistedColumnsToken extends SQLToken implements Attachable {
     
     private final Collection<String> columns;
     
-    private final boolean isToAppendCloseParenthesis;
+    private final boolean isToAddCloseParenthesis;
     
-    @Override
-    public String toString() {
-        if (columns.isEmpty()) {
-            return "";
-        }
-        if (isToAppendCloseParenthesis) {
-            return String.format("(%s)", Joiner.on(", ").join(columns));
-        }
-        return String.format("(%s", Joiner.on(", ").join(columns));
+    public InsertAssistedColumnsToken(final int startIndex, final Collection<String> columns, final boolean isToAddCloseParenthesis) {
+        super(startIndex);
+        this.columns = columns;
+        this.isToAddCloseParenthesis = isToAddCloseParenthesis;
     }
 }
