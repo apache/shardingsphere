@@ -23,8 +23,7 @@ import lombok.ToString;
 import org.apache.shardingsphere.core.parse.sql.token.Attachable;
 import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Collection;
 
 /**
  * Insert columns token.
@@ -36,12 +35,13 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 public final class InsertColumnsToken extends SQLToken implements Attachable {
     
-    private boolean isPartColumns;
+    private final Collection<String> columns;
     
-    private final List<String> columns = new LinkedList<>();
+    private boolean isToAppendParenthesis;
     
-    public InsertColumnsToken(final int startIndex, final boolean isPartColumns) {
+    public InsertColumnsToken(final int startIndex, final Collection<String> columns, final boolean isToAppendParenthesis) {
         super(startIndex);
-        this.isPartColumns = isPartColumns;
+        this.columns = columns;
+        this.isToAppendParenthesis = isToAppendParenthesis;
     }
 }
