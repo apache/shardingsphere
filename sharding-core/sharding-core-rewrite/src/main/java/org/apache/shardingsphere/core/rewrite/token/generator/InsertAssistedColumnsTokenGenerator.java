@@ -21,47 +21,43 @@ import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.parse.sql.token.impl.InsertColumnsToken;
+import org.apache.shardingsphere.core.parse.sql.token.impl.InsertAssistedColumnsToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
+import java.util.Collection;
+import java.util.LinkedList;
+
 /**
- * Encrypt insert columns token generator.
+ * Insert assisted columns token generator.
  *
  * @author panjuan
  */
-public final class EncryptInsertColumnsTokenGenerator implements OptionalSQLTokenGenerator<EncryptRule> {
+public final class InsertAssistedColumnsTokenGenerator implements OptionalSQLTokenGenerator<EncryptRule> {
     
     @Override
-    public Optional<InsertColumnsToken> generateSQLToken(final SQLStatement sqlStatement, final EncryptRule encryptRule) {
+    public Optional<InsertAssistedColumnsToken> generateSQLToken(final SQLStatement sqlStatement, final EncryptRule encryptRule) {
         Optional<InsertColumnsSegment> insertColumnsSegment = sqlStatement.findSQLSegment(InsertColumnsSegment.class);
         if (!(sqlStatement instanceof InsertStatement && insertColumnsSegment.isPresent())) {
             return Optional.absent();
         }
-        return Optional.of(createInsertColumnsToken((InsertStatement) sqlStatement, insertColumnsSegment.get(), encryptRule));
+        return createInsertAssistedColumnsToken((InsertStatement) sqlStatement, insertColumnsSegment.get(), encryptRule);
     }
     
-    private InsertColumnsToken createInsertColumnsToken(final InsertStatement insertStatement, final InsertColumnsSegment segment, final EncryptRule encryptRule) {
-        InsertColumnsToken result = createInsertColumnsToken(insertStatement, segment);
-        fillWithQueryAssistedColumn(result, insertStatement, encryptRule);
-        return result;
-    }
-    
-    private InsertColumnsToken createInsertColumnsToken(final InsertStatement insertStatement, final InsertColumnsSegment segment) {
-        if (!segment.getColumns().isEmpty()) {
-            return new InsertColumnsToken(segment.getStopIndex(), true);
+    private Optional<InsertAssistedColumnsToken> createInsertAssistedColumnsToken(final InsertStatement insertStatement, final InsertColumnsSegment segment, final EncryptRule encryptRule) {
+        if (insertStatement.isNeededToAppendAssistedColumns()) {
+            return Optional.of(new InsertAssistedColumnsToken(segment.getStopIndex(), getQueryAssistedColumsn(insertStatement, encryptRule), segment.getColumns().isEmpty()));
         }
-        InsertColumnsToken result = new InsertColumnsToken(segment.getStopIndex(), false);
-        result.getColumns().addAll(insertStatement.getColumnNames());
-        return result;
+        return Optional.absent();
     }
     
-    private void fillWithQueryAssistedColumn(final InsertColumnsToken insertColumnsToken, final InsertStatement insertStatement, final EncryptRule encryptRule) {
+    private Collection<String> getQueryAssistedColumsn(final InsertStatement insertStatement, final EncryptRule encryptRule) {
+        Collection<String> result = new LinkedList<>();
         for (String each : insertStatement.getColumnNames()) {
             Optional<String> assistedColumnName = encryptRule.getEncryptorEngine().getAssistedQueryColumn(insertStatement.getTables().getSingleTableName(), each);
             if (assistedColumnName.isPresent()) {
-                insertColumnsToken.getColumns().remove(assistedColumnName.get());
-                insertColumnsToken.getColumns().add(assistedColumnName.get());
+                result.add(assistedColumnName.get());
             }
         }
+        return result;
     }
 }
