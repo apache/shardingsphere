@@ -32,7 +32,7 @@ import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertAssistedColumnsToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.InsertSetAddItemsToken;
-import org.apache.shardingsphere.core.parse.sql.token.impl.InsertSetEncryptValueToken;
+import org.apache.shardingsphere.core.rewrite.token.pojo.InsertSetEncryptValueToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertValuesToken;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;

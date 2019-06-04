@@ -23,7 +23,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssign
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.parse.sql.token.impl.InsertSetEncryptValueToken;
+import org.apache.shardingsphere.core.rewrite.token.pojo.InsertSetEncryptValueToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 
