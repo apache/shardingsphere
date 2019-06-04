@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.token;
+package org.apache.shardingsphere.core.rewrite.token.pojo;
 
 /**
  * Substitute available.
