@@ -17,9 +17,7 @@
 
 package org.apache.shardingsphere.core.parse.filler.encrypt.dml;
 
-import com.google.common.base.Optional;
 import lombok.Setter;
-import org.apache.shardingsphere.core.parse.filler.api.EncryptRuleAwareFiller;
 import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
 import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
@@ -29,11 +27,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegme
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.core.parse.sql.token.impl.InsertSetAddItemsToken;
-import org.apache.shardingsphere.core.rule.EncryptRule;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -43,9 +37,7 @@ import java.util.List;
  * @author zhangliang
  */
 @Setter
-public final class EncryptSetAssignmentsFiller implements SQLSegmentFiller<SetAssignmentsSegment>, EncryptRuleAwareFiller {
-    
-    private EncryptRule encryptRule;
+public final class EncryptSetAssignmentsFiller implements SQLSegmentFiller<SetAssignmentsSegment> {
     
     @Override
     public void fill(final SetAssignmentsSegment sqlSegment, final SQLStatement sqlStatement) {
@@ -63,7 +55,6 @@ public final class EncryptSetAssignmentsFiller implements SQLSegmentFiller<SetAs
         InsertValue insertValue = getInsertValue(sqlSegment, insertStatement);
         insertStatement.getValues().add(insertValue);
         insertStatement.setParametersIndex(insertValue.getParametersCount());
-        fillWithInsertSetAddItemsToken(insertStatement, sqlSegment);
     }
     
     private InsertValue getInsertValue(final SetAssignmentsSegment sqlSegment, final InsertStatement insertStatement) {
@@ -72,26 +63,6 @@ public final class EncryptSetAssignmentsFiller implements SQLSegmentFiller<SetAs
             columnValues.add(each.getValue());
         }
         return new InsertValue(columnValues);
-    }
-    
-    private void fillWithInsertSetAddItemsToken(final InsertStatement insertStatement, final SetAssignmentsSegment sqlSegment) {
-        Collection<String> columnNames = getQueryAssistedColumn(insertStatement);
-        if (columnNames.isEmpty()) {
-            return;
-        }
-        List<AssignmentSegment> assignments = new ArrayList<>(sqlSegment.getAssignments());
-        insertStatement.getSQLTokens().add(new InsertSetAddItemsToken(assignments.get(assignments.size() - 1).getStopIndex() + 1, columnNames));
-    }
-    
-    private Collection<String> getQueryAssistedColumn(final InsertStatement insertStatement) {
-        Collection<String> result = new LinkedList<>();
-        for (String each : insertStatement.getColumnNames()) {
-            Optional<String> assistedColumnName = encryptRule.getEncryptorEngine().getAssistedQueryColumn(insertStatement.getTables().getSingleTableName(), each);
-            if (assistedColumnName.isPresent()) {
-                result.add(assistedColumnName.get());
-            }
-        }
-        return result;
     }
     
     private void fillUpdate(final SetAssignmentsSegment sqlSegment, final UpdateStatement updateStatement) {

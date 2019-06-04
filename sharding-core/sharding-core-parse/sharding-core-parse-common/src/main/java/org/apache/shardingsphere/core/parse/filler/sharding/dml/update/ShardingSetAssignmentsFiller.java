@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.parse.filler.sharding.dml.update;
 
-import com.google.common.base.Optional;
 import lombok.Setter;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.exception.SQLParsingException;
@@ -36,11 +35,8 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateS
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.core.parse.sql.token.impl.InsertSetAddItemsToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -88,36 +84,6 @@ public final class ShardingSetAssignmentsFiller implements SQLSegmentFiller<SetA
         insertStatement.getValues().add(insertValue);
         insertStatement.getRouteCondition().getOrConditions().add(andCondition);
         insertStatement.setParametersIndex(insertValue.getParametersCount());
-        fillWithInsertSetAddItemsToken(insertStatement, sqlSegment);
-    }
-    
-    private void fillWithInsertSetAddItemsToken(final InsertStatement insertStatement, final SetAssignmentsSegment sqlSegment) {
-        Collection<String> columnNames = getQueryAssistedColumn(insertStatement);
-        if (getGeneratedKeyColumn(insertStatement).isPresent()) {
-            columnNames.add(getGeneratedKeyColumn(insertStatement).get());
-        }
-        if (columnNames.isEmpty()) {
-            return;
-        }
-        List<AssignmentSegment> assignments = new ArrayList<>(sqlSegment.getAssignments());
-        insertStatement.getSQLTokens().add(new InsertSetAddItemsToken(assignments.get(assignments.size() - 1).getStopIndex() + 1, columnNames));
-    }
-    
-    private Optional<String> getGeneratedKeyColumn(final InsertStatement insertStatement) {
-        String tableName = insertStatement.getTables().getSingleTableName();
-        Optional<String> generateKeyColumn = shardingRule.findGenerateKeyColumnName(tableName);
-        return generateKeyColumn.isPresent() && !insertStatement.getColumnNames().contains(generateKeyColumn.get()) ? generateKeyColumn : Optional.<String>absent();
-    }
-    
-    private Collection<String> getQueryAssistedColumn(final InsertStatement insertStatement) {
-        Collection<String> result = new LinkedList<>();
-        for (String each : insertStatement.getColumnNames()) {
-            Optional<String> assistedColumnName = shardingRule.getEncryptRule().getEncryptorEngine().getAssistedQueryColumn(insertStatement.getTables().getSingleTableName(), each);
-            if (assistedColumnName.isPresent()) {
-                result.add(assistedColumnName.get());
-            }
-        }
-        return result;
     }
     
     private int getColumnCountExcludeAssistedQueryColumns(final InsertStatement insertStatement) {
