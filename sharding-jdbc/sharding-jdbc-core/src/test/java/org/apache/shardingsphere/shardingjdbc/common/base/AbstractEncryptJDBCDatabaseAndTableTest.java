@@ -74,7 +74,7 @@ public abstract class AbstractEncryptJDBCDatabaseAndTableTest extends AbstractSQ
     public void initTable() {
         try {
             EncryptConnection conn = encryptDataSource.getConnection();
-            RunScript.execute(conn, new InputStreamReader(AbstractSQLTest.class.getClassLoader().getResourceAsStream("integrate/cases/jdbc/encrypt_data.sql")));
+            RunScript.execute(conn, new InputStreamReader(AbstractSQLTest.class.getClassLoader().getResourceAsStream("encrypt_data.sql")));
             conn.close();
         } catch (final SQLException ex) {
             ex.printStackTrace();
