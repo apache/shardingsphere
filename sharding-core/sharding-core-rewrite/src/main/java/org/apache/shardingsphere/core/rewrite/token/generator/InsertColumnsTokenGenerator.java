@@ -21,7 +21,7 @@ import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.parse.sql.token.impl.InsertColumnsToken;
+import org.apache.shardingsphere.core.rewrite.token.pojo.InsertColumnsToken;
 import org.apache.shardingsphere.core.rule.BaseRule;
 
 import java.util.LinkedList;
