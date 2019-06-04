@@ -65,23 +65,23 @@ public final class SQLCasesLoaderTest {
     
     @Test
     public void assertGetSupportedSQLTestParameters() {
-        Collection<Object[]> actual = SQLCasesLoader.getInstance().getSupportedSQLTestParameters(Collections.singletonList(DatabaseTypeEnum.H2), DatabaseTypeEnum.class);
+        Collection<Object[]> actual = SQLCasesLoader.getInstance().getSupportedSQLTestParameters();
         assertFalse(actual.isEmpty());
         Object[] actualRow = actual.iterator().next();
         assertThat(actualRow.length, is(3));
         assertThat(actualRow[0], instanceOf(String.class));
-        assertThat(actualRow[1], instanceOf(DatabaseTypeEnum.class));
+        assertThat(actualRow[1], instanceOf(String.class));
         assertThat(actualRow[2], instanceOf(SQLCaseType.class));
     }
     
     @Test
     public void assertGetUnsupportedSQLTestParameters() {
-        Collection<Object[]> actual = SQLCasesLoader.getInstance().getUnsupportedSQLTestParameters(Collections.singletonList(DatabaseTypeEnum.H2), DatabaseTypeEnum.class);
+        Collection<Object[]> actual = SQLCasesLoader.getInstance().getUnsupportedSQLTestParameters();
         assertFalse(actual.isEmpty());
         Object[] actualRow = actual.iterator().next();
         assertThat(actualRow.length, is(3));
         assertThat(actualRow[0], instanceOf(String.class));
-        assertThat(actualRow[1], instanceOf(DatabaseTypeEnum.class));
+        assertThat(actualRow[1], instanceOf(String.class));
         assertThat(actualRow[2], instanceOf(SQLCaseType.class));
     }
     

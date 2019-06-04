@@ -15,23 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.integrate.jaxb.token;
+package org.apache.shardingsphere.core.rewrite.token;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.apache.shardingsphere.core.rewrite.token.generator.EncryptColumnTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.token.generator.SQLTokenGenerator;
+import org.apache.shardingsphere.core.rule.EncryptRule;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
+import java.util.Collection;
+import java.util.LinkedList;
 
-@Getter
-@Setter
-@XmlAccessorType(XmlAccessType.FIELD)
-public final class ExpectedOffsetToken {
+/**
+ * SQL token generator for encrypt.
+ *
+ * @author panjuan
+ */
+public final class EncryptTokenGenerateEngine extends SQLTokenGenerateEngine<EncryptRule> {
     
-    @XmlAttribute(name = "begin-position")
-    private int beginPosition;
+    private static final Collection<SQLTokenGenerator> SQL_TOKEN_GENERATORS = new LinkedList<>();
     
-    @XmlAttribute(name = "offset")
-    private int offset;
+    static {
+        SQL_TOKEN_GENERATORS.add(new EncryptColumnTokenGenerator());
+    }
+    
+    @Override
+    protected Collection<SQLTokenGenerator> getSQLTokenGenerators() {
+        return SQL_TOKEN_GENERATORS;
+    }
 }

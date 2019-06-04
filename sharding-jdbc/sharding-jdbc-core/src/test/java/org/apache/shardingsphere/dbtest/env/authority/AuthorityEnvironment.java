@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.dbtest.env.authority;
 
-import org.apache.shardingsphere.core.constant.DatabaseType;
-
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Collection;
@@ -41,7 +39,7 @@ public final class AuthorityEnvironment {
      * @param databaseType database type
      * @return init sqls of this data base type
      */
-    public Collection<String> getInitSQLs(final DatabaseType databaseType) {
+    public Collection<String> getInitSQLs(final String databaseType) {
         Collection<String> result = new LinkedList<>();
         for (AuthoritySQLSet each : sqlSets) {
             result.addAll(each.getCreateUserSQLs(databaseType));
@@ -55,7 +53,7 @@ public final class AuthorityEnvironment {
      * @param databaseType database type
      * @return clean sqls of this database type
      */
-    public Collection<String> getCleanSQLs(final DatabaseType databaseType) {
+    public Collection<String> getCleanSQLs(final String databaseType) {
         Collection<String> result = new LinkedList<>();
         for (AuthoritySQLSet each : sqlSets) {
             result.addAll(each.getDropUserSQLs(databaseType));

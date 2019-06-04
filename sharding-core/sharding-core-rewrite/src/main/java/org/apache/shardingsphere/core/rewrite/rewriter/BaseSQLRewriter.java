@@ -43,11 +43,11 @@ public final class BaseSQLRewriter implements SQLRewriter {
     private int currentSQLTokenIndex;
     
     /**
-     * Rewrite original literal.
+     * Append whole SQL.
      *
      * @param sqlBuilder SQL builder
      */
-    public void rewrite(final SQLBuilder sqlBuilder) {
+    public void appendWholeSQL(final SQLBuilder sqlBuilder) {
         sqlBuilder.appendLiterals(sqlStatement.getLogicSQL());
     }
     
@@ -77,11 +77,11 @@ public final class BaseSQLRewriter implements SQLRewriter {
     }
     
     /**
-     * rewrite initial literal.
+     * Append initial literal.
      *
      * @param sqlBuilder SQL builder
      */
-    public void rewriteInitialLiteral(final SQLBuilder sqlBuilder) {
+    public void appendInitialLiteral(final SQLBuilder sqlBuilder) {
         sqlBuilder.appendLiterals(sqlStatement.getLogicSQL().substring(0, sqlTokens.get(0).getStartIndex()));
     }
 }

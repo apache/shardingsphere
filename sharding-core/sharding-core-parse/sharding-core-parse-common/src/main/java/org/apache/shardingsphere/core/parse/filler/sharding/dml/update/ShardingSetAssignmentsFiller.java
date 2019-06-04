@@ -33,10 +33,10 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssign
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.SimpleExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.core.parse.sql.token.impl.EncryptColumnToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.InsertSetAddItemsToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.InsertSetEncryptValueToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -52,6 +52,7 @@ import java.util.List;
  * Set assignments filler.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @Setter
 public final class ShardingSetAssignmentsFiller implements SQLSegmentFiller<SetAssignmentsSegment>, ShardingRuleAwareFiller, ShardingTableMetaDataAwareFiller {
@@ -82,7 +83,7 @@ public final class ShardingSetAssignmentsFiller implements SQLSegmentFiller<SetA
         List<ExpressionSegment> columnValues = new LinkedList<>();
         for (AssignmentSegment each : sqlSegment.getAssignments()) {
             if (each.getValue() instanceof SimpleExpressionSegment) {
-                fillShardingCondition(andCondition, columnNames.next(), insertStatement.getTables().getSingleTableName(), (SimpleExpressionSegment) each.getValue());
+                fillShardingCondition(andCondition, columnNames.next(), insertStatement.getTables().getSingleTableName(), null, (SimpleExpressionSegment) each.getValue());
             }
             columnValues.add(each.getValue());
             fillWithInsertSetEncryptValueToken(insertStatement, each, each.getValue());
@@ -95,7 +96,8 @@ public final class ShardingSetAssignmentsFiller implements SQLSegmentFiller<SetA
     }
     
     private void fillWithInsertSetEncryptValueToken(final InsertStatement insertStatement, final AssignmentSegment segment, final ExpressionSegment expressionSegment) {
-        Optional<ShardingEncryptor> shardingEncryptor = shardingRule.getShardingEncryptorEngine().getShardingEncryptor(insertStatement.getTables().getSingleTableName(), segment.getColumn().getName());
+        Optional<ShardingEncryptor> shardingEncryptor = 
+                shardingRule.getEncryptRule().getEncryptorEngine().getShardingEncryptor(insertStatement.getTables().getSingleTableName(), segment.getColumn().getName());
         if (shardingEncryptor.isPresent() && !(expressionSegment instanceof ParameterMarkerExpressionSegment)) {
             insertStatement.getSQLTokens().add(new InsertSetEncryptValueToken(segment.getValue().getStartIndex(), segment.getValue().getStopIndex(), segment.getColumn().getName()));
         }
@@ -122,7 +124,7 @@ public final class ShardingSetAssignmentsFiller implements SQLSegmentFiller<SetA
     private Collection<String> getQueryAssistedColumn(final InsertStatement insertStatement) {
         Collection<String> result = new LinkedList<>();
         for (String each : insertStatement.getColumnNames()) {
-            Optional<String> assistedColumnName = shardingRule.getShardingEncryptorEngine().getAssistedQueryColumn(insertStatement.getTables().getSingleTableName(), each);
+            Optional<String> assistedColumnName = shardingRule.getEncryptRule().getEncryptorEngine().getAssistedQueryColumn(insertStatement.getTables().getSingleTableName(), each);
             if (assistedColumnName.isPresent()) {
                 result.add(assistedColumnName.get());
             }
@@ -135,21 +137,20 @@ public final class ShardingSetAssignmentsFiller implements SQLSegmentFiller<SetA
         if (shardingTableMetaData.containsTable(tableName) && shardingTableMetaData.get(tableName).getColumns().size() == insertStatement.getColumnNames().size()) {
             return insertStatement.getColumnNames().size();
         }
-        Integer assistedQueryColumnCount = shardingRule.getShardingEncryptorEngine().getAssistedQueryColumnCount(insertStatement.getTables().getSingleTableName());
+        Integer assistedQueryColumnCount = shardingRule.getEncryptRule().getEncryptorEngine().getAssistedQueryColumnCount(insertStatement.getTables().getSingleTableName());
         return insertStatement.getColumnNames().size() - assistedQueryColumnCount;
     }
     
-    private void fillShardingCondition(final AndCondition andCondition, final String columnName, final String tableName, final SimpleExpressionSegment simpleExpressionSegment) {
+    private void fillShardingCondition(final AndCondition andCondition,
+                                       final String columnName, final String tableName, final PredicateSegment predicateSegment, final SimpleExpressionSegment simpleExpressionSegment) {
         if (shardingRule.isShardingColumn(columnName, tableName)) {
-            andCondition.getConditions().add(new Condition(new Column(columnName, tableName), simpleExpressionSegment));
+            andCondition.getConditions().add(new Condition(new Column(columnName, tableName), predicateSegment, simpleExpressionSegment));
         }
     }
     
     private void fillUpdate(final SetAssignmentsSegment sqlSegment, final UpdateStatement updateStatement) {
         String tableName = updateStatement.getTables().getSingleTableName();
         for (AssignmentSegment each : sqlSegment.getAssignments()) {
-            Column column = new Column(each.getColumn().getName(), tableName);
-            updateStatement.getAssignments().put(column, each.getValue());
             fillEncryptCondition(each, tableName, updateStatement);
         }
     }
@@ -157,8 +158,5 @@ public final class ShardingSetAssignmentsFiller implements SQLSegmentFiller<SetA
     private void fillEncryptCondition(final AssignmentSegment assignment, final String tableName, final UpdateStatement updateStatement) {
         Column column = new Column(assignment.getColumn().getName(), tableName);
         updateStatement.getAssignments().put(column, assignment.getValue());
-        if (shardingRule.getShardingEncryptorEngine().getShardingEncryptor(column.getTableName(), column.getName()).isPresent()) {
-            updateStatement.getSQLTokens().add(new EncryptColumnToken(assignment.getColumn().getStartIndex(), assignment.getValue().getStopIndex(), column, false));
-        }
     }
 }

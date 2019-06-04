@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.dbtest.engine.ddl;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.dbtest.cases.assertion.ddl.DDLIntegrateTestCaseAssertion;
 import org.apache.shardingsphere.dbtest.cases.dataset.DataSet;
 import org.apache.shardingsphere.dbtest.cases.dataset.metadata.DataSetColumn;
@@ -57,7 +56,7 @@ public abstract class BaseDDLIntegrateTest extends SingleIntegrateTest {
     
     private final DDLIntegrateTestCaseAssertion assertion;
     
-    private final DatabaseType databaseType;
+    private final String databaseType;
     
     public BaseDDLIntegrateTest(final String sqlCaseId, final String path, final DDLIntegrateTestCaseAssertion assertion, final String shardingRuleType,
                                 final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException, SQLException, ParseException {
@@ -65,35 +64,35 @@ public abstract class BaseDDLIntegrateTest extends SingleIntegrateTest {
         this.assertion = assertion;
         databaseType = databaseTypeEnvironment.getDatabaseType();
     }
-
+    
     @BeforeClass
     public static void initDatabases() {
         createDatabases();
     }
-
+    
     @AfterClass
     public static void destroyDatabasesAndTables() {
         dropDatabases();
     }
-
+    
     @Before
     public void initTables() throws SQLException, ParseException, IOException, JAXBException {
         if (getDatabaseTypeEnvironment().isEnabled()) {
-            if (DatabaseType.H2.equals(getDatabaseTypeEnvironment().getDatabaseType())) {
+            if ("H2".equals(getDatabaseTypeEnvironment().getDatabaseType())) {
                 dropTables();
             }
             createTables();
             new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(getShardingRuleType()), getDataSourceMap()).initialize();
         }
     }
-
+    
     @After
     public void destroyTables() {
         if (getDatabaseTypeEnvironment().isEnabled()) {
             dropTables();
         }
     }
-
+    
     protected final void assertMetadata(final Connection connection) throws IOException, JAXBException, SQLException {
         if (null == assertion.getExpectedDataFile()) {
             log.warn("Have empty expectedDataFile `{}`", super.getSql());
@@ -122,25 +121,25 @@ public abstract class BaseDDLIntegrateTest extends SingleIntegrateTest {
             assertIndexMetadata(actualIndexes, each);
         }
     }
-
+    
     private void assertIfDropTable(final List<DataSetColumn> actualColumns) {
         if (getSql().startsWith("DROP TABLE")) {
             assertTrue(actualColumns.isEmpty());
         }
     }
-
+    
     private void assertIfDropIndex(final List<DataSetIndex> actualIndexes) {
         if (getSql().startsWith("DROP INDEX")) {
             assertTrue(actualIndexes.isEmpty());
         }
     }
-
+    
     private void assertColumnMetadata(final List<DataSetColumn> actual, final DataSetColumn expect) {
         for (DataSetColumn each : actual) {
             if (expect.getName().equals(each.getName())) {
-                if (DatabaseType.MySQL == databaseType && "integer".equals(expect.getType())) {
+                if ("MySQL".equals(databaseType) && "integer".equals(expect.getType())) {
                     assertThat(each.getType(), is("int"));
-                } else if (DatabaseType.PostgreSQL == databaseType && "integer".equals(expect.getType())) {
+                } else if ("PostgreSQL".equals(databaseType) && "integer".equals(expect.getType())) {
                     assertThat(each.getType(), is("int4"));
                 } else {
                     assertThat(each.getType(), is(expect.getType()));
@@ -148,7 +147,7 @@ public abstract class BaseDDLIntegrateTest extends SingleIntegrateTest {
             }
         }
     }
-
+    
     private void assertIndexMetadata(final List<DataSetIndex> actual, final DataSetIndex expect) {
         for (DataSetIndex each : actual) {
             if (expect.getName().equals(each.getName())) {
@@ -156,7 +155,7 @@ public abstract class BaseDDLIntegrateTest extends SingleIntegrateTest {
             }
         }
     }
-
+    
     private List<DataSetColumn> getActualColumns(final Connection connection, final String tableName) throws SQLException {
         DatabaseMetaData metaData = connection.getMetaData();
         boolean isTableExisted = metaData.getTables(null, null, tableName, new String[] {"TABLE"}).next();
@@ -174,7 +173,7 @@ public abstract class BaseDDLIntegrateTest extends SingleIntegrateTest {
             return result;
         }
     }
-
+    
     private List<DataSetIndex> getActualIndexes(final Connection connection, final String tableName) throws SQLException {
         DatabaseMetaData metaData = connection.getMetaData();
         try (ResultSet resultSet = metaData.getIndexInfo(null, null, tableName, false, false)) {
@@ -189,7 +188,7 @@ public abstract class BaseDDLIntegrateTest extends SingleIntegrateTest {
             return result;
         }
     }
-
+    
     protected final void dropTableIfExisted(final Connection connection) {
         try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("DROP TABLE %s", assertion.getTable()))) {
             preparedStatement.executeUpdate();

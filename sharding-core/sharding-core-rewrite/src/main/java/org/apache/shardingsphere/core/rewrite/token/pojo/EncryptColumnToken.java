@@ -15,28 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.token.impl;
+package org.apache.shardingsphere.core.rewrite.token.pojo;
 
 import lombok.Getter;
+import lombok.ToString;
+import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
 import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
 import org.apache.shardingsphere.core.parse.sql.token.Substitutable;
 
 /**
- * Offset token for limit.
+ * Encrypt column token.
  *
- * @author zhangliang
  * @author panjuan
  */
 @Getter
-public final class OffsetToken extends SQLToken implements Substitutable {
+@ToString
+public final class EncryptColumnToken extends SQLToken implements Substitutable {
     
-    private final int offset;
+    private final Column column;
+    
+    private final boolean isInWhere;
     
     private final int stopIndex;
     
-    public OffsetToken(final int startIndex, final int stopIndex, final int offset) {
+    public EncryptColumnToken(final int startIndex, final int stopIndex, final Column column, final boolean isInWhere) {
         super(startIndex);
-        this.offset = offset;
+        this.column = column;
+        this.isInWhere = isInWhere;
         this.stopIndex = stopIndex;
     }
 }

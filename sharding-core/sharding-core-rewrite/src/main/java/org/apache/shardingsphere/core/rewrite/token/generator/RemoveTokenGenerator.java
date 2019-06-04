@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.rewrite.token.generator;
 import org.apache.shardingsphere.core.parse.sql.segment.RemoveAvailable;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.token.impl.RemoveToken;
+import org.apache.shardingsphere.core.rewrite.token.pojo.RemoveToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Collection;

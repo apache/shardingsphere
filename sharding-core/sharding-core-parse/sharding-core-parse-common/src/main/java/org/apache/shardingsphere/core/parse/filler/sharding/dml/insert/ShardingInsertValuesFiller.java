@@ -28,6 +28,7 @@ import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.SimpleExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.token.impl.InsertColumnsToken;
@@ -57,7 +58,7 @@ public final class ShardingInsertValuesFiller implements SQLSegmentFiller<Insert
         Iterator<String> columnNames = getColumnNames(sqlSegment, insertStatement);
         for (ExpressionSegment each : sqlSegment.getValues()) {
             if (each instanceof SimpleExpressionSegment) {
-                fillShardingCondition(andCondition, insertStatement.getTables().getSingleTableName(), columnNames.next(), (SimpleExpressionSegment) each);
+                fillShardingCondition(andCondition, insertStatement.getTables().getSingleTableName(), columnNames.next(), null, (SimpleExpressionSegment) each);
             }
         }
         insertStatement.getRouteCondition().getOrConditions().add(andCondition);
@@ -70,7 +71,7 @@ public final class ShardingInsertValuesFiller implements SQLSegmentFiller<Insert
     
     private Iterator<String> getColumnNames(final InsertValuesSegment sqlSegment, final InsertStatement insertStatement) {
         Collection<String> result = new ArrayList<>(insertStatement.getColumnNames());
-        result.removeAll(shardingRule.getShardingEncryptorEngine().getAssistedQueryColumns(insertStatement.getTables().getSingleTableName()));
+        result.removeAll(shardingRule.getEncryptRule().getEncryptorEngine().getAssistedQueryColumns(insertStatement.getTables().getSingleTableName()));
         Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTables().getSingleTableName());
         if (insertStatement.getColumnNames().size() != sqlSegment.getValues().size() && generateKeyColumnName.isPresent()) {
             result.remove(generateKeyColumnName.get());
@@ -78,9 +79,10 @@ public final class ShardingInsertValuesFiller implements SQLSegmentFiller<Insert
         return result.iterator();
     }
     
-    private void fillShardingCondition(final AndCondition andCondition, final String tableName, final String columnName, final SimpleExpressionSegment expressionSegment) {
+    private void fillShardingCondition(final AndCondition andCondition, final String tableName,
+                                       final String columnName, final PredicateSegment predicateSegment, final SimpleExpressionSegment expressionSegment) {
         if (shardingRule.isShardingColumn(columnName, tableName)) {
-            andCondition.getConditions().add(new Condition(new Column(columnName, tableName), expressionSegment));
+            andCondition.getConditions().add(new Condition(new Column(columnName, tableName), predicateSegment, expressionSegment));
         }
     }
     
@@ -98,7 +100,7 @@ public final class ShardingInsertValuesFiller implements SQLSegmentFiller<Insert
     
     private void reviseInsertColumnNames(final InsertValuesSegment sqlSegment, final InsertStatement insertStatement) {
         Collection<String> result = new ArrayList<>(insertStatement.getColumnNames());
-        result.removeAll(shardingRule.getShardingEncryptorEngine().getAssistedQueryColumns(insertStatement.getTables().getSingleTableName()));
+        result.removeAll(shardingRule.getEncryptRule().getEncryptorEngine().getAssistedQueryColumns(insertStatement.getTables().getSingleTableName()));
         Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTables().getSingleTableName());
         if (insertStatement.getColumnNames().size() != sqlSegment.getValues().size() && generateKeyColumnName.isPresent()) {
             result.remove(generateKeyColumnName.get());

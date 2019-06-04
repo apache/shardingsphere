@@ -15,9 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql;
+package org.apache.shardingsphere.core.parse.rule.fixture;
 
-public enum DatabaseTypeEnum {
+import org.antlr.v4.runtime.Lexer;
+import org.apache.shardingsphere.core.parse.api.SQLParser;
+import org.apache.shardingsphere.core.parse.spi.SQLParserEntry;
+
+import java.util.Collection;
+import java.util.Collections;
+
+public final class TestParserEntry implements SQLParserEntry {
     
-    H2, MySQL, Oracle, SQLServer, PostgreSQL
+    @Override
+    public String getDatabaseType() {
+        return "MySQL";
+    }
+    
+    @Override
+    public Collection<String> getDatabaseTypeAliases() {
+        return Collections.emptyList();
+    }
+    
+    @Override
+    public Class<? extends Lexer> getLexerClass() {
+        return null;
+    }
+    
+    @Override
+    public Class<? extends SQLParser> getParserClass() {
+        return null;
+    }
 }

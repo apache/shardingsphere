@@ -34,4 +34,6 @@ public abstract class LimitValueSegment implements SQLSegment {
     private final int startIndex;
     
     private final int stopIndex;
+    
+    private final boolean boundOpened;
 }

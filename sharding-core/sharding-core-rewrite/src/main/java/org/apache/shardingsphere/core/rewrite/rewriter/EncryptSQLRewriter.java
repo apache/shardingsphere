@@ -23,13 +23,14 @@ import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResult;
 import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResultUnit;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
+import org.apache.shardingsphere.core.parse.sql.context.condition.ParseCondition;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
-import org.apache.shardingsphere.core.parse.sql.token.impl.EncryptColumnToken;
+import org.apache.shardingsphere.core.rewrite.token.pojo.EncryptColumnToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.InsertSetAddItemsToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.InsertSetEncryptValueToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.InsertValuesToken;
@@ -144,11 +145,24 @@ public final class EncryptSQLRewriter implements SQLRewriter {
     }
     
     private void appendEncryptColumnPlaceholder(final SQLBuilder sqlBuilder, final EncryptColumnToken encryptColumnToken, final ParameterBuilder parameterBuilder) {
-        Optional<Condition> encryptCondition = ((AbstractSQLStatement) sqlStatement).getEncryptCondition(encryptColumnToken);
+        Optional<Condition> encryptCondition = getEncryptCondition(sqlStatement.getEncryptCondition(), encryptColumnToken);
         Preconditions.checkArgument(!encryptColumnToken.isInWhere() || encryptCondition.isPresent(), "Can not find encrypt condition");
         ShardingPlaceholder result = encryptColumnToken.isInWhere() ? getEncryptColumnPlaceholderFromConditions(encryptColumnToken, encryptCondition.get(), parameterBuilder) 
                 : getEncryptColumnPlaceholderFromUpdateItem(encryptColumnToken, parameterBuilder);
         sqlBuilder.appendPlaceholder(result);
+    }
+    
+    private Optional<Condition> getEncryptCondition(final ParseCondition encryptCondition, final EncryptColumnToken encryptColumnToken) {
+        for (Condition each : encryptCondition.findConditions(encryptColumnToken.getColumn())) {
+            if (isSameIndexes(each.getPredicateSegment(), encryptColumnToken)) {
+                return Optional.of(each);
+            }
+        }
+        return Optional.absent();
+    }
+    
+    private boolean isSameIndexes(final PredicateSegment predicateSegment, final EncryptColumnToken encryptColumnToken) {
+        return predicateSegment.getStartIndex() == encryptColumnToken.getStartIndex() && predicateSegment.getStopIndex() == encryptColumnToken.getStopIndex();
     }
     
     private WhereEncryptColumnPlaceholder getEncryptColumnPlaceholderFromConditions(

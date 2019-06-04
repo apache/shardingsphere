@@ -25,6 +25,7 @@ import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.execute.ShardingExecuteEngine;
 import org.apache.shardingsphere.core.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
+import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.core.strategy.encrypt.ShardingEncryptorEngine;
@@ -87,7 +88,9 @@ public abstract class AbstractBaseExecutorTest {
         when(shardingEncryptor.decrypt(anyString())).thenReturn("decryptValue");
         ShardingEncryptorEngine shardingEncryptorEngine = mock(ShardingEncryptorEngine.class);
         when(shardingEncryptorEngine.getShardingEncryptor(anyString(), anyString())).thenReturn(Optional.of(shardingEncryptor));
-        when(shardingRule.getShardingEncryptorEngine()).thenReturn(shardingEncryptorEngine);
+        EncryptRule encryptRule = mock(EncryptRule.class);
+        when(encryptRule.getEncryptorEngine()).thenReturn(shardingEncryptorEngine);
+        when(shardingRule.getEncryptRule()).thenReturn(encryptRule);
         when(shardingRule.findTableRuleByActualTable("table_x")).thenReturn(Optional.<TableRule>absent());
         return shardingRule;
     }

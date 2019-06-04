@@ -100,8 +100,8 @@ public final class ProxySQLExecuteCallback extends SQLExecuteCallback<ExecuteRes
         LogicSchema logicSchema = backendConnection.getLogicSchema();
         if (logicSchema instanceof ShardingSchema) {
             ShardingRule shardingRule = logicSchema.getShardingRule();
-            return connectionMode == ConnectionMode.MEMORY_STRICTLY ? new StreamQueryResult(resultSet, shardingRule, shardingRule.getShardingEncryptorEngine()) 
-                    : new MemoryQueryResult(resultSet, shardingRule, shardingRule.getShardingEncryptorEngine());
+            return connectionMode == ConnectionMode.MEMORY_STRICTLY ? new StreamQueryResult(resultSet, shardingRule, shardingRule.getEncryptRule().getEncryptorEngine()) 
+                    : new MemoryQueryResult(resultSet, shardingRule, shardingRule.getEncryptRule().getEncryptorEngine());
         }
         if (logicSchema instanceof EncryptSchema) {
             EncryptSchema encryptSchema = (EncryptSchema) logicSchema;

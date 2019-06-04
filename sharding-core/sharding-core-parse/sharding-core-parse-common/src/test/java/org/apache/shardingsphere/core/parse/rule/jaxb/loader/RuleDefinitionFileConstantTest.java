@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.parse.rule.jaxb.loader;
 
-import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -32,7 +31,7 @@ public final class RuleDefinitionFileConstantTest {
     
     @Test
     public void assertGetExtractorRuleDefinitionFile() {
-        assertThat(RuleDefinitionFileConstant.getExtractorRuleDefinitionFile("sharding", DatabaseType.MySQL), is("META-INF/parsing-rule-definition/sharding/mysql/extractor-rule-definition.xml"));
+        assertThat(RuleDefinitionFileConstant.getExtractorRuleDefinitionFile("sharding", "MySQL"), is("META-INF/parsing-rule-definition/sharding/mysql/extractor-rule-definition.xml"));
     }
     
     @Test
@@ -47,12 +46,12 @@ public final class RuleDefinitionFileConstantTest {
     
     @Test
     public void assertGetFillerRuleDefinitionFile() {
-        assertThat(RuleDefinitionFileConstant.getFillerRuleDefinitionFile("sharding", DatabaseType.MySQL), is("META-INF/parsing-rule-definition/sharding/mysql/filler-rule-definition.xml"));
+        assertThat(RuleDefinitionFileConstant.getFillerRuleDefinitionFile("sharding", "MySQL"), is("META-INF/parsing-rule-definition/sharding/mysql/filler-rule-definition.xml"));
     }
     
     @Test
     public void assertGetSQLStatementRuleDefinitionFile() {
         assertThat(
-                RuleDefinitionFileConstant.getSQLStatementRuleDefinitionFile("sharding", DatabaseType.MySQL), is("META-INF/parsing-rule-definition/sharding/mysql/sql-statement-rule-definition.xml"));
+                RuleDefinitionFileConstant.getSQLStatementRuleDefinitionFile("sharding", "MySQL"), is("META-INF/parsing-rule-definition/sharding/mysql/sql-statement-rule-definition.xml"));
     }
 }

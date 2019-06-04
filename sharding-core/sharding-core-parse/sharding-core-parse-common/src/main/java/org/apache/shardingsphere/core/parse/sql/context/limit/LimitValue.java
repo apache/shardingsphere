@@ -21,6 +21,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.LimitValueSegment;
 
 /**
  * Limit value.
@@ -37,5 +38,5 @@ public final class LimitValue {
     
     private int index;
     
-    private boolean boundOpened;
+    private LimitValueSegment limitValueSegment;
 }

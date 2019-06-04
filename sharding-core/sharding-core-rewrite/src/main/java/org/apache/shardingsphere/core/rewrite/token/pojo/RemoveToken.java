@@ -15,23 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.integrate.jaxb.token;
+package org.apache.shardingsphere.core.rewrite.token.pojo;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.ToString;
+import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
+import org.apache.shardingsphere.core.parse.sql.token.Substitutable;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-
+/**
+ * Remove token.
+ *
+ * @author zhangliang
+ * @author panjuan
+ */
 @Getter
-@Setter
-@XmlAccessorType(XmlAccessType.FIELD)
-public final class ExpectedRowCountToken {
+@ToString
+public final class RemoveToken extends SQLToken implements Substitutable {
     
-    @XmlAttribute(name = "begin-position")
-    private int beginPosition;
+    private final int stopIndex;
     
-    @XmlAttribute(name = "row-count")
-    private int rowCount;
+    public RemoveToken(final int startIndex, final int stopIndex) {
+        super(startIndex);
+        this.stopIndex = stopIndex;
+    }
 }

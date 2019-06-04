@@ -33,6 +33,10 @@ public final class EncryptRule implements BaseRule {
     
     private final ShardingEncryptorEngine encryptorEngine;
     
+    public EncryptRule() {
+        encryptorEngine = new ShardingEncryptorEngine();
+    }
+    
     public EncryptRule(final EncryptRuleConfiguration encryptRuleConfiguration) {
         encryptorEngine = new ShardingEncryptorEngine(encryptRuleConfiguration);
     }
