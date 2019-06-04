@@ -103,23 +103,23 @@ public final class ShardingRowNumberPredicateFiller implements SQLSegmentFiller<
         for (PredicateSegment each : rowNumberPredicates) {
             ExpressionSegment expression = ((PredicateCompareRightValue) each.getRightValue()).getExpression();
             switch (((PredicateCompareRightValue) each.getRightValue()).getOperator()) {
-                case "<":
-                    rowCount = createLimitValueSegment(expression, false);
-                    break;
-                case "<=":
-                    rowCount = createLimitValueSegment(expression, true);
-                    break;
                 case ">":
                     offset = createLimitValueSegment(expression, false);
                     break;
                 case ">=":
                     offset = createLimitValueSegment(expression, true);
                     break;
+                case "<":
+                    rowCount = createLimitValueSegment(expression, false);
+                    break;
+                case "<=":
+                    rowCount = createLimitValueSegment(expression, true);
+                    break;
                 default:
                     break;
             }
         }
-        selectStatement.setLimit(new LimitSegment(-1, -1, rowCount, offset));
+        selectStatement.setLimit(new LimitSegment(-1, -1, offset, rowCount));
     }
     
     private LimitValueSegment createLimitValueSegment(final ExpressionSegment expression, final boolean boundOpened) {

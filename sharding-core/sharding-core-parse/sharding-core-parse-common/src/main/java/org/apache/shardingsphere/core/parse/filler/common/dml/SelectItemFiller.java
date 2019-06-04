@@ -109,7 +109,7 @@ public final class SelectItemFiller implements SQLSegmentFiller<SelectItemSegmen
     }
     
     private void fillTopSegment(final TopSegment topSegment, final SelectStatement selectStatement) {
-        selectStatement.setLimit(new LimitSegment(topSegment.getStartIndex(), topSegment.getStopIndex(), topSegment.getTop(), null));
+        selectStatement.setLimit(new LimitSegment(topSegment.getStartIndex(), topSegment.getStopIndex(), null, topSegment.getTop()));
         selectStatement.getItems().add(new CommonSelectItem("rownum", Optional.of(topSegment.getRowNumberAlias())));
     }
 }
