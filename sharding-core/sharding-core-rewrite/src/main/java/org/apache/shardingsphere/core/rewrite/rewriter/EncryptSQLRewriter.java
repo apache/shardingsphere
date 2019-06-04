@@ -30,12 +30,13 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateS
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
-import org.apache.shardingsphere.core.rewrite.token.pojo.EncryptColumnToken;
+import org.apache.shardingsphere.core.parse.sql.token.impl.InsertAssistedColumnsToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.InsertSetAddItemsToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.InsertSetEncryptValueToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.InsertValuesToken;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
+import org.apache.shardingsphere.core.rewrite.placeholder.InsertAssistedColumnsPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertSetAddItemsPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertSetEncryptValuePlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertValuePlaceholder;
@@ -44,6 +45,7 @@ import org.apache.shardingsphere.core.rewrite.placeholder.ShardingPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.UpdateEncryptAssistedItemPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.UpdateEncryptItemPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.WhereEncryptColumnPlaceholder;
+import org.apache.shardingsphere.core.rewrite.token.pojo.EncryptColumnToken;
 import org.apache.shardingsphere.core.rule.ColumnNode;
 import org.apache.shardingsphere.core.strategy.encrypt.ShardingEncryptorEngine;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
@@ -119,6 +121,8 @@ public final class EncryptSQLRewriter implements SQLRewriter {
             appendInsertSetEncryptValuePlaceholder(sqlBuilder, (InsertSetEncryptValueToken) sqlToken, insertOptimizeResult);
         } else if (sqlToken instanceof InsertSetAddItemsToken) {
             appendInsertSetAddItemsPlaceholder(sqlBuilder, (InsertSetAddItemsToken) sqlToken, insertOptimizeResult);
+        } else if (sqlToken instanceof InsertAssistedColumnsToken) {
+            appendInsertAssistedColumnsPlaceholder(sqlBuilder, (InsertAssistedColumnsToken) sqlToken);
         } else if (sqlToken instanceof EncryptColumnToken) {
             appendEncryptColumnPlaceholder(sqlBuilder, (EncryptColumnToken) sqlToken, parameterBuilder);
         }
@@ -142,6 +146,10 @@ public final class EncryptSQLRewriter implements SQLRewriter {
             columnValues.add(insertOptimizeResult.getUnits().get(0).getColumnSQLExpression(each));
         }
         sqlBuilder.appendPlaceholder(new InsertSetAddItemsPlaceholder(new LinkedList<>(insertSetAddItemsToken.getColumnNames()), columnValues));
+    }
+    
+    private void appendInsertAssistedColumnsPlaceholder(final SQLBuilder sqlBuilder, final InsertAssistedColumnsToken insertAssistedColumnsToken) {
+        sqlBuilder.appendPlaceholder(new InsertAssistedColumnsPlaceholder(insertAssistedColumnsToken.getColumns(), insertAssistedColumnsToken.isToAddCloseParenthesis()));
     }
     
     private void appendEncryptColumnPlaceholder(final SQLBuilder sqlBuilder, final EncryptColumnToken encryptColumnToken, final ParameterBuilder parameterBuilder) {
