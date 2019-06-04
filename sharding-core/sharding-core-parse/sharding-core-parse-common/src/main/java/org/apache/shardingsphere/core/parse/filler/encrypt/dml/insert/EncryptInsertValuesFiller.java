@@ -18,12 +18,17 @@
 package org.apache.shardingsphere.core.parse.filler.encrypt.dml.insert;
 
 import com.google.common.base.Optional;
+import lombok.Setter;
+import org.apache.shardingsphere.core.parse.filler.api.EncryptRuleAwareFiller;
 import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.token.impl.InsertValuesToken;
+import org.apache.shardingsphere.core.rule.EncryptRule;
+
+import java.util.Collection;
 
 /**
  * Insert values filler for encrypt.
@@ -31,7 +36,10 @@ import org.apache.shardingsphere.core.parse.sql.token.impl.InsertValuesToken;
  * @author zhangliang
  * @author panjuan
  */
-public final class EncryptInsertValuesFiller implements SQLSegmentFiller<InsertValuesSegment> {
+@Setter
+public final class EncryptInsertValuesFiller implements SQLSegmentFiller<InsertValuesSegment>, EncryptRuleAwareFiller {
+    
+    private EncryptRule encryptRule;
     
     @Override
     public void fill(final InsertValuesSegment sqlSegment, final SQLStatement sqlStatement) {
@@ -39,10 +47,28 @@ public final class EncryptInsertValuesFiller implements SQLSegmentFiller<InsertV
         InsertValue insertValue = new InsertValue(sqlSegment.getValues());
         insertStatement.getValues().add(insertValue);
         insertStatement.setParametersIndex(insertStatement.getParametersIndex() + insertValue.getParametersCount());
-        fillWithInsertValuesToken(sqlSegment, insertStatement);
+        reviseInsertStatement(insertStatement, sqlSegment);
     }
     
-    private void fillWithInsertValuesToken(final InsertValuesSegment sqlSegment, final InsertStatement insertStatement) {
+    private void reviseInsertStatement(final InsertStatement insertStatement, final InsertValuesSegment sqlSegment) {
+        reviseInsertColumnNames(insertStatement);
+        setNeededToAppendAssistedColumns(insertStatement);
+        fillWithInsertValuesToken(insertStatement, sqlSegment);
+        
+    }
+    
+    private void reviseInsertColumnNames(final InsertStatement insertStatement) {
+        insertStatement.getColumnNames().removeAll(encryptRule.getEncryptorEngine().getAssistedQueryColumns(insertStatement.getTables().getSingleTableName()));
+    }
+    
+    private void setNeededToAppendAssistedColumns(final InsertStatement insertStatement) {
+        Collection<String> assistedQueryColumns = encryptRule.getEncryptorEngine().getAssistedQueryColumns(insertStatement.getTables().getSingleTableName());
+        if (!assistedQueryColumns.isEmpty()) {
+            insertStatement.setNeededToAppendAssistedColumns(true);
+        }
+    }
+    
+    private void fillWithInsertValuesToken(final InsertStatement insertStatement, final InsertValuesSegment sqlSegment) {
         Optional<InsertValuesToken> insertValuesToken = insertStatement.findSQLToken(InsertValuesToken.class);
         if (insertValuesToken.isPresent()) {
             int startIndex = insertValuesToken.get().getStartIndex() < sqlSegment.getStartIndex() ? insertValuesToken.get().getStartIndex() : sqlSegment.getStartIndex();
