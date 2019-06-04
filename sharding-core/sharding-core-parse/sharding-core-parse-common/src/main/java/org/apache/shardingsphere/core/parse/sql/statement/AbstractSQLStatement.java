@@ -69,17 +69,6 @@ public abstract class AbstractSQLStatement implements SQLStatement {
     }
     
     @Override
-    @SuppressWarnings("unchecked")
-    public final <T extends SQLToken> Optional<T> findSQLToken(final Class<T> sqlTokenType) {
-        for (SQLToken each : sqlTokens) {
-            if (each.getClass().equals(sqlTokenType)) {
-                return Optional.of((T) each);
-            }
-        }
-        return Optional.absent();
-    }
-    
-    @Override
     public final List<SQLToken> getSQLTokens() {
         Collections.sort(sqlTokens);
         return sqlTokens;

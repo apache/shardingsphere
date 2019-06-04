@@ -77,15 +77,6 @@ public interface SQLStatement {
     void addSQLToken(SQLToken sqlToken);
     
     /**
-     * Find SQL token.
-     *
-     * @param sqlTokenType SQL token type
-     * @param <T> type of SQL token
-     * @return SQL token
-     */
-    <T extends SQLToken> Optional<T> findSQLToken(Class<T> sqlTokenType);
-    
-    /**
      * Get SQL tokens.
      * 
      * @return SQL tokens
