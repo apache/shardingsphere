@@ -37,6 +37,7 @@ import org.apache.shardingsphere.core.rule.BindingTableRule;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -109,12 +110,12 @@ public final class SQLRewriteEngine {
     /**
      * Initialize SQL rewrite engine.
      * 
-     * @param parameterRewriter parameter rewriter
+     * @param parameterRewriters parameter rewriters
      * @param sqlRewriters SQL rewriters
      */
-    public void init(final ParameterRewriter parameterRewriter, final SQLRewriter... sqlRewriters) {
-        if (null != parameterRewriter) {
-            parameterRewriter.rewrite(parameterBuilder);
+    public void init(final Collection<ParameterRewriter> parameterRewriters, final Collection<SQLRewriter> sqlRewriters) {
+        for (ParameterRewriter each : parameterRewriters) {
+            each.rewrite(parameterBuilder);
         }
         if (sqlTokens.isEmpty()) {
             baseSQLRewriter.appendWholeSQL(sqlBuilder);

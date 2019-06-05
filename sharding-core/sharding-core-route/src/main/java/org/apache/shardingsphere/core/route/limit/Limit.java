@@ -67,10 +67,6 @@ public final class Limit {
      * @param parameters SQL parameters
      */
     public void fillParameters(final List<Object> parameters) {
-        fill(parameters);
-    }
-    
-    private void fill(final List<Object> parameters) {
         int offset = 0;
         if (null != this.offset) {
             offset = -1 == this.offset.getIndex() ? getOffsetValue() : NumberUtil.roundHalfUp(parameters.get(this.offset.getIndex()));
