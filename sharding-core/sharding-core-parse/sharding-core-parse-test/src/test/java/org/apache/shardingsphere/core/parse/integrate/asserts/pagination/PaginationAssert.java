@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.integrate.asserts.limit;
+package org.apache.shardingsphere.core.parse.integrate.asserts.pagination;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.integrate.asserts.SQLStatementAssertMessage;
-import org.apache.shardingsphere.core.parse.integrate.jaxb.limit.ExpectedLimit;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.pagination.ExpectedPagination;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.NumberLiteralPaginationValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.ParameterMarkerPaginationValueSegment;
@@ -47,7 +47,7 @@ public final class PaginationAssert {
      * @param actual actual pagination
      * @param expected expected pagination
      */
-    public void assertPagination(final PaginationSegment actual, final ExpectedLimit expected) {
+    public void assertPagination(final PaginationSegment actual, final ExpectedPagination expected) {
         if (null == actual) {
             assertNull(assertMessage.getFullAssertMessage("Pagination should not exist: "), expected);
             return;

@@ -21,9 +21,9 @@ import org.apache.shardingsphere.core.parse.integrate.asserts.condition.Conditio
 import org.apache.shardingsphere.core.parse.integrate.asserts.groupby.GroupByAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.index.IndexAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.item.ItemAssert;
-import org.apache.shardingsphere.core.parse.integrate.asserts.limit.PaginationAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.meta.TableMetaDataAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.orderby.OrderByAssert;
+import org.apache.shardingsphere.core.parse.integrate.asserts.pagination.PaginationAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.table.AlterTableAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.table.TableAssert;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.root.ParserResult;
@@ -118,7 +118,7 @@ public final class SQLStatementAssert {
         itemAssert.assertItems(actual.getItems(), expected.getSelectItems());
         groupByAssert.assertGroupByItems(actual.getGroupByItems(), expected.getGroupByColumns());
         orderByAssert.assertOrderByItems(actual.getOrderByItems(), expected.getOrderByColumns());
-        paginationAssert.assertPagination(actual.getPagination(), expected.getLimit());
+        paginationAssert.assertPagination(actual.getPagination(), expected.getPagination());
     }
     
     private void assertCreateTableStatement(final CreateTableStatement actual) {

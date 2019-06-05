@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.route.limit;
+package org.apache.shardingsphere.core.route.pagination;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationValueSegment;
 
 /**
- * Limit value.
+ * Pagination value.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-public final class LimitValue {
+public final class PaginationValue {
     
-    private final PaginationValueSegment paginationValueSegment;
+    private final PaginationValueSegment segment;
     
     private final int value;
 }

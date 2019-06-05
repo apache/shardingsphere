@@ -15,22 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.segment.dml.limit;
+package org.apache.shardingsphere.core.parse.integrate.jaxb.pagination;
 
 import lombok.Getter;
+import lombok.Setter;
 
-/**
- * Limit value segment for parameter marker.
- * 
- * @author zhangliang
- */
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+
 @Getter
-public final class ParameterMarkerLimitValueSegment extends LimitValueSegment {
+@Setter
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class ExpectedPagination {
     
-    private final int parameterIndex;
+    @XmlAttribute
+    private Integer offset;
     
-    public ParameterMarkerLimitValueSegment(final int startIndex, final int stopIndex, final int parameterIndex, final boolean boundOpened) {
-        super(startIndex, stopIndex, boundOpened);
-        this.parameterIndex = parameterIndex;
-    }
+    @XmlAttribute(name = "row-count")
+    private Integer rowCount;
+    
+    @XmlAttribute(name = "offset-index")
+    private Integer offsetParameterIndex;
+    
+    @XmlAttribute(name = "row-count-index")
+    private Integer rowCountParameterIndex;
 }
