@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.top;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.LimitValueSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.rownum.RowNumberValueSegment;
 
 /**
  * Top segment.
@@ -37,7 +37,7 @@ public final class TopSegment implements SelectItemSegment {
     
     private final String text;
     
-    private final LimitValueSegment top;
+    private final RowNumberValueSegment top;
     
     private final String rowNumberAlias;
 }

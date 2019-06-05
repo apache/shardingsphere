@@ -22,6 +22,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.NumberLit
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.ParameterMarkerPaginationValueSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.LimitValueSegment;
 
 import java.util.HashMap;
 import java.util.List;
@@ -74,35 +75,26 @@ public final class Pagination {
     /**
      * Get revise parameters.
      * 
-     * @param isFetchAll is fetch all data or not
-     * @param databaseType database type
+     * @param isMaxRowCount is max row count
      * @return revised parameters and parameters' indexes
      */
-    public Map<Integer, Object> getRevisedParameters(final boolean isFetchAll, final String databaseType) {
+    public Map<Integer, Object> getRevisedParameters(final boolean isMaxRowCount) {
         Map<Integer, Object> result = new HashMap<>(2, 1);
         if (null != offset && offset.getSegment() instanceof ParameterMarkerPaginationValueSegment) {
             result.put(((ParameterMarkerPaginationValueSegment) offset.getSegment()).getParameterIndex(), 0);
         }
         if (null != rowCount && rowCount.getSegment() instanceof ParameterMarkerPaginationValueSegment) {
-            result.put(((ParameterMarkerPaginationValueSegment) rowCount.getSegment()).getParameterIndex(), getRewriteRowCount(isFetchAll, databaseType));
+            result.put(((ParameterMarkerPaginationValueSegment) rowCount.getSegment()).getParameterIndex(), isMaxRowCount ? Integer.MAX_VALUE : getRevisedRowCount());
         }
         return result;
     }
     
-    private int getRewriteRowCount(final boolean isFetchAll, final String databaseType) {
-        if (isFetchAll) {
-            return Integer.MAX_VALUE;
-        }
-        return isNeedRewriteRowCount(databaseType) ? getOffsetValue() + rowCount.getValue() : rowCount.getValue();
-    }
-    
     /**
-     * Judge is need rewrite row count or not.
+     * Get revised row count.
      * 
-     * @param databaseType database type
-     * @return is need rewrite row count or not
+     * @return revised row count
      */
-    public boolean isNeedRewriteRowCount(final String databaseType) {
-        return "MySQL".equals(databaseType) || "PostgreSQL".equals(databaseType) || "H2".equals(databaseType);
+    public int getRevisedRowCount() {
+        return rowCount.getSegment() instanceof LimitValueSegment ? getOffsetValue() + rowCount.getValue() : rowCount.getValue();
     }
 }
