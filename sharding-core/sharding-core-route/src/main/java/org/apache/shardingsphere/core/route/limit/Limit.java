@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.route.limit;
 
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.parse.exception.SQLParsingException;
 import org.apache.shardingsphere.core.util.NumberUtil;
@@ -35,13 +34,17 @@ import java.util.Map;
  * @author zhangyonglun
  */
 @Getter
-@Setter
 @ToString
 public final class Limit {
     
     private LimitValue offset;
     
     private LimitValue rowCount;
+    
+    public Limit(final LimitValue offset, final LimitValue rowCount) {
+        this.offset = offset;
+        this.rowCount = rowCount;
+    }
     
     /**
      * Get offset value.

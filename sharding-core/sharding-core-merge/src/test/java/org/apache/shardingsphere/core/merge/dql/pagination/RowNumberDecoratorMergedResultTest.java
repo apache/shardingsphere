@@ -71,9 +71,7 @@ public final class RowNumberDecoratorMergedResultTest {
     
     @Test
     public void assertNextForSkipAll() throws SQLException {
-        Limit limit = new Limit();
-        limit.setOffset(new LimitValue(Integer.MAX_VALUE, -1, new NumberLiteralLimitValueSegment(0, 0, 2, true)));
-        routeResult.setLimit(limit);
+        routeResult.setLimit(new Limit(new LimitValue(Integer.MAX_VALUE, -1, new NumberLiteralLimitValueSegment(0, 0, 2, true)), null));
         mergeEngine = new DQLMergeEngine(DatabaseType.Oracle, routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertFalse(actual.next());
@@ -81,7 +79,7 @@ public final class RowNumberDecoratorMergedResultTest {
     
     @Test
     public void assertNextWithoutOffsetWithoutRowCount() throws SQLException {
-        routeResult.setLimit(new Limit());
+        routeResult.setLimit(new Limit(null, null));
         mergeEngine = new DQLMergeEngine(DatabaseType.Oracle, routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
         for (int i = 0; i < 8; i++) {
@@ -92,10 +90,7 @@ public final class RowNumberDecoratorMergedResultTest {
     
     @Test
     public void assertNextForRowCountBoundOpenedFalse() throws SQLException {
-        Limit limit = new Limit();
-        limit.setOffset(new LimitValue(2, -1, new NumberLiteralLimitValueSegment(0, 0, 2, true)));
-        limit.setRowCount(new LimitValue(4, -1, new NumberLiteralLimitValueSegment(0, 0, 4, false)));
-        routeResult.setLimit(limit);
+        routeResult.setLimit(new Limit(new LimitValue(2, -1, new NumberLiteralLimitValueSegment(0, 0, 2, true)), new LimitValue(4, -1, new NumberLiteralLimitValueSegment(0, 0, 4, false))));
         mergeEngine = new DQLMergeEngine(DatabaseType.Oracle, routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertTrue(actual.next());
@@ -105,10 +100,7 @@ public final class RowNumberDecoratorMergedResultTest {
     
     @Test
     public void assertNextForRowCountBoundOpenedTrue() throws SQLException {
-        Limit limit = new Limit();
-        limit.setOffset(new LimitValue(2, -1, new NumberLiteralLimitValueSegment(0, 0, 2, true)));
-        limit.setRowCount(new LimitValue(4, -1, new NumberLiteralLimitValueSegment(0, 0, 4, true)));
-        routeResult.setLimit(limit);
+        routeResult.setLimit(new Limit(new LimitValue(2, -1, new NumberLiteralLimitValueSegment(0, 0, 2, true)), new LimitValue(4, -1, new NumberLiteralLimitValueSegment(0, 0, 4, true))));
         mergeEngine = new DQLMergeEngine(DatabaseType.Oracle, routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertTrue(actual.next());

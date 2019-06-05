@@ -196,14 +196,15 @@ public final class ParsingSQLRouter implements ShardingRouter {
     }
     
     private Limit createLimit(final LimitSegment limitSegment) {
-        Limit result = new Limit();
+        LimitValue offset = null;
         if (limitSegment.getOffset().isPresent()) {
-            result.setOffset(createLimitValue(limitSegment.getOffset().get()));
+            offset = createLimitValue(limitSegment.getOffset().get());
         }
+        LimitValue rowCount = null;
         if (limitSegment.getRowCount().isPresent()) {
-            result.setRowCount(createLimitValue(limitSegment.getRowCount().get()));
+            rowCount = createLimitValue(limitSegment.getRowCount().get());
         }
-        return result; 
+        return new Limit(offset, rowCount);
     }
     
     private LimitValue createLimitValue(final LimitValueSegment limitValueSegment) {
