@@ -26,7 +26,6 @@ import org.apache.shardingsphere.core.rewrite.rewriter.sql.BaseSQLRewriter;
 import org.apache.shardingsphere.core.rewrite.rewriter.sql.SQLRewriter;
 import org.apache.shardingsphere.core.rewrite.token.BaseTokenGenerateEngine;
 import org.apache.shardingsphere.core.rewrite.token.EncryptTokenGenerateEngine;
-import org.apache.shardingsphere.core.rewrite.token.MasterSlaveTokenGenerateEngine;
 import org.apache.shardingsphere.core.rewrite.token.ShardingTokenGenerateEngine;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SQLToken;
 import org.apache.shardingsphere.core.route.SQLUnit;
@@ -100,8 +99,6 @@ public final class SQLRewriteEngine {
             result.addAll(new EncryptTokenGenerateEngine().generateSQLTokens(sqlStatement, shardingRule.getEncryptRule(), isSingleRoute));
         } else if (baseRule instanceof EncryptRule) {
             result.addAll(new EncryptTokenGenerateEngine().generateSQLTokens(sqlStatement, (EncryptRule) baseRule, isSingleRoute));
-        } else {
-            result.addAll(new MasterSlaveTokenGenerateEngine().generateSQLTokens(sqlStatement, null, isSingleRoute));
         }
         Collections.sort(result);
         return result;

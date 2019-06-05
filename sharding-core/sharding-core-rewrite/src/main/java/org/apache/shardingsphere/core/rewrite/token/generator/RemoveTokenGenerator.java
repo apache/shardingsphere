@@ -21,7 +21,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.RemoveAvailable;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.rewrite.token.pojo.RemoveToken;
-import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.rule.BaseRule;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -31,10 +31,10 @@ import java.util.LinkedList;
  *
  * @author zhangliang
  */
-public final class RemoveTokenGenerator implements CollectionSQLTokenGenerator<ShardingRule> {
+public final class RemoveTokenGenerator implements CollectionSQLTokenGenerator<BaseRule> {
     
     @Override
-    public Collection<RemoveToken> generateSQLTokens(final SQLStatement sqlStatement, final ShardingRule shardingRule) {
+    public Collection<RemoveToken> generateSQLTokens(final SQLStatement sqlStatement, final BaseRule baseRule) {
         Collection<RemoveToken> result = new LinkedList<>();
         for (SQLSegment each : sqlStatement.getSqlSegments()) {
             if (each instanceof RemoveAvailable) {
