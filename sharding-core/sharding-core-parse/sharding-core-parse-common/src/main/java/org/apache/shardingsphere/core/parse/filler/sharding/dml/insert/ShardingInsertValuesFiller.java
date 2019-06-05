@@ -28,16 +28,14 @@ import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.SimpleExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.parse.sql.token.impl.InsertColumnsToken;
-import org.apache.shardingsphere.core.parse.sql.token.impl.InsertValuesToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedList;
 
 /**
  * Insert values filler for sharding.
@@ -57,20 +55,19 @@ public final class ShardingInsertValuesFiller implements SQLSegmentFiller<Insert
         Iterator<String> columnNames = getColumnNames(sqlSegment, insertStatement);
         for (ExpressionSegment each : sqlSegment.getValues()) {
             if (each instanceof SimpleExpressionSegment) {
-                fillShardingCondition(andCondition, insertStatement.getTables().getSingleTableName(), columnNames.next(), (SimpleExpressionSegment) each);
+                fillShardingCondition(andCondition, insertStatement.getTables().getSingleTableName(), columnNames.next(), null, (SimpleExpressionSegment) each);
             }
         }
         insertStatement.getRouteCondition().getOrConditions().add(andCondition);
         InsertValue insertValue = new InsertValue(sqlSegment.getValues());
         insertStatement.getValues().add(insertValue);
         insertStatement.setParametersIndex(insertStatement.getParametersIndex() + insertValue.getParametersCount());
-        fillWithInsertValuesToken(sqlSegment, insertStatement);
-        reviseInsertColumnNames(sqlSegment, insertStatement);
+        reviseInsertStatement(insertStatement, sqlSegment);
     }
     
     private Iterator<String> getColumnNames(final InsertValuesSegment sqlSegment, final InsertStatement insertStatement) {
         Collection<String> result = new ArrayList<>(insertStatement.getColumnNames());
-        result.removeAll(shardingRule.getShardingEncryptorEngine().getAssistedQueryColumns(insertStatement.getTables().getSingleTableName()));
+        result.removeAll(shardingRule.getEncryptRule().getEncryptorEngine().getAssistedQueryColumns(insertStatement.getTables().getSingleTableName()));
         Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTables().getSingleTableName());
         if (insertStatement.getColumnNames().size() != sqlSegment.getValues().size() && generateKeyColumnName.isPresent()) {
             result.remove(generateKeyColumnName.get());
@@ -78,44 +75,50 @@ public final class ShardingInsertValuesFiller implements SQLSegmentFiller<Insert
         return result.iterator();
     }
     
-    private void fillShardingCondition(final AndCondition andCondition, final String tableName, final String columnName, final SimpleExpressionSegment expressionSegment) {
+    private void fillShardingCondition(final AndCondition andCondition, final String tableName,
+                                       final String columnName, final PredicateSegment predicateSegment, final SimpleExpressionSegment expressionSegment) {
         if (shardingRule.isShardingColumn(columnName, tableName)) {
-            andCondition.getConditions().add(new Condition(new Column(columnName, tableName), expressionSegment));
+            andCondition.getConditions().add(new Condition(new Column(columnName, tableName), predicateSegment, expressionSegment));
         }
     }
     
-    private void fillWithInsertValuesToken(final InsertValuesSegment sqlSegment, final InsertStatement insertStatement) {
-        Optional<InsertValuesToken> insertValuesToken = insertStatement.findSQLToken(InsertValuesToken.class);
-        if (insertValuesToken.isPresent()) {
-            int startIndex = insertValuesToken.get().getStartIndex() < sqlSegment.getStartIndex() ? insertValuesToken.get().getStartIndex() : sqlSegment.getStartIndex();
-            int stopIndex = insertValuesToken.get().getStopIndex() > sqlSegment.getStopIndex() ? insertValuesToken.get().getStopIndex() : sqlSegment.getStopIndex();
-            insertStatement.getSQLTokens().remove(insertValuesToken.get());
-            insertStatement.getSQLTokens().add(new InsertValuesToken(startIndex, stopIndex));
-        } else {
-            insertStatement.getSQLTokens().add(new InsertValuesToken(sqlSegment.getStartIndex(), sqlSegment.getStopIndex()));
-        }
+    private void reviseInsertStatement(final InsertStatement insertStatement, final InsertValuesSegment sqlSegment) {
+        reviseInsertColumnNames(insertStatement, sqlSegment);
+        setNeededToAppendGeneratedKey(insertStatement);
+        setNeededToAppendAssistedColumns(insertStatement);
     }
     
-    private void reviseInsertColumnNames(final InsertValuesSegment sqlSegment, final InsertStatement insertStatement) {
-        Collection<String> result = new ArrayList<>(insertStatement.getColumnNames());
-        result.removeAll(shardingRule.getShardingEncryptorEngine().getAssistedQueryColumns(insertStatement.getTables().getSingleTableName()));
+    private void reviseInsertColumnNames(final InsertStatement insertStatement, final InsertValuesSegment sqlSegment) {
+        Collection<String> insertColumns = new ArrayList<>(insertStatement.getColumnNames());
+        insertColumns.removeAll(getAssistedQueryColumns(insertStatement));
         Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTables().getSingleTableName());
         if (insertStatement.getColumnNames().size() != sqlSegment.getValues().size() && generateKeyColumnName.isPresent()) {
-            result.remove(generateKeyColumnName.get());
-            reviseInsertColumnsToken(insertStatement, generateKeyColumnName.get(), result);
+            insertColumns.remove(generateKeyColumnName.get());
         }
         insertStatement.getColumnNames().clear();
-        insertStatement.getColumnNames().addAll(result);
+        insertStatement.getColumnNames().addAll(insertColumns);
     }
     
-    private void reviseInsertColumnsToken(final InsertStatement insertStatement, final String generateKeyColumnName, final Collection<String> columnNames) {
-        Optional<InsertColumnsToken> insertColumnsToken = insertStatement.findSQLToken(InsertColumnsToken.class);
-        Collection<String> assistedColumns = new LinkedList<>(insertColumnsToken.get().getColumns());
-        assistedColumns.removeAll(columnNames);
-        assistedColumns.remove(generateKeyColumnName);
-        insertColumnsToken.get().getColumns().clear();
-        insertColumnsToken.get().getColumns().addAll(columnNames);
-        insertColumnsToken.get().getColumns().add(generateKeyColumnName);
-        insertColumnsToken.get().getColumns().addAll(assistedColumns);
+    private void setNeededToAppendGeneratedKey(final InsertStatement insertStatement) {
+        Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTables().getSingleTableName());
+        if (generateKeyColumnName.isPresent() && !insertStatement.getColumnNames().contains(generateKeyColumnName.get())) {
+            insertStatement.setNeededToAppendGeneratedKey(true);
+        }
+    }
+    
+    private void setNeededToAppendAssistedColumns(final InsertStatement insertStatement) {
+        Collection<String> assistedQueryColumns = getAssistedQueryColumns(insertStatement);
+        if (!assistedQueryColumns.isEmpty()) {
+            insertStatement.setNeededToAppendAssistedColumns(true);
+        }
+    }
+    
+    private Collection<String> getAssistedQueryColumns(final InsertStatement insertStatement) {
+        Collection<String> result = new ArrayList<>();
+        Collection<String> assistedQueryColumns = shardingRule.getEncryptRule().getEncryptorEngine().getAssistedQueryColumns(insertStatement.getTables().getSingleTableName());
+        if (!assistedQueryColumns.isEmpty()) {
+            result.addAll(assistedQueryColumns);
+        }
+        return result;
     }
 }

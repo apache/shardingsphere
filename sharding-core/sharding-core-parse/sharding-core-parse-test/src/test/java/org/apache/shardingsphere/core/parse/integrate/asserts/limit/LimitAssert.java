@@ -20,7 +20,9 @@ package org.apache.shardingsphere.core.parse.integrate.asserts.limit;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.integrate.asserts.SQLStatementAssertMessage;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.limit.ExpectedLimit;
-import org.apache.shardingsphere.core.parse.sql.context.limit.Limit;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.LimitSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.NumberLiteralLimitValueSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.ParameterMarkerLimitValueSegment;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -45,24 +47,28 @@ public final class LimitAssert {
      * @param actual actual limit
      * @param expected expected limit
      */
-    public void assertLimit(final Limit actual, final ExpectedLimit expected) {
+    public void assertLimit(final LimitSegment actual, final ExpectedLimit expected) {
         if (null == actual) {
             assertNull(assertMessage.getFullAssertMessage("Limit should not exist: "), expected);
             return;
         }
         if (SQLCaseType.Placeholder == sqlCaseType) {
-            if (null != actual.getOffset()) {
-                assertThat(assertMessage.getFullAssertMessage("Limit offset index assertion error: "), actual.getOffset().getIndex(), is(expected.getOffsetParameterIndex()));
+            if (actual.getOffset().isPresent()) {
+                assertThat(assertMessage.getFullAssertMessage("Limit offset index assertion error: "),
+                        ((ParameterMarkerLimitValueSegment) actual.getOffset().get()).getParameterIndex(), is(expected.getOffsetParameterIndex()));
             }
-            if (null != actual.getRowCount()) {
-                assertThat(assertMessage.getFullAssertMessage("Limit row count index assertion error: "), actual.getRowCount().getIndex(), is(expected.getRowCountParameterIndex()));
+            if (actual.getRowCount().isPresent()) {
+                assertThat(assertMessage.getFullAssertMessage("Limit row count index assertion error: "), 
+                        ((ParameterMarkerLimitValueSegment) actual.getRowCount().get()).getParameterIndex(), is(expected.getRowCountParameterIndex()));
             }
         } else {
-            if (null != actual.getOffset()) {
-                assertThat(assertMessage.getFullAssertMessage("Limit offset value assertion error: "), actual.getOffset().getValue(), is(expected.getOffset()));
+            if (actual.getOffset().isPresent()) {
+                assertThat(assertMessage.getFullAssertMessage("Limit offset value assertion error: "), 
+                        ((NumberLiteralLimitValueSegment) actual.getOffset().get()).getValue(), is(expected.getOffset()));
             }
-            if (null != actual.getRowCount()) {
-                assertThat(assertMessage.getFullAssertMessage("Limit row count value assertion error: "), actual.getRowCount().getValue(), is(expected.getRowCount()));
+            if (actual.getRowCount().isPresent()) {
+                assertThat(assertMessage.getFullAssertMessage("Limit row count value assertion error: "),
+                        ((NumberLiteralLimitValueSegment) actual.getRowCount().get()).getValue(), is(expected.getRowCount()));
             }
         }
     }

@@ -44,8 +44,6 @@ public final class IteratorStreamMergedResultTest {
     
     private List<QueryResult> queryResults;
     
-    private SelectStatement selectStatement;
-    
     private SQLRouteResult routeResult;
     
     @Before
@@ -53,11 +51,8 @@ public final class IteratorStreamMergedResultTest {
         ResultSet resultSet = mock(ResultSet.class);
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
         when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
-        queryResults = Lists.<QueryResult>newArrayList(
-                new TestQueryResult(resultSet), new TestQueryResult(mock(ResultSet.class)), new TestQueryResult(mock(ResultSet.class)));
-        selectStatement = new SelectStatement();
-        routeResult = new SQLRouteResult(selectStatement);
-        routeResult.setLimit(selectStatement.getLimit());
+        queryResults = Lists.<QueryResult>newArrayList(new TestQueryResult(resultSet), new TestQueryResult(mock(ResultSet.class)), new TestQueryResult(mock(ResultSet.class)));
+        routeResult = new SQLRouteResult(new SelectStatement());
     }
     
     @Test

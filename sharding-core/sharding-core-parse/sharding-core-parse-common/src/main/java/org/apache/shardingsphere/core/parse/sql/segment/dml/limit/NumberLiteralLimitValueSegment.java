@@ -29,8 +29,8 @@ public final class NumberLiteralLimitValueSegment extends LimitValueSegment {
     
     private final int value;
     
-    public NumberLiteralLimitValueSegment(final int startIndex, final int stopIndex, final int value) {
-        super(startIndex, stopIndex);
+    public NumberLiteralLimitValueSegment(final int startIndex, final int stopIndex, final int value, final boolean boundOpened) {
+        super(startIndex, stopIndex, boundOpened);
         this.value = value;
     }
 }

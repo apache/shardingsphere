@@ -77,15 +77,6 @@ public interface SQLStatement {
     void addSQLToken(SQLToken sqlToken);
     
     /**
-     * Find SQL token.
-     *
-     * @param sqlTokenType SQL token type
-     * @param <T> type of SQL token
-     * @return SQL token
-     */
-    <T extends SQLToken> Optional<T> findSQLToken(Class<T> sqlTokenType);
-    
-    /**
      * Get SQL tokens.
      * 
      * @return SQL tokens
@@ -119,4 +110,22 @@ public interface SQLStatement {
      * @param logicTable logic SQL
      */
     void setLogicSQL(String logicTable);
+    
+    /**
+     * Find SQL segment.
+     *
+     * @param sqlSegmentType SQL segment type
+     * @param <T> type of SQL segment
+     * @return SQL segment
+     */
+    <T extends SQLSegment> Optional<T> findSQLSegment(Class<T> sqlSegmentType);
+    
+    /**
+     * Find SQL segment.
+     *
+     * @param sqlSegmentType SQL segment type
+     * @param <T> type of SQL segment
+     * @return SQL segments
+     */
+    <T extends SQLSegment> Collection<T> findSQLSegments(Class<T> sqlSegmentType);
 }

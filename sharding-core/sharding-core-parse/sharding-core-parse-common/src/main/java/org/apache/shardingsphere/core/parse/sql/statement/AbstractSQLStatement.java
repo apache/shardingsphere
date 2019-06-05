@@ -24,13 +24,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.constant.SQLType;
-import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
 import org.apache.shardingsphere.core.parse.sql.context.condition.ParseCondition;
 import org.apache.shardingsphere.core.parse.sql.context.table.Tables;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
-import org.apache.shardingsphere.core.parse.sql.token.impl.EncryptColumnToken;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -72,10 +69,16 @@ public abstract class AbstractSQLStatement implements SQLStatement {
     }
     
     @Override
+    public final List<SQLToken> getSQLTokens() {
+        Collections.sort(sqlTokens);
+        return sqlTokens;
+    }
+    
+    @Override
     @SuppressWarnings("unchecked")
-    public final <T extends SQLToken> Optional<T> findSQLToken(final Class<T> sqlTokenType) {
-        for (SQLToken each : sqlTokens) {
-            if (each.getClass().equals(sqlTokenType)) {
+    public final <T extends SQLSegment> Optional<T> findSQLSegment(final Class<T> sqlSegmentType) {
+        for (SQLSegment each : sqlSegments) {
+            if (each.getClass().equals(sqlSegmentType)) {
                 return Optional.of((T) each);
             }
         }
@@ -83,37 +86,14 @@ public abstract class AbstractSQLStatement implements SQLStatement {
     }
     
     @Override
-    public final List<SQLToken> getSQLTokens() {
-        Collections.sort(sqlTokens);
-        return sqlTokens;
-    }
-    
-    /**
-     * Get encrypt condition.
-     * 
-     * @param encryptColumnToken encrypt column token
-     * @return encrypt condition
-     */
-    public Optional<Condition> getEncryptCondition(final EncryptColumnToken encryptColumnToken) {
-        List<Condition> conditions = encryptCondition.findConditions(encryptColumnToken.getColumn());
-        if (conditions.isEmpty()) {
-            return Optional.absent();
-        }
-        if (1 == conditions.size()) {
-            return Optional.of(conditions.iterator().next());
-        }
-        return Optional.of(conditions.get(getEncryptConditionIndex(encryptColumnToken)));
-    }
-    
-    private int getEncryptConditionIndex(final EncryptColumnToken encryptColumnToken) {
-        int result = 0;
-        for (SQLToken each : sqlTokens) {
-            if (each.equals(encryptColumnToken)) {
-                return result;
-            } else if (each instanceof EncryptColumnToken) {
-                result++;
+    @SuppressWarnings("unchecked")
+    public final <T extends SQLSegment> Collection<T> findSQLSegments(final Class<T> sqlSegmentType) {
+        Collection<T> result = new LinkedList<>();
+        for (SQLSegment each : sqlSegments) {
+            if (each.getClass().equals(sqlSegmentType)) {
+                result.add((T) each);
             }
         }
-        throw new ShardingException("Index Out Of Bounds For sqlTokens.");
+        return result;
     }
 }

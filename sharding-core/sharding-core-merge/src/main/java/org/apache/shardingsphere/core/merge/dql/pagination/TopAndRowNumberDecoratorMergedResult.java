@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.merge.dql.pagination;
 
 import org.apache.shardingsphere.core.merge.MergedResult;
 import org.apache.shardingsphere.core.merge.dql.common.DecoratorMergedResult;
-import org.apache.shardingsphere.core.parse.sql.context.limit.Limit;
+import org.apache.shardingsphere.core.route.limit.Limit;
 
 import java.sql.SQLException;
 
@@ -47,7 +47,7 @@ public final class TopAndRowNumberDecoratorMergedResult extends DecoratorMergedR
         if (null == limit.getOffset()) {
             end = 0;
         } else {
-            end = limit.getOffset().isBoundOpened() ? limit.getOffsetValue() - 1 : limit.getOffsetValue();
+            end = limit.getOffset().getLimitValueSegment().isBoundOpened() ? limit.getOffsetValue() - 1 : limit.getOffsetValue();
         }
         for (int i = 0; i < end; i++) {
             if (!getMergedResult().next()) {

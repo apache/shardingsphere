@@ -16,4 +16,3 @@
 #
 
 org.apache.shardingsphere.core.parse.MySQLParserEntry
-org.apache.shardingsphere.core.parse.H2ParserEntry

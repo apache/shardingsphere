@@ -23,13 +23,13 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.parse.sql.context.condition.ParseCondition;
-import org.apache.shardingsphere.core.parse.sql.context.limit.Limit;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.DistinctSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.StarSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.table.Table;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.LimitSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.IndexOrderByItemSegment;
@@ -55,6 +55,12 @@ import java.util.Set;
 @ToString(callSuper = true, exclude = "parentStatement")
 public final class SelectStatement extends DQLStatement {
     
+    private final Set<SelectItem> items = new LinkedHashSet<>();
+    
+    private final List<OrderByItemSegment> groupByItems = new LinkedList<>();
+    
+    private final List<OrderByItemSegment> orderByItems = new LinkedList<>();
+    
     private boolean containStar;
     
     private int firstSelectItemStartIndex;
@@ -63,13 +69,7 @@ public final class SelectStatement extends DQLStatement {
     
     private int groupByLastIndex;
     
-    private final Set<SelectItem> items = new LinkedHashSet<>();
-    
-    private final List<OrderByItemSegment> groupByItems = new LinkedList<>();
-    
-    private final List<OrderByItemSegment> orderByItems = new LinkedList<>();
-    
-    private Limit limit;
+    private LimitSegment limit;
     
     private SelectStatement parentStatement;
     

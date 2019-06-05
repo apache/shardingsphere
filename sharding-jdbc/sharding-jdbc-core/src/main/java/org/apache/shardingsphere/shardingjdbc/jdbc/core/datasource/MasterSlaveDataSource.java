@@ -55,7 +55,7 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
         super(dataSourceMap);
         cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap);
         this.masterSlaveRule = new MasterSlaveRule(masterSlaveRuleConfig);
-        parseEngine = new MasterSlaveSQLParseEntry(getDatabaseType());
+        parseEngine = new MasterSlaveSQLParseEntry(getDatabaseType().name());
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
     }
     
@@ -64,7 +64,7 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
         cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap);
         this.masterSlaveRule = masterSlaveRule;
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
-        parseEngine = new MasterSlaveSQLParseEntry(getDatabaseType());
+        parseEngine = new MasterSlaveSQLParseEntry(getDatabaseType().name());
     }
     
     private DatabaseMetaData createCachedDatabaseMetaData(final Map<String, DataSource> dataSourceMap) throws SQLException {

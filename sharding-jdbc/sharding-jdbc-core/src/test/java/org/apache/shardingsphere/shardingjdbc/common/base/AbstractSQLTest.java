@@ -27,7 +27,6 @@ import org.h2.tools.RunScript;
 import org.junit.BeforeClass;
 
 import javax.sql.DataSource;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -35,7 +34,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 
 public abstract class AbstractSQLTest {
@@ -49,13 +47,7 @@ public abstract class AbstractSQLTest {
     
     @BeforeClass
     public static synchronized void initDataSource() {
-        try {
-            Properties prop = new Properties();
-            prop.load(AbstractSQLTest.class.getClassLoader().getResourceAsStream("integrate/env.properties"));
-            createDataSources();
-        } catch (final IOException ex) {
-            ex.printStackTrace();
-        }
+        createDataSources();
     }
     
     private static void createDataSources() {
@@ -91,7 +83,7 @@ public abstract class AbstractSQLTest {
     private static void createSchema(final String dbName, final DatabaseType dbType) {
         try {
             Connection conn = databaseTypeMap.get(dbType).get(dbName).getConnection();
-            RunScript.execute(conn, new InputStreamReader(AbstractSQLTest.class.getClassLoader().getResourceAsStream("integrate/cases/jdbc/jdbc_init.sql")));
+            RunScript.execute(conn, new InputStreamReader(AbstractSQLTest.class.getClassLoader().getResourceAsStream("jdbc_init.sql")));
             conn.close();
         } catch (final SQLException ex) {
             ex.printStackTrace();

@@ -46,8 +46,8 @@ public final class QueryOptimizeEngineTest {
     
     @Test
     public void assertOptimizeAlwaysFalseListConditions() {
-        Condition condition1 = new Condition(new Column("column", "tbl"), Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 2)));
-        Condition condition2 = new Condition(new Column("column", "tbl"), new LiteralExpressionSegment(0, 0, 3));
+        Condition condition1 = new Condition(new Column("column", "tbl"), null, Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 2)));
+        Condition condition2 = new Condition(new Column("column", "tbl"), null, new LiteralExpressionSegment(0, 0, 3));
         AndCondition andCondition = new AndCondition();
         andCondition.getConditions().add(condition1);
         andCondition.getConditions().add(condition2);
@@ -59,8 +59,8 @@ public final class QueryOptimizeEngineTest {
     
     @Test
     public void assertOptimizeAlwaysFalseRangeConditions() {
-        Condition condition1 = new Condition(new Column("column", "tbl"), new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 2));
-        Condition condition2 = new Condition(new Column("column", "tbl"), new LiteralExpressionSegment(0, 0, 3), new LiteralExpressionSegment(0, 0, 4));
+        Condition condition1 = new Condition(new Column("column", "tbl"), null, new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 2));
+        Condition condition2 = new Condition(new Column("column", "tbl"), null, new LiteralExpressionSegment(0, 0, 3), new LiteralExpressionSegment(0, 0, 4));
         AndCondition andCondition = new AndCondition();
         andCondition.getConditions().add(condition1);
         andCondition.getConditions().add(condition2);
@@ -72,8 +72,8 @@ public final class QueryOptimizeEngineTest {
     
     @Test
     public void assertOptimizeAlwaysFalseListConditionsAndRangeConditions() {
-        Condition condition1 = new Condition(new Column("column", "tbl"), Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 2)));
-        Condition condition2 = new Condition(new Column("column", "tbl"), new LiteralExpressionSegment(0, 0, 3), new LiteralExpressionSegment(0, 0, 4));
+        Condition condition1 = new Condition(new Column("column", "tbl"), null, Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 2)));
+        Condition condition2 = new Condition(new Column("column", "tbl"), null, new LiteralExpressionSegment(0, 0, 3), new LiteralExpressionSegment(0, 0, 4));
         AndCondition andCondition = new AndCondition();
         andCondition.getConditions().add(condition1);
         andCondition.getConditions().add(condition2);
@@ -86,8 +86,8 @@ public final class QueryOptimizeEngineTest {
     @SuppressWarnings("unchecked")
     @Test
     public void assertOptimizeListConditions() {
-        Condition condition1 = new Condition(new Column("column", "tbl"), Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 2)));
-        Condition condition2 = new Condition(new Column("column", "tbl"), new LiteralExpressionSegment(0, 0, 1));
+        Condition condition1 = new Condition(new Column("column", "tbl"), null, Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 2)));
+        Condition condition2 = new Condition(new Column("column", "tbl"), null, new LiteralExpressionSegment(0, 0, 1));
         AndCondition andCondition = new AndCondition();
         andCondition.getConditions().add(condition1);
         andCondition.getConditions().add(condition2);
@@ -105,8 +105,8 @@ public final class QueryOptimizeEngineTest {
     @SuppressWarnings("unchecked")
     @Test
     public void assertOptimizeRangeConditions() {
-        Condition condition1 = new Condition(new Column("column", "tbl"), new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 2));
-        Condition condition2 = new Condition(new Column("column", "tbl"), new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 3));
+        Condition condition1 = new Condition(new Column("column", "tbl"), null, new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 2));
+        Condition condition2 = new Condition(new Column("column", "tbl"), null, new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 3));
         AndCondition andCondition = new AndCondition();
         andCondition.getConditions().add(condition1);
         andCondition.getConditions().add(condition2);
@@ -124,8 +124,8 @@ public final class QueryOptimizeEngineTest {
     @SuppressWarnings("unchecked")
     @Test
     public void assertOptimizeListConditionsAndRangeConditions() {
-        Condition condition1 = new Condition(new Column("column", "tbl"), Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 2)));
-        Condition condition2 = new Condition(new Column("column", "tbl"), new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 2));
+        Condition condition1 = new Condition(new Column("column", "tbl"), null, Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 2)));
+        Condition condition2 = new Condition(new Column("column", "tbl"), null, new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 2));
         AndCondition andCondition = new AndCondition();
         andCondition.getConditions().add(condition1);
         andCondition.getConditions().add(condition2);

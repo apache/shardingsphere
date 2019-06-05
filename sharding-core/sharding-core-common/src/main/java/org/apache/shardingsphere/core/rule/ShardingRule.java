@@ -30,7 +30,6 @@ import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
 import org.apache.shardingsphere.core.spi.algorithm.keygen.ShardingKeyGeneratorServiceLoader;
-import org.apache.shardingsphere.core.strategy.encrypt.ShardingEncryptorEngine;
 import org.apache.shardingsphere.core.strategy.route.ShardingStrategy;
 import org.apache.shardingsphere.core.strategy.route.ShardingStrategyFactory;
 import org.apache.shardingsphere.core.strategy.route.hint.HintShardingStrategy;
@@ -71,7 +70,7 @@ public class ShardingRule implements BaseRule {
     
     private final Collection<MasterSlaveRule> masterSlaveRules;
     
-    private final ShardingEncryptorEngine shardingEncryptorEngine;
+    private final EncryptRule encryptRule;
     
     public ShardingRule(final ShardingRuleConfiguration shardingRuleConfig, final Collection<String> dataSourceNames) {
         Preconditions.checkArgument(!dataSourceNames.isEmpty(), "Data sources cannot be empty.");
@@ -84,7 +83,7 @@ public class ShardingRule implements BaseRule {
         defaultTableShardingStrategy = createDefaultShardingStrategy(shardingRuleConfig.getDefaultTableShardingStrategyConfig());
         defaultShardingKeyGenerator = createDefaultKeyGenerator(shardingRuleConfig.getDefaultKeyGeneratorConfig());
         masterSlaveRules = createMasterSlaveRules(shardingRuleConfig.getMasterSlaveRuleConfigs());
-        shardingEncryptorEngine = createShardingEncryptorEngine(shardingRuleConfig.getEncryptRuleConfig());
+        encryptRule = createEncryptRule(shardingRuleConfig.getEncryptRuleConfig());
     }
     
     private Collection<TableRule> createTableRules(final ShardingRuleConfiguration shardingRuleConfig) {
@@ -138,8 +137,8 @@ public class ShardingRule implements BaseRule {
         return result;
     }
     
-    private ShardingEncryptorEngine createShardingEncryptorEngine(final EncryptRuleConfiguration encryptRuleConfig) {
-        return null == encryptRuleConfig ? new ShardingEncryptorEngine() : new ShardingEncryptorEngine(shardingRuleConfig.getEncryptRuleConfig());
+    private EncryptRule createEncryptRule(final EncryptRuleConfiguration encryptRuleConfig) {
+        return null == encryptRuleConfig ? new EncryptRule() : new EncryptRule(shardingRuleConfig.getEncryptRuleConfig());
     }
     
     /**

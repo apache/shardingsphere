@@ -62,7 +62,6 @@ public final class OrderByStreamMergedResultTest {
         selectStatement = new SelectStatement();
         selectStatement.getOrderByItems().add(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC));
         routeResult = new SQLRouteResult(selectStatement);
-        routeResult.setLimit(selectStatement.getLimit());
     }
     
     @Test

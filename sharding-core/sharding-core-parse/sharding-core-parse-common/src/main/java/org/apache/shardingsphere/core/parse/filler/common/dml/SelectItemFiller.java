@@ -19,10 +19,7 @@ package org.apache.shardingsphere.core.parse.filler.common.dml;
 
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.constant.DerivedColumn;
 import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.sql.context.limit.Limit;
-import org.apache.shardingsphere.core.parse.sql.context.limit.LimitValue;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.CommonSelectItem;
@@ -35,15 +32,10 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.item.ColumnSelectIte
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.ExpressionSelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.ShorthandSelectItemSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.LimitValueSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.NumberLiteralLimitValueSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.ParameterMarkerLimitValueSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.LimitSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.TopSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.core.parse.sql.token.impl.AggregationDistinctToken;
-import org.apache.shardingsphere.core.parse.sql.token.impl.RowCountToken;
-import org.apache.shardingsphere.core.parse.sql.token.impl.SelectItemPrefixToken;
 
 /**
  * Select item filler.
@@ -110,12 +102,6 @@ public final class SelectItemFiller implements SQLSegmentFiller<SelectItemSegmen
     private void fillAggregationDistinctSelectItemSegment(final AggregationDistinctSelectItemSegment selectItemSegment, final SelectStatement selectStatement) {
         selectStatement.getItems().add(new AggregationDistinctSelectItem(selectItemSegment.getType(), selectStatement.getLogicSQL().substring(selectItemSegment.getInnerExpressionStartIndex(), 
                 selectItemSegment.getStopIndex() + 1), selectItemSegment.getAlias(), selectItemSegment.getDistinctExpression()));
-        Optional<String> derivedAlias = Optional.absent();
-        if (DerivedColumn.isDerivedColumn(selectItemSegment.getAlias().get())) {
-            derivedAlias = Optional.of(selectItemSegment.getAlias().get());
-        }
-        selectStatement.getSQLTokens().add(new AggregationDistinctToken(selectItemSegment.getStartIndex(), selectItemSegment.getStopIndex(), selectItemSegment.getDistinctExpression(), derivedAlias));
-        setSelectItemPrefixToken(selectStatement);
     }
     
     private void fillSubquerySegment(final SubquerySegment subquerySegment, final SQLStatement sqlStatement) {
@@ -123,24 +109,7 @@ public final class SelectItemFiller implements SQLSegmentFiller<SelectItemSegmen
     }
     
     private void fillTopSegment(final TopSegment topSegment, final SelectStatement selectStatement) {
-        Limit limit = new Limit();
-        limit.setRowCount(getTopValueSegment(topSegment.getTop()));
-        selectStatement.setLimit(limit);
-        if (-1 != limit.getRowCount().getValue()) {
-            selectStatement.addSQLToken(new RowCountToken(topSegment.getTop().getStartIndex(), topSegment.getTop().getStopIndex(), limit.getRowCount().getValue()));
-        }
+        selectStatement.setLimit(new LimitSegment(topSegment.getStartIndex(), topSegment.getStopIndex(), null, topSegment.getTop()));
         selectStatement.getItems().add(new CommonSelectItem("rownum", Optional.of(topSegment.getRowNumberAlias())));
-    }
-    
-    private LimitValue getTopValueSegment(final LimitValueSegment topValueSegment) {
-        return topValueSegment instanceof ParameterMarkerLimitValueSegment ? new LimitValue(-1, ((ParameterMarkerLimitValueSegment) topValueSegment).getParameterIndex(), false)
-                : new LimitValue(((NumberLiteralLimitValueSegment) topValueSegment).getValue(), -1, false);
-    }
-    
-    private void setSelectItemPrefixToken(final SelectStatement selectStatement) {
-        Optional<SelectItemPrefixToken> selectItemPrefixToken = selectStatement.findSQLToken(SelectItemPrefixToken.class);
-        if (selectItemPrefixToken.isPresent()) {
-            selectItemPrefixToken.get().setToAppendDistinct(true);
-        }
     }
 }

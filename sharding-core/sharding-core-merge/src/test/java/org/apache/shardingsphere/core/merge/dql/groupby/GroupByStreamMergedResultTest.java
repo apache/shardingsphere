@@ -82,7 +82,6 @@ public final class GroupByStreamMergedResultTest {
         selectStatement.getGroupByItems().add(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, OrderDirection.ASC));
         selectStatement.getOrderByItems().add(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, OrderDirection.ASC));
         routeResult = new SQLRouteResult(selectStatement);
-        routeResult.setLimit(selectStatement.getLimit());
     }
     
     private ResultSet mockResultSet() throws SQLException {

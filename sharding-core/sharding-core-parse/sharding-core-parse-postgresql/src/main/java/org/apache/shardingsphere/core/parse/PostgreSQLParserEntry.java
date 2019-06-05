@@ -22,6 +22,9 @@ import org.apache.shardingsphere.core.parse.api.SQLParser;
 import org.apache.shardingsphere.core.parse.autogen.PostgreSQLStatementLexer;
 import org.apache.shardingsphere.core.parse.spi.SQLParserEntry;
 
+import java.util.Collection;
+import java.util.Collections;
+
 /**
  * SQL parser entry for PostgreSQL.
  *
@@ -32,6 +35,11 @@ public final class PostgreSQLParserEntry implements SQLParserEntry {
     @Override
     public String getDatabaseType() {
         return "PostgreSQL";
+    }
+    
+    @Override
+    public Collection<String> getDatabaseTypeAliases() {
+        return Collections.emptyList();
     }
     
     @Override

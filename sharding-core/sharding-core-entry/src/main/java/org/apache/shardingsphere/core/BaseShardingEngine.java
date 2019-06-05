@@ -24,6 +24,9 @@ import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
 import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
+import org.apache.shardingsphere.core.rewrite.rewriter.parameter.ShardingParameterRewriter;
+import org.apache.shardingsphere.core.rewrite.rewriter.sql.EncryptSQLRewriter;
+import org.apache.shardingsphere.core.rewrite.rewriter.sql.ShardingSQLRewriter;
 import org.apache.shardingsphere.core.route.RouteUnit;
 import org.apache.shardingsphere.core.route.SQLLogger;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
@@ -100,7 +103,11 @@ public abstract class BaseShardingEngine {
     }
     
     private Collection<RouteUnit> rewriteAndConvert(final List<Object> parameters, final SQLRouteResult sqlRouteResult) {
-        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, databaseType, sqlRouteResult, parameters);
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, sqlRouteResult.getSqlStatement(), parameters, sqlRouteResult.getRoutingResult().isSingleRouting());
+        ShardingParameterRewriter shardingParameterRewriter = new ShardingParameterRewriter(databaseType, sqlRouteResult);
+        ShardingSQLRewriter shardingSQLRewriter = new ShardingSQLRewriter(shardingRule, databaseType, sqlRouteResult, sqlRouteResult.getOptimizeResult());
+        EncryptSQLRewriter encryptSQLRewriter = new EncryptSQLRewriter(shardingRule.getEncryptRule().getEncryptorEngine(), sqlRouteResult.getSqlStatement(), sqlRouteResult.getOptimizeResult());
+        rewriteEngine.init(shardingParameterRewriter, shardingSQLRewriter, encryptSQLRewriter);
         Collection<RouteUnit> result = new LinkedHashSet<>();
         for (RoutingUnit each : sqlRouteResult.getRoutingResult().getRoutingUnits()) {
             result.add(new RouteUnit(each.getDataSourceName(), rewriteEngine.generateSQL(each)));

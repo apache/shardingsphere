@@ -63,6 +63,6 @@ public final class PreparedStatementRoutingEngine {
         if (null == sqlStatement) {
             sqlStatement = shardingRouter.parse(logicSQL, true);
         }
-        return masterSlaveRouter.route(shardingRouter.route(logicSQL, parameters, sqlStatement));
+        return masterSlaveRouter.route(shardingRouter.route(sqlStatement, parameters));
     }
 }

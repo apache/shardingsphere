@@ -18,18 +18,17 @@
 package org.apache.shardingsphere.core.rewrite;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.constant.DatabaseType;
-import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
-import org.apache.shardingsphere.core.rewrite.rewriter.BaseSQLRewriter;
-import org.apache.shardingsphere.core.rewrite.rewriter.EncryptSQLRewriter;
-import org.apache.shardingsphere.core.rewrite.rewriter.ShardingSQLRewriter;
+import org.apache.shardingsphere.core.rewrite.rewriter.parameter.ParameterRewriter;
+import org.apache.shardingsphere.core.rewrite.rewriter.sql.BaseSQLRewriter;
+import org.apache.shardingsphere.core.rewrite.rewriter.sql.SQLRewriter;
+import org.apache.shardingsphere.core.rewrite.token.BaseTokenGenerateEngine;
+import org.apache.shardingsphere.core.rewrite.token.EncryptTokenGenerateEngine;
 import org.apache.shardingsphere.core.rewrite.token.MasterSlaveTokenGenerateEngine;
 import org.apache.shardingsphere.core.rewrite.token.ShardingTokenGenerateEngine;
-import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.SQLUnit;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.route.type.TableUnit;
@@ -37,107 +36,97 @@ import org.apache.shardingsphere.core.rule.BaseRule;
 import org.apache.shardingsphere.core.rule.BindingTableRule;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.core.strategy.encrypt.ShardingEncryptorEngine;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 /**
  * SQL rewrite engine.
  * 
- * <p>Rewrite logic SQL to actual SQL.</p>
- *
  * @author panjuan
+ * @author zhangliang
  */
 public final class SQLRewriteEngine {
     
     private final BaseRule baseRule;
     
-    private final DatabaseType databaseType;
-    
-    private final SQLRouteResult sqlRouteResult;
-    
     private final SQLStatement sqlStatement;
+    
+    private final List<SQLToken> sqlTokens;
     
     private final SQLBuilder sqlBuilder;
     
     private final ParameterBuilder parameterBuilder;
     
-    private final List<SQLToken> sqlTokens;
+    private final BaseSQLRewriter baseSQLRewriter;
     
-    public SQLRewriteEngine(final ShardingRule shardingRule, final DatabaseType databaseType, final SQLRouteResult sqlRouteResult, final List<Object> parameters) {
+    public SQLRewriteEngine(final ShardingRule shardingRule, final SQLStatement sqlStatement, final List<Object> parameters, final boolean isSingleRoute) {
         baseRule = shardingRule;
-        this.databaseType = databaseType;
-        this.sqlRouteResult = sqlRouteResult;
-        sqlStatement = sqlRouteResult.getSqlStatement();
+        this.sqlStatement = sqlStatement;
+        sqlTokens = createSQLTokens(shardingRule, sqlStatement, isSingleRoute);
         sqlBuilder = new SQLBuilder();
         parameterBuilder = new ParameterBuilder(parameters);
-        sqlTokens = generateSQLTokens(shardingRule);
-        pattern(sqlRouteResult.getOptimizeResult());
+        baseSQLRewriter = new BaseSQLRewriter(sqlStatement, sqlTokens);
     }
     
-    public SQLRewriteEngine(final EncryptRule encryptRule, final DatabaseType databaseType, final SQLStatement sqlStatement, final OptimizeResult optimizeResult, final List<Object> parameters) {
+    public SQLRewriteEngine(final EncryptRule encryptRule, final SQLStatement sqlStatement, final List<Object> parameters) {
         baseRule = encryptRule;
-        this.databaseType = databaseType;
-        sqlRouteResult = null;
         this.sqlStatement = sqlStatement;
+        sqlTokens = createSQLTokens(encryptRule, sqlStatement, true);
         sqlBuilder = new SQLBuilder();
         parameterBuilder = new ParameterBuilder(parameters);
-        sqlTokens = generateSQLTokens(encryptRule);
-        pattern(optimizeResult);
+        baseSQLRewriter = new BaseSQLRewriter(sqlStatement, sqlTokens);
     }
     
     public SQLRewriteEngine(final SQLStatement sqlStatement) {
         baseRule = null;
-        this.databaseType = null;
-        sqlRouteResult = null;
         this.sqlStatement = sqlStatement;
+        sqlTokens = createSQLTokens(null, sqlStatement, true);
         sqlBuilder = new SQLBuilder();
         parameterBuilder = new ParameterBuilder(Collections.emptyList());
-        sqlTokens = generateSQLTokens(null);
-        pattern(null);
+        baseSQLRewriter = new BaseSQLRewriter(sqlStatement, sqlTokens);
     }
     
-    private List<SQLToken> generateSQLTokens(final BaseRule baseRule) {
+    private List<SQLToken> createSQLTokens(final BaseRule baseRule, final SQLStatement sqlStatement, final boolean isSingleRoute) {
+        List<SQLToken> result = new LinkedList<>(sqlStatement.getSQLTokens());
+        result.addAll(new BaseTokenGenerateEngine().generateSQLTokens(sqlStatement, baseRule, isSingleRoute));
         if (baseRule instanceof ShardingRule) {
-            return new ShardingTokenGenerateEngine().generateSQLTokens(sqlStatement, (ShardingRule) baseRule);
-        }
-        if (null == baseRule) {
-            return new MasterSlaveTokenGenerateEngine().generateSQLTokens(sqlStatement, null);
-        }
-        return sqlStatement.getSQLTokens();
-    }
-    
-    private void pattern(final OptimizeResult optimizeResult) {
-        BaseSQLRewriter baseSQLRewriter = new BaseSQLRewriter(sqlStatement, sqlTokens);
-        if (sqlTokens.isEmpty()) {
-            baseSQLRewriter.rewrite(sqlBuilder);
+            ShardingRule shardingRule = (ShardingRule) baseRule;
+            result.addAll(new ShardingTokenGenerateEngine().generateSQLTokens(sqlStatement, shardingRule, isSingleRoute));
+            result.addAll(new EncryptTokenGenerateEngine().generateSQLTokens(sqlStatement, shardingRule.getEncryptRule(), isSingleRoute));
+        } else if (baseRule instanceof EncryptRule) {
+            result.addAll(new EncryptTokenGenerateEngine().generateSQLTokens(sqlStatement, (EncryptRule) baseRule, isSingleRoute));
         } else {
-            rewrite(baseSQLRewriter, new ShardingSQLRewriter(getShardingRule(), sqlStatement.getLogicSQL(), databaseType, sqlStatement, sqlRouteResult),
-                    new EncryptSQLRewriter(getShardingEncryptorEngine(), sqlStatement, optimizeResult));
+            result.addAll(new MasterSlaveTokenGenerateEngine().generateSQLTokens(sqlStatement, null, isSingleRoute));
         }
+        Collections.sort(result);
+        return result;
     }
     
-    private void rewrite(final BaseSQLRewriter baseSQLRewriter, final ShardingSQLRewriter shardingSQLRewriter, final EncryptSQLRewriter encryptSQLRewriter) {
-        baseSQLRewriter.rewriteInitialLiteral(sqlBuilder);
+    /**
+     * Initialize SQL rewrite engine.
+     * 
+     * @param parameterRewriter parameter rewriter
+     * @param sqlRewriters SQL rewriters
+     */
+    public void init(final ParameterRewriter parameterRewriter, final SQLRewriter... sqlRewriters) {
+        if (null != parameterRewriter) {
+            parameterRewriter.rewrite(parameterBuilder);
+        }
+        if (sqlTokens.isEmpty()) {
+            baseSQLRewriter.appendWholeSQL(sqlBuilder);
+            return;
+        }
+        baseSQLRewriter.appendInitialLiteral(sqlBuilder);
         for (SQLToken each : sqlTokens) {
-            shardingSQLRewriter.rewrite(sqlBuilder, parameterBuilder, each);
-            encryptSQLRewriter.rewrite(sqlBuilder, parameterBuilder, each);
+            for (SQLRewriter sqlRewriter : sqlRewriters) {
+                sqlRewriter.rewrite(sqlBuilder, parameterBuilder, each);
+            }
             baseSQLRewriter.rewrite(sqlBuilder, parameterBuilder, each);
         }
-    }
-    
-    private ShardingRule getShardingRule() {
-        return baseRule instanceof ShardingRule ? (ShardingRule) baseRule : null;
-    }
-    
-    private ShardingEncryptorEngine getShardingEncryptorEngine() {
-        if (null == baseRule) {
-            return null;
-        }
-        return baseRule instanceof ShardingRule ? ((ShardingRule) baseRule).getShardingEncryptorEngine() : ((EncryptRule) baseRule).getEncryptorEngine();
     }
     
     /**

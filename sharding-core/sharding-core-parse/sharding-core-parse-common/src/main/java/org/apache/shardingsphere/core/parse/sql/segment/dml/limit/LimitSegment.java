@@ -35,18 +35,9 @@ public final class LimitSegment implements SQLSegment {
     
     private final int stopIndex;
     
-    private final LimitValueSegment rowCount;
-    
     private final LimitValueSegment offset;
     
-    /**
-     * Get row count.
-     *
-     * @return row count
-     */
-    public Optional<LimitValueSegment> getRowCount() {
-        return Optional.fromNullable(rowCount);
-    }
+    private final LimitValueSegment rowCount;
     
     /**
      * Get offset.
@@ -55,5 +46,14 @@ public final class LimitSegment implements SQLSegment {
      */
     public Optional<LimitValueSegment> getOffset() {
         return Optional.fromNullable(offset);
+    }
+    
+    /**
+     * Get row count.
+     *
+     * @return row count
+     */
+    public Optional<LimitValueSegment> getRowCount() {
+        return Optional.fromNullable(rowCount);
     }
 }
