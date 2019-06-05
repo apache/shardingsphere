@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.rewrite.rewriter;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.AggregationType;
@@ -28,6 +29,8 @@ import org.apache.shardingsphere.core.parse.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
+import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationSelectItem;
+import org.apache.shardingsphere.core.parse.sql.context.selectitem.DerivedCommonSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.table.Table;
 import org.apache.shardingsphere.core.parse.sql.segment.common.SchemaSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
@@ -56,8 +59,6 @@ import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
-import org.apache.shardingsphere.core.rewrite.token.pojo.OrderByToken;
-import org.apache.shardingsphere.core.rewrite.token.pojo.SelectItemsToken;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.limit.Limit;
 import org.apache.shardingsphere.core.route.limit.LimitValue;
@@ -149,27 +150,35 @@ public final class ShardingSQLRewriterTest {
     @Test
     public void assertRewriteForOrderByAndGroupByDerivedColumns() {
         selectStatement.getSqlSegments().add(new TableSegment(18, 24, "table_x"));
-        SelectItemsToken selectItemsToken = new SelectItemsToken(12, Arrays.asList("x.id as GROUP_BY_DERIVED_0", "x.name as ORDER_BY_DERIVED_0"));
-        selectStatement.addSQLToken(selectItemsToken);
+        DerivedCommonSelectItem selectItem1 = new DerivedCommonSelectItem("x.id", Optional.of("GROUP_BY_DERIVED_0"));
+        DerivedCommonSelectItem selectItem2 = new DerivedCommonSelectItem("x.name", Optional.of("ORDER_BY_DERIVED_0"));
+        selectStatement.getItems().add(selectItem1);
+        selectStatement.getItems().add(selectItem2);
+        selectStatement.setSelectListStopIndex(11);
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setRoutingResult(new RoutingResult());
         selectStatement.setLogicSQL("SELECT x.age FROM table_x x GROUP BY x.id ORDER BY x.name");
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(DatabaseType.MySQL, Collections.emptyList());
         assertThat(getSQLBuilder(rewriteEngine).toSQL(null, tableTokens), is(
-                "SELECT x.age, x.id as GROUP_BY_DERIVED_0, x.name as ORDER_BY_DERIVED_0 FROM table_1 x GROUP BY x.id ORDER BY x.name"));
+                "SELECT x.age , x.id AS GROUP_BY_DERIVED_0 , x.name AS ORDER_BY_DERIVED_0 FROM table_1 x GROUP BY x.id ORDER BY x.name"));
     }
     
     @Test
     public void assertRewriteForAggregationDerivedColumns() {
         selectStatement.getSqlSegments().add(new TableSegment(23, 29, "table_x"));
-        SelectItemsToken selectItemsToken = new SelectItemsToken(17, Arrays.asList("COUNT(x.age) as AVG_DERIVED_COUNT_0", "SUM(x.age) as AVG_DERIVED_SUM_0"));
-        selectStatement.addSQLToken(selectItemsToken);
+        AggregationSelectItem countSelectItem = new AggregationSelectItem(AggregationType.COUNT, "(x.age)", Optional.of("AVG_DERIVED_COUNT_0"));
+        AggregationSelectItem sumSelectItem = new AggregationSelectItem(AggregationType.SUM, "(x.age)", Optional.of("AVG_DERIVED_SUM_0"));
+        AggregationSelectItem avgSelectItem = new AggregationSelectItem(AggregationType.AVG, "(x.age)", Optional.<String>absent());
+        avgSelectItem.getDerivedAggregationSelectItems().add(countSelectItem);
+        avgSelectItem.getDerivedAggregationSelectItems().add(sumSelectItem);
+        selectStatement.getItems().add(avgSelectItem);
+        selectStatement.setSelectListStopIndex(16);
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setRoutingResult(new RoutingResult());
         selectStatement.setLogicSQL("SELECT AVG(x.age) FROM table_x x");
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(DatabaseType.MySQL, Collections.emptyList());
         assertThat(getSQLBuilder(rewriteEngine).toSQL(null, tableTokens), is(
-                "SELECT AVG(x.age), COUNT(x.age) as AVG_DERIVED_COUNT_0, SUM(x.age) as AVG_DERIVED_SUM_0 FROM table_1 x"));
+                "SELECT AVG(x.age) , COUNT(x.age) AS AVG_DERIVED_COUNT_0 , SUM(x.age) AS AVG_DERIVED_SUM_0 FROM table_1 x"));
     }
     
     @Test
@@ -513,14 +522,16 @@ public final class ShardingSQLRewriterTest {
     @Test
     public void assertRewriteForDerivedOrderBy() {
         selectStatement.setGroupByLastIndex(60);
+        selectStatement.setToAppendOrderByItems(true);
         ColumnSegment columnSegment1 = new ColumnSegment(0, 0, "id");
         columnSegment1.setOwner(new TableSegment(0, 0, "x"));
         ColumnSegment columnSegment2 = new ColumnSegment(0, 0, "name");
         columnSegment2.setOwner(new TableSegment(0, 0, "x"));
+        selectStatement.getGroupByItems().add(new ColumnOrderByItemSegment(0, 0, columnSegment1, OrderDirection.ASC, OrderDirection.ASC));
         selectStatement.getOrderByItems().add(new ColumnOrderByItemSegment(0, 0, columnSegment1, OrderDirection.ASC, OrderDirection.ASC));
+        selectStatement.getGroupByItems().add(new ColumnOrderByItemSegment(0, 0, columnSegment2, OrderDirection.DESC, OrderDirection.ASC));
         selectStatement.getOrderByItems().add(new ColumnOrderByItemSegment(0, 0, columnSegment2, OrderDirection.DESC, OrderDirection.ASC));
         selectStatement.getSqlSegments().add(new TableSegment(25, 31, "table_x"));
-        selectStatement.addSQLToken(new OrderByToken(61));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setRoutingResult(new RoutingResult());
         selectStatement.setLogicSQL("SELECT x.id, x.name FROM table_x x GROUP BY x.id, x.name DESC");
