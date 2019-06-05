@@ -190,9 +190,8 @@ public final class ParsingSQLRouter implements ShardingRouter {
     }
     
     private Limit createLimit(final SelectStatement selectStatement, final List<Object> parameters) {
-        boolean isNeedFetchAll = (!selectStatement.getGroupByItems().isEmpty() || !selectStatement.getAggregationSelectItems().isEmpty()) && !selectStatement.isSameGroupByAndOrderByItems();
         Limit result = createLimit(selectStatement.getLimit());
-        result.processParameters(parameters, isNeedFetchAll, databaseType.name());
+        result.fillParameters(parameters);
         return result;
     }
     

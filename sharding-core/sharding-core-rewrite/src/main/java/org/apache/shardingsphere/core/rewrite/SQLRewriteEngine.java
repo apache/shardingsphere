@@ -23,6 +23,7 @@ import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
 import org.apache.shardingsphere.core.rewrite.rewriter.BaseSQLRewriter;
+import org.apache.shardingsphere.core.rewrite.rewriter.ParameterRewriter;
 import org.apache.shardingsphere.core.rewrite.rewriter.SQLRewriter;
 import org.apache.shardingsphere.core.rewrite.token.BaseTokenGenerateEngine;
 import org.apache.shardingsphere.core.rewrite.token.EncryptTokenGenerateEngine;
@@ -108,9 +109,13 @@ public final class SQLRewriteEngine {
     /**
      * Initialize SQL rewrite engine.
      * 
+     * @param parameterRewriter parameter rewriter
      * @param sqlRewriters SQL rewriters
      */
-    public void init(final SQLRewriter... sqlRewriters) {
+    public void init(final ParameterRewriter parameterRewriter, final SQLRewriter... sqlRewriters) {
+        if (null != parameterRewriter) {
+            parameterRewriter.rewrite(parameterBuilder);
+        }
         if (sqlTokens.isEmpty()) {
             baseSQLRewriter.appendWholeSQL(sqlBuilder);
             return;

@@ -23,7 +23,9 @@ import lombok.ToString;
 import org.apache.shardingsphere.core.parse.exception.SQLParsingException;
 import org.apache.shardingsphere.core.util.NumberUtil;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Limit object.
@@ -60,15 +62,12 @@ public final class Limit {
     }
     
     /**
-     * Fill parameters for rewrite limit.
+     * Fill parameters.
      *
-     * @param parameters parameters
-     * @param isFetchAll is fetch all data or not
-     * @param databaseType database type
+     * @param parameters SQL parameters
      */
-    public void processParameters(final List<Object> parameters, final boolean isFetchAll, final String databaseType) {
+    public void fillParameters(final List<Object> parameters) {
         fill(parameters);
-        rewrite(parameters, isFetchAll, databaseType);
     }
     
     private void fill(final List<Object> parameters) {
@@ -87,7 +86,15 @@ public final class Limit {
         }
     }
     
-    private void rewrite(final List<Object> parameters, final boolean isFetchAll, final String databaseType) {
+    /**
+     * Revise parameters.
+     * 
+     * @param isFetchAll is fetch all data or not
+     * @param databaseType database type
+     * @return revised indexes and parameters
+     */
+    public Map<Integer, Object> getRevisedIndexAndParameters(final boolean isFetchAll, final String databaseType) {
+        Map<Integer, Object> result = new HashMap<>(2, 1);
         int rewriteOffset = 0;
         int rewriteRowCount;
         if (isFetchAll) {
@@ -98,11 +105,12 @@ public final class Limit {
             rewriteRowCount = rowCount.getValue();
         }
         if (null != offset && offset.getIndex() > -1) {
-            parameters.set(offset.getIndex(), rewriteOffset);
+            result.put(offset.getIndex(), rewriteOffset);
         }
         if (null != rowCount && rowCount.getIndex() > -1) {
-            parameters.set(rowCount.getIndex(), rewriteRowCount);
+            result.put(rowCount.getIndex(), rewriteRowCount);
         }
+        return result;
     }
     
     /**

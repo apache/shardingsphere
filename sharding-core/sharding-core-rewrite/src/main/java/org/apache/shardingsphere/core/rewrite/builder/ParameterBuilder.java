@@ -40,13 +40,16 @@ public final class ParameterBuilder {
     
     private final List<Object> originalParameters;
     
-    private final Map<Integer, Object> assistedIndexAndParametersForUpdate;
+    private final Map<Integer, Object> addedIndexAndParameters;
+    
+    private final Map<Integer, Object> replacedIndexAndParameters;
     
     private final List<InsertParameterUnit> insertParameterUnits;
     
     public ParameterBuilder(final List<Object> parameters) {
         originalParameters = new LinkedList<>(parameters);
-        assistedIndexAndParametersForUpdate = new HashMap<>();
+        addedIndexAndParameters = new HashMap<>();
+        replacedIndexAndParameters = new HashMap<>();
         insertParameterUnits = new LinkedList<>();
     }
     
@@ -122,8 +125,11 @@ public final class ParameterBuilder {
     
     private List<Object> getRevisedParameters() {
         List<Object> result = new LinkedList<>(originalParameters);
-        for (Entry<Integer, Object> entry : assistedIndexAndParametersForUpdate.entrySet()) {
+        for (Entry<Integer, Object> entry : addedIndexAndParameters.entrySet()) {
             result.add(entry.getKey(), entry.getValue());
+        }
+        for (Entry<Integer, Object> entry : replacedIndexAndParameters.entrySet()) {
+            result.set(entry.getKey(), entry.getValue());
         }
         return result;
     }
