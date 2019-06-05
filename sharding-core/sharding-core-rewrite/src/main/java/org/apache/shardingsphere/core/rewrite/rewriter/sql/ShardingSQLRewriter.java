@@ -25,7 +25,6 @@ import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResul
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.TextOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
 import org.apache.shardingsphere.core.rewrite.placeholder.AggregationDistinctPlaceholder;
@@ -45,6 +44,7 @@ import org.apache.shardingsphere.core.rewrite.token.pojo.InsertSetAddGeneratedKe
 import org.apache.shardingsphere.core.rewrite.token.pojo.OffsetToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.OrderByToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.RowCountToken;
+import org.apache.shardingsphere.core.rewrite.token.pojo.SQLToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SelectItemPrefixToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SelectItemsToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.TableToken;

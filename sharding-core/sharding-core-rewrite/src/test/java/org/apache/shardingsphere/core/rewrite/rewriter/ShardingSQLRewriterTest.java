@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.rewrite.rewriter;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.AggregationType;
@@ -28,8 +29,13 @@ import org.apache.shardingsphere.core.parse.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
+import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationSelectItem;
+import org.apache.shardingsphere.core.parse.sql.context.selectitem.DerivedCommonSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.table.Table;
+import org.apache.shardingsphere.core.parse.sql.segment.common.SchemaSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dal.FromSchemaSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.SelectItemsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
@@ -57,11 +63,6 @@ import org.apache.shardingsphere.core.rewrite.rewriter.parameter.ParameterRewrit
 import org.apache.shardingsphere.core.rewrite.rewriter.parameter.ShardingParameterRewriter;
 import org.apache.shardingsphere.core.rewrite.rewriter.sql.EncryptSQLRewriter;
 import org.apache.shardingsphere.core.rewrite.rewriter.sql.ShardingSQLRewriter;
-import org.apache.shardingsphere.core.rewrite.token.pojo.IndexToken;
-import org.apache.shardingsphere.core.rewrite.token.pojo.OrderByToken;
-import org.apache.shardingsphere.core.rewrite.token.pojo.RemoveToken;
-import org.apache.shardingsphere.core.rewrite.token.pojo.SelectItemsToken;
-import org.apache.shardingsphere.core.rewrite.token.pojo.TableToken;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.limit.Limit;
 import org.apache.shardingsphere.core.route.limit.LimitValue;
@@ -140,9 +141,9 @@ public final class ShardingSQLRewriterTest {
         List<Object> parameters = new ArrayList<>(2);
         parameters.add(1);
         parameters.add("x");
-        selectStatement.addSQLToken(new TableToken(7, 13, "table_x", QuoteCharacter.NONE));
-        selectStatement.addSQLToken(new TableToken(31, 37, "table_x", QuoteCharacter.NONE));
-        selectStatement.addSQLToken(new TableToken(47, 53, "table_x", QuoteCharacter.NONE));
+        selectStatement.getSqlSegments().add(new TableSegment(7, 13, "table_x"));
+        selectStatement.getSqlSegments().add(new TableSegment(31, 37, "table_x"));
+        selectStatement.getSqlSegments().add(new TableSegment(47, 53, "table_x"));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setRoutingResult(new RoutingResult());
         selectStatement.setLogicSQL("SELECT table_x.id, x.name FROM table_x x WHERE table_x.id=? AND x.name=?");
@@ -152,28 +153,36 @@ public final class ShardingSQLRewriterTest {
     
     @Test
     public void assertRewriteForOrderByAndGroupByDerivedColumns() {
-        selectStatement.addSQLToken(new TableToken(18, 24, "table_x", QuoteCharacter.NONE));
-        SelectItemsToken selectItemsToken = new SelectItemsToken(12, Arrays.asList("x.id as GROUP_BY_DERIVED_0", "x.name as ORDER_BY_DERIVED_0"));
-        selectStatement.addSQLToken(selectItemsToken);
+        selectStatement.getSqlSegments().add(new TableSegment(18, 24, "table_x"));
+        DerivedCommonSelectItem selectItem1 = new DerivedCommonSelectItem("x.id", Optional.of("GROUP_BY_DERIVED_0"));
+        DerivedCommonSelectItem selectItem2 = new DerivedCommonSelectItem("x.name", Optional.of("ORDER_BY_DERIVED_0"));
+        selectStatement.getItems().add(selectItem1);
+        selectStatement.getItems().add(selectItem2);
+        selectStatement.setSelectListStopIndex(11);
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setRoutingResult(new RoutingResult());
         selectStatement.setLogicSQL("SELECT x.age FROM table_x x GROUP BY x.id ORDER BY x.name");
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(DatabaseType.MySQL, Collections.emptyList());
         assertThat(getSQLBuilder(rewriteEngine).toSQL(null, tableTokens), is(
-                "SELECT x.age, x.id as GROUP_BY_DERIVED_0, x.name as ORDER_BY_DERIVED_0 FROM table_1 x GROUP BY x.id ORDER BY x.name"));
+                "SELECT x.age , x.id AS GROUP_BY_DERIVED_0 , x.name AS ORDER_BY_DERIVED_0 FROM table_1 x GROUP BY x.id ORDER BY x.name"));
     }
     
     @Test
     public void assertRewriteForAggregationDerivedColumns() {
-        selectStatement.addSQLToken(new TableToken(23, 29, "table_x", QuoteCharacter.NONE));
-        SelectItemsToken selectItemsToken = new SelectItemsToken(17, Arrays.asList("COUNT(x.age) as AVG_DERIVED_COUNT_0", "SUM(x.age) as AVG_DERIVED_SUM_0"));
-        selectStatement.addSQLToken(selectItemsToken);
+        selectStatement.getSqlSegments().add(new TableSegment(23, 29, "table_x"));
+        AggregationSelectItem countSelectItem = new AggregationSelectItem(AggregationType.COUNT, "(x.age)", Optional.of("AVG_DERIVED_COUNT_0"));
+        AggregationSelectItem sumSelectItem = new AggregationSelectItem(AggregationType.SUM, "(x.age)", Optional.of("AVG_DERIVED_SUM_0"));
+        AggregationSelectItem avgSelectItem = new AggregationSelectItem(AggregationType.AVG, "(x.age)", Optional.<String>absent());
+        avgSelectItem.getDerivedAggregationSelectItems().add(countSelectItem);
+        avgSelectItem.getDerivedAggregationSelectItems().add(sumSelectItem);
+        selectStatement.getItems().add(avgSelectItem);
+        selectStatement.setSelectListStopIndex(16);
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setRoutingResult(new RoutingResult());
         selectStatement.setLogicSQL("SELECT AVG(x.age) FROM table_x x");
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(DatabaseType.MySQL, Collections.emptyList());
         assertThat(getSQLBuilder(rewriteEngine).toSQL(null, tableTokens), is(
-                "SELECT AVG(x.age), COUNT(x.age) as AVG_DERIVED_COUNT_0, SUM(x.age) as AVG_DERIVED_SUM_0 FROM table_1 x"));
+                "SELECT AVG(x.age) , COUNT(x.age) AS AVG_DERIVED_COUNT_0 , SUM(x.age) AS AVG_DERIVED_SUM_0 FROM table_1 x"));
     }
     
     @Test
@@ -185,7 +194,7 @@ public final class ShardingSQLRewriterTest {
         insertStatement.getSqlSegments().add(new InsertColumnsSegment(30, 30, Collections.singleton(mock(ColumnSegment.class))));
         insertStatement.getSqlSegments().add(new InsertValuesSegment(39, 44, Collections.<ExpressionSegment>emptyList()));
         insertStatement.setParametersIndex(2);
-        insertStatement.addSQLToken(new TableToken(12, 18, "table_x", QuoteCharacter.NONE));
+        insertStatement.getSqlSegments().add(new TableSegment(12, 18, "table_x"));
         InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(Arrays.asList("name", "age", "id"));
         Object[] parameters = {"x", 1, 1};
         ExpressionSegment[] expressionSegments = {new ParameterMarkerExpressionSegment(0, 0, 0), new ParameterMarkerExpressionSegment(0, 0, 1), new ParameterMarkerExpressionSegment(0, 0, 2)};
@@ -209,7 +218,7 @@ public final class ShardingSQLRewriterTest {
         insertStatement.getSqlSegments().add(new InsertValuesSegment(29, 31, Collections.<ExpressionSegment>emptyList()));
         insertStatement.getTables().add(new Table("table_x", null));
         insertStatement.setParametersIndex(1);
-        insertStatement.addSQLToken(new TableToken(12, 20, "`table_x`", QuoteCharacter.BACK_QUOTE));
+        insertStatement.getSqlSegments().add(new TableSegment(12, 20, "`table_x`"));
         InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(Arrays.asList("name", "id"));
         Object[] parameters = {"Bill", 1};
         ExpressionSegment[] expressionSegments = {new ParameterMarkerExpressionSegment(0, 0, 0), new ParameterMarkerExpressionSegment(0, 0, 1)};
@@ -232,7 +241,7 @@ public final class ShardingSQLRewriterTest {
         insertStatement.getSqlSegments().add(new InsertColumnsSegment(21, 21, Collections.<ColumnSegment>emptyList()));
         insertStatement.getSqlSegments().add(new InsertValuesSegment(29, 32, Collections.<ExpressionSegment>emptyList()));
         insertStatement.getTables().add(new Table("table_x", null));
-        insertStatement.addSQLToken(new TableToken(12, 20, "`table_x`", QuoteCharacter.BACK_QUOTE));
+        insertStatement.getSqlSegments().add(new TableSegment(12, 20, "`table_x`"));
         InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(Arrays.asList("name", "id"));
         ExpressionSegment[] expressionSegments = {new LiteralExpressionSegment(0, 0, 10), new LiteralExpressionSegment(0, 0, 1)};
         insertOptimizeResult.addUnit(expressionSegments, new Object[0], 0);
@@ -254,7 +263,7 @@ public final class ShardingSQLRewriterTest {
         insertStatement.getSqlSegments().add(new InsertColumnsSegment(21, 21, Collections.<ColumnSegment>emptyList()));
         insertStatement.getSqlSegments().add(new InsertValuesSegment(29, 32, Collections.<ExpressionSegment>emptyList()));
         insertStatement.getTables().add(new Table("table_x", null));
-        insertStatement.addSQLToken(new TableToken(12, 20, "`table_x`", QuoteCharacter.BACK_QUOTE));
+        insertStatement.getSqlSegments().add(new TableSegment(12, 20, "`table_x`"));
         InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(Arrays.asList("name", "id"));
         ExpressionSegment[] expressionSegments = {new LiteralExpressionSegment(0, 0, 10), new LiteralExpressionSegment(0, 0, 1)};
         insertOptimizeResult.addUnit(expressionSegments, new Object[0], 0);
@@ -274,7 +283,7 @@ public final class ShardingSQLRewriterTest {
         insertStatement.getColumnNames().add("name");
         insertStatement.getColumnNames().add("id");
         insertStatement.getTables().add(new Table("table_x", null));
-        insertStatement.addSQLToken(new TableToken(12, 20, "`table_x`", QuoteCharacter.BACK_QUOTE));
+        insertStatement.getSqlSegments().add(new TableSegment(12, 20, "`table_x`"));
         InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(Arrays.asList("name", "id"));
         ExpressionSegment[] expressionSegments = {new LiteralExpressionSegment(0, 0, 10), new LiteralExpressionSegment(0, 0, 1)};
         insertOptimizeResult.addUnit(expressionSegments, new Object[0], 0);
@@ -297,7 +306,7 @@ public final class ShardingSQLRewriterTest {
         List<Object> parameters = new ArrayList<>(2);
         parameters.add("x");
         parameters.add(1);
-        insertStatement.addSQLToken(new TableToken(12, 20, "`table_x`", QuoteCharacter.BACK_QUOTE));
+        insertStatement.getSqlSegments().add(new TableSegment(12, 20, "`table_x`"));
         insertStatement.getSqlSegments().add(new InsertColumnsSegment(21, 21, Collections.<ColumnSegment>emptyList()));
         insertStatement.getSqlSegments().add(new InsertValuesSegment(29, 35, Collections.<ExpressionSegment>emptyList()));
         InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(Arrays.asList("name", "id"));
@@ -321,7 +330,7 @@ public final class ShardingSQLRewriterTest {
         insertStatement.getSqlSegments().add(new InsertColumnsSegment(21, 21, Collections.<ColumnSegment>emptyList()));
         insertStatement.getSqlSegments().add(new InsertValuesSegment(29, 34, Collections.<ExpressionSegment>emptyList()));
         insertStatement.getTables().add(new Table("table_x", null));
-        insertStatement.addSQLToken(new TableToken(12, 20, "`table_x`", QuoteCharacter.BACK_QUOTE));
+        insertStatement.getSqlSegments().add(new TableSegment(12, 20, "`table_x`"));
         InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(Arrays.asList("name", "id"));
         ExpressionSegment[] expressionSegments = {new ParameterMarkerExpressionSegment(0, 0, 0), new ParameterMarkerExpressionSegment(0, 0, 1)};
         Object[] parameters = {"x", 1};
@@ -342,7 +351,7 @@ public final class ShardingSQLRewriterTest {
         LimitValueSegment offsetSQLSegment = new NumberLiteralLimitValueSegment(33, 33, 2, true);
         LimitValueSegment rowCountSQLSegment = new NumberLiteralLimitValueSegment(36, 36, 2, false);
         selectStatement.setLimit(new LimitSegment(0, 0, offsetSQLSegment, rowCountSQLSegment));
-        selectStatement.addSQLToken(new TableToken(17, 23, "table_x", QuoteCharacter.NONE));
+        selectStatement.getSqlSegments().add(new TableSegment(17, 23, "table_x"));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(new Limit(new LimitValue(2, -1, offsetSQLSegment), new LimitValue(2, -1, rowCountSQLSegment), Collections.emptyList()));
         routeResult.setRoutingResult(new RoutingResult());
@@ -356,7 +365,7 @@ public final class ShardingSQLRewriterTest {
         LimitValueSegment offsetSQLSegment = new NumberLiteralLimitValueSegment(119, 119, 2, true);
         LimitValueSegment rowCountSQLSegment = new NumberLiteralLimitValueSegment(98, 98, 4, false);
         selectStatement.setLimit(new LimitSegment(0, 0, offsetSQLSegment, rowCountSQLSegment));
-        selectStatement.addSQLToken(new TableToken(68, 74, "table_x", QuoteCharacter.NONE));
+        selectStatement.getSqlSegments().add(new TableSegment(68, 74, "table_x"));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(new Limit(new LimitValue(2, -1, offsetSQLSegment), new LimitValue(4, -1, rowCountSQLSegment), Collections.emptyList()));
         routeResult.setRoutingResult(new RoutingResult());
@@ -371,7 +380,7 @@ public final class ShardingSQLRewriterTest {
         LimitValueSegment offsetSQLSegment = new NumberLiteralLimitValueSegment(123, 123, 2, true);
         LimitValueSegment rowCountSQLSegment = new NumberLiteralLimitValueSegment(26, 26, 4, false);
         selectStatement.setLimit(new LimitSegment(0, 0, offsetSQLSegment, rowCountSQLSegment));
-        selectStatement.addSQLToken(new TableToken(85, 91, "table_x", QuoteCharacter.NONE));
+        selectStatement.getSqlSegments().add(new TableSegment(85, 91, "table_x"));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(new Limit(new LimitValue(2, -1, offsetSQLSegment), new LimitValue(4, -1, rowCountSQLSegment), Collections.emptyList()));
         routeResult.setRoutingResult(new RoutingResult());
@@ -390,7 +399,7 @@ public final class ShardingSQLRewriterTest {
         columnSegment.setOwner(new TableSegment(0, 0, "x"));
         selectStatement.getOrderByItems().add(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.ASC, OrderDirection.ASC));
         selectStatement.getGroupByItems().add(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.DESC, OrderDirection.ASC));
-        selectStatement.addSQLToken(new TableToken(17, 23, "table_x", QuoteCharacter.NONE));
+        selectStatement.getSqlSegments().add(new TableSegment(17, 23, "table_x"));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(new Limit(new LimitValue(2, -1, offsetSQLSegment), new LimitValue(4, -1, rowCountSQLSegment), Collections.emptyList()));
         routeResult.setRoutingResult(new RoutingResult());
@@ -404,7 +413,7 @@ public final class ShardingSQLRewriterTest {
         LimitValueSegment offsetSQLSegment = new NumberLiteralLimitValueSegment(119, 119, 2, true);
         LimitValueSegment rowCountSQLSegment = new NumberLiteralLimitValueSegment(98, 98, 4, false);
         selectStatement.setLimit(new LimitSegment(0, 0, offsetSQLSegment, rowCountSQLSegment));
-        selectStatement.addSQLToken(new TableToken(68, 74, "table_x", QuoteCharacter.NONE));
+        selectStatement.getSqlSegments().add(new TableSegment(68, 74, "table_x"));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, "id");
         columnSegment.setOwner(new TableSegment(0, 0, "x"));
         selectStatement.getOrderByItems().add(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.ASC, OrderDirection.ASC));
@@ -423,7 +432,7 @@ public final class ShardingSQLRewriterTest {
         LimitValueSegment offsetSQLSegment = new NumberLiteralLimitValueSegment(123, 123, 2, true);
         LimitValueSegment rowCountSQLSegment = new NumberLiteralLimitValueSegment(26, 26, 4, false);
         selectStatement.setLimit(new LimitSegment(0, 0, offsetSQLSegment, rowCountSQLSegment));
-        selectStatement.addSQLToken(new TableToken(85, 91, "table_x", QuoteCharacter.NONE));
+        selectStatement.getSqlSegments().add(new TableSegment(85, 91, "table_x"));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, "id");
         columnSegment.setOwner(new TableSegment(0, 0, "x"));
         selectStatement.getOrderByItems().add(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.ASC, OrderDirection.ASC));
@@ -442,7 +451,7 @@ public final class ShardingSQLRewriterTest {
         LimitValueSegment offsetSQLSegment = new NumberLiteralLimitValueSegment(33, 33, 2, true);
         LimitValueSegment rowCountSQLSegment = new NumberLiteralLimitValueSegment(36, 36, 2, false);
         selectStatement.setLimit(new LimitSegment(0, 0, offsetSQLSegment, rowCountSQLSegment));
-        selectStatement.addSQLToken(new TableToken(17, 23, "table_x", QuoteCharacter.NONE));
+        selectStatement.getSqlSegments().add(new TableSegment(17, 23, "table_x"));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(new Limit(new LimitValue(2, -1, offsetSQLSegment), new LimitValue(4, -1, rowCountSQLSegment), Collections.emptyList()));
         RoutingResult routingResult = new RoutingResult();
@@ -458,7 +467,7 @@ public final class ShardingSQLRewriterTest {
         LimitValueSegment offsetSQLSegment = new NumberLiteralLimitValueSegment(119, 119, 2, true);
         LimitValueSegment rowCountSQLSegment = new NumberLiteralLimitValueSegment(98, 98, 4, false);
         selectStatement.setLimit(new LimitSegment(0, 0, offsetSQLSegment, rowCountSQLSegment));
-        selectStatement.addSQLToken(new TableToken(68, 74, "table_x", QuoteCharacter.NONE));
+        selectStatement.getSqlSegments().add(new TableSegment(68, 74, "table_x"));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(new Limit(new LimitValue(2, -1, offsetSQLSegment), new LimitValue(4, -1, rowCountSQLSegment), Collections.emptyList()));
         RoutingResult routingResult = new RoutingResult();
@@ -475,7 +484,7 @@ public final class ShardingSQLRewriterTest {
         LimitValueSegment offsetSQLSegment = new NumberLiteralLimitValueSegment(123, 123, 2, true);
         LimitValueSegment rowCountSQLSegment = new NumberLiteralLimitValueSegment(26, 26, 4, false);
         selectStatement.setLimit(new LimitSegment(0, 0, offsetSQLSegment, rowCountSQLSegment));
-        selectStatement.addSQLToken(new TableToken(85, 91, "table_x", QuoteCharacter.NONE));
+        selectStatement.getSqlSegments().add(new TableSegment(85, 91, "table_x"));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(new Limit(new LimitValue(2, -1, offsetSQLSegment), new LimitValue(4, -1, rowCountSQLSegment), Collections.emptyList()));
         RoutingResult routingResult = new RoutingResult();
@@ -490,14 +499,16 @@ public final class ShardingSQLRewriterTest {
     @Test
     public void assertRewriteForDerivedOrderBy() {
         selectStatement.setGroupByLastIndex(60);
+        selectStatement.setToAppendOrderByItems(true);
         ColumnSegment columnSegment1 = new ColumnSegment(0, 0, "id");
         columnSegment1.setOwner(new TableSegment(0, 0, "x"));
         ColumnSegment columnSegment2 = new ColumnSegment(0, 0, "name");
         columnSegment2.setOwner(new TableSegment(0, 0, "x"));
+        selectStatement.getGroupByItems().add(new ColumnOrderByItemSegment(0, 0, columnSegment1, OrderDirection.ASC, OrderDirection.ASC));
         selectStatement.getOrderByItems().add(new ColumnOrderByItemSegment(0, 0, columnSegment1, OrderDirection.ASC, OrderDirection.ASC));
+        selectStatement.getGroupByItems().add(new ColumnOrderByItemSegment(0, 0, columnSegment2, OrderDirection.DESC, OrderDirection.ASC));
         selectStatement.getOrderByItems().add(new ColumnOrderByItemSegment(0, 0, columnSegment2, OrderDirection.DESC, OrderDirection.ASC));
-        selectStatement.addSQLToken(new TableToken(25, 31, "table_x", QuoteCharacter.NONE));
-        selectStatement.addSQLToken(new OrderByToken(61));
+        selectStatement.getSqlSegments().add(new TableSegment(25, 31, "table_x"));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setRoutingResult(new RoutingResult());
         selectStatement.setLogicSQL("SELECT x.id, x.name FROM table_x x GROUP BY x.id, x.name DESC");
@@ -526,8 +537,9 @@ public final class ShardingSQLRewriterTest {
     
     @Test
     public void assertIndexTokenForIndexNameTableName() {
-        selectStatement.addSQLToken(new IndexToken(13, 22, "index_name", QuoteCharacter.NONE, "table_x"));
-        selectStatement.addSQLToken(new TableToken(27, 33, "table_x", QuoteCharacter.NONE));
+        selectStatement.getTables().add(new Table("table_x", null));
+        selectStatement.getSqlSegments().add(new IndexSegment(13, 22, "index_name", QuoteCharacter.NONE));
+        selectStatement.getSqlSegments().add(new TableSegment(27, 33, "table_x"));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setRoutingResult(new RoutingResult());
         selectStatement.setLogicSQL("CREATE INDEX index_name ON table_x ('column')");
@@ -551,8 +563,9 @@ public final class ShardingSQLRewriterTest {
     
     @Test
     public void assertIndexTokenForIndexNameTableNameWithoutLogicTableName() {
-        selectStatement.addSQLToken(new IndexToken(13, 23, "logic_index", QuoteCharacter.NONE, "table_x"));
-        selectStatement.addSQLToken(new TableToken(28, 34, "table_x", QuoteCharacter.NONE));
+        selectStatement.getTables().add(new Table("table_x", null));
+        selectStatement.getSqlSegments().add(new IndexSegment(13, 23, "logic_index", QuoteCharacter.NONE));
+        selectStatement.getSqlSegments().add(new TableSegment(28, 34, "table_x"));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setRoutingResult(new RoutingResult());
         selectStatement.setLogicSQL("CREATE INDEX logic_index ON table_x ('column')");
@@ -562,7 +575,7 @@ public final class ShardingSQLRewriterTest {
     
     @Test
     public void assertTableTokenWithoutBackQuoteForShow() {
-        showTablesStatement.addSQLToken(new TableToken(18, 24, "table_x", QuoteCharacter.NONE));
+        showTablesStatement.getSqlSegments().add(new TableSegment(18, 24, "table_x"));
         routeResult = new SQLRouteResult(showTablesStatement);
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
@@ -574,8 +587,8 @@ public final class ShardingSQLRewriterTest {
     
     @Test
     public void assertTableTokenWithoutBackQuoteFromSchemaForShow() {
-        showTablesStatement.addSQLToken(new TableToken(18, 24, "table_x", QuoteCharacter.NONE));
-        showTablesStatement.addSQLToken(new RemoveToken(25, 43));
+        showTablesStatement.getSqlSegments().add(new FromSchemaSegment(25, 43));
+        showTablesStatement.getSqlSegments().add(new TableSegment(18, 24, "table_x"));
         routeResult = new SQLRouteResult(showTablesStatement);
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
@@ -589,7 +602,7 @@ public final class ShardingSQLRewriterTest {
     
     @Test
     public void assertTableTokenWithBackQuoteForShow() {
-        showTablesStatement.addSQLToken(new TableToken(18, 26, "`table_x`", QuoteCharacter.BACK_QUOTE));
+        showTablesStatement.getSqlSegments().add(new TableSegment(18, 26, "`table_x`"));
         routeResult = new SQLRouteResult(showTablesStatement);
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
@@ -601,7 +614,7 @@ public final class ShardingSQLRewriterTest {
     
     @Test
     public void assertTableTokenWithBackQuoteFromSchemaForShow() {
-        showTablesStatement.addSQLToken(new TableToken(18, 26, "`table_x`", QuoteCharacter.BACK_QUOTE));
+        showTablesStatement.getSqlSegments().add(new TableSegment(18, 26, "`table_x`"));
         routeResult = new SQLRouteResult(showTablesStatement);
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
@@ -613,7 +626,7 @@ public final class ShardingSQLRewriterTest {
     
     @Test
     public void assertTableTokenWithSchemaForShow() {
-        showTablesStatement.addSQLToken(new TableToken(18, 36, "table_x", QuoteCharacter.NONE));
+        showTablesStatement.getSqlSegments().add(new TableSegment(18, 36, "table_x"));
         routeResult = new SQLRouteResult(showTablesStatement);
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
@@ -625,7 +638,7 @@ public final class ShardingSQLRewriterTest {
     
     @Test
     public void assertTableTokenWithSchemaFromSchemaForShow() {
-        showTablesStatement.addSQLToken(new TableToken(18, 36, "table_x", QuoteCharacter.NONE));
+        showTablesStatement.getSqlSegments().add(new TableSegment(18, 36, "table_x"));
         routeResult = new SQLRouteResult(showTablesStatement);
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
@@ -637,7 +650,7 @@ public final class ShardingSQLRewriterTest {
     
     @Test
     public void assertTableTokenWithBackQuoteWithSchemaForShow() {
-        showTablesStatement.addSQLToken(new TableToken(18, 38, "`table_x`", QuoteCharacter.BACK_QUOTE));
+        showTablesStatement.getSqlSegments().add(new TableSegment(18, 38, "`table_x`"));
         routeResult = new SQLRouteResult(showTablesStatement);
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
@@ -649,7 +662,7 @@ public final class ShardingSQLRewriterTest {
     
     @Test
     public void assertTableTokenWithBackQuoteWithSchemaFromSchemaForShow() {
-        showTablesStatement.addSQLToken(new TableToken(18, 38, "`table_x`", QuoteCharacter.BACK_QUOTE));
+        showTablesStatement.getSqlSegments().add(new TableSegment(18, 38, "`table_x`"));
         routeResult = new SQLRouteResult(showTablesStatement);
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
@@ -661,7 +674,7 @@ public final class ShardingSQLRewriterTest {
     
     @Test
     public void assertTableTokenWithSchemaWithBackQuoteForShow() {
-        showTablesStatement.addSQLToken(new TableToken(18, 40, "`table_x`", QuoteCharacter.BACK_QUOTE));
+        showTablesStatement.getSqlSegments().add(new TableSegment(18, 40, "`table_x`"));
         routeResult = new SQLRouteResult(showTablesStatement);
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
@@ -673,7 +686,7 @@ public final class ShardingSQLRewriterTest {
     
     @Test
     public void assertTableTokenWithSchemaWithBackQuoteFromSchemaForShow() {
-        showTablesStatement.addSQLToken(new TableToken(18, 40, "`table_x`", QuoteCharacter.BACK_QUOTE));
+        showTablesStatement.getSqlSegments().add(new TableSegment(18, 40, "`table_x`"));
         routeResult = new SQLRouteResult(showTablesStatement);
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
@@ -685,7 +698,10 @@ public final class ShardingSQLRewriterTest {
     
     @Test
     public void assertTableTokenWithSchemaForSelect() {
-        selectStatement.addSQLToken(new TableToken(14, 32, "table_x", QuoteCharacter.NONE));
+        selectStatement.getTables().add(new Table("table_x", null));
+        TableSegment tableSegment = new TableSegment(14, 32, "table_x");
+        tableSegment.setOwner(new SchemaSegment(14, 24, "sharding_db"));
+        selectStatement.getSqlSegments().add(tableSegment);
         routeResult = new SQLRouteResult(selectStatement);
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
@@ -697,7 +713,7 @@ public final class ShardingSQLRewriterTest {
     
     @Test
     public void assertTableTokenWithSchemaForInsert() {
-        insertStatement.addSQLToken(new TableToken(12, 30, "table_x", QuoteCharacter.NONE));
+        insertStatement.getSqlSegments().add(new TableSegment(12, 30, "table_x"));
         routeResult = new SQLRouteResult(insertStatement);
         routeResult.setRoutingResult(new RoutingResult());
         insertStatement.setLogicSQL("INSERT INTO sharding_db.table_x (order_id, user_id, status) values (1, 1, 'OK')");
@@ -708,7 +724,7 @@ public final class ShardingSQLRewriterTest {
     
     @Test
     public void assertTableTokenWithSchemaForUpdate() {
-        updateStatement.addSQLToken(new TableToken(7, 27, "table_x", QuoteCharacter.NONE));
+        updateStatement.getSqlSegments().add(new TableSegment(7, 27, "table_x"));
         routeResult = new SQLRouteResult(updateStatement);
         routeResult.setRoutingResult(new RoutingResult());
         updateStatement.setLogicSQL("UPDATE `sharding_db`.table_x SET user_id=1 WHERE order_id=1");
@@ -718,7 +734,7 @@ public final class ShardingSQLRewriterTest {
     
     @Test
     public void assertTableTokenWithSchemaForDelete() {
-        deleteStatement.addSQLToken(new TableToken(12, 34, "`table_x`", QuoteCharacter.BACK_QUOTE));
+        deleteStatement.getSqlSegments().add(new TableSegment(12, 34, "`table_x`"));
         routeResult = new SQLRouteResult(deleteStatement);
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
@@ -734,7 +750,7 @@ public final class ShardingSQLRewriterTest {
         parameters.add(1);
         parameters.add("x");
         Column column = new Column("id", "table_z");
-        selectStatement.addSQLToken(new TableToken(15, 21, "table_z", QuoteCharacter.NONE));
+        selectStatement.getSqlSegments().add(new TableSegment(15, 21, "table_z"));
         selectStatement.getEncryptCondition().getOrConditions().add(new AndCondition());
         selectStatement.getEncryptCondition().getOrConditions().get(0).getConditions().add(
                 new Condition(column, new PredicateSegment(29, 32, null, null), new ParameterMarkerExpressionSegment(0, 0, 0)));
@@ -748,7 +764,7 @@ public final class ShardingSQLRewriterTest {
     
     @Test
     public void assertSelectInWithShardingEncryptor() {
-        selectStatement.addSQLToken(new TableToken(15, 21, "table_z", QuoteCharacter.NONE));
+        selectStatement.getSqlSegments().add(new TableSegment(15, 21, "table_z"));
         selectStatement.getEncryptCondition().getOrConditions().add(new AndCondition());
         List<ExpressionSegment> expressionSegments = new LinkedList<>();
         expressionSegments.add(new LiteralExpressionSegment(0, 0, 3));
@@ -767,7 +783,7 @@ public final class ShardingSQLRewriterTest {
         List<Object> parameters = new ArrayList<>(2);
         parameters.add(1);
         parameters.add(2);
-        selectStatement.addSQLToken(new TableToken(15, 21, "table_z", QuoteCharacter.NONE));
+        selectStatement.getSqlSegments().add(new TableSegment(15, 21, "table_z"));
         selectStatement.getEncryptCondition().getOrConditions().add(new AndCondition());
         selectStatement.getEncryptCondition().getOrConditions().add(new AndCondition());
         List<ExpressionSegment> expressionSegments = new LinkedList<>();
@@ -791,7 +807,7 @@ public final class ShardingSQLRewriterTest {
         parameters.add(1);
         parameters.add("k");
         Column column = new Column("id", "table_k");
-        selectStatement.addSQLToken(new TableToken(15, 21, "table_k", QuoteCharacter.NONE));
+        selectStatement.getSqlSegments().add(new TableSegment(15, 21, "table_k"));
         selectStatement.getEncryptCondition().getOrConditions().add(new AndCondition());
         selectStatement.getEncryptCondition().getOrConditions().get(0).getConditions().add(
                 new Condition(column, new PredicateSegment(29, 32, null, null), new ParameterMarkerExpressionSegment(0, 0, 0)));
@@ -805,7 +821,7 @@ public final class ShardingSQLRewriterTest {
     
     @Test
     public void assertSelectInWithQueryAssistedShardingEncryptor() {
-        selectStatement.addSQLToken(new TableToken(15, 21, "table_k", QuoteCharacter.NONE));
+        selectStatement.getSqlSegments().add(new TableSegment(15, 21, "table_k"));
         selectStatement.getEncryptCondition().getOrConditions().add(new AndCondition());
         List<ExpressionSegment> expressionSegments = new LinkedList<>();
         expressionSegments.add(new LiteralExpressionSegment(0, 0, 3));
@@ -823,7 +839,7 @@ public final class ShardingSQLRewriterTest {
     @Test
     public void assertUpdateWithShardingEncryptor() {
         updateStatement.getTables().add(new Table("table_z", ""));
-        updateStatement.addSQLToken(new TableToken(7, 13, "table_z", QuoteCharacter.NONE));
+        updateStatement.getSqlSegments().add(new TableSegment(7, 13, "table_z"));
         SetAssignmentsSegment setAssignmentsSegment = new SetAssignmentsSegment(15, 24, Collections.singleton(new AssignmentSegment(19, 24, new ColumnSegment(19, 20, "id"), null)));
         updateStatement.getSqlSegments().add(setAssignmentsSegment);
         Column column = new Column("id", "table_z");
@@ -843,8 +859,8 @@ public final class ShardingSQLRewriterTest {
         ColumnSegment columnSegment = new ColumnSegment(26, 29, "name");
         LiteralExpressionSegment expressionSegment = new LiteralExpressionSegment(33, 34, 10);
         insertStatement.getSqlSegments().add(new SetAssignmentsSegment(22, 34, Collections.singleton(new AssignmentSegment(22, 34, columnSegment, expressionSegment))));
+        insertStatement.getSqlSegments().add(new TableSegment(12, 20, "`table_w`"));
         insertStatement.getTables().add(new Table("table_w", null));
-        insertStatement.addSQLToken(new TableToken(12, 20, "`table_w`", QuoteCharacter.BACK_QUOTE));
         InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(Arrays.asList("name", "id", "query_name"));
         ExpressionSegment[] expressionSegments = {new LiteralExpressionSegment(0, 0, 10), new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 10)};
         insertOptimizeResult.addUnit(expressionSegments, new Object[0], 0);
@@ -862,7 +878,7 @@ public final class ShardingSQLRewriterTest {
     
     @Test
     public void assertSelectInWithAggregationDistinct() {
-        selectStatement.addSQLToken(new TableToken(49, 55, "table_z", QuoteCharacter.NONE));
+        selectStatement.getSqlSegments().add(new TableSegment(49, 55, "table_z"));
         selectStatement.getSqlSegments().add(new SelectItemsSegment(7, 44, false));
         AggregationDistinctSelectItemSegment selectItemSegment1 = new AggregationDistinctSelectItemSegment(7, 24, "DISTINCT id", AggregationType.COUNT, 12, "id");
         selectItemSegment1.setAlias("a");

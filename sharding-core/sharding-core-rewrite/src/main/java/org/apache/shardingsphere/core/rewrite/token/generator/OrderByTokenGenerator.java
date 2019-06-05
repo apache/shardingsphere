@@ -35,7 +35,7 @@ public final class OrderByTokenGenerator implements OptionalSQLTokenGenerator<Sh
         if (!(sqlStatement instanceof SelectStatement)) {
             return Optional.absent();
         }
-        if (!((SelectStatement) sqlStatement).getGroupByItems().isEmpty() && ((SelectStatement) sqlStatement).getOrderByItems().isEmpty()) {
+        if (((SelectStatement) sqlStatement).isToAppendOrderByItems()) {
             return Optional.of(new OrderByToken(((SelectStatement) sqlStatement).getGroupByLastIndex() + 1));
         }
         return Optional.absent();

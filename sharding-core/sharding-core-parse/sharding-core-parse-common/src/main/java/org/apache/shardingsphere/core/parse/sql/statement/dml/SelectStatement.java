@@ -61,6 +61,8 @@ public final class SelectStatement extends DQLStatement {
     
     private final List<OrderByItemSegment> orderByItems = new LinkedList<>();
     
+    private boolean toAppendOrderByItems;
+    
     private boolean containStar;
     
     private int firstSelectItemStartIndex;
@@ -69,7 +71,7 @@ public final class SelectStatement extends DQLStatement {
     
     private int groupByLastIndex;
     
-    private LimitSegment limit;
+    private LimitSegment limit; 
     
     private SelectStatement parentStatement;
     

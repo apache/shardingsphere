@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.rewrite;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
 import org.apache.shardingsphere.core.rewrite.rewriter.parameter.ParameterRewriter;
@@ -29,6 +28,7 @@ import org.apache.shardingsphere.core.rewrite.token.BaseTokenGenerateEngine;
 import org.apache.shardingsphere.core.rewrite.token.EncryptTokenGenerateEngine;
 import org.apache.shardingsphere.core.rewrite.token.MasterSlaveTokenGenerateEngine;
 import org.apache.shardingsphere.core.rewrite.token.ShardingTokenGenerateEngine;
+import org.apache.shardingsphere.core.rewrite.token.pojo.SQLToken;
 import org.apache.shardingsphere.core.route.SQLUnit;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.route.type.TableUnit;
@@ -92,7 +92,7 @@ public final class SQLRewriteEngine {
     }
     
     private List<SQLToken> createSQLTokens(final BaseRule baseRule, final SQLStatement sqlStatement, final boolean isSingleRoute) {
-        List<SQLToken> result = new LinkedList<>(sqlStatement.getSQLTokens());
+        List<SQLToken> result = new LinkedList<>();
         result.addAll(new BaseTokenGenerateEngine().generateSQLTokens(sqlStatement, baseRule, isSingleRoute));
         if (baseRule instanceof ShardingRule) {
             ShardingRule shardingRule = (ShardingRule) baseRule;
