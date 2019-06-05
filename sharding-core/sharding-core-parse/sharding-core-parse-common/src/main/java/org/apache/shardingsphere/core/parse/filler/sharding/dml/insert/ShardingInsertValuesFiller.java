@@ -31,7 +31,6 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.SimpleEx
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.parse.sql.token.impl.InsertValuesToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.ArrayList;
@@ -87,7 +86,6 @@ public final class ShardingInsertValuesFiller implements SQLSegmentFiller<Insert
         reviseInsertColumnNames(insertStatement, sqlSegment);
         setNeededToAppendGeneratedKey(insertStatement);
         setNeededToAppendAssistedColumns(insertStatement);
-        fillWithInsertValuesToken(insertStatement, sqlSegment);
     }
     
     private void reviseInsertColumnNames(final InsertStatement insertStatement, final InsertValuesSegment sqlSegment) {
@@ -122,17 +120,5 @@ public final class ShardingInsertValuesFiller implements SQLSegmentFiller<Insert
             result.addAll(assistedQueryColumns);
         }
         return result;
-    }
-    
-    private void fillWithInsertValuesToken(final InsertStatement insertStatement, final InsertValuesSegment sqlSegment) {
-        Optional<InsertValuesToken> insertValuesToken = insertStatement.findSQLToken(InsertValuesToken.class);
-        if (insertValuesToken.isPresent()) {
-            int startIndex = insertValuesToken.get().getStartIndex() < sqlSegment.getStartIndex() ? insertValuesToken.get().getStartIndex() : sqlSegment.getStartIndex();
-            int stopIndex = insertValuesToken.get().getStopIndex() > sqlSegment.getStopIndex() ? insertValuesToken.get().getStopIndex() : sqlSegment.getStopIndex();
-            insertStatement.getSQLTokens().remove(insertValuesToken.get());
-            insertStatement.getSQLTokens().add(new InsertValuesToken(startIndex, stopIndex));
-        } else {
-            insertStatement.getSQLTokens().add(new InsertValuesToken(sqlSegment.getStartIndex(), sqlSegment.getStopIndex()));
-        }
     }
 }

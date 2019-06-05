@@ -30,6 +30,7 @@ import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
 import org.apache.shardingsphere.core.parse.sql.context.table.Table;
 import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.SelectItemsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
@@ -49,7 +50,6 @@ import org.apache.shardingsphere.core.parse.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.core.parse.sql.token.impl.InsertValuesToken;
 import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
@@ -179,9 +179,9 @@ public final class ShardingSQLRewriterTest {
         insertStatement.getColumnNames().add("age");
         insertStatement.setNeededToAppendGeneratedKey(true);
         insertStatement.getSqlSegments().add(new InsertColumnsSegment(30, 30, Collections.singleton(mock(ColumnSegment.class))));
+        insertStatement.getSqlSegments().add(new InsertValuesSegment(39, 44, Collections.<ExpressionSegment>emptyList()));
         insertStatement.setParametersIndex(2);
         insertStatement.addSQLToken(new TableToken(12, 18, "table_x", QuoteCharacter.NONE));
-        insertStatement.addSQLToken(new InsertValuesToken(39, 44));
         InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(Arrays.asList("name", "age", "id"));
         Object[] parameters = {"x", 1, 1};
         ExpressionSegment[] expressionSegments = {new ParameterMarkerExpressionSegment(0, 0, 0), new ParameterMarkerExpressionSegment(0, 0, 1), new ParameterMarkerExpressionSegment(0, 0, 2)};
@@ -202,10 +202,10 @@ public final class ShardingSQLRewriterTest {
         insertStatement.getColumnNames().add("name");
         insertStatement.setNeededToAppendGeneratedKey(true);
         insertStatement.getSqlSegments().add(new InsertColumnsSegment(21, 21, Collections.<ColumnSegment>emptyList()));
+        insertStatement.getSqlSegments().add(new InsertValuesSegment(29, 31, Collections.<ExpressionSegment>emptyList()));
         insertStatement.getTables().add(new Table("table_x", null));
         insertStatement.setParametersIndex(1);
         insertStatement.addSQLToken(new TableToken(12, 20, "`table_x`", QuoteCharacter.BACK_QUOTE));
-        insertStatement.addSQLToken(new InsertValuesToken(29, 31));
         InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(Arrays.asList("name", "id"));
         Object[] parameters = {"Bill", 1};
         ExpressionSegment[] expressionSegments = {new ParameterMarkerExpressionSegment(0, 0, 0), new ParameterMarkerExpressionSegment(0, 0, 1)};
@@ -226,9 +226,9 @@ public final class ShardingSQLRewriterTest {
         insertStatement.getColumnNames().add("name");
         insertStatement.setNeededToAppendGeneratedKey(true);
         insertStatement.getSqlSegments().add(new InsertColumnsSegment(21, 21, Collections.<ColumnSegment>emptyList()));
+        insertStatement.getSqlSegments().add(new InsertValuesSegment(29, 32, Collections.<ExpressionSegment>emptyList()));
         insertStatement.getTables().add(new Table("table_x", null));
         insertStatement.addSQLToken(new TableToken(12, 20, "`table_x`", QuoteCharacter.BACK_QUOTE));
-        insertStatement.addSQLToken(new InsertValuesToken(29, 32));
         InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(Arrays.asList("name", "id"));
         ExpressionSegment[] expressionSegments = {new LiteralExpressionSegment(0, 0, 10), new LiteralExpressionSegment(0, 0, 1)};
         insertOptimizeResult.addUnit(expressionSegments, new Object[0], 0);
@@ -248,9 +248,9 @@ public final class ShardingSQLRewriterTest {
         insertStatement.getColumnNames().add("name");
         insertStatement.setNeededToAppendGeneratedKey(true);
         insertStatement.getSqlSegments().add(new InsertColumnsSegment(21, 21, Collections.<ColumnSegment>emptyList()));
+        insertStatement.getSqlSegments().add(new InsertValuesSegment(29, 32, Collections.<ExpressionSegment>emptyList()));
         insertStatement.getTables().add(new Table("table_x", null));
         insertStatement.addSQLToken(new TableToken(12, 20, "`table_x`", QuoteCharacter.BACK_QUOTE));
-        insertStatement.addSQLToken(new InsertValuesToken(29, 32));
         InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(Arrays.asList("name", "id"));
         ExpressionSegment[] expressionSegments = {new LiteralExpressionSegment(0, 0, 10), new LiteralExpressionSegment(0, 0, 1)};
         insertOptimizeResult.addUnit(expressionSegments, new Object[0], 0);
@@ -294,8 +294,8 @@ public final class ShardingSQLRewriterTest {
         parameters.add("x");
         parameters.add(1);
         insertStatement.addSQLToken(new TableToken(12, 20, "`table_x`", QuoteCharacter.BACK_QUOTE));
-        insertStatement.addSQLToken(new InsertValuesToken(29, 35));
         insertStatement.getSqlSegments().add(new InsertColumnsSegment(21, 21, Collections.<ColumnSegment>emptyList()));
+        insertStatement.getSqlSegments().add(new InsertValuesSegment(29, 35, Collections.<ExpressionSegment>emptyList()));
         InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(Arrays.asList("name", "id"));
         ExpressionSegment[] expressionSegments = {new LiteralExpressionSegment(0, 0, 10), new LiteralExpressionSegment(0, 0, 1)};
         insertOptimizeResult.addUnit(expressionSegments, new Object[0], 0);
@@ -315,9 +315,9 @@ public final class ShardingSQLRewriterTest {
         insertStatement.getColumnNames().add("name");
         insertStatement.setNeededToAppendGeneratedKey(true);
         insertStatement.getSqlSegments().add(new InsertColumnsSegment(21, 21, Collections.<ColumnSegment>emptyList()));
+        insertStatement.getSqlSegments().add(new InsertValuesSegment(29, 34, Collections.<ExpressionSegment>emptyList()));
         insertStatement.getTables().add(new Table("table_x", null));
         insertStatement.addSQLToken(new TableToken(12, 20, "`table_x`", QuoteCharacter.BACK_QUOTE));
-        insertStatement.addSQLToken(new InsertValuesToken(29, 34));
         InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(Arrays.asList("name", "id"));
         ExpressionSegment[] expressionSegments = {new ParameterMarkerExpressionSegment(0, 0, 0), new ParameterMarkerExpressionSegment(0, 0, 1)};
         Object[] parameters = {"x", 1};
@@ -533,9 +533,6 @@ public final class ShardingSQLRewriterTest {
         List<Object> parameters = new ArrayList<>(2);
         parameters.add(1);
         parameters.add("x");
-        selectStatement.addSQLToken(new TableToken(7, 13, "table_x", QuoteCharacter.NONE));
-        selectStatement.addSQLToken(new TableToken(31, 37, "table_x", QuoteCharacter.NONE));
-        selectStatement.addSQLToken(new TableToken(58, 64, "table_x", QuoteCharacter.NONE));
         selectStatement.getTables().add(new Table("table_x", "x"));
         selectStatement.getTables().add(new Table("table_y", "y"));
         routeResult = new SQLRouteResult(selectStatement);
@@ -543,7 +540,7 @@ public final class ShardingSQLRewriterTest {
         selectStatement.setLogicSQL("SELECT table_x.id, x.name FROM table_x x, table_y y WHERE table_x.id=? AND x.name=?");
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, routeResult.getSqlStatement(), parameters);
         rewriteEngine.init(
-                new ShardingSQLRewriter(shardingRule, DatabaseType.MySQL, routeResult), 
+                new ShardingSQLRewriter(shardingRule, DatabaseType.MySQL, routeResult, null), 
                 new EncryptSQLRewriter(shardingRule.getEncryptRule().getEncryptorEngine(), routeResult.getSqlStatement(), routeResult.getOptimizeResult()));
         RoutingUnit routingUnit = new RoutingUnit("db0");
         routingUnit.getTableUnits().add(new TableUnit("table_x", "table_x"));
@@ -864,6 +861,29 @@ public final class ShardingSQLRewriterTest {
     }
     
     @Test
+    public void assertInsertWithQueryAssistedShardingEncryptor() {
+        insertStatement.getColumnNames().add("name");
+        ColumnSegment columnSegment = new ColumnSegment(26, 29, "name");
+        LiteralExpressionSegment expressionSegment = new LiteralExpressionSegment(33, 34, 10);
+        insertStatement.getSqlSegments().add(new SetAssignmentsSegment(22, 34, Collections.singleton(new AssignmentSegment(22, 34, columnSegment, expressionSegment))));
+        insertStatement.getTables().add(new Table("table_w", null));
+        insertStatement.addSQLToken(new TableToken(12, 20, "`table_w`", QuoteCharacter.BACK_QUOTE));
+        InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(Arrays.asList("name", "id", "query_name"));
+        ExpressionSegment[] expressionSegments = {new LiteralExpressionSegment(0, 0, 10), new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 10)};
+        insertOptimizeResult.addUnit(expressionSegments, new Object[0], 0);
+        insertOptimizeResult.getUnits().get(0).getDataNodes().add(new DataNode("db0.table_1"));
+        RoutingUnit routingUnit = new RoutingUnit("db0");
+        routingUnit.getTableUnits().add(new TableUnit("table_w", "table_1"));
+        routeResult = new SQLRouteResult(insertStatement);
+        routeResult.setOptimizeResult(new OptimizeResult(insertOptimizeResult));
+        routeResult.setRoutingResult(new RoutingResult());
+        insertStatement.setLogicSQL("INSERT INTO `table_w` set name = 10 ON DUPLICATE KEY UPDATE name = VALUES(name)");
+        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(DatabaseType.MySQL, Collections.emptyList());
+        assertThat(getSQLBuilder(rewriteEngine).toSQL(routingUnit, tableTokens), 
+                is("INSERT INTO `table_w` set name = 'encryptValue', id = 1, query_name = 'assistedEncryptValue' ON DUPLICATE KEY UPDATE name = VALUES(name)"));
+    }
+    
+    @Test
     public void assertSelectInWithAggregationDistinct() {
         selectStatement.addSQLToken(new TableToken(49, 55, "table_z", QuoteCharacter.NONE));
         selectStatement.getSqlSegments().add(new SelectItemsSegment(7, 44, false));
@@ -883,7 +903,7 @@ public final class ShardingSQLRewriterTest {
     private SQLRewriteEngine createSQLRewriteEngine(final DatabaseType databaseType, final List<Object> parameters) {
         SQLRewriteEngine result = new SQLRewriteEngine(shardingRule, routeResult.getSqlStatement(), parameters);
         result.init(
-                new ShardingSQLRewriter(shardingRule, databaseType, routeResult),
+                new ShardingSQLRewriter(shardingRule, databaseType, routeResult, routeResult.getOptimizeResult()),
                 new EncryptSQLRewriter(shardingRule.getEncryptRule().getEncryptorEngine(), routeResult.getSqlStatement(), routeResult.getOptimizeResult()));
         return result;
     }

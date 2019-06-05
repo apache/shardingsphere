@@ -26,7 +26,6 @@ import org.apache.shardingsphere.core.parse.integrate.asserts.meta.TableMetaData
 import org.apache.shardingsphere.core.parse.integrate.asserts.orderby.OrderByAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.table.AlterTableAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.table.TableAssert;
-import org.apache.shardingsphere.core.parse.integrate.asserts.token.TokenAssert;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.root.ParserResult;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.AlterTableStatement;
@@ -53,8 +52,6 @@ public final class SQLStatementAssert {
     private final TableAssert tableAssert;
     
     private final ConditionAssert conditionAssert;
-    
-    private final TokenAssert tokenAssert;
     
     private final IndexAssert indexAssert;
     
@@ -83,7 +80,6 @@ public final class SQLStatementAssert {
         expected = parserResultSetLoader.getParserResult(sqlCaseId);
         tableAssert = new TableAssert(assertMessage);
         conditionAssert = new ConditionAssert(assertMessage);
-        tokenAssert = new TokenAssert(sqlCaseType, assertMessage);
         indexAssert = new IndexAssert(sqlCaseType, assertMessage);
         itemAssert = new ItemAssert(assertMessage);
         groupByAssert = new GroupByAssert(assertMessage);
@@ -103,7 +99,6 @@ public final class SQLStatementAssert {
         if ("MySQL".equals(databaseType)) {
             conditionAssert.assertConditions(actual.getEncryptCondition(), expected.getEncryptCondition());
         }
-        tokenAssert.assertTokens(actual.getSQLTokens(), expected.getTokens());
         indexAssert.assertParametersIndex(actual.getParametersIndex(), expected.getParameters().size());
         if (actual instanceof SelectStatement) {
             assertSelectStatement((SelectStatement) actual);

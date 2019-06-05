@@ -15,20 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.integrate.jaxb.token;
+package org.apache.shardingsphere.core.rewrite.token.pojo;
 
 import lombok.Getter;
-import lombok.Setter;
+import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
+import java.util.Collection;
 
+/**
+ * Insert set add item token.
+ *
+ * @author panjuan
+ */
 @Getter
-@Setter
-@XmlAccessorType(XmlAccessType.FIELD)
-public final class ExpectedInsertValuesToken {
+public final class InsertSetAddAssistedColumnsToken extends SQLToken implements Attachable {
     
-    @XmlAttribute(name = "begin-position")
-    private int beginPosition;
+    private final Collection<String> columnNames;
+    
+    public InsertSetAddAssistedColumnsToken(final int startIndex, final Collection<String> columnNames) {
+        super(startIndex);
+        this.columnNames = columnNames;
+    }
 }

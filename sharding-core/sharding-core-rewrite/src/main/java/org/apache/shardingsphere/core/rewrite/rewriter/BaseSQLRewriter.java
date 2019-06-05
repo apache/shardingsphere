@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.rewrite.rewriter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
-import org.apache.shardingsphere.core.parse.sql.token.Substitutable;
+import org.apache.shardingsphere.core.rewrite.token.pojo.Substitutable;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertColumnsToken;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;

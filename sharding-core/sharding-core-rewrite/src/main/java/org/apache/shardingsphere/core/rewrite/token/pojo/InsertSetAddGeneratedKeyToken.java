@@ -15,26 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.token;
+package org.apache.shardingsphere.core.rewrite.token.pojo;
+
+import lombok.Getter;
+import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
 
 /**
- * Substitute available.
+ * Insert set add generated key token.
  *
  * @author panjuan
  */
-public interface Substitutable {
+@Getter
+public final class InsertSetAddGeneratedKeyToken extends SQLToken implements Attachable {
     
-    /**
-     * Get start index.
-     * 
-     * @return start index
-     */
-    int getStartIndex();
+    private final String columnName;
     
-    /**
-     * Get stop index.
-     * 
-     * @return stop index
-     */
-    int getStopIndex();
+    public InsertSetAddGeneratedKeyToken(final int startIndex, final String columnName) {
+        super(startIndex);
+        this.columnName = columnName;
+    }
 }

@@ -15,26 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.token.impl;
-
-import lombok.Getter;
-import org.apache.shardingsphere.core.parse.sql.token.Attachable;
-import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
-
-import java.util.Collection;
+package org.apache.shardingsphere.core.rewrite.token.pojo;
 
 /**
- * Insert set add item token.
+ * Substitute available.
  *
  * @author panjuan
  */
-@Getter
-public final class InsertSetAddItemsToken extends SQLToken implements Attachable {
+public interface Substitutable {
     
-    private final Collection<String> columnNames;
+    /**
+     * Get start index.
+     * 
+     * @return start index
+     */
+    int getStartIndex();
     
-    public InsertSetAddItemsToken(final int startIndex, final Collection<String> columnNames) {
-        super(startIndex);
-        this.columnNames = columnNames;
-    }
+    /**
+     * Get stop index.
+     * 
+     * @return stop index
+     */
+    int getStopIndex();
 }
