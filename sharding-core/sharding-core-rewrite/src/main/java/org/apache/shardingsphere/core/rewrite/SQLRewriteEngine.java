@@ -62,10 +62,10 @@ public final class SQLRewriteEngine {
     
     private final BaseSQLRewriter baseSQLRewriter;
     
-    public SQLRewriteEngine(final ShardingRule shardingRule, final SQLStatement sqlStatement, final List<Object> parameters) {
+    public SQLRewriteEngine(final ShardingRule shardingRule, final SQLStatement sqlStatement, final List<Object> parameters, final boolean isSingleRoute) {
         baseRule = shardingRule;
         this.sqlStatement = sqlStatement;
-        sqlTokens = createSQLTokens(shardingRule, sqlStatement);
+        sqlTokens = createSQLTokens(shardingRule, sqlStatement, isSingleRoute);
         sqlBuilder = new SQLBuilder();
         parameterBuilder = new ParameterBuilder(parameters);
         baseSQLRewriter = new BaseSQLRewriter(sqlStatement, sqlTokens);
@@ -74,7 +74,7 @@ public final class SQLRewriteEngine {
     public SQLRewriteEngine(final EncryptRule encryptRule, final SQLStatement sqlStatement, final List<Object> parameters) {
         baseRule = encryptRule;
         this.sqlStatement = sqlStatement;
-        sqlTokens = createSQLTokens(encryptRule, sqlStatement);
+        sqlTokens = createSQLTokens(encryptRule, sqlStatement, true);
         sqlBuilder = new SQLBuilder();
         parameterBuilder = new ParameterBuilder(parameters);
         baseSQLRewriter = new BaseSQLRewriter(sqlStatement, sqlTokens);
@@ -83,23 +83,23 @@ public final class SQLRewriteEngine {
     public SQLRewriteEngine(final SQLStatement sqlStatement) {
         baseRule = null;
         this.sqlStatement = sqlStatement;
-        sqlTokens = createSQLTokens(null, sqlStatement);
+        sqlTokens = createSQLTokens(null, sqlStatement, true);
         sqlBuilder = new SQLBuilder();
         parameterBuilder = new ParameterBuilder(Collections.emptyList());
         baseSQLRewriter = new BaseSQLRewriter(sqlStatement, sqlTokens);
     }
     
-    private List<SQLToken> createSQLTokens(final BaseRule baseRule, final SQLStatement sqlStatement) {
+    private List<SQLToken> createSQLTokens(final BaseRule baseRule, final SQLStatement sqlStatement, final boolean isSingleRoute) {
         List<SQLToken> result = new LinkedList<>(sqlStatement.getSQLTokens());
-        result.addAll(new BaseTokenGenerateEngine().generateSQLTokens(sqlStatement, baseRule));
+        result.addAll(new BaseTokenGenerateEngine().generateSQLTokens(sqlStatement, baseRule, isSingleRoute));
         if (baseRule instanceof ShardingRule) {
             ShardingRule shardingRule = (ShardingRule) baseRule;
-            result.addAll(new ShardingTokenGenerateEngine().generateSQLTokens(sqlStatement, shardingRule));
-            result.addAll(new EncryptTokenGenerateEngine().generateSQLTokens(sqlStatement, shardingRule.getEncryptRule()));
+            result.addAll(new ShardingTokenGenerateEngine().generateSQLTokens(sqlStatement, shardingRule, isSingleRoute));
+            result.addAll(new EncryptTokenGenerateEngine().generateSQLTokens(sqlStatement, shardingRule.getEncryptRule(), isSingleRoute));
         } else if (baseRule instanceof EncryptRule) {
-            result.addAll(new EncryptTokenGenerateEngine().generateSQLTokens(sqlStatement, (EncryptRule) baseRule));
+            result.addAll(new EncryptTokenGenerateEngine().generateSQLTokens(sqlStatement, (EncryptRule) baseRule, isSingleRoute));
         } else {
-            result.addAll(new MasterSlaveTokenGenerateEngine().generateSQLTokens(sqlStatement, null));
+            result.addAll(new MasterSlaveTokenGenerateEngine().generateSQLTokens(sqlStatement, null, isSingleRoute));
         }
         Collections.sort(result);
         return result;

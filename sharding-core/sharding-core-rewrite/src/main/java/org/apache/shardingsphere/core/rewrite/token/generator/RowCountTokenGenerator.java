@@ -30,7 +30,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
  *
  * @author panjuan
  */
-public final class RowCountTokenGenerator implements OptionalSQLTokenGenerator<ShardingRule> {
+public final class RowCountTokenGenerator implements OptionalSQLTokenGenerator<ShardingRule>, IgnoreForSingleRoute {
     
     @Override
     public Optional<RowCountToken> generateSQLToken(final SQLStatement sqlStatement, final ShardingRule shardingRule) {
