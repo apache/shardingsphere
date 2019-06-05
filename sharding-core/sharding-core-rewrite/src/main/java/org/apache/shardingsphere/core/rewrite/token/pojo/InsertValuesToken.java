@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.rewrite.token.pojo;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
 
 /**
  * Insert values token.

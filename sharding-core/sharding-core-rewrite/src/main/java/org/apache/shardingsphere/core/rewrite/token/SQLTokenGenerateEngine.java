@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.rewrite.token;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
+import org.apache.shardingsphere.core.rewrite.token.pojo.SQLToken;
 import org.apache.shardingsphere.core.rewrite.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.SQLTokenGenerator;
@@ -60,5 +60,6 @@ public abstract class SQLTokenGenerateEngine<T extends BaseRule> {
         }
         return result;
     }
+    
     protected abstract Collection<SQLTokenGenerator> getSQLTokenGenerators();
 }

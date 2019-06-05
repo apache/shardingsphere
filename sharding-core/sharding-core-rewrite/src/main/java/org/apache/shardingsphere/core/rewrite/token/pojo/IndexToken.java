@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.rewrite.token.pojo;
 import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.parse.constant.QuoteCharacter;
-import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
 
 /**
  * Index token.

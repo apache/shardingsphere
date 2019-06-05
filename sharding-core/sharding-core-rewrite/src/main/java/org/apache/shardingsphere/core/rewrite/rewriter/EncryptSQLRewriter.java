@@ -29,7 +29,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.Paramete
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
+import org.apache.shardingsphere.core.rewrite.token.pojo.SQLToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertAssistedColumnsToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertSetAddAssistedColumnsToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertSetEncryptValueToken;
@@ -140,7 +140,8 @@ public final class EncryptSQLRewriter implements SQLRewriter {
         sqlBuilder.appendPlaceholder(new InsertSetEncryptValuePlaceholder(insertOptimizeResult.getUnits().get(0).getColumnSQLExpression(insertSetEncryptValueToken.getColumnName())));
     }
     
-    private void appendInsertSetAddItemsPlaceholder(final SQLBuilder sqlBuilder, final InsertSetAddAssistedColumnsToken insertSetAddAssistedColumnsToken, final InsertOptimizeResult insertOptimizeResult) {
+    private void appendInsertSetAddItemsPlaceholder(final SQLBuilder sqlBuilder, 
+                                                    final InsertSetAddAssistedColumnsToken insertSetAddAssistedColumnsToken, final InsertOptimizeResult insertOptimizeResult) {
         List<ExpressionSegment> columnValues = new LinkedList<>();
         for (String each : insertSetAddAssistedColumnsToken.getColumnNames()) {
             columnValues.add(insertOptimizeResult.getUnits().get(0).getColumnSQLExpression(each));

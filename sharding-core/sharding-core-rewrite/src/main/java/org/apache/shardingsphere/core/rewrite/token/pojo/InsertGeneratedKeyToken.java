@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.rewrite.token.pojo;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
 
 /**
  * Insert generated key columns token.
