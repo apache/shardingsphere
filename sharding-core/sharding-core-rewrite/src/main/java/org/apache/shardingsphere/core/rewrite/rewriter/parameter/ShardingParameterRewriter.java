@@ -44,6 +44,6 @@ public final class ShardingParameterRewriter implements ParameterRewriter {
     
     private void rewriteLimit(final SelectStatement selectStatement, final ParameterBuilder parameterBuilder) {
         boolean isNeedFetchAll = (!selectStatement.getGroupByItems().isEmpty() || !selectStatement.getAggregationSelectItems().isEmpty()) && !selectStatement.isSameGroupByAndOrderByItems();
-        parameterBuilder.getReplacedIndexAndParameters().putAll(sqlRouteResult.getLimit().getRevisedIndexAndParameters(isNeedFetchAll, databaseType.name()));
+        parameterBuilder.getReplacedIndexAndParameters().putAll(sqlRouteResult.getLimit().getRevisedParameters(isNeedFetchAll, databaseType.name()));
     }
 }

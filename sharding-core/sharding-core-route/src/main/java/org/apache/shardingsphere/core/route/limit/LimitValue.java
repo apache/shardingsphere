@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.core.route.limit;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.LimitValueSegment;
 
 /**
@@ -28,15 +26,11 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.LimitValueSegm
  *
  * @author zhangliang
  */
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Getter
-@Setter
-@ToString
 public final class LimitValue {
     
-    private int value;
+    private final LimitValueSegment limitValueSegment;
     
-    private int index;
-    
-    private LimitValueSegment limitValueSegment;
+    private final int value;
 }

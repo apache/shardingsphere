@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.route.limit;
 
 import lombok.Getter;
-import lombok.ToString;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.LimitValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.NumberLiteralLimitValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.ParameterMarkerLimitValueSegment;
@@ -28,14 +27,13 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Limit object.
+ * Limit.
  *
  * @author zhangliang
  * @author caohao
  * @author zhangyonglun
  */
 @Getter
-@ToString
 public final class Limit {
     
     private final LimitValue offset;
@@ -50,8 +48,7 @@ public final class Limit {
     private LimitValue createLimitValue(final LimitValueSegment limitValueSegment, final List<Object> parameters) {
         int segmentValue = limitValueSegment instanceof ParameterMarkerLimitValueSegment
                 ? (int) parameters.get(((ParameterMarkerLimitValueSegment) limitValueSegment).getParameterIndex()) : ((NumberLiteralLimitValueSegment) limitValueSegment).getValue();
-        int index = limitValueSegment instanceof ParameterMarkerLimitValueSegment ? ((ParameterMarkerLimitValueSegment) limitValueSegment).getParameterIndex() : -1;
-        return new LimitValue(segmentValue, index, limitValueSegment);
+        return new LimitValue(limitValueSegment, segmentValue);
     }
     
     /**
@@ -73,30 +70,28 @@ public final class Limit {
     }
     
     /**
-     * Revise parameters.
+     * Get revise parameters.
      * 
      * @param isFetchAll is fetch all data or not
      * @param databaseType database type
-     * @return revised indexes and parameters
+     * @return revised parameters and parameters' indexes
      */
-    public Map<Integer, Object> getRevisedIndexAndParameters(final boolean isFetchAll, final String databaseType) {
+    public Map<Integer, Object> getRevisedParameters(final boolean isFetchAll, final String databaseType) {
         Map<Integer, Object> result = new HashMap<>(2, 1);
-        int rewriteOffset = 0;
-        int rewriteRowCount;
-        if (isFetchAll) {
-            rewriteRowCount = Integer.MAX_VALUE;
-        } else if (isNeedRewriteRowCount(databaseType)) {
-            rewriteRowCount = null == rowCount ? -1 : getOffsetValue() + rowCount.getValue();
-        } else {
-            rewriteRowCount = rowCount.getValue();
+        if (null != offset && offset.getLimitValueSegment() instanceof ParameterMarkerLimitValueSegment) {
+            result.put(((ParameterMarkerLimitValueSegment) offset.getLimitValueSegment()).getParameterIndex(), 0);
         }
-        if (null != offset && offset.getIndex() > -1) {
-            result.put(offset.getIndex(), rewriteOffset);
-        }
-        if (null != rowCount && rowCount.getIndex() > -1) {
-            result.put(rowCount.getIndex(), rewriteRowCount);
+        if (null != rowCount && rowCount.getLimitValueSegment() instanceof ParameterMarkerLimitValueSegment) {
+            result.put(((ParameterMarkerLimitValueSegment) rowCount.getLimitValueSegment()).getParameterIndex(), getRewriteRowCount(isFetchAll, databaseType));
         }
         return result;
+    }
+    
+    private int getRewriteRowCount(final boolean isFetchAll, final String databaseType) {
+        if (isFetchAll) {
+            return Integer.MAX_VALUE;
+        }
+        return isNeedRewriteRowCount(databaseType) ? getOffsetValue() + rowCount.getValue() : rowCount.getValue();
     }
     
     /**
