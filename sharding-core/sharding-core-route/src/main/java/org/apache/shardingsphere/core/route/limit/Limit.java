@@ -41,9 +41,26 @@ public final class Limit {
     
     private LimitValue rowCount;
     
-    public Limit(final LimitValue offset, final LimitValue rowCount) {
+    public Limit(final LimitValue offset, final LimitValue rowCount, final List<Object> parameters) {
         this.offset = offset;
         this.rowCount = rowCount;
+        fillParameters(parameters);
+    }
+    
+    private void fillParameters(final List<Object> parameters) {
+        int offset = 0;
+        if (null != this.offset) {
+            offset = -1 == this.offset.getIndex() ? getOffsetValue() : NumberUtil.roundHalfUp(parameters.get(this.offset.getIndex()));
+            this.offset.setValue(offset);
+        }
+        int rowCount = 0;
+        if (null != this.rowCount) {
+            rowCount = -1 == this.rowCount.getIndex() ? getRowCountValue() : NumberUtil.roundHalfUp(parameters.get(this.rowCount.getIndex()));
+            this.rowCount.setValue(rowCount);
+        }
+        if (offset < 0 || rowCount < 0) {
+            throw new SQLParsingException("LIMIT offset and row count can not be a negative value.");
+        }
     }
     
     /**
@@ -62,27 +79,6 @@ public final class Limit {
      */
     public int getRowCountValue() {
         return null != rowCount ? rowCount.getValue() : -1;
-    }
-    
-    /**
-     * Fill parameters.
-     *
-     * @param parameters SQL parameters
-     */
-    public void fillParameters(final List<Object> parameters) {
-        int offset = 0;
-        if (null != this.offset) {
-            offset = -1 == this.offset.getIndex() ? getOffsetValue() : NumberUtil.roundHalfUp(parameters.get(this.offset.getIndex()));
-            this.offset.setValue(offset);
-        }
-        int rowCount = 0;
-        if (null != this.rowCount) {
-            rowCount = -1 == this.rowCount.getIndex() ? getRowCountValue() : NumberUtil.roundHalfUp(parameters.get(this.rowCount.getIndex()));
-            this.rowCount.setValue(rowCount);
-        }
-        if (offset < 0 || rowCount < 0) {
-            throw new SQLParsingException("LIMIT offset and row count can not be a negative value.");
-        }
     }
     
     /**

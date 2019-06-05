@@ -344,7 +344,7 @@ public final class ShardingSQLRewriterTest {
         selectStatement.setLimit(new LimitSegment(0, 0, offsetSQLSegment, rowCountSQLSegment));
         selectStatement.addSQLToken(new TableToken(17, 23, "table_x", QuoteCharacter.NONE));
         routeResult = new SQLRouteResult(selectStatement);
-        routeResult.setLimit(new Limit(new LimitValue(2, -1, offsetSQLSegment), new LimitValue(2, -1, rowCountSQLSegment)));
+        routeResult.setLimit(new Limit(new LimitValue(2, -1, offsetSQLSegment), new LimitValue(2, -1, rowCountSQLSegment), Collections.emptyList()));
         routeResult.setRoutingResult(new RoutingResult());
         selectStatement.setLogicSQL("SELECT x.id FROM table_x x LIMIT 2, 2");
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(DatabaseType.MySQL, Collections.emptyList());
@@ -358,7 +358,7 @@ public final class ShardingSQLRewriterTest {
         selectStatement.setLimit(new LimitSegment(0, 0, offsetSQLSegment, rowCountSQLSegment));
         selectStatement.addSQLToken(new TableToken(68, 74, "table_x", QuoteCharacter.NONE));
         routeResult = new SQLRouteResult(selectStatement);
-        routeResult.setLimit(new Limit(new LimitValue(2, -1, offsetSQLSegment), new LimitValue(4, -1, rowCountSQLSegment)));
+        routeResult.setLimit(new Limit(new LimitValue(2, -1, offsetSQLSegment), new LimitValue(4, -1, rowCountSQLSegment), Collections.emptyList()));
         routeResult.setRoutingResult(new RoutingResult());
         selectStatement.setLogicSQL("SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT x.id FROM table_x x) row_ WHERE rownum<=4) t WHERE t.rownum_>2");
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(DatabaseType.Oracle, Collections.emptyList());
@@ -373,7 +373,7 @@ public final class ShardingSQLRewriterTest {
         selectStatement.setLimit(new LimitSegment(0, 0, offsetSQLSegment, rowCountSQLSegment));
         selectStatement.addSQLToken(new TableToken(85, 91, "table_x", QuoteCharacter.NONE));
         routeResult = new SQLRouteResult(selectStatement);
-        routeResult.setLimit(new Limit(new LimitValue(2, -1, offsetSQLSegment), new LimitValue(4, -1, rowCountSQLSegment)));
+        routeResult.setLimit(new Limit(new LimitValue(2, -1, offsetSQLSegment), new LimitValue(4, -1, rowCountSQLSegment), Collections.emptyList()));
         routeResult.setRoutingResult(new RoutingResult());
         selectStatement.setLogicSQL("SELECT * FROM (SELECT TOP(4) row_number() OVER (ORDER BY x.id) AS rownum_, x.id FROM table_x x) AS row_ WHERE row_.rownum_>2");
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(DatabaseType.SQLServer, Collections.emptyList());
@@ -392,7 +392,7 @@ public final class ShardingSQLRewriterTest {
         selectStatement.getGroupByItems().add(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.DESC, OrderDirection.ASC));
         selectStatement.addSQLToken(new TableToken(17, 23, "table_x", QuoteCharacter.NONE));
         routeResult = new SQLRouteResult(selectStatement);
-        routeResult.setLimit(new Limit(new LimitValue(2, -1, offsetSQLSegment), new LimitValue(4, -1, rowCountSQLSegment)));
+        routeResult.setLimit(new Limit(new LimitValue(2, -1, offsetSQLSegment), new LimitValue(4, -1, rowCountSQLSegment), Collections.emptyList()));
         routeResult.setRoutingResult(new RoutingResult());
         selectStatement.setLogicSQL("SELECT x.id FROM table_x x LIMIT 2, 2");
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(DatabaseType.MySQL, Collections.emptyList());
@@ -410,7 +410,7 @@ public final class ShardingSQLRewriterTest {
         selectStatement.getOrderByItems().add(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.ASC, OrderDirection.ASC));
         selectStatement.getGroupByItems().add(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.DESC, OrderDirection.ASC));
         routeResult = new SQLRouteResult(selectStatement);
-        routeResult.setLimit(new Limit(new LimitValue(2, -1, offsetSQLSegment), new LimitValue(4, -1, rowCountSQLSegment)));
+        routeResult.setLimit(new Limit(new LimitValue(2, -1, offsetSQLSegment), new LimitValue(4, -1, rowCountSQLSegment), Collections.emptyList()));
         routeResult.setRoutingResult(new RoutingResult());
         selectStatement.setLogicSQL("SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT x.id FROM table_x x) row_ WHERE rownum<=4) t WHERE t.rownum_>2");
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(DatabaseType.Oracle, Collections.emptyList());
@@ -429,7 +429,7 @@ public final class ShardingSQLRewriterTest {
         selectStatement.getOrderByItems().add(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.ASC, OrderDirection.ASC));
         selectStatement.getGroupByItems().add(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.DESC, OrderDirection.ASC));
         routeResult = new SQLRouteResult(selectStatement);
-        routeResult.setLimit(new Limit(new LimitValue(2, -1, offsetSQLSegment), new LimitValue(4, -1, rowCountSQLSegment)));
+        routeResult.setLimit(new Limit(new LimitValue(2, -1, offsetSQLSegment), new LimitValue(4, -1, rowCountSQLSegment), Collections.emptyList()));
         routeResult.setRoutingResult(new RoutingResult());
         selectStatement.setLogicSQL("SELECT * FROM (SELECT TOP(4) row_number() OVER (ORDER BY x.id) AS rownum_, x.id FROM table_x x) AS row_ WHERE row_.rownum_>2");
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(DatabaseType.SQLServer, Collections.emptyList());
@@ -444,7 +444,7 @@ public final class ShardingSQLRewriterTest {
         selectStatement.setLimit(new LimitSegment(0, 0, offsetSQLSegment, rowCountSQLSegment));
         selectStatement.addSQLToken(new TableToken(17, 23, "table_x", QuoteCharacter.NONE));
         routeResult = new SQLRouteResult(selectStatement);
-        routeResult.setLimit(new Limit(new LimitValue(2, -1, offsetSQLSegment), new LimitValue(4, -1, rowCountSQLSegment)));
+        routeResult.setLimit(new Limit(new LimitValue(2, -1, offsetSQLSegment), new LimitValue(4, -1, rowCountSQLSegment), Collections.emptyList()));
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
         routeResult.setRoutingResult(routingResult);
@@ -460,7 +460,7 @@ public final class ShardingSQLRewriterTest {
         selectStatement.setLimit(new LimitSegment(0, 0, offsetSQLSegment, rowCountSQLSegment));
         selectStatement.addSQLToken(new TableToken(68, 74, "table_x", QuoteCharacter.NONE));
         routeResult = new SQLRouteResult(selectStatement);
-        routeResult.setLimit(new Limit(new LimitValue(2, -1, offsetSQLSegment), new LimitValue(4, -1, rowCountSQLSegment)));
+        routeResult.setLimit(new Limit(new LimitValue(2, -1, offsetSQLSegment), new LimitValue(4, -1, rowCountSQLSegment), Collections.emptyList()));
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
         routeResult.setRoutingResult(routingResult);
@@ -477,7 +477,7 @@ public final class ShardingSQLRewriterTest {
         selectStatement.setLimit(new LimitSegment(0, 0, offsetSQLSegment, rowCountSQLSegment));
         selectStatement.addSQLToken(new TableToken(85, 91, "table_x", QuoteCharacter.NONE));
         routeResult = new SQLRouteResult(selectStatement);
-        routeResult.setLimit(new Limit(new LimitValue(2, -1, offsetSQLSegment), new LimitValue(4, -1, rowCountSQLSegment)));
+        routeResult.setLimit(new Limit(new LimitValue(2, -1, offsetSQLSegment), new LimitValue(4, -1, rowCountSQLSegment), Collections.emptyList()));
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
         routeResult.setRoutingResult(routingResult);
