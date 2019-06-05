@@ -30,6 +30,7 @@ import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
 import org.apache.shardingsphere.core.parse.sql.context.table.Table;
 import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.SelectItemsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
@@ -53,7 +54,6 @@ import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
-import org.apache.shardingsphere.core.rewrite.token.pojo.IndexToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.OrderByToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.RemoveToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SelectItemsToken;
@@ -549,7 +549,8 @@ public final class ShardingSQLRewriterTest {
     
     @Test
     public void assertIndexTokenForIndexNameTableName() {
-        selectStatement.addSQLToken(new IndexToken(13, 22, "index_name", QuoteCharacter.NONE, "table_x"));
+        selectStatement.getTables().add(new Table("table_x", null));
+        selectStatement.getSqlSegments().add(new IndexSegment(13, 22, "index_name", QuoteCharacter.NONE));
         selectStatement.addSQLToken(new TableToken(27, 33, "table_x", QuoteCharacter.NONE));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setRoutingResult(new RoutingResult());
@@ -574,8 +575,9 @@ public final class ShardingSQLRewriterTest {
     
     @Test
     public void assertIndexTokenForIndexNameTableNameWithoutLogicTableName() {
-        selectStatement.addSQLToken(new IndexToken(13, 23, "logic_index", QuoteCharacter.NONE, "table_x"));
-        selectStatement.addSQLToken(new TableToken(28, 34, "table_x", QuoteCharacter.NONE));
+        selectStatement.getTables().add(new Table("table_x", null));
+        selectStatement.getSqlSegments().add(new IndexSegment(13, 23, "logic_index", QuoteCharacter.NONE));
+        selectStatement.getSqlSegments().add(new TableSegment(28, 34, "table_x"));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setRoutingResult(new RoutingResult());
         selectStatement.setLogicSQL("CREATE INDEX logic_index ON table_x ('column')");
