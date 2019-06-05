@@ -58,7 +58,6 @@ import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
 import org.apache.shardingsphere.core.rewrite.token.pojo.OrderByToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SelectItemsToken;
-import org.apache.shardingsphere.core.rewrite.token.pojo.TableToken;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.limit.Limit;
 import org.apache.shardingsphere.core.route.limit.LimitValue;
@@ -396,7 +395,7 @@ public final class ShardingSQLRewriterTest {
         columnSegment.setOwner(new TableSegment(0, 0, "x"));
         selectStatement.getOrderByItems().add(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.ASC, OrderDirection.ASC));
         selectStatement.getGroupByItems().add(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.DESC, OrderDirection.ASC));
-        selectStatement.addSQLToken(new TableToken(17, 23, "table_x", QuoteCharacter.NONE));
+        selectStatement.getSqlSegments().add(new TableSegment(17, 23, "table_x"));
         routeResult = new SQLRouteResult(selectStatement);
         Limit limit = new Limit();
         limit.setOffset(new LimitValue(2, -1, offsetSQLSegment));
@@ -413,7 +412,7 @@ public final class ShardingSQLRewriterTest {
         LimitValueSegment offsetSQLSegment = new NumberLiteralLimitValueSegment(119, 119, 2, true);
         LimitValueSegment rowCountSQLSegment = new NumberLiteralLimitValueSegment(98, 98, 4, false);
         selectStatement.setLimit(new LimitSegment(0, 0, offsetSQLSegment, rowCountSQLSegment));
-        selectStatement.addSQLToken(new TableToken(68, 74, "table_x", QuoteCharacter.NONE));
+        selectStatement.getSqlSegments().add(new TableSegment(68, 74, "table_x"));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, "id");
         columnSegment.setOwner(new TableSegment(0, 0, "x"));
         selectStatement.getOrderByItems().add(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.ASC, OrderDirection.ASC));
@@ -435,7 +434,7 @@ public final class ShardingSQLRewriterTest {
         LimitValueSegment offsetSQLSegment = new NumberLiteralLimitValueSegment(123, 123, 2, true);
         LimitValueSegment rowCountSQLSegment = new NumberLiteralLimitValueSegment(26, 26, 4, false);
         selectStatement.setLimit(new LimitSegment(0, 0, offsetSQLSegment, rowCountSQLSegment));
-        selectStatement.addSQLToken(new TableToken(85, 91, "table_x", QuoteCharacter.NONE));
+        selectStatement.getSqlSegments().add(new TableSegment(85, 91, "table_x"));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, "id");
         columnSegment.setOwner(new TableSegment(0, 0, "x"));
         selectStatement.getOrderByItems().add(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.ASC, OrderDirection.ASC));
@@ -457,7 +456,7 @@ public final class ShardingSQLRewriterTest {
         LimitValueSegment offsetSQLSegment = new NumberLiteralLimitValueSegment(33, 33, 2, true);
         LimitValueSegment rowCountSQLSegment = new NumberLiteralLimitValueSegment(36, 36, 2, false);
         selectStatement.setLimit(new LimitSegment(0, 0, offsetSQLSegment, rowCountSQLSegment));
-        selectStatement.addSQLToken(new TableToken(17, 23, "table_x", QuoteCharacter.NONE));
+        selectStatement.getSqlSegments().add(new TableSegment(17, 23, "table_x"));
         routeResult = new SQLRouteResult(selectStatement);
         Limit limit = new Limit();
         limit.setOffset(new LimitValue(2, -1, offsetSQLSegment));
@@ -476,7 +475,7 @@ public final class ShardingSQLRewriterTest {
         LimitValueSegment offsetSQLSegment = new NumberLiteralLimitValueSegment(119, 119, 2, true);
         LimitValueSegment rowCountSQLSegment = new NumberLiteralLimitValueSegment(98, 98, 4, false);
         selectStatement.setLimit(new LimitSegment(0, 0, offsetSQLSegment, rowCountSQLSegment));
-        selectStatement.addSQLToken(new TableToken(68, 74, "table_x", QuoteCharacter.NONE));
+        selectStatement.getSqlSegments().add(new TableSegment(68, 74, "table_x"));
         routeResult = new SQLRouteResult(selectStatement);
         Limit limit = new Limit();
         limit.setOffset(new LimitValue(2, -1, offsetSQLSegment));
@@ -496,7 +495,7 @@ public final class ShardingSQLRewriterTest {
         LimitValueSegment offsetSQLSegment = new NumberLiteralLimitValueSegment(123, 123, 2, true);
         LimitValueSegment rowCountSQLSegment = new NumberLiteralLimitValueSegment(26, 26, 4, false);
         selectStatement.setLimit(new LimitSegment(0, 0, offsetSQLSegment, rowCountSQLSegment));
-        selectStatement.addSQLToken(new TableToken(85, 91, "table_x", QuoteCharacter.NONE));
+        selectStatement.getSqlSegments().add(new TableSegment(85, 91, "table_x"));
         routeResult = new SQLRouteResult(selectStatement);
         Limit limit = new Limit();
         limit.setOffset(new LimitValue(2, -1, offsetSQLSegment));
@@ -520,7 +519,7 @@ public final class ShardingSQLRewriterTest {
         columnSegment2.setOwner(new TableSegment(0, 0, "x"));
         selectStatement.getOrderByItems().add(new ColumnOrderByItemSegment(0, 0, columnSegment1, OrderDirection.ASC, OrderDirection.ASC));
         selectStatement.getOrderByItems().add(new ColumnOrderByItemSegment(0, 0, columnSegment2, OrderDirection.DESC, OrderDirection.ASC));
-        selectStatement.addSQLToken(new TableToken(25, 31, "table_x", QuoteCharacter.NONE));
+        selectStatement.getSqlSegments().add(new TableSegment(25, 31, "table_x"));
         selectStatement.addSQLToken(new OrderByToken(61));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setRoutingResult(new RoutingResult());
