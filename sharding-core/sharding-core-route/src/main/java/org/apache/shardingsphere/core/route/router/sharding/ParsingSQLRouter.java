@@ -32,7 +32,6 @@ import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
 import org.apache.shardingsphere.core.parse.entry.ShardingSQLParseEntry;
 import org.apache.shardingsphere.core.parse.hook.ParsingHook;
 import org.apache.shardingsphere.core.parse.hook.SPIParsingHook;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.LimitSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
@@ -105,8 +104,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
         }
         RoutingResult routingResult = RoutingEngineFactory.newInstance(shardingRule, shardingMetaData.getDataSource(), sqlStatement, optimizeResult).route();
         if (sqlStatement instanceof SelectStatement && null != ((SelectStatement) sqlStatement).getLimit() && !routingResult.isSingleRouting()) {
-            final LimitSegment limitSegment = ((SelectStatement) sqlStatement).getLimit();
-            result.setLimit(new Limit(limitSegment.getOffset().orNull(), limitSegment.getRowCount().orNull(), parameters));
+            result.setLimit(new Limit(((SelectStatement) sqlStatement).getLimit(), parameters));
         }
         if (needMerge) {
             Preconditions.checkState(1 == routingResult.getRoutingUnits().size(), "Must have one sharding with subquery.");

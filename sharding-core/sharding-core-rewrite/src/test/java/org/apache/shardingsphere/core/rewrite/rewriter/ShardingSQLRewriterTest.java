@@ -47,7 +47,6 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralE
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.AggregationDistinctSelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.LimitSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.LimitValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.NumberLiteralLimitValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
@@ -347,12 +346,11 @@ public final class ShardingSQLRewriterTest {
     
     @Test
     public void assertRewriteForLimit() {
-        LimitValueSegment offsetSQLSegment = new NumberLiteralLimitValueSegment(33, 33, 2, true);
-        LimitValueSegment rowCountSQLSegment = new NumberLiteralLimitValueSegment(36, 36, 2, false);
-        selectStatement.setLimit(new LimitSegment(0, 0, offsetSQLSegment, rowCountSQLSegment));
+        LimitSegment limitSegment = new LimitSegment(0, 0, new NumberLiteralLimitValueSegment(33, 33, 2, true), new NumberLiteralLimitValueSegment(36, 36, 2, false));
+        selectStatement.setLimit(limitSegment);
         selectStatement.getSqlSegments().add(new TableSegment(17, 23, "table_x"));
         routeResult = new SQLRouteResult(selectStatement);
-        routeResult.setLimit(new Limit(offsetSQLSegment, rowCountSQLSegment, Collections.emptyList()));
+        routeResult.setLimit(new Limit(limitSegment, Collections.emptyList()));
         routeResult.setRoutingResult(new RoutingResult());
         selectStatement.setLogicSQL("SELECT x.id FROM table_x x LIMIT 2, 2");
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(DatabaseType.MySQL, Collections.emptyList());
@@ -361,12 +359,11 @@ public final class ShardingSQLRewriterTest {
     
     @Test
     public void assertRewriteForRowNum() {
-        LimitValueSegment offsetSQLSegment = new NumberLiteralLimitValueSegment(119, 119, 2, true);
-        LimitValueSegment rowCountSQLSegment = new NumberLiteralLimitValueSegment(98, 98, 4, false);
-        selectStatement.setLimit(new LimitSegment(0, 0, offsetSQLSegment, rowCountSQLSegment));
+        LimitSegment limitSegment = new LimitSegment(0, 0, new NumberLiteralLimitValueSegment(119, 119, 2, true), new NumberLiteralLimitValueSegment(98, 98, 4, false));
+        selectStatement.setLimit(limitSegment);
         selectStatement.getSqlSegments().add(new TableSegment(68, 74, "table_x"));
         routeResult = new SQLRouteResult(selectStatement);
-        routeResult.setLimit(new Limit(offsetSQLSegment, rowCountSQLSegment, Collections.emptyList()));
+        routeResult.setLimit(new Limit(limitSegment, Collections.emptyList()));
         routeResult.setRoutingResult(new RoutingResult());
         selectStatement.setLogicSQL("SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT x.id FROM table_x x) row_ WHERE rownum<=4) t WHERE t.rownum_>2");
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(DatabaseType.Oracle, Collections.emptyList());
@@ -376,12 +373,11 @@ public final class ShardingSQLRewriterTest {
     
     @Test
     public void assertRewriteForTopAndRowNumber() {
-        LimitValueSegment offsetSQLSegment = new NumberLiteralLimitValueSegment(123, 123, 2, true);
-        LimitValueSegment rowCountSQLSegment = new NumberLiteralLimitValueSegment(26, 26, 4, false);
-        selectStatement.setLimit(new LimitSegment(0, 0, offsetSQLSegment, rowCountSQLSegment));
+        LimitSegment limitSegment = new LimitSegment(0, 0, new NumberLiteralLimitValueSegment(123, 123, 2, true), new NumberLiteralLimitValueSegment(26, 26, 4, false));
+        selectStatement.setLimit(limitSegment);
         selectStatement.getSqlSegments().add(new TableSegment(85, 91, "table_x"));
         routeResult = new SQLRouteResult(selectStatement);
-        routeResult.setLimit(new Limit(offsetSQLSegment, rowCountSQLSegment, Collections.emptyList()));
+        routeResult.setLimit(new Limit(limitSegment, Collections.emptyList()));
         routeResult.setRoutingResult(new RoutingResult());
         selectStatement.setLogicSQL("SELECT * FROM (SELECT TOP(4) row_number() OVER (ORDER BY x.id) AS rownum_, x.id FROM table_x x) AS row_ WHERE row_.rownum_>2");
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(DatabaseType.SQLServer, Collections.emptyList());
@@ -391,16 +387,15 @@ public final class ShardingSQLRewriterTest {
     
     @Test
     public void assertRewriteForLimitForMemoryGroupBy() {
-        LimitValueSegment offsetSQLSegment = new NumberLiteralLimitValueSegment(33, 33, 2, true);
-        LimitValueSegment rowCountSQLSegment = new NumberLiteralLimitValueSegment(36, 36, 2, false);
-        selectStatement.setLimit(new LimitSegment(0, 0, offsetSQLSegment, rowCountSQLSegment));
+        LimitSegment limitSegment = new LimitSegment(0, 0, new NumberLiteralLimitValueSegment(33, 33, 2, true), new NumberLiteralLimitValueSegment(36, 36, 2, false));
+        selectStatement.setLimit(limitSegment);
         ColumnSegment columnSegment = new ColumnSegment(0, 0, "id");
         columnSegment.setOwner(new TableSegment(0, 0, "x"));
         selectStatement.getOrderByItems().add(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.ASC, OrderDirection.ASC));
         selectStatement.getGroupByItems().add(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.DESC, OrderDirection.ASC));
         selectStatement.getSqlSegments().add(new TableSegment(17, 23, "table_x"));
         routeResult = new SQLRouteResult(selectStatement);
-        routeResult.setLimit(new Limit(offsetSQLSegment, rowCountSQLSegment, Collections.emptyList()));
+        routeResult.setLimit(new Limit(limitSegment, Collections.emptyList()));
         routeResult.setRoutingResult(new RoutingResult());
         selectStatement.setLogicSQL("SELECT x.id FROM table_x x LIMIT 2, 2");
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(DatabaseType.MySQL, Collections.emptyList());
@@ -409,16 +404,15 @@ public final class ShardingSQLRewriterTest {
     
     @Test
     public void assertRewriteForRowNumForMemoryGroupBy() {
-        LimitValueSegment offsetSQLSegment = new NumberLiteralLimitValueSegment(119, 119, 2, true);
-        LimitValueSegment rowCountSQLSegment = new NumberLiteralLimitValueSegment(98, 98, 4, false);
-        selectStatement.setLimit(new LimitSegment(0, 0, offsetSQLSegment, rowCountSQLSegment));
+        LimitSegment limitSegment = new LimitSegment(0, 0, new NumberLiteralLimitValueSegment(119, 119, 2, true), new NumberLiteralLimitValueSegment(98, 98, 4, false));
+        selectStatement.setLimit(limitSegment);
         selectStatement.getSqlSegments().add(new TableSegment(68, 74, "table_x"));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, "id");
         columnSegment.setOwner(new TableSegment(0, 0, "x"));
         selectStatement.getOrderByItems().add(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.ASC, OrderDirection.ASC));
         selectStatement.getGroupByItems().add(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.DESC, OrderDirection.ASC));
         routeResult = new SQLRouteResult(selectStatement);
-        routeResult.setLimit(new Limit(offsetSQLSegment, rowCountSQLSegment, Collections.emptyList()));
+        routeResult.setLimit(new Limit(limitSegment, Collections.emptyList()));
         routeResult.setRoutingResult(new RoutingResult());
         selectStatement.setLogicSQL("SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT x.id FROM table_x x) row_ WHERE rownum<=4) t WHERE t.rownum_>2");
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(DatabaseType.Oracle, Collections.emptyList());
@@ -428,16 +422,15 @@ public final class ShardingSQLRewriterTest {
     
     @Test
     public void assertRewriteForTopAndRowNumberForMemoryGroupBy() {
-        LimitValueSegment offsetSQLSegment = new NumberLiteralLimitValueSegment(123, 123, 2, true);
-        LimitValueSegment rowCountSQLSegment = new NumberLiteralLimitValueSegment(26, 26, 4, false);
-        selectStatement.setLimit(new LimitSegment(0, 0, offsetSQLSegment, rowCountSQLSegment));
+        LimitSegment limitSegment = new LimitSegment(0, 0, new NumberLiteralLimitValueSegment(123, 123, 2, true), new NumberLiteralLimitValueSegment(26, 26, 4, false));
+        selectStatement.setLimit(limitSegment);
         selectStatement.getSqlSegments().add(new TableSegment(85, 91, "table_x"));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, "id");
         columnSegment.setOwner(new TableSegment(0, 0, "x"));
         selectStatement.getOrderByItems().add(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.ASC, OrderDirection.ASC));
         selectStatement.getGroupByItems().add(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.DESC, OrderDirection.ASC));
         routeResult = new SQLRouteResult(selectStatement);
-        routeResult.setLimit(new Limit(offsetSQLSegment, rowCountSQLSegment, Collections.emptyList()));
+        routeResult.setLimit(new Limit(limitSegment, Collections.emptyList()));
         routeResult.setRoutingResult(new RoutingResult());
         selectStatement.setLogicSQL("SELECT * FROM (SELECT TOP(4) row_number() OVER (ORDER BY x.id) AS rownum_, x.id FROM table_x x) AS row_ WHERE row_.rownum_>2");
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(DatabaseType.SQLServer, Collections.emptyList());
@@ -447,12 +440,11 @@ public final class ShardingSQLRewriterTest {
     
     @Test
     public void assertRewriteForLimitForNotRewriteLimit() {
-        LimitValueSegment offsetSQLSegment = new NumberLiteralLimitValueSegment(33, 33, 2, true);
-        LimitValueSegment rowCountSQLSegment = new NumberLiteralLimitValueSegment(36, 36, 2, false);
-        selectStatement.setLimit(new LimitSegment(0, 0, offsetSQLSegment, rowCountSQLSegment));
+        LimitSegment limitSegment = new LimitSegment(0, 0, new NumberLiteralLimitValueSegment(33, 33, 2, true), new NumberLiteralLimitValueSegment(36, 36, 2, false));
+        selectStatement.setLimit(limitSegment);
         selectStatement.getSqlSegments().add(new TableSegment(17, 23, "table_x"));
         routeResult = new SQLRouteResult(selectStatement);
-        routeResult.setLimit(new Limit(offsetSQLSegment, rowCountSQLSegment, Collections.emptyList()));
+        routeResult.setLimit(new Limit(limitSegment, Collections.emptyList()));
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
         routeResult.setRoutingResult(routingResult);
@@ -463,12 +455,11 @@ public final class ShardingSQLRewriterTest {
     
     @Test
     public void assertRewriteForRowNumForNotRewriteLimit() {
-        LimitValueSegment offsetSQLSegment = new NumberLiteralLimitValueSegment(119, 119, 2, true);
-        LimitValueSegment rowCountSQLSegment = new NumberLiteralLimitValueSegment(98, 98, 4, false);
-        selectStatement.setLimit(new LimitSegment(0, 0, offsetSQLSegment, rowCountSQLSegment));
+        LimitSegment limitSegment = new LimitSegment(0, 0, new NumberLiteralLimitValueSegment(119, 119, 2, true), new NumberLiteralLimitValueSegment(98, 98, 4, false));
+        selectStatement.setLimit(limitSegment);
         selectStatement.getSqlSegments().add(new TableSegment(68, 74, "table_x"));
         routeResult = new SQLRouteResult(selectStatement);
-        routeResult.setLimit(new Limit(offsetSQLSegment, rowCountSQLSegment, Collections.emptyList()));
+        routeResult.setLimit(new Limit(limitSegment, Collections.emptyList()));
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
         routeResult.setRoutingResult(routingResult);
@@ -480,12 +471,11 @@ public final class ShardingSQLRewriterTest {
     
     @Test
     public void assertRewriteForTopAndRowNumberForNotRewriteLimit() {
-        LimitValueSegment offsetSQLSegment = new NumberLiteralLimitValueSegment(123, 123, 2, true);
-        LimitValueSegment rowCountSQLSegment = new NumberLiteralLimitValueSegment(26, 26, 4, false);
-        selectStatement.setLimit(new LimitSegment(0, 0, offsetSQLSegment, rowCountSQLSegment));
+        LimitSegment limitSegment = new LimitSegment(0, 0, new NumberLiteralLimitValueSegment(123, 123, 2, true), new NumberLiteralLimitValueSegment(26, 26, 4, false));
+        selectStatement.setLimit(limitSegment);
         selectStatement.getSqlSegments().add(new TableSegment(85, 91, "table_x"));
         routeResult = new SQLRouteResult(selectStatement);
-        routeResult.setLimit(new Limit(offsetSQLSegment, rowCountSQLSegment, Collections.emptyList()));
+        routeResult.setLimit(new Limit(limitSegment, Collections.emptyList()));
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
         routeResult.setRoutingResult(routingResult);

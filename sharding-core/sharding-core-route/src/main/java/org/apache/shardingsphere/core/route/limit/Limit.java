@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.route.limit;
 
 import lombok.Getter;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.LimitSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.LimitValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.NumberLiteralLimitValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.ParameterMarkerLimitValueSegment;
@@ -40,9 +41,9 @@ public final class Limit {
     
     private final LimitValue rowCount;
     
-    public Limit(final LimitValueSegment offsetSegment, final LimitValueSegment rowCountSegment, final List<Object> parameters) {
-        offset = null == offsetSegment ? null : createLimitValue(offsetSegment, parameters);
-        rowCount = null == rowCountSegment ? null : createLimitValue(rowCountSegment, parameters);
+    public Limit(final LimitSegment limitSegment, final List<Object> parameters) {
+        offset = limitSegment.getOffset().isPresent() ? createLimitValue(limitSegment.getOffset().get(), parameters) : null;
+        rowCount = limitSegment.getRowCount().isPresent() ? createLimitValue(limitSegment.getRowCount().get(), parameters) : null;
     }
     
     private LimitValue createLimitValue(final LimitValueSegment limitValueSegment, final List<Object> parameters) {
