@@ -21,7 +21,7 @@ import org.apache.shardingsphere.core.parse.integrate.asserts.condition.Conditio
 import org.apache.shardingsphere.core.parse.integrate.asserts.groupby.GroupByAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.index.IndexAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.item.ItemAssert;
-import org.apache.shardingsphere.core.parse.integrate.asserts.limit.LimitAssert;
+import org.apache.shardingsphere.core.parse.integrate.asserts.limit.PaginationAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.meta.TableMetaDataAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.orderby.OrderByAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.table.AlterTableAssert;
@@ -61,7 +61,7 @@ public final class SQLStatementAssert {
     
     private final OrderByAssert orderByAssert;
     
-    private final LimitAssert limitAssert;
+    private final PaginationAssert paginationAssert;
     
     private final TableMetaDataAssert metaAssert;
     
@@ -84,7 +84,7 @@ public final class SQLStatementAssert {
         itemAssert = new ItemAssert(assertMessage);
         groupByAssert = new GroupByAssert(assertMessage);
         orderByAssert = new OrderByAssert(assertMessage);
-        limitAssert = new LimitAssert(sqlCaseType, assertMessage);
+        paginationAssert = new PaginationAssert(sqlCaseType, assertMessage);
         metaAssert = new TableMetaDataAssert(assertMessage);
         alterTableAssert = new AlterTableAssert(assertMessage);
         this.databaseType = databaseType;
@@ -118,7 +118,7 @@ public final class SQLStatementAssert {
         itemAssert.assertItems(actual.getItems(), expected.getSelectItems());
         groupByAssert.assertGroupByItems(actual.getGroupByItems(), expected.getGroupByColumns());
         orderByAssert.assertOrderByItems(actual.getOrderByItems(), expected.getOrderByColumns());
-        limitAssert.assertLimit(actual.getLimit(), expected.getLimit());
+        paginationAssert.assertPagination(actual.getPagination(), expected.getLimit());
     }
     
     private void assertCreateTableStatement(final CreateTableStatement actual) {

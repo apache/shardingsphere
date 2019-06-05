@@ -15,26 +15,45 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.token.pojo;
+package org.apache.shardingsphere.core.parse.sql.segment.dml.pagination;
 
+import com.google.common.base.Optional;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 
 /**
- * Offset token for pagination.
- *
- * @author zhangliang
- * @author panjuan
+ * Pagination segment.
+ * 
+ * @author duhongjun
  */
+@RequiredArgsConstructor
 @Getter
-public final class OffsetToken extends SQLToken implements Substitutable {
+public final class PaginationSegment implements SQLSegment {
     
-    private final int offset;
+    private final int startIndex;
     
     private final int stopIndex;
     
-    public OffsetToken(final int startIndex, final int stopIndex, final int offset) {
-        super(startIndex);
-        this.offset = offset;
-        this.stopIndex = stopIndex;
+    private final PaginationValueSegment offset;
+    
+    private final PaginationValueSegment rowCount;
+    
+    /**
+     * Get offset.
+     * 
+     * @return offset
+     */
+    public Optional<PaginationValueSegment> getOffset() {
+        return Optional.fromNullable(offset);
+    }
+    
+    /**
+     * Get row count.
+     *
+     * @return row count
+     */
+    public Optional<PaginationValueSegment> getRowCount() {
+        return Optional.fromNullable(rowCount);
     }
 }

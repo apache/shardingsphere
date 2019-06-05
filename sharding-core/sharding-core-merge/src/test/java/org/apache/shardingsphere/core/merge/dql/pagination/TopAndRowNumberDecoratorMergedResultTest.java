@@ -23,8 +23,9 @@ import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.MergedResult;
 import org.apache.shardingsphere.core.merge.dql.DQLMergeEngine;
 import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.LimitSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.NumberLiteralLimitValueSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.rownum.NumberLiteralRowNumberValueSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.limit.Limit;
@@ -49,8 +50,6 @@ public final class TopAndRowNumberDecoratorMergedResultTest {
     
     private List<QueryResult> queryResults;
     
-    private SelectStatement selectStatement;
-    
     private SQLRouteResult routeResult;
     
     @Before
@@ -66,13 +65,12 @@ public final class TopAndRowNumberDecoratorMergedResultTest {
         for (ResultSet each : resultSets) {
             queryResults.add(new TestQueryResult(each));
         }
-        selectStatement = new SelectStatement();
-        routeResult = new SQLRouteResult(selectStatement);
+        routeResult = new SQLRouteResult(new SelectStatement());
     }
     
     @Test
     public void assertNextForSkipAll() throws SQLException {
-        routeResult.setLimit(new Limit(new LimitSegment(0, 0, new NumberLiteralLimitValueSegment(0, 0, Integer.MAX_VALUE, true), null), Collections.emptyList()));
+        routeResult.setLimit(new Limit(new PaginationSegment(0, 0, new NumberLiteralRowNumberValueSegment(0, 0, Integer.MAX_VALUE, true), null), Collections.emptyList()));
         mergeEngine = new DQLMergeEngine(DatabaseType.SQLServer, routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertFalse(actual.next());
@@ -80,7 +78,7 @@ public final class TopAndRowNumberDecoratorMergedResultTest {
     
     @Test
     public void assertNextWithoutOffsetWithRowCount() throws SQLException {
-        routeResult.setLimit(new Limit(new LimitSegment(0, 0, null, new NumberLiteralLimitValueSegment(0, 0, 5, false)), Collections.emptyList()));
+        routeResult.setLimit(new Limit(new PaginationSegment(0, 0, null, new NumberLiteralLimitValueSegment(0, 0, 5)), Collections.emptyList()));
         mergeEngine = new DQLMergeEngine(DatabaseType.SQLServer, routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
         for (int i = 0; i < 5; i++) {
@@ -91,7 +89,7 @@ public final class TopAndRowNumberDecoratorMergedResultTest {
     
     @Test
     public void assertNextWithOffsetWithoutRowCount() throws SQLException {
-        routeResult.setLimit(new Limit(new LimitSegment(0, 0, new NumberLiteralLimitValueSegment(0, 0, 2, true), null), Collections.emptyList()));
+        routeResult.setLimit(new Limit(new PaginationSegment(0, 0, new NumberLiteralRowNumberValueSegment(0, 0, 2, true), null), Collections.emptyList()));
         mergeEngine = new DQLMergeEngine(DatabaseType.SQLServer, routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
         for (int i = 0; i < 7; i++) {
@@ -102,7 +100,7 @@ public final class TopAndRowNumberDecoratorMergedResultTest {
     
     @Test
     public void assertNextWithOffsetBoundOpenedFalse() throws SQLException {
-        routeResult.setLimit(new Limit(new LimitSegment(0, 0, new NumberLiteralLimitValueSegment(0, 0, 2, false), new NumberLiteralLimitValueSegment(0, 0, 4, false)), Collections.emptyList()));
+        routeResult.setLimit(new Limit(new PaginationSegment(0, 0, new NumberLiteralRowNumberValueSegment(0, 0, 2, false), new NumberLiteralLimitValueSegment(0, 0, 4)), Collections.emptyList()));
         mergeEngine = new DQLMergeEngine(DatabaseType.SQLServer, routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertTrue(actual.next());
@@ -112,7 +110,7 @@ public final class TopAndRowNumberDecoratorMergedResultTest {
 
     @Test
     public void assertNextWithOffsetBoundOpenedTrue() throws SQLException {
-        routeResult.setLimit(new Limit(new LimitSegment(0, 0, new NumberLiteralLimitValueSegment(0, 0, 2, true), new NumberLiteralLimitValueSegment(0, 0, 4, false)), Collections.emptyList()));
+        routeResult.setLimit(new Limit(new PaginationSegment(0, 0, new NumberLiteralRowNumberValueSegment(0, 0, 2, true), new NumberLiteralLimitValueSegment(0, 0, 4)), Collections.emptyList()));
         mergeEngine = new DQLMergeEngine(DatabaseType.SQLServer, routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertTrue(actual.next());

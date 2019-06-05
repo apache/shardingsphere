@@ -25,10 +25,10 @@ import org.apache.shardingsphere.core.parse.extractor.impl.common.expression.imp
 import org.apache.shardingsphere.core.parse.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.LimitSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.LimitValueSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.NumberLiteralLimitValueSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.ParameterMarkerLimitValueSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.LimitValueSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.ParameterMarkerLimitValueSegment;
 import org.apache.shardingsphere.core.util.NumberUtil;
 
 import java.util.Map;
@@ -45,11 +45,11 @@ public final class LimitExtractor implements OptionalSQLSegmentExtractor {
     private final ParameterMarkerExpressionExtractor parameterMarkerExpressionExtractor = new ParameterMarkerExpressionExtractor();
     
     @Override
-    public Optional<LimitSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
+    public Optional<PaginationSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> limitNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.LIMIT_CLAUSE);
         return limitNode.isPresent()
-                ? Optional.of(new LimitSegment(limitNode.get().getStart().getStartIndex(), limitNode.get().getStop().getStopIndex(),
-                extractOffset(limitNode.get(), parameterMarkerIndexes).orNull(), extractRowCount(limitNode.get(), parameterMarkerIndexes).orNull())) : Optional.<LimitSegment>absent();
+                ? Optional.of(new PaginationSegment(limitNode.get().getStart().getStartIndex(), limitNode.get().getStop().getStopIndex(),
+                extractOffset(limitNode.get(), parameterMarkerIndexes).orNull(), extractRowCount(limitNode.get(), parameterMarkerIndexes).orNull())) : Optional.<PaginationSegment>absent();
     }
     
     private Optional<LimitValueSegment> extractOffset(final ParserRuleContext limitNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
@@ -66,11 +66,11 @@ public final class LimitExtractor implements OptionalSQLSegmentExtractor {
         Optional<ParameterMarkerExpressionSegment> parameterMarkerExpression = parameterMarkerExpressionExtractor.extract(limitValueNode, parameterMarkerIndexes);
         if (parameterMarkerExpression.isPresent()) {
             return new ParameterMarkerLimitValueSegment(
-                    limitValueNode.getStart().getStartIndex(), limitValueNode.getStop().getStopIndex(), parameterMarkerExpression.get().getParameterMarkerIndex(), false);
+                    limitValueNode.getStart().getStartIndex(), limitValueNode.getStop().getStopIndex(), parameterMarkerExpression.get().getParameterMarkerIndex());
         }
         Optional<ParserRuleContext> numberLiteralsNode = ExtractorUtils.findFirstChildNode(limitValueNode, RuleName.NUMBER_LITERALS);
         Preconditions.checkState(numberLiteralsNode.isPresent());
         return new NumberLiteralLimitValueSegment(
-                limitValueNode.getStart().getStartIndex(), limitValueNode.getStop().getStopIndex(), NumberUtil.getExactlyNumber(numberLiteralsNode.get().getText(), 10).intValue(), false);
+                limitValueNode.getStart().getStartIndex(), limitValueNode.getStop().getStopIndex(), NumberUtil.getExactlyNumber(numberLiteralsNode.get().getText(), 10).intValue());
     }
 }

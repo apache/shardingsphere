@@ -15,22 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.filler.common.dml;
+package org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.rownum;
 
-import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationValueSegment;
 
 /**
- * Limit filler.
- *
- * @author duhongjun
+ * Row number value segment.
+ * 
+ * @author zhangliang
  */
-public final class LimitFiller implements SQLSegmentFiller<PaginationSegment> {
+public abstract class RowNumberValueSegment extends PaginationValueSegment {
     
-    @Override
-    public void fill(final PaginationSegment sqlSegment, final SQLStatement sqlStatement) {
-        ((SelectStatement) sqlStatement).setPagination(sqlSegment);
+    public RowNumberValueSegment(final int startIndex, final int stopIndex, final boolean boundOpened) {
+        super(startIndex, stopIndex, boundOpened);
     }
 }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.route.limit;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.LimitValueSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationValueSegment;
 
 /**
  * Limit value.
@@ -30,7 +30,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.LimitValueSegm
 @Getter
 public final class LimitValue {
     
-    private final LimitValueSegment limitValueSegment;
+    private final PaginationValueSegment paginationValueSegment;
     
     private final int value;
 }

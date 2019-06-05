@@ -24,7 +24,7 @@ import org.apache.shardingsphere.core.route.limit.Limit;
 import java.sql.SQLException;
 
 /**
- * Decorator merged result for rownum pagination.
+ * Decorator merged result for row number pagination.
  *
  * @author zhangliang
  */
@@ -47,7 +47,7 @@ public final class RowNumberDecoratorMergedResult extends DecoratorMergedResult 
         if (null == limit.getOffset()) {
             end = 0;
         } else {
-            end = limit.getOffset().getLimitValueSegment().isBoundOpened() ? limit.getOffsetValue() - 1 : limit.getOffsetValue();
+            end = limit.getOffset().getPaginationValueSegment().isBoundOpened() ? limit.getOffsetValue() - 1 : limit.getOffsetValue();
         }
         for (int i = 0; i < end; i++) {
             if (!getMergedResult().next()) {
@@ -66,7 +66,7 @@ public final class RowNumberDecoratorMergedResult extends DecoratorMergedResult 
         if (limit.getRowCountValue() < 0) {
             return getMergedResult().next();
         }
-        if (limit.getRowCount().getLimitValueSegment().isBoundOpened()) {
+        if (limit.getRowCount().getPaginationValueSegment().isBoundOpened()) {
             return rowNumber++ <= limit.getRowCountValue() && getMergedResult().next();
         }
         return rowNumber++ < limit.getRowCountValue() && getMergedResult().next();

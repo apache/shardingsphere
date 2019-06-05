@@ -23,8 +23,8 @@ import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.MergedResult;
 import org.apache.shardingsphere.core.merge.dql.DQLMergeEngine;
 import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.LimitSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.NumberLiteralLimitValueSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.rownum.NumberLiteralRowNumberValueSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.limit.Limit;
@@ -69,7 +69,7 @@ public final class RowNumberDecoratorMergedResultTest {
     
     @Test
     public void assertNextForSkipAll() throws SQLException {
-        routeResult.setLimit(new Limit(new LimitSegment(0, 0, new NumberLiteralLimitValueSegment(0, 0, Integer.MAX_VALUE, true), null), Collections.emptyList()));
+        routeResult.setLimit(new Limit(new PaginationSegment(0, 0, new NumberLiteralRowNumberValueSegment(0, 0, Integer.MAX_VALUE, true), null), Collections.emptyList()));
         mergeEngine = new DQLMergeEngine(DatabaseType.Oracle, routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertFalse(actual.next());
@@ -77,7 +77,7 @@ public final class RowNumberDecoratorMergedResultTest {
     
     @Test
     public void assertNextWithoutOffsetWithoutRowCount() throws SQLException {
-        routeResult.setLimit(new Limit(new LimitSegment(0, 0, null, null), Collections.emptyList()));
+        routeResult.setLimit(new Limit(new PaginationSegment(0, 0, null, null), Collections.emptyList()));
         mergeEngine = new DQLMergeEngine(DatabaseType.Oracle, routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
         for (int i = 0; i < 8; i++) {
@@ -88,7 +88,8 @@ public final class RowNumberDecoratorMergedResultTest {
     
     @Test
     public void assertNextForRowCountBoundOpenedFalse() throws SQLException {
-        routeResult.setLimit(new Limit(new LimitSegment(0, 0, new NumberLiteralLimitValueSegment(0, 0, 2, true), new NumberLiteralLimitValueSegment(0, 0, 4, false)), Collections.emptyList()));
+        routeResult.setLimit(new Limit(
+                new PaginationSegment(0, 0, new NumberLiteralRowNumberValueSegment(0, 0, 2, true), new NumberLiteralRowNumberValueSegment(0, 0, 4, false)), Collections.emptyList()));
         mergeEngine = new DQLMergeEngine(DatabaseType.Oracle, routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertTrue(actual.next());
@@ -98,7 +99,8 @@ public final class RowNumberDecoratorMergedResultTest {
     
     @Test
     public void assertNextForRowCountBoundOpenedTrue() throws SQLException {
-        routeResult.setLimit(new Limit(new LimitSegment(0, 0, new NumberLiteralLimitValueSegment(0, 0, 2, true), new NumberLiteralLimitValueSegment(0, 0, 4, true)), Collections.emptyList()));
+        routeResult.setLimit(new Limit(
+                new PaginationSegment(0, 0, new NumberLiteralRowNumberValueSegment(0, 0, 2, true), new NumberLiteralRowNumberValueSegment(0, 0, 4, true)), Collections.emptyList()));
         mergeEngine = new DQLMergeEngine(DatabaseType.Oracle, routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertTrue(actual.next());

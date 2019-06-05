@@ -27,10 +27,10 @@ import org.apache.shardingsphere.core.parse.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.LimitValueSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.NumberLiteralLimitValueSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.ParameterMarkerLimitValueSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.TopSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.LimitValueSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.ParameterMarkerLimitValueSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.top.TopSegment;
 
 import java.util.Map;
 
@@ -62,11 +62,11 @@ public final class TopSelectItemExtractor implements OptionalSQLSegmentExtractor
     private Optional<LimitValueSegment> createLimitValueSegment(final ExpressionSegment topExpr) {
         if (topExpr instanceof ParameterMarkerExpressionSegment) {
             return Optional.<LimitValueSegment>of(
-                    new ParameterMarkerLimitValueSegment(topExpr.getStartIndex(), topExpr.getStopIndex(), ((ParameterMarkerExpressionSegment) topExpr).getParameterMarkerIndex(), false));
+                    new ParameterMarkerLimitValueSegment(topExpr.getStartIndex(), topExpr.getStopIndex(), ((ParameterMarkerExpressionSegment) topExpr).getParameterMarkerIndex()));
         }
         if (topExpr instanceof LiteralExpressionSegment && ((LiteralExpressionSegment) topExpr).getLiterals() instanceof Number) {
             return Optional.<LimitValueSegment>of(
-                    new NumberLiteralLimitValueSegment(topExpr.getStartIndex(), topExpr.getStopIndex(), ((Number) ((LiteralExpressionSegment) topExpr).getLiterals()).intValue(), false));
+                    new NumberLiteralLimitValueSegment(topExpr.getStartIndex(), topExpr.getStopIndex(), ((Number) ((LiteralExpressionSegment) topExpr).getLiterals()).intValue()));
         }
         return Optional.absent();
     }

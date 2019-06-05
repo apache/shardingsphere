@@ -18,10 +18,11 @@
 package org.apache.shardingsphere.core.route.limit;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.LimitSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.LimitValueSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.NumberLiteralLimitValueSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.ParameterMarkerLimitValueSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.NumberLiteralPaginationValueSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationValueSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.ParameterMarkerPaginationValueSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.ParameterMarkerLimitValueSegment;
 
 import java.util.HashMap;
 import java.util.List;
@@ -41,15 +42,16 @@ public final class Limit {
     
     private final LimitValue rowCount;
     
-    public Limit(final LimitSegment limitSegment, final List<Object> parameters) {
+    public Limit(final PaginationSegment limitSegment, final List<Object> parameters) {
         offset = limitSegment.getOffset().isPresent() ? createLimitValue(limitSegment.getOffset().get(), parameters) : null;
         rowCount = limitSegment.getRowCount().isPresent() ? createLimitValue(limitSegment.getRowCount().get(), parameters) : null;
     }
     
-    private LimitValue createLimitValue(final LimitValueSegment limitValueSegment, final List<Object> parameters) {
-        int segmentValue = limitValueSegment instanceof ParameterMarkerLimitValueSegment
-                ? (int) parameters.get(((ParameterMarkerLimitValueSegment) limitValueSegment).getParameterIndex()) : ((NumberLiteralLimitValueSegment) limitValueSegment).getValue();
-        return new LimitValue(limitValueSegment, segmentValue);
+    private LimitValue createLimitValue(final PaginationValueSegment paginationValueSegment, final List<Object> parameters) {
+        int segmentValue = paginationValueSegment instanceof ParameterMarkerPaginationValueSegment
+                ? (int) parameters.get(((ParameterMarkerPaginationValueSegment) paginationValueSegment).getParameterIndex())
+                : ((NumberLiteralPaginationValueSegment) paginationValueSegment).getValue();
+        return new LimitValue(paginationValueSegment, segmentValue);
     }
     
     /**
@@ -79,11 +81,11 @@ public final class Limit {
      */
     public Map<Integer, Object> getRevisedParameters(final boolean isFetchAll, final String databaseType) {
         Map<Integer, Object> result = new HashMap<>(2, 1);
-        if (null != offset && offset.getLimitValueSegment() instanceof ParameterMarkerLimitValueSegment) {
-            result.put(((ParameterMarkerLimitValueSegment) offset.getLimitValueSegment()).getParameterIndex(), 0);
+        if (null != offset && offset.getPaginationValueSegment() instanceof ParameterMarkerLimitValueSegment) {
+            result.put(((ParameterMarkerLimitValueSegment) offset.getPaginationValueSegment()).getParameterIndex(), 0);
         }
-        if (null != rowCount && rowCount.getLimitValueSegment() instanceof ParameterMarkerLimitValueSegment) {
-            result.put(((ParameterMarkerLimitValueSegment) rowCount.getLimitValueSegment()).getParameterIndex(), getRewriteRowCount(isFetchAll, databaseType));
+        if (null != rowCount && rowCount.getPaginationValueSegment() instanceof ParameterMarkerLimitValueSegment) {
+            result.put(((ParameterMarkerLimitValueSegment) rowCount.getPaginationValueSegment()).getParameterIndex(), getRewriteRowCount(isFetchAll, databaseType));
         }
         return result;
     }

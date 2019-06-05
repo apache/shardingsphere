@@ -27,7 +27,7 @@ import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.NumberLiteralLimitValueSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.fixture.HintShardingAlgorithmFixture;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -89,17 +89,17 @@ public final class DatabaseTest {
         String originSQL = "select user_id from tbl_pagination limit 0,5";
         SQLRouteResult actual = new StatementRoutingEngine(shardingRule, mock(ShardingMetaData.class), DatabaseType.MySQL, new ParsingResultCache()).route(originSQL);
         SelectStatement selectStatement = (SelectStatement) actual.getSqlStatement();
-        assertTrue(selectStatement.getLimit().getOffset().isPresent());
-        assertThat(((NumberLiteralLimitValueSegment) selectStatement.getLimit().getOffset().get()).getValue(), is(0));
-        assertTrue(selectStatement.getLimit().getRowCount().isPresent());
-        assertThat(((NumberLiteralLimitValueSegment) selectStatement.getLimit().getRowCount().get()).getValue(), is(5));
+        assertTrue(selectStatement.getPagination().getOffset().isPresent());
+        assertThat(((NumberLiteralLimitValueSegment) selectStatement.getPagination().getOffset().get()).getValue(), is(0));
+        assertTrue(selectStatement.getPagination().getRowCount().isPresent());
+        assertThat(((NumberLiteralLimitValueSegment) selectStatement.getPagination().getRowCount().get()).getValue(), is(5));
         originSQL = "select user_id from tbl_pagination limit 5,5";
         actual = new StatementRoutingEngine(shardingRule, mock(ShardingMetaData.class), DatabaseType.MySQL, new ParsingResultCache()).route(originSQL);
         selectStatement = (SelectStatement) actual.getSqlStatement();
-        assertTrue(selectStatement.getLimit().getOffset().isPresent());
-        assertThat(((NumberLiteralLimitValueSegment) selectStatement.getLimit().getOffset().get()).getValue(), is(5));
-        assertTrue(selectStatement.getLimit().getRowCount().isPresent());
-        assertThat(((NumberLiteralLimitValueSegment) selectStatement.getLimit().getRowCount().get()).getValue(), is(5));
+        assertTrue(selectStatement.getPagination().getOffset().isPresent());
+        assertThat(((NumberLiteralLimitValueSegment) selectStatement.getPagination().getOffset().get()).getValue(), is(5));
+        assertTrue(selectStatement.getPagination().getRowCount().isPresent());
+        assertThat(((NumberLiteralLimitValueSegment) selectStatement.getPagination().getRowCount().get()).getValue(), is(5));
     }
     
     @Test
@@ -119,18 +119,18 @@ public final class DatabaseTest {
         when(shardingMetaData.getTable()).thenReturn(mock(ShardingTableMetaData.class));
         SQLRouteResult actual = new PreparedStatementRoutingEngine(originSQL, rule, shardingMetaData, DatabaseType.MySQL, new ParsingResultCache()).route(Lists.<Object>newArrayList(13, 173));
         SelectStatement selectStatement = (SelectStatement) actual.getSqlStatement();
-        assertTrue(selectStatement.getLimit().getOffset().isPresent());
-        assertThat(((NumberLiteralLimitValueSegment) selectStatement.getLimit().getOffset().get()).getValue(), is(5));
-        assertTrue(selectStatement.getLimit().getRowCount().isPresent());
-        assertThat(((NumberLiteralLimitValueSegment) selectStatement.getLimit().getRowCount().get()).getValue(), is(10));
+        assertTrue(selectStatement.getPagination().getOffset().isPresent());
+        assertThat(((NumberLiteralLimitValueSegment) selectStatement.getPagination().getOffset().get()).getValue(), is(5));
+        assertTrue(selectStatement.getPagination().getRowCount().isPresent());
+        assertThat(((NumberLiteralLimitValueSegment) selectStatement.getPagination().getRowCount().get()).getValue(), is(10));
         assertThat(actual.getRoutingResult().getRoutingUnits().size(), is(1));
         originSQL = "select city_id from t_user where city_id in (?,?) limit 5,10";
         actual = new PreparedStatementRoutingEngine(originSQL, rule, shardingMetaData, DatabaseType.MySQL, new ParsingResultCache()).route(Lists.<Object>newArrayList(89, 84));
         selectStatement = (SelectStatement) actual.getSqlStatement();
-        assertTrue(selectStatement.getLimit().getOffset().isPresent());
-        assertThat(((NumberLiteralLimitValueSegment) selectStatement.getLimit().getOffset().get()).getValue(), is(5));
-        assertTrue(selectStatement.getLimit().getRowCount().isPresent());
-        assertThat(((NumberLiteralLimitValueSegment) selectStatement.getLimit().getRowCount().get()).getValue(), is(10));
+        assertTrue(selectStatement.getPagination().getOffset().isPresent());
+        assertThat(((NumberLiteralLimitValueSegment) selectStatement.getPagination().getOffset().get()).getValue(), is(5));
+        assertTrue(selectStatement.getPagination().getRowCount().isPresent());
+        assertThat(((NumberLiteralLimitValueSegment) selectStatement.getPagination().getRowCount().get()).getValue(), is(10));
         assertThat(actual.getRoutingResult().getRoutingUnits().size(), is(2));
     }
     
