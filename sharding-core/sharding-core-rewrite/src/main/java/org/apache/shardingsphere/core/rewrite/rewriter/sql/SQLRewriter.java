@@ -15,35 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.route.router.sharding;
+package org.apache.shardingsphere.core.rewrite.rewriter.sql;
 
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.route.SQLRouteResult;
-
-import java.util.List;
+import org.apache.shardingsphere.core.rewrite.token.pojo.SQLToken;
+import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
 
 /**
- * Sharding router.
- * 
- * @author zhangliang
+ * SQL rewriter.
+ *
+ * @author panjuan
  */
-public interface ShardingRouter {
+public interface SQLRewriter {
     
     /**
-     * Parse SQL.
-     * 
-     * @param logicSQL logic SQL
-     * @param useCache use cache to save SQL parse result or not
-     * @return parse result
+     * Rewrite.
+     *
+     * @param sqlBuilder SQL builder
+     * @param parameterBuilder parameter builder
+     * @param sqlToken SQL token
      */
-    SQLStatement parse(String logicSQL, boolean useCache);
-    
-    /**
-     * Route SQL.
-     * 
-     * @param sqlStatement SQL statement
-     * @param parameters parameters
-     * @return parse result
-     */
-    SQLRouteResult route(SQLStatement sqlStatement, List<Object> parameters);
+    void rewrite(SQLBuilder sqlBuilder, ParameterBuilder parameterBuilder, SQLToken sqlToken);
 }

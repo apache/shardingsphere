@@ -15,25 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.rewriter;
+package org.apache.shardingsphere.core.rewrite.rewriter.parameter;
 
-import org.apache.shardingsphere.core.rewrite.token.pojo.SQLToken;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
-import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
 
 /**
- * SQL rewriter.
+ * Parameter rewriter.
  *
- * @author panjuan
+ * @author zhangliang
  */
-public interface SQLRewriter {
+public interface ParameterRewriter {
     
     /**
      * Rewrite.
      *
-     * @param sqlBuilder SQL builder
      * @param parameterBuilder parameter builder
-     * @param sqlToken SQL token
      */
-    void rewrite(SQLBuilder sqlBuilder, ParameterBuilder parameterBuilder, SQLToken sqlToken);
+    void rewrite(ParameterBuilder parameterBuilder);
 }

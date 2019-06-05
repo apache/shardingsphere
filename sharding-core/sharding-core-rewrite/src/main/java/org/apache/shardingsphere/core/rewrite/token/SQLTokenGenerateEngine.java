@@ -21,6 +21,7 @@ import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SQLToken;
 import org.apache.shardingsphere.core.rewrite.token.generator.CollectionSQLTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.token.generator.IgnoreForSingleRoute;
 import org.apache.shardingsphere.core.rewrite.token.generator.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.SQLTokenGenerator;
 import org.apache.shardingsphere.core.rule.BaseRule;
@@ -43,12 +44,16 @@ public abstract class SQLTokenGenerateEngine<T extends BaseRule> {
      *
      * @param sqlStatement SQL statement
      * @param rule rule
+     * @param isSingleRoute is single route
      * @return SQL tokens
      */
     @SuppressWarnings("unchecked")
-    public final List<SQLToken> generateSQLTokens(final SQLStatement sqlStatement, final T rule) {
+    public final List<SQLToken> generateSQLTokens(final SQLStatement sqlStatement, final T rule, final boolean isSingleRoute) {
         List<SQLToken> result = new LinkedList<>();
         for (SQLTokenGenerator each : getSQLTokenGenerators()) {
+            if (isSingleRoute && each instanceof IgnoreForSingleRoute) {
+                continue;
+            }
             if (each instanceof OptionalSQLTokenGenerator) {
                 Optional<? extends SQLToken> sqlToken = ((OptionalSQLTokenGenerator) each).generateSQLToken(sqlStatement, rule);
                 if (sqlToken.isPresent()) {

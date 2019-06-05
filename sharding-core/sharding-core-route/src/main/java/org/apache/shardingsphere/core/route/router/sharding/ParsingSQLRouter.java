@@ -91,7 +91,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
     }
     
     @Override
-    public SQLRouteResult route(final String logicSQL, final List<Object> parameters, final SQLStatement sqlStatement) {
+    public SQLRouteResult route(final SQLStatement sqlStatement, final List<Object> parameters) {
         Optional<GeneratedKey> generatedKey = sqlStatement instanceof InsertStatement
                 ? GeneratedKey.getGenerateKey(shardingRule, parameters, (InsertStatement) sqlStatement) : Optional.<GeneratedKey>absent();
         SQLRouteResult result = new SQLRouteResult(sqlStatement, generatedKey.orNull());
@@ -109,7 +109,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
         }
         RoutingResult routingResult = RoutingEngineFactory.newInstance(shardingRule, shardingMetaData.getDataSource(), sqlStatement, optimizeResult).route();
         if (sqlStatement instanceof SelectStatement && null != ((SelectStatement) sqlStatement).getLimit() && !routingResult.isSingleRouting()) {
-            result.setLimit(getProcessedLimit(parameters, (SelectStatement) sqlStatement));
+            result.setLimit(createLimit((SelectStatement) sqlStatement, parameters));
         }
         if (needMerge) {
             Preconditions.checkState(1 == routingResult.getRoutingUnits().size(), "Must have one sharding with subquery.");
@@ -189,10 +189,9 @@ public final class ParsingSQLRouter implements ShardingRouter {
         }
     }
     
-    private Limit getProcessedLimit(final List<Object> parameters, final SelectStatement selectStatement) {
-        boolean isNeedFetchAll = (!selectStatement.getGroupByItems().isEmpty() || !selectStatement.getAggregationSelectItems().isEmpty()) && !selectStatement.isSameGroupByAndOrderByItems();
+    private Limit createLimit(final SelectStatement selectStatement, final List<Object> parameters) {
         Limit result = createLimit(selectStatement.getLimit());
-        result.processParameters(parameters, isNeedFetchAll, databaseType.name());
+        result.fillParameters(parameters);
         return result;
     }
     

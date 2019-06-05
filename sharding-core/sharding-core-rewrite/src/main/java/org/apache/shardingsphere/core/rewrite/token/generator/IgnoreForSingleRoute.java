@@ -15,35 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.route.router.sharding;
-
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.route.SQLRouteResult;
-
-import java.util.List;
+package org.apache.shardingsphere.core.rewrite.token.generator;
 
 /**
- * Sharding router.
- * 
+ * Ignore for single route.
+ *
  * @author zhangliang
  */
-public interface ShardingRouter {
-    
-    /**
-     * Parse SQL.
-     * 
-     * @param logicSQL logic SQL
-     * @param useCache use cache to save SQL parse result or not
-     * @return parse result
-     */
-    SQLStatement parse(String logicSQL, boolean useCache);
-    
-    /**
-     * Route SQL.
-     * 
-     * @param sqlStatement SQL statement
-     * @param parameters parameters
-     * @return parse result
-     */
-    SQLRouteResult route(SQLStatement sqlStatement, List<Object> parameters);
+public interface IgnoreForSingleRoute {
 }

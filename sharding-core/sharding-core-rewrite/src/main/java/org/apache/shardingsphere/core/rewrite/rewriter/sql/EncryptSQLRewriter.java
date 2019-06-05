@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.rewriter;
+package org.apache.shardingsphere.core.rewrite.rewriter.sql;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
@@ -29,11 +29,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.Paramete
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.core.rewrite.token.pojo.SQLToken;
-import org.apache.shardingsphere.core.rewrite.token.pojo.InsertAssistedColumnsToken;
-import org.apache.shardingsphere.core.rewrite.token.pojo.InsertSetAddAssistedColumnsToken;
-import org.apache.shardingsphere.core.rewrite.token.pojo.InsertSetEncryptValueToken;
-import org.apache.shardingsphere.core.rewrite.token.pojo.InsertValuesToken;
+import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertAssistedColumnsPlaceholder;
@@ -46,6 +42,10 @@ import org.apache.shardingsphere.core.rewrite.placeholder.UpdateEncryptAssistedI
 import org.apache.shardingsphere.core.rewrite.placeholder.UpdateEncryptItemPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.WhereEncryptColumnPlaceholder;
 import org.apache.shardingsphere.core.rewrite.token.pojo.EncryptColumnToken;
+import org.apache.shardingsphere.core.rewrite.token.pojo.InsertAssistedColumnsToken;
+import org.apache.shardingsphere.core.rewrite.token.pojo.InsertSetAddAssistedColumnsToken;
+import org.apache.shardingsphere.core.rewrite.token.pojo.InsertSetEncryptValueToken;
+import org.apache.shardingsphere.core.rewrite.token.pojo.InsertValuesToken;
 import org.apache.shardingsphere.core.rule.ColumnNode;
 import org.apache.shardingsphere.core.strategy.encrypt.ShardingEncryptorEngine;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
@@ -140,8 +140,8 @@ public final class EncryptSQLRewriter implements SQLRewriter {
         sqlBuilder.appendPlaceholder(new InsertSetEncryptValuePlaceholder(insertOptimizeResult.getUnits().get(0).getColumnSQLExpression(insertSetEncryptValueToken.getColumnName())));
     }
     
-    private void appendInsertSetAddItemsPlaceholder(final SQLBuilder sqlBuilder, 
-                                                    final InsertSetAddAssistedColumnsToken insertSetAddAssistedColumnsToken, final InsertOptimizeResult insertOptimizeResult) {
+    private void appendInsertSetAddItemsPlaceholder(
+            final SQLBuilder sqlBuilder, final InsertSetAddAssistedColumnsToken insertSetAddAssistedColumnsToken, final InsertOptimizeResult insertOptimizeResult) {
         List<ExpressionSegment> columnValues = new LinkedList<>();
         for (String each : insertSetAddAssistedColumnsToken.getColumnNames()) {
             columnValues.add(insertOptimizeResult.getUnits().get(0).getColumnSQLExpression(each));
@@ -215,7 +215,7 @@ public final class EncryptSQLRewriter implements SQLRewriter {
             return getUpdateEncryptItemPlaceholder(encryptColumnToken, encryptColumnValues);
         }
         List<Comparable<?>> encryptAssistedColumnValues = encryptorEngine.getEncryptAssistedColumnValues(columnNode, Collections.<Comparable<?>>singletonList(originalColumnValue));
-        parameterBuilder.getAssistedIndexAndParametersForUpdate().putAll(getIndexAndParameters(encryptColumnToken, encryptAssistedColumnValues));
+        parameterBuilder.getAddedIndexAndParameters().putAll(getIndexAndParameters(encryptColumnToken, encryptAssistedColumnValues));
         return getUpdateEncryptAssistedItemPlaceholder(encryptColumnToken, encryptColumnValues, encryptAssistedColumnValues);
     }
     
