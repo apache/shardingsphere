@@ -66,6 +66,8 @@ public final class DatabaseHintSQLRouterTest {
     @Test
     public void assertRoute() {
         hintManager.addDatabaseShardingValue("", 1);
-        assertNotNull(databaseHintSQLRouter.route("select t from tbl t", Collections.emptyList(), new DQLStatement()));
+        DQLStatement dqlStatement = new DQLStatement();
+        dqlStatement.setLogicSQL("select t from tbl t");
+        assertNotNull(databaseHintSQLRouter.route(dqlStatement, Collections.emptyList()));
     }
 }
