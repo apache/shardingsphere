@@ -90,7 +90,7 @@ public final class SQLRewriteEngine {
     }
     
     private List<SQLToken> createSQLTokens(final BaseRule baseRule, final SQLStatement sqlStatement) {
-        List<SQLToken> result = new LinkedList<>(sqlStatement.getSQLTokens());
+        List<SQLToken> result = new LinkedList<>();
         result.addAll(new BaseTokenGenerateEngine().generateSQLTokens(sqlStatement, baseRule));
         if (baseRule instanceof ShardingRule) {
             ShardingRule shardingRule = (ShardingRule) baseRule;
