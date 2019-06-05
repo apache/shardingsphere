@@ -19,7 +19,9 @@ package org.apache.shardingsphere.core.route.limit;
 
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.shardingsphere.core.util.NumberUtil;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.LimitValueSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.NumberLiteralLimitValueSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.ParameterMarkerLimitValueSegment;
 
 import java.util.HashMap;
 import java.util.List;
@@ -40,15 +42,16 @@ public final class Limit {
     
     private final LimitValue rowCount;
     
-    public Limit(final LimitValue offset, final LimitValue rowCount, final List<Object> parameters) {
-        if (null != offset) {
-            offset.setValue(-1 == offset.getIndex() ? getOffsetValue() : NumberUtil.roundHalfUp(parameters.get(offset.getIndex())));
-        }
-        this.offset = offset;
-        if (null != rowCount) {
-            rowCount.setValue(-1 == rowCount.getIndex() ? getRowCountValue() : NumberUtil.roundHalfUp(parameters.get(rowCount.getIndex())));
-        }
-        this.rowCount = rowCount;
+    public Limit(final LimitValueSegment offsetSegment, final LimitValueSegment rowCountSegment, final List<Object> parameters) {
+        offset = null == offsetSegment ? null : createLimitValue(offsetSegment, parameters);
+        rowCount = null == rowCountSegment ? null : createLimitValue(rowCountSegment, parameters);
+    }
+    
+    private LimitValue createLimitValue(final LimitValueSegment limitValueSegment, final List<Object> parameters) {
+        int segmentValue = limitValueSegment instanceof ParameterMarkerLimitValueSegment
+                ? (int) parameters.get(((ParameterMarkerLimitValueSegment) limitValueSegment).getParameterIndex()) : ((NumberLiteralLimitValueSegment) limitValueSegment).getValue();
+        int index = limitValueSegment instanceof ParameterMarkerLimitValueSegment ? ((ParameterMarkerLimitValueSegment) limitValueSegment).getParameterIndex() : -1;
+        return new LimitValue(segmentValue, index, limitValueSegment);
     }
     
     /**

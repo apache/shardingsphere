@@ -27,7 +27,6 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.NumberLiteralL
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.limit.Limit;
-import org.apache.shardingsphere.core.route.limit.LimitValue;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -71,7 +70,7 @@ public final class LimitDecoratorMergedResultTest {
     
     @Test
     public void assertNextForSkipAll() throws SQLException {
-        routeResult.setLimit(new Limit(new LimitValue(Integer.MAX_VALUE, -1, new NumberLiteralLimitValueSegment(0, 0, Integer.MAX_VALUE, true)), null, Collections.emptyList()));
+        routeResult.setLimit(new Limit(new NumberLiteralLimitValueSegment(0, 0, Integer.MAX_VALUE, true), null, Collections.emptyList()));
         mergeEngine = new DQLMergeEngine(DatabaseType.MySQL, routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertFalse(actual.next());
@@ -79,7 +78,7 @@ public final class LimitDecoratorMergedResultTest {
     
     @Test
     public void assertNextWithoutRowCount() throws SQLException {
-        routeResult.setLimit(new Limit(new LimitValue(2, -1, new NumberLiteralLimitValueSegment(0, 0, 2, true)), null, Collections.emptyList()));
+        routeResult.setLimit(new Limit(new NumberLiteralLimitValueSegment(0, 0, 2, true), null, Collections.emptyList()));
         mergeEngine = new DQLMergeEngine(DatabaseType.MySQL, routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
         for (int i = 0; i < 6; i++) {
@@ -90,8 +89,7 @@ public final class LimitDecoratorMergedResultTest {
     
     @Test
     public void assertNextWithRowCount() throws SQLException {
-        routeResult.setLimit(new Limit(
-                new LimitValue(2, -1, new NumberLiteralLimitValueSegment(0, 0, 2, true)), new LimitValue(2, -1, new NumberLiteralLimitValueSegment(0, 0, 2, false)), Collections.emptyList()));
+        routeResult.setLimit(new Limit(new NumberLiteralLimitValueSegment(0, 0, 2, true), new NumberLiteralLimitValueSegment(0, 0, 2, false), Collections.emptyList()));
         mergeEngine = new DQLMergeEngine(DatabaseType.MySQL, routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertTrue(actual.next());
