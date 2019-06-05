@@ -18,9 +18,7 @@
 package org.apache.shardingsphere.core.route.limit;
 
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.core.parse.exception.SQLParsingException;
 import org.apache.shardingsphere.core.util.NumberUtil;
 
 import java.util.HashMap;
@@ -35,13 +33,23 @@ import java.util.Map;
  * @author zhangyonglun
  */
 @Getter
-@Setter
 @ToString
 public final class Limit {
     
-    private LimitValue offset;
+    private final LimitValue offset;
     
-    private LimitValue rowCount;
+    private final LimitValue rowCount;
+    
+    public Limit(final LimitValue offset, final LimitValue rowCount, final List<Object> parameters) {
+        if (null != offset) {
+            offset.setValue(-1 == offset.getIndex() ? getOffsetValue() : NumberUtil.roundHalfUp(parameters.get(offset.getIndex())));
+        }
+        this.offset = offset;
+        if (null != rowCount) {
+            rowCount.setValue(-1 == rowCount.getIndex() ? getRowCountValue() : NumberUtil.roundHalfUp(parameters.get(rowCount.getIndex())));
+        }
+        this.rowCount = rowCount;
+    }
     
     /**
      * Get offset value.
@@ -59,27 +67,6 @@ public final class Limit {
      */
     public int getRowCountValue() {
         return null != rowCount ? rowCount.getValue() : -1;
-    }
-    
-    /**
-     * Fill parameters.
-     *
-     * @param parameters SQL parameters
-     */
-    public void fillParameters(final List<Object> parameters) {
-        int offset = 0;
-        if (null != this.offset) {
-            offset = -1 == this.offset.getIndex() ? getOffsetValue() : NumberUtil.roundHalfUp(parameters.get(this.offset.getIndex()));
-            this.offset.setValue(offset);
-        }
-        int rowCount = 0;
-        if (null != this.rowCount) {
-            rowCount = -1 == this.rowCount.getIndex() ? getRowCountValue() : NumberUtil.roundHalfUp(parameters.get(this.rowCount.getIndex()));
-            this.rowCount.setValue(rowCount);
-        }
-        if (offset < 0 || rowCount < 0) {
-            throw new SQLParsingException("LIMIT offset and row count can not be a negative value.");
-        }
     }
     
     /**

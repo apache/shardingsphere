@@ -109,7 +109,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
         }
         RoutingResult routingResult = RoutingEngineFactory.newInstance(shardingRule, shardingMetaData.getDataSource(), sqlStatement, optimizeResult).route();
         if (sqlStatement instanceof SelectStatement && null != ((SelectStatement) sqlStatement).getLimit() && !routingResult.isSingleRouting()) {
-            result.setLimit(createLimit((SelectStatement) sqlStatement, parameters));
+            result.setLimit(createLimit(((SelectStatement) sqlStatement).getLimit(), parameters));
         }
         if (needMerge) {
             Preconditions.checkState(1 == routingResult.getRoutingUnits().size(), "Must have one sharding with subquery.");
@@ -189,21 +189,16 @@ public final class ParsingSQLRouter implements ShardingRouter {
         }
     }
     
-    private Limit createLimit(final SelectStatement selectStatement, final List<Object> parameters) {
-        Limit result = createLimit(selectStatement.getLimit());
-        result.fillParameters(parameters);
-        return result;
-    }
-    
-    private Limit createLimit(final LimitSegment limitSegment) {
-        Limit result = new Limit();
+    private Limit createLimit(final LimitSegment limitSegment, final List<Object> parameters) {
+        LimitValue offset = null;
         if (limitSegment.getOffset().isPresent()) {
-            result.setOffset(createLimitValue(limitSegment.getOffset().get()));
+            offset = createLimitValue(limitSegment.getOffset().get());
         }
+        LimitValue rowCount = null;
         if (limitSegment.getRowCount().isPresent()) {
-            result.setRowCount(createLimitValue(limitSegment.getRowCount().get()));
+            rowCount = createLimitValue(limitSegment.getRowCount().get());
         }
-        return result; 
+        return new Limit(offset, rowCount, parameters);
     }
     
     private LimitValue createLimitValue(final LimitValueSegment limitValueSegment) {
