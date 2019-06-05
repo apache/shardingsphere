@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.rewriter;
+package org.apache.shardingsphere.core.rewrite.rewriter.sql;
 
 import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;

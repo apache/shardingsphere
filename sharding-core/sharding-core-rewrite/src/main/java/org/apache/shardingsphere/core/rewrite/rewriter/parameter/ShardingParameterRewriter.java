@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.rewriter;
+package org.apache.shardingsphere.core.rewrite.rewriter.parameter;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.DatabaseType;

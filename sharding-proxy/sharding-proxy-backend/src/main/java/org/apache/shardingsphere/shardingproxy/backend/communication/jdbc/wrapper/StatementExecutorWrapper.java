@@ -25,7 +25,7 @@ import org.apache.shardingsphere.core.optimize.OptimizeEngineFactory;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
-import org.apache.shardingsphere.core.rewrite.rewriter.EncryptSQLRewriter;
+import org.apache.shardingsphere.core.rewrite.rewriter.sql.EncryptSQLRewriter;
 import org.apache.shardingsphere.core.route.RouteUnit;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.SQLUnit;

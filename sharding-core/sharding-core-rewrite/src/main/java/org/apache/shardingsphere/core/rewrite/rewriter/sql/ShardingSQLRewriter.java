@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.rewriter;
+package org.apache.shardingsphere.core.rewrite.rewriter.sql;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
