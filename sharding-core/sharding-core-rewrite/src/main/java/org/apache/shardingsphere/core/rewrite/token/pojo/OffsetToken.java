@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.rewrite.token.pojo;
 import lombok.Getter;
 
 /**
- * Offset token for limit.
+ * Offset token for pagination.
  *
  * @author zhangliang
  * @author panjuan

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.merge.dql.pagination;
 
 import org.apache.shardingsphere.core.merge.MergedResult;
 import org.apache.shardingsphere.core.merge.dql.common.DecoratorMergedResult;
-import org.apache.shardingsphere.core.route.limit.Limit;
+import org.apache.shardingsphere.core.route.pagination.Pagination;
 
 import java.sql.SQLException;
 
@@ -30,20 +30,20 @@ import java.sql.SQLException;
  */
 public final class LimitDecoratorMergedResult extends DecoratorMergedResult {
     
-    private final Limit limit;
+    private final Pagination pagination;
     
     private final boolean skipAll;
     
     private int rowNumber;
     
-    public LimitDecoratorMergedResult(final MergedResult mergedResult, final Limit limit) throws SQLException {
+    public LimitDecoratorMergedResult(final MergedResult mergedResult, final Pagination pagination) throws SQLException {
         super(mergedResult);
-        this.limit = limit;
+        this.pagination = pagination;
         skipAll = skipOffset();
     }
     
     private boolean skipOffset() throws SQLException {
-        for (int i = 0; i < limit.getOffsetValue(); i++) {
+        for (int i = 0; i < pagination.getOffsetValue(); i++) {
             if (!getMergedResult().next()) {
                 return true;
             }
@@ -57,9 +57,9 @@ public final class LimitDecoratorMergedResult extends DecoratorMergedResult {
         if (skipAll) {
             return false;
         }
-        if (limit.getRowCountValue() < 0) {
+        if (pagination.getRowCountValue() < 0) {
             return getMergedResult().next();
         }
-        return ++rowNumber <= limit.getRowCountValue() && getMergedResult().next();
+        return ++rowNumber <= pagination.getRowCountValue() && getMergedResult().next();
     }
 }

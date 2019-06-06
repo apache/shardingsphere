@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.rewrite.token.pojo;
 import lombok.Getter;
 
 /**
- * Row count token for limit.
+ * Row count token for pagination.
  *
  * @author zhangliang
  * @author panjuan

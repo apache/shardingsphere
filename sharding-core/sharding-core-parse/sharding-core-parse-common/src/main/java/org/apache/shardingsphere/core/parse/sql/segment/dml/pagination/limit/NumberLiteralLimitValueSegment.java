@@ -15,45 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.segment.dml.limit;
+package org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit;
 
-import com.google.common.base.Optional;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.NumberLiteralPaginationValueSegment;
 
 /**
- * Limit segment.
+ * Limit value segment for number literal.
  * 
- * @author duhongjun
+ * @author zhangliang
  */
-@RequiredArgsConstructor
 @Getter
-public final class LimitSegment implements SQLSegment {
+public final class NumberLiteralLimitValueSegment extends LimitValueSegment implements NumberLiteralPaginationValueSegment {
     
-    private final int startIndex;
+    private final int value;
     
-    private final int stopIndex;
-    
-    private final LimitValueSegment offset;
-    
-    private final LimitValueSegment rowCount;
-    
-    /**
-     * Get offset.
-     * 
-     * @return offset
-     */
-    public Optional<LimitValueSegment> getOffset() {
-        return Optional.fromNullable(offset);
-    }
-    
-    /**
-     * Get row count.
-     *
-     * @return row count
-     */
-    public Optional<LimitValueSegment> getRowCount() {
-        return Optional.fromNullable(rowCount);
+    public NumberLiteralLimitValueSegment(final int startIndex, final int stopIndex, final int value) {
+        super(startIndex, stopIndex);
+        this.value = value;
     }
 }

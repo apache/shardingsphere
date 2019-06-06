@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.filler.common.dml;
+package org.apache.shardingsphere.core.route.pagination;
 
-import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationValueSegment;
 
 /**
- * Limit filler.
+ * Pagination value.
  *
- * @author duhongjun
+ * @author zhangliang
  */
-public final class LimitFiller implements SQLSegmentFiller<PaginationSegment> {
+@RequiredArgsConstructor
+@Getter
+public final class PaginationValue {
     
-    @Override
-    public void fill(final PaginationSegment sqlSegment, final SQLStatement sqlStatement) {
-        ((SelectStatement) sqlStatement).setPagination(sqlSegment);
-    }
+    private final PaginationValueSegment segment;
+    
+    private final int value;
 }

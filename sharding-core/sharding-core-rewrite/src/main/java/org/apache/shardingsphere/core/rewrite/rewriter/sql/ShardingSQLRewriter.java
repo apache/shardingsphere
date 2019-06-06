@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.rewrite.rewriter.sql;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResult;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.OrderByItemSegment;
@@ -49,7 +48,7 @@ import org.apache.shardingsphere.core.rewrite.token.pojo.SelectItemPrefixToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SelectItemsToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.TableToken;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
-import org.apache.shardingsphere.core.route.limit.Limit;
+import org.apache.shardingsphere.core.route.pagination.Pagination;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
@@ -63,15 +62,12 @@ public final class ShardingSQLRewriter implements SQLRewriter {
     
     private final ShardingRule shardingRule;
     
-    private final DatabaseType databaseType;
-    
     private final SQLRouteResult sqlRouteResult;
     
     private final InsertOptimizeResult insertOptimizeResult;
     
-    public ShardingSQLRewriter(final ShardingRule shardingRule, final DatabaseType databaseType, final SQLRouteResult sqlRouteResult, final OptimizeResult optimizeResult) {
+    public ShardingSQLRewriter(final ShardingRule shardingRule, final SQLRouteResult sqlRouteResult, final OptimizeResult optimizeResult) {
         this.shardingRule = shardingRule;
-        this.databaseType = databaseType;
         this.sqlRouteResult = sqlRouteResult;
         this.insertOptimizeResult = getInsertOptimizeResult(optimizeResult);
     }
@@ -140,17 +136,14 @@ public final class ShardingSQLRewriter implements SQLRewriter {
     
     private void appendLimitRowCountPlaceholder(final SQLBuilder sqlBuilder, final RowCountToken rowCountToken) {
         SelectStatement selectStatement = (SelectStatement) sqlRouteResult.getSqlStatement();
-        sqlBuilder.appendPlaceholder(new LimitRowCountPlaceholder(getRowCount(rowCountToken, isRewrite(), selectStatement, sqlRouteResult.getLimit())));
+        sqlBuilder.appendPlaceholder(new LimitRowCountPlaceholder(getRowCount(rowCountToken, isRewrite(), selectStatement, sqlRouteResult.getPagination())));
     }
     
-    private int getRowCount(final RowCountToken rowCountToken, final boolean isRewrite, final SelectStatement selectStatement, final Limit limit) {
+    private int getRowCount(final RowCountToken rowCountToken, final boolean isRewrite, final SelectStatement selectStatement, final Pagination pagination) {
         if (!isRewrite) {
             return rowCountToken.getRowCount();
         }
-        if (isMaxRowCount(selectStatement)) {
-            return Integer.MAX_VALUE;
-        }
-        return limit.isNeedRewriteRowCount(databaseType.name()) ? rowCountToken.getRowCount() + limit.getOffsetValue() : rowCountToken.getRowCount();
+        return isMaxRowCount(selectStatement) ? Integer.MAX_VALUE : pagination.getRevisedRowCount();
     }
     
     private boolean isMaxRowCount(final SelectStatement selectStatement) {

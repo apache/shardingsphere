@@ -15,22 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.filler.common.dml;
+package org.apache.shardingsphere.core.parse.integrate.jaxb.pagination;
 
-import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
+import lombok.Getter;
+import lombok.Setter;
 
-/**
- * Limit filler.
- *
- * @author duhongjun
- */
-public final class LimitFiller implements SQLSegmentFiller<PaginationSegment> {
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+
+@Getter
+@Setter
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class ExpectedPagination {
     
-    @Override
-    public void fill(final PaginationSegment sqlSegment, final SQLStatement sqlStatement) {
-        ((SelectStatement) sqlStatement).setPagination(sqlSegment);
-    }
+    @XmlAttribute
+    private Integer offset;
+    
+    @XmlAttribute(name = "row-count")
+    private Integer rowCount;
+    
+    @XmlAttribute(name = "offset-index")
+    private Integer offsetParameterIndex;
+    
+    @XmlAttribute(name = "row-count-index")
+    private Integer rowCountParameterIndex;
 }

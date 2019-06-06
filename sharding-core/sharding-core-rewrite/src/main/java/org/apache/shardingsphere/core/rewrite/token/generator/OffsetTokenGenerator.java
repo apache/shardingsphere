@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.LimitValueSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.NumberLiteralLimitValueSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.NumberLiteralPaginationValueSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationValueSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.rewrite.token.pojo.OffsetToken;
@@ -37,17 +37,18 @@ public final class OffsetTokenGenerator implements OptionalSQLTokenGenerator<Sha
         if (!(sqlStatement instanceof SelectStatement)) {
             return Optional.absent();
         }
-        Optional<LimitValueSegment> offsetSegment = getLiteralOffsetSegment((SelectStatement) sqlStatement);
+        Optional<PaginationValueSegment> offsetSegment = getLiteralOffsetSegment((SelectStatement) sqlStatement);
         return offsetSegment.isPresent()
-                ? Optional.of(new OffsetToken(offsetSegment.get().getStartIndex(), offsetSegment.get().getStopIndex(), ((NumberLiteralLimitValueSegment) offsetSegment.get()).getValue()))
+                ? Optional.of(new OffsetToken(offsetSegment.get().getStartIndex(), offsetSegment.get().getStopIndex(), ((NumberLiteralPaginationValueSegment) offsetSegment.get()).getValue()))
                 : Optional.<OffsetToken>absent();
     }
     
-    private Optional<LimitValueSegment> getLiteralOffsetSegment(final SelectStatement selectStatement) {
-        return isLiteralOffset(selectStatement) ? selectStatement.getLimit().getOffset() : Optional.<LimitValueSegment>absent();
+    private Optional<PaginationValueSegment> getLiteralOffsetSegment(final SelectStatement selectStatement) {
+        return isLiteralOffset(selectStatement) ? selectStatement.getPagination().getOffset() : Optional.<PaginationValueSegment>absent();
     }
     
     private boolean isLiteralOffset(final SelectStatement selectStatement) {
-        return null != selectStatement.getLimit() && selectStatement.getLimit().getOffset().isPresent() && selectStatement.getLimit().getOffset().get() instanceof NumberLiteralLimitValueSegment;
+        return null != selectStatement.getPagination()
+                && selectStatement.getPagination().getOffset().isPresent() && selectStatement.getPagination().getOffset().get() instanceof NumberLiteralPaginationValueSegment;
     }
 }

@@ -15,22 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.segment.dml.limit;
+package org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.top;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.rownum.RowNumberValueSegment;
 
 /**
- * Limit value segment for number literal.
- * 
+ * Top segment.
+ *
  * @author zhangliang
  */
+@RequiredArgsConstructor
 @Getter
-public final class NumberLiteralLimitValueSegment extends LimitValueSegment {
+public final class TopSegment implements SelectItemSegment {
     
-    private final int value;
+    private final int startIndex;
     
-    public NumberLiteralLimitValueSegment(final int startIndex, final int stopIndex, final int value, final boolean boundOpened) {
-        super(startIndex, stopIndex, boundOpened);
-        this.value = value;
-    }
+    private final int stopIndex;
+    
+    private final String text;
+    
+    private final RowNumberValueSegment top;
+    
+    private final String rowNumberAlias;
 }

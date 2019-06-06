@@ -15,29 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.integrate.jaxb.limit;
+package org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.rownum;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationValueSegment;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-
-@Getter
-@Setter
-@XmlAccessorType(XmlAccessType.FIELD)
-public final class ExpectedLimit {
+/**
+ * Row number value segment.
+ * 
+ * @author zhangliang
+ */
+public abstract class RowNumberValueSegment extends PaginationValueSegment {
     
-    @XmlAttribute
-    private Integer offset;
-    
-    @XmlAttribute(name = "row-count")
-    private Integer rowCount;
-    
-    @XmlAttribute(name = "offset-index")
-    private Integer offsetParameterIndex;
-    
-    @XmlAttribute(name = "row-count-index")
-    private Integer rowCountParameterIndex;
+    public RowNumberValueSegment(final int startIndex, final int stopIndex, final boolean boundOpened) {
+        super(startIndex, stopIndex, boundOpened);
+    }
 }

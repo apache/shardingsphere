@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.segment.dml.limit;
+package org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit;
 
 import lombok.Getter;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.ParameterMarkerPaginationValueSegment;
 
 /**
  * Limit value segment for parameter marker.
@@ -25,12 +26,12 @@ import lombok.Getter;
  * @author zhangliang
  */
 @Getter
-public final class ParameterMarkerLimitValueSegment extends LimitValueSegment {
+public final class ParameterMarkerLimitValueSegment extends LimitValueSegment implements ParameterMarkerPaginationValueSegment {
     
     private final int parameterIndex;
     
-    public ParameterMarkerLimitValueSegment(final int startIndex, final int stopIndex, final int parameterIndex, final boolean boundOpened) {
-        super(startIndex, stopIndex, boundOpened);
+    public ParameterMarkerLimitValueSegment(final int startIndex, final int stopIndex, final int parameterIndex) {
+        super(startIndex, stopIndex);
         this.parameterIndex = parameterIndex;
     }
 }

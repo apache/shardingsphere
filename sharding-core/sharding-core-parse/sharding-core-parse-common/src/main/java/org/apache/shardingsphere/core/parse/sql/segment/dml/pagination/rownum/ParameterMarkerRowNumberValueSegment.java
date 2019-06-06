@@ -15,28 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.route.limit;
+package org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.rownum;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.LimitValueSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.ParameterMarkerPaginationValueSegment;
 
 /**
- * Limit value.
- *
+ * Row number value segment for parameter marker.
+ * 
  * @author zhangliang
  */
-@AllArgsConstructor
 @Getter
-@Setter
-@ToString
-public final class LimitValue {
+public final class ParameterMarkerRowNumberValueSegment extends RowNumberValueSegment implements ParameterMarkerPaginationValueSegment {
     
-    private int value;
+    private final int parameterIndex;
     
-    private int index;
-    
-    private LimitValueSegment limitValueSegment;
+    public ParameterMarkerRowNumberValueSegment(final int startIndex, final int stopIndex, final int parameterIndex, final boolean boundOpened) {
+        super(startIndex, stopIndex, boundOpened);
+        this.parameterIndex = parameterIndex;
+    }
 }

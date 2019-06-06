@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
-import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
@@ -56,8 +55,6 @@ public abstract class BaseShardingEngine {
     private final ShardingProperties shardingProperties;
     
     private final ShardingMetaData metaData;
-    
-    private final DatabaseType databaseType;
     
     private final SPIRoutingHook routingHook = new SPIRoutingHook();
     
@@ -107,8 +104,8 @@ public abstract class BaseShardingEngine {
     
     private Collection<RouteUnit> rewriteAndConvert(final List<Object> parameters, final SQLRouteResult sqlRouteResult) {
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, sqlRouteResult.getSqlStatement(), parameters, sqlRouteResult.getRoutingResult().isSingleRouting());
-        ShardingParameterRewriter shardingParameterRewriter = new ShardingParameterRewriter(databaseType, sqlRouteResult);
-        ShardingSQLRewriter shardingSQLRewriter = new ShardingSQLRewriter(shardingRule, databaseType, sqlRouteResult, sqlRouteResult.getOptimizeResult());
+        ShardingParameterRewriter shardingParameterRewriter = new ShardingParameterRewriter(sqlRouteResult);
+        ShardingSQLRewriter shardingSQLRewriter = new ShardingSQLRewriter(shardingRule, sqlRouteResult, sqlRouteResult.getOptimizeResult());
         EncryptSQLRewriter encryptSQLRewriter = new EncryptSQLRewriter(shardingRule.getEncryptRule().getEncryptorEngine(), sqlRouteResult.getSqlStatement(), sqlRouteResult.getOptimizeResult());
         rewriteEngine.init(Collections.<ParameterRewriter>singletonList(shardingParameterRewriter), Arrays.asList(shardingSQLRewriter, encryptSQLRewriter));
         Collection<RouteUnit> result = new LinkedHashSet<>();

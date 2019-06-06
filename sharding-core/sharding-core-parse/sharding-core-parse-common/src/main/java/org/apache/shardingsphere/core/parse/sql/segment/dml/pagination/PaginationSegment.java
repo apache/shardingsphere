@@ -15,28 +15,45 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.segment.dml.limit;
+package org.apache.shardingsphere.core.parse.sql.segment.dml.pagination;
 
+import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 
 /**
- * Top segment.
- *
- * @author zhangliang
+ * Pagination segment.
+ * 
+ * @author duhongjun
  */
 @RequiredArgsConstructor
 @Getter
-public final class TopSegment implements SelectItemSegment {
+public final class PaginationSegment implements SQLSegment {
     
     private final int startIndex;
     
     private final int stopIndex;
     
-    private final String text;
+    private final PaginationValueSegment offset;
     
-    private final LimitValueSegment top;
+    private final PaginationValueSegment rowCount;
     
-    private final String rowNumberAlias;
+    /**
+     * Get offset.
+     * 
+     * @return offset
+     */
+    public Optional<PaginationValueSegment> getOffset() {
+        return Optional.fromNullable(offset);
+    }
+    
+    /**
+     * Get row count.
+     *
+     * @return row count
+     */
+    public Optional<PaginationValueSegment> getRowCount() {
+        return Optional.fromNullable(rowCount);
+    }
 }
