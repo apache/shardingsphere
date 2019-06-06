@@ -38,9 +38,7 @@ public final class OffsetTokenGenerator implements OptionalSQLTokenGenerator<Sha
             return Optional.absent();
         }
         Optional<PaginationValueSegment> offsetSegment = getLiteralOffsetSegment((SelectStatement) sqlStatement);
-        return offsetSegment.isPresent()
-                ? Optional.of(new OffsetToken(offsetSegment.get().getStartIndex(), offsetSegment.get().getStopIndex(), ((NumberLiteralPaginationValueSegment) offsetSegment.get()).getValue()))
-                : Optional.<OffsetToken>absent();
+        return offsetSegment.isPresent() ? Optional.of(new OffsetToken(offsetSegment.get().getStartIndex(), offsetSegment.get().getStopIndex(), 0)) : Optional.<OffsetToken>absent();
     }
     
     private Optional<PaginationValueSegment> getLiteralOffsetSegment(final SelectStatement selectStatement) {

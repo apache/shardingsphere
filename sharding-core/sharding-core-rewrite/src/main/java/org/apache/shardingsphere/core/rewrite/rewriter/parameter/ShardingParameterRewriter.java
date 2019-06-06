@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.core.rewrite.rewriter.parameter;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationValueSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.ParameterMarkerPaginationValueSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
@@ -35,11 +37,25 @@ public final class ShardingParameterRewriter implements ParameterRewriter {
     @Override
     public void rewrite(final ParameterBuilder parameterBuilder) {
         if (sqlRouteResult.getSqlStatement() instanceof SelectStatement && null != sqlRouteResult.getPagination()) {
-            rewriteLimit((SelectStatement) sqlRouteResult.getSqlStatement(), parameterBuilder);
+            if (null != sqlRouteResult.getPagination().getOffset()) {
+                rewriteOffset(sqlRouteResult.getPagination().getOffset().getSegment(), parameterBuilder);
+            }
+            if (null != sqlRouteResult.getPagination().getRowCount()) {
+                rewriteRowCount(sqlRouteResult.getPagination().getRowCount().getSegment(), parameterBuilder);
+            }
         }
     }
     
-    private void rewriteLimit(final SelectStatement selectStatement, final ParameterBuilder parameterBuilder) {
-        parameterBuilder.getReplacedIndexAndParameters().putAll(sqlRouteResult.getPagination().getRevisedParameters(selectStatement));
+    private void rewriteOffset(final PaginationValueSegment offsetSegment, final ParameterBuilder parameterBuilder) {
+        if (offsetSegment instanceof ParameterMarkerPaginationValueSegment) {
+            parameterBuilder.getReplacedIndexAndParameters().put(((ParameterMarkerPaginationValueSegment) offsetSegment).getParameterIndex(), 0);
+        }
+    }
+    
+    private void rewriteRowCount(final PaginationValueSegment rowCountSegment, final ParameterBuilder parameterBuilder) {
+        if (rowCountSegment instanceof ParameterMarkerPaginationValueSegment) {
+            parameterBuilder.getReplacedIndexAndParameters().put(((ParameterMarkerPaginationValueSegment) rowCountSegment).getParameterIndex(), 
+                    sqlRouteResult.getPagination().getRevisedRowCount((SelectStatement) sqlRouteResult.getSqlStatement()));
+        }
     }
 }

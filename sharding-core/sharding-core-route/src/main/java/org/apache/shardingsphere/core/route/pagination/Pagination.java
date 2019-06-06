@@ -24,9 +24,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.Parameter
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.LimitValueSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Pagination.
@@ -70,23 +68,6 @@ public final class Pagination {
      */
     public int getRowCountValue() {
         return null != rowCount ? rowCount.getValue() : -1;
-    }
-    
-    /**
-     * Get revise parameters.
-     * 
-     * @param selectStatement select statement
-     * @return revised parameters and parameters' indexes
-     */
-    public Map<Integer, Object> getRevisedParameters(final SelectStatement selectStatement) {
-        Map<Integer, Object> result = new HashMap<>(2, 1);
-        if (null != offset && offset.getSegment() instanceof ParameterMarkerPaginationValueSegment) {
-            result.put(((ParameterMarkerPaginationValueSegment) offset.getSegment()).getParameterIndex(), 0);
-        }
-        if (null != rowCount && rowCount.getSegment() instanceof ParameterMarkerPaginationValueSegment) {
-            result.put(((ParameterMarkerPaginationValueSegment) rowCount.getSegment()).getParameterIndex(), getRevisedRowCount(selectStatement));
-        }
-        return result;
     }
     
     /**
