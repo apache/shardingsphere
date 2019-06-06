@@ -15,22 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.segment.dml.limit;
+package org.apache.shardingsphere.core.rewrite.token.pojo;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 /**
- * Limit value segment for parameter marker.
- * 
+ * SQL Token.
+ *
  * @author zhangliang
+ * @author panjuan
  */
+@RequiredArgsConstructor
 @Getter
-public final class ParameterMarkerLimitValueSegment extends LimitValueSegment {
+@ToString
+public abstract class SQLToken implements Comparable<SQLToken> {
     
-    private final int parameterIndex;
+    private final int startIndex;
     
-    public ParameterMarkerLimitValueSegment(final int startIndex, final int stopIndex, final int parameterIndex, final boolean boundOpened) {
-        super(startIndex, stopIndex, boundOpened);
-        this.parameterIndex = parameterIndex;
+    @Override
+    public final int compareTo(final SQLToken sqlToken) {
+        return startIndex - sqlToken.getStartIndex();
     }
 }

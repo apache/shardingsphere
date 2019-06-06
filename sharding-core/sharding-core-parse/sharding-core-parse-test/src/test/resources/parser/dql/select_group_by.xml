@@ -187,7 +187,7 @@
         <order-by-columns>
             <order-by-column name="user_id" order-direction="ASC" />
         </order-by-columns>
-        <limit row-count-index="0" row-count="5" />
+        <pagination row-count-index="0" row-count="5" />
     </parser-result>
     
     <parser-result sql-case-id="select_group_by_with_order_by_and_limit" parameters="5">
@@ -208,7 +208,7 @@
         <order-by-columns>
             <order-by-column name="SUM(order_id)" order-direction="ASC" />
         </order-by-columns>
-        <limit row-count-index="0" row-count="5" />
+        <pagination row-count-index="0" row-count="5" />
     </parser-result>
     
     <parser-result sql-case-id="select_with_item_alias_match_order_by_and_group_by_items">

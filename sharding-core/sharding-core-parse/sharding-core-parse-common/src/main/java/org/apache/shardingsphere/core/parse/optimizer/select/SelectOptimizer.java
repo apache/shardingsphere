@@ -49,6 +49,7 @@ public final class SelectOptimizer implements SQLStatementOptimizer {
     
     @Override
     public void optimize(final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
+        
         appendDerivedColumns((SelectStatement) sqlStatement, shardingTableMetaData);
         appendDerivedOrderBy((SelectStatement) sqlStatement);
         addSubqueryCondition(sqlStatement);
@@ -170,6 +171,7 @@ public final class SelectOptimizer implements SQLStatementOptimizer {
     private void appendDerivedOrderBy(final SelectStatement selectStatement) {
         if (!selectStatement.getGroupByItems().isEmpty() && selectStatement.getOrderByItems().isEmpty()) {
             selectStatement.getOrderByItems().addAll(selectStatement.getGroupByItems());
+            selectStatement.setToAppendOrderByItems(true);
         }
     }
     

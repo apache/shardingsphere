@@ -29,12 +29,12 @@ import org.apache.shardingsphere.core.parse.sql.context.selectitem.DistinctSelec
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.StarSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.table.Table;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.LimitSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.TextOrderByItemSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationSegment;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 import java.util.Collection;
@@ -61,6 +61,8 @@ public final class SelectStatement extends DQLStatement {
     
     private final List<OrderByItemSegment> orderByItems = new LinkedList<>();
     
+    private boolean toAppendOrderByItems;
+    
     private boolean containStar;
     
     private int firstSelectItemStartIndex;
@@ -69,7 +71,7 @@ public final class SelectStatement extends DQLStatement {
     
     private int groupByLastIndex;
     
-    private LimitSegment limit;
+    private PaginationSegment pagination; 
     
     private SelectStatement parentStatement;
     

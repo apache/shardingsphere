@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.rewrite.token.pojo;
 
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
 
 /**
  * Remove token.

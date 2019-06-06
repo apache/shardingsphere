@@ -23,10 +23,10 @@ import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.LimitSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.LimitValueSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.NumberLiteralLimitValueSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.ParameterMarkerLimitValueSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.rownum.NumberLiteralRowNumberValueSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.rownum.ParameterMarkerRowNumberValueSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.rownum.RowNumberValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.OrPredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
@@ -98,34 +98,34 @@ public final class ShardingRowNumberPredicateFiller implements SQLSegmentFiller<
     }
     
     private void fillLimit(final SelectStatement selectStatement, final Collection<PredicateSegment> rowNumberPredicates) {
-        LimitValueSegment rowCount = null;
-        LimitValueSegment offset = null;
+        RowNumberValueSegment rowCount = null;
+        RowNumberValueSegment offset = null;
         for (PredicateSegment each : rowNumberPredicates) {
             ExpressionSegment expression = ((PredicateCompareRightValue) each.getRightValue()).getExpression();
             switch (((PredicateCompareRightValue) each.getRightValue()).getOperator()) {
                 case ">":
-                    offset = createLimitValueSegment(expression, false);
+                    offset = createRowNumberValueSegment(expression, false);
                     break;
                 case ">=":
-                    offset = createLimitValueSegment(expression, true);
+                    offset = createRowNumberValueSegment(expression, true);
                     break;
                 case "<":
-                    rowCount = createLimitValueSegment(expression, false);
+                    rowCount = createRowNumberValueSegment(expression, false);
                     break;
                 case "<=":
-                    rowCount = createLimitValueSegment(expression, true);
+                    rowCount = createRowNumberValueSegment(expression, true);
                     break;
                 default:
                     break;
             }
         }
-        selectStatement.setLimit(new LimitSegment(-1, -1, offset, rowCount));
+        selectStatement.setPagination(new PaginationSegment(-1, -1, offset, rowCount));
     }
     
-    private LimitValueSegment createLimitValueSegment(final ExpressionSegment expression, final boolean boundOpened) {
-        if (expression instanceof LiteralExpressionSegment) {
-            return new NumberLiteralLimitValueSegment(expression.getStartIndex(), expression.getStopIndex(), (Integer) ((LiteralExpressionSegment) expression).getLiterals(), boundOpened);
-        }
-        return new ParameterMarkerLimitValueSegment(expression.getStartIndex(), expression.getStopIndex(), ((ParameterMarkerExpressionSegment) expression).getParameterMarkerIndex(), boundOpened);
+    private RowNumberValueSegment createRowNumberValueSegment(final ExpressionSegment expression, final boolean boundOpened) {
+        return expression instanceof LiteralExpressionSegment
+                ? new NumberLiteralRowNumberValueSegment(expression.getStartIndex(), expression.getStopIndex(), (int) ((LiteralExpressionSegment) expression).getLiterals(), boundOpened) 
+                : new ParameterMarkerRowNumberValueSegment(
+                        expression.getStartIndex(), expression.getStopIndex(), ((ParameterMarkerExpressionSegment) expression).getParameterMarkerIndex(), boundOpened);
     }
 }

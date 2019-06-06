@@ -19,35 +19,35 @@ package org.apache.shardingsphere.core.merge.dql.pagination;
 
 import org.apache.shardingsphere.core.merge.MergedResult;
 import org.apache.shardingsphere.core.merge.dql.common.DecoratorMergedResult;
-import org.apache.shardingsphere.core.route.limit.Limit;
+import org.apache.shardingsphere.core.route.pagination.Pagination;
 
 import java.sql.SQLException;
 
 /**
- * Decorator merged result for top and rownum pagination.
+ * Decorator merged result for top and row number pagination.
  *
  * @author zhangliang
  */
 public final class TopAndRowNumberDecoratorMergedResult extends DecoratorMergedResult {
     
-    private final Limit limit;
+    private final Pagination pagination;
     
     private final boolean skipAll;
     
     private int rowNumber;
     
-    public TopAndRowNumberDecoratorMergedResult(final MergedResult mergedResult, final Limit limit) throws SQLException {
+    public TopAndRowNumberDecoratorMergedResult(final MergedResult mergedResult, final Pagination pagination) throws SQLException {
         super(mergedResult);
-        this.limit = limit;
+        this.pagination = pagination;
         skipAll = skipOffset();
     }
     
     private boolean skipOffset() throws SQLException {
         int end;
-        if (null == limit.getOffset()) {
+        if (null == pagination.getOffset()) {
             end = 0;
         } else {
-            end = limit.getOffset().getLimitValueSegment().isBoundOpened() ? limit.getOffsetValue() - 1 : limit.getOffsetValue();
+            end = pagination.getOffset().getSegment().isBoundOpened() ? pagination.getOffsetValue() - 1 : pagination.getOffsetValue();
         }
         for (int i = 0; i < end; i++) {
             if (!getMergedResult().next()) {
@@ -63,9 +63,9 @@ public final class TopAndRowNumberDecoratorMergedResult extends DecoratorMergedR
         if (skipAll) {
             return false;
         }
-        if (limit.getRowCountValue() < 0) {
+        if (pagination.getRowCountValue() < 0) {
             return getMergedResult().next();
         }
-        return rowNumber++ <= limit.getRowCountValue() && getMergedResult().next();
+        return rowNumber++ <= pagination.getRowCountValue() && getMergedResult().next();
     }
 }

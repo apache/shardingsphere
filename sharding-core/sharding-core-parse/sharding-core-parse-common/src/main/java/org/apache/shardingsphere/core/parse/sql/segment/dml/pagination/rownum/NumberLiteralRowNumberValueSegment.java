@@ -15,29 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.integrate.jaxb.limit;
+package org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.rownum;
 
 import lombok.Getter;
-import lombok.Setter;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.NumberLiteralPaginationValueSegment;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-
+/**
+ * Row number value segment for number literal.
+ * 
+ * @author zhangliang
+ */
 @Getter
-@Setter
-@XmlAccessorType(XmlAccessType.FIELD)
-public final class ExpectedLimit {
+public final class NumberLiteralRowNumberValueSegment extends RowNumberValueSegment implements NumberLiteralPaginationValueSegment {
     
-    @XmlAttribute
-    private Integer offset;
+    private final int value;
     
-    @XmlAttribute(name = "row-count")
-    private Integer rowCount;
-    
-    @XmlAttribute(name = "offset-index")
-    private Integer offsetParameterIndex;
-    
-    @XmlAttribute(name = "row-count-index")
-    private Integer rowCountParameterIndex;
+    public NumberLiteralRowNumberValueSegment(final int startIndex, final int stopIndex, final int value, final boolean boundOpened) {
+        super(startIndex, stopIndex, boundOpened);
+        this.value = value;
+    }
 }

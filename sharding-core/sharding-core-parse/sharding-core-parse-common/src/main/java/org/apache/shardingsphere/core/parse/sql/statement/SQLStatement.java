@@ -22,10 +22,8 @@ import org.apache.shardingsphere.core.constant.SQLType;
 import org.apache.shardingsphere.core.parse.sql.context.condition.ParseCondition;
 import org.apache.shardingsphere.core.parse.sql.context.table.Tables;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
-import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
 
 import java.util.Collection;
-import java.util.List;
 
 /**
  * SQL statement.
@@ -68,20 +66,6 @@ public interface SQLStatement {
      * @return parse condition
      */
     ParseCondition getEncryptCondition();
-    
-    /**
-     * Add SQL token.
-     *
-     * @param sqlToken SQL token
-     */
-    void addSQLToken(SQLToken sqlToken);
-    
-    /**
-     * Get SQL tokens.
-     * 
-     * @return SQL tokens
-     */
-    List<SQLToken> getSQLTokens();
     
     /**
      * Get index of parameters.

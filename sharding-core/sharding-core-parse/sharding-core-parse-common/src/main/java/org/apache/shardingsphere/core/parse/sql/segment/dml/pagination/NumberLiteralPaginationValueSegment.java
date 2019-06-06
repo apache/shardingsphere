@@ -15,30 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.token;
-
-import org.apache.shardingsphere.core.rewrite.token.generator.RemoveTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.token.generator.SQLTokenGenerator;
-import org.apache.shardingsphere.core.rule.ShardingRule;
-
-import java.util.Collection;
-import java.util.LinkedList;
+package org.apache.shardingsphere.core.parse.sql.segment.dml.pagination;
 
 /**
- * SQL token generator for master-slave.
- *
+ * Pagination value segment for number literal.
+ * 
  * @author zhangliang
  */
-public final class MasterSlaveTokenGenerateEngine extends SQLTokenGenerateEngine<ShardingRule> {
+public interface NumberLiteralPaginationValueSegment extends PaginationValueSegment {
     
-    private static final Collection<SQLTokenGenerator> SQL_TOKEN_GENERATORS = new LinkedList<>();
-    
-    static {
-        SQL_TOKEN_GENERATORS.add(new RemoveTokenGenerator());
-    }
-    
-    @Override
-    protected Collection<SQLTokenGenerator> getSQLTokenGenerators() {
-        return SQL_TOKEN_GENERATORS;
-    }
+    /**
+     * Get value.
+     * 
+     * @return value
+     */
+    int getValue();
 }

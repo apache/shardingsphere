@@ -15,25 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.segment.dml.limit;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
+package org.apache.shardingsphere.core.parse.sql.segment.dml.pagination;
 
 /**
- * Limit value segment.
+ * Pagination value segment for parameter marker.
  * 
  * @author zhangliang
- * @author panjuan
  */
-@RequiredArgsConstructor
-@Getter
-public abstract class LimitValueSegment implements SQLSegment {
+public interface ParameterMarkerPaginationValueSegment extends PaginationValueSegment {
     
-    private final int startIndex;
-    
-    private final int stopIndex;
-    
-    private final boolean boundOpened;
+    /**
+     * Get parameter index.
+     * 
+     * @return parameter index
+     */
+    int getParameterIndex();
 }

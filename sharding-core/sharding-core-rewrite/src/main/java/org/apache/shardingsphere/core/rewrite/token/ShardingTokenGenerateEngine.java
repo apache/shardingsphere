@@ -50,7 +50,6 @@ public final class ShardingTokenGenerateEngine extends SQLTokenGenerateEngine<Sh
         SQL_TOKEN_GENERATORS.add(new OrderByTokenGenerator());
         SQL_TOKEN_GENERATORS.add(new AggregationDistinctTokenGenerator());
         SQL_TOKEN_GENERATORS.add(new IndexTokenGenerator());
-        SQL_TOKEN_GENERATORS.add(new RemoveTokenGenerator());
         SQL_TOKEN_GENERATORS.add(new OffsetTokenGenerator());
         SQL_TOKEN_GENERATORS.add(new RowCountTokenGenerator());
         SQL_TOKEN_GENERATORS.add(new InsertGeneratedKeyTokenGenerator());

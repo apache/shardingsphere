@@ -15,27 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.token;
+package org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.ParameterMarkerPaginationValueSegment;
 
 /**
- * SQL Token.
- *
+ * Limit value segment for parameter marker.
+ * 
  * @author zhangliang
- * @author panjuan
  */
-@RequiredArgsConstructor
 @Getter
-@ToString
-public abstract class SQLToken implements Comparable<SQLToken> {
+public final class ParameterMarkerLimitValueSegment extends LimitValueSegment implements ParameterMarkerPaginationValueSegment {
     
-    private final int startIndex;
+    private final int parameterIndex;
     
-    @Override
-    public final int compareTo(final SQLToken sqlToken) {
-        return startIndex - sqlToken.getStartIndex();
+    public ParameterMarkerLimitValueSegment(final int startIndex, final int stopIndex, final int parameterIndex) {
+        super(startIndex, stopIndex);
+        this.parameterIndex = parameterIndex;
     }
 }

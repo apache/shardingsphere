@@ -18,12 +18,9 @@
 package org.apache.shardingsphere.core.rewrite.rewriter.parameter;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
-
-import java.util.Map;
 
 /**
  * Parameter rewriter for sharding.
@@ -33,20 +30,17 @@ import java.util.Map;
 @RequiredArgsConstructor
 public final class ShardingParameterRewriter implements ParameterRewriter {
     
-    private final DatabaseType databaseType;
-    
     private final SQLRouteResult sqlRouteResult;
     
     @Override
     public void rewrite(final ParameterBuilder parameterBuilder) {
-        if (sqlRouteResult.getSqlStatement() instanceof SelectStatement) {
-            SelectStatement selectStatement = (SelectStatement) sqlRouteResult.getSqlStatement();
-            if (null == selectStatement.getLimit()) {
-                return;
-            }
-            boolean isNeedFetchAll = (!selectStatement.getGroupByItems().isEmpty() || !selectStatement.getAggregationSelectItems().isEmpty()) && !selectStatement.isSameGroupByAndOrderByItems();
-            Map<Integer, Object> revisedIndexAndParameters = sqlRouteResult.getLimit().getRevisedIndexAndParameters(isNeedFetchAll, databaseType.name());
-            parameterBuilder.getReplacedIndexAndParameters().putAll(revisedIndexAndParameters);
+        if (sqlRouteResult.getSqlStatement() instanceof SelectStatement && null != sqlRouteResult.getPagination()) {
+            rewriteLimit((SelectStatement) sqlRouteResult.getSqlStatement(), parameterBuilder);
         }
+    }
+    
+    private void rewriteLimit(final SelectStatement selectStatement, final ParameterBuilder parameterBuilder) {
+        boolean isMaxRowCount = (!selectStatement.getGroupByItems().isEmpty() || !selectStatement.getAggregationSelectItems().isEmpty()) && !selectStatement.isSameGroupByAndOrderByItems();
+        parameterBuilder.getReplacedIndexAndParameters().putAll(sqlRouteResult.getPagination().getRevisedParameters(isMaxRowCount));
     }
 }

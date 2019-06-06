@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.rewrite;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
 import org.apache.shardingsphere.core.rewrite.rewriter.parameter.ParameterRewriter;
@@ -27,8 +26,8 @@ import org.apache.shardingsphere.core.rewrite.rewriter.sql.BaseSQLRewriter;
 import org.apache.shardingsphere.core.rewrite.rewriter.sql.SQLRewriter;
 import org.apache.shardingsphere.core.rewrite.token.BaseTokenGenerateEngine;
 import org.apache.shardingsphere.core.rewrite.token.EncryptTokenGenerateEngine;
-import org.apache.shardingsphere.core.rewrite.token.MasterSlaveTokenGenerateEngine;
 import org.apache.shardingsphere.core.rewrite.token.ShardingTokenGenerateEngine;
+import org.apache.shardingsphere.core.rewrite.token.pojo.SQLToken;
 import org.apache.shardingsphere.core.route.SQLUnit;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.route.type.TableUnit;
@@ -37,6 +36,7 @@ import org.apache.shardingsphere.core.rule.BindingTableRule;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -91,7 +91,7 @@ public final class SQLRewriteEngine {
     }
     
     private List<SQLToken> createSQLTokens(final BaseRule baseRule, final SQLStatement sqlStatement, final boolean isSingleRoute) {
-        List<SQLToken> result = new LinkedList<>(sqlStatement.getSQLTokens());
+        List<SQLToken> result = new LinkedList<>();
         result.addAll(new BaseTokenGenerateEngine().generateSQLTokens(sqlStatement, baseRule, isSingleRoute));
         if (baseRule instanceof ShardingRule) {
             ShardingRule shardingRule = (ShardingRule) baseRule;
@@ -99,8 +99,6 @@ public final class SQLRewriteEngine {
             result.addAll(new EncryptTokenGenerateEngine().generateSQLTokens(sqlStatement, shardingRule.getEncryptRule(), isSingleRoute));
         } else if (baseRule instanceof EncryptRule) {
             result.addAll(new EncryptTokenGenerateEngine().generateSQLTokens(sqlStatement, (EncryptRule) baseRule, isSingleRoute));
-        } else {
-            result.addAll(new MasterSlaveTokenGenerateEngine().generateSQLTokens(sqlStatement, null, isSingleRoute));
         }
         Collections.sort(result);
         return result;
@@ -109,12 +107,12 @@ public final class SQLRewriteEngine {
     /**
      * Initialize SQL rewrite engine.
      * 
-     * @param parameterRewriter parameter rewriter
+     * @param parameterRewriters parameter rewriters
      * @param sqlRewriters SQL rewriters
      */
-    public void init(final ParameterRewriter parameterRewriter, final SQLRewriter... sqlRewriters) {
-        if (null != parameterRewriter) {
-            parameterRewriter.rewrite(parameterBuilder);
+    public void init(final Collection<ParameterRewriter> parameterRewriters, final Collection<SQLRewriter> sqlRewriters) {
+        for (ParameterRewriter each : parameterRewriters) {
+            each.rewrite(parameterBuilder);
         }
         if (sqlTokens.isEmpty()) {
             baseSQLRewriter.appendWholeSQL(sqlBuilder);
