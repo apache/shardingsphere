@@ -49,6 +49,7 @@ public final class SnowflakeShardingKeyGeneratorTest {
         ExecutorService executor = Executors.newFixedThreadPool(threadNumber);
         int taskNumber = threadNumber << 2;
         final SnowflakeShardingKeyGenerator keyGenerator = new SnowflakeShardingKeyGenerator();
+        
         keyGenerator.setProperties(new Properties());
         Set<Comparable<?>> actual = new HashSet<>();
         for (int i = 0; i < taskNumber; i++) {

@@ -45,6 +45,8 @@ shardingRule:
       keyGenerator:
         type: SNOWFLAKE
         column: item_id
+        props:
+          worker.id: 123        
     t_place:
       actualDataNodes: db${0..1}.t_place
       tableStrategy: 

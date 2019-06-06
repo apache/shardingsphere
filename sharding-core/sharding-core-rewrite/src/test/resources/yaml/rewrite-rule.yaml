@@ -34,6 +34,8 @@ shardingRule:
       keyGenerator:
         type: SNOWFLAKE
         column: id
+        props:
+          worker.id: 123
       logicIndex: logic_index
     table_y:
       actualDataNodes: db${0..1}.table_y
@@ -47,6 +49,8 @@ shardingRule:
       keyGenerator:
         type: SNOWFLAKE
         column: id
+        props:
+          worker.id: 123        
   bindingTables:
     - table_x, table_y
   encryptRule:
