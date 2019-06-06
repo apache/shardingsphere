@@ -79,7 +79,7 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
     
     private EncryptOrPredicateFiller createEncryptOrPredicateFiller() {
         EncryptOrPredicateFiller result = new EncryptOrPredicateFiller();
-        result.setEncryptorEngine(shardingRule.getEncryptRule().getEncryptorEngine());
+        result.setEncryptRule(shardingRule.getEncryptRule());
         result.setShardingTableMetaData(shardingTableMetaData);
         return result;
     }

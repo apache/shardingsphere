@@ -49,7 +49,7 @@ public class QueryResultMetaDataTest {
     public void setUp() {
         ResultSetMetaData resultSetMetaData = getResultMetaData();
         ShardingRule shardingRule = getShardingRule();
-        queryResultMetaData = new QueryResultMetaData(resultSetMetaData, shardingRule, shardingRule.getEncryptRule().getEncryptorEngine());
+        queryResultMetaData = new QueryResultMetaData(resultSetMetaData, shardingRule);
     }
     
     @SuppressWarnings("unchecked")
