@@ -57,15 +57,6 @@ public final class Pagination {
     }
     
     /**
-     * Get offset segment.
-     * 
-     * @return offset segment
-     */
-    public Optional<PaginationValueSegment> getOffsetSegment() {
-        return Optional.fromNullable(offsetSegment);
-    }
-    
-    /**
      * Get row count segment.
      *
      * @return row count segment
@@ -93,6 +84,25 @@ public final class Pagination {
      */
     public Optional<Integer> getActualRowCount() {
         return Optional.fromNullable(actualRowCount);
+    }
+    
+    /**
+     * Get offset parameter index.
+     *
+     * @return offset parameter index
+     */
+    public Optional<Integer> getOffsetParameterIndex() {
+        return offsetSegment instanceof ParameterMarkerPaginationValueSegment ? Optional.of(((ParameterMarkerPaginationValueSegment) offsetSegment).getParameterIndex()) : Optional.<Integer>absent();
+    }
+    
+    /**
+     * Get row count parameter index.
+     *
+     * @return row count parameter index
+     */
+    public Optional<Integer> getRowCountParameterIndex() {
+        return rowCountSegment instanceof ParameterMarkerPaginationValueSegment
+                ? Optional.of(((ParameterMarkerPaginationValueSegment) rowCountSegment).getParameterIndex()) : Optional.<Integer>absent();
     }
     
     /**
