@@ -49,6 +49,7 @@ public final class MasterSlaveRuleConfigurationYamlSwapper implements YamlSwappe
     }
     
     private LoadBalanceStrategyConfiguration getLoadBalanceStrategyConfiguration(final YamlMasterSlaveRuleConfiguration yamlConfiguration) {
-        return Strings.isNullOrEmpty(yamlConfiguration.getLoadBalanceAlgorithmType()) ? null : new LoadBalanceStrategyConfiguration(yamlConfiguration.getLoadBalanceAlgorithmType());
+        return Strings.isNullOrEmpty(yamlConfiguration.getLoadBalanceAlgorithmType()) ? null
+            : new LoadBalanceStrategyConfiguration(yamlConfiguration.getLoadBalanceAlgorithmType(), yamlConfiguration.getProps());
     }
 }
