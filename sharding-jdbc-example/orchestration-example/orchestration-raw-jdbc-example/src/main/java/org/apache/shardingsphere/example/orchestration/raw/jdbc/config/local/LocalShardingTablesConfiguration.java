@@ -70,6 +70,8 @@ public final class LocalShardingTablesConfiguration implements ExampleConfigurat
     }
     
     private static KeyGeneratorConfiguration getKeyGeneratorConfiguration() {
-        return new KeyGeneratorConfiguration("SNOWFLAKE", "order_id", new Properties());
+        Properties properties = new Properties();
+        properties.setProperty("worker.id", "123");
+        return new KeyGeneratorConfiguration("SNOWFLAKE", "order_id", properties);
     }
 }

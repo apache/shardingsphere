@@ -5,6 +5,7 @@
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
        xmlns:master-slave="http://shardingsphere.apache.org/schema/shardingsphere/masterslave"
+       xmlns:bean="http://www.springframework.org/schema/util"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                         http://www.springframework.org/schema/beans/spring-beans.xsd 
                         http://www.springframework.org/schema/context 
@@ -14,7 +15,7 @@
                         http://shardingsphere.apache.org/schema/shardingsphere/sharding
                         http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
                         http://shardingsphere.apache.org/schema/shardingsphere/masterslave
-                        http://shardingsphere.apache.org/schema/shardingsphere/masterslave/master-slave.xsd">
+                        http://shardingsphere.apache.org/schema/shardingsphere/masterslave/master-slave.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
     <context:component-scan base-package="org.apache.shardingsphere.example.common.mybatis" />
     
     <bean id="demo_ds_master_0" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
@@ -62,9 +63,14 @@
     <sharding:inline-strategy id="databaseStrategy" sharding-column="user_id" algorithm-expression="demo_ds_ms_${user_id % 2}" />
     <sharding:inline-strategy id="orderTableStrategy" sharding-column="order_id" algorithm-expression="t_order_${order_id % 2}" />
     <sharding:inline-strategy id="orderItemTableStrategy" sharding-column="order_item_id" algorithm-expression="t_order_item_${order_item_id % 2}" />
+    
+    <bean:properties id="properties">
+        <prop key="worker.id">123</prop>
+    </bean:properties>
 
-    <sharding:key-generator id="orderKeyGenerator" type="SNOWFLAKE" column="order_id" />
-    <sharding:key-generator id="itemKeyGenerator" type="SNOWFLAKE" column="order_item_id" />
+    <sharding:key-generator id="orderKeyGenerator" type="SNOWFLAKE" column="order_id" props-ref="properties" />
+    <sharding:key-generator id="itemKeyGenerator" type="SNOWFLAKE" column="order_item_id" props-ref="properties" />
+    
     <master-slave:load-balance-algorithm id="randomStrategy" type="RANDOM" />
 
     <sharding:data-source id="shardingDataSource">
