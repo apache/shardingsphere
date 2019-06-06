@@ -30,6 +30,8 @@ The list here will be shown in the registered order.
 * [newbeescm](https://www.newbeescm.com/)
 * [xiaohongchun](https://www.xiaohongchun.com/)
 * [58](https://bj.58.com/)
+* [chuchujie](http://www.chuchujie.com/)
+* [pagoda](http://www.pagoda.com.cn/)
 
 ## FinTech
 
@@ -45,6 +47,7 @@ The list here will be shown in the registered order.
 * [Cypfintech](https://www.cypfintech.com/)
 * [Ppdai](https://www.ppdai.com/)
 * [HuoBi Info](https://www.huobiinfo.com/)
+* [9fgroup](https://www.9fgroup.com/)
 
 ## Cloud Company
 
@@ -59,6 +62,7 @@ The list here will be shown in the registered order.
 * [Yiche](http://www.yiche.com/)
 * [Baixing](http://www.baixing.com/)
 * [Yidianzixun](https://www.yidianzixun.com/)
+* [mafengwo](http://www.mafengwo.com/)
 
 ## O2O
 
@@ -81,6 +85,7 @@ The list here will be shown in the registered order.
 * [500px](https://500px.me/)
 * [Bilibili](https://www.bilibili.com/)
 * [DOUYU.com](https://www.douyu.com/)
+* [iqiyi](https://www.iqiyi.com/)
 
 ## Intelligent Hardware
 
@@ -90,6 +95,7 @@ The list here will be shown in the registered order.
 * [Oppo](http://www.oppo.com/)
 * [Iflytek](http://www.iflytek.com/)
 * [Super SOCO](http://www.supersoco.com/)
+* [vivo](http://www.vivo.com/)
 
 ## Enterprise Service
 
@@ -106,6 +112,7 @@ The list here will be shown in the registered order.
 * [Cloudansys](http://www.cloudansys.com/)
 * [HYDEE](http://www.hydee.cn/)
 * [Compasshz](http://www.compasshz.com/)
+* [raycloud](http://www.raycloud.com/)
 
 ## Government
 
@@ -121,6 +128,7 @@ The list here will be shown in the registered order.
 * [AreoSpace](http://www.ascf.com.cn/n4194536/)
 * [KING COME](http://www.kingcome.cn/)
 * [ZHONGCHEN](http://jszcrj.com/)
+* [izxcs](http://www.izxcs.com/)
 
 ## Express
 
@@ -134,9 +142,12 @@ The list here will be shown in the registered order.
 
 * [Eeka Fashion](http://www.eeka.cn/)
 * [Lily&Beauty](http://www.lrlz.com/)
+* [hikvision](http://www.hikvision.com )
+
 
 ## Online Education
 
 * [TAL](http://www.100tal.com/)
 * [KAIKE.LA](http://www.kaike.la/)
 * [Okayzhihui](https://www.okayzhihui.com/)
+* [edu.dongao](http://edu.dongao.com/)
