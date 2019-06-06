@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.route.pagination;
 
 import com.google.common.base.Optional;
-import lombok.Getter;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.NumberLiteralPaginationValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.ParameterMarkerPaginationValueSegment;
@@ -34,7 +33,6 @@ import java.util.List;
  * @author caohao
  * @author zhangyonglun
  */
-@Getter
 public final class Pagination {
     
     private final PaginationValueSegment offsetSegment;
@@ -56,6 +54,24 @@ public final class Pagination {
         return paginationValueSegment instanceof ParameterMarkerPaginationValueSegment
                 ? (int) parameters.get(((ParameterMarkerPaginationValueSegment) paginationValueSegment).getParameterIndex())
                 : ((NumberLiteralPaginationValueSegment) paginationValueSegment).getValue();
+    }
+    
+    /**
+     * Get offset segment.
+     * 
+     * @return offset segment
+     */
+    public Optional<PaginationValueSegment> getOffsetSegment() {
+        return Optional.fromNullable(offsetSegment);
+    }
+    
+    /**
+     * Get row count segment.
+     *
+     * @return row count segment
+     */
+    public Optional<PaginationValueSegment> getRowCountSegment() {
+        return Optional.fromNullable(rowCountSegment);
     }
     
     /**
