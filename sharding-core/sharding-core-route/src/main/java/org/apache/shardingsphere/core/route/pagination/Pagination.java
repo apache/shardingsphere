@@ -57,15 +57,6 @@ public final class Pagination {
     }
     
     /**
-     * Get row count segment.
-     *
-     * @return row count segment
-     */
-    public Optional<PaginationValueSegment> getRowCountSegment() {
-        return Optional.fromNullable(rowCountSegment);
-    }
-    
-    /**
      * Get actual offset.
      * 
      * @return actual offset
@@ -83,7 +74,10 @@ public final class Pagination {
      * @return actual row count
      */
     public Optional<Integer> getActualRowCount() {
-        return Optional.fromNullable(actualRowCount);
+        if (null == rowCountSegment) {
+            return Optional.absent();
+        }
+        return Optional.of(rowCountSegment.isBoundOpened() ? actualRowCount + 1 : actualRowCount);
     }
     
     /**

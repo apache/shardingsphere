@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.merge.dql.pagination;
 
-import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.core.merge.MergedResult;
 import org.apache.shardingsphere.core.merge.dql.common.DecoratorMergedResult;
 import org.apache.shardingsphere.core.route.pagination.Pagination;
@@ -61,10 +60,6 @@ public final class RowNumberDecoratorMergedResult extends DecoratorMergedResult 
         }
         if (!pagination.getActualRowCount().isPresent()) {
             return getMergedResult().next();
-        }
-        Preconditions.checkState(pagination.getRowCountSegment().isPresent());
-        if (pagination.getRowCountSegment().get().isBoundOpened()) {
-            return rowNumber++ <= pagination.getActualRowCount().get() && getMergedResult().next();
         }
         return rowNumber++ < pagination.getActualRowCount().get() && getMergedResult().next();
     }
