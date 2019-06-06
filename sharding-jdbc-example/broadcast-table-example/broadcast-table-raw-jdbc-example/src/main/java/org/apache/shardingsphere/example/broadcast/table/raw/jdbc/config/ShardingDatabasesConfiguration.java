@@ -44,7 +44,9 @@ public class ShardingDatabasesConfiguration implements ExampleConfiguration {
 
     private TableRuleConfiguration getSportsmanTableRuleConfiguration() {
         TableRuleConfiguration result = new TableRuleConfiguration("t_sportsman");
-        result.setKeyGeneratorConfig(new KeyGeneratorConfiguration("SNOWFLAKE", "id", new Properties()));
+        Properties properties = new Properties();
+        properties.setProperty("worker.id", "123abc");
+        result.setKeyGeneratorConfig(new KeyGeneratorConfiguration("SNOWFLAKE", "id", properties));
         return result;
     }
 

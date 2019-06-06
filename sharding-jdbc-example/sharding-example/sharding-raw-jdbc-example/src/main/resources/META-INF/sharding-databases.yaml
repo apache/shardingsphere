@@ -17,11 +17,15 @@ shardingRule:
       keyGenerator:
         type: SNOWFLAKE
         column: order_id
+        props:
+          worker.id: 123abc        
     t_order_item:
       actualDataNodes: ds_${0..1}.t_order_item
       keyGenerator:
         type: SNOWFLAKE
         column: order_item_id
+        props:
+           worker.id: 123abc       
   bindingTables:
     - t_order,t_order_item
   defaultDatabaseStrategy:
