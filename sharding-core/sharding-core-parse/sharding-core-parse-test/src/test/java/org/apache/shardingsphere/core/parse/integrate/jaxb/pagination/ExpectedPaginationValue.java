@@ -27,17 +27,11 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class ExpectedPagination {
+public final class ExpectedPaginationValue {
     
     @XmlAttribute
-    private Integer offset;
+    private Integer value;
     
-    @XmlAttribute(name = "row-count")
-    private Integer rowCount;
-    
-    @XmlAttribute(name = "offset-index")
-    private Integer offsetParameterIndex;
-    
-    @XmlAttribute(name = "row-count-index")
-    private Integer rowCountParameterIndex;
+    @XmlAttribute(name = "parameter-index")
+    private Integer parameterIndex;
 }

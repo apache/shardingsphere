@@ -34,7 +34,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.Expressio
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.TextOrderByItemSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationValueSegment;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 import java.util.Collection;
@@ -71,7 +71,9 @@ public final class SelectStatement extends DQLStatement {
     
     private int groupByLastIndex;
     
-    private PaginationSegment pagination; 
+    private PaginationValueSegment offset;
+    
+    private PaginationValueSegment rowCount;
     
     private SelectStatement parentStatement;
     

@@ -31,6 +31,11 @@ public final class LimitFiller implements SQLSegmentFiller<PaginationSegment> {
     
     @Override
     public void fill(final PaginationSegment sqlSegment, final SQLStatement sqlStatement) {
-        ((SelectStatement) sqlStatement).setPagination(sqlSegment);
+        if (sqlSegment.getOffset().isPresent()) {
+            ((SelectStatement) sqlStatement).setOffset(sqlSegment.getOffset().get());
+        }
+        if (sqlSegment.getRowCount().isPresent()) {
+            ((SelectStatement) sqlStatement).setRowCount(sqlSegment.getRowCount().get());
+        }
     }
 }

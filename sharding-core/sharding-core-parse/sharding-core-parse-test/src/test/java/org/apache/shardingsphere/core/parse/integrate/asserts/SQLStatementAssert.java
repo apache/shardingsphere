@@ -118,7 +118,8 @@ public final class SQLStatementAssert {
         itemAssert.assertItems(actual.getItems(), expected.getSelectItems());
         groupByAssert.assertGroupByItems(actual.getGroupByItems(), expected.getGroupByColumns());
         orderByAssert.assertOrderByItems(actual.getOrderByItems(), expected.getOrderByColumns());
-        paginationAssert.assertPagination(actual.getPagination(), expected.getPagination());
+        paginationAssert.assertOffset(actual.getOffset(), expected.getOffset());
+        paginationAssert.assertRowCount(actual.getRowCount(), expected.getRowCount());
     }
     
     private void assertCreateTableStatement(final CreateTableStatement actual) {

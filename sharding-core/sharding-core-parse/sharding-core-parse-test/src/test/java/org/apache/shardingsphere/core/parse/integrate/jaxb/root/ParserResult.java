@@ -26,7 +26,7 @@ import org.apache.shardingsphere.core.parse.integrate.jaxb.insert.ExpectedInsert
 import org.apache.shardingsphere.core.parse.integrate.jaxb.item.ExpectedSelectItems;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.meta.ExpectedTableMetaData;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.orderby.ExpectedOrderByColumn;
-import org.apache.shardingsphere.core.parse.integrate.jaxb.pagination.ExpectedPagination;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.pagination.ExpectedPaginationValue;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.table.ExpectedAlterTable;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.table.ExpectedTable;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.token.ExpectedTokens;
@@ -77,7 +77,10 @@ public final class ParserResult {
     private List<ExpectedGroupByColumn> groupByColumns = new LinkedList<>();
     
     @XmlElement 
-    private ExpectedPagination pagination;
+    private ExpectedPaginationValue offset;
+    
+    @XmlElement(name = "row-count")
+    private ExpectedPaginationValue rowCount;
     
     @XmlElement
     private ExpectedTableMetaData meta;

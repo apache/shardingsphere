@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.route.pagination;
 
 import lombok.Getter;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.NumberLiteralPaginationValueSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.ParameterMarkerPaginationValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.LimitValueSegment;
@@ -42,9 +41,9 @@ public final class Pagination {
     
     private final PaginationValue rowCount;
     
-    public Pagination(final PaginationSegment paginationSegment, final List<Object> parameters) {
-        offset = paginationSegment.getOffset().isPresent() ? createPaginationValue(paginationSegment.getOffset().get(), parameters) : null;
-        rowCount = paginationSegment.getRowCount().isPresent() ? createPaginationValue(paginationSegment.getRowCount().get(), parameters) : null;
+    public Pagination(final PaginationValueSegment offsetSegment, final PaginationValueSegment rowCountSegment, final List<Object> parameters) {
+        offset = null == offsetSegment ? null : createPaginationValue(offsetSegment, parameters);
+        rowCount = null == rowCountSegment ? null : createPaginationValue(rowCountSegment, parameters);
     }
     
     private PaginationValue createPaginationValue(final PaginationValueSegment paginationValueSegment, final List<Object> parameters) {
