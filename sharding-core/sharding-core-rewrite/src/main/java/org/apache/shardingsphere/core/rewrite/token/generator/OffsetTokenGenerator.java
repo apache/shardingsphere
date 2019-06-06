@@ -23,7 +23,10 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.Paginatio
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.rewrite.token.pojo.OffsetToken;
+import org.apache.shardingsphere.core.route.pagination.Pagination;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+
+import java.util.Collections;
 
 /**
  * Offset token generator.
@@ -38,7 +41,9 @@ public final class OffsetTokenGenerator implements OptionalSQLTokenGenerator<Sha
             return Optional.absent();
         }
         Optional<PaginationValueSegment> offsetSegment = getLiteralOffsetSegment((SelectStatement) sqlStatement);
-        return offsetSegment.isPresent() ? Optional.of(new OffsetToken(offsetSegment.get().getStartIndex(), offsetSegment.get().getStopIndex(), 0)) : Optional.<OffsetToken>absent();
+        return offsetSegment.isPresent()
+                ? Optional.of(new OffsetToken(offsetSegment.get().getStartIndex(), offsetSegment.get().getStopIndex(), getRevisedOffset((SelectStatement) sqlStatement, offsetSegment.get())))
+                : Optional.<OffsetToken>absent();
     }
     
     private Optional<PaginationValueSegment> getLiteralOffsetSegment(final SelectStatement selectStatement) {
@@ -47,5 +52,9 @@ public final class OffsetTokenGenerator implements OptionalSQLTokenGenerator<Sha
     
     private boolean isLiteralOffset(final SelectStatement selectStatement) {
         return null != selectStatement.getOffset() && selectStatement.getOffset() instanceof NumberLiteralPaginationValueSegment;
+    }
+    
+    private int getRevisedOffset(final SelectStatement sqlStatement, final PaginationValueSegment offsetSegment) {
+        return new Pagination(offsetSegment, sqlStatement.getRowCount(), Collections.emptyList()).getRevisedOffset();
     }
 }

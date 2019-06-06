@@ -138,7 +138,7 @@ public final class ShardingSQLRewriter implements SQLRewriter {
     }
     
     private void appendLimitOffsetPlaceholder(final SQLBuilder sqlBuilder, final OffsetToken offsetToken) {
-        sqlBuilder.appendPlaceholder(new LimitOffsetPlaceholder(offsetToken.getOffset()));
+        sqlBuilder.appendPlaceholder(new LimitOffsetPlaceholder(offsetToken.getRevisedOffset()));
     }
     
     private void appendOrderByPlaceholder(final SQLBuilder sqlBuilder) {

@@ -71,6 +71,15 @@ public final class Pagination {
     }
     
     /**
+     * Get revised offset.
+     *
+     * @return revised offset
+     */
+    public int getRevisedOffset() {
+        return 0;
+    }
+    
+    /**
      * Get revised row count.
      * 
      * @param selectStatement select statement

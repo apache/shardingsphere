@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.rewrite.token.pojo;
 import lombok.Getter;
 
 /**
- * Offset token for pagination.
+ * Offset token.
  *
  * @author zhangliang
  * @author panjuan
@@ -28,13 +28,13 @@ import lombok.Getter;
 @Getter
 public final class OffsetToken extends SQLToken implements Substitutable {
     
-    private final int offset;
-    
     private final int stopIndex;
     
-    public OffsetToken(final int startIndex, final int stopIndex, final int offset) {
+    private final int revisedOffset;
+    
+    public OffsetToken(final int startIndex, final int stopIndex, final int revisedOffset) {
         super(startIndex);
-        this.offset = offset;
         this.stopIndex = stopIndex;
+        this.revisedOffset = revisedOffset;
     }
 }
