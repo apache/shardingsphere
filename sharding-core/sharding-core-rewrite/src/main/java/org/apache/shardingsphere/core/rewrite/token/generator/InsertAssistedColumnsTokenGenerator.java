@@ -26,6 +26,7 @@ import org.apache.shardingsphere.core.rule.EncryptRule;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Insert assisted columns token generator.
@@ -35,7 +36,7 @@ import java.util.LinkedList;
 public final class InsertAssistedColumnsTokenGenerator implements OptionalSQLTokenGenerator<EncryptRule> {
     
     @Override
-    public Optional<InsertAssistedColumnsToken> generateSQLToken(final SQLStatement sqlStatement, final EncryptRule encryptRule) {
+    public Optional<InsertAssistedColumnsToken> generateSQLToken(final SQLStatement sqlStatement, final List<Object> parameters, final EncryptRule encryptRule) {
         Optional<InsertColumnsSegment> insertColumnsSegment = sqlStatement.findSQLSegment(InsertColumnsSegment.class);
         if (!(sqlStatement instanceof InsertStatement && insertColumnsSegment.isPresent())) {
             return Optional.absent();

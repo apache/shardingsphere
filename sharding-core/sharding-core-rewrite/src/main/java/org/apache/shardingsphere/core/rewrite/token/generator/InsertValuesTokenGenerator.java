@@ -25,6 +25,7 @@ import org.apache.shardingsphere.core.rewrite.token.pojo.InsertValuesToken;
 import org.apache.shardingsphere.core.rule.BaseRule;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Insert values token generator.
@@ -34,7 +35,7 @@ import java.util.Collection;
 public final class InsertValuesTokenGenerator implements OptionalSQLTokenGenerator<BaseRule> {
     
     @Override
-    public Optional<InsertValuesToken> generateSQLToken(final SQLStatement sqlStatement, final BaseRule baseRule) {
+    public Optional<InsertValuesToken> generateSQLToken(final SQLStatement sqlStatement, final List<Object> parameters, final BaseRule baseRule) {
         Collection<InsertValuesSegment> insertValuesSegments = sqlStatement.findSQLSegments(InsertValuesSegment.class);
         if (!(sqlStatement instanceof InsertStatement) || insertValuesSegments.isEmpty()) {
             return Optional.absent();

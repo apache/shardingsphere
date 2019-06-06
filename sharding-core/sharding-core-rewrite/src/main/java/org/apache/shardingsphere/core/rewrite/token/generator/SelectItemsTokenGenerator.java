@@ -31,6 +31,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Select items token generator.
@@ -40,7 +41,7 @@ import java.util.LinkedList;
 public final class SelectItemsTokenGenerator implements OptionalSQLTokenGenerator<ShardingRule> {
     
     @Override
-    public Optional<SelectItemsToken> generateSQLToken(final SQLStatement sqlStatement, final ShardingRule shardingRule) {
+    public Optional<SelectItemsToken> generateSQLToken(final SQLStatement sqlStatement, final List<Object> parameters, final ShardingRule shardingRule) {
         if (!(sqlStatement instanceof SelectStatement)) {
             return Optional.absent();
         }

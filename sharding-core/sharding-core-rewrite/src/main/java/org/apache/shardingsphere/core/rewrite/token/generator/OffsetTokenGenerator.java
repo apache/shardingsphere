@@ -26,7 +26,7 @@ import org.apache.shardingsphere.core.rewrite.token.pojo.OffsetToken;
 import org.apache.shardingsphere.core.route.pagination.Pagination;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
-import java.util.Collections;
+import java.util.List;
 
 /**
  * Offset token generator.
@@ -36,13 +36,13 @@ import java.util.Collections;
 public final class OffsetTokenGenerator implements OptionalSQLTokenGenerator<ShardingRule>, IgnoreForSingleRoute {
     
     @Override
-    public Optional<OffsetToken> generateSQLToken(final SQLStatement sqlStatement, final ShardingRule shardingRule) {
+    public Optional<OffsetToken> generateSQLToken(final SQLStatement sqlStatement, final List<Object> parameters, final ShardingRule shardingRule) {
         if (!(sqlStatement instanceof SelectStatement)) {
             return Optional.absent();
         }
-        Optional<PaginationValueSegment> offsetSegment = getLiteralOffsetSegment((SelectStatement) sqlStatement);
-        return offsetSegment.isPresent()
-                ? Optional.of(new OffsetToken(offsetSegment.get().getStartIndex(), offsetSegment.get().getStopIndex(), getRevisedOffset((SelectStatement) sqlStatement, offsetSegment.get())))
+        Optional<PaginationValueSegment> offset = getLiteralOffsetSegment((SelectStatement) sqlStatement);
+        return offset.isPresent()
+                ? Optional.of(new OffsetToken(offset.get().getStartIndex(), offset.get().getStopIndex(), getRevisedOffset((SelectStatement) sqlStatement, parameters, offset.get())))
                 : Optional.<OffsetToken>absent();
     }
     
@@ -54,7 +54,7 @@ public final class OffsetTokenGenerator implements OptionalSQLTokenGenerator<Sha
         return null != selectStatement.getOffset() && selectStatement.getOffset() instanceof NumberLiteralPaginationValueSegment;
     }
     
-    private int getRevisedOffset(final SelectStatement sqlStatement, final PaginationValueSegment offsetSegment) {
-        return new Pagination(offsetSegment, sqlStatement.getRowCount(), Collections.emptyList()).getRevisedOffset();
+    private int getRevisedOffset(final SelectStatement selectStatement, final List<Object> parameters, final PaginationValueSegment offsetSegment) {
+        return new Pagination(offsetSegment, selectStatement.getRowCount(), parameters).getRevisedOffset();
     }
 }

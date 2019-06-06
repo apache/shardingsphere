@@ -92,10 +92,10 @@ public final class ShardingSQLRewriter implements SQLRewriter {
             appendIndexPlaceholder(sqlBuilder, (IndexToken) sqlToken);
         } else if (sqlToken instanceof SelectItemsToken) {
             appendSelectItemsPlaceholder(sqlBuilder, (SelectItemsToken) sqlToken);
-        } else if (sqlToken instanceof RowCountToken) {
-            appendLimitRowCountPlaceholder(sqlBuilder, (RowCountToken) sqlToken);
         } else if (sqlToken instanceof OffsetToken) {
-            appendLimitOffsetPlaceholder(sqlBuilder, (OffsetToken) sqlToken);
+            appendOffsetPlaceholder(sqlBuilder, (OffsetToken) sqlToken);
+        } else if (sqlToken instanceof RowCountToken) {
+            appendRowCountPlaceholder(sqlBuilder, (RowCountToken) sqlToken);
         } else if (sqlToken instanceof OrderByToken) {
             appendOrderByPlaceholder(sqlBuilder);
         } else if (sqlToken instanceof AggregationDistinctToken) {
@@ -133,12 +133,12 @@ public final class ShardingSQLRewriter implements SQLRewriter {
         }
     }
     
-    private void appendLimitRowCountPlaceholder(final SQLBuilder sqlBuilder, final RowCountToken rowCountToken) {
-        sqlBuilder.appendPlaceholder(new LimitRowCountPlaceholder(sqlRouteResult.getPagination().getRevisedRowCount((SelectStatement) sqlRouteResult.getSqlStatement())));
+    private void appendOffsetPlaceholder(final SQLBuilder sqlBuilder, final OffsetToken offsetToken) {
+        sqlBuilder.appendPlaceholder(new LimitOffsetPlaceholder(offsetToken.getRevisedOffset()));
     }
     
-    private void appendLimitOffsetPlaceholder(final SQLBuilder sqlBuilder, final OffsetToken offsetToken) {
-        sqlBuilder.appendPlaceholder(new LimitOffsetPlaceholder(offsetToken.getRevisedOffset()));
+    private void appendRowCountPlaceholder(final SQLBuilder sqlBuilder, final RowCountToken rowCountToken) {
+        sqlBuilder.appendPlaceholder(new LimitRowCountPlaceholder(rowCountToken.getRevisedRowCount()));
     }
     
     private void appendOrderByPlaceholder(final SQLBuilder sqlBuilder) {
