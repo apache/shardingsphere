@@ -43,12 +43,7 @@ public final class TopAndRowNumberDecoratorMergedResult extends DecoratorMergedR
     }
     
     private boolean skipOffset() throws SQLException {
-        int end;
-        if (null == pagination.getOffsetSegment()) {
-            end = 0;
-        } else {
-            end = pagination.getOffsetSegment().isBoundOpened() ? pagination.getActualOffset() - 1 : pagination.getActualOffset();
-        }
+        int end = pagination.getActualOffset();
         for (int i = 0; i < end; i++) {
             if (!getMergedResult().next()) {
                 return true;

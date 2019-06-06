@@ -58,6 +58,18 @@ public final class Pagination {
     }
     
     /**
+     * Get actual offset.
+     * 
+     * @return actual offset
+     */
+    public int getActualOffset() {
+        if (null == offsetSegment) {
+            return 0;
+        }
+        return offsetSegment.isBoundOpened() ? actualOffset - 1 : actualOffset;
+    }
+    
+    /**
      * Get revised offset.
      *
      * @return revised offset
