@@ -48,7 +48,6 @@ import org.apache.shardingsphere.core.rewrite.token.pojo.SelectItemPrefixToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SelectItemsToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.TableToken;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
-import org.apache.shardingsphere.core.route.pagination.Pagination;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
@@ -135,16 +134,7 @@ public final class ShardingSQLRewriter implements SQLRewriter {
     }
     
     private void appendLimitRowCountPlaceholder(final SQLBuilder sqlBuilder, final RowCountToken rowCountToken) {
-        SelectStatement selectStatement = (SelectStatement) sqlRouteResult.getSqlStatement();
-        sqlBuilder.appendPlaceholder(new LimitRowCountPlaceholder(getRowCount(selectStatement, sqlRouteResult.getPagination())));
-    }
-    
-    private int getRowCount(final SelectStatement selectStatement, final Pagination pagination) {
-        return isMaxRowCount(selectStatement) ? Integer.MAX_VALUE : pagination.getRevisedRowCount();
-    }
-    
-    private boolean isMaxRowCount(final SelectStatement selectStatement) {
-        return (!selectStatement.getGroupByItems().isEmpty() || !selectStatement.getAggregationSelectItems().isEmpty()) && !selectStatement.isSameGroupByAndOrderByItems();
+        sqlBuilder.appendPlaceholder(new LimitRowCountPlaceholder(sqlRouteResult.getPagination().getRevisedRowCount((SelectStatement) sqlRouteResult.getSqlStatement())));
     }
     
     private void appendLimitOffsetPlaceholder(final SQLBuilder sqlBuilder, final OffsetToken offsetToken) {

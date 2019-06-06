@@ -22,6 +22,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.NumberLit
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.ParameterMarkerPaginationValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.LimitValueSegment;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 
 import java.util.HashMap;
 import java.util.List;
@@ -74,16 +75,16 @@ public final class Pagination {
     /**
      * Get revise parameters.
      * 
-     * @param isMaxRowCount is max row count
+     * @param selectStatement select statement
      * @return revised parameters and parameters' indexes
      */
-    public Map<Integer, Object> getRevisedParameters(final boolean isMaxRowCount) {
+    public Map<Integer, Object> getRevisedParameters(final SelectStatement selectStatement) {
         Map<Integer, Object> result = new HashMap<>(2, 1);
         if (null != offset && offset.getSegment() instanceof ParameterMarkerPaginationValueSegment) {
             result.put(((ParameterMarkerPaginationValueSegment) offset.getSegment()).getParameterIndex(), 0);
         }
         if (null != rowCount && rowCount.getSegment() instanceof ParameterMarkerPaginationValueSegment) {
-            result.put(((ParameterMarkerPaginationValueSegment) rowCount.getSegment()).getParameterIndex(), isMaxRowCount ? Integer.MAX_VALUE : getRevisedRowCount());
+            result.put(((ParameterMarkerPaginationValueSegment) rowCount.getSegment()).getParameterIndex(), getRevisedRowCount(selectStatement));
         }
         return result;
     }
@@ -91,9 +92,17 @@ public final class Pagination {
     /**
      * Get revised row count.
      * 
+     * @param selectStatement select statement
      * @return revised row count
      */
-    public int getRevisedRowCount() {
+    public int getRevisedRowCount(final SelectStatement selectStatement) {
+        if (isMaxRowCount(selectStatement)) {
+            return Integer.MAX_VALUE;
+        }
         return rowCount.getSegment() instanceof LimitValueSegment ? getOffsetValue() + rowCount.getValue() : rowCount.getValue();
+    }
+    
+    private boolean isMaxRowCount(final SelectStatement selectStatement) {
+        return (!selectStatement.getGroupByItems().isEmpty() || !selectStatement.getAggregationSelectItems().isEmpty()) && !selectStatement.isSameGroupByAndOrderByItems();
     }
 }

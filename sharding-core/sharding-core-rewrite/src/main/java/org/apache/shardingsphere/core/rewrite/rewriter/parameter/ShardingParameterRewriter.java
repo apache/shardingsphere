@@ -40,7 +40,6 @@ public final class ShardingParameterRewriter implements ParameterRewriter {
     }
     
     private void rewriteLimit(final SelectStatement selectStatement, final ParameterBuilder parameterBuilder) {
-        boolean isMaxRowCount = (!selectStatement.getGroupByItems().isEmpty() || !selectStatement.getAggregationSelectItems().isEmpty()) && !selectStatement.isSameGroupByAndOrderByItems();
-        parameterBuilder.getReplacedIndexAndParameters().putAll(sqlRouteResult.getPagination().getRevisedParameters(isMaxRowCount));
+        parameterBuilder.getReplacedIndexAndParameters().putAll(sqlRouteResult.getPagination().getRevisedParameters(selectStatement));
     }
 }
