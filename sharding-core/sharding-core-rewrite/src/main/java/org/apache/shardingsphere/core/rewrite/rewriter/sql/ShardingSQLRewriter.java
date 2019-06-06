@@ -136,13 +136,10 @@ public final class ShardingSQLRewriter implements SQLRewriter {
     
     private void appendLimitRowCountPlaceholder(final SQLBuilder sqlBuilder, final RowCountToken rowCountToken) {
         SelectStatement selectStatement = (SelectStatement) sqlRouteResult.getSqlStatement();
-        sqlBuilder.appendPlaceholder(new LimitRowCountPlaceholder(getRowCount(rowCountToken, isRewrite(), selectStatement, sqlRouteResult.getPagination())));
+        sqlBuilder.appendPlaceholder(new LimitRowCountPlaceholder(getRowCount(selectStatement, sqlRouteResult.getPagination())));
     }
     
-    private int getRowCount(final RowCountToken rowCountToken, final boolean isRewrite, final SelectStatement selectStatement, final Pagination pagination) {
-        if (!isRewrite) {
-            return rowCountToken.getRowCount();
-        }
+    private int getRowCount(final SelectStatement selectStatement, final Pagination pagination) {
         return isMaxRowCount(selectStatement) ? Integer.MAX_VALUE : pagination.getRevisedRowCount();
     }
     
