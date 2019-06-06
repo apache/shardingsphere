@@ -35,7 +35,7 @@ public final class ShardingParameterRewriter implements ParameterRewriter {
     
     @Override
     public void rewrite(final ParameterBuilder parameterBuilder) {
-        if (sqlRouteResult.getSqlStatement() instanceof SelectStatement && null != sqlRouteResult.getPagination()) {
+        if (isNeedRewritePagination()) {
             if (null != sqlRouteResult.getPagination().getOffset() && sqlRouteResult.getPagination().getOffset().getSegment() instanceof ParameterMarkerPaginationValueSegment) {
                 rewriteOffset(parameterBuilder, (ParameterMarkerPaginationValueSegment) sqlRouteResult.getPagination().getOffset().getSegment());
             }
@@ -43,6 +43,10 @@ public final class ShardingParameterRewriter implements ParameterRewriter {
                 rewriteRowCount(parameterBuilder, (ParameterMarkerPaginationValueSegment) sqlRouteResult.getPagination().getRowCount().getSegment());
             }
         }
+    }
+    
+    private boolean isNeedRewritePagination() {
+        return sqlRouteResult.getSqlStatement() instanceof SelectStatement && null != sqlRouteResult.getPagination() && !sqlRouteResult.getRoutingResult().isSingleRouting();
     }
     
     private void rewriteOffset(final ParameterBuilder parameterBuilder, final ParameterMarkerPaginationValueSegment offsetSegment) {
