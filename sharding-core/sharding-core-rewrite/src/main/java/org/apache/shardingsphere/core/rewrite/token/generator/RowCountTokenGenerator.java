@@ -47,11 +47,7 @@ public final class RowCountTokenGenerator implements OptionalSQLTokenGenerator<S
     }
     
     private Optional<PaginationValueSegment> getLiteralRowCountSegment(final SelectStatement selectStatement) {
-        return isLiteralRowCount(selectStatement) ? Optional.of(selectStatement.getRowCount()) : Optional.<PaginationValueSegment>absent();
-    }
-    
-    private boolean isLiteralRowCount(final SelectStatement selectStatement) {
-        return null != selectStatement.getRowCount() && selectStatement.getRowCount() instanceof NumberLiteralPaginationValueSegment;
+        return selectStatement.getRowCount() instanceof NumberLiteralPaginationValueSegment ? Optional.of(selectStatement.getRowCount()) : Optional.<PaginationValueSegment>absent();
     }
     
     private int getRevisedRowCount(final SelectStatement selectStatement, final List<Object> parameters, final PaginationValueSegment rowCountSegment) {
