@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.route.pagination;
 
+import com.google.common.base.Optional;
 import lombok.Getter;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.NumberLiteralPaginationValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationValueSegment;
@@ -42,13 +43,13 @@ public final class Pagination {
     
     private final int actualOffset;
     
-    private final int actualRowCount;
+    private final Integer actualRowCount;
     
     public Pagination(final PaginationValueSegment offsetSegment, final PaginationValueSegment rowCountSegment, final List<Object> parameters) {
         this.offsetSegment = offsetSegment;
         this.rowCountSegment = rowCountSegment;
         actualOffset = null == offsetSegment ? 0 : getValue(offsetSegment, parameters);
-        actualRowCount = null == rowCountSegment ? -1 : getValue(rowCountSegment, parameters); 
+        actualRowCount = null == rowCountSegment ? null : getValue(rowCountSegment, parameters); 
     }
     
     private int getValue(final PaginationValueSegment paginationValueSegment, final List<Object> parameters) {
@@ -67,6 +68,15 @@ public final class Pagination {
             return 0;
         }
         return offsetSegment.isBoundOpened() ? actualOffset - 1 : actualOffset;
+    }
+    
+    /**
+     * Get actual row count.
+     *
+     * @return actual row count
+     */
+    public Optional<Integer> getActualRowCount() {
+        return Optional.fromNullable(actualRowCount);
     }
     
     /**

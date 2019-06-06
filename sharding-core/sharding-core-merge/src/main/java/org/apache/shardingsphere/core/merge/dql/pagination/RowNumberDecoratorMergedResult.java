@@ -58,12 +58,12 @@ public final class RowNumberDecoratorMergedResult extends DecoratorMergedResult 
         if (skipAll) {
             return false;
         }
-        if (pagination.getActualRowCount() < 0) {
+        if (!pagination.getActualRowCount().isPresent()) {
             return getMergedResult().next();
         }
         if (pagination.getRowCountSegment().isBoundOpened()) {
-            return rowNumber++ <= pagination.getActualRowCount() && getMergedResult().next();
+            return rowNumber++ <= pagination.getActualRowCount().get() && getMergedResult().next();
         }
-        return rowNumber++ < pagination.getActualRowCount() && getMergedResult().next();
+        return rowNumber++ < pagination.getActualRowCount().get() && getMergedResult().next();
     }
 }

@@ -58,9 +58,9 @@ public final class TopAndRowNumberDecoratorMergedResult extends DecoratorMergedR
         if (skipAll) {
             return false;
         }
-        if (pagination.getActualRowCount() < 0) {
+        if (!pagination.getActualRowCount().isPresent()) {
             return getMergedResult().next();
         }
-        return rowNumber++ <= pagination.getActualRowCount() && getMergedResult().next();
+        return rowNumber++ <= pagination.getActualRowCount().get() && getMergedResult().next();
     }
 }
