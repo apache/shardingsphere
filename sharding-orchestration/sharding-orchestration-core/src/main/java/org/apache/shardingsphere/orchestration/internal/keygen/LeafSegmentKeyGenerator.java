@@ -22,9 +22,9 @@ import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
-import org.apache.curator.framework.recipes.locks.InterProcessMutex;
+import org.apache.shardingsphere.orchestration.internal.registry.RegistryCenterServiceLoader;
+import org.apache.shardingsphere.orchestration.reg.api.RegistryCenter;
 import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
-import org.apache.shardingsphere.orchestration.reg.zookeeper.curator.CuratorZookeeperRegistryCenter;
 import org.apache.shardingsphere.spi.keygen.ShardingKeyGenerator;
 
 import java.util.Properties;
@@ -51,11 +51,13 @@ public final class LeafSegmentKeyGenerator implements ShardingKeyGenerator {
 
     private static final String INITIAL_VALUE = "1";
 
+    private static final String DEFAULT_REGISTRY_CENTER = "zookeeper";
+
     private static final float THRESHOLD = 0.5F;
 
     private boolean isInitialized = Boolean.FALSE;
 
-    private CuratorZookeeperRegistryCenter leafRegistryCenter;
+    private RegistryCenter leafRegistryCenter;
 
     private long id;
 
@@ -87,14 +89,14 @@ public final class LeafSegmentKeyGenerator implements ShardingKeyGenerator {
     }
 
     private void initLeafSegmentKeyGenerator(final String leafKey) {
-        leafRegistryCenter = new CuratorZookeeperRegistryCenter();
         RegistryCenterConfiguration leafConfiguration = getRegistryCenterConfiguration();
-        leafRegistryCenter.init(leafConfiguration);
+        leafRegistryCenter = new RegistryCenterServiceLoader().load(leafConfiguration);
         if (leafRegistryCenter.isExisted(leafKey)) {
             id = incrementCacheId(leafKey, getStep());
         } else {
             id = getInitialValue();
             leafRegistryCenter.persist(leafKey, String.valueOf(id));
+            leafRegistryCenter.initLock(leafKey);
         }
         incrementCacheIdExecutor = Executors.newSingleThreadExecutor();
         cacheIdQueue = new SynchronousQueue<>();
@@ -113,7 +115,7 @@ public final class LeafSegmentKeyGenerator implements ShardingKeyGenerator {
     }
 
     private RegistryCenterConfiguration getRegistryCenterConfiguration() {
-        RegistryCenterConfiguration result = new RegistryCenterConfiguration(TYPE, properties);
+        RegistryCenterConfiguration result = new RegistryCenterConfiguration(getRegistryCenterType(), properties);
         result.setNamespace(NAMESPACE);
         result.setServerLists(getServerList());
         result.setDigest(getDigest());
@@ -132,12 +134,11 @@ public final class LeafSegmentKeyGenerator implements ShardingKeyGenerator {
 
     @SneakyThrows
     private long incrementCacheId(final String leafKey, final long step) {
-        InterProcessMutex lock = leafRegistryCenter.initLock(leafKey);
         long result = Long.MIN_VALUE;
-        boolean lockIsAcquired = leafRegistryCenter.tryLock(lock);
+        boolean lockIsAcquired = leafRegistryCenter.tryLock();
         if (lockIsAcquired) {
             result = updateCacheIdInCenter(leafKey, step);
-            leafRegistryCenter.tryRelease(lock);
+            leafRegistryCenter.tryRelease();
         }
         return result;
     }
@@ -176,7 +177,7 @@ public final class LeafSegmentKeyGenerator implements ShardingKeyGenerator {
     }
 
     private String getLeafKey() {
-        String leafKey = properties.getProperty("leaf.key");
+        String leafKey = properties.getProperty("leafKey");
         Preconditions.checkArgument(!Strings.isNullOrEmpty(leafKey));
         Preconditions.checkArgument(leafKey.matches(REGULAR_PATTERN));
         return SLANTING_BAR + leafKey;
@@ -190,6 +191,12 @@ public final class LeafSegmentKeyGenerator implements ShardingKeyGenerator {
 
     private String getDigest() {
         return properties.getProperty("digest");
+    }
+
+    private String getRegistryCenterType() {
+        String result = properties.getProperty("registryCenterType",DEFAULT_REGISTRY_CENTER);
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(result));
+        return result;
     }
 
 }

@@ -62,6 +62,8 @@ public final class CuratorZookeeperRegistryCenter implements RegistryCenter {
     private final Map<String, TreeCache> caches = new HashMap<>();
     
     private CuratorFramework client;
+
+    private InterProcessMutex leafLock;
     
     @Getter
     @Setter
@@ -293,35 +295,21 @@ public final class CuratorZookeeperRegistryCenter implements RegistryCenter {
         return "zookeeper";
     }
 
-    /**
-     * Initialize the lock of the key.
-     *
-     * @param key key of data
-     * @return the lock of the key
-     */
-    public InterProcessMutex initLock(final String key) {
-        return new InterProcessMutex(client, key);
+    @Override
+    public void initLock(final String key) {
+        leafLock = new InterProcessMutex(client, key);
     }
 
-    /**
-     * Try to get the lock of the key.
-     *
-     * @param lock lock of key
-     * @return get the lock or not
-     */
+    @Override
     @SneakyThrows
-    public boolean tryLock(final InterProcessMutex lock) {
-        return lock.acquire(5, TimeUnit.SECONDS);
+    public boolean tryLock() {
+        return leafLock.acquire(5, TimeUnit.SECONDS);
     }
 
-    /**
-     * Try to release the lock of the key.
-     *
-     * @param lock lock of key
-     */
+    @Override
     @SneakyThrows
-    public void tryRelease(final InterProcessMutex lock) {
-        lock.release();
+    public void tryRelease() {
+        leafLock.release();
     }
 
 }
