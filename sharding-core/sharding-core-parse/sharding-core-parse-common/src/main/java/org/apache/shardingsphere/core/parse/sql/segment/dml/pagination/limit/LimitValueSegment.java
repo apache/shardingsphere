@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationValueSegment;
 
 /**
@@ -25,9 +27,16 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.Paginatio
  * @author zhangliang
  * @author panjuan
  */
-public abstract class LimitValueSegment extends PaginationValueSegment {
+@RequiredArgsConstructor
+@Getter
+public abstract class LimitValueSegment implements PaginationValueSegment {
     
-    public LimitValueSegment(final int startIndex, final int stopIndex) {
-        super(startIndex, stopIndex, false);
+    private final int startIndex;
+    
+    private final int stopIndex;
+    
+    @Override
+    public final boolean isBoundOpened() {
+        return false;
     }
 }

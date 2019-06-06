@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.core.parse.sql.segment.dml.pagination;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 
 /**
@@ -27,13 +25,12 @@ import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
  * @author zhangliang
  * @author panjuan
  */
-@RequiredArgsConstructor
-@Getter
-public abstract class PaginationValueSegment implements SQLSegment {
+public interface PaginationValueSegment extends SQLSegment {
     
-    private final int startIndex;
-    
-    private final int stopIndex;
-    
-    private final boolean boundOpened;
+    /**
+     * Is bound opened.
+     * 
+     * @return bound opened
+     */
+    boolean isBoundOpened();
 }
