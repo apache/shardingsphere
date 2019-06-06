@@ -36,38 +36,25 @@ import java.util.List;
 @Getter
 public final class Pagination {
     
-    private final PaginationValue offset;
+    private final PaginationValueSegment offsetSegment;
     
-    private final PaginationValue rowCount;
+    private final PaginationValueSegment rowCountSegment;
+    
+    private final int actualOffset;
+    
+    private final int actualRowCount;
     
     public Pagination(final PaginationValueSegment offsetSegment, final PaginationValueSegment rowCountSegment, final List<Object> parameters) {
-        offset = null == offsetSegment ? null : createPaginationValue(offsetSegment, parameters);
-        rowCount = null == rowCountSegment ? null : createPaginationValue(rowCountSegment, parameters);
+        this.offsetSegment = offsetSegment;
+        this.rowCountSegment = rowCountSegment;
+        actualOffset = null == offsetSegment ? 0 : getValue(offsetSegment, parameters);
+        actualRowCount = null == rowCountSegment ? -1 : getValue(rowCountSegment, parameters); 
     }
     
-    private PaginationValue createPaginationValue(final PaginationValueSegment paginationValueSegment, final List<Object> parameters) {
-        int segmentValue = paginationValueSegment instanceof ParameterMarkerPaginationValueSegment
+    private int getValue(final PaginationValueSegment paginationValueSegment, final List<Object> parameters) {
+        return paginationValueSegment instanceof ParameterMarkerPaginationValueSegment
                 ? (int) parameters.get(((ParameterMarkerPaginationValueSegment) paginationValueSegment).getParameterIndex())
                 : ((NumberLiteralPaginationValueSegment) paginationValueSegment).getValue();
-        return new PaginationValue(paginationValueSegment, segmentValue);
-    }
-    
-    /**
-     * Get offset value.
-     * 
-     * @return offset value
-     */
-    public int getOffsetValue() {
-        return null != offset ? offset.getValue() : 0;
-    }
-    
-    /**
-     * Get row count value.
-     *
-     * @return row count value
-     */
-    public int getRowCountValue() {
-        return null != rowCount ? rowCount.getValue() : -1;
     }
     
     /**
@@ -89,7 +76,7 @@ public final class Pagination {
         if (isMaxRowCount(selectStatement)) {
             return Integer.MAX_VALUE;
         }
-        return rowCount.getSegment() instanceof LimitValueSegment ? getOffsetValue() + rowCount.getValue() : rowCount.getValue();
+        return rowCountSegment instanceof LimitValueSegment ? actualOffset + actualRowCount : actualRowCount;
     }
     
     private boolean isMaxRowCount(final SelectStatement selectStatement) {

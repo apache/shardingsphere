@@ -44,10 +44,10 @@ public final class RowNumberDecoratorMergedResult extends DecoratorMergedResult 
     
     private boolean skipOffset() throws SQLException {
         int end;
-        if (null == pagination.getOffset()) {
+        if (null == pagination.getOffsetSegment()) {
             end = 0;
         } else {
-            end = pagination.getOffset().getSegment().isBoundOpened() ? pagination.getOffsetValue() - 1 : pagination.getOffsetValue();
+            end = pagination.getOffsetSegment().isBoundOpened() ? pagination.getActualOffset() - 1 : pagination.getActualOffset();
         }
         for (int i = 0; i < end; i++) {
             if (!getMergedResult().next()) {
@@ -63,12 +63,12 @@ public final class RowNumberDecoratorMergedResult extends DecoratorMergedResult 
         if (skipAll) {
             return false;
         }
-        if (pagination.getRowCountValue() < 0) {
+        if (pagination.getActualRowCount() < 0) {
             return getMergedResult().next();
         }
-        if (pagination.getRowCount().getSegment().isBoundOpened()) {
-            return rowNumber++ <= pagination.getRowCountValue() && getMergedResult().next();
+        if (pagination.getRowCountSegment().isBoundOpened()) {
+            return rowNumber++ <= pagination.getActualRowCount() && getMergedResult().next();
         }
-        return rowNumber++ < pagination.getRowCountValue() && getMergedResult().next();
+        return rowNumber++ < pagination.getActualRowCount() && getMergedResult().next();
     }
 }

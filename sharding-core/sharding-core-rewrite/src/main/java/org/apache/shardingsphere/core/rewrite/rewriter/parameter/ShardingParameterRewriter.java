@@ -36,11 +36,11 @@ public final class ShardingParameterRewriter implements ParameterRewriter {
     @Override
     public void rewrite(final ParameterBuilder parameterBuilder) {
         if (isNeedRewritePagination()) {
-            if (null != sqlRouteResult.getPagination().getOffset() && sqlRouteResult.getPagination().getOffset().getSegment() instanceof ParameterMarkerPaginationValueSegment) {
-                rewriteOffset(parameterBuilder, (ParameterMarkerPaginationValueSegment) sqlRouteResult.getPagination().getOffset().getSegment());
+            if (null != sqlRouteResult.getPagination().getOffsetSegment() && sqlRouteResult.getPagination().getOffsetSegment() instanceof ParameterMarkerPaginationValueSegment) {
+                rewriteOffset(parameterBuilder, (ParameterMarkerPaginationValueSegment) sqlRouteResult.getPagination().getOffsetSegment());
             }
-            if (null != sqlRouteResult.getPagination().getRowCount() && sqlRouteResult.getPagination().getRowCount().getSegment() instanceof ParameterMarkerPaginationValueSegment) {
-                rewriteRowCount(parameterBuilder, (ParameterMarkerPaginationValueSegment) sqlRouteResult.getPagination().getRowCount().getSegment());
+            if (null != sqlRouteResult.getPagination().getRowCountSegment() && sqlRouteResult.getPagination().getRowCountSegment() instanceof ParameterMarkerPaginationValueSegment) {
+                rewriteRowCount(parameterBuilder, (ParameterMarkerPaginationValueSegment) sqlRouteResult.getPagination().getRowCountSegment());
             }
         }
     }
