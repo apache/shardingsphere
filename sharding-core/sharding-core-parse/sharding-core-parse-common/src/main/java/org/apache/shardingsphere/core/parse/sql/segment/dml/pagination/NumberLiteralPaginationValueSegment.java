@@ -17,14 +17,12 @@
 
 package org.apache.shardingsphere.core.parse.sql.segment.dml.pagination;
 
-import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
-
 /**
  * Pagination value segment for number literal.
  * 
  * @author zhangliang
  */
-public interface NumberLiteralPaginationValueSegment extends SQLSegment {
+public interface NumberLiteralPaginationValueSegment extends PaginationValueSegment {
     
     /**
      * Get value.

@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.rownum;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationValueSegment;
 
 /**
@@ -24,9 +26,13 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.Paginatio
  * 
  * @author zhangliang
  */
-public abstract class RowNumberValueSegment extends PaginationValueSegment {
+@RequiredArgsConstructor
+@Getter
+public abstract class RowNumberValueSegment implements PaginationValueSegment {
     
-    public RowNumberValueSegment(final int startIndex, final int stopIndex, final boolean boundOpened) {
-        super(startIndex, stopIndex, boundOpened);
-    }
+    private final int startIndex;
+    
+    private final int stopIndex;
+    
+    private final boolean boundOpened;
 }
