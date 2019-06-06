@@ -53,13 +53,13 @@ public final class MemoryQueryResult implements QueryResult {
     @SneakyThrows
     public MemoryQueryResult(final ResultSet resultSet, final ShardingRule shardingRule) {
         resultData = getResultData(resultSet);
-        metaData = new QueryResultMetaData(resultSet.getMetaData(), shardingRule, shardingRule.getEncryptRule().getEncryptorEngine());
+        metaData = new QueryResultMetaData(resultSet.getMetaData(), shardingRule);
     }
     
     @SneakyThrows
     public MemoryQueryResult(final ResultSet resultSet, final EncryptRule encryptRule) {
         resultData = getResultData(resultSet);
-        metaData = new QueryResultMetaData(resultSet.getMetaData(), null, encryptRule.getEncryptorEngine());
+        metaData = new QueryResultMetaData(resultSet.getMetaData(), encryptRule);
     }
     
     @SneakyThrows
