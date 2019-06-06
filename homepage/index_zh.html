@@ -231,9 +231,10 @@
             <div class="l-m-tit">分布式事务</div>
             <hr class="l-m-tit-hr" />
             <div class="l-m-info">
-              <p>标准化事务接口</p>
-              <p>两阶段提交事务</p>
-              <p>柔性事务</p>
+              <p>原生事务接口自动转化分布式事务</p>
+              <p>XA事务和柔性事务自由切换</p>
+              <p>原生数据源接口自动转换XA接口</p>
+              <p>柔性事务自动补偿，无需用户实现补偿接口</p>
             </div>
           </div>
           <img
@@ -249,10 +250,23 @@
             <div class="l-m-tit">数据库治理</div>
             <hr class="l-m-tit-hr" />
             <div class="l-m-info">
-              <p>配置动态化</p>
-              <p>编排 & 治理</p>
-              <p>数据脱敏</p>
-              <p>可视化链路追踪</p>
+              <p>
+                服务治理
+                <li>配置动态化</li>
+                <li>高可用</li>
+                <li>熔断 & 禁用</li>
+              </p>
+              <p>
+                数据治理
+                <li>数据脱敏</li>
+                <li>权限</li>
+              </p>
+              <p>可观察性
+                <li>APM</li>
+                <li>链路追踪</li>
+                <li>调用拓扑</li>
+                <li>OpenTracing对接</li>
+              </p>
               <p>弹性伸缩 (规划中)</p>
             </div>
           </div>
