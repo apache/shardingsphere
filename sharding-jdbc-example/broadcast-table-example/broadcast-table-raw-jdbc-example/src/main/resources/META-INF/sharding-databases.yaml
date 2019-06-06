@@ -18,7 +18,7 @@ shardingRule:
         type: SNOWFLAKE
         column: id
         props:
-          worker.id: 123abc
+          worker.id: 123
   defaultDatabaseStrategy:
     inline:
       shardingColumn: id

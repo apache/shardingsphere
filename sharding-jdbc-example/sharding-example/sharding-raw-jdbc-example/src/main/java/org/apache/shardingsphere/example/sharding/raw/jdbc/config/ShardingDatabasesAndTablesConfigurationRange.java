@@ -59,7 +59,7 @@ public final class ShardingDatabasesAndTablesConfigurationRange implements Examp
     private static TableRuleConfiguration getOrderItemTableRuleConfiguration() {
         TableRuleConfiguration result = new TableRuleConfiguration("t_order_item", "demo_ds_${0..1}.t_order_item_${[0, 1]}");
         Properties properties = new Properties();
-        properties.setProperty("worker.id", "123abc");
+        properties.setProperty("worker.id", "123");
         result.setKeyGeneratorConfig(new KeyGeneratorConfiguration("SNOWFLAKE", "order_item_id", getProperties()));
         return result;
     }
@@ -73,7 +73,7 @@ public final class ShardingDatabasesAndTablesConfigurationRange implements Examp
     
     private static Properties getProperties() {
         Properties result = new Properties();
-        result.setProperty("worker.id", "123abc");
+        result.setProperty("worker.id", "123");
         return result;
     }
 }

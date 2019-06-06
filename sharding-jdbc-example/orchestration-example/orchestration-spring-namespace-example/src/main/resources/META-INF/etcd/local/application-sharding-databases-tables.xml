@@ -54,7 +54,7 @@
     <sharding:inline-strategy id="orderItemTableStrategy" sharding-column="order_id" algorithm-expression="t_order_item_${order_id % 2}" />
     
     <bean:properties id="properties">
-        <prop key="worker.id">123abc</prop>
+        <prop key="worker.id">123</prop>
     </bean:properties>
     
     <sharding:key-generator id="orderKeyGenerator" type="SNOWFLAKE" column="order_id" props-ref="properties" />

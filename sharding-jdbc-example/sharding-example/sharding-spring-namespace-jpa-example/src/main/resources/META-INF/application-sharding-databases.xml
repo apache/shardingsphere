@@ -51,7 +51,7 @@
     <sharding:inline-strategy id="databaseStrategy" sharding-column="user_id" algorithm-expression="demo_ds_${user_id % 2}" />
     
     <bean:properties id="properties">
-        <prop key="worker.id">123abc</prop>
+        <prop key="worker.id">123</prop>
     </bean:properties>
     
     <sharding:key-generator id="orderKeyGenerator" type="SNOWFLAKE" column="order_id" props-ref="properties" />

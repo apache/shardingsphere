@@ -89,7 +89,7 @@ public final class LocalShardingMasterSlaveConfiguration implements ExampleConfi
     
     private static KeyGeneratorConfiguration getKeyGeneratorConfiguration() {
         Properties properties = new Properties();
-        properties.setProperty("worker.id", "123abc");
+        properties.setProperty("worker.id", "123");
         return new KeyGeneratorConfiguration("SNOWFLAKE", "order_id", properties);
     }
 }
