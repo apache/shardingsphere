@@ -23,7 +23,6 @@ import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.dal.DALMergeEngine;
 import org.apache.shardingsphere.core.merge.dql.DQLMergeEngine;
 import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
-import org.apache.shardingsphere.core.parse.sql.context.limit.Limit;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
@@ -61,10 +60,9 @@ public final class MergeEngineFactoryTest {
     @Test
     public void assertNewInstanceWithSelectStatement() throws SQLException {
         SQLRouteResult routeResult = new SQLRouteResult(new SelectStatement());
-        routeResult.setLimit(new Limit());
         assertThat(MergeEngineFactory.newInstance(DatabaseType.MySQL, null, routeResult, null, queryResults), instanceOf(DQLMergeEngine.class));
     }
-
+    
     @Test
     public void assertNewInstanceWithDALStatement() throws SQLException {
         SQLRouteResult routeResult = new SQLRouteResult(new DALStatement());

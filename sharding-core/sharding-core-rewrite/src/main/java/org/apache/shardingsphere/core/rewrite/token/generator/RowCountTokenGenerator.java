@@ -18,36 +18,43 @@
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.LimitValueSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.NumberLiteralLimitValueSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.NumberLiteralPaginationValueSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationValueSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.core.parse.sql.token.impl.RowCountToken;
+import org.apache.shardingsphere.core.rewrite.token.pojo.RowCountToken;
+import org.apache.shardingsphere.core.route.pagination.Pagination;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+
+import java.util.List;
 
 /**
  * Row count token generator.
  *
  * @author panjuan
  */
-public final class RowCountTokenGenerator implements OptionalSQLTokenGenerator<ShardingRule> {
+public final class RowCountTokenGenerator implements OptionalSQLTokenGenerator<ShardingRule>, IgnoreForSingleRoute {
     
     @Override
-    public Optional<RowCountToken> generateSQLToken(final SQLStatement sqlStatement, final ShardingRule shardingRule) {
+    public Optional<RowCountToken> generateSQLToken(final SQLStatement sqlStatement, final List<Object> parameters, final ShardingRule shardingRule) {
         if (!(sqlStatement instanceof SelectStatement)) {
             return Optional.absent();
         }
-        Optional<LimitValueSegment> rowCountSegment = getLiteralRowCountSegment((SelectStatement) sqlStatement);
-        return rowCountSegment.isPresent()
-                ? Optional.of(new RowCountToken(rowCountSegment.get().getStartIndex(), rowCountSegment.get().getStopIndex(), ((NumberLiteralLimitValueSegment) rowCountSegment.get()).getValue()))
+        Optional<PaginationValueSegment> rowCount = getLiteralRowCountSegment((SelectStatement) sqlStatement);
+        return rowCount.isPresent()
+                ? Optional.of(new RowCountToken(rowCount.get().getStartIndex(), rowCount.get().getStopIndex(), getRevisedRowCount((SelectStatement) sqlStatement, parameters, rowCount.get())))
                 : Optional.<RowCountToken>absent();
     }
     
-    private Optional<LimitValueSegment> getLiteralRowCountSegment(final SelectStatement selectStatement) {
-        return isLiteralRowCount(selectStatement) ? selectStatement.getLimit().getRowCount() : Optional.<LimitValueSegment>absent();
+    private Optional<PaginationValueSegment> getLiteralRowCountSegment(final SelectStatement selectStatement) {
+        return isLiteralRowCount(selectStatement) ? Optional.of(selectStatement.getRowCount()) : Optional.<PaginationValueSegment>absent();
     }
     
     private boolean isLiteralRowCount(final SelectStatement selectStatement) {
-        return null != selectStatement.getLimit() && selectStatement.getLimit().getRowCount().isPresent() && selectStatement.getLimit().getRowCount().get() instanceof NumberLiteralLimitValueSegment;
+        return null != selectStatement.getRowCount() && selectStatement.getRowCount() instanceof NumberLiteralPaginationValueSegment;
+    }
+    
+    private int getRevisedRowCount(final SelectStatement selectStatement, final List<Object> parameters, final PaginationValueSegment rowCountSegment) {
+        return new Pagination(selectStatement.getOffset(), rowCountSegment, parameters).getRevisedRowCount(selectStatement);
     }
 }

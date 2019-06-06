@@ -23,6 +23,7 @@ import org.apache.shardingsphere.core.execute.sql.execute.result.MemoryQueryResu
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.execute.sql.execute.result.StreamQueryResult;
 import org.apache.shardingsphere.core.route.RouteUnit;
+import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.ExecuteQueryResponse;
@@ -100,13 +101,11 @@ public final class ProxySQLExecuteCallback extends SQLExecuteCallback<ExecuteRes
         LogicSchema logicSchema = backendConnection.getLogicSchema();
         if (logicSchema instanceof ShardingSchema) {
             ShardingRule shardingRule = logicSchema.getShardingRule();
-            return connectionMode == ConnectionMode.MEMORY_STRICTLY ? new StreamQueryResult(resultSet, shardingRule, shardingRule.getEncryptRule().getEncryptorEngine()) 
-                    : new MemoryQueryResult(resultSet, shardingRule, shardingRule.getEncryptRule().getEncryptorEngine());
+            return connectionMode == ConnectionMode.MEMORY_STRICTLY ? new StreamQueryResult(resultSet, shardingRule) : new MemoryQueryResult(resultSet, shardingRule);
         }
         if (logicSchema instanceof EncryptSchema) {
-            EncryptSchema encryptSchema = (EncryptSchema) logicSchema;
-            return connectionMode == ConnectionMode.MEMORY_STRICTLY ? new StreamQueryResult(resultSet, encryptSchema.getShardingRule(), encryptSchema.getEncryptRule().getEncryptorEngine()) 
-                    : new MemoryQueryResult(resultSet, encryptSchema.getShardingRule(), encryptSchema.getEncryptRule().getEncryptorEngine());
+            EncryptRule encryptRule = ((EncryptSchema) logicSchema).getEncryptRule();
+            return connectionMode == ConnectionMode.MEMORY_STRICTLY ? new StreamQueryResult(resultSet, encryptRule) : new MemoryQueryResult(resultSet, encryptRule);
         }
         return connectionMode == ConnectionMode.MEMORY_STRICTLY ? new StreamQueryResult(resultSet) : new MemoryQueryResult(resultSet);
     }

@@ -27,6 +27,7 @@ import org.apache.shardingsphere.core.rule.TableRule;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Index token generator.
@@ -36,7 +37,7 @@ import java.util.LinkedList;
 public final class IndexTokenGenerator implements CollectionSQLTokenGenerator<ShardingRule> {
     
     @Override
-    public Collection<IndexToken> generateSQLTokens(final SQLStatement sqlStatement, final ShardingRule shardingRule) {
+    public Collection<IndexToken> generateSQLTokens(final SQLStatement sqlStatement, final List<Object> parameters, final ShardingRule shardingRule) {
         Collection<IndexToken> result = new LinkedList<>();
         for (SQLSegment each : sqlStatement.getSqlSegments()) {
             if (each instanceof IndexSegment) {

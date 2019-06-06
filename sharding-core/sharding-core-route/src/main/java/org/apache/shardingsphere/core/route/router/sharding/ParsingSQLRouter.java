@@ -32,16 +32,12 @@ import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
 import org.apache.shardingsphere.core.parse.entry.ShardingSQLParseEntry;
 import org.apache.shardingsphere.core.parse.hook.ParsingHook;
 import org.apache.shardingsphere.core.parse.hook.SPIParsingHook;
-import org.apache.shardingsphere.core.parse.sql.context.limit.Limit;
-import org.apache.shardingsphere.core.parse.sql.context.limit.LimitValue;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.LimitSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.LimitValueSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.NumberLiteralLimitValueSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.ParameterMarkerLimitValueSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationValueSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
+import org.apache.shardingsphere.core.route.pagination.Pagination;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 import org.apache.shardingsphere.core.rule.BindingTableRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -91,7 +87,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
     }
     
     @Override
-    public SQLRouteResult route(final String logicSQL, final List<Object> parameters, final SQLStatement sqlStatement) {
+    public SQLRouteResult route(final SQLStatement sqlStatement, final List<Object> parameters) {
         Optional<GeneratedKey> generatedKey = sqlStatement instanceof InsertStatement
                 ? GeneratedKey.getGenerateKey(shardingRule, parameters, (InsertStatement) sqlStatement) : Optional.<GeneratedKey>absent();
         SQLRouteResult result = new SQLRouteResult(sqlStatement, generatedKey.orNull());
@@ -108,8 +104,12 @@ public final class ParsingSQLRouter implements ShardingRouter {
             mergeShardingValues(optimizeResult.getShardingConditions());
         }
         RoutingResult routingResult = RoutingEngineFactory.newInstance(shardingRule, shardingMetaData.getDataSource(), sqlStatement, optimizeResult).route();
-        if (sqlStatement instanceof SelectStatement && null != ((SelectStatement) sqlStatement).getLimit() && !routingResult.isSingleRouting()) {
-            result.setLimit(getProcessedLimit(parameters, (SelectStatement) sqlStatement));
+        if (sqlStatement instanceof SelectStatement && !routingResult.isSingleRouting()) {
+            PaginationValueSegment offsetSegment = ((SelectStatement) sqlStatement).getOffset();
+            PaginationValueSegment rowCountSegment = ((SelectStatement) sqlStatement).getRowCount();
+            if (null != offsetSegment || null != rowCountSegment) {
+                result.setPagination(new Pagination(offsetSegment, rowCountSegment, parameters));
+            }
         }
         if (needMerge) {
             Preconditions.checkState(1 == routingResult.getRoutingUnits().size(), "Must have one sharding with subquery.");
@@ -187,30 +187,5 @@ public final class ParsingSQLRouter implements ShardingRouter {
             shardingConditions.getShardingConditions().clear();
             shardingConditions.getShardingConditions().add(shardingCondition);
         }
-    }
-    
-    private Limit getProcessedLimit(final List<Object> parameters, final SelectStatement selectStatement) {
-        boolean isNeedFetchAll = (!selectStatement.getGroupByItems().isEmpty() || !selectStatement.getAggregationSelectItems().isEmpty()) && !selectStatement.isSameGroupByAndOrderByItems();
-        Limit result = createLimit(selectStatement.getLimit());
-        result.processParameters(parameters, isNeedFetchAll, databaseType.name());
-        return result;
-    }
-    
-    private Limit createLimit(final LimitSegment limitSegment) {
-        Limit result = new Limit();
-        if (limitSegment.getOffset().isPresent()) {
-            result.setOffset(createLimitValue(limitSegment.getOffset().get()));
-        }
-        if (limitSegment.getRowCount().isPresent()) {
-            result.setRowCount(createLimitValue(limitSegment.getRowCount().get()));
-        }
-        return result; 
-    }
-    
-    private LimitValue createLimitValue(final LimitValueSegment limitValueSegment) {
-        if (limitValueSegment instanceof ParameterMarkerLimitValueSegment) {
-            return new LimitValue(-1, ((ParameterMarkerLimitValueSegment) limitValueSegment).getParameterIndex(), limitValueSegment);
-        }
-        return new LimitValue(((NumberLiteralLimitValueSegment) limitValueSegment).getValue(), -1, limitValueSegment);
     }
 }

@@ -29,12 +29,12 @@ import org.apache.shardingsphere.core.parse.sql.context.selectitem.DistinctSelec
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.StarSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.table.Table;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.LimitSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.TextOrderByItemSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationValueSegment;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 import java.util.Collection;
@@ -55,6 +55,14 @@ import java.util.Set;
 @ToString(callSuper = true, exclude = "parentStatement")
 public final class SelectStatement extends DQLStatement {
     
+    private final Set<SelectItem> items = new LinkedHashSet<>();
+    
+    private final List<OrderByItemSegment> groupByItems = new LinkedList<>();
+    
+    private final List<OrderByItemSegment> orderByItems = new LinkedList<>();
+    
+    private boolean toAppendOrderByItems;
+    
     private boolean containStar;
     
     private int firstSelectItemStartIndex;
@@ -63,13 +71,9 @@ public final class SelectStatement extends DQLStatement {
     
     private int groupByLastIndex;
     
-    private final Set<SelectItem> items = new LinkedHashSet<>();
+    private PaginationValueSegment offset;
     
-    private final List<OrderByItemSegment> groupByItems = new LinkedList<>();
-    
-    private final List<OrderByItemSegment> orderByItems = new LinkedList<>();
-    
-    private LimitSegment limit;
+    private PaginationValueSegment rowCount;
     
     private SelectStatement parentStatement;
     

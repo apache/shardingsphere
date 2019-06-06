@@ -21,12 +21,11 @@ import org.apache.shardingsphere.core.parse.integrate.asserts.condition.Conditio
 import org.apache.shardingsphere.core.parse.integrate.asserts.groupby.GroupByAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.index.IndexAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.item.ItemAssert;
-import org.apache.shardingsphere.core.parse.integrate.asserts.limit.LimitAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.meta.TableMetaDataAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.orderby.OrderByAssert;
+import org.apache.shardingsphere.core.parse.integrate.asserts.pagination.PaginationAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.table.AlterTableAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.table.TableAssert;
-import org.apache.shardingsphere.core.parse.integrate.asserts.token.TokenAssert;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.root.ParserResult;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.AlterTableStatement;
@@ -54,8 +53,6 @@ public final class SQLStatementAssert {
     
     private final ConditionAssert conditionAssert;
     
-    private final TokenAssert tokenAssert;
-    
     private final IndexAssert indexAssert;
     
     private final ItemAssert itemAssert;
@@ -64,7 +61,7 @@ public final class SQLStatementAssert {
     
     private final OrderByAssert orderByAssert;
     
-    private final LimitAssert limitAssert;
+    private final PaginationAssert paginationAssert;
     
     private final TableMetaDataAssert metaAssert;
     
@@ -83,12 +80,11 @@ public final class SQLStatementAssert {
         expected = parserResultSetLoader.getParserResult(sqlCaseId);
         tableAssert = new TableAssert(assertMessage);
         conditionAssert = new ConditionAssert(assertMessage);
-        tokenAssert = new TokenAssert(sqlCaseType, assertMessage);
         indexAssert = new IndexAssert(sqlCaseType, assertMessage);
         itemAssert = new ItemAssert(assertMessage);
         groupByAssert = new GroupByAssert(assertMessage);
         orderByAssert = new OrderByAssert(assertMessage);
-        limitAssert = new LimitAssert(sqlCaseType, assertMessage);
+        paginationAssert = new PaginationAssert(sqlCaseType, assertMessage);
         metaAssert = new TableMetaDataAssert(assertMessage);
         alterTableAssert = new AlterTableAssert(assertMessage);
         this.databaseType = databaseType;
@@ -103,7 +99,6 @@ public final class SQLStatementAssert {
         if ("MySQL".equals(databaseType)) {
             conditionAssert.assertConditions(actual.getEncryptCondition(), expected.getEncryptCondition());
         }
-        tokenAssert.assertTokens(actual.getSQLTokens(), expected.getTokens());
         indexAssert.assertParametersIndex(actual.getParametersIndex(), expected.getParameters().size());
         if (actual instanceof SelectStatement) {
             assertSelectStatement((SelectStatement) actual);
@@ -123,7 +118,8 @@ public final class SQLStatementAssert {
         itemAssert.assertItems(actual.getItems(), expected.getSelectItems());
         groupByAssert.assertGroupByItems(actual.getGroupByItems(), expected.getGroupByColumns());
         orderByAssert.assertOrderByItems(actual.getOrderByItems(), expected.getOrderByColumns());
-        limitAssert.assertLimit(actual.getLimit(), expected.getLimit());
+        paginationAssert.assertOffset(actual.getOffset(), expected.getOffset());
+        paginationAssert.assertRowCount(actual.getRowCount(), expected.getRowCount());
     }
     
     private void assertCreateTableStatement(final CreateTableStatement actual) {

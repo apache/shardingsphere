@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.parse.sql.statement;
 
 import com.google.common.base.Optional;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -27,12 +26,9 @@ import org.apache.shardingsphere.core.constant.SQLType;
 import org.apache.shardingsphere.core.parse.sql.context.condition.ParseCondition;
 import org.apache.shardingsphere.core.parse.sql.context.table.Tables;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
-import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * SQL statement abstract class.
@@ -56,34 +52,9 @@ public abstract class AbstractSQLStatement implements SQLStatement {
     
     private final ParseCondition encryptCondition = new ParseCondition();
     
-    @Getter(AccessLevel.NONE)
-    private final List<SQLToken> sqlTokens = new LinkedList<>();
-    
     private int parametersIndex;
     
     private String logicSQL;
-    
-    @Override
-    public final void addSQLToken(final SQLToken sqlToken) {
-        sqlTokens.add(sqlToken);
-    }
-    
-    @Override
-    @SuppressWarnings("unchecked")
-    public final <T extends SQLToken> Optional<T> findSQLToken(final Class<T> sqlTokenType) {
-        for (SQLToken each : sqlTokens) {
-            if (each.getClass().equals(sqlTokenType)) {
-                return Optional.of((T) each);
-            }
-        }
-        return Optional.absent();
-    }
-    
-    @Override
-    public final List<SQLToken> getSQLTokens() {
-        Collections.sort(sqlTokens);
-        return sqlTokens;
-    }
     
     @Override
     @SuppressWarnings("unchecked")
@@ -94,5 +65,17 @@ public abstract class AbstractSQLStatement implements SQLStatement {
             }
         }
         return Optional.absent();
+    }
+    
+    @Override
+    @SuppressWarnings("unchecked")
+    public final <T extends SQLSegment> Collection<T> findSQLSegments(final Class<T> sqlSegmentType) {
+        Collection<T> result = new LinkedList<>();
+        for (SQLSegment each : sqlSegments) {
+            if (each.getClass().equals(sqlSegmentType)) {
+                result.add((T) each);
+            }
+        }
+        return result;
     }
 }
