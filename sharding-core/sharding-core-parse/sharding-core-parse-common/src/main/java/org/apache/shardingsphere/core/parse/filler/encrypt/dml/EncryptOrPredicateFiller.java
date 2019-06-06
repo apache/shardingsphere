@@ -36,7 +36,6 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.Pred
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateInRightValue;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.rule.EncryptRule;
-import org.apache.shardingsphere.core.strategy.encrypt.ShardingEncryptorEngine;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -45,6 +44,7 @@ import java.util.HashSet;
  * Or predicate filler for encrypt.
  *
  * @author duhongjun
+ * @author panjuan
  */
 @Setter
 public final class EncryptOrPredicateFiller implements SQLSegmentFiller<OrPredicateSegment>, EncryptRuleAwareFiller, ShardingTableMetaDataAwareFiller {
@@ -52,9 +52,6 @@ public final class EncryptOrPredicateFiller implements SQLSegmentFiller<OrPredic
     private EncryptRule encryptRule;
     
     private ShardingTableMetaData shardingTableMetaData;
-    
-    @Deprecated // TODO should use encryptRule, to be refactored
-    private ShardingEncryptorEngine encryptorEngine;
     
     @Override
     public void fill(final OrPredicateSegment sqlSegment, final SQLStatement sqlStatement) {
@@ -67,7 +64,7 @@ public final class EncryptOrPredicateFiller implements SQLSegmentFiller<OrPredic
             }
         }
     }
-
+    
     private void fill(final PredicateSegment predicateSegment, final SQLStatement sqlStatement) {
         Optional<String> tableName = PredicateUtils.findTableName(predicateSegment, sqlStatement, shardingTableMetaData);
         if (!tableName.isPresent() || !isNeedEncrypt(predicateSegment, tableName.get())) {
@@ -86,7 +83,7 @@ public final class EncryptOrPredicateFiller implements SQLSegmentFiller<OrPredic
             andCondition.getConditions().add(condition.get());
         }
     }
-
+    
     private Optional<Condition> createCondition(final PredicateSegment predicateSegment, final Column column) {
         if (predicateSegment.getRightValue() instanceof PredicateBetweenRightValue) {
             throw new SQLParsingException("The SQL clause 'BETWEEN...AND...' is unsupported in encrypt rule.");
@@ -103,9 +100,7 @@ public final class EncryptOrPredicateFiller implements SQLSegmentFiller<OrPredic
     }
     
     private boolean isNeedEncrypt(final PredicateSegment predicate, final String tableName) {
-        // TODO panjuan: spilt EncryptRule and EncryptorEngine, cannot pass EncryptorEngine to parse module
-        encryptorEngine = null == encryptorEngine ? encryptRule.getEncryptorEngine() : encryptorEngine;
-        return encryptorEngine.getShardingEncryptor(tableName, predicate.getColumn().getName()).isPresent();
+        return encryptRule.getEncryptorEngine().getShardingEncryptor(tableName, predicate.getColumn().getName()).isPresent();
     }
     
     private boolean isOperatorSupportedWithEncrypt(final String operator) {
