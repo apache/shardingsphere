@@ -28,16 +28,16 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Conditions collection.
+ * Conditions.
  *
  * @author zhangliang
  * @author maxiaoguang
  * @author zhaojun
  */
+@RequiredArgsConstructor
 @Getter
 @ToString
-@RequiredArgsConstructor
-public final class ParseCondition {
+public final class Conditions {
     
     private List<AndCondition> orConditions = new ArrayList<>();
     

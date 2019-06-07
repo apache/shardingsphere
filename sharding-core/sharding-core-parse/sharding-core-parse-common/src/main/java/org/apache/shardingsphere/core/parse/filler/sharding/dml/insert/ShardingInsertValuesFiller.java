@@ -58,7 +58,7 @@ public final class ShardingInsertValuesFiller implements SQLSegmentFiller<Insert
                 fillShardingCondition(andCondition, insertStatement.getTables().getSingleTableName(), columnNames.next(), null, (SimpleExpressionSegment) each);
             }
         }
-        insertStatement.getRouteCondition().getOrConditions().add(andCondition);
+        insertStatement.getShardingConditions().getOrConditions().add(andCondition);
         InsertValue insertValue = new InsertValue(sqlSegment.getValues());
         insertStatement.getValues().add(insertValue);
         insertStatement.setParametersIndex(insertStatement.getParametersIndex() + insertValue.getParametersCount());

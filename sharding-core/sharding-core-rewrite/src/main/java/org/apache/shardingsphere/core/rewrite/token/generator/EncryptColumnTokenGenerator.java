@@ -66,10 +66,10 @@ public final class EncryptColumnTokenGenerator implements CollectionSQLTokenGene
     
     private Collection<EncryptColumnToken> createFromWhereCondition(final SQLStatement sqlStatement) {
         Collection<EncryptColumnToken> result = new LinkedList<>();
-        if (sqlStatement.getEncryptCondition().getOrConditions().isEmpty()) {
+        if (sqlStatement.getEncryptConditions().getOrConditions().isEmpty()) {
             return result;
         }
-        for (Condition each : sqlStatement.getEncryptCondition().getOrConditions().get(0).getConditions()) {
+        for (Condition each : sqlStatement.getEncryptConditions().getOrConditions().get(0).getConditions()) {
             result.add(new EncryptColumnToken(each.getPredicateSegment().getStartIndex(), each.getPredicateSegment().getStopIndex(), each.getColumn(), true));
         }
         return result;

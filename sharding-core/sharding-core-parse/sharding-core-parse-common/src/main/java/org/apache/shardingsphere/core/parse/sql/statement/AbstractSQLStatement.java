@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.constant.SQLType;
-import org.apache.shardingsphere.core.parse.sql.context.condition.ParseCondition;
+import org.apache.shardingsphere.core.parse.sql.context.condition.Conditions;
 import org.apache.shardingsphere.core.parse.sql.context.table.Tables;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 
@@ -48,9 +48,9 @@ public abstract class AbstractSQLStatement implements SQLStatement {
     
     private final Tables tables = new Tables();
     
-    private final ParseCondition routeCondition = new ParseCondition();
+    private final Conditions shardingConditions = new Conditions();
     
-    private final ParseCondition encryptCondition = new ParseCondition();
+    private final Conditions encryptConditions = new Conditions();
     
     private int parametersIndex;
     

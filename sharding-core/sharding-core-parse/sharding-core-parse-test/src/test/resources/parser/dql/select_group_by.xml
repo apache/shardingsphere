@@ -149,7 +149,7 @@
             <table-token start-index="36" table-name="t_order" length="7" />
             <table-token start-index="51" table-name="t_order_item" length="12" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
                     <value index="0" literal="1" type="int" />
@@ -160,7 +160,7 @@
                     <value index="3" literal="10" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
         <select-items>
             <aggregation-select-items>
                 <aggregation-select-item type="COUNT" inner-expression="(*)" alias="items_count" />
@@ -233,14 +233,14 @@
         <tokens>
             <table-token start-index="91" table-name="t_order_item" left-delimiter="`" right-delimiter="`" length="14" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order_item" operator="IN">
                     <value index="0" literal="1000" type="int" />
                     <value index="1" literal="1100" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
         <select-items>
             <aggregation-select-items>
                 <aggregation-select-item type="COUNT" inner-expression="(*)" alias="c_number" />

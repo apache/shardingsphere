@@ -23,7 +23,7 @@ import org.apache.shardingsphere.core.constant.AggregationType;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.constant.DerivedColumn;
 import org.apache.shardingsphere.core.parse.optimizer.SQLStatementOptimizer;
-import org.apache.shardingsphere.core.parse.sql.context.condition.ParseCondition;
+import org.apache.shardingsphere.core.parse.sql.context.condition.Conditions;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.DerivedCommonSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.DistinctSelectItem;
@@ -177,9 +177,9 @@ public final class SelectOptimizer implements SQLStatementOptimizer {
     
     private void addSubqueryCondition(final SQLStatement sqlStatement) {
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
-        for (ParseCondition each : selectStatement.getSubqueryParseConditions()) {
-            if (!selectStatement.getRouteCondition().getOrConditions().containsAll(each.getOrConditions())) {
-                selectStatement.getRouteCondition().getOrConditions().addAll(each.getOrConditions());
+        for (Conditions each : selectStatement.getSubqueryShardingConditions()) {
+            if (!selectStatement.getShardingConditions().getOrConditions().containsAll(each.getOrConditions())) {
+                selectStatement.getShardingConditions().getOrConditions().addAll(each.getOrConditions());
             }
         }
     }

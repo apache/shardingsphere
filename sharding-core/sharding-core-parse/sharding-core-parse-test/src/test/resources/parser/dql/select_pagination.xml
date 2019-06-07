@@ -26,7 +26,7 @@
             <table-token start-index="16" table-name="t_order" length="7" />
             <table-token start-index="31" table-name="t_order_item" length="12" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
                     <value index="0" literal="1" type="int" />
@@ -37,7 +37,7 @@
                     <value index="3" literal="10" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
         <order-by-columns>
             <order-by-column name="item_id" owner="i" order-direction="DESC" />
         </order-by-columns>
@@ -53,7 +53,7 @@
             <table-token start-index="16" table-name="t_order" length="7" />
             <table-token start-index="31" table-name="t_order_item" length="12" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
                     <value index="0" literal="1" type="int" />
@@ -64,7 +64,7 @@
                     <value index="3" literal="10" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
         <order-by-columns>
             <order-by-column name="item_id" owner="i" order-direction="DESC" />
         </order-by-columns>
@@ -80,7 +80,7 @@
             <table-token start-index="16" table-name="t_order" left-delimiter="`" right-delimiter="`" length="9" />
             <table-token start-index="33" table-name="t_order_item" left-delimiter="`" right-delimiter="`" length="14" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
                     <value index="0" literal="1" type="int" />
@@ -91,7 +91,7 @@
                     <value index="3" literal="10" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
         <order-by-columns>
             <order-by-column name="item_id" owner="i" order-direction="DESC" />
         </order-by-columns>
@@ -108,7 +108,7 @@
             <table-token start-index="167" table-name="t_order" length="7" />
             <table-token start-index="182" table-name="t_order_item" length="12" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
                     <value index="1" literal="1" type="int" />
@@ -119,7 +119,7 @@
                     <value index="4" literal="10" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
         <order-by-columns>
             <order-by-column name="item_id" owner="i" order-direction="DESC" />
         </order-by-columns>
@@ -135,7 +135,7 @@
             <table-token start-index="16" table-name="t_order" length="7" />
             <table-token start-index="31" table-name="t_order_item" length="12" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
                     <value index="0" literal="1" type="int" />
@@ -146,7 +146,7 @@
                     <value index="3" literal="10" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
         <order-by-columns>
             <order-by-column name="item_id" owner="i" order-direction="DESC" />
         </order-by-columns>
@@ -163,7 +163,7 @@
             <table-token start-index="167" table-name="t_order" length="7" />
             <table-token start-index="182" table-name="t_order_item" length="12" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
                     <value index="1" literal="1" type="int" />
@@ -174,7 +174,7 @@
                     <value index="4" literal="10" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
         <order-by-columns>
             <order-by-column name="item_id" owner="i" order-direction="DESC" />
         </order-by-columns>
@@ -191,7 +191,7 @@
             <table-token start-index="167" table-name="t_order" length="7" />
             <table-token start-index="182" table-name="t_order_item" length="12" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
                     <value index="1" literal="1" type="int" />
@@ -202,7 +202,7 @@
                     <value index="4" literal="10" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
         <order-by-columns>
             <order-by-column name="item_id" owner="i" order-direction="DESC" />
         </order-by-columns>
@@ -219,7 +219,7 @@
             <table-token start-index="146" table-name="t_order" length="7" />
             <table-token start-index="167" table-name="t_order_item" length="12" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
                     <value index="0" literal="1" type="int" />
@@ -230,7 +230,7 @@
                     <value index="3" literal="10" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
         <order-by-columns>
             <order-by-column name="item_id" owner="i" order-direction="DESC" />
         </order-by-columns>
@@ -246,7 +246,7 @@
             <table-token start-index="146" table-name="t_order" length="7" />
             <table-token start-index="167" table-name="t_order_item" length="12" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
                     <value index="0" literal="1" type="int" />
@@ -257,7 +257,7 @@
                     <value index="3" literal="10" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
         <order-by-columns>
             <order-by-column name="item_id" owner="i" order-direction="DESC" />
         </order-by-columns>
@@ -274,7 +274,7 @@
             <table-token start-index="146" table-name="t_order" length="7" />
             <table-token start-index="167" table-name="t_order_item" length="12" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
                     <value index="0" literal="1" type="int" />
@@ -285,7 +285,7 @@
                     <value index="3" literal="10" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
         <order-by-columns>
             <order-by-column name="item_id" owner="i" order-direction="DESC" />
         </order-by-columns>

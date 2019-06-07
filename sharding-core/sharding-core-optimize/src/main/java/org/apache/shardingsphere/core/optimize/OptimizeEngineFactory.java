@@ -57,10 +57,10 @@ public final class OptimizeEngineFactory {
             return new InsertOptimizeEngine(shardingRule, (InsertStatement) sqlStatement, parameters, generatedKey);
         }
         if (sqlStatement instanceof SelectStatement || sqlStatement instanceof DMLStatement) {
-            return new QueryOptimizeEngine(sqlStatement, parameters, sqlStatement.getRouteCondition());
+            return new QueryOptimizeEngine(sqlStatement, parameters, sqlStatement.getShardingConditions());
         }
         // TODO do with DDL and DAL
-        return new QueryOptimizeEngine(sqlStatement, parameters, sqlStatement.getRouteCondition());
+        return new QueryOptimizeEngine(sqlStatement, parameters, sqlStatement.getShardingConditions());
     }
     
     /**

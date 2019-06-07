@@ -791,8 +791,8 @@ public final class ShardingSQLRewriterTest {
         parameters.add("x");
         Column column = new Column("id", "table_z");
         selectStatement.getSqlSegments().add(new TableSegment(15, 21, "table_z"));
-        selectStatement.getEncryptCondition().getOrConditions().add(new AndCondition());
-        selectStatement.getEncryptCondition().getOrConditions().get(0).getConditions().add(
+        selectStatement.getEncryptConditions().getOrConditions().add(new AndCondition());
+        selectStatement.getEncryptConditions().getOrConditions().get(0).getConditions().add(
                 new Condition(column, new PredicateSegment(29, 32, null, null), new ParameterMarkerExpressionSegment(0, 0, 0)));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setRoutingResult(new RoutingResult());
@@ -806,12 +806,12 @@ public final class ShardingSQLRewriterTest {
     @Test
     public void assertSelectInWithShardingEncryptor() {
         selectStatement.getSqlSegments().add(new TableSegment(15, 21, "table_z"));
-        selectStatement.getEncryptCondition().getOrConditions().add(new AndCondition());
+        selectStatement.getEncryptConditions().getOrConditions().add(new AndCondition());
         List<ExpressionSegment> expressionSegments = new LinkedList<>();
         expressionSegments.add(new LiteralExpressionSegment(0, 0, 3));
         expressionSegments.add(new LiteralExpressionSegment(0, 0, 5));
         Column column = new Column("id", "table_z");
-        selectStatement.getEncryptCondition().getOrConditions().get(0).getConditions().add(new Condition(column, new PredicateSegment(29, 39, null, null), expressionSegments));
+        selectStatement.getEncryptConditions().getOrConditions().get(0).getConditions().add(new Condition(column, new PredicateSegment(29, 39, null, null), expressionSegments));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setRoutingResult(new RoutingResult());
         routeResult.setOptimizeResult(new OptimizeResult(new ShardingConditions(Collections.<ShardingCondition>emptyList())));
@@ -826,14 +826,14 @@ public final class ShardingSQLRewriterTest {
         parameters.add(1);
         parameters.add(2);
         selectStatement.getSqlSegments().add(new TableSegment(15, 21, "table_z"));
-        selectStatement.getEncryptCondition().getOrConditions().add(new AndCondition());
-        selectStatement.getEncryptCondition().getOrConditions().add(new AndCondition());
+        selectStatement.getEncryptConditions().getOrConditions().add(new AndCondition());
+        selectStatement.getEncryptConditions().getOrConditions().add(new AndCondition());
         List<ExpressionSegment> expressionSegments = new LinkedList<>();
         expressionSegments.add(new ParameterMarkerExpressionSegment(0, 0, 0));
         expressionSegments.add(new ParameterMarkerExpressionSegment(0, 0, 1));
         Column column = new Column("id", "table_z");
-        selectStatement.getEncryptCondition().getOrConditions().get(0).getConditions().add(new Condition(column, new PredicateSegment(29, 40, null, null), expressionSegments));
-        selectStatement.getEncryptCondition().getOrConditions().get(0).getConditions().add(new Condition(column, new PredicateSegment(45, 50, null, null), new LiteralExpressionSegment(0, 0, 3)));
+        selectStatement.getEncryptConditions().getOrConditions().get(0).getConditions().add(new Condition(column, new PredicateSegment(29, 40, null, null), expressionSegments));
+        selectStatement.getEncryptConditions().getOrConditions().get(0).getConditions().add(new Condition(column, new PredicateSegment(45, 50, null, null), new LiteralExpressionSegment(0, 0, 3)));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setRoutingResult(new RoutingResult());
         routeResult.setOptimizeResult(new OptimizeResult(new ShardingConditions(Collections.<ShardingCondition>emptyList())));
@@ -851,8 +851,8 @@ public final class ShardingSQLRewriterTest {
         parameters.add("k");
         Column column = new Column("id", "table_k");
         selectStatement.getSqlSegments().add(new TableSegment(15, 21, "table_k"));
-        selectStatement.getEncryptCondition().getOrConditions().add(new AndCondition());
-        selectStatement.getEncryptCondition().getOrConditions().get(0).getConditions().add(
+        selectStatement.getEncryptConditions().getOrConditions().add(new AndCondition());
+        selectStatement.getEncryptConditions().getOrConditions().get(0).getConditions().add(
                 new Condition(column, new PredicateSegment(29, 32, null, null), new ParameterMarkerExpressionSegment(0, 0, 0)));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setRoutingResult(new RoutingResult());
@@ -866,12 +866,12 @@ public final class ShardingSQLRewriterTest {
     @Test
     public void assertSelectInWithQueryAssistedShardingEncryptor() {
         selectStatement.getSqlSegments().add(new TableSegment(15, 21, "table_k"));
-        selectStatement.getEncryptCondition().getOrConditions().add(new AndCondition());
+        selectStatement.getEncryptConditions().getOrConditions().add(new AndCondition());
         List<ExpressionSegment> expressionSegments = new LinkedList<>();
         expressionSegments.add(new LiteralExpressionSegment(0, 0, 3));
         expressionSegments.add(new LiteralExpressionSegment(0, 0, 5));
         Column column = new Column("id", "table_k");
-        selectStatement.getEncryptCondition().getOrConditions().get(0).getConditions().add(new Condition(column, new PredicateSegment(29, 39, null, null), expressionSegments));
+        selectStatement.getEncryptConditions().getOrConditions().get(0).getConditions().add(new Condition(column, new PredicateSegment(29, 39, null, null), expressionSegments));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setRoutingResult(new RoutingResult());
         routeResult.setOptimizeResult(new OptimizeResult(new ShardingConditions(Collections.<ShardingCondition>emptyList())));
@@ -889,8 +889,8 @@ public final class ShardingSQLRewriterTest {
         updateStatement.getSqlSegments().add(setAssignmentsSegment);
         Column column = new Column("id", "table_z");
         updateStatement.getAssignments().put(column, new LiteralExpressionSegment(0, 0, 1));
-        updateStatement.getEncryptCondition().getOrConditions().add(new AndCondition());
-        updateStatement.getEncryptCondition().getOrConditions().get(0).getConditions().add(new Condition(column, new PredicateSegment(32, 37, null, null), new LiteralExpressionSegment(0, 0, 2)));
+        updateStatement.getEncryptConditions().getOrConditions().add(new AndCondition());
+        updateStatement.getEncryptConditions().getOrConditions().get(0).getConditions().add(new Condition(column, new PredicateSegment(32, 37, null, null), new LiteralExpressionSegment(0, 0, 2)));
         routeResult = new SQLRouteResult(updateStatement);
         routeResult.setRoutingResult(new RoutingResult());
         routeResult.setOptimizeResult(new OptimizeResult(new ShardingConditions(Collections.<ShardingCondition>emptyList())));

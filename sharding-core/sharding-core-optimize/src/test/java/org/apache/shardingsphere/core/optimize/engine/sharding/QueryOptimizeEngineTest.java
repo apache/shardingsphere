@@ -24,7 +24,7 @@ import org.apache.shardingsphere.core.optimize.engine.sharding.query.QueryOptimi
 import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
-import org.apache.shardingsphere.core.parse.sql.context.condition.ParseCondition;
+import org.apache.shardingsphere.core.parse.sql.context.condition.Conditions;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
@@ -52,7 +52,7 @@ public final class QueryOptimizeEngineTest {
         AndCondition andCondition = new AndCondition();
         andCondition.getConditions().add(condition1);
         andCondition.getConditions().add(condition2);
-        ParseCondition conditions = new ParseCondition();
+        Conditions conditions = new Conditions();
         conditions.getOrConditions().add(andCondition);
         ShardingConditions shardingConditions = new QueryOptimizeEngine(new SelectStatement(), Collections.emptyList(), conditions).optimize().getShardingConditions();
         assertTrue(shardingConditions.isAlwaysFalse());
@@ -65,7 +65,7 @@ public final class QueryOptimizeEngineTest {
         AndCondition andCondition = new AndCondition();
         andCondition.getConditions().add(condition1);
         andCondition.getConditions().add(condition2);
-        ParseCondition conditions = new ParseCondition();
+        Conditions conditions = new Conditions();
         conditions.getOrConditions().add(andCondition);
         ShardingConditions shardingConditions = new QueryOptimizeEngine(new SelectStatement(), Collections.emptyList(), conditions).optimize().getShardingConditions();
         assertTrue(shardingConditions.isAlwaysFalse());
@@ -78,7 +78,7 @@ public final class QueryOptimizeEngineTest {
         AndCondition andCondition = new AndCondition();
         andCondition.getConditions().add(condition1);
         andCondition.getConditions().add(condition2);
-        ParseCondition conditions = new ParseCondition();
+        Conditions conditions = new Conditions();
         conditions.getOrConditions().add(andCondition);
         ShardingConditions shardingConditions = new QueryOptimizeEngine(new SelectStatement(), Collections.emptyList(), conditions).optimize().getShardingConditions();
         assertTrue(shardingConditions.isAlwaysFalse());
@@ -92,7 +92,7 @@ public final class QueryOptimizeEngineTest {
         AndCondition andCondition = new AndCondition();
         andCondition.getConditions().add(condition1);
         andCondition.getConditions().add(condition2);
-        ParseCondition conditions = new ParseCondition();
+        Conditions conditions = new Conditions();
         conditions.getOrConditions().add(andCondition);
         ShardingConditions shardingConditions = new QueryOptimizeEngine(new SelectStatement(), Collections.emptyList(), conditions).optimize().getShardingConditions();
         assertFalse(shardingConditions.isAlwaysFalse());
@@ -111,7 +111,7 @@ public final class QueryOptimizeEngineTest {
         AndCondition andCondition = new AndCondition();
         andCondition.getConditions().add(condition1);
         andCondition.getConditions().add(condition2);
-        ParseCondition parseCondition = new ParseCondition();
+        Conditions parseCondition = new Conditions();
         parseCondition.getOrConditions().add(andCondition);
         ShardingConditions shardingConditions = new QueryOptimizeEngine(new SelectStatement(), Collections.emptyList(), parseCondition).optimize().getShardingConditions();
         assertFalse(shardingConditions.isAlwaysFalse());
@@ -130,7 +130,7 @@ public final class QueryOptimizeEngineTest {
         AndCondition andCondition = new AndCondition();
         andCondition.getConditions().add(condition1);
         andCondition.getConditions().add(condition2);
-        ParseCondition parseCondition = new ParseCondition();
+        Conditions parseCondition = new Conditions();
         parseCondition.getOrConditions().add(andCondition);
         ShardingConditions shardingConditions = new QueryOptimizeEngine(new SelectStatement(), Collections.emptyList(), parseCondition).optimize().getShardingConditions();
         assertFalse(shardingConditions.isAlwaysFalse());

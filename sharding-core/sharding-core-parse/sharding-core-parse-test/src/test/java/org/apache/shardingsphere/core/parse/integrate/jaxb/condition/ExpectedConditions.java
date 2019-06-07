@@ -27,14 +27,14 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Expected and conditions.
+ * Expected conditions.
  *
  * @author maxiaoguang
  */
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class ExpectedOrCondition {
+public final class ExpectedConditions {
     
     @XmlElement(name = "and-condition")
     private List<ExpectedAndCondition> andConditions = new LinkedList<>();

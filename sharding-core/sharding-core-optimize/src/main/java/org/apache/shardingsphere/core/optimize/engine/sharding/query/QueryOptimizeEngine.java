@@ -31,7 +31,7 @@ import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
-import org.apache.shardingsphere.core.parse.sql.context.condition.ParseCondition;
+import org.apache.shardingsphere.core.parse.sql.context.condition.Conditions;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationValueSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
@@ -57,12 +57,12 @@ public final class QueryOptimizeEngine implements OptimizeEngine {
     
     private final List<Object> parameters;
     
-    private final ParseCondition parseCondition;
+    private final Conditions conditions;
     
     @Override
     public OptimizeResult optimize() {
-        List<ShardingCondition> shardingConditions = new ArrayList<>(parseCondition.getOrConditions().size());
-        for (AndCondition each : parseCondition.getOrConditions()) {
+        List<ShardingCondition> shardingConditions = new ArrayList<>(conditions.getOrConditions().size());
+        for (AndCondition each : conditions.getOrConditions()) {
             shardingConditions.add(optimize(each.getConditionsMap()));
         }
         OptimizeResult result = new OptimizeResult(new ShardingConditions(shardingConditions));
