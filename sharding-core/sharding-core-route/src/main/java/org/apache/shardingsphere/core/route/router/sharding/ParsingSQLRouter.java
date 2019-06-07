@@ -104,7 +104,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
             mergeShardingValues(optimizeResult.getShardingConditions());
         }
         RoutingResult routingResult = RoutingEngineFactory.newInstance(shardingRule, shardingMetaData.getDataSource(), sqlStatement, optimizeResult).route();
-        if (sqlStatement instanceof SelectStatement && !routingResult.isSingleRouting()) {
+        if (sqlStatement instanceof SelectStatement) {
             PaginationValueSegment offsetSegment = ((SelectStatement) sqlStatement).getOffset();
             PaginationValueSegment rowCountSegment = ((SelectStatement) sqlStatement).getRowCount();
             if (null != offsetSegment || null != rowCountSegment) {
