@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.core.parse.sql.context.condition;
 
+import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.core.constant.ShardingOperator;
-import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -95,9 +95,7 @@ public final class Condition {
         List<Comparable<?>> result = new LinkedList<>(positionValueMap.values());
         for (Entry<Integer, Integer> entry : positionIndexMap.entrySet()) {
             Object parameter = parameters.get(entry.getValue());
-            if (!(parameter instanceof Comparable<?>)) {
-                throw new ShardingException("Parameter `%s` should extends Comparable for sharding value.", parameter);
-            }
+            Preconditions.checkArgument(parameter instanceof Comparable<?>, "Parameter `%s` should extends Comparable for sharding value.", parameter);
             if (entry.getKey() < result.size()) {
                 result.add(entry.getKey(), (Comparable<?>) parameter);
             } else {
