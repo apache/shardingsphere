@@ -36,11 +36,11 @@ public final class ShardingParameterRewriter implements ParameterRewriter {
     @Override
     public void rewrite(final ParameterBuilder parameterBuilder) {
         if (isNeedRewritePagination()) {
-            Optional<Integer> offsetParameterIndex = sqlRouteResult.getPagination().getOffsetParameterIndex();
+            Optional<Integer> offsetParameterIndex = sqlRouteResult.getOptimizeResult().getPagination().getOffsetParameterIndex();
             if (offsetParameterIndex.isPresent()) {
                 rewriteOffset(parameterBuilder, offsetParameterIndex.get());
             }
-            Optional<Integer> rowCountParameterIndex = sqlRouteResult.getPagination().getRowCountParameterIndex();
+            Optional<Integer> rowCountParameterIndex = sqlRouteResult.getOptimizeResult().getPagination().getRowCountParameterIndex();
             if (rowCountParameterIndex.isPresent()) {
                 rewriteRowCount(parameterBuilder, rowCountParameterIndex.get());
             }
@@ -48,14 +48,15 @@ public final class ShardingParameterRewriter implements ParameterRewriter {
     }
     
     private boolean isNeedRewritePagination() {
-        return sqlRouteResult.getSqlStatement() instanceof SelectStatement && null != sqlRouteResult.getPagination() && !sqlRouteResult.getRoutingResult().isSingleRouting();
+        return null != sqlRouteResult.getOptimizeResult().getPagination() && !sqlRouteResult.getRoutingResult().isSingleRouting();
     }
     
     private void rewriteOffset(final ParameterBuilder parameterBuilder, final int offsetParameterIndex) {
-        parameterBuilder.getReplacedIndexAndParameters().put(offsetParameterIndex, sqlRouteResult.getPagination().getRevisedOffset());
+        parameterBuilder.getReplacedIndexAndParameters().put(offsetParameterIndex, sqlRouteResult.getOptimizeResult().getPagination().getRevisedOffset());
     }
     
     private void rewriteRowCount(final ParameterBuilder parameterBuilder, final int rowCountParameterIndex) {
-        parameterBuilder.getReplacedIndexAndParameters().put(rowCountParameterIndex, sqlRouteResult.getPagination().getRevisedRowCount((SelectStatement) sqlRouteResult.getSqlStatement()));
+        parameterBuilder.getReplacedIndexAndParameters().put(
+                rowCountParameterIndex, sqlRouteResult.getOptimizeResult().getPagination().getRevisedRowCount((SelectStatement) sqlRouteResult.getSqlStatement()));
     }
 }

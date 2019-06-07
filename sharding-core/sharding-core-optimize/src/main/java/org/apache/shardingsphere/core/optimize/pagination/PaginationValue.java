@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.route.pagination;
+package org.apache.shardingsphere.core.optimize.pagination;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.route.pagination;
+package org.apache.shardingsphere.core.optimize.pagination;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.NumberLiteralPaginationValueSegment;

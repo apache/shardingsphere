@@ -23,7 +23,6 @@ import lombok.Setter;
 import org.apache.shardingsphere.core.optimize.GeneratedKey;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.route.pagination.Pagination;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 
 import java.util.Collection;
@@ -44,8 +43,6 @@ public final class SQLRouteResult {
     private final SQLStatement sqlStatement;
     
     private final GeneratedKey generatedKey;
-    
-    private Pagination pagination;
     
     private RoutingResult routingResult;
     
