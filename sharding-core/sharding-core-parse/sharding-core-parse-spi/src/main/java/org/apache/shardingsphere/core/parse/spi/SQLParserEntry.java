@@ -21,8 +21,6 @@ import org.antlr.v4.runtime.Lexer;
 import org.apache.shardingsphere.core.parse.api.SQLParser;
 import org.apache.shardingsphere.spi.DbType;
 
-import java.util.Collection;
-
 /**
  * SQL parser entry.
  *
@@ -36,13 +34,6 @@ public interface SQLParserEntry {
      * @return database type
      */
     DbType getDatabaseType();
-    
-    /**
-     * Get database type alias.
-     *
-     * @return database type alias
-     */
-    Collection<String> getDatabaseTypeAliases();
     
     /**
      * Get SQL lexer class type.

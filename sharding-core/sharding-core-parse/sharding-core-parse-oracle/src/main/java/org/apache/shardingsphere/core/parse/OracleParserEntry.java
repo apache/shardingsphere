@@ -24,9 +24,6 @@ import org.apache.shardingsphere.core.parse.spi.SQLParserEntry;
 import org.apache.shardingsphere.spi.DatabaseTypes;
 import org.apache.shardingsphere.spi.DbType;
 
-import java.util.Collection;
-import java.util.Collections;
-
 /**
  * SQL parser entry for Oracle.
  *
@@ -37,11 +34,6 @@ public final class OracleParserEntry implements SQLParserEntry {
     @Override
     public DbType getDatabaseType() {
         return DatabaseTypes.getDatabaseType("Oracle");
-    }
-    
-    @Override
-    public Collection<String> getDatabaseTypeAliases() {
-        return Collections.emptyList();
     }
     
     @Override

@@ -24,9 +24,6 @@ import org.apache.shardingsphere.core.parse.spi.SQLParserEntry;
 import org.apache.shardingsphere.spi.DatabaseTypes;
 import org.apache.shardingsphere.spi.DbType;
 
-import java.util.Collection;
-import java.util.Collections;
-
 /**
  * SQL parser entry for SQLServer.
  *
@@ -37,11 +34,6 @@ public final class SQLServerParserEntry implements SQLParserEntry {
     @Override
     public DbType getDatabaseType() {
         return DatabaseTypes.getDatabaseType("SQLServer");
-    }
-    
-    @Override
-    public Collection<String> getDatabaseTypeAliases() {
-        return Collections.emptyList();
     }
     
     @Override

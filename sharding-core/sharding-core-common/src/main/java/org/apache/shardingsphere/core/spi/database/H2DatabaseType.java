@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.core.spi.database;
 
 import org.apache.shardingsphere.spi.BranchDatabaseType;
+import org.apache.shardingsphere.spi.DatabaseTypes;
+import org.apache.shardingsphere.spi.DbType;
 
 /**
  * Database type of H2.
@@ -37,7 +39,7 @@ public final class H2DatabaseType implements BranchDatabaseType {
     }
     
     @Override
-    public Class<MySQLDatabaseType> getMasterDatabaseType() {
-        return MySQLDatabaseType.class;
+    public DbType getMasterDatabaseType() {
+        return DatabaseTypes.getDatabaseType("MySQL");
     }
 }

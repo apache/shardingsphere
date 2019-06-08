@@ -95,7 +95,7 @@ public abstract class ParseRuleRegistry {
      * @return SQL statement rule
      */
     public SQLStatementRule getSQLStatementRule(final DbType databaseType, final String contextClassName) {
-        return sqlStatementRuleDefinitions.get(getCurrentDatabaseType(databaseType.getName())).getSQLStatementRule(contextClassName);
+        return sqlStatementRuleDefinitions.get(databaseType.getName()).getSQLStatementRule(contextClassName);
     }
     
     /**
@@ -106,10 +106,6 @@ public abstract class ParseRuleRegistry {
      * @return SQL segment rule
      */
     public Optional<SQLSegmentFiller> findSQLSegmentFiller(final DbType databaseType, final Class<? extends SQLSegment> sqlSegmentClass) {
-        return Optional.fromNullable(fillerRuleDefinitions.get(getCurrentDatabaseType(databaseType.getName())).getFiller(sqlSegmentClass));
-    }
-    
-    private String getCurrentDatabaseType(final String databaseType) {
-        return SQLParserFactory.isDatabaseAlias(databaseType) ? SQLParserFactory.getAddOnDatabaseType(databaseType) : databaseType;
+        return Optional.fromNullable(fillerRuleDefinitions.get(databaseType.getName()).getFiller(sqlSegmentClass));
     }
 }

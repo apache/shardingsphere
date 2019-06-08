@@ -28,12 +28,11 @@ import org.antlr.v4.runtime.TokenStream;
 import org.apache.shardingsphere.core.parse.api.SQLParser;
 import org.apache.shardingsphere.core.parse.spi.SQLParserEntry;
 import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
+import org.apache.shardingsphere.spi.BranchDatabaseType;
 import org.apache.shardingsphere.spi.DbType;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 
 /**
  * SQL parser factory.
@@ -46,15 +45,10 @@ public final class SQLParserFactory {
     
     private static final Collection<DbType> DATABASE_TYPES = new HashSet<>();
     
-    private static final Map<String, String> DATABASE_ALIAS = new HashMap<>();
-    
     static {
         NewInstanceServiceLoader.register(SQLParserEntry.class);
         for (SQLParserEntry each : NewInstanceServiceLoader.newServiceInstances(SQLParserEntry.class)) {
             DATABASE_TYPES.add(each.getDatabaseType());
-            for (String alias : each.getDatabaseTypeAliases()) {
-                DATABASE_ALIAS.put(alias, each.getDatabaseType().getName());
-            }
         }
     }
     
@@ -67,26 +61,6 @@ public final class SQLParserFactory {
         return DATABASE_TYPES;
     }
     
-    /**
-     * Is database alias.
-     *
-     * @param databaseAlias database alias
-     * @return is database alias or not
-     */
-    public static boolean isDatabaseAlias(final String databaseAlias) {
-        return DATABASE_ALIAS.containsKey(databaseAlias);
-    }
-    
-    /**
-     * Get add on database type.
-     *
-     * @param databaseAlias database alias
-     * @return add on database type
-     */
-    public static String getAddOnDatabaseType(final String databaseAlias) {
-        return DATABASE_ALIAS.get(databaseAlias);
-    }
-    
     /** 
      * New instance of SQL parser.
      * 
@@ -96,23 +70,12 @@ public final class SQLParserFactory {
      */
     public static SQLParser newInstance(final DbType databaseType, final String sql) {
         for (SQLParserEntry each : NewInstanceServiceLoader.newServiceInstances(SQLParserEntry.class)) {
-            if (isCurrentDatabaseType(databaseType, each)) {
+            // FIXME for h2 test case, should remove BranchDatabaseType judge and remove h2 test cases
+            if (each.getDatabaseType().equals(databaseType instanceof BranchDatabaseType ? ((BranchDatabaseType) databaseType).getMasterDatabaseType() : databaseType)) {
                 return createSQLParser(sql, each);
             }
         }
         throw new UnsupportedOperationException(String.format("Cannot support database type '%s'", databaseType));
-    }
-    
-    private static boolean isCurrentDatabaseType(final DbType databaseType, final SQLParserEntry sqlParserEntry) {
-        if (sqlParserEntry.getDatabaseType().equals(databaseType)) {
-            return true;
-        }
-        for (String each : sqlParserEntry.getDatabaseTypeAliases()) {
-            if (each.equals(databaseType.getName())) {
-                return true;
-            }
-        }
-        return false;
     }
     
     @SneakyThrows

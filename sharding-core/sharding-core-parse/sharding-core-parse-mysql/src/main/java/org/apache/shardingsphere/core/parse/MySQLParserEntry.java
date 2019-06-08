@@ -24,9 +24,6 @@ import org.apache.shardingsphere.core.parse.spi.SQLParserEntry;
 import org.apache.shardingsphere.spi.DatabaseTypes;
 import org.apache.shardingsphere.spi.DbType;
 
-import java.util.Collection;
-import java.util.Collections;
-
 /**
  * SQL parser entry for MySQL.
  *
@@ -37,11 +34,6 @@ public final class MySQLParserEntry implements SQLParserEntry {
     @Override
     public DbType getDatabaseType() {
         return DatabaseTypes.getDatabaseType("MySQL");
-    }
-    
-    @Override
-    public Collection<String> getDatabaseTypeAliases() {
-        return Collections.singletonList("H2");
     }
     
     @Override
