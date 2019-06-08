@@ -28,6 +28,7 @@ import org.antlr.v4.runtime.TokenStream;
 import org.apache.shardingsphere.core.parse.api.SQLParser;
 import org.apache.shardingsphere.core.parse.spi.SQLParserEntry;
 import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
+import org.apache.shardingsphere.spi.DbType;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -43,7 +44,7 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLParserFactory {
     
-    private static final Collection<String> DATABASE_TYPES = new HashSet<>();
+    private static final Collection<DbType> DATABASE_TYPES = new HashSet<>();
     
     private static final Map<String, String> DATABASE_ALIAS = new HashMap<>();
     
@@ -52,7 +53,7 @@ public final class SQLParserFactory {
         for (SQLParserEntry each : NewInstanceServiceLoader.newServiceInstances(SQLParserEntry.class)) {
             DATABASE_TYPES.add(each.getDatabaseType());
             for (String alias : each.getDatabaseTypeAliases()) {
-                DATABASE_ALIAS.put(alias, each.getDatabaseType());
+                DATABASE_ALIAS.put(alias, each.getDatabaseType().getName());
             }
         }
     }
@@ -62,7 +63,7 @@ public final class SQLParserFactory {
      * 
      * @return add on database types
      */
-    public static Collection<String> getAddOnDatabaseTypes() {
+    public static Collection<DbType> getAddOnDatabaseTypes() {
         return DATABASE_TYPES;
     }
     
@@ -93,7 +94,7 @@ public final class SQLParserFactory {
      * @param sql SQL
      * @return SQL parser
      */
-    public static SQLParser newInstance(final String databaseType, final String sql) {
+    public static SQLParser newInstance(final DbType databaseType, final String sql) {
         for (SQLParserEntry each : NewInstanceServiceLoader.newServiceInstances(SQLParserEntry.class)) {
             if (isCurrentDatabaseType(databaseType, each)) {
                 return createSQLParser(sql, each);
@@ -102,12 +103,12 @@ public final class SQLParserFactory {
         throw new UnsupportedOperationException(String.format("Cannot support database type '%s'", databaseType));
     }
     
-    private static boolean isCurrentDatabaseType(final String databaseType, final SQLParserEntry sqlParserEntry) {
+    private static boolean isCurrentDatabaseType(final DbType databaseType, final SQLParserEntry sqlParserEntry) {
         if (sqlParserEntry.getDatabaseType().equals(databaseType)) {
             return true;
         }
         for (String each : sqlParserEntry.getDatabaseTypeAliases()) {
-            if (each.equals(databaseType)) {
+            if (each.equals(databaseType.getName())) {
                 return true;
             }
         }

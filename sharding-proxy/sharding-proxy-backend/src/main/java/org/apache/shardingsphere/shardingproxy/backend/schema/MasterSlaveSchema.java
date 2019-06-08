@@ -32,6 +32,7 @@ import org.apache.shardingsphere.orchestration.internal.registry.state.event.Dis
 import org.apache.shardingsphere.orchestration.internal.registry.state.schema.OrchestrationShardingSchema;
 import org.apache.shardingsphere.orchestration.internal.rule.OrchestrationMasterSlaveRule;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
+import org.apache.shardingsphere.spi.DatabaseTypes;
 
 import java.util.Map;
 
@@ -57,7 +58,7 @@ public final class MasterSlaveSchema extends LogicSchema {
         // TODO we should remove it after none-sharding parsingEngine completed.
         shardingRule = new ShardingRule(new ShardingRuleConfiguration(), getDataSources().keySet());
         metaData = createShardingMetaData();
-        parseEngine = new MasterSlaveSQLParseEntry(LogicSchemas.getInstance().getDatabaseType().name());
+        parseEngine = new MasterSlaveSQLParseEntry(DatabaseTypes.getDatabaseType(LogicSchemas.getInstance().getDatabaseType().name()));
     }
     
     private MasterSlaveRule createMasterSlaveRule(final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final boolean isUsingRegistry) {

@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
 import org.apache.shardingsphere.core.parse.entry.ShardingSQLParseEntry;
 import org.apache.shardingsphere.core.parse.exception.SQLParsingException;
+import org.apache.shardingsphere.spi.DatabaseTypes;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.SQLCasesLoader;
 import org.junit.Test;
@@ -47,7 +48,7 @@ public final class IntegrateUnsupportedSQLParsingTest extends AbstractBaseIntegr
     
     @Test(expected = SQLParsingException.class)
     public void assertUnsupportedSQL() {
-        new ShardingSQLParseEntry(databaseType, getShardingRule(), getShardingTableMetaData(), new ParsingResultCache())
+        new ShardingSQLParseEntry(DatabaseTypes.getDatabaseType(databaseType), getShardingRule(), getShardingTableMetaData(), new ParsingResultCache())
                 .parse(sqlCasesLoader.getUnsupportedSQL(sqlCaseId, sqlCaseType, Collections.emptyList()), false);
     }
 }

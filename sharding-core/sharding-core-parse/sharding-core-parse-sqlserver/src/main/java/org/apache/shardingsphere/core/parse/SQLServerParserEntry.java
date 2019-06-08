@@ -21,6 +21,8 @@ import org.antlr.v4.runtime.Lexer;
 import org.apache.shardingsphere.core.parse.api.SQLParser;
 import org.apache.shardingsphere.core.parse.autogen.SQLServerStatementLexer;
 import org.apache.shardingsphere.core.parse.spi.SQLParserEntry;
+import org.apache.shardingsphere.spi.DatabaseTypes;
+import org.apache.shardingsphere.spi.DbType;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -33,8 +35,8 @@ import java.util.Collections;
 public final class SQLServerParserEntry implements SQLParserEntry {
     
     @Override
-    public String getDatabaseType() {
-        return "SQLServer";
+    public DbType getDatabaseType() {
+        return DatabaseTypes.getDatabaseType("SQLServer");
     }
     
     @Override

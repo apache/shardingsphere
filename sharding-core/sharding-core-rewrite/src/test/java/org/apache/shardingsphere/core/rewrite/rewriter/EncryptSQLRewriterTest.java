@@ -33,6 +33,7 @@ import org.apache.shardingsphere.core.rewrite.rewriter.sql.EncryptSQLRewriter;
 import org.apache.shardingsphere.core.rewrite.rewriter.sql.SQLRewriter;
 import org.apache.shardingsphere.core.route.SQLUnit;
 import org.apache.shardingsphere.core.rule.EncryptRule;
+import org.apache.shardingsphere.spi.DatabaseTypes;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -63,7 +64,7 @@ public final class EncryptSQLRewriterTest {
         parameters = new LinkedList<>();
         parameters.add(1);
         parameters.add(2);
-        encryptSQLParseEngine = new EncryptSQLParseEntry(databaseType.name(), encryptRule, createShardingTableMetaData());
+        encryptSQLParseEngine = new EncryptSQLParseEntry(DatabaseTypes.getDatabaseType(databaseType.name()), encryptRule, createShardingTableMetaData());
     }
     
     private EncryptRuleConfiguration createEncryptRuleConfiguration() {

@@ -27,6 +27,7 @@ import org.apache.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCase;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCaseAssertion;
 import org.apache.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import org.apache.shardingsphere.dbtest.env.IntegrateTestEnvironment;
+import org.apache.shardingsphere.spi.DatabaseTypes;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.SQLCasesLoader;
 
@@ -63,8 +64,8 @@ public final class IntegrateTestParameters {
             String sqlCaseId = each[0].toString();
             String databaseType = each[1].toString();
             SQLCaseType caseType = (SQLCaseType) each[2];
-            if (sqlType != new SQLParseEngine(MasterSlaveParseRuleRegistry.getInstance(), 
-                    databaseType, sqlCasesLoader.getSupportedSQL(sqlCaseId, SQLCaseType.Placeholder, Collections.emptyList()), null, null).parse().getType()) {
+            if (sqlType != new SQLParseEngine(MasterSlaveParseRuleRegistry.getInstance(),
+                    DatabaseTypes.getDatabaseType(databaseType), sqlCasesLoader.getSupportedSQL(sqlCaseId, SQLCaseType.Placeholder, Collections.emptyList()), null, null).parse().getType()) {
                 continue;
             }
             IntegrateTestCase integrateTestCase = getIntegrateTestCase(sqlCaseId, sqlType);
@@ -115,8 +116,8 @@ public final class IntegrateTestParameters {
             String sqlCaseId = each[0].toString();
             String databaseType = each[1].toString();
             SQLCaseType caseType = (SQLCaseType) each[2];
-            if (sqlType != new SQLParseEngine(MasterSlaveParseRuleRegistry.getInstance(), 
-                    databaseType, sqlCasesLoader.getSupportedSQL(sqlCaseId, SQLCaseType.Placeholder, Collections.emptyList()), null, null).parse().getType()) {
+            if (sqlType != new SQLParseEngine(MasterSlaveParseRuleRegistry.getInstance(),
+                    DatabaseTypes.getDatabaseType(databaseType), sqlCasesLoader.getSupportedSQL(sqlCaseId, SQLCaseType.Placeholder, Collections.emptyList()), null, null).parse().getType()) {
                 continue;
             }
             // TODO only for prepared statement for now

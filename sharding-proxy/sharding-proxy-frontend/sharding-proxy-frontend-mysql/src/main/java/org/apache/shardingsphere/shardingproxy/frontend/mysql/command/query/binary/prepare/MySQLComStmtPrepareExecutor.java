@@ -32,6 +32,7 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.qu
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.prepare.MySQLComStmtPreparePacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLEofPacket;
 import org.apache.shardingsphere.shardingproxy.transport.packet.DatabasePacket;
+import org.apache.shardingsphere.spi.DatabaseTypes;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -61,8 +62,8 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     @Override
     public Collection<DatabasePacket> execute() {
         // TODO we should use none-sharding parsing engine in future.
-        ShardingSQLParseEntry shardingSQLParseEntry = new ShardingSQLParseEntry(
-                LogicSchemas.getInstance().getDatabaseType().name(), logicSchema.getShardingRule(), logicSchema.getMetaData().getTable(), logicSchema.getParsingResultCache());
+        ShardingSQLParseEntry shardingSQLParseEntry = new ShardingSQLParseEntry(DatabaseTypes.getDatabaseType(LogicSchemas.getInstance().getDatabaseType().name()), 
+                logicSchema.getShardingRule(), logicSchema.getMetaData().getTable(), logicSchema.getParsingResultCache());
         Collection<DatabasePacket> result = new LinkedList<>();
         int currentSequenceId = 0;
         SQLStatement sqlStatement = shardingSQLParseEntry.parse(packet.getSql(), true);

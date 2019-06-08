@@ -27,6 +27,7 @@ import org.apache.shardingsphere.core.route.type.RoutingResult;
 import org.apache.shardingsphere.core.route.type.hint.DatabaseHintRoutingEngine;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.strategy.route.hint.HintShardingStrategy;
+import org.apache.shardingsphere.spi.DatabaseTypes;
 
 import java.util.List;
 
@@ -46,7 +47,7 @@ public final class DatabaseHintSQLRouter implements ShardingRouter {
     
     @Override
     public SQLStatement parse(final String logicSQL, final boolean useCache) {
-        return new SQLParseEngine(MasterSlaveParseRuleRegistry.getInstance(), databaseType.name(), logicSQL, null, null).parse();
+        return new SQLParseEngine(MasterSlaveParseRuleRegistry.getInstance(), DatabaseTypes.getDatabaseType(databaseType.name()), logicSQL, null, null).parse();
     }
     
     @Override

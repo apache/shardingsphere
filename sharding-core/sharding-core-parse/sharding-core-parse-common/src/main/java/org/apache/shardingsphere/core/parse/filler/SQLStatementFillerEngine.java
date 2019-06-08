@@ -32,6 +32,7 @@ import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.rule.BaseRule;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.spi.DbType;
 
 import java.util.Collection;
 
@@ -47,7 +48,7 @@ public final class SQLStatementFillerEngine {
     
     private final ParseRuleRegistry parseRuleRegistry;
     
-    private final String databaseType;
+    private final DbType databaseType;
     
     private final String sql;
     

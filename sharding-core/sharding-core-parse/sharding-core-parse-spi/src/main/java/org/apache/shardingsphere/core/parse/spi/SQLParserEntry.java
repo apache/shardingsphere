@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.parse.spi;
 
 import org.antlr.v4.runtime.Lexer;
 import org.apache.shardingsphere.core.parse.api.SQLParser;
+import org.apache.shardingsphere.spi.DbType;
 
 import java.util.Collection;
 
@@ -34,7 +35,7 @@ public interface SQLParserEntry {
      * 
      * @return database type
      */
-    String getDatabaseType();
+    DbType getDatabaseType();
     
     /**
      * Get database type alias.

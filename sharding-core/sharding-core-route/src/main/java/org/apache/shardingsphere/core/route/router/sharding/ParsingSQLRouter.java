@@ -42,6 +42,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
+import org.apache.shardingsphere.spi.DatabaseTypes;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -73,7 +74,8 @@ public final class ParsingSQLRouter implements ShardingRouter {
     public SQLStatement parse(final String logicSQL, final boolean useCache) {
         parsingHook.start(logicSQL);
         try {
-            SQLStatement result = new ShardingSQLParseEntry(databaseType.name(), shardingRule, shardingMetaData.getTable(), parsingResultCache).parse(logicSQL, useCache);
+            SQLStatement result = new ShardingSQLParseEntry(
+                    DatabaseTypes.getDatabaseType(databaseType.name()), shardingRule, shardingMetaData.getTable(), parsingResultCache).parse(logicSQL, useCache);
             parsingHook.finishSuccess(result, shardingMetaData.getTable());
             return result;
             // CHECKSTYLE:OFF
