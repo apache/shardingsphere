@@ -27,7 +27,6 @@ import org.apache.shardingsphere.core.parse.rule.registry.ParseRuleRegistry;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.rule.BaseRule;
-import org.apache.shardingsphere.spi.BranchDatabaseType;
 import org.apache.shardingsphere.spi.DbType;
 
 import java.util.Collection;
@@ -49,15 +48,10 @@ public final class SQLParseEngine {
     private final SQLStatementOptimizerEngine optimizerEngine;
     
     public SQLParseEngine(final ParseRuleRegistry parseRuleRegistry, final DbType databaseType, final String sql, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
-        DbType masterDatabaseType = getMasterDatabaseType(databaseType);
-        parserEngine = new SQLParserEngine(parseRuleRegistry, masterDatabaseType, sql);
+        parserEngine = new SQLParserEngine(parseRuleRegistry, databaseType, sql);
         extractorEngine = new SQLSegmentsExtractorEngine();
-        fillerEngine = new SQLStatementFillerEngine(parseRuleRegistry, masterDatabaseType, sql, rule, shardingTableMetaData);
+        fillerEngine = new SQLStatementFillerEngine(parseRuleRegistry, databaseType, sql, rule, shardingTableMetaData);
         optimizerEngine = new SQLStatementOptimizerEngine(shardingTableMetaData);
-    }
-    
-    private DbType getMasterDatabaseType(final DbType databaseType) {
-        return databaseType instanceof BranchDatabaseType ? ((BranchDatabaseType) databaseType).getMasterDatabaseType() : databaseType;
     }
     
     /**

@@ -72,8 +72,7 @@ public final class SQLParserFactory {
      */
     public static SQLParser newInstance(final DbType databaseType, final String sql) {
         for (SQLParserEntry each : NewInstanceServiceLoader.newServiceInstances(SQLParserEntry.class)) {
-            // FIXME for h2 test case, should remove BranchDatabaseType judge and remove h2 test cases
-            if (each.getDatabaseType().equals(databaseType instanceof BranchDatabaseType ? ((BranchDatabaseType) databaseType).getMasterDatabaseType() : databaseType)) {
+            if (each.getDatabaseType().equals(databaseType)) {
                 return createSQLParser(sql, each);
             }
         }

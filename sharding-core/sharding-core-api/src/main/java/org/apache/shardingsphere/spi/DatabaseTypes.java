@@ -53,6 +53,6 @@ public final class DatabaseTypes {
      * @return database type
      */
     public static DbType getDatabaseType(final String name) {
-        return DATABASE_TYPES.get(name);
+        return DATABASE_TYPES.get(name) instanceof BranchDatabaseType ? ((BranchDatabaseType) DATABASE_TYPES.get(name)).getMasterDatabaseType() : DATABASE_TYPES.get(name);
     }
 }
