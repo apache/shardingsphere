@@ -48,7 +48,9 @@ public final class SQLParserFactory {
     static {
         NewInstanceServiceLoader.register(SQLParserEntry.class);
         for (SQLParserEntry each : NewInstanceServiceLoader.newServiceInstances(SQLParserEntry.class)) {
-            DATABASE_TYPES.add(each.getDatabaseType());
+            if (!(each instanceof BranchDatabaseType)) {
+                DATABASE_TYPES.add(each.getDatabaseType());
+            }
         }
     }
     
