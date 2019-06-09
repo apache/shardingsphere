@@ -36,6 +36,7 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.GeneratedKeysResultSet;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.ShardingResultSet;
+import org.apache.shardingsphere.spi.DatabaseTypes;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -249,8 +250,8 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     
     private void shard(final String sql) {
         ShardingContext shardingContext = connection.getShardingContext();
-        SimpleQueryShardingEngine shardingEngine = new SimpleQueryShardingEngine(
-                shardingContext.getShardingRule(), shardingContext.getShardingProperties(), shardingContext.getMetaData(), shardingContext.getDatabaseType(), shardingContext.getParsingResultCache());
+        SimpleQueryShardingEngine shardingEngine = new SimpleQueryShardingEngine(shardingContext.getShardingRule(), shardingContext.getShardingProperties(), 
+                shardingContext.getMetaData(), DatabaseTypes.getActualDatabaseType(shardingContext.getDatabaseType().name()), shardingContext.getParsingResultCache());
         routeResult = shardingEngine.shard(sql, Collections.emptyList());
     }
     

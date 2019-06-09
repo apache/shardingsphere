@@ -39,6 +39,7 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.GeneratedKeysResultSet;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.ShardingResultSet;
+import org.apache.shardingsphere.spi.DatabaseTypes;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -94,8 +95,8 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         this.connection = connection;
         this.sql = sql;
         ShardingContext shardingContext = connection.getShardingContext();
-        shardingEngine = new PreparedQueryShardingEngine(sql, 
-                shardingContext.getShardingRule(), shardingContext.getShardingProperties(), shardingContext.getMetaData(), shardingContext.getDatabaseType(), shardingContext.getParsingResultCache());
+        shardingEngine = new PreparedQueryShardingEngine(sql, shardingContext.getShardingRule(), shardingContext.getShardingProperties(), 
+                shardingContext.getMetaData(), DatabaseTypes.getActualDatabaseType(shardingContext.getDatabaseType().name()), shardingContext.getParsingResultCache());
         preparedStatementExecutor = new PreparedStatementExecutor(resultSetType, resultSetConcurrency, resultSetHoldability, returnGeneratedKeys, connection);
         batchPreparedStatementExecutor = new BatchPreparedStatementExecutor(resultSetType, resultSetConcurrency, resultSetHoldability, returnGeneratedKeys, connection);
     }
