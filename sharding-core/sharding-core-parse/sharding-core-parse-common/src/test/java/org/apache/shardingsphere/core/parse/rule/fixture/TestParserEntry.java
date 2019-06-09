@@ -27,7 +27,7 @@ public final class TestParserEntry implements SQLParserEntry {
     
     @Override
     public DbType getDatabaseType() {
-        return DatabaseTypes.getTrunkDatabaseType("MySQL");
+        return DatabaseTypes.getActualDatabaseType("MySQL");
     }
     
     @Override

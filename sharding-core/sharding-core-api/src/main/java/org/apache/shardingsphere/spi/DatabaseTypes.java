@@ -47,10 +47,20 @@ public final class DatabaseTypes {
     }
     
     /**
-     * Get database type.
+     * Get actual database type.
      *
      * @param name database name 
-     * @return database type
+     * @return actual database type
+     */
+    public static DbType getActualDatabaseType(final String name) {
+        return DATABASE_TYPES.get(name);
+    }
+    
+    /**
+     * Get trunk database type.
+     *
+     * @param name database name 
+     * @return trunk database type
      */
     public static DbType getTrunkDatabaseType(final String name) {
         return DATABASE_TYPES.get(name) instanceof BranchDatabaseType ? ((BranchDatabaseType) DATABASE_TYPES.get(name)).getTrunkDatabaseType() : DATABASE_TYPES.get(name);

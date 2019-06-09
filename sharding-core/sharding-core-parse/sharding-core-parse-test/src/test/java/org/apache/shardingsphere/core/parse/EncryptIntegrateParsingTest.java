@@ -98,12 +98,9 @@ public final class EncryptIntegrateParsingTest extends AbstractBaseIntegrateSQLP
         ParserResult parserResult = parserResultSetLoader.getParserResult(sqlCaseId);
         if (null != parserResult) {
             String sql = sqlCasesLoader.getSupportedSQL(sqlCaseId, sqlCaseType, parserResult.getParameters());
-            DbType execDatabaseType = DatabaseTypes.getTrunkDatabaseType(databaseType);
-            if ("H2".equals(databaseType)) {
-                execDatabaseType = DatabaseTypes.getTrunkDatabaseType("MySQL");
-            }
-            new EncryptSQLStatementAssert(new EncryptSQLParseEntry(execDatabaseType, buildShardingRule(), AbstractBaseIntegrateSQLParsingTest.getShardingTableMetaData()).parse(sql, false), 
-                    sqlCaseId, sqlCaseType, sqlCasesLoader, parserResultSetLoader, execDatabaseType.getName()).assertSQLStatement();
+            DbType trunkDatabaseType = DatabaseTypes.getTrunkDatabaseType(databaseType);
+            new EncryptSQLStatementAssert(new EncryptSQLParseEntry(trunkDatabaseType, buildShardingRule(), AbstractBaseIntegrateSQLParsingTest.getShardingTableMetaData()).parse(sql, false), 
+                    sqlCaseId, sqlCaseType, sqlCasesLoader, parserResultSetLoader, trunkDatabaseType.getName()).assertSQLStatement();
         }
     }
 }
