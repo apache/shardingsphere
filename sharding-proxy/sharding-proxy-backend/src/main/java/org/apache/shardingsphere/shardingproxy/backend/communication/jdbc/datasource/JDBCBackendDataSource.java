@@ -21,6 +21,7 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Maps;
 import lombok.Getter;
 import org.apache.shardingsphere.core.constant.ConnectionMode;
+import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.shardingproxy.backend.BackendDataSource;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
@@ -65,7 +66,7 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
     public JDBCBackendDataSource(final Map<String, YamlDataSourceParameter> dataSourceParameters) {
         this.dataSourceParameters = dataSourceParameters;
         this.dataSources = createDataSources(dataSourceParameters);
-        shardingTransactionManagerEngine.init(LogicSchemas.getInstance().getDatabaseType(), dataSources);
+        shardingTransactionManagerEngine.init(null == LogicSchemas.getInstance().getDatabaseType() ? null : DatabaseType.valueOf(LogicSchemas.getInstance().getDatabaseType().getName()), dataSources);
     }
     
     private Map<String, DataSource> createDataSources(final Map<String, YamlDataSourceParameter> dataSourceParameters) {
@@ -194,7 +195,7 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
         this.dataSourceParameters.clear();
         this.dataSourceParameters.putAll(dataSourceParameters);
         shardingTransactionManagerEngine.close();
-        shardingTransactionManagerEngine.init(LogicSchemas.getInstance().getDatabaseType(), dataSources);
+        shardingTransactionManagerEngine.init(DatabaseType.valueOf(LogicSchemas.getInstance().getDatabaseType().getName()), dataSources);
     }
     
     private synchronized List<String> getDeletedDataSources(final Map<String, YamlDataSourceParameter> dataSourceParameters) {
@@ -217,7 +218,8 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
         return dataSourceParameters.containsKey(dataSourceNameAndParameters.getKey()) && !dataSourceParameters.get(dataSourceNameAndParameters.getKey()).equals(dataSourceNameAndParameters.getValue());
     }
     
-    private synchronized Map<String, DataSource> getChangedDataSources(final List<String> deletedDataSources, final Map<String, YamlDataSourceParameter> addedDataSources, final Map<String, YamlDataSourceParameter> modifiedDataSources) {
+    private synchronized Map<String, DataSource> getChangedDataSources(final List<String> deletedDataSources, 
+                                                                       final Map<String, YamlDataSourceParameter> addedDataSources, final Map<String, YamlDataSourceParameter> modifiedDataSources) {
         Map<String, DataSource> result = new LinkedHashMap<>(dataSources);
         result.keySet().removeAll(deletedDataSources);
         result.keySet().removeAll(modifiedDataSources.keySet());
