@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.rewrite.rewriter;
 
 import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.encryptor.EncryptorRuleConfiguration;
-import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
@@ -40,7 +39,6 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -50,21 +48,17 @@ import static org.junit.Assert.assertThat;
 
 public final class EncryptSQLRewriterTest {
     
-    private final DatabaseType databaseType = DatabaseType.MySQL;
-    
     private EncryptRule encryptRule;
     
-    private EncryptSQLParseEntry encryptSQLParseEngine;
-    
     private List<Object> parameters;
+    
+    private EncryptSQLParseEntry encryptSQLParseEntry;
     
     @Before
     public void setUp() {
         encryptRule = new EncryptRule(createEncryptRuleConfiguration());
-        parameters = new LinkedList<>();
-        parameters.add(1);
-        parameters.add(2);
-        encryptSQLParseEngine = new EncryptSQLParseEntry(DatabaseTypes.getTrunkDatabaseType(databaseType.name()), encryptRule, createShardingTableMetaData());
+        parameters = Arrays.<Object>asList(1, 2);
+        encryptSQLParseEntry = new EncryptSQLParseEntry(DatabaseTypes.getActualDatabaseType("MySQL"), encryptRule, createShardingTableMetaData());
     }
     
     private EncryptRuleConfiguration createEncryptRuleConfiguration() {
@@ -186,7 +180,8 @@ public final class EncryptSQLRewriterTest {
     }
     
     private SQLUnit getSQLUnit(final String sql, final List<Object> parameters) {
-        SQLStatement sqlStatement = encryptSQLParseEngine.parse(sql, false);
+        // TODO panjuan: should mock sqlStatement, do not call parse module on rewrite test case
+        SQLStatement sqlStatement = encryptSQLParseEntry.parse(sql, false);
         SQLRewriteEngine sqlRewriteEngine = new SQLRewriteEngine(encryptRule, sqlStatement, parameters);
         OptimizeResult optimizeResult = OptimizeEngineFactory.newInstance(encryptRule, sqlStatement, parameters).optimize();
         sqlRewriteEngine.init(
