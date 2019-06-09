@@ -90,7 +90,7 @@ public final class LogicSchemas {
      */
     public void init(final Collection<String> localSchemaNames, final Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources,
                      final Map<String, RuleConfiguration> schemaRules, final boolean isUsingRegistry) {
-        databaseType = JDBCDriverURLRecognizerEngine.getDatabaseType(schemaDataSources.values().iterator().next().values().iterator().next().getUrl());
+        databaseType = DatabaseType.valueOf(JDBCDriverURLRecognizerEngine.getDatabaseType(schemaDataSources.values().iterator().next().values().iterator().next().getUrl()).getName());
         initSchemas(localSchemaNames, schemaDataSources, schemaRules, isUsingRegistry);
     }
     
