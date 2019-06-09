@@ -65,7 +65,7 @@ public final class IntegrateTestParameters {
             String databaseType = each[1].toString();
             SQLCaseType caseType = (SQLCaseType) each[2];
             if (sqlType != new SQLParseEngine(MasterSlaveParseRuleRegistry.getInstance(),
-                    DatabaseTypes.getDatabaseType(databaseType), sqlCasesLoader.getSupportedSQL(sqlCaseId, SQLCaseType.Placeholder, Collections.emptyList()), null, null).parse().getType()) {
+                    DatabaseTypes.getTrunkDatabaseType(databaseType), sqlCasesLoader.getSupportedSQL(sqlCaseId, SQLCaseType.Placeholder, Collections.emptyList()), null, null).parse().getType()) {
                 continue;
             }
             IntegrateTestCase integrateTestCase = getIntegrateTestCase(sqlCaseId, sqlType);
@@ -117,7 +117,7 @@ public final class IntegrateTestParameters {
             String databaseType = each[1].toString();
             SQLCaseType caseType = (SQLCaseType) each[2];
             if (sqlType != new SQLParseEngine(MasterSlaveParseRuleRegistry.getInstance(),
-                    DatabaseTypes.getDatabaseType(databaseType), sqlCasesLoader.getSupportedSQL(sqlCaseId, SQLCaseType.Placeholder, Collections.emptyList()), null, null).parse().getType()) {
+                    DatabaseTypes.getTrunkDatabaseType(databaseType), sqlCasesLoader.getSupportedSQL(sqlCaseId, SQLCaseType.Placeholder, Collections.emptyList()), null, null).parse().getType()) {
                 continue;
             }
             // TODO only for prepared statement for now

@@ -58,7 +58,7 @@ public final class MasterSlaveSchema extends LogicSchema {
         // TODO we should remove it after none-sharding parsingEngine completed.
         shardingRule = new ShardingRule(new ShardingRuleConfiguration(), getDataSources().keySet());
         metaData = createShardingMetaData();
-        parseEngine = new MasterSlaveSQLParseEntry(DatabaseTypes.getDatabaseType(LogicSchemas.getInstance().getDatabaseType().name()));
+        parseEngine = new MasterSlaveSQLParseEntry(DatabaseTypes.getTrunkDatabaseType(LogicSchemas.getInstance().getDatabaseType().name()));
     }
     
     private MasterSlaveRule createMasterSlaveRule(final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final boolean isUsingRegistry) {

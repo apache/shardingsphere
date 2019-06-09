@@ -69,7 +69,7 @@ public class EncryptDataSource extends AbstractUnsupportedOperationDataSource im
         this.dataSource = dataSource;
         databaseType = getDatabaseType();
         encryptRule = new EncryptRule(encryptRuleConfiguration);
-        parseEngine = new EncryptSQLParseEntry(DatabaseTypes.getDatabaseType(databaseType.name()), encryptRule, createEncryptTableMetaData());
+        parseEngine = new EncryptSQLParseEntry(DatabaseTypes.getTrunkDatabaseType(databaseType.name()), encryptRule, createEncryptTableMetaData());
     }
     
     @SneakyThrows

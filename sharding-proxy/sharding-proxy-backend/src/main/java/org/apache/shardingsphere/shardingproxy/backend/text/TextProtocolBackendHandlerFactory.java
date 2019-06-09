@@ -76,7 +76,7 @@ public final class TextProtocolBackendHandlerFactory {
         if (AUTO_COMMIT.contains(sql.toUpperCase())) {
             return backendConnection.getStateHandler().isInTransaction() ? new TransactionBackendHandler(TransactionOperationType.COMMIT, backendConnection) : new SkipBackendHandler();
         }
-        SQLStatement sqlStatement = new SQLParseEngine(MasterSlaveParseRuleRegistry.getInstance(), DatabaseTypes.getDatabaseType(databaseType.name()), sql, null, null).parse();
+        SQLStatement sqlStatement = new SQLParseEngine(MasterSlaveParseRuleRegistry.getInstance(), DatabaseTypes.getTrunkDatabaseType(databaseType.name()), sql, null, null).parse();
         return SQLType.DAL == sqlStatement.getType() ? createDALBackendHandler(sqlStatement, sql, backendConnection) : new QueryBackendHandler(sql, backendConnection);
     }
     

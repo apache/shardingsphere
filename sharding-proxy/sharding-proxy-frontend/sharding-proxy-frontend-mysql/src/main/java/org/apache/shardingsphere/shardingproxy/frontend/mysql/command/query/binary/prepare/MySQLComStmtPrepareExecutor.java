@@ -62,7 +62,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     @Override
     public Collection<DatabasePacket> execute() {
         // TODO we should use none-sharding parsing engine in future.
-        ShardingSQLParseEntry shardingSQLParseEntry = new ShardingSQLParseEntry(DatabaseTypes.getDatabaseType(LogicSchemas.getInstance().getDatabaseType().name()), 
+        ShardingSQLParseEntry shardingSQLParseEntry = new ShardingSQLParseEntry(DatabaseTypes.getTrunkDatabaseType(LogicSchemas.getInstance().getDatabaseType().name()), 
                 logicSchema.getShardingRule(), logicSchema.getMetaData().getTable(), logicSchema.getParsingResultCache());
         Collection<DatabasePacket> result = new LinkedList<>();
         int currentSequenceId = 0;

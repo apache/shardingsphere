@@ -81,7 +81,7 @@ public final class EncryptIntegrateParsingTest extends AbstractBaseIntegrateSQLP
     @Test
     public void parsingSupportedSQL() throws Exception {
         String sql = sqlCasesLoader.getSupportedSQL(sqlCaseId, sqlCaseType, Collections.emptyList());
-        SQLParser sqlParser = SQLParserFactory.newInstance(DatabaseTypes.getDatabaseType(databaseType), sql);
+        SQLParser sqlParser = SQLParserFactory.newInstance(DatabaseTypes.getTrunkDatabaseType(databaseType), sql);
         Method addErrorListener = sqlParser.getClass().getMethod("addErrorListener", ANTLRErrorListener.class);
         addErrorListener.invoke(sqlParser, new BaseErrorListener() {
             
@@ -98,9 +98,9 @@ public final class EncryptIntegrateParsingTest extends AbstractBaseIntegrateSQLP
         ParserResult parserResult = parserResultSetLoader.getParserResult(sqlCaseId);
         if (null != parserResult) {
             String sql = sqlCasesLoader.getSupportedSQL(sqlCaseId, sqlCaseType, parserResult.getParameters());
-            DbType execDatabaseType = DatabaseTypes.getDatabaseType(databaseType);
+            DbType execDatabaseType = DatabaseTypes.getTrunkDatabaseType(databaseType);
             if ("H2".equals(databaseType)) {
-                execDatabaseType = DatabaseTypes.getDatabaseType("MySQL");
+                execDatabaseType = DatabaseTypes.getTrunkDatabaseType("MySQL");
             }
             new EncryptSQLStatementAssert(new EncryptSQLParseEntry(execDatabaseType, buildShardingRule(), AbstractBaseIntegrateSQLParsingTest.getShardingTableMetaData()).parse(sql, false), 
                     sqlCaseId, sqlCaseType, sqlCasesLoader, parserResultSetLoader, execDatabaseType.getName()).assertSQLStatement();

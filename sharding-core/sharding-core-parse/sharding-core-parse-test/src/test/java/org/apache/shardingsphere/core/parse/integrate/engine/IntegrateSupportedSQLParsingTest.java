@@ -63,7 +63,7 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
     @Test
     public void parsingSupportedSQL() throws Exception {
         String sql = sqlCasesLoader.getSupportedSQL(sqlCaseId, sqlCaseType, Collections.emptyList());
-        SQLParser sqlParser = SQLParserFactory.newInstance(DatabaseTypes.getDatabaseType(databaseType), sql);
+        SQLParser sqlParser = SQLParserFactory.newInstance(DatabaseTypes.getTrunkDatabaseType(databaseType), sql);
         Method addErrorListener = sqlParser.getClass().getMethod("addErrorListener", ANTLRErrorListener.class);
         addErrorListener.invoke(sqlParser, new BaseErrorListener() {
             
@@ -82,7 +82,7 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
         if ("select_with_same_table_name_and_alias".equals(sqlCaseId)) {
             return;
         }
-        new SQLStatementAssert(new ShardingSQLParseEntry(DatabaseTypes.getDatabaseType(databaseType), getShardingRule(), getShardingTableMetaData(), new ParsingResultCache())
+        new SQLStatementAssert(new ShardingSQLParseEntry(DatabaseTypes.getTrunkDatabaseType(databaseType), getShardingRule(), getShardingTableMetaData(), new ParsingResultCache())
                 .parse(sql, false), sqlCaseId, sqlCaseType, databaseType).assertSQLStatement();
     }
 }

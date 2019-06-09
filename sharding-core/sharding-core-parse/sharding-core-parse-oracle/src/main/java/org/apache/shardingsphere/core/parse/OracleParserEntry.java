@@ -33,7 +33,7 @@ public final class OracleParserEntry implements SQLParserEntry {
     
     @Override
     public DbType getDatabaseType() {
-        return DatabaseTypes.getDatabaseType("Oracle");
+        return DatabaseTypes.getTrunkDatabaseType("Oracle");
     }
     
     @Override

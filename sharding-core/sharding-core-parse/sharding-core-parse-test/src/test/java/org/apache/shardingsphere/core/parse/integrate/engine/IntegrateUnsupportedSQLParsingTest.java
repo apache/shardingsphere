@@ -48,7 +48,7 @@ public final class IntegrateUnsupportedSQLParsingTest extends AbstractBaseIntegr
     
     @Test(expected = SQLParsingException.class)
     public void assertUnsupportedSQL() {
-        new ShardingSQLParseEntry(DatabaseTypes.getDatabaseType(databaseType), getShardingRule(), getShardingTableMetaData(), new ParsingResultCache())
+        new ShardingSQLParseEntry(DatabaseTypes.getTrunkDatabaseType(databaseType), getShardingRule(), getShardingTableMetaData(), new ParsingResultCache())
                 .parse(sqlCasesLoader.getUnsupportedSQL(sqlCaseId, sqlCaseType, Collections.emptyList()), false);
     }
 }

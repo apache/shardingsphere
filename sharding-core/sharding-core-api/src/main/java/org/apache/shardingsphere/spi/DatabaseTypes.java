@@ -52,7 +52,7 @@ public final class DatabaseTypes {
      * @param name database name 
      * @return database type
      */
-    public static DbType getDatabaseType(final String name) {
+    public static DbType getTrunkDatabaseType(final String name) {
         return DATABASE_TYPES.get(name) instanceof BranchDatabaseType ? ((BranchDatabaseType) DATABASE_TYPES.get(name)).getTrunkDatabaseType() : DATABASE_TYPES.get(name);
     }
 }

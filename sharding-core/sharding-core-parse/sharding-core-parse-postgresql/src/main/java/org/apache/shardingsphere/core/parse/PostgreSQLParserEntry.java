@@ -33,7 +33,7 @@ public final class PostgreSQLParserEntry implements SQLParserEntry {
     
     @Override
     public DbType getDatabaseType() {
-        return DatabaseTypes.getDatabaseType("PostgreSQL");
+        return DatabaseTypes.getTrunkDatabaseType("PostgreSQL");
     }
     
     @Override

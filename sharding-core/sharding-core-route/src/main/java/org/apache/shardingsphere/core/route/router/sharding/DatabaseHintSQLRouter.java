@@ -47,7 +47,7 @@ public final class DatabaseHintSQLRouter implements ShardingRouter {
     
     @Override
     public SQLStatement parse(final String logicSQL, final boolean useCache) {
-        return new SQLParseEngine(MasterSlaveParseRuleRegistry.getInstance(), DatabaseTypes.getDatabaseType(databaseType.name()), logicSQL, null, null).parse();
+        return new SQLParseEngine(MasterSlaveParseRuleRegistry.getInstance(), DatabaseTypes.getTrunkDatabaseType(databaseType.name()), logicSQL, null, null).parse();
     }
     
     @Override

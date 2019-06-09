@@ -33,7 +33,7 @@ public final class SQLServerParserEntry implements SQLParserEntry {
     
     @Override
     public DbType getDatabaseType() {
-        return DatabaseTypes.getDatabaseType("SQLServer");
+        return DatabaseTypes.getTrunkDatabaseType("SQLServer");
     }
     
     @Override

@@ -48,7 +48,7 @@ public final class IntegrateSQLParsingExceptionTest extends AbstractBaseIntegrat
     
     @Test(expected = SQLParsingException.class)
     public void assertSQLParsingExceptionSQL() {
-        new ShardingSQLParseEntry(DatabaseTypes.getDatabaseType(databaseType), getShardingRule(), getShardingTableMetaData(), new ParsingResultCache())
+        new ShardingSQLParseEntry(DatabaseTypes.getTrunkDatabaseType(databaseType), getShardingRule(), getShardingTableMetaData(), new ParsingResultCache())
                 .parse(sqlCasesLoader.getSQLParsingErrorSQL(sqlCaseId, sqlCaseType, Collections.emptyList()), false);
     }
 }

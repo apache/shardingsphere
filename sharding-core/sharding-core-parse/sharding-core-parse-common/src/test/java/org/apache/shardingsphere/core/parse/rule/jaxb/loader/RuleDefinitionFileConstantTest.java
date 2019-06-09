@@ -32,7 +32,7 @@ public final class RuleDefinitionFileConstantTest {
     
     @Test
     public void assertGetExtractorRuleDefinitionFile() {
-        assertThat(RuleDefinitionFileConstant.getExtractorRuleDefinitionFile("sharding", DatabaseTypes.getDatabaseType("MySQL")),
+        assertThat(RuleDefinitionFileConstant.getExtractorRuleDefinitionFile("sharding", DatabaseTypes.getTrunkDatabaseType("MySQL")),
                 is("META-INF/parsing-rule-definition/sharding/mysql/extractor-rule-definition.xml"));
     }
     
@@ -48,13 +48,13 @@ public final class RuleDefinitionFileConstantTest {
     
     @Test
     public void assertGetFillerRuleDefinitionFile() {
-        assertThat(RuleDefinitionFileConstant.getFillerRuleDefinitionFile("sharding", DatabaseTypes.getDatabaseType("MySQL")), 
+        assertThat(RuleDefinitionFileConstant.getFillerRuleDefinitionFile("sharding", DatabaseTypes.getTrunkDatabaseType("MySQL")), 
                 is("META-INF/parsing-rule-definition/sharding/mysql/filler-rule-definition.xml"));
     }
     
     @Test
     public void assertGetSQLStatementRuleDefinitionFile() {
-        assertThat(RuleDefinitionFileConstant.getSQLStatementRuleDefinitionFile("sharding", DatabaseTypes.getDatabaseType("MySQL")), 
+        assertThat(RuleDefinitionFileConstant.getSQLStatementRuleDefinitionFile("sharding", DatabaseTypes.getTrunkDatabaseType("MySQL")), 
                 is("META-INF/parsing-rule-definition/sharding/mysql/sql-statement-rule-definition.xml"));
     }
 }

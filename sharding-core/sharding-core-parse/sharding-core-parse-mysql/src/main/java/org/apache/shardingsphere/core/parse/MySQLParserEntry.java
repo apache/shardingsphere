@@ -33,7 +33,7 @@ public final class MySQLParserEntry implements SQLParserEntry {
     
     @Override
     public DbType getDatabaseType() {
-        return DatabaseTypes.getDatabaseType("MySQL");
+        return DatabaseTypes.getTrunkDatabaseType("MySQL");
     }
     
     @Override
