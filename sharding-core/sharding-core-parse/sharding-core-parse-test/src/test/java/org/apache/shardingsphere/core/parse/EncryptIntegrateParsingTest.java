@@ -36,7 +36,6 @@ import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptRuleConfigu
 import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.core.yaml.swapper.impl.EncryptRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.spi.DatabaseTypes;
-import org.apache.shardingsphere.spi.DbType;
 import org.apache.shardingsphere.test.sql.EncryptSQLCasesLoader;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.SQLCasesLoader;
@@ -98,9 +97,9 @@ public final class EncryptIntegrateParsingTest extends AbstractBaseIntegrateSQLP
         ParserResult parserResult = parserResultSetLoader.getParserResult(sqlCaseId);
         if (null != parserResult) {
             String sql = sqlCasesLoader.getSupportedSQL(sqlCaseId, sqlCaseType, parserResult.getParameters());
-            DbType trunkDatabaseType = DatabaseTypes.getTrunkDatabaseType(databaseType);
-            new EncryptSQLStatementAssert(new EncryptSQLParseEntry(trunkDatabaseType, buildShardingRule(), AbstractBaseIntegrateSQLParsingTest.getShardingTableMetaData()).parse(sql, false), 
-                    sqlCaseId, sqlCaseType, sqlCasesLoader, parserResultSetLoader, trunkDatabaseType.getName()).assertSQLStatement();
+            EncryptSQLParseEntry encryptSQLParseEntry = new EncryptSQLParseEntry(
+                    DatabaseTypes.getActualDatabaseType(databaseType), buildShardingRule(), AbstractBaseIntegrateSQLParsingTest.getShardingTableMetaData());
+            new EncryptSQLStatementAssert(encryptSQLParseEntry.parse(sql, false), sqlCaseId, sqlCaseType, sqlCasesLoader, parserResultSetLoader).assertSQLStatement();
         }
     }
 }

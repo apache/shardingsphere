@@ -41,19 +41,16 @@ public final class EncryptSQLStatementAssert {
     
     private final ConditionAssert conditionAssert;
     
-    private final String databaseType;
-    
     private final InsertNamesAndValuesAssert insertNamesAndValuesAssert;
     
     public EncryptSQLStatementAssert(final SQLStatement actual, final String sqlCaseId, 
-                                     final SQLCaseType sqlCaseType, final SQLCasesLoader sqlLoader, final ParserResultSetLoader parserResultSetLoader, final String databaseType) {
+                                     final SQLCaseType sqlCaseType, final SQLCasesLoader sqlLoader, final ParserResultSetLoader parserResultSetLoader) {
         SQLStatementAssertMessage assertMessage = new SQLStatementAssertMessage(sqlLoader, parserResultSetLoader, sqlCaseId, sqlCaseType);
         this.actual = actual;
         expected = parserResultSetLoader.getParserResult(sqlCaseId);
         tableAssert = new TableAssert(assertMessage);
         conditionAssert = new ConditionAssert(assertMessage);
         insertNamesAndValuesAssert = new InsertNamesAndValuesAssert(assertMessage, sqlCaseType);
-        this.databaseType = databaseType;
     }
     
     /**
@@ -61,9 +58,7 @@ public final class EncryptSQLStatementAssert {
      */
     public void assertSQLStatement() {
         tableAssert.assertTables(actual.getTables(), expected.getTables());
-        if ("MySQL".equals(databaseType)) {
-            conditionAssert.assertConditions(actual.getEncryptConditions(), expected.getEncryptConditions());
-        }
+        conditionAssert.assertConditions(actual.getEncryptConditions(), expected.getEncryptConditions());
         if (actual instanceof InsertStatement) {
             insertNamesAndValuesAssert.assertInsertNamesAndValues((InsertStatement) actual, expected.getInsertColumnsAndValues());
         }
