@@ -25,9 +25,9 @@ package org.apache.shardingsphere.spi;
 public interface BranchDatabaseType extends DbType {
     
     /**
-     * Get master database type.
+     * Get trunk database type.
      * 
-     * @return master database type
+     * @return trunk database type
      */
-    DbType getMasterDatabaseType();
+    DbType getTrunkDatabaseType();
 }
