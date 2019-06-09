@@ -53,6 +53,9 @@ public final class DatabaseTypes {
      * @return actual database type
      */
     public static DbType getActualDatabaseType(final String name) {
+        if (!DATABASE_TYPES.containsKey(name)) {
+            throw new UnsupportedOperationException(String.format("Unsupported database: '%s'", name));
+        }
         return DATABASE_TYPES.get(name);
     }
     
@@ -63,6 +66,21 @@ public final class DatabaseTypes {
      * @return trunk database type
      */
     public static DbType getTrunkDatabaseType(final String name) {
-        return DATABASE_TYPES.get(name) instanceof BranchDatabaseType ? ((BranchDatabaseType) DATABASE_TYPES.get(name)).getTrunkDatabaseType() : DATABASE_TYPES.get(name);
+        return DATABASE_TYPES.get(name) instanceof BranchDatabaseType ? ((BranchDatabaseType) DATABASE_TYPES.get(name)).getTrunkDatabaseType() : getActualDatabaseType(name);
+    }
+    
+    /**
+     * Get actual database type.
+     *
+     * @param productName database product name 
+     * @return actual database type
+     */
+    public static DbType getActualDatabaseTypeByProductName(final String productName) {
+        for (DbType each : DATABASE_TYPES.values()) {
+            if (each.getProductName().equals(productName)) {
+                return each;
+            }
+        }
+        throw new UnsupportedOperationException(String.format("Unsupported database from product name: '%s'", productName));
     }
 }
