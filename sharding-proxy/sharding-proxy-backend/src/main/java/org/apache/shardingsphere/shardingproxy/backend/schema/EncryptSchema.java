@@ -45,14 +45,14 @@ public final class EncryptSchema extends LogicSchema {
     
     private final ShardingRule shardingRule;
     
-    private final EncryptSQLParseEntry encryptSQLParseEntry;
+    private final EncryptSQLParseEntry parseEngine;
     
     public EncryptSchema(final String name, final Map<String, YamlDataSourceParameter> dataSources, final EncryptRuleConfiguration encryptRuleConfiguration) {
         super(name, dataSources);
         encryptRule = new EncryptRule(encryptRuleConfiguration);
         shardingRule = new ShardingRule(new ShardingRuleConfiguration(), getDataSources().keySet());
         metaData = createShardingMetaData();
-        encryptSQLParseEntry = new EncryptSQLParseEntry(LogicSchemas.getInstance().getDatabaseType(), encryptRule, metaData.getTable());
+        parseEngine = new EncryptSQLParseEntry(LogicSchemas.getInstance().getDatabaseType(), encryptRule, metaData.getTable());
     }
     
     private ShardingMetaData createShardingMetaData() {

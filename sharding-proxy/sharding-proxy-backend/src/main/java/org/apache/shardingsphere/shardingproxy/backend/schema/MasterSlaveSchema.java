@@ -46,9 +46,9 @@ public final class MasterSlaveSchema extends LogicSchema {
     
     private MasterSlaveRule masterSlaveRule;
     
-    private final ShardingMetaData metaData;
-    
     private final ShardingRule shardingRule;
+    
+    private final ShardingMetaData metaData;
     
     private final MasterSlaveSQLParseEntry parseEngine;
     
