@@ -25,7 +25,6 @@ import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.MasterSlaveConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata.CachedDatabaseMetaData;
-import org.apache.shardingsphere.spi.DatabaseTypes;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -56,7 +55,7 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
         super(dataSourceMap);
         cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap);
         this.masterSlaveRule = new MasterSlaveRule(masterSlaveRuleConfig);
-        parseEngine = new MasterSlaveSQLParseEntry(DatabaseTypes.getTrunkDatabaseType(getDatabaseType().name()));
+        parseEngine = new MasterSlaveSQLParseEntry(getDatabaseType());
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
     }
     
@@ -65,7 +64,7 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
         cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap);
         this.masterSlaveRule = masterSlaveRule;
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
-        parseEngine = new MasterSlaveSQLParseEntry(DatabaseTypes.getTrunkDatabaseType(getDatabaseType().name()));
+        parseEngine = new MasterSlaveSQLParseEntry(getDatabaseType());
     }
     
     private DatabaseMetaData createCachedDatabaseMetaData(final Map<String, DataSource> dataSourceMap) throws SQLException {

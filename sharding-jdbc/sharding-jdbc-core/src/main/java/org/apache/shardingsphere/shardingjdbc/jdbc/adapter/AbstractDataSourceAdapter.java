@@ -22,6 +22,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
+import org.apache.shardingsphere.spi.DatabaseTypes;
+import org.apache.shardingsphere.spi.DbType;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 
 import javax.sql.DataSource;
@@ -44,7 +46,7 @@ import java.util.logging.Logger;
 @Setter
 public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOperationDataSource implements AutoCloseable {
     
-    private final DatabaseType databaseType;
+    private final DbType databaseType;
     
     private final Map<String, DataSource> dataSourceMap;
     
@@ -54,26 +56,26 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
     
     public AbstractDataSourceAdapter(final Map<String, DataSource> dataSourceMap) throws SQLException {
         databaseType = getDatabaseType(dataSourceMap.values());
-        shardingTransactionManagerEngine.init(databaseType, dataSourceMap);
+        shardingTransactionManagerEngine.init(DatabaseType.valueOf(databaseType.getName()), dataSourceMap);
         this.dataSourceMap = dataSourceMap;
     }
     
-    protected final DatabaseType getDatabaseType(final Collection<DataSource> dataSources) throws SQLException {
-        DatabaseType result = null;
+    protected final DbType getDatabaseType(final Collection<DataSource> dataSources) throws SQLException {
+        DbType result = null;
         for (DataSource each : dataSources) {
-            DatabaseType databaseType = getDatabaseType(each);
-            Preconditions.checkState(null == result || result.equals(databaseType), String.format("Database type inconsistent with '%s' and '%s'", result, databaseType));
+            DbType databaseType = getDatabaseType(each);
+            Preconditions.checkState(null == result || result == databaseType, String.format("Database type inconsistent with '%s' and '%s'", result, databaseType));
             result = databaseType;
         }
         return result;
     }
     
-    private DatabaseType getDatabaseType(final DataSource dataSource) throws SQLException {
+    private DbType getDatabaseType(final DataSource dataSource) throws SQLException {
         if (dataSource instanceof AbstractDataSourceAdapter) {
             return ((AbstractDataSourceAdapter) dataSource).databaseType;
         }
         try (Connection connection = dataSource.getConnection()) {
-            return DatabaseType.valueFrom(connection.getMetaData().getDatabaseProductName());
+            return DatabaseTypes.getActualDatabaseTypeByProductName(connection.getMetaData().getDatabaseProductName());
         }
     }
     
