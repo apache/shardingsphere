@@ -20,6 +20,8 @@ package org.apache.shardingsphere.orchestration.internal.registry.config.service
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
+import org.apache.shardingsphere.api.config.encryptor.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.config.DataSourceConfiguration;
@@ -45,6 +47,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.hasItems;
@@ -78,6 +81,8 @@ public final class ConfigurationServiceTest {
             + "        shardingColumn: order_id\n";
     
     private static final String MASTER_SLAVE_RULE_YAML = "masterDataSourceName: master_ds\n" + "name: ms_ds\n" + "slaveDataSourceNames:\n" + "- slave_ds_0\n" + "- slave_ds_1\n";
+    
+    private static final String ENCRYPT_RULE_YAML = "encryptors:\n  order_encryptor:\n    type: AES\n    qualifiedColumns: t_order.order_id\n    props:\n      aes.key.value: 123456";
     
     private static final String AUTHENTICATION_YAML = "users:\n" + "  root1:\n" + "    authorizedSchemas: sharding_db\n" + "    password: root1\n" 
             + "  root2:\n" + "    authorizedSchemas: sharding_db,ms_db\n" + "    password: root2\n";
@@ -312,6 +317,19 @@ public final class ConfigurationServiceTest {
         ConfigurationService configurationService = new ConfigurationService("test", regCenter);
         MasterSlaveRuleConfiguration actual = configurationService.loadMasterSlaveRuleConfiguration("sharding_db");
         assertThat(actual.getName(), is("ms_ds"));
+    }
+    
+    @Test
+    public void assertLoadEncryptRuleConfiguration() {
+        when(regCenter.getDirectly("/test/config/schema/sharding_db/rule")).thenReturn(ENCRYPT_RULE_YAML);
+        ConfigurationService configurationService = new ConfigurationService("test", regCenter);
+        EncryptRuleConfiguration actual = configurationService.loadEncryptRuleConfiguration("sharding_db");
+        assertThat(actual.getEncryptorRuleConfigs().size(), is(1));
+        Entry<String, EncryptorRuleConfiguration> entry = actual.getEncryptorRuleConfigs().entrySet().iterator().next();
+        assertThat(entry.getKey(), is("order_encryptor"));
+        assertThat(entry.getValue().getType(), is("AES"));
+        assertThat(entry.getValue().getQualifiedColumns(), is("t_order.order_id"));
+        assertThat(entry.getValue().getProperties().get("aes.key.value").toString(), is("123456"));
     }
     
     @Test
