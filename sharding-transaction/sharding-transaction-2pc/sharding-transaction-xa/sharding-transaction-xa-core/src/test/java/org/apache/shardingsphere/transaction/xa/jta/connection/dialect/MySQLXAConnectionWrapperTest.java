@@ -19,6 +19,7 @@ package org.apache.shardingsphere.transaction.xa.jta.connection.dialect;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.spi.DatabaseTypes;
 import org.apache.shardingsphere.transaction.xa.fixture.DataSourceUtils;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.XADataSourceFactory;
 import org.junit.Before;
@@ -53,7 +54,7 @@ public final class MySQLXAConnectionWrapperTest {
     public void setUp() throws SQLException, ClassNotFoundException {
         Connection connection = (Connection) mock(Class.forName("com.mysql.jdbc.Connection"));
         DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, DatabaseType.MySQL, "ds1");
-        xaDataSource = XADataSourceFactory.build(DatabaseType.MySQL, dataSource);
+        xaDataSource = XADataSourceFactory.build(DatabaseTypes.getActualDatabaseType("MySQL"), dataSource);
         when(this.connection.unwrap((Class<Object>) any())).thenReturn(connection);
     }
     

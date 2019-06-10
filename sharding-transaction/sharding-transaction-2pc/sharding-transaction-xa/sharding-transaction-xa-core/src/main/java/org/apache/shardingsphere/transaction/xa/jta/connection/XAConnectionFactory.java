@@ -19,7 +19,7 @@ package org.apache.shardingsphere.transaction.xa.jta.connection;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.spi.DbType;
 import org.apache.shardingsphere.transaction.xa.jta.connection.dialect.H2XAConnectionWrapper;
 import org.apache.shardingsphere.transaction.xa.jta.connection.dialect.MySQLXAConnectionWrapper;
 import org.apache.shardingsphere.transaction.xa.jta.connection.dialect.PostgreSQLXAConnectionWrapper;
@@ -44,13 +44,13 @@ public final class XAConnectionFactory {
      * @param xaDataSource XA data source
      * @return XA connection
      */
-    public static XAConnection createXAConnection(final DatabaseType databaseType, final XADataSource xaDataSource, final Connection connection) {
-        switch (databaseType) {
-            case MySQL:
+    public static XAConnection createXAConnection(final DbType databaseType, final XADataSource xaDataSource, final Connection connection) {
+        switch (databaseType.getName()) {
+            case "MySQL":
                 return new MySQLXAConnectionWrapper().wrap(xaDataSource, connection);
-            case PostgreSQL:
+            case "PostgreSQL":
                 return new PostgreSQLXAConnectionWrapper().wrap(xaDataSource, connection);
-            case H2:
+            case "H2":
                 return new H2XAConnectionWrapper().wrap(xaDataSource, connection);
             default:
                 throw new UnsupportedOperationException(String.format("Cannot support database type: `%s`", databaseType));

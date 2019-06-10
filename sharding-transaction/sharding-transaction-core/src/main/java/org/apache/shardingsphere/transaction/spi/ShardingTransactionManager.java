@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.transaction.spi;
 
-import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.spi.DbType;
 import org.apache.shardingsphere.transaction.core.ResourceDataSource;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
@@ -39,7 +39,7 @@ public interface ShardingTransactionManager extends AutoCloseable {
      * @param databaseType database type
      * @param resourceDataSources resource data sources
      */
-    void init(DatabaseType databaseType, Collection<ResourceDataSource> resourceDataSources);
+    void init(DbType databaseType, Collection<ResourceDataSource> resourceDataSources);
     
     /**
      * Get transaction type.

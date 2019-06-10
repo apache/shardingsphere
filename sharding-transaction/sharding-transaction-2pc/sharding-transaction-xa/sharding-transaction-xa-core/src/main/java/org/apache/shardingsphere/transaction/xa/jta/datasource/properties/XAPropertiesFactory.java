@@ -19,7 +19,7 @@ package org.apache.shardingsphere.transaction.xa.jta.datasource.properties;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.spi.DbType;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.H2XAProperties;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.MySQLXAProperties;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.OracleXAProperties;
@@ -40,18 +40,18 @@ public final class XAPropertiesFactory {
      * @param databaseType database type
      * @return XA properties
      */
-    public static XAProperties createXAProperties(final DatabaseType databaseType) {
-        switch (databaseType) {
-            case H2:
-                return new H2XAProperties();
-            case MySQL:
+    public static XAProperties createXAProperties(final DbType databaseType) {
+        switch (databaseType.getName()) {
+            case "MySQL":
                 return new MySQLXAProperties();
-            case PostgreSQL:
+            case "PostgreSQL":
                 return new PostgreSQLXAProperties();
-            case Oracle:
+            case "Oracle":
                 return new OracleXAProperties();
-            case SQLServer:
+            case "SQLServer":
                 return new SQLServerXAProperties();
+            case "H2":
+                return new H2XAProperties();
             default:
                 throw new UnsupportedOperationException(String.format("Cannot support database type: `%s`", databaseType));
         }

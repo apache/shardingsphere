@@ -19,7 +19,6 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapp
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.SimpleQueryShardingEngine;
-import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.optimize.OptimizeEngineFactory;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
@@ -37,7 +36,6 @@ import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.MasterSlaveSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSchema;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
-import org.apache.shardingsphere.spi.DatabaseTypes;
 import org.apache.shardingsphere.spi.DbType;
 
 import java.sql.Connection;
@@ -60,9 +58,9 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
     private final LogicSchema logicSchema;
     
     @Override
-    public SQLRouteResult route(final String sql, final DatabaseType databaseType) {
+    public SQLRouteResult route(final String sql, final DbType databaseType) {
         if (logicSchema instanceof ShardingSchema) {
-            return doShardingRoute(sql, DatabaseTypes.getActualDatabaseType(databaseType.name()));
+            return doShardingRoute(sql, databaseType);
         }
         if (logicSchema instanceof MasterSlaveSchema) {
             return doMasterSlaveRoute(sql);

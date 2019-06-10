@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.fixture;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.spi.DbType;
 import org.apache.shardingsphere.transaction.core.ResourceDataSource;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
 import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;
@@ -39,7 +39,7 @@ public abstract class AbstractShardingTransactionManagerFixture implements Shard
     private final Map<String, DataSource> dataSourceMap = new HashMap<>();
     
     @Override
-    public final void init(final DatabaseType databaseType, final Collection<ResourceDataSource> resourceDataSources) {
+    public final void init(final DbType databaseType, final Collection<ResourceDataSource> resourceDataSources) {
         for (ResourceDataSource each : resourceDataSources) {
             dataSourceMap.put(each.getOriginalName(), each.getDataSource());
         }

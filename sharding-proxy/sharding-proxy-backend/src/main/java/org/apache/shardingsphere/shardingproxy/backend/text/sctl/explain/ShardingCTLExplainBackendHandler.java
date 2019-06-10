@@ -19,7 +19,6 @@ package org.apache.shardingsphere.shardingproxy.backend.text.sctl.explain;
 
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.route.RouteUnit;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapper.StatementExecutorWrapper;
@@ -60,7 +59,7 @@ public final class ShardingCTLExplainBackendHandler implements TextProtocolBacke
             return new ErrorResponse(new InvalidShardingCTLFormatException(sql));
         }
         StatementExecutorWrapper statementExecutorWrapper = new StatementExecutorWrapper(backendConnection.getLogicSchema());
-        routeUnits = statementExecutorWrapper.route(explainStatement.get().getSql(), DatabaseType.valueOf(LogicSchemas.getInstance().getDatabaseType().getName())).getRouteUnits().iterator();
+        routeUnits = statementExecutorWrapper.route(explainStatement.get().getSql(), LogicSchemas.getInstance().getDatabaseType()).getRouteUnits().iterator();
         queryHeaders = new ArrayList<>(2);
         queryHeaders.add(new QueryHeader("", "", "datasource_name", "", 255, Types.CHAR, 0));
         queryHeaders.add(new QueryHeader("", "", "sql", "", 255, Types.CHAR, 0));

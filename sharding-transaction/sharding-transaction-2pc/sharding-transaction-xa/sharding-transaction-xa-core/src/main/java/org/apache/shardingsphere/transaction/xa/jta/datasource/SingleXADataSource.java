@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.transaction.xa.jta.datasource;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.spi.DbType;
 import org.apache.shardingsphere.transaction.xa.jta.connection.SingleXAConnection;
 import org.apache.shardingsphere.transaction.xa.jta.connection.XAConnectionFactory;
 
@@ -41,13 +41,13 @@ public final class SingleXADataSource extends AbstractUnsupportedSingleXADataSou
     @Getter
     private final XADataSource xaDataSource;
     
-    private final DatabaseType databaseType;
+    private final DbType databaseType;
     
     private final DataSource originalDataSource;
     
     private final boolean isOriginalXADataSource;
     
-    public SingleXADataSource(final DatabaseType databaseType, final String resourceName, final DataSource dataSource) {
+    public SingleXADataSource(final DbType databaseType, final String resourceName, final DataSource dataSource) {
         this.databaseType = databaseType;
         this.resourceName = resourceName;
         originalDataSource = dataSource;
