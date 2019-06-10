@@ -18,20 +18,23 @@
 package org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource;
 
 import com.google.common.base.Preconditions;
+import com.google.common.eventbus.Subscribe;
 import lombok.AccessLevel;
 import lombok.Getter;
-
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.api.config.RuleConfiguration;
 import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.encryptor.EncryptorRuleConfiguration;
+import org.apache.shardingsphere.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.core.constant.ShardingConstant;
 import org.apache.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.internal.registry.ShardingOrchestrationFacade;
+import org.apache.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
+import org.apache.shardingsphere.orchestration.internal.registry.config.event.EncryptRuleChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.service.ConfigurationService;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.util.DataSourceConverter;
 
-import javax.sql.DataSource;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -49,16 +52,16 @@ public class OrchestrationEncryptDataSource extends AbstractOrchestrationDataSou
     
     private static final String ENCRYPT_DATASOURCE = "encrypt-datasource";
     
-    private final EncryptDataSource dataSource;
+    private EncryptDataSource dataSource;
     
     public OrchestrationEncryptDataSource(final OrchestrationConfiguration orchestrationConfig) {
         super(new ShardingOrchestrationFacade(orchestrationConfig, Collections.singletonList(ShardingConstant.LOGIC_SCHEMA_NAME)));
         ConfigurationService configService = getShardingOrchestrationFacade().getConfigService();
         EncryptRuleConfiguration encryptRuleConfiguration = configService.loadEncryptRuleConfiguration(ShardingConstant.LOGIC_SCHEMA_NAME);
         Preconditions.checkState(!encryptRuleConfiguration.getEncryptorRuleConfigs().isEmpty(), "No available encrypt rule configuration to load.");
-        Map<String, DataSource> dataSourceMap = DataSourceConverter.getDataSourceMap(configService.loadDataSourceConfigurations(ShardingConstant.LOGIC_SCHEMA_NAME));
-        Preconditions.checkState(1 == dataSourceMap.size(), String.format("There should be only one datasource for encrypt, but now has %d datasource(s)", dataSourceMap.size()));
-        dataSource = new EncryptDataSource(dataSourceMap.values().iterator().next(), encryptRuleConfiguration);
+        Map<String, DataSourceConfiguration> dataSourceConfigurations = configService.loadDataSourceConfigurations(ShardingConstant.LOGIC_SCHEMA_NAME);
+        checkDataSourceConfiguration(dataSourceConfigurations);
+        dataSource = new EncryptDataSource(DataSourceConverter.getDataSourceMap(dataSourceConfigurations).values().iterator().next(), encryptRuleConfiguration);
         initShardingOrchestrationFacade();
     }
     
@@ -70,6 +73,10 @@ public class OrchestrationEncryptDataSource extends AbstractOrchestrationDataSou
             getRuleConfigurationMap(), new Properties());
     }
     
+    private void checkDataSourceConfiguration(final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
+        Preconditions.checkState(1 == dataSourceConfigurations.size(), String.format("There should be only one datasource for encrypt, but now has %d datasource(s)", dataSourceConfigurations.size()));
+    }
+    
     private Map<String, RuleConfiguration> getRuleConfigurationMap() {
         Map<String, RuleConfiguration> result = new HashMap<>(1);
         EncryptRuleConfiguration encryptRuleConfig = new EncryptRuleConfiguration();
@@ -79,5 +86,32 @@ public class OrchestrationEncryptDataSource extends AbstractOrchestrationDataSou
         }
         result.put(ShardingConstant.LOGIC_SCHEMA_NAME, encryptRuleConfig);
         return result;
+    }
+    
+    /**
+     * Renew encrypt data source.
+     *
+     * @param dataSourceChangedEvent data source changed event
+     */
+    @Subscribe
+    @SneakyThrows
+    public final synchronized void renew(final DataSourceChangedEvent dataSourceChangedEvent) {
+        Map<String, DataSourceConfiguration> dataSourceConfigurations = dataSourceChangedEvent.getDataSourceConfigurations();
+        dataSource.close();
+        checkDataSourceConfiguration(dataSourceConfigurations);
+        dataSource = new EncryptDataSource(DataSourceConverter.getDataSourceMap(dataSourceConfigurations).values().iterator().next(), dataSource.getEncryptRule().getEncryptRuleConfig());
+        getDataSourceConfigurations().clear();
+        getDataSourceConfigurations().putAll(dataSourceConfigurations);
+    }
+    
+    /**
+     * Renew encrypt rule.
+     *
+     * @param encryptRuleChangedEvent encrypt configuration changed event
+     */
+    @Subscribe
+    @SneakyThrows
+    public final synchronized void renew(final EncryptRuleChangedEvent encryptRuleChangedEvent) {
+        dataSource = new EncryptDataSource(dataSource.getDataSource(), encryptRuleChangedEvent.getEncryptRuleConfiguration());
     }
 }
