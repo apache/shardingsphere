@@ -50,7 +50,7 @@ public abstract class AbstractEncryptJDBCDatabaseAndTableTest extends AbstractSQ
         }
         Map<String, DataSource> dataSources = getDataSources();
         Properties props = new Properties();
-        props.put(ShardingPropertiesConstant.SQL_SHOW.getKey(),true);
+        props.put(ShardingPropertiesConstant.SQL_SHOW.getKey(), true);
         encryptDataSource = new EncryptDataSource(dataSources.values().iterator().next(), createEncryptRuleConfiguration(), props);
     }
     

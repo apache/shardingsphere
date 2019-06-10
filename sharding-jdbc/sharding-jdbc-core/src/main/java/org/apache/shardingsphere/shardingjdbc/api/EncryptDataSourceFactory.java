@@ -43,12 +43,13 @@ public final class EncryptDataSourceFactory {
     public static DataSource createDataSource(final DataSource dataSource, final EncryptRuleConfiguration encryptRuleConfiguration) {
         return createDataSource(dataSource, encryptRuleConfiguration, new Properties());
     }
-
+    
     /**
-     * Create encrypt data source,with props
+     * Create encrypt data source.
+     * 
      * @param dataSource data source
      * @param encryptRuleConfiguration encrypt rule configuration
-     * @param props shardingProperties such as sql.show
+     * @param props properties
      * @return encrypt data source
      */
     public static DataSource createDataSource(final DataSource dataSource, final EncryptRuleConfiguration encryptRuleConfiguration, final Properties props) {

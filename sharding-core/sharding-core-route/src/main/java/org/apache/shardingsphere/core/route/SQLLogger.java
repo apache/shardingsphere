@@ -47,16 +47,17 @@ public final class SQLLogger {
         log("Rule Type: master-slave");
         log("SQL: {} ::: DataSources: {}", logicSQL, Joiner.on(",").join(dataSourceNames));
     }
-
+    
     /**
      * Print SQL log for encrypt rule.
-     * @param encryptSQL
+     * 
+     * @param encryptSQL encrypt SQL
      */
-    public static void logSQL(final String encryptSQL){
+    public static void logSQL(final String encryptSQL) { 
         log("Rule Type: encrypt");
         log("SQL: {}", encryptSQL);
     }
-
+    
     /**
      * Print SQL log for sharding rule.
      * 

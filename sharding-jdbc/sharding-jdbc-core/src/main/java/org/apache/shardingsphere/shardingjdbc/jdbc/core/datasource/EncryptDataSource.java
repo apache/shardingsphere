@@ -38,7 +38,13 @@ import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import java.util.logging.Logger;
 
 /**
@@ -56,12 +62,12 @@ public class EncryptDataSource extends AbstractUnsupportedOperationDataSource im
     private final EncryptRule encryptRule;
     
     private final EncryptSQLParseEntry parseEngine;
-
+    
     private final ShardingProperties shardingProperties;
-
+    
     @Setter
     private PrintWriter logWriter = new PrintWriter(System.out);
-
+    
     @SneakyThrows
     public EncryptDataSource(final DataSource dataSource, final EncryptRuleConfiguration encryptRuleConfiguration, final Properties props) {
         this.dataSource = dataSource;
@@ -118,11 +124,11 @@ public class EncryptDataSource extends AbstractUnsupportedOperationDataSource im
             return DatabaseTypes.getActualDatabaseTypeByProductName(connection.getMetaData().getDatabaseProductName());
         }
     }
-
+    
     @Override
     @SneakyThrows
     public EncryptConnection getConnection() {
-        return new EncryptConnection(databaseType, dataSource.getConnection(), encryptRule, parseEngine,shardingProperties);
+        return new EncryptConnection(databaseType, dataSource.getConnection(), encryptRule, parseEngine, shardingProperties);
     }
     
     @Override
