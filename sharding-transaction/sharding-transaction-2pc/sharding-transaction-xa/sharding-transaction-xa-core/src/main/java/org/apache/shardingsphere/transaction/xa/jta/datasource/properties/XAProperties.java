@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.transaction.xa.jta.datasource.properties;
 
 import org.apache.shardingsphere.core.config.DatabaseAccessConfiguration;
+import org.apache.shardingsphere.spi.database.DatabaseType;
 
 import java.util.Properties;
 
@@ -27,6 +28,13 @@ import java.util.Properties;
  * @author zhangliang
  */
 public interface XAProperties {
+    
+    /**
+     * Get database type.
+     * 
+     * @return database type
+     */
+    DatabaseType getDatabaseType();
     
     /**
      * Build XA properties.

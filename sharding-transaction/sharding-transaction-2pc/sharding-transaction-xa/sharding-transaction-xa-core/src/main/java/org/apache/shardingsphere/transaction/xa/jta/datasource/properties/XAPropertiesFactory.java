@@ -20,11 +20,10 @@ package org.apache.shardingsphere.transaction.xa.jta.datasource.properties;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.spi.database.DatabaseType;
-import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.H2XAProperties;
-import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.MySQLXAProperties;
-import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.OracleXAProperties;
-import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.PostgreSQLXAProperties;
-import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.SQLServerXAProperties;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ServiceLoader;
 
 /**
  * XA properties factory.
@@ -34,6 +33,14 @@ import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialec
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class XAPropertiesFactory {
     
+    private static final Map<DatabaseType, XAProperties> XA_PROPERTIES_MAP = new HashMap<>();
+    
+    static {
+        for (XAProperties each : ServiceLoader.load(XAProperties.class)) {
+            XA_PROPERTIES_MAP.put(each.getDatabaseType(), each);
+        }
+    }
+    
     /**
      * Create XA properties.
      * 
@@ -41,19 +48,6 @@ public final class XAPropertiesFactory {
      * @return XA properties
      */
     public static XAProperties createXAProperties(final DatabaseType databaseType) {
-        switch (databaseType.getName()) {
-            case "MySQL":
-                return new MySQLXAProperties();
-            case "PostgreSQL":
-                return new PostgreSQLXAProperties();
-            case "Oracle":
-                return new OracleXAProperties();
-            case "SQLServer":
-                return new SQLServerXAProperties();
-            case "H2":
-                return new H2XAProperties();
-            default:
-                throw new UnsupportedOperationException(String.format("Cannot support database type: `%s`", databaseType));
-        }
+        return XA_PROPERTIES_MAP.get(databaseType);
     }
 }

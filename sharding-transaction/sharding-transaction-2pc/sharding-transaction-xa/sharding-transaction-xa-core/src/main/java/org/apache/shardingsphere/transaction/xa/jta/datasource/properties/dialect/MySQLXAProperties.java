@@ -19,6 +19,8 @@ package org.apache.shardingsphere.transaction.xa.jta.datasource.properties.diale
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.config.DatabaseAccessConfiguration;
+import org.apache.shardingsphere.spi.database.DatabaseType;
+import org.apache.shardingsphere.spi.database.DatabaseTypes;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XAProperties;
 
 import java.util.Properties;
@@ -29,6 +31,11 @@ import java.util.Properties;
  * @author zhaojun
  */
 public final class MySQLXAProperties implements XAProperties {
+    
+    @Override
+    public DatabaseType getDatabaseType() {
+        return DatabaseTypes.getActualDatabaseType("MySQL");
+    }
     
     @Override
     public Properties build(final DatabaseAccessConfiguration databaseAccessConfiguration) {
