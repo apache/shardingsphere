@@ -15,22 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.route.pagination;
+package org.apache.shardingsphere.core.spi.database;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationValueSegment;
+import org.apache.shardingsphere.spi.BranchDatabaseType;
+import org.apache.shardingsphere.spi.DatabaseTypes;
+import org.apache.shardingsphere.spi.DbType;
 
 /**
- * Pagination value.
+ * Database type of H2.
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
-@Getter
-public final class PaginationValue {
+public final class H2DatabaseType implements BranchDatabaseType {
     
-    private final PaginationValueSegment segment;
+    @Override
+    public String getName() {
+        return "H2";
+    }
     
-    private final int value;
+    @Override
+    public String getProductName() {
+        return "H2";
+    }
+    
+    @Override
+    public DbType getTrunkDatabaseType() {
+        return DatabaseTypes.getActualDatabaseType("MySQL");
+    }
 }

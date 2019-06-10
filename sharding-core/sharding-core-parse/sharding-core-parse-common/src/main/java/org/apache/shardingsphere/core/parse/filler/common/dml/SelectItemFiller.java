@@ -32,7 +32,6 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.item.ColumnSelectIte
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.ExpressionSelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.ShorthandSelectItemSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.top.TopSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
@@ -109,7 +108,7 @@ public final class SelectItemFiller implements SQLSegmentFiller<SelectItemSegmen
     }
     
     private void fillTopSegment(final TopSegment topSegment, final SelectStatement selectStatement) {
-        selectStatement.setPagination(new PaginationSegment(topSegment.getStartIndex(), topSegment.getStopIndex(), null, topSegment.getTop()));
+        selectStatement.setRowCount(topSegment.getTop());
         selectStatement.getItems().add(new CommonSelectItem("rownum", Optional.of(topSegment.getRowNumberAlias())));
     }
 }

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.execute.sql.execute.result;
 
 import com.google.common.base.Optional;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.core.strategy.encrypt.ShardingEncryptorEngine;
@@ -44,17 +45,28 @@ public final class QueryResultMetaData {
     
     private final ShardingEncryptorEngine shardingEncryptorEngine;
     
-    @SneakyThrows 
-    public QueryResultMetaData(final ResultSetMetaData resultSetMetaData, final ShardingRule shardingRule, final ShardingEncryptorEngine shardingEncryptorEngine) {
+    @SneakyThrows
+    public QueryResultMetaData(final ResultSetMetaData resultSetMetaData, final ShardingRule shardingRule) {
         columnLabelAndIndexes = getColumnLabelAndIndexMap(resultSetMetaData);
         this.resultSetMetaData = resultSetMetaData;
         this.shardingRule = shardingRule;
-        this.shardingEncryptorEngine = shardingEncryptorEngine;
+        this.shardingEncryptorEngine = shardingRule.getEncryptRule().getEncryptorEngine();
+    }
+    
+    @SneakyThrows
+    public QueryResultMetaData(final ResultSetMetaData resultSetMetaData, final EncryptRule encryptRule) {
+        columnLabelAndIndexes = getColumnLabelAndIndexMap(resultSetMetaData);
+        this.resultSetMetaData = resultSetMetaData;
+        this.shardingRule = null;
+        this.shardingEncryptorEngine = encryptRule.getEncryptorEngine();
     }
     
     @SneakyThrows
     public QueryResultMetaData(final ResultSetMetaData resultSetMetaData) {
-        this(resultSetMetaData, null, new ShardingEncryptorEngine());
+        columnLabelAndIndexes = getColumnLabelAndIndexMap(resultSetMetaData);
+        this.resultSetMetaData = resultSetMetaData;
+        this.shardingRule = null;
+        this.shardingEncryptorEngine = new ShardingEncryptorEngine();
     }
     
     @SneakyThrows

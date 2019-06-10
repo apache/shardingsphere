@@ -25,6 +25,7 @@ import org.apache.shardingsphere.core.rule.BaseRule;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Remove token generator.
@@ -34,7 +35,7 @@ import java.util.LinkedList;
 public final class RemoveTokenGenerator implements CollectionSQLTokenGenerator<BaseRule> {
     
     @Override
-    public Collection<RemoveToken> generateSQLTokens(final SQLStatement sqlStatement, final BaseRule baseRule) {
+    public Collection<RemoveToken> generateSQLTokens(final SQLStatement sqlStatement, final List<Object> parameters, final BaseRule baseRule) {
         Collection<RemoveToken> result = new LinkedList<>();
         for (SQLSegment each : sqlStatement.getSqlSegments()) {
             if (each instanceof RemoveAvailable) {

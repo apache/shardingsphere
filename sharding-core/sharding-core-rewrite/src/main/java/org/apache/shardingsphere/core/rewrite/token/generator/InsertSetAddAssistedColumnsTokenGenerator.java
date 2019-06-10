@@ -38,7 +38,7 @@ import java.util.List;
 public final class InsertSetAddAssistedColumnsTokenGenerator implements OptionalSQLTokenGenerator<EncryptRule> {
     
     @Override
-    public Optional<InsertSetAddAssistedColumnsToken> generateSQLToken(final SQLStatement sqlStatement, final EncryptRule encryptRule) {
+    public Optional<InsertSetAddAssistedColumnsToken> generateSQLToken(final SQLStatement sqlStatement, final List<Object> parameters, final EncryptRule encryptRule) {
         Optional<SetAssignmentsSegment> setAssignmentsSegment = sqlStatement.findSQLSegment(SetAssignmentsSegment.class);
         if (!(sqlStatement instanceof InsertStatement && setAssignmentsSegment.isPresent())) {
             return Optional.absent();

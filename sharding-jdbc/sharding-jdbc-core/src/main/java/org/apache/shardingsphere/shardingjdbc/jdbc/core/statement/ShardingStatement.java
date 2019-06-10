@@ -30,13 +30,13 @@ import org.apache.shardingsphere.core.parse.sql.statement.dml.DQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
-import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.executor.StatementExecutor;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractStatementAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.GeneratedKeysResultSet;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.ShardingResultSet;
+import org.apache.shardingsphere.spi.DatabaseTypes;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -113,8 +113,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
         for (Statement each : statementExecutor.getStatements()) {
             ResultSet resultSet = each.getResultSet();
             resultSets.add(resultSet);
-            ShardingRule shardingRule = connection.getShardingContext().getShardingRule();
-            queryResults.add(new StreamQueryResult(resultSet, shardingRule, shardingRule.getEncryptRule().getEncryptorEngine()));
+            queryResults.add(new StreamQueryResult(resultSet, connection.getShardingContext().getShardingRule()));
         }
         if (routeResult.getSqlStatement() instanceof SelectStatement || routeResult.getSqlStatement() instanceof DALStatement) {
             MergeEngine mergeEngine = MergeEngineFactory.newInstance(connection.getShardingContext().getDatabaseType(),
@@ -251,8 +250,8 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     
     private void shard(final String sql) {
         ShardingContext shardingContext = connection.getShardingContext();
-        SimpleQueryShardingEngine shardingEngine = new SimpleQueryShardingEngine(
-                shardingContext.getShardingRule(), shardingContext.getShardingProperties(), shardingContext.getMetaData(), shardingContext.getDatabaseType(), shardingContext.getParsingResultCache());
+        SimpleQueryShardingEngine shardingEngine = new SimpleQueryShardingEngine(shardingContext.getShardingRule(), shardingContext.getShardingProperties(), 
+                shardingContext.getMetaData(), DatabaseTypes.getActualDatabaseType(shardingContext.getDatabaseType().name()), shardingContext.getParsingResultCache());
         routeResult = shardingEngine.shard(sql, Collections.emptyList());
     }
     

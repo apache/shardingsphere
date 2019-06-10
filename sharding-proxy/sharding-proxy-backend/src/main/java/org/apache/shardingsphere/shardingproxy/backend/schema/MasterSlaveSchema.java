@@ -21,6 +21,7 @@ import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
+import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
@@ -45,9 +46,9 @@ public final class MasterSlaveSchema extends LogicSchema {
     
     private MasterSlaveRule masterSlaveRule;
     
-    private final ShardingMetaData metaData;
-    
     private final ShardingRule shardingRule;
+    
+    private final ShardingMetaData metaData;
     
     private final MasterSlaveSQLParseEntry parseEngine;
     
@@ -57,7 +58,7 @@ public final class MasterSlaveSchema extends LogicSchema {
         // TODO we should remove it after none-sharding parsingEngine completed.
         shardingRule = new ShardingRule(new ShardingRuleConfiguration(), getDataSources().keySet());
         metaData = createShardingMetaData();
-        parseEngine = new MasterSlaveSQLParseEntry(LogicSchemas.getInstance().getDatabaseType().name());
+        parseEngine = new MasterSlaveSQLParseEntry(LogicSchemas.getInstance().getDatabaseType());
     }
     
     private MasterSlaveRule createMasterSlaveRule(final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final boolean isUsingRegistry) {
@@ -65,7 +66,8 @@ public final class MasterSlaveSchema extends LogicSchema {
     }
     
     private ShardingMetaData createShardingMetaData() {
-        ShardingDataSourceMetaData shardingDataSourceMetaData = new ShardingDataSourceMetaData(getDataSourceURLs(getDataSources()), shardingRule, LogicSchemas.getInstance().getDatabaseType());
+        ShardingDataSourceMetaData shardingDataSourceMetaData = new ShardingDataSourceMetaData(
+                getDataSourceURLs(getDataSources()), shardingRule, DatabaseType.valueOf(LogicSchemas.getInstance().getDatabaseType().getName()));
         ShardingTableMetaData shardingTableMetaData = new ShardingTableMetaData(getTableMetaDataInitializer(shardingDataSourceMetaData).load(shardingRule));
         return new ShardingMetaData(shardingDataSourceMetaData, shardingTableMetaData);
     }

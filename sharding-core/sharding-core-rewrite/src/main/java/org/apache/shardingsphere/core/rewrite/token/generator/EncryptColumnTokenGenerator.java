@@ -29,6 +29,7 @@ import org.apache.shardingsphere.core.rule.EncryptRule;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Encrypt column token generator.
@@ -38,7 +39,7 @@ import java.util.LinkedList;
 public final class EncryptColumnTokenGenerator implements CollectionSQLTokenGenerator<EncryptRule> {
     
     @Override
-    public Collection<EncryptColumnToken> generateSQLTokens(final SQLStatement sqlStatement, final EncryptRule encryptRule) {
+    public Collection<EncryptColumnToken> generateSQLTokens(final SQLStatement sqlStatement, final List<Object> parameters, final EncryptRule encryptRule) {
         Collection<EncryptColumnToken> result = new LinkedList<>();
         for (SQLSegment each : sqlStatement.getSqlSegments()) {
             if (each instanceof SetAssignmentsSegment) {
@@ -65,10 +66,10 @@ public final class EncryptColumnTokenGenerator implements CollectionSQLTokenGene
     
     private Collection<EncryptColumnToken> createFromWhereCondition(final SQLStatement sqlStatement) {
         Collection<EncryptColumnToken> result = new LinkedList<>();
-        if (sqlStatement.getEncryptCondition().getOrConditions().isEmpty()) {
+        if (sqlStatement.getEncryptConditions().getOrConditions().isEmpty()) {
             return result;
         }
-        for (Condition each : sqlStatement.getEncryptCondition().getOrConditions().get(0).getConditions()) {
+        for (Condition each : sqlStatement.getEncryptConditions().getOrConditions().get(0).getConditions()) {
             result.add(new EncryptColumnToken(each.getPredicateSegment().getStartIndex(), each.getPredicateSegment().getStopIndex(), each.getColumn(), true));
         }
         return result;

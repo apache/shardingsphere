@@ -42,6 +42,8 @@ shardingRule:
       keyGenerator:
         type: SNOWFLAKE
         column: order_id
+        props:
+          worker.id: 123
       logicIndex: order_index
     t_encrypt:
       actualDataNodes: ds_${0..1}.t_encrypt_${0..1}
@@ -56,6 +58,8 @@ shardingRule:
       keyGenerator:
         type: SNOWFLAKE
         column: order_id
+        props:
+          worker.id: 123
     t_encrypt_query:
       actualDataNodes: ds_${0..1}.t_encrypt_query${0..1}
       databaseStrategy:
@@ -69,6 +73,8 @@ shardingRule:
       keyGenerator:
         type: SNOWFLAKE
         column: order_id
+        props:
+          worker.id: 123
   encryptRule:
     encryptors:
       t_encryptor:

@@ -15,21 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.segment.dml.pagination;
+package org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationValueSegment;
 
 /**
- * Pagination segment.
+ * Limit segment.
  * 
  * @author duhongjun
  */
 @RequiredArgsConstructor
 @Getter
-public final class PaginationSegment implements SQLSegment {
+public final class LimitSegment implements SQLSegment {
     
     private final int startIndex;
     

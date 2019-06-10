@@ -18,10 +18,13 @@
 package org.apache.shardingsphere.core.optimize.result;
 
 import com.google.common.base.Optional;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.core.optimize.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.condition.ShardingConditions;
+import org.apache.shardingsphere.core.optimize.pagination.Pagination;
 import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResult;
 
 import java.util.Collections;
@@ -32,12 +35,16 @@ import java.util.Collections;
  * @author panjuan
  */
 @RequiredArgsConstructor
+@Getter
+@Setter
 public final class OptimizeResult {
     
-    @Getter
     private final ShardingConditions shardingConditions;
     
+    @Getter(AccessLevel.NONE)
     private final InsertOptimizeResult insertOptimizeResult;
+    
+    private Pagination pagination;
     
     public OptimizeResult(final ShardingConditions shardingConditions) {
         this(shardingConditions, null);

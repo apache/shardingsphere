@@ -26,7 +26,7 @@
             <table-token start-index="16" table-name="t_order" length="7" />
             <table-token start-index="31" table-name="t_order_item" length="12" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
                     <value index="0" literal="1" type="int" />
@@ -37,11 +37,11 @@
                     <value index="3" literal="10" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
         <order-by-columns>
             <order-by-column name="item_id" owner="i" order-direction="DESC" />
         </order-by-columns>
-        <pagination offset="5" offset-index="4" />
+        <offset value="5" parameter-index="4" />
     </parser-result>
     
     <parser-result sql-case-id="select_pagination_with_row_count" parameters="1, 2, 9, 10, 5">
@@ -53,7 +53,7 @@
             <table-token start-index="16" table-name="t_order" length="7" />
             <table-token start-index="31" table-name="t_order_item" length="12" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
                     <value index="0" literal="1" type="int" />
@@ -64,11 +64,11 @@
                     <value index="3" literal="10" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
         <order-by-columns>
             <order-by-column name="item_id" owner="i" order-direction="DESC" />
         </order-by-columns>
-        <pagination row-count="5" row-count-index="4" />
+        <row-count value="5" parameter-index="4" />
     </parser-result>
     
     <parser-result sql-case-id="select_pagination_with_limit_with_back_quotes" parameters="1, 2, 9, 10, 5, 3">
@@ -80,7 +80,7 @@
             <table-token start-index="16" table-name="t_order" left-delimiter="`" right-delimiter="`" length="9" />
             <table-token start-index="33" table-name="t_order_item" left-delimiter="`" right-delimiter="`" length="14" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
                     <value index="0" literal="1" type="int" />
@@ -91,11 +91,12 @@
                     <value index="3" literal="10" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
         <order-by-columns>
             <order-by-column name="item_id" owner="i" order-direction="DESC" />
         </order-by-columns>
-        <pagination offset="5" offset-index="4" row-count="3" row-count-index="5" />
+        <offset value="5" parameter-index="4" />
+        <row-count value="3" parameter-index="5" />
     </parser-result>
     
     <parser-result sql-case-id="select_pagination_with_top" parameters="3, 1, 2, 9, 10">
@@ -107,7 +108,7 @@
             <table-token start-index="167" table-name="t_order" length="7" />
             <table-token start-index="182" table-name="t_order_item" length="12" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
                     <value index="1" literal="1" type="int" />
@@ -118,11 +119,11 @@
                     <value index="4" literal="10" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
         <order-by-columns>
             <order-by-column name="item_id" owner="i" order-direction="DESC" />
         </order-by-columns>
-        <pagination row-count="3" row-count-index="0" />
+        <row-count value="3" parameter-index="0" />
     </parser-result>
     
     <parser-result sql-case-id="select_pagination_with_offset_and_limit" parameters="1, 2, 9, 10, 5, 3">
@@ -134,7 +135,7 @@
             <table-token start-index="16" table-name="t_order" length="7" />
             <table-token start-index="31" table-name="t_order_item" length="12" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
                     <value index="0" literal="1" type="int" />
@@ -145,11 +146,12 @@
                     <value index="3" literal="10" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
         <order-by-columns>
             <order-by-column name="item_id" owner="i" order-direction="DESC" />
         </order-by-columns>
-        <pagination offset="5" offset-index="4" row-count="3" row-count-index="5" />
+        <offset value="5" parameter-index="4" />
+        <row-count value="3" parameter-index="5" />
     </parser-result>
     
     <parser-result sql-case-id="select_pagination_with_top_for_greater_than" parameters="3, 1, 2, 9, 10, 6">
@@ -161,7 +163,7 @@
             <table-token start-index="167" table-name="t_order" length="7" />
             <table-token start-index="182" table-name="t_order_item" length="12" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
                     <value index="1" literal="1" type="int" />
@@ -172,11 +174,12 @@
                     <value index="4" literal="10" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
         <order-by-columns>
             <order-by-column name="item_id" owner="i" order-direction="DESC" />
         </order-by-columns>
-        <pagination offset="6" offset-index="5" row-count-index="0" row-count="3" />
+        <offset value="6" parameter-index="5" />
+        <row-count value="3" parameter-index="0" />
     </parser-result>
     
     <parser-result sql-case-id="select_pagination_with_top_for_greater_than_and_equal" parameters="3, 1, 2, 9, 10, 6">
@@ -188,7 +191,7 @@
             <table-token start-index="167" table-name="t_order" length="7" />
             <table-token start-index="182" table-name="t_order_item" length="12" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
                     <value index="1" literal="1" type="int" />
@@ -199,11 +202,12 @@
                     <value index="4" literal="10" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
         <order-by-columns>
             <order-by-column name="item_id" owner="i" order-direction="DESC" />
         </order-by-columns>
-        <pagination offset="6" offset-index="5" row-count-index="0" row-count="3" />
+        <offset value="6" parameter-index="5" />
+        <row-count value="3" parameter-index="0" />
     </parser-result>
     
     <parser-result sql-case-id="select_pagination_with_row_number" parameters="1, 2, 9, 10, 3">
@@ -215,7 +219,7 @@
             <table-token start-index="146" table-name="t_order" length="7" />
             <table-token start-index="167" table-name="t_order_item" length="12" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
                     <value index="0" literal="1" type="int" />
@@ -226,11 +230,11 @@
                     <value index="3" literal="10" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
         <order-by-columns>
             <order-by-column name="item_id" owner="i" order-direction="DESC" />
         </order-by-columns>
-        <pagination row-count="3" row-count-index="4" />
+        <row-count value="3" parameter-index="4" />
     </parser-result>
     
     <parser-result sql-case-id="select_pagination_with_row_number_for_greater_than" parameters="1, 2, 9, 10, 5, 3">
@@ -242,7 +246,7 @@
             <table-token start-index="146" table-name="t_order" length="7" />
             <table-token start-index="167" table-name="t_order_item" length="12" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
                     <value index="0" literal="1" type="int" />
@@ -253,11 +257,12 @@
                     <value index="3" literal="10" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
         <order-by-columns>
             <order-by-column name="item_id" owner="i" order-direction="DESC" />
         </order-by-columns>
-        <pagination offset="3" offset-index="5" row-count-index="4" row-count="5" />
+        <offset value="3" parameter-index="5" />
+        <row-count value="5" parameter-index="4" />
     </parser-result>
     
     <parser-result sql-case-id="select_pagination_with_row_number_for_greater_than_and_equal" parameters="1, 2, 9, 10, 5, 3">
@@ -269,7 +274,7 @@
             <table-token start-index="146" table-name="t_order" length="7" />
             <table-token start-index="167" table-name="t_order_item" length="12" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
                     <value index="0" literal="1" type="int" />
@@ -280,11 +285,12 @@
                     <value index="3" literal="10" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
         <order-by-columns>
             <order-by-column name="item_id" owner="i" order-direction="DESC" />
         </order-by-columns>
-        <pagination offset="3" offset-index="5" row-count-index="4" row-count="5" />
+        <offset value="3" parameter-index="5" />
+        <row-count value="5" parameter-index="4" />
     </parser-result>
     
     <parser-result sql-case-id="select_pagination_with_row_number_not_at_end" parameters="20">
@@ -297,7 +303,7 @@
         <order-by-columns>
             <order-by-column name="order_id" order-direction="ASC" />
         </order-by-columns>
-        <pagination row-count="20" row-count-index="0" />
+        <row-count value="20" parameter-index="0" />
     </parser-result>
     
 </parser-result-sets>

@@ -25,7 +25,7 @@ import org.apache.shardingsphere.core.parse.extractor.impl.common.expression.imp
 import org.apache.shardingsphere.core.parse.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.LimitValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.ParameterMarkerLimitValueSegment;
@@ -45,11 +45,11 @@ public final class LimitExtractor implements OptionalSQLSegmentExtractor {
     private final ParameterMarkerExpressionExtractor parameterMarkerExpressionExtractor = new ParameterMarkerExpressionExtractor();
     
     @Override
-    public Optional<PaginationSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
+    public Optional<LimitSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> limitNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.LIMIT_CLAUSE);
         return limitNode.isPresent()
-                ? Optional.of(new PaginationSegment(limitNode.get().getStart().getStartIndex(), limitNode.get().getStop().getStopIndex(),
-                extractOffset(limitNode.get(), parameterMarkerIndexes).orNull(), extractRowCount(limitNode.get(), parameterMarkerIndexes).orNull())) : Optional.<PaginationSegment>absent();
+                ? Optional.of(new LimitSegment(limitNode.get().getStart().getStartIndex(), limitNode.get().getStop().getStopIndex(),
+                extractOffset(limitNode.get(), parameterMarkerIndexes).orNull(), extractRowCount(limitNode.get(), parameterMarkerIndexes).orNull())) : Optional.<LimitSegment>absent();
     }
     
     private Optional<LimitValueSegment> extractOffset(final ParserRuleContext limitNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {

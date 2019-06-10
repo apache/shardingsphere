@@ -64,7 +64,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     
     private final JDBCExecuteEngine executeEngine;
     
-    private final DatabaseType databaseType = LogicSchemas.getInstance().getDatabaseType();
+    private final DatabaseType databaseType = DatabaseType.valueOf(LogicSchemas.getInstance().getDatabaseType().getName());
     
     private BackendResponse response;
     

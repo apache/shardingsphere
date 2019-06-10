@@ -23,6 +23,8 @@ import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.rewrite.token.pojo.OrderByToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
+import java.util.List;
+
 /**
  * Order by token generator.
  *
@@ -31,7 +33,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 public final class OrderByTokenGenerator implements OptionalSQLTokenGenerator<ShardingRule> {
     
     @Override
-    public Optional<OrderByToken> generateSQLToken(final SQLStatement sqlStatement, final ShardingRule shardingRule) {
+    public Optional<OrderByToken> generateSQLToken(final SQLStatement sqlStatement, final List<Object> parameters, final ShardingRule shardingRule) {
         if (!(sqlStatement instanceof SelectStatement)) {
             return Optional.absent();
         }

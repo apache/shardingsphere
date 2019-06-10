@@ -20,6 +20,7 @@ package org.apache.shardingsphere.shardingproxy.backend.schema;
 import lombok.Getter;
 import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
+import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
@@ -44,18 +45,19 @@ public final class EncryptSchema extends LogicSchema {
     
     private final ShardingRule shardingRule;
     
-    private final EncryptSQLParseEntry encryptSQLParseEntry;
+    private final EncryptSQLParseEntry parseEngine;
     
     public EncryptSchema(final String name, final Map<String, YamlDataSourceParameter> dataSources, final EncryptRuleConfiguration encryptRuleConfiguration) {
         super(name, dataSources);
         encryptRule = new EncryptRule(encryptRuleConfiguration);
         shardingRule = new ShardingRule(new ShardingRuleConfiguration(), getDataSources().keySet());
         metaData = createShardingMetaData();
-        encryptSQLParseEntry = new EncryptSQLParseEntry(LogicSchemas.getInstance().getDatabaseType().name(), encryptRule, metaData.getTable());
+        parseEngine = new EncryptSQLParseEntry(LogicSchemas.getInstance().getDatabaseType(), encryptRule, metaData.getTable());
     }
     
     private ShardingMetaData createShardingMetaData() {
-        ShardingDataSourceMetaData shardingDataSourceMetaData = new ShardingDataSourceMetaData(getDataSourceURLs(getDataSources()), shardingRule, LogicSchemas.getInstance().getDatabaseType());
+        ShardingDataSourceMetaData shardingDataSourceMetaData = new ShardingDataSourceMetaData(getDataSourceURLs(
+                getDataSources()), shardingRule, DatabaseType.valueOf(LogicSchemas.getInstance().getDatabaseType().getName()));
         ShardingTableMetaData shardingTableMetaData = new ShardingTableMetaData(getTableMetaDataInitializer(shardingDataSourceMetaData).load(shardingRule));
         return new ShardingMetaData(shardingDataSourceMetaData, shardingTableMetaData);
     }

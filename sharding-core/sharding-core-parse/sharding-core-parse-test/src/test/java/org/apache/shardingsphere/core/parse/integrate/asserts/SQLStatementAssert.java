@@ -95,9 +95,9 @@ public final class SQLStatementAssert {
      */
     public void assertSQLStatement() {
         tableAssert.assertTables(actual.getTables(), expected.getTables());
-        conditionAssert.assertConditions(actual.getRouteCondition(), expected.getOrCondition());
+        conditionAssert.assertConditions(actual.getShardingConditions(), expected.getShardingConditions());
         if ("MySQL".equals(databaseType)) {
-            conditionAssert.assertConditions(actual.getEncryptCondition(), expected.getEncryptCondition());
+            conditionAssert.assertConditions(actual.getEncryptConditions(), expected.getEncryptConditions());
         }
         indexAssert.assertParametersIndex(actual.getParametersIndex(), expected.getParameters().size());
         if (actual instanceof SelectStatement) {
@@ -118,7 +118,8 @@ public final class SQLStatementAssert {
         itemAssert.assertItems(actual.getItems(), expected.getSelectItems());
         groupByAssert.assertGroupByItems(actual.getGroupByItems(), expected.getGroupByColumns());
         orderByAssert.assertOrderByItems(actual.getOrderByItems(), expected.getOrderByColumns());
-        paginationAssert.assertPagination(actual.getPagination(), expected.getPagination());
+        paginationAssert.assertOffset(actual.getOffset(), expected.getOffset());
+        paginationAssert.assertRowCount(actual.getRowCount(), expected.getRowCount());
     }
     
     private void assertCreateTableStatement(final CreateTableStatement actual) {

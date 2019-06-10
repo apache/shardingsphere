@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.rewrite.token.pojo;
 import lombok.Getter;
 
 /**
- * Row count token for pagination.
+ * Row count token.
  *
  * @author zhangliang
  * @author panjuan
@@ -28,13 +28,13 @@ import lombok.Getter;
 @Getter
 public final class RowCountToken extends SQLToken implements Substitutable {
     
-    private final int rowCount;
-    
     private final int stopIndex;
     
-    public RowCountToken(final int startIndex, final int stopIndex, final int rowCount) {
+    private final int revisedRowCount;
+    
+    public RowCountToken(final int startIndex, final int stopIndex, final int revisedRowCount) {
         super(startIndex);
-        this.rowCount = rowCount;
         this.stopIndex = stopIndex;
+        this.revisedRowCount = revisedRowCount;
     }
 }

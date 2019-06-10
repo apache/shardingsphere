@@ -32,6 +32,7 @@ import org.apache.shardingsphere.core.route.PreparedStatementRoutingEngine;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.fixture.HintShardingAlgorithmFixture;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.spi.DatabaseTypes;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -48,7 +49,7 @@ public class AbstractSQLRouteTest {
     protected SQLRouteResult assertRoute(final String sql, final List<Object> parameters) {
         ShardingRule shardingRule = createShardingRule();
         ShardingMetaData shardingMetaData = new ShardingMetaData(buildShardingDataSourceMetaData(), buildShardingTableMetaData());
-        PreparedStatementRoutingEngine engine = new PreparedStatementRoutingEngine(sql, shardingRule, shardingMetaData, DatabaseType.MySQL, new ParsingResultCache());
+        PreparedStatementRoutingEngine engine = new PreparedStatementRoutingEngine(sql, shardingRule, shardingMetaData, DatabaseTypes.getActualDatabaseType("MySQL"), new ParsingResultCache());
         SQLRouteResult result = engine.route(parameters);
         assertThat(result.getRoutingResult().getRoutingUnits().size(), is(1));
         return result;

@@ -37,7 +37,7 @@ public final class RegistryCenterServiceLoader extends TypeBasedSPIServiceLoader
         NewInstanceServiceLoader.register(RegistryCenter.class);
     }
     
-    RegistryCenterServiceLoader() {
+    public RegistryCenterServiceLoader() {
         super(RegistryCenter.class);
     }
     

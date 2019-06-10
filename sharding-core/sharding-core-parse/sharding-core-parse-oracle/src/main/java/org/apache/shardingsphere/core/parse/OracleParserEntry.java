@@ -21,9 +21,8 @@ import org.antlr.v4.runtime.Lexer;
 import org.apache.shardingsphere.core.parse.api.SQLParser;
 import org.apache.shardingsphere.core.parse.autogen.OracleStatementLexer;
 import org.apache.shardingsphere.core.parse.spi.SQLParserEntry;
-
-import java.util.Collection;
-import java.util.Collections;
+import org.apache.shardingsphere.spi.DatabaseTypes;
+import org.apache.shardingsphere.spi.DbType;
 
 /**
  * SQL parser entry for Oracle.
@@ -33,13 +32,8 @@ import java.util.Collections;
 public final class OracleParserEntry implements SQLParserEntry {
     
     @Override
-    public String getDatabaseType() {
-        return "Oracle";
-    }
-    
-    @Override
-    public Collection<String> getDatabaseTypeAliases() {
-        return Collections.emptyList();
+    public DbType getDatabaseType() {
+        return DatabaseTypes.getActualDatabaseType("Oracle");
     }
     
     @Override

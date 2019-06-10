@@ -15,27 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.integrate.jaxb.condition;
-
-import lombok.Getter;
-import lombok.Setter;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import java.util.LinkedList;
-import java.util.List;
+package org.apache.shardingsphere.spi;
 
 /**
- * Expected and conditions.
+ * Database type.
  *
- * @author maxiaoguang
+ * @author zhangliang
  */
-@Getter
-@Setter
-@XmlAccessorType(XmlAccessType.FIELD)
-public final class ExpectedOrCondition {
+public interface DbType {
     
-    @XmlElement(name = "and-condition")
-    private List<ExpectedAndCondition> andConditions = new LinkedList<>();
+    /**
+     * Get database name.
+     * 
+     * @return database name
+     */
+    String getName();
+    
+    /**
+     * Get database product name.
+     * 
+     * @return database product name
+     */
+    String getProductName();
 }

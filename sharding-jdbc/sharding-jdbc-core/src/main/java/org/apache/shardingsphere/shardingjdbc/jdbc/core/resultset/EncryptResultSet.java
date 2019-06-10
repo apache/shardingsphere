@@ -57,7 +57,7 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     public EncryptResultSet(final Statement encryptStatement, final ResultSet resultSet, final EncryptRule encryptRule) {
         this.encryptStatement = encryptStatement;
         originalResultSet = resultSet;
-        QueryResult queryResult = new StreamQueryResult(resultSet, null, encryptRule.getEncryptorEngine());
+        QueryResult queryResult = new StreamQueryResult(resultSet, encryptRule);
         this.resultSet = new IteratorStreamMergedResult(Collections.singletonList(queryResult));
     }
     

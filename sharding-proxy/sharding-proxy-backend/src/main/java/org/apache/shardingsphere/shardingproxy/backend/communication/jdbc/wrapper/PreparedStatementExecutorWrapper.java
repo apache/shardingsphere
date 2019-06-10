@@ -37,6 +37,8 @@ import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.MasterSlaveSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSchema;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
+import org.apache.shardingsphere.spi.DatabaseTypes;
+import org.apache.shardingsphere.spi.DbType;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -63,7 +65,7 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     @Override
     public SQLRouteResult route(final String sql, final DatabaseType databaseType) {
         if (logicSchema instanceof ShardingSchema) {
-            return doShardingRoute(sql, databaseType);
+            return doShardingRoute(sql, DatabaseTypes.getActualDatabaseType(databaseType.name()));
         }
         if (logicSchema instanceof MasterSlaveSchema) {
             return doMasterSlaveRoute(sql);
@@ -71,7 +73,7 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
         return doEncryptRoute(sql);
     }
     
-    private SQLRouteResult doShardingRoute(final String sql, final DatabaseType databaseType) {
+    private SQLRouteResult doShardingRoute(final String sql, final DbType databaseType) {
         PreparedQueryShardingEngine shardingEngine = new PreparedQueryShardingEngine(sql, logicSchema.getShardingRule(), 
                 ShardingProxyContext.getInstance().getShardingProperties(), logicSchema.getMetaData(), databaseType, logicSchema.getParsingResultCache());
         return shardingEngine.shard(sql, parameters);
@@ -92,7 +94,7 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     
     private SQLRouteResult doEncryptRoute(final String sql) {
         EncryptSchema encryptSchema = (EncryptSchema) logicSchema;
-        SQLStatement sqlStatement = encryptSchema.getEncryptSQLParseEntry().parse(sql, true);
+        SQLStatement sqlStatement = encryptSchema.getParseEngine().parse(sql, true);
         SQLRewriteEngine sqlRewriteEngine = new SQLRewriteEngine(encryptSchema.getEncryptRule(), sqlStatement, parameters);
         OptimizeResult optimizeResult = OptimizeEngineFactory.newInstance(encryptSchema.getEncryptRule(), sqlStatement, parameters).optimize();
         sqlRewriteEngine.init(Collections.<ParameterRewriter>emptyList(), 
