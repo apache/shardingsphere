@@ -18,12 +18,13 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.adapter;
 
 import com.google.common.collect.Lists;
-import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.shardingjdbc.common.base.AbstractShardingJDBCDatabaseAndTableTest;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingPreparedStatement;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingStatement;
 import org.apache.shardingsphere.shardingjdbc.jdbc.util.JDBCTestSQL;
+import org.apache.shardingsphere.spi.DatabaseTypes;
+import org.apache.shardingsphere.spi.DbType;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -51,7 +52,7 @@ public final class StatementAdapterTest extends AbstractShardingJDBCDatabaseAndT
     
     private final List<ShardingConnection> shardingConnections = new ArrayList<>();
     
-    private final Map<DatabaseType, Statement> statements = new HashMap<>();
+    private final Map<DbType, Statement> statements = new HashMap<>();
     
     private String sql = JDBCTestSQL.SELECT_GROUP_BY_USER_ID_SQL;
     
@@ -59,7 +60,7 @@ public final class StatementAdapterTest extends AbstractShardingJDBCDatabaseAndT
     public void init() {
         ShardingConnection shardingConnection = getShardingDataSource().getConnection();
         shardingConnections.add(shardingConnection);
-        statements.put(DatabaseType.H2, shardingConnection.createStatement());
+        statements.put(DatabaseTypes.getActualDatabaseType("H2"), shardingConnection.createStatement());
     }
     
     @After
@@ -84,7 +85,7 @@ public final class StatementAdapterTest extends AbstractShardingJDBCDatabaseAndT
     
     @Test
     public void assertSetPoolable() throws SQLException {
-        for (Entry<DatabaseType, Statement> each : statements.entrySet()) {
+        for (Entry<DbType, Statement> each : statements.entrySet()) {
             each.getValue().setPoolable(true);
             each.getValue().executeQuery(sql);
             assertPoolable((ShardingStatement) each.getValue(), true);
@@ -97,7 +98,7 @@ public final class StatementAdapterTest extends AbstractShardingJDBCDatabaseAndT
         assertThat(actual.isPoolable(), is(poolable));
         assertThat(actual.getRoutedStatements().size(), is(4));
         for (Statement each : actual.getRoutedStatements()) {
-            // H2数据库未实现setPoolable方法
+            // H2 do not implements method `setPoolable()`
             assertFalse(each.isPoolable());
         }
     }
@@ -141,7 +142,7 @@ public final class StatementAdapterTest extends AbstractShardingJDBCDatabaseAndT
     @Test
     public void assertGetUpdateCount() throws SQLException {
         String sql = "DELETE FROM t_order WHERE status = 'init'";
-        for (Entry<DatabaseType, Statement> each : statements.entrySet()) {
+        for (Entry<DbType, Statement> each : statements.entrySet()) {
             each.getValue().execute(sql);
             assertThat(each.getValue().getUpdateCount(), is(4));
         }
@@ -150,7 +151,7 @@ public final class StatementAdapterTest extends AbstractShardingJDBCDatabaseAndT
     @Test
     public void assertGetUpdateCountNoData() throws SQLException {
         String sql = "DELETE FROM t_order WHERE status = 'none'";
-        for (Entry<DatabaseType, Statement> each : statements.entrySet()) {
+        for (Entry<DbType, Statement> each : statements.entrySet()) {
             each.getValue().execute(sql);
             assertThat(each.getValue().getUpdateCount(), is(0));
         }
@@ -241,10 +242,10 @@ public final class StatementAdapterTest extends AbstractShardingJDBCDatabaseAndT
     
     @Test
     public void assertSetMaxFieldSize() throws SQLException {
-        for (Entry<DatabaseType, Statement> each : statements.entrySet()) {
+        for (Entry<DbType, Statement> each : statements.entrySet()) {
             each.getValue().executeQuery(sql);
             each.getValue().setMaxFieldSize(10);
-            assertThat(each.getValue().getMaxFieldSize(), is(DatabaseType.H2 == each.getKey() ? 0 : 10));
+            assertThat(each.getValue().getMaxFieldSize(), is(DatabaseTypes.getActualDatabaseType("H2") == each.getKey() ? 0 : 10));
         }
     }
     
@@ -289,7 +290,7 @@ public final class StatementAdapterTest extends AbstractShardingJDBCDatabaseAndT
     
     @Test
     public void assertSetQueryTimeout() throws SQLException {
-        for (Entry<DatabaseType, Statement> each : statements.entrySet()) {
+        for (Entry<DbType, Statement> each : statements.entrySet()) {
             each.getValue().executeQuery(sql);
             each.getValue().setQueryTimeout(10);
             assertThat(each.getValue().getQueryTimeout(), is(10));
