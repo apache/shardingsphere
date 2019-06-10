@@ -128,9 +128,9 @@ public final class DataSourceUtils {
             case "MySQL":
                 return String.format("jdbc:mysql://localhost:3306/%s", databaseName);
             case "PostgreSQL":
-                return String.format("jdbc:postgresql://localhost:3306/%s", databaseName);
+                return String.format("jdbc:postgresql://localhost:5432/%s", databaseName);
             case "Oracle":
-                return String.format("jdbc:oracle:thin:@//localhost:3306/%s", databaseName);
+                return String.format("jdbc:oracle:thin:@//localhost:1521/%s", databaseName);
             case "SQLServer":
                 return String.format("jdbc:sqlserver://localhost:1433;DatabaseName=%s", databaseName);
             case "H2":
