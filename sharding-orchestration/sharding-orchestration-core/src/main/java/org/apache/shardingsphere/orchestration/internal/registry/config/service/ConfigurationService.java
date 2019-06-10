@@ -170,6 +170,15 @@ public final class ConfigurationService {
     }
     
     /**
+     * Judge is encrypt rule or not.
+     * @param shardingSchemaName sharding schema name
+     * @return is encrypt rule or not
+     */
+    public boolean isEncryptRule(final String shardingSchemaName) {
+        return regCenter.getDirectly(configNode.getRulePath(shardingSchemaName)).contains("encryptors:\n");
+    }
+    
+    /**
      * Load data source configurations.
      *
      * @param shardingSchemaName sharding schema name
