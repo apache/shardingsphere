@@ -25,6 +25,8 @@ import org.apache.shardingsphere.shardingproxy.frontend.mysql.command.MySQLComma
 import org.apache.shardingsphere.shardingproxy.frontend.spi.DatabaseProtocolFrontendEngine;
 import org.apache.shardingsphere.shardingproxy.transport.codec.DatabasePacketCodecEngine;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.codec.MySQLPacketCodecEngine;
+import org.apache.shardingsphere.spi.DatabaseType;
+import org.apache.shardingsphere.spi.DatabaseTypes;
 
 /**
  * Frontend engine for MySQL protocol.
@@ -46,8 +48,8 @@ public final class MySQLProtocolFrontendEngine implements DatabaseProtocolFronte
     private final DatabasePacketCodecEngine codecEngine = new MySQLPacketCodecEngine();
     
     @Override
-    public String getDatabaseType() {
-        return "MySQL";
+    public DatabaseType getDatabaseType() {
+        return DatabaseTypes.getActualDatabaseType("MySQL");
     }
     
     @Override
