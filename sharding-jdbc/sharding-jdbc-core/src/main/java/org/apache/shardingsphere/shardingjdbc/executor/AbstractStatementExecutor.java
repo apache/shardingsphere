@@ -22,7 +22,6 @@ import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.execute.ShardingExecuteEngine;
@@ -39,6 +38,8 @@ import org.apache.shardingsphere.core.parse.sql.statement.ddl.DropTableStatement
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.metadata.JDBCTableMetaDataConnectionManager;
+import org.apache.shardingsphere.spi.DatabaseTypes;
+import org.apache.shardingsphere.spi.DbType;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -58,7 +59,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @Getter(AccessLevel.PROTECTED)
 public class AbstractStatementExecutor {
     
-    private final DatabaseType databaseType;
+    private final DbType databaseType;
     
     @Getter
     private final int resultSetType;
@@ -93,7 +94,7 @@ public class AbstractStatementExecutor {
     private final Collection<ShardingExecuteGroup<StatementExecuteUnit>> executeGroups = new LinkedList<>();
     
     public AbstractStatementExecutor(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final ShardingConnection shardingConnection) {
-        this.databaseType = shardingConnection.getShardingContext().getDatabaseType();
+        this.databaseType = DatabaseTypes.getActualDatabaseType(shardingConnection.getShardingContext().getDatabaseType().name());
         this.resultSetType = resultSetType;
         this.resultSetConcurrency = resultSetConcurrency;
         this.resultSetHoldability = resultSetHoldability;

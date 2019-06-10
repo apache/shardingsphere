@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.callback;
 
 import org.apache.shardingsphere.core.constant.ConnectionMode;
-import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.execute.sql.execute.SQLExecuteCallback;
 import org.apache.shardingsphere.core.execute.sql.execute.result.MemoryQueryResult;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
@@ -63,7 +62,7 @@ public final class ProxySQLExecuteCallback extends SQLExecuteCallback<ExecuteRes
     
     public ProxySQLExecuteCallback(final BackendConnection backendConnection, final JDBCExecutorWrapper jdbcExecutorWrapper, 
                                    final boolean isExceptionThrown, final boolean isReturnGeneratedKeys, final boolean fetchMetaData) {
-        super(DatabaseType.valueOf(LogicSchemas.getInstance().getDatabaseType().getName()), isExceptionThrown);
+        super(LogicSchemas.getInstance().getDatabaseType(), isExceptionThrown);
         this.backendConnection = backendConnection;
         this.jdbcExecutorWrapper = jdbcExecutorWrapper;
         this.isReturnGeneratedKeys = isReturnGeneratedKeys;
