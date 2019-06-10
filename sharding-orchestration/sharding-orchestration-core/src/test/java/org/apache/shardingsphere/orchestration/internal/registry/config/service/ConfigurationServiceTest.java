@@ -28,10 +28,12 @@ import org.apache.shardingsphere.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.rule.Authentication;
 import org.apache.shardingsphere.core.yaml.config.common.YamlAuthenticationConfiguration;
+import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.core.yaml.swapper.impl.AuthenticationYamlSwapper;
+import org.apache.shardingsphere.core.yaml.swapper.impl.EncryptRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.impl.MasterSlaveRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.impl.ShardingRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.reg.api.RegistryCenter;
@@ -82,7 +84,8 @@ public final class ConfigurationServiceTest {
     
     private static final String MASTER_SLAVE_RULE_YAML = "masterDataSourceName: master_ds\n" + "name: ms_ds\n" + "slaveDataSourceNames:\n" + "- slave_ds_0\n" + "- slave_ds_1\n";
     
-    private static final String ENCRYPT_RULE_YAML = "encryptors:\n  order_encryptor:\n    type: AES\n    qualifiedColumns: t_order.order_id\n    props:\n      aes.key.value: 123456";
+    private static final String ENCRYPT_RULE_YAML = "encryptors:\n  order_encryptor:\n    assistedQueryColumns: ''\n"
+        + "    props:\n      aes.key.value: 123456\n    qualifiedColumns: t_order.order_id\n    type: AES\n";
     
     private static final String AUTHENTICATION_YAML = "users:\n" + "  root1:\n" + "    authorizedSchemas: sharding_db\n" + "    password: root1\n" 
             + "  root2:\n" + "    authorizedSchemas: sharding_db,ms_db\n" + "    password: root2\n";
@@ -223,6 +226,14 @@ public final class ConfigurationServiceTest {
         verify(regCenter).persist("/test/config/props", PROPS_YAML);
     }
     
+    @Test
+    public void assertPersisteConfigurationForEncrypt() {
+        ConfigurationService configurationService = new ConfigurationService("test", regCenter);
+        configurationService.persistConfiguration("sharding_db", createDataSourceConfigurations(), createEncryptRuleConfiguration(), null, createProperties(), true);
+        verify(regCenter).persist(eq("/test/config/schema/sharding_db/datasource"), ArgumentMatchers.<String>any());
+        verify(regCenter).persist("/test/config/schema/sharding_db/rule", ENCRYPT_RULE_YAML);
+    }
+    
     private Map<String, DataSourceConfiguration> createDataSourceConfigurations() {
         return Maps.transformValues(createDataSourceMap(), new Function<DataSource, DataSourceConfiguration>() {
         
@@ -259,6 +270,10 @@ public final class ConfigurationServiceTest {
     
     private MasterSlaveRuleConfiguration createMasterSlaveRuleConfiguration() {
         return new MasterSlaveRuleConfigurationYamlSwapper().swap(YamlEngine.unmarshal(MASTER_SLAVE_RULE_YAML, YamlMasterSlaveRuleConfiguration.class));
+    }
+    
+    private EncryptRuleConfiguration createEncryptRuleConfiguration() {
+        return new EncryptRuleConfigurationYamlSwapper().swap(YamlEngine.unmarshal(ENCRYPT_RULE_YAML, YamlEncryptRuleConfiguration.class));
     }
     
     private Authentication createAuthentication() {

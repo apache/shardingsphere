@@ -111,6 +111,8 @@ public final class ConfigurationService {
         if (isOverwrite || !hasRuleConfiguration(shardingSchemaName)) {
             if (ruleConfig instanceof ShardingRuleConfiguration) {
                 persistShardingRuleConfiguration(shardingSchemaName, (ShardingRuleConfiguration) ruleConfig);
+            } else if (ruleConfig instanceof EncryptRuleConfiguration) {
+                persistEncryptRuleConfiguration(shardingSchemaName, (EncryptRuleConfiguration) ruleConfig);
             } else {
                 persistMasterSlaveRuleConfiguration(shardingSchemaName, (MasterSlaveRuleConfiguration) ruleConfig);
             }
@@ -119,7 +121,7 @@ public final class ConfigurationService {
     
     /**
      * Judge whether schema has rule configuration.
-     * 
+     *
      * @param shardingSchemaName sharding schema name
      * @return has rule configuration or not
      */
@@ -131,6 +133,12 @@ public final class ConfigurationService {
         Preconditions.checkState(null != shardingRuleConfiguration && !shardingRuleConfiguration.getTableRuleConfigs().isEmpty(),
                 "No available sharding rule configuration in `%s` for orchestration.", shardingSchemaName);
         regCenter.persist(configNode.getRulePath(shardingSchemaName), YamlEngine.marshal(new ShardingRuleConfigurationYamlSwapper().swap(shardingRuleConfiguration)));
+    }
+    
+    private void persistEncryptRuleConfiguration(final String shardingSchemaName, final EncryptRuleConfiguration encryptRuleConfiguration) {
+        Preconditions.checkState(null != encryptRuleConfiguration && !encryptRuleConfiguration.getEncryptorRuleConfigs().isEmpty(),
+            "No available encrypt rule configuration in `%s` for orchestration.", shardingSchemaName);
+        regCenter.persist(configNode.getRulePath(shardingSchemaName), YamlEngine.marshal(new EncryptRuleConfigurationYamlSwapper().swap(encryptRuleConfiguration)));
     }
     
     private void persistMasterSlaveRuleConfiguration(final String shardingSchemaName, final MasterSlaveRuleConfiguration masterSlaveRuleConfiguration) {
