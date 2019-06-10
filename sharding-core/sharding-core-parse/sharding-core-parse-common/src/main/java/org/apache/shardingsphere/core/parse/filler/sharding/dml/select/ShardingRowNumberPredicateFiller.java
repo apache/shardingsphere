@@ -23,10 +23,9 @@ import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.LimitSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.LimitValueSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.NumberLiteralLimitValueSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.ParameterMarkerLimitValueSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.rownum.NumberLiteralRowNumberValueSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.rownum.ParameterMarkerRowNumberValueSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.rownum.RowNumberValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.OrPredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
@@ -60,7 +59,7 @@ public final class ShardingRowNumberPredicateFiller implements SQLSegmentFiller<
         Optional<String> rowNumberAlias = findRowNumberAlias(selectStatement);
         Collection<PredicateSegment> rowNumberPredicates = getRowNumberPredicates(sqlSegment, rowNumberAlias.orNull());
         if (!rowNumberPredicates.isEmpty()) {
-            fillLimit(selectStatement, rowNumberPredicates);
+            fillPagination(selectStatement, rowNumberPredicates);
         }
     }
     
@@ -97,35 +96,32 @@ public final class ShardingRowNumberPredicateFiller implements SQLSegmentFiller<
         return "<".equals(operator) || "<=".equals(operator) || ">".equals(operator) || ">=".equals(operator);
     }
     
-    private void fillLimit(final SelectStatement selectStatement, final Collection<PredicateSegment> rowNumberPredicates) {
-        LimitValueSegment rowCount = null;
-        LimitValueSegment offset = null;
+    private void fillPagination(final SelectStatement selectStatement, final Collection<PredicateSegment> rowNumberPredicates) {
         for (PredicateSegment each : rowNumberPredicates) {
             ExpressionSegment expression = ((PredicateCompareRightValue) each.getRightValue()).getExpression();
             switch (((PredicateCompareRightValue) each.getRightValue()).getOperator()) {
-                case "<":
-                    rowCount = createLimitValueSegment(expression, false);
-                    break;
-                case "<=":
-                    rowCount = createLimitValueSegment(expression, true);
-                    break;
                 case ">":
-                    offset = createLimitValueSegment(expression, false);
+                    selectStatement.setOffset(createRowNumberValueSegment(expression, false));
                     break;
                 case ">=":
-                    offset = createLimitValueSegment(expression, true);
+                    selectStatement.setOffset(createRowNumberValueSegment(expression, true));
+                    break;
+                case "<":
+                    selectStatement.setRowCount(createRowNumberValueSegment(expression, false));
+                    break;
+                case "<=":
+                    selectStatement.setRowCount(createRowNumberValueSegment(expression, true));
                     break;
                 default:
                     break;
             }
         }
-        selectStatement.setLimit(new LimitSegment(-1, -1, rowCount, offset));
     }
     
-    private LimitValueSegment createLimitValueSegment(final ExpressionSegment expression, final boolean boundOpened) {
-        if (expression instanceof LiteralExpressionSegment) {
-            return new NumberLiteralLimitValueSegment(expression.getStartIndex(), expression.getStopIndex(), (Integer) ((LiteralExpressionSegment) expression).getLiterals(), boundOpened);
-        }
-        return new ParameterMarkerLimitValueSegment(expression.getStartIndex(), expression.getStopIndex(), ((ParameterMarkerExpressionSegment) expression).getParameterMarkerIndex(), boundOpened);
+    private RowNumberValueSegment createRowNumberValueSegment(final ExpressionSegment expression, final boolean boundOpened) {
+        return expression instanceof LiteralExpressionSegment
+                ? new NumberLiteralRowNumberValueSegment(expression.getStartIndex(), expression.getStopIndex(), (int) ((LiteralExpressionSegment) expression).getLiterals(), boundOpened) 
+                : new ParameterMarkerRowNumberValueSegment(
+                        expression.getStartIndex(), expression.getStopIndex(), ((ParameterMarkerExpressionSegment) expression).getParameterMarkerIndex(), boundOpened);
     }
 }

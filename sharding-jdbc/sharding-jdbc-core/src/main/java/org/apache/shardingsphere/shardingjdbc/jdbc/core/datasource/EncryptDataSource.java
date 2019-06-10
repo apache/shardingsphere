@@ -21,7 +21,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
-import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
@@ -29,6 +28,8 @@ import org.apache.shardingsphere.core.parse.entry.EncryptSQLParseEntry;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
+import org.apache.shardingsphere.spi.DatabaseTypes;
+import org.apache.shardingsphere.spi.DbType;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
@@ -54,7 +55,7 @@ public class EncryptDataSource extends AbstractUnsupportedOperationDataSource im
     
     private final DataSource dataSource;
     
-    private final DatabaseType databaseType;
+    private final DbType databaseType;
     
     private final EncryptRule encryptRule;
     
@@ -68,7 +69,7 @@ public class EncryptDataSource extends AbstractUnsupportedOperationDataSource im
         this.dataSource = dataSource;
         databaseType = getDatabaseType();
         encryptRule = new EncryptRule(encryptRuleConfiguration);
-        parseEngine = new EncryptSQLParseEntry(databaseType.name(), encryptRule, createEncryptTableMetaData());
+        parseEngine = new EncryptSQLParseEntry(databaseType, encryptRule, createEncryptTableMetaData());
     }
     
     @SneakyThrows
@@ -113,9 +114,9 @@ public class EncryptDataSource extends AbstractUnsupportedOperationDataSource im
         return result;
     }
     
-    private DatabaseType getDatabaseType() throws SQLException {
+    private DbType getDatabaseType() throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
-            return DatabaseType.valueFrom(connection.getMetaData().getDatabaseProductName());
+            return DatabaseTypes.getActualDatabaseTypeByProductName(connection.getMetaData().getDatabaseProductName());
         }
     }
 

@@ -24,7 +24,7 @@
         <tokens>
             <table-token start-index="14" table-name="t_order" length="7" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order" operator="EQUAL">
                     <value index="0" literal="1" type="int" />
@@ -35,7 +35,7 @@
                     <value index="1" literal="2" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
     </parser-result>
     
     <parser-result sql-case-id="select_or_with_different_sharding_columns" parameters="1, 2">
@@ -45,7 +45,7 @@
         <tokens>
             <table-token start-index="14" table-name="t_order" length="7" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order" operator="EQUAL">
                     <value index="0" literal="1" type="int" />
@@ -56,7 +56,7 @@
                     <value index="1" literal="2" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
     </parser-result>
     
     <parser-result sql-case-id="select_or_with_none_sharding_columns" parameters="1, 'init'">
@@ -66,13 +66,13 @@
         <tokens>
             <table-token start-index="14" table-name="t_order" length="7" />
         </tokens>
-        <encrypt-condition>
+        <encrypt-conditions>
             <and-condition>
                 <condition column-name="status" table-name="t_order" operator="EQUAL">
                     <value index="1" literal="init" type="varchar" />
                 </condition>
             </and-condition>
-        </encrypt-condition>
+        </encrypt-conditions>
     </parser-result>
     
     <parser-result sql-case-id="select_or_mix_and_for_simple_pattern" parameters="1, 'init', 3">
@@ -82,7 +82,7 @@
         <tokens>
             <table-token start-index="14" table-name="t_order" length="7" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order" operator="EQUAL">
                     <value index="0" literal="1" type="int" />
@@ -96,14 +96,14 @@
                     <value index="2" literal="3" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
-        <encrypt-condition>
+        </sharding-conditions>
+        <encrypt-conditions>
             <and-condition>
                 <condition column-name="status" table-name="t_order" operator="EQUAL">
                     <value index="1" literal="init" type="varchar" />
                 </condition>
             </and-condition>
-        </encrypt-condition>
+        </encrypt-conditions>
     </parser-result>
     
     <parser-result sql-case-id="select_or_mix_and_for_complex_pattern" parameters="'init', 1, 2, 3, 4">
@@ -113,7 +113,7 @@
         <tokens>
             <table-token start-index="14" table-name="t_order" length="7" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order" operator="EQUAL">
                     <value index="1" literal="1" type="int" />
@@ -146,14 +146,14 @@
                     <value index="4" literal="4" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
-        <encrypt-condition>
+        </sharding-conditions>
+        <encrypt-conditions>
             <and-condition>
                 <condition column-name="status" table-name="t_order" operator="EQUAL">
                     <value index="0" literal="init" type="varchar" />
                 </condition>
             </and-condition>
-        </encrypt-condition>
+        </encrypt-conditions>
     </parser-result>
     
     <parser-result sql-case-id="select_or_mix_and_with_binding_tables" parameters="1, 2, 3">
@@ -165,7 +165,7 @@
             <table-token start-index="16" table-name="t_order" length="7" />
             <table-token start-index="31" table-name="t_order_item" length="12" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order" operator="EQUAL">
                     <value index="0" literal="1" type="int" />
@@ -182,7 +182,7 @@
                     <value index="2" literal="3" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
     </parser-result>
     
     <parser-result sql-case-id="select_or_mix_and_with_binding_and_broadcast_tables" parameters="1, 2, 3, 'init'">
@@ -194,7 +194,7 @@
             <table-token start-index="16" table-name="t_order" length="7" />
             <table-token start-index="31" table-name="t_order_item" length="12" />F
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order" operator="EQUAL">
                     <value index="0" literal="1" type="int" />
@@ -211,13 +211,13 @@
                     <value index="2" literal="3" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
-        <encrypt-condition>
+        </sharding-conditions>
+        <encrypt-conditions>
             <and-condition>
                 <condition column-name="status" table-name="t_order" operator="EQUAL">
                     <value index="3" literal="init" type="varchar" />
                 </condition>
             </and-condition>
-        </encrypt-condition>
+        </encrypt-conditions>
     </parser-result>
 </parser-result-sets>

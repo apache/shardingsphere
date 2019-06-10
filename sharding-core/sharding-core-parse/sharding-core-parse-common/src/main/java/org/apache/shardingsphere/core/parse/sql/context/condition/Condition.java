@@ -17,14 +17,13 @@
 
 package org.apache.shardingsphere.core.parse.sql.context.condition;
 
+import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.constant.ShardingOperator;
-import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -46,7 +45,7 @@ import java.util.Map.Entry;
 @Getter
 @EqualsAndHashCode(exclude = {"predicateSegment"})
 @ToString
-public class Condition {
+public final class Condition {
     
     private final Column column;
     
@@ -54,52 +53,31 @@ public class Condition {
     
     private final ShardingOperator operator;
     
-    @Setter
-    private String compareOperator;
-    
     private final Map<Integer, Comparable<?>> positionValueMap = new LinkedHashMap<>();
     
     private final Map<Integer, Integer> positionIndexMap = new LinkedHashMap<>();
     
-    protected Condition() {
-        column = null;
-        operator = null;
-        predicateSegment = null;
-    }
-    
     public Condition(final Column column, final PredicateSegment predicateSegment, final ExpressionSegment expressionSegment) {
         this(column, predicateSegment, ShardingOperator.EQUAL);
-        init(expressionSegment, 0);
-    }
-    
-    public Condition(final Column column, final PredicateSegment predicateSegment, final String compareOperator, final ExpressionSegment expressionSegment) {
-        this.column = column;
-        this.predicateSegment = predicateSegment;
-        this.compareOperator = compareOperator;
-        if ("=".equals(compareOperator)) {
-            operator = ShardingOperator.EQUAL;
-        } else {
-            operator = null;
-        }
-        init(expressionSegment, 0);
+        putPositionMap(0, expressionSegment);
     }
     
     public Condition(final Column column, final PredicateSegment predicateSegment, final ExpressionSegment beginExpressionSegment, final ExpressionSegment endExpressionSegment) {
         this(column, predicateSegment, ShardingOperator.BETWEEN);
-        init(beginExpressionSegment, 0);
-        init(endExpressionSegment, 1);
+        putPositionMap(0, beginExpressionSegment);
+        putPositionMap(1, endExpressionSegment);
     }
     
     public Condition(final Column column, final PredicateSegment predicateSegment, final List<ExpressionSegment> expressionSegments) {
         this(column, predicateSegment, ShardingOperator.IN);
         int count = 0;
         for (ExpressionSegment each : expressionSegments) {
-            init(each, count);
+            putPositionMap(count, each);
             count++;
         }
     }
     
-    private void init(final ExpressionSegment expressionSegment, final int position) {
+    private void putPositionMap(final int position, final ExpressionSegment expressionSegment) {
         if (expressionSegment instanceof ParameterMarkerExpressionSegment) {
             positionIndexMap.put(position, ((ParameterMarkerExpressionSegment) expressionSegment).getParameterMarkerIndex());
         } else if (expressionSegment instanceof LiteralExpressionSegment) {
@@ -113,13 +91,11 @@ public class Condition {
      * @param parameters parameters
      * @return condition values
      */
-    public List<Comparable<?>> getConditionValues(final List<?> parameters) {
+    public List<Comparable<?>> getConditionValues(final List<Object> parameters) {
         List<Comparable<?>> result = new LinkedList<>(positionValueMap.values());
         for (Entry<Integer, Integer> entry : positionIndexMap.entrySet()) {
             Object parameter = parameters.get(entry.getValue());
-            if (!(parameter instanceof Comparable<?>)) {
-                throw new ShardingException("Parameter `%s` should extends Comparable for sharding value.", parameter);
-            }
+            Preconditions.checkArgument(parameter instanceof Comparable<?>, "Parameter `%s` should extends Comparable for sharding value.", parameter);
             if (entry.getKey() < result.size()) {
                 result.add(entry.getKey(), (Comparable<?>) parameter);
             } else {

@@ -23,6 +23,7 @@ import org.apache.shardingsphere.core.yaml.config.YamlConfiguration;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Properties;
 
 /**
  * Master-slave rule configuration for YAML.
@@ -41,4 +42,6 @@ public class YamlMasterSlaveRuleConfiguration implements YamlConfiguration {
     private Collection<String> slaveDataSourceNames = new ArrayList<>();
     
     private String loadBalanceAlgorithmType;
+    
+    private Properties props = new Properties();
 }

@@ -40,6 +40,7 @@ import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateRes
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSchema;
+import org.apache.shardingsphere.spi.DatabaseTypes;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import java.sql.SQLException;
@@ -64,7 +65,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     
     private final JDBCExecuteEngine executeEngine;
     
-    private final DatabaseType databaseType = LogicSchemas.getInstance().getDatabaseType();
+    private final DatabaseType databaseType = DatabaseType.valueOf(LogicSchemas.getInstance().getDatabaseType().getName());
     
     private BackendResponse response;
     
@@ -107,8 +108,8 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
             }
             return response;
         }
-        mergedResult = MergeEngineFactory.newInstance(
-            databaseType, logicSchema.getShardingRule(), routeResult, logicSchema.getMetaData().getTable(), ((QueryResponse) response).getQueryResults()).merge();
+        mergedResult = MergeEngineFactory.newInstance(DatabaseTypes.getActualDatabaseType(databaseType.name()), 
+                logicSchema.getShardingRule(), routeResult, logicSchema.getMetaData().getTable(), ((QueryResponse) response).getQueryResults()).merge();
         if (mergedResult instanceof ShowTablesMergedResult) {
             ((ShowTablesMergedResult) mergedResult).resetColumnLabel(logicSchema.getName());
         }

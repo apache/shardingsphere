@@ -19,8 +19,10 @@ package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
+import org.apache.shardingsphere.core.rewrite.token.pojo.SQLToken;
 import org.apache.shardingsphere.core.rule.BaseRule;
+
+import java.util.List;
 
 /**
  * SQL token generator for optional.
@@ -35,8 +37,9 @@ public interface OptionalSQLTokenGenerator<T extends BaseRule> extends SQLTokenG
      * Generate SQL token.
      * 
      * @param sqlStatement SQL statement
+     * @param parameters SQL parameters
      * @param rule rule
      * @return SQL token
      */
-    Optional<? extends SQLToken> generateSQLToken(SQLStatement sqlStatement, T rule);
+    Optional<? extends SQLToken> generateSQLToken(SQLStatement sqlStatement, List<Object> parameters, T rule);
 }

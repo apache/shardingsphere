@@ -23,9 +23,8 @@
         </tables>
         <tokens>
             <table-token start-index="12" table-name="t_order" length="7" />
-            <insert-values-token begin-position="55" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order" operator="EQUAL">
                     <value index="0" literal="1" type="int" />
@@ -34,7 +33,7 @@
                     <value index="1" literal="1" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
     </parser-result>
     
     <parser-result sql-case-id="insert_with_now_function" parameters="1, 1, 'init'">
@@ -43,9 +42,8 @@
         </tables>
         <tokens>
             <table-token start-index="12" table-name="t_order" length="7" />
-            <insert-values-token begin-position="67" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order" operator="EQUAL">
                     <value index="0" literal="1" type="int" />
@@ -54,7 +52,7 @@
                     <value index="1" literal="1" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
     </parser-result>
     
     <parser-result sql-case-id="insert_without_parameters">
@@ -63,9 +61,8 @@
         </tables>
         <tokens>
             <table-token start-index="12" table-name="t_order" length="7" />
-            <insert-values-token begin-position="55" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order" operator="EQUAL">
                     <value literal="1" type="int" />
@@ -74,7 +71,7 @@
                     <value literal="1" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
     </parser-result>
     
     <parser-result sql-case-id="insert_with_multiple_values">
@@ -83,9 +80,8 @@
         </tables>
         <tokens>
             <table-token start-index="12" table-name="t_order" length="7" />
-            <insert-values-token begin-position="55" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order" operator="EQUAL">
                     <value literal="1" type="int" />
@@ -102,7 +98,7 @@
                     <value literal="2" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
     </parser-result>
     
     <parser-result sql-case-id="insert_with_special_characters">
@@ -111,9 +107,8 @@
         </tables>
         <tokens>
             <table-token start-index="12" table-name="t_order" left-delimiter="`" right-delimiter="`" length="9" />
-            <insert-values-token begin-position="63" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order" operator="EQUAL">
                     <value literal="1" type="int" />
@@ -122,7 +117,7 @@
                     <value literal="1" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
     </parser-result>
     
     <parser-result sql-case-id="insert_with_special_syntax">
@@ -131,9 +126,8 @@
         </tables>
         <tokens>
             <table-token start-index="33" table-name="t_order" length="7" />
-            <insert-values-token begin-position="76" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order" operator="EQUAL">
                     <value literal="1" type="int" />
@@ -142,7 +136,7 @@
                     <value literal="1" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
     </parser-result>
     
     <parser-result sql-case-id="insert_with_all_placeholders_for_table_identifier" parameters="1, 1, 'init'">
@@ -154,9 +148,8 @@
             <table-token start-index="21" table-name="t_order" length="7" />
             <table-token start-index="39" table-name="t_order" length="7" />
             <table-token start-index="56" table-name="t_order" length="7" />
-            <insert-values-token begin-position="79" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order" operator="EQUAL">
                     <value index="0" literal="1" type="int" />
@@ -165,7 +158,7 @@
                     <value index="1" literal="1" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
     </parser-result>
     
     <parser-result sql-case-id="insert_without_columns_with_all_placeholders" parameters="1, 1, 'init'">
@@ -174,9 +167,8 @@
         </tables>
         <tokens>
             <table-token start-index="12" table-name="t_order" length="7" />
-            <insert-values-token begin-position="27" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order" operator="EQUAL">
                     <value index="0" literal="1" type="int" />
@@ -185,7 +177,7 @@
                     <value index="1" literal="1" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
     </parser-result>
     
     <parser-result sql-case-id="insert_set_with_all_placeholders" parameters="1, 1, 'init'">
@@ -196,7 +188,7 @@
             <table-token start-index="12" table-name="t_order" length="7" />
             <insert-set-token begin-position="20" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order" operator="EQUAL">
                     <value index="0" literal="1" type="int" />
@@ -205,7 +197,7 @@
                     <value index="1" literal="1" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
     </parser-result>
     
     <parser-result sql-case-id="insert_with_partial_placeholders" parameters="1, 1">
@@ -214,9 +206,8 @@
         </tables>
         <tokens>
             <table-token start-index="12" table-name="t_order" length="7" />
-            <insert-values-token begin-position="55" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order" operator="EQUAL">
                     <value index="0" literal="1" type="int" />
@@ -225,7 +216,7 @@
                     <value index="1" literal="1" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
     </parser-result>
     
     <parser-result sql-case-id="insert_set_with_partial_placeholders" parameters="1, 1">
@@ -236,7 +227,7 @@
             <table-token start-index="12" table-name="t_order" length="7" />
             <insert-set-token begin-position="55" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order" operator="EQUAL">
                     <value index="0" literal="1" type="int" />
@@ -245,7 +236,7 @@
                     <value index="1" literal="1" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
     </parser-result>
     
     <parser-result sql-case-id="insert_with_generate_key_column" parameters="10000, 1000, 10">
@@ -254,9 +245,8 @@
         </tables>
         <tokens>
             <table-token start-index="12" table-name="t_order_item" length="12" />
-            <insert-values-token begin-position="83" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="item_id" table-name="t_order_item" operator="EQUAL">
                     <value index="0" literal="10000" type="int" />
@@ -268,7 +258,7 @@
                     <value index="2" literal="10" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
     </parser-result>
     
     <parser-result sql-case-id="insert_without_generate_key_column" parameters="1000, 10">
@@ -277,9 +267,8 @@
         </tables>
         <tokens>
             <table-token start-index="12" table-name="t_order_item" length="12" />
-            <insert-values-token begin-position="74" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order_item" operator="EQUAL">
                     <value index="0" literal="1000" type="int" />
@@ -288,7 +277,7 @@
                     <value index="1" literal="10" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
     </parser-result>
     
     <parser-result sql-case-id="insert_set_with_generate_key_column" parameters="10000, 1000, 10">
@@ -299,7 +288,7 @@
             <table-token start-index="12" table-name="t_order_item" length="12" />
             <insert-set-token begin-position="25" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="item_id" table-name="t_order_item" operator="EQUAL">
                     <value index="0" literal="10000" type="int" />
@@ -311,7 +300,7 @@
                     <value index="2" literal="10" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
     </parser-result>
     
     <parser-result sql-case-id="insert_set_without_generate_key_column" parameters="1000, 10">
@@ -322,7 +311,7 @@
             <table-token start-index="12" table-name="t_order_item" length="12" />
             <insert-set-token begin-position="25" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order_item" operator="EQUAL">
                     <value index="0" literal="1000" type="int" />
@@ -331,7 +320,7 @@
                     <value index="1" literal="10" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
     </parser-result>
     
     <parser-result sql-case-id="insert_on_duplicate_key_update" parameters="1, 1, 'init'">
@@ -340,9 +329,8 @@
         </tables>
         <tokens>
             <table-token start-index="12" table-name="t_order" length="7" />
-            <insert-values-token begin-position="55" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order" operator="EQUAL">
                     <value index="0" literal="1" type="int" />
@@ -351,7 +339,7 @@
                     <value index="1" literal="1" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
     </parser-result>
     
     <parser-result sql-case-id="insert_set_with_all_placeholders_for_table_identifier" parameters="1, 1, 'init'">
@@ -365,7 +353,7 @@
             <table-token start-index="46" table-name="t_order" length="7" />
             <table-token start-index="67" table-name="t_order" length="7" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order" operator="EQUAL">
                     <value index="0" literal="1" type="int" />
@@ -374,7 +362,7 @@
                     <value index="1" literal="1" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
     </parser-result>
     
     <!--<parser-result sql-case-id="insert_on_duplicate_key_update_with_table_identifier" parameters="1, 1, 'init'">-->
@@ -386,11 +374,10 @@
             <!--<table-token start-index="21" table-name="t_order" length="7" />-->
             <!--<table-token start-index="39" table-name="t_order" length="7" />-->
             <!--<table-token start-index="56" table-name="t_order" length="7" />-->
-            <!--<insert-values-token begin-position="79" table-name="t_order"/>-->
             <!--<table-token start-index="113" table-name="t_order" length="7" />-->
             <!--<table-token start-index="137" table-name="t_order" length="7" />-->
         <!--</tokens>-->
-        <!--<or-condition>-->
+        <!--<sharding-conditions>-->
             <!--<and-condition>-->
                 <!--<condition column-name="order_id" table-name="t_order" operator="EQUAL">-->
                     <!--<value index="0" literal="1" type="int" />-->
@@ -399,7 +386,7 @@
                     <!--<value index="1" literal="1" type="int" />-->
                 <!--</condition>-->
             <!--</and-condition>-->
-        <!--</or-condition>-->
+        <!--</sharding-conditions>-->
     <!--</parser-result>-->
     
     <parser-result sql-case-id="insert_with_batch" parameters="1000, 10, 'init', 1100, 11, 'init'">
@@ -408,9 +395,8 @@
         </tables>
         <tokens>
             <table-token start-index="12" table-name="t_order" length="7" />
-            <insert-values-token begin-position="55" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order" operator="EQUAL">
                     <value index="0" literal="1000" type="int" />
@@ -427,7 +413,7 @@
                     <value index="4" literal="11" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
     </parser-result>
 
     <parser-result sql-case-id="insert_with_batch_and_irregular_parameters" parameters="1, 2, 2, 'init'">
@@ -436,9 +422,8 @@
         </tables>
         <tokens>
             <table-token start-index="12" table-name="t_order" length="7" />
-            <insert-values-token begin-position="55" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order" operator="EQUAL">
                     <value index="0" literal="1" type="int" />
@@ -455,7 +440,7 @@
                     <value index="2" literal="2" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
     </parser-result>
 
     <!--<parser-result sql-case-id="insert_with_batch_and_composite_expression" parameters="1, 1, 'init', 2, 2, 'init'">-->
@@ -464,9 +449,8 @@
         <!--</tables>-->
         <!--<tokens>-->
             <!--<table-token start-index="12" table-name="t_order" length="7" />-->
-            <!--<insert-values-token begin-position="55" table-name="t_order"/>-->
         <!--</tokens>-->
-        <!--<or-condition>-->
+        <!--<sharding-conditions>-->
             <!--<and-condition>-->
                 <!--<condition column-name="order_id" table-name="t_order" operator="EQUAL">-->
                     <!--<value index="0" literal="1" type="int" />-->
@@ -483,7 +467,7 @@
                     <!--<value index="4" literal="2" type="int" />-->
                 <!--</condition>-->
             <!--</and-condition>-->
-        <!--</or-condition>-->
+        <!--</sharding-conditions>-->
     <!--</parser-result>-->
     
     <parser-result sql-case-id="insert_with_batch_and_with_generate_key_column" parameters="10000, 1000, 10, 10010, 1001, 10">
@@ -492,9 +476,8 @@
         </tables>
         <tokens>
             <table-token start-index="12" table-name="t_order_item" length="12" />
-            <insert-values-token begin-position="83" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="item_id" table-name="t_order_item" operator="EQUAL">
                     <value index="0" literal="10000" type="int" />
@@ -517,7 +500,7 @@
                     <value index="5" literal="10" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
     </parser-result>
     
     <!--<parser-result sql-case-id="insert_with_batch_and_without_generate_key_column" parameters="1000, 10, 1001, 10">-->
@@ -526,9 +509,8 @@
         <!--</tables>-->
         <!--<tokens>-->
             <!--<table-token start-index="12" table-name="t_order_item" length="12" />-->
-            <!--<insert-values-token begin-position="74" table-name="t_order_item"/>-->
         <!--</tokens>-->
-        <!--<or-condition>-->
+        <!--<sharding-conditions>-->
             <!--<and-condition>-->
                 <!--<condition column-name="order_id" table-name="t_order_item" operator="EQUAL">-->
                     <!--<value index="0" literal="1000" type="int" />-->
@@ -545,7 +527,7 @@
                     <!--<value index="3" literal="10" type="int" />-->
                 <!--</condition>-->
             <!--</and-condition>-->
-        <!--</or-condition>-->
+        <!--</sharding-conditions>-->
     <!--</parser-result>-->
     
     <parser-result sql-case-id="insert_with_geography" parameters="7, 200, '{&quot;rule&quot;:&quot;null&quot;}'">
@@ -554,9 +536,8 @@
         </tables>
         <tokens>
             <table-token start-index="12" table-name="t_place" length="7" />
-            <insert-values-token begin-position="64" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="user_new_id" table-name="t_place" operator="EQUAL">
                     <value index="0" literal="7" type="int" />
@@ -565,7 +546,7 @@
                     <value index="1" literal="200" type="int"/>
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
     </parser-result>
     
     <parser-result sql-case-id="insert_without_columns_and_with_generate_key_column" parameters="10000, 1000, 10">
@@ -574,9 +555,8 @@
         </tables>
         <tokens>
             <table-token start-index="12" table-name="t_order_item" length="12" />
-            <insert-values-token begin-position="31" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="item_id" table-name="t_order_item" operator="EQUAL">
                     <value index="0" literal="10000" type="int" />
@@ -588,7 +568,7 @@
                     <value index="2" literal="10" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
     </parser-result>
     
     <parser-result sql-case-id="insert_without_columns_and_without_generate_key_column" parameters="1000, 10">
@@ -597,9 +577,8 @@
         </tables>
         <tokens>
             <table-token start-index="12" table-name="t_order_item" length="12" />
-            <insert-values-token begin-position="31" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order_item" operator="EQUAL">
                     <value index="0" literal="1000" type="int" />
@@ -608,7 +587,7 @@
                     <value index="1" literal="10" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
     </parser-result>
     
     <!-- // TODO
@@ -627,11 +606,10 @@
         </tables>
         <tokens>
             <table-token start-index="12" table-name="t_auto_increment_table" length="22" />
-            <insert-values-token begin-position="41" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition/>
-        </or-condition>
+        </sharding-conditions>
     </parser-result>
     <parser-result sql-case-id="insert_with_double_value">
         <tables>
@@ -639,11 +617,10 @@
         </tables>
         <tokens>
             <table-token start-index="12" table-name="t_double_test" length="13" />
-            <insert-values-token begin-position="38" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition/>
-        </or-condition>
+        </sharding-conditions>
     </parser-result>
     
     <parser-result sql-case-id="insert_with_null_value">
@@ -652,11 +629,10 @@
         </tables>
         <tokens>
             <table-token start-index="12" table-name="t_null_value_test" length="17" />
-            <insert-values-token begin-position="42" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition/>
-        </or-condition>
+        </sharding-conditions>
     </parser-result>
     
     <parser-result sql-case-id="insert_with_blob_value">
@@ -665,10 +641,9 @@
         </tables>
         <tokens>
             <table-token start-index="12" table-name="t_blob_value_test" length="17" />
-            <insert-values-token begin-position="42" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition/>
-        </or-condition>
+        </sharding-conditions>
     </parser-result>
 </parser-result-sets>

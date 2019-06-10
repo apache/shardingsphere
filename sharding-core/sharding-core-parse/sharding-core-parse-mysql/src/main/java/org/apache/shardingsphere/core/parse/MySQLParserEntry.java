@@ -21,9 +21,8 @@ import org.antlr.v4.runtime.Lexer;
 import org.apache.shardingsphere.core.parse.api.SQLParser;
 import org.apache.shardingsphere.core.parse.autogen.MySQLStatementLexer;
 import org.apache.shardingsphere.core.parse.spi.SQLParserEntry;
-
-import java.util.Collection;
-import java.util.Collections;
+import org.apache.shardingsphere.spi.DatabaseTypes;
+import org.apache.shardingsphere.spi.DbType;
 
 /**
  * SQL parser entry for MySQL.
@@ -33,13 +32,8 @@ import java.util.Collections;
 public final class MySQLParserEntry implements SQLParserEntry {
     
     @Override
-    public String getDatabaseType() {
-        return "MySQL";
-    }
-    
-    @Override
-    public Collection<String> getDatabaseTypeAliases() {
-        return Collections.singletonList("H2");
+    public DbType getDatabaseType() {
+        return DatabaseTypes.getActualDatabaseType("MySQL");
     }
     
     @Override

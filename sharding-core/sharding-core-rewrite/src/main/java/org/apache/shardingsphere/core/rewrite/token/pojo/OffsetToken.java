@@ -18,11 +18,9 @@
 package org.apache.shardingsphere.core.rewrite.token.pojo;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
-import org.apache.shardingsphere.core.parse.sql.token.Substitutable;
 
 /**
- * Offset token for limit.
+ * Offset token.
  *
  * @author zhangliang
  * @author panjuan
@@ -30,13 +28,13 @@ import org.apache.shardingsphere.core.parse.sql.token.Substitutable;
 @Getter
 public final class OffsetToken extends SQLToken implements Substitutable {
     
-    private final int offset;
-    
     private final int stopIndex;
     
-    public OffsetToken(final int startIndex, final int stopIndex, final int offset) {
+    private final int revisedOffset;
+    
+    public OffsetToken(final int startIndex, final int stopIndex, final int revisedOffset) {
         super(startIndex);
-        this.offset = offset;
         this.stopIndex = stopIndex;
+        this.revisedOffset = revisedOffset;
     }
 }
