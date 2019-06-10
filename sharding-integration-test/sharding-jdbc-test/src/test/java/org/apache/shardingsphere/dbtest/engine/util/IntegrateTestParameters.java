@@ -27,6 +27,7 @@ import org.apache.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCase;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCaseAssertion;
 import org.apache.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import org.apache.shardingsphere.dbtest.env.IntegrateTestEnvironment;
+import org.apache.shardingsphere.spi.DatabaseType;
 import org.apache.shardingsphere.spi.DatabaseTypes;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.SQLCasesLoader;
@@ -73,12 +74,12 @@ public final class IntegrateTestParameters {
             if (null == integrateTestCase) {
                 continue;
             }
-            result.addAll(getParametersWithAssertion(databaseType, caseType, integrateTestCase));
+            result.addAll(getParametersWithAssertion(DatabaseTypes.getActualDatabaseType(databaseType), caseType, integrateTestCase));
         }
         return result;
     }
     
-    private static Collection<Object[]> getParametersWithAssertion(final String databaseType, final SQLCaseType caseType, final IntegrateTestCase integrateTestCase) {
+    private static Collection<Object[]> getParametersWithAssertion(final DatabaseType databaseType, final SQLCaseType caseType, final IntegrateTestCase integrateTestCase) {
         Collection<Object[]> result = new LinkedList<>();
         for (IntegrateTestCaseAssertion each : integrateTestCase.getIntegrateTestCaseAssertions()) {
             result.addAll(getParametersWithAssertion(integrateTestCase, each, databaseType, caseType));
@@ -87,7 +88,7 @@ public final class IntegrateTestParameters {
     }
     
     private static Collection<Object[]> getParametersWithAssertion(
-            final IntegrateTestCase integrateTestCase, final IntegrateTestCaseAssertion assertion, final String databaseType, final SQLCaseType caseType) {
+            final IntegrateTestCase integrateTestCase, final IntegrateTestCaseAssertion assertion, final DatabaseType databaseType, final SQLCaseType caseType) {
         Collection<Object[]> result = new LinkedList<>();
         for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
             Object[] data = new Object[6];
@@ -129,12 +130,12 @@ public final class IntegrateTestParameters {
             if (null == integrateTestCase) {
                 continue;
             }
-            result.addAll(getParametersWithCase(databaseType, integrateTestCase));
+            result.addAll(getParametersWithCase(DatabaseTypes.getActualDatabaseType(databaseType), integrateTestCase));
         }
         return result;
     }
     
-    private static Collection<Object[]> getParametersWithCase(final String databaseType, final IntegrateTestCase integrateTestCase) {
+    private static Collection<Object[]> getParametersWithCase(final DatabaseType databaseType, final IntegrateTestCase integrateTestCase) {
         Collection<Object[]> result = new LinkedList<>();
         for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
             Object[] data = new Object[4];

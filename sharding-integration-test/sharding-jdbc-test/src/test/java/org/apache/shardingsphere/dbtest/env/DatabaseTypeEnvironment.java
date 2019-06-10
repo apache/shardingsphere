@@ -19,6 +19,7 @@ package org.apache.shardingsphere.dbtest.env;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.spi.DatabaseType;
 
 /**
  * Database type environment.
@@ -29,7 +30,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public final class DatabaseTypeEnvironment {
     
-    private final String databaseType;
+    private final DatabaseType databaseType;
     
     private final boolean isEnabled;
     
