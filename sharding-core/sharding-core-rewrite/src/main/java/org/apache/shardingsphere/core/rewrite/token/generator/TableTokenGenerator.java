@@ -34,6 +34,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Table token generator.
@@ -43,7 +44,7 @@ import java.util.LinkedList;
 public final class TableTokenGenerator implements CollectionSQLTokenGenerator<ShardingRule> {
     
     @Override
-    public Collection<TableToken> generateSQLTokens(final SQLStatement sqlStatement, final ShardingRule shardingRule) {
+    public Collection<TableToken> generateSQLTokens(final SQLStatement sqlStatement, final List<Object> parameters, final ShardingRule shardingRule) {
         Collection<TableToken> result = new LinkedList<>();
         for (SQLSegment each : sqlStatement.getSqlSegments()) {
             if (each instanceof SelectItemsSegment) {

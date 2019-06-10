@@ -29,7 +29,7 @@ import org.apache.shardingsphere.core.parse.filler.sharding.dml.select.ShardingR
 import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
-import org.apache.shardingsphere.core.parse.sql.context.condition.ParseCondition;
+import org.apache.shardingsphere.core.parse.sql.context.condition.Conditions;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.OrPredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
@@ -58,34 +58,34 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
     
     @Override
     public void fill(final OrPredicateSegment sqlSegment, final SQLStatement sqlStatement) {
-        sqlStatement.getRouteCondition().getOrConditions().addAll(buildConditions(sqlSegment, sqlStatement).getOrConditions());
+        sqlStatement.getShardingConditions().getOrConditions().addAll(buildShardingConditions(sqlSegment, sqlStatement).getOrConditions());
         if (sqlStatement instanceof SelectStatement) {
             shardingRowNumberPredicateFiller.fill(sqlSegment, sqlStatement);
         }
     }
     
     /**
-     * Build condition.
+     * Build conditions.
      *
      * @param sqlSegment SQL segment
      * @param sqlStatement SQL statement
-     * @return or condition
+     * @return conditions
      */
-    public ParseCondition buildConditions(final OrPredicateSegment sqlSegment, final SQLStatement sqlStatement) {
-        ParseCondition result = createParseCondition(sqlSegment, sqlStatement);
+    public Conditions buildShardingConditions(final OrPredicateSegment sqlSegment, final SQLStatement sqlStatement) {
+        Conditions result = createShardingCondition(sqlSegment, sqlStatement);
         createEncryptOrPredicateFiller().fill(sqlSegment, sqlStatement);
         return result;
     }
     
     private EncryptOrPredicateFiller createEncryptOrPredicateFiller() {
         EncryptOrPredicateFiller result = new EncryptOrPredicateFiller();
-        result.setEncryptorEngine(shardingRule.getEncryptRule().getEncryptorEngine());
+        result.setEncryptRule(shardingRule.getEncryptRule());
         result.setShardingTableMetaData(shardingTableMetaData);
         return result;
     }
     
-    private ParseCondition createParseCondition(final OrPredicateSegment sqlSegment, final SQLStatement sqlStatement) {
-        ParseCondition result = new ParseCondition();
+    private Conditions createShardingCondition(final OrPredicateSegment sqlSegment, final SQLStatement sqlStatement) {
+        Conditions result = new Conditions();
         for (AndPredicate each : sqlSegment.getAndPredicates()) {
             AndCondition andCondition = new AndCondition();
             for (PredicateSegment predicate : each.getPredicates()) {

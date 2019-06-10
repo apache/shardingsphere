@@ -19,12 +19,12 @@ package org.apache.shardingsphere.core.metadata.datasource;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.metadata.datasource.dialect.H2DataSourceMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.dialect.MySQLDataSourceMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.dialect.OracleDataSourceMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.dialect.PostgreSQLDataSourceMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.dialect.SQLServerDataSourceMetaData;
+import org.apache.shardingsphere.spi.DbType;
 
 /**
  * Data source meta data builder.
@@ -41,17 +41,17 @@ public final class DataSourceMetaDataFactory {
      * @param url data source URL
      * @return data source meta data
      */
-    public static DataSourceMetaData newInstance(final DatabaseType databaseType, final String url) {
-        switch (databaseType) {
-            case H2:
+    public static DataSourceMetaData newInstance(final DbType databaseType, final String url) {
+        switch (databaseType.getName()) {
+            case "H2":
                 return new H2DataSourceMetaData(url);
-            case MySQL:
+            case "MySQL":
                 return new MySQLDataSourceMetaData(url);
-            case Oracle:
+            case "Oracle":
                 return new OracleDataSourceMetaData(url);
-            case PostgreSQL:
+            case "PostgreSQL":
                 return new PostgreSQLDataSourceMetaData(url);
-            case SQLServer:
+            case "SQLServer":
                 return new SQLServerDataSourceMetaData(url);
             default:
                 throw new UnsupportedOperationException(String.format("Cannot support database [%s].", databaseType));

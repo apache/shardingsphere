@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.parse.sql.statement.dml;
 
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
 
@@ -39,4 +40,19 @@ public final class InsertStatement extends DMLStatement {
     private final Collection<String> columnNames = new LinkedList<>();
     
     private final List<InsertValue> values = new LinkedList<>();
+    
+    @Setter
+    private boolean isNeededToAppendGeneratedKey;
+    
+    @Setter
+    private boolean isNeededToAppendAssistedColumns;
+    
+    /**
+     * Is needed to append columns.
+     * 
+     * @return append columns or not
+     */
+    public boolean isNeededToAppendColumns() {
+        return isNeededToAppendGeneratedKey || isNeededToAppendAssistedColumns;
+    }
 }

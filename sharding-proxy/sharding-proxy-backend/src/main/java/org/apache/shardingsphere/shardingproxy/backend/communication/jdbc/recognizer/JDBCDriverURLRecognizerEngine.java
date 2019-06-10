@@ -19,9 +19,10 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recog
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recognizer.spi.JDBCDriverURLRecognizer;
+import org.apache.shardingsphere.spi.DatabaseTypes;
+import org.apache.shardingsphere.spi.DbType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -71,19 +72,19 @@ public final class JDBCDriverURLRecognizerEngine {
      * @param url JDBC URL
      * @return database type
      */
-    public static DatabaseType getDatabaseType(final String url) {
+    public static DbType getDatabaseType(final String url) {
         switch (getDriverClassName(url)) {
             case "com.mysql.cj.jdbc.Driver":
             case "com.mysql.jdbc.Driver":
-                return DatabaseType.MySQL;
+                return DatabaseTypes.getActualDatabaseType("MySQL");
             case "org.postgresql.Driver":
-                return DatabaseType.PostgreSQL;
+                return DatabaseTypes.getActualDatabaseType("PostgreSQL");
             case "oracle.jdbc.driver.OracleDriver":
-                return DatabaseType.Oracle;
+                return DatabaseTypes.getActualDatabaseType("Oracle");
             case "com.microsoft.sqlserver.jdbc.SQLServerDriver":
-                return DatabaseType.SQLServer;
+                return DatabaseTypes.getActualDatabaseType("SQLServer");
             case "org.h2.Driver":
-                return DatabaseType.H2;
+                return DatabaseTypes.getActualDatabaseType("H2");
             default:
                 throw new ShardingException("Cannot resolve JDBC url `%s`", url);
         }

@@ -43,6 +43,7 @@
         <module>sharding-sql-test</module>
         
         <module>sharding-distribution</module>
+        <module>sharding-integration-test</module>
     </modules>
     
     <properties>
@@ -501,9 +502,6 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <configuration>
                         <argLine>-Xmx1024m -XX:MaxPermSize=256m</argLine>
-                        <excludes>
-                            <exclude>**/*Tests.java</exclude>
-                        </excludes>
                     </configuration>
                 </plugin>
                 <plugin>
