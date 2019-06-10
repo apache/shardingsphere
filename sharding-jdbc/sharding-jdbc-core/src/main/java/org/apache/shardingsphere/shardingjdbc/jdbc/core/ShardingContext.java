@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.execute.ShardingExecuteEngine;
@@ -30,7 +29,7 @@ import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata.CachedDatabaseMetaData;
 import org.apache.shardingsphere.shardingjdbc.jdbc.metadata.JDBCTableMetaDataConnectionManager;
-import org.apache.shardingsphere.spi.DatabaseTypes;
+import org.apache.shardingsphere.spi.DbType;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -54,7 +53,7 @@ public final class ShardingContext implements AutoCloseable {
     
     private final ShardingRule shardingRule;
     
-    private final DatabaseType databaseType;
+    private final DbType databaseType;
     
     private final ShardingExecuteEngine executeEngine;
     
@@ -64,15 +63,14 @@ public final class ShardingContext implements AutoCloseable {
     
     private final ParsingResultCache parsingResultCache;
     
-    public ShardingContext(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType, final Properties props) throws SQLException {
+    public ShardingContext(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DbType databaseType, final Properties props) throws SQLException {
         this.shardingRule = shardingRule;
         this.cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap);
         this.databaseType = databaseType;
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
         int executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
         executeEngine = new ShardingExecuteEngine(executorSize);
-        ShardingDataSourceMetaData shardingDataSourceMetaData = new ShardingDataSourceMetaData(
-                getDataSourceURLs(dataSourceMap), shardingRule, DatabaseTypes.getActualDatabaseType(databaseType.name()));
+        ShardingDataSourceMetaData shardingDataSourceMetaData = new ShardingDataSourceMetaData(getDataSourceURLs(dataSourceMap), shardingRule, databaseType);
         ShardingTableMetaData shardingTableMetaData = new ShardingTableMetaData(getTableMetaDataInitializer(dataSourceMap, shardingDataSourceMetaData).load(shardingRule));
         metaData = new ShardingMetaData(shardingDataSourceMetaData, shardingTableMetaData);
         parsingResultCache = new ParsingResultCache();

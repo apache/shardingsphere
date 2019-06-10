@@ -38,7 +38,6 @@ import org.apache.shardingsphere.core.parse.sql.statement.ddl.DropTableStatement
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.metadata.JDBCTableMetaDataConnectionManager;
-import org.apache.shardingsphere.spi.DatabaseTypes;
 import org.apache.shardingsphere.spi.DbType;
 
 import java.sql.Connection;
@@ -94,7 +93,7 @@ public class AbstractStatementExecutor {
     private final Collection<ShardingExecuteGroup<StatementExecuteUnit>> executeGroups = new LinkedList<>();
     
     public AbstractStatementExecutor(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final ShardingConnection shardingConnection) {
-        this.databaseType = DatabaseTypes.getActualDatabaseType(shardingConnection.getShardingContext().getDatabaseType().name());
+        this.databaseType = shardingConnection.getShardingContext().getDatabaseType();
         this.resultSetType = resultSetType;
         this.resultSetConcurrency = resultSetConcurrency;
         this.resultSetHoldability = resultSetHoldability;

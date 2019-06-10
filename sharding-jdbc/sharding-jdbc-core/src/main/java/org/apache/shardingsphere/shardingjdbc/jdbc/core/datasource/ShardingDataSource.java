@@ -19,7 +19,6 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
@@ -51,7 +50,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
     public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final Properties props) throws SQLException {
         super(dataSourceMap);
         checkDataSourceType(dataSourceMap);
-        shardingContext = new ShardingContext(getDataSourceMap(), shardingRule, DatabaseType.valueOf(getDatabaseType().getName()), props);
+        shardingContext = new ShardingContext(getDataSourceMap(), shardingRule, getDatabaseType(), props);
     }
     
     private void checkDataSourceType(final Map<String, DataSource> dataSourceMap) {
