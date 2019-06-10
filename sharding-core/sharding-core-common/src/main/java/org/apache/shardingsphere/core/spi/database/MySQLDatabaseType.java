@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.core.spi.database;
 
+import org.apache.shardingsphere.core.metadata.datasource.dialect.MySQLDataSourceMetaData;
+import org.apache.shardingsphere.spi.database.DataSourceMetaData;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 
 /**
@@ -34,5 +36,10 @@ public final class MySQLDatabaseType implements DatabaseType {
     @Override
     public String getProductName() {
         return "MySQL";
+    }
+    
+    @Override
+    public DataSourceMetaData getDataSourceMetaData(final String url) {
+        return new MySQLDataSourceMetaData(url);
     }
 }

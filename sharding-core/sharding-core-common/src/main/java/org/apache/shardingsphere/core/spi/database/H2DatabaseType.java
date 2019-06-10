@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.core.spi.database;
 
+import org.apache.shardingsphere.core.metadata.datasource.dialect.H2DataSourceMetaData;
 import org.apache.shardingsphere.spi.database.BranchDatabaseType;
+import org.apache.shardingsphere.spi.database.DataSourceMetaData;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 import org.apache.shardingsphere.spi.database.DatabaseTypes;
 
@@ -36,6 +38,11 @@ public final class H2DatabaseType implements BranchDatabaseType {
     @Override
     public String getProductName() {
         return "H2";
+    }
+    
+    @Override
+    public DataSourceMetaData getDataSourceMetaData(final String url) {
+        return new H2DataSourceMetaData(url);
     }
     
     @Override

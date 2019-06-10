@@ -125,8 +125,6 @@ public final class DataSourceUtils {
     
     private static String getURL(final DatabaseType databaseType, final String databaseName) {
         switch (databaseType.getName()) {
-            case "H2":
-                return String.format("jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL", databaseName);
             case "MySQL":
                 return String.format("jdbc:mysql://localhost:3306/%s", databaseName);
             case "PostgreSQL":
@@ -135,6 +133,8 @@ public final class DataSourceUtils {
                 return String.format("jdbc:oracle:thin:@//localhost:3306/%s", databaseName);
             case "SQLServer":
                 return String.format("jdbc:sqlserver://localhost:1433;DatabaseName=%s", databaseName);
+            case "H2":
+                return String.format("jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL", databaseName);
             default:
                 throw new UnsupportedOperationException(databaseType.getName());
         }

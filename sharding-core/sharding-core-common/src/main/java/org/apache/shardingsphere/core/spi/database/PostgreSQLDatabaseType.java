@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.core.spi.database;
 
+import org.apache.shardingsphere.core.metadata.datasource.dialect.PostgreSQLDataSourceMetaData;
+import org.apache.shardingsphere.spi.database.DataSourceMetaData;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 
 /**
@@ -34,5 +36,10 @@ public final class PostgreSQLDatabaseType implements DatabaseType {
     @Override
     public String getProductName() {
         return "PostgreSQL";
+    }
+    
+    @Override
+    public DataSourceMetaData getDataSourceMetaData(final String url) {
+        return new PostgreSQLDataSourceMetaData(url);
     }
 }

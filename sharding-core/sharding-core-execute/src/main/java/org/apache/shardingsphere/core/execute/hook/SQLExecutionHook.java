@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.core.execute.hook;
 
-import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import org.apache.shardingsphere.core.route.RouteUnit;
+import org.apache.shardingsphere.spi.database.DataSourceMetaData;
 
 import java.util.Map;
 
