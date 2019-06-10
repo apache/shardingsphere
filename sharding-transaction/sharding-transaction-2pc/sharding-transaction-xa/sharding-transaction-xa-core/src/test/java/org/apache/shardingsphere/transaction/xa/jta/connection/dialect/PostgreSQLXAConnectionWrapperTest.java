@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.transaction.xa.jta.connection.dialect;
 
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.spi.DatabaseTypes;
 import org.apache.shardingsphere.transaction.xa.fixture.DataSourceUtils;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.XADataSourceFactory;
@@ -54,7 +53,7 @@ public class PostgreSQLXAConnectionWrapperTest {
     @SuppressWarnings("unchecked")
     public void setUp() throws SQLException, ClassNotFoundException {
         BaseConnection connection = (BaseConnection) mock(Class.forName("org.postgresql.core.BaseConnection"));
-        DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, DatabaseType.PostgreSQL, "ds1");
+        DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, DatabaseTypes.getActualDatabaseType("PostgreSQL"), "ds1");
         xaDataSource = XADataSourceFactory.build(DatabaseTypes.getActualDatabaseType("MySQL"), dataSource);
         when(this.connection.unwrap((Class<Object>) any())).thenReturn(connection);
         
