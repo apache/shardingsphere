@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.merge.dql.pagination;
 
 import com.google.common.collect.Lists;
-import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.MergedResult;
 import org.apache.shardingsphere.core.merge.dql.DQLMergeEngine;
@@ -30,6 +29,7 @@ import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
+import org.apache.shardingsphere.spi.DatabaseTypes;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -75,7 +75,7 @@ public final class LimitDecoratorMergedResultTest {
     @Test
     public void assertNextForSkipAll() throws SQLException {
         routeResult.getOptimizeResult().setPagination(new Pagination(new NumberLiteralLimitValueSegment(0, 0, Integer.MAX_VALUE), null, Collections.emptyList()));
-        mergeEngine = new DQLMergeEngine(DatabaseType.MySQL, routeResult, queryResults);
+        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertFalse(actual.next());
     }
@@ -83,7 +83,7 @@ public final class LimitDecoratorMergedResultTest {
     @Test
     public void assertNextWithoutRowCount() throws SQLException {
         routeResult.getOptimizeResult().setPagination(new Pagination(new NumberLiteralLimitValueSegment(0, 0, 2), null, Collections.emptyList()));
-        mergeEngine = new DQLMergeEngine(DatabaseType.MySQL, routeResult, queryResults);
+        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
         for (int i = 0; i < 6; i++) {
             assertTrue(actual.next());
@@ -94,7 +94,7 @@ public final class LimitDecoratorMergedResultTest {
     @Test
     public void assertNextWithRowCount() throws SQLException {
         routeResult.getOptimizeResult().setPagination(new Pagination(new NumberLiteralLimitValueSegment(0, 0, 2), new NumberLiteralLimitValueSegment(0, 0, 2), Collections.emptyList()));
-        mergeEngine = new DQLMergeEngine(DatabaseType.MySQL, routeResult, queryResults);
+        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertTrue(actual.next());
         assertTrue(actual.next());
