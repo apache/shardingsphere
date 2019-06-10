@@ -35,5 +35,8 @@
     <encrypt:data-source id="encryptDataSource" data-source-name="dbtbl_0" >
         <encrypt:encryptor-rule id="order_encryptor" type="MD5" qualified-columns="t_order.order_id" />
         <encrypt:encryptor-rule id="user_encryptor" type="AES" qualified-columns="t_order.user_id" props-ref="props" />
+        <encrypt:props>
+            <prop key="sql.show">${sql_show}</prop>
+        </encrypt:props>
     </encrypt:data-source>
 </beans>
