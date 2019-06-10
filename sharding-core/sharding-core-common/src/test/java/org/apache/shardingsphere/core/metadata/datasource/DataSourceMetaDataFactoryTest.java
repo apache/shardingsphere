@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.core.metadata.datasource;
 
-import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.metadata.datasource.dialect.H2DataSourceMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.dialect.MySQLDataSourceMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.dialect.OracleDataSourceMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.dialect.PostgreSQLDataSourceMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.dialect.SQLServerDataSourceMetaData;
+import org.apache.shardingsphere.spi.DatabaseTypes;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -31,27 +31,29 @@ import static org.junit.Assert.assertThat;
 public class DataSourceMetaDataFactoryTest {
     
     @Test
-    public void assertAllNewInstanceForH2() {
-        assertThat(DataSourceMetaDataFactory.newInstance(DatabaseType.H2, "jdbc:h2:mem:ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"), instanceOf(H2DataSourceMetaData.class));
-    }
-    
-    @Test
     public void assertAllNewInstanceForMySQL() {
-        assertThat(DataSourceMetaDataFactory.newInstance(DatabaseType.MySQL, "jdbc:mysql://127.0.0.1:3306/db_0"), instanceOf(MySQLDataSourceMetaData.class));
-    }
-    
-    @Test
-    public void assertAllNewInstanceForOracle() {
-        assertThat(DataSourceMetaDataFactory.newInstance(DatabaseType.Oracle, "jdbc:oracle:thin:@//127.0.0.1:3306/ds_0"), instanceOf(OracleDataSourceMetaData.class));
+        assertThat(DataSourceMetaDataFactory.newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), "jdbc:mysql://127.0.0.1:3306/db_0"), instanceOf(MySQLDataSourceMetaData.class));
     }
     
     @Test
     public void assertAllNewInstanceForPostgreSQL() {
-        assertThat(DataSourceMetaDataFactory.newInstance(DatabaseType.PostgreSQL, "jdbc:postgresql://127.0.0.1:3306/ds_0"), instanceOf(PostgreSQLDataSourceMetaData.class));
+        assertThat(DataSourceMetaDataFactory.newInstance(DatabaseTypes.getActualDatabaseType("PostgreSQL"), "jdbc:postgresql://127.0.0.1:3306/ds_0"), instanceOf(PostgreSQLDataSourceMetaData.class));
+    }
+    
+    @Test
+    public void assertAllNewInstanceForOracle() {
+        assertThat(DataSourceMetaDataFactory.newInstance(DatabaseTypes.getActualDatabaseType("Oracle"), "jdbc:oracle:thin:@//127.0.0.1:3306/ds_0"), instanceOf(OracleDataSourceMetaData.class));
     }
     
     @Test
     public void assertAllNewInstanceForSQLServer() {
-        assertThat(DataSourceMetaDataFactory.newInstance(DatabaseType.SQLServer, "jdbc:microsoft:sqlserver://127.0.0.1:3306;DatabaseName=ds_0"), instanceOf(SQLServerDataSourceMetaData.class));
+        assertThat(DataSourceMetaDataFactory.newInstance(DatabaseTypes.getActualDatabaseType("SQLServer"),
+                "jdbc:microsoft:sqlserver://127.0.0.1:3306;DatabaseName=ds_0"), instanceOf(SQLServerDataSourceMetaData.class));
+    }
+    
+    @Test
+    public void assertAllNewInstanceForH2() {
+        assertThat(DataSourceMetaDataFactory.newInstance(DatabaseTypes.getActualDatabaseType("H2"),
+                "jdbc:h2:mem:ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"), instanceOf(H2DataSourceMetaData.class));
     }
 }

@@ -28,6 +28,7 @@ import org.apache.shardingsphere.core.execute.sql.execute.threadlocal.ExecutorEx
 import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetaDataFactory;
 import org.apache.shardingsphere.core.route.RouteUnit;
+import org.apache.shardingsphere.spi.DatabaseTypes;
 
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -62,7 +63,8 @@ public abstract class SQLExecuteCallback<T> implements ShardingGroupExecuteCallb
     
     private T execute0(final StatementExecuteUnit statementExecuteUnit, final boolean isTrunkThread, final Map<String, Object> shardingExecuteDataMap) throws SQLException {
         ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
-        DataSourceMetaData dataSourceMetaData = DataSourceMetaDataFactory.newInstance(databaseType, statementExecuteUnit.getStatement().getConnection().getMetaData().getURL());
+        DataSourceMetaData dataSourceMetaData = DataSourceMetaDataFactory.newInstance(
+                DatabaseTypes.getActualDatabaseType(databaseType.name()), statementExecuteUnit.getStatement().getConnection().getMetaData().getURL());
         SQLExecutionHook sqlExecutionHook = new SPISQLExecutionHook();
         try {
             sqlExecutionHook.start(statementExecuteUnit.getRouteUnit(), dataSourceMetaData, isTrunkThread, shardingExecuteDataMap);

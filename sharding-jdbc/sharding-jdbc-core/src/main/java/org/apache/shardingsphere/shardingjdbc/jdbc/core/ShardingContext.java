@@ -30,6 +30,7 @@ import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata.CachedDatabaseMetaData;
 import org.apache.shardingsphere.shardingjdbc.jdbc.metadata.JDBCTableMetaDataConnectionManager;
+import org.apache.shardingsphere.spi.DatabaseTypes;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -70,7 +71,8 @@ public final class ShardingContext implements AutoCloseable {
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
         int executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
         executeEngine = new ShardingExecuteEngine(executorSize);
-        ShardingDataSourceMetaData shardingDataSourceMetaData = new ShardingDataSourceMetaData(getDataSourceURLs(dataSourceMap), shardingRule, databaseType);
+        ShardingDataSourceMetaData shardingDataSourceMetaData = new ShardingDataSourceMetaData(
+                getDataSourceURLs(dataSourceMap), shardingRule, DatabaseTypes.getActualDatabaseType(databaseType.name()));
         ShardingTableMetaData shardingTableMetaData = new ShardingTableMetaData(getTableMetaDataInitializer(dataSourceMap, shardingDataSourceMetaData).load(shardingRule));
         metaData = new ShardingMetaData(shardingDataSourceMetaData, shardingTableMetaData);
         parsingResultCache = new ParsingResultCache();
