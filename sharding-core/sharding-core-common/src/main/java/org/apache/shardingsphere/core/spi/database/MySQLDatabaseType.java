@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.core.spi.database;
 
-import org.apache.shardingsphere.spi.DbType;
+import org.apache.shardingsphere.spi.DatabaseType;
 
 /**
  * Database type of MySQL.
  *
  * @author zhangliang
  */
-public final class MySQLDatabaseType implements DbType {
+public final class MySQLDatabaseType implements DatabaseType {
     
     @Override
     public String getName() {

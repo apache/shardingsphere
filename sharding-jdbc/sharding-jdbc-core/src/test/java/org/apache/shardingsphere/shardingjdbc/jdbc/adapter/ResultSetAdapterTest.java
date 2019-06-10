@@ -20,8 +20,8 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.adapter;
 import org.apache.shardingsphere.shardingjdbc.common.base.AbstractShardingJDBCDatabaseAndTableTest;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.util.JDBCTestSQL;
+import org.apache.shardingsphere.spi.DatabaseType;
 import org.apache.shardingsphere.spi.DatabaseTypes;
-import org.apache.shardingsphere.spi.DbType;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,7 +48,7 @@ public final class ResultSetAdapterTest extends AbstractShardingJDBCDatabaseAndT
     
     private final List<Statement> statements = new ArrayList<>();
     
-    private final Map<DbType, ResultSet> resultSets = new HashMap<>();
+    private final Map<DatabaseType, ResultSet> resultSets = new HashMap<>();
     
     @Before
     public void init() throws SQLException {
@@ -74,13 +74,13 @@ public final class ResultSetAdapterTest extends AbstractShardingJDBCDatabaseAndT
     
     @Test
     public void assertClose() throws SQLException {
-        for (Entry<DbType, ResultSet> each : resultSets.entrySet()) {
+        for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
             each.getValue().close();
             assertClose((AbstractResultSetAdapter) each.getValue(), each.getKey());
         }
     }
     
-    private void assertClose(final AbstractResultSetAdapter actual, final DbType type) throws SQLException {
+    private void assertClose(final AbstractResultSetAdapter actual, final DatabaseType type) throws SQLException {
         assertTrue(actual.isClosed());
         assertThat(actual.getResultSets().size(), is(4));
         if (DatabaseTypes.getActualDatabaseType("Oracle") != type) {
@@ -99,7 +99,7 @@ public final class ResultSetAdapterTest extends AbstractShardingJDBCDatabaseAndT
     
     @Test
     public void assertSetFetchDirection() throws SQLException {
-        for (Entry<DbType, ResultSet> each : resultSets.entrySet()) {
+        for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
             assertThat(each.getValue().getFetchDirection(), is(ResultSet.FETCH_FORWARD));
             try {
                 each.getValue().setFetchDirection(ResultSet.FETCH_REVERSE);
@@ -111,7 +111,7 @@ public final class ResultSetAdapterTest extends AbstractShardingJDBCDatabaseAndT
         }
     }
     
-    private void assertFetchDirection(final AbstractResultSetAdapter actual, final int fetchDirection, final DbType type) throws SQLException {
+    private void assertFetchDirection(final AbstractResultSetAdapter actual, final int fetchDirection, final DatabaseType type) throws SQLException {
         // H2 do not implement getFetchDirection
         assertThat(actual.getFetchDirection(), is(
                 DatabaseTypes.getActualDatabaseType("H2") == type || DatabaseTypes.getActualDatabaseType("PostgreSQL") == type ? ResultSet.FETCH_FORWARD : fetchDirection));
@@ -124,7 +124,7 @@ public final class ResultSetAdapterTest extends AbstractShardingJDBCDatabaseAndT
     
     @Test
     public void assertSetFetchSize() throws SQLException {
-        for (Entry<DbType, ResultSet> each : resultSets.entrySet()) {
+        for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
             if (DatabaseTypes.getActualDatabaseType("MySQL") == each.getKey() || DatabaseTypes.getActualDatabaseType("PostgreSQL") == each.getKey()) {
                 assertThat(each.getValue().getFetchSize(), is(0));
             }
@@ -133,7 +133,7 @@ public final class ResultSetAdapterTest extends AbstractShardingJDBCDatabaseAndT
         }
     }
     
-    private void assertFetchSize(final AbstractResultSetAdapter actual, final DbType type) throws SQLException {
+    private void assertFetchSize(final AbstractResultSetAdapter actual, final DatabaseType type) throws SQLException {
         // H2 do not implement getFetchSize
         assertThat(actual.getFetchSize(), is(DatabaseTypes.getActualDatabaseType("H2") == type ? 0 : 100));
         assertThat(actual.getResultSets().size(), is(4));
@@ -181,7 +181,7 @@ public final class ResultSetAdapterTest extends AbstractShardingJDBCDatabaseAndT
     
     @Test
     public void assertFindColumn() throws SQLException {
-        for (Entry<DbType, ResultSet> each : resultSets.entrySet()) {
+        for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
             assertThat(each.getValue().findColumn("user_id"), is(1));
         }
     }

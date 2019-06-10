@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.core.spi.database;
 
-import org.apache.shardingsphere.spi.DbType;
+import org.apache.shardingsphere.spi.DatabaseType;
 
 /**
  * Database type of SQLServer.
  *
  * @author zhangliang
  */
-public final class SQLServerDatabaseType implements DbType {
+public final class SQLServerDatabaseType implements DatabaseType {
     
     @Override
     public String getName() {

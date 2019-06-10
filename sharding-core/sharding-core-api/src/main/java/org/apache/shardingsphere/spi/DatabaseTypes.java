@@ -29,10 +29,10 @@ import java.util.ServiceLoader;
  */
 public final class DatabaseTypes {
     
-    private static final Map<String, DbType> DATABASE_TYPES = new HashMap<>();
+    private static final Map<String, DatabaseType> DATABASE_TYPES = new HashMap<>();
     
     static {
-        for (DbType each : ServiceLoader.load(DbType.class)) {
+        for (DatabaseType each : ServiceLoader.load(DatabaseType.class)) {
             DATABASE_TYPES.put(each.getName(), each);
         }
     }
@@ -42,7 +42,7 @@ public final class DatabaseTypes {
      * 
      * @return database types
      */
-    public static Collection<DbType> getDatabaseTypes() {
+    public static Collection<DatabaseType> getDatabaseTypes() {
         return DATABASE_TYPES.values();
     }
     
@@ -52,7 +52,7 @@ public final class DatabaseTypes {
      * @param name database name 
      * @return actual database type
      */
-    public static DbType getActualDatabaseType(final String name) {
+    public static DatabaseType getActualDatabaseType(final String name) {
         if (!DATABASE_TYPES.containsKey(name)) {
             throw new UnsupportedOperationException(String.format("Unsupported database: '%s'", name));
         }
@@ -65,7 +65,7 @@ public final class DatabaseTypes {
      * @param name database name 
      * @return trunk database type
      */
-    public static DbType getTrunkDatabaseType(final String name) {
+    public static DatabaseType getTrunkDatabaseType(final String name) {
         return DATABASE_TYPES.get(name) instanceof BranchDatabaseType ? ((BranchDatabaseType) DATABASE_TYPES.get(name)).getTrunkDatabaseType() : getActualDatabaseType(name);
     }
     
@@ -75,8 +75,8 @@ public final class DatabaseTypes {
      * @param productName database product name 
      * @return actual database type
      */
-    public static DbType getActualDatabaseTypeByProductName(final String productName) {
-        for (DbType each : DATABASE_TYPES.values()) {
+    public static DatabaseType getActualDatabaseTypeByProductName(final String productName) {
+        for (DatabaseType each : DATABASE_TYPES.values()) {
             if (each.getProductName().equals(productName)) {
                 return each;
             }

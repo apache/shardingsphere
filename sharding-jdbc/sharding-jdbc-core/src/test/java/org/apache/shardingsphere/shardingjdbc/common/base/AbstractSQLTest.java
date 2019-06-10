@@ -22,8 +22,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.shardingjdbc.common.env.DatabaseEnvironment;
+import org.apache.shardingsphere.spi.DatabaseType;
 import org.apache.shardingsphere.spi.DatabaseTypes;
-import org.apache.shardingsphere.spi.DbType;
 import org.h2.tools.RunScript;
 import org.junit.BeforeClass;
 
@@ -41,10 +41,10 @@ public abstract class AbstractSQLTest {
     
     private static final List<String> DB_NAMES = Arrays.asList("jdbc_0", "jdbc_1", "encrypt");
     
-    private static Set<DbType> databaseTypes = Sets.newHashSet(DatabaseTypes.getActualDatabaseType("H2"));
+    private static Set<DatabaseType> databaseTypes = Sets.newHashSet(DatabaseTypes.getActualDatabaseType("H2"));
     
     @Getter(AccessLevel.PROTECTED)
-    private static Map<DbType, Map<String, DataSource>> databaseTypeMap = new HashMap<>();
+    private static Map<DatabaseType, Map<String, DataSource>> databaseTypeMap = new HashMap<>();
     
     @BeforeClass
     public static synchronized void initDataSource() {
@@ -53,13 +53,13 @@ public abstract class AbstractSQLTest {
     
     private static void createDataSources() {
         for (String each : DB_NAMES) {
-            for (DbType type : databaseTypes) {
+            for (DatabaseType type : databaseTypes) {
                 createDataSources(each, type);
             }
         }
     }
     
-    private static void createDataSources(final String dbName, final DbType databaseType) {
+    private static void createDataSources(final String dbName, final DatabaseType databaseType) {
         Map<String, DataSource> dataSourceMap = databaseTypeMap.get(databaseType);
         if (null == dataSourceMap) {
             dataSourceMap = new HashMap<>();
@@ -70,7 +70,7 @@ public abstract class AbstractSQLTest {
         createSchema(dbName, databaseType);
     }
     
-    private static BasicDataSource buildDataSource(final String dbName, final DbType databaseType) {
+    private static BasicDataSource buildDataSource(final String dbName, final DatabaseType databaseType) {
         DatabaseEnvironment dbEnv = new DatabaseEnvironment(databaseType);
         BasicDataSource result = new BasicDataSource();
         result.setDriverClassName(dbEnv.getDriverClassName());
@@ -81,7 +81,7 @@ public abstract class AbstractSQLTest {
         return result;
     }
     
-    private static void createSchema(final String dbName, final DbType databaseType) {
+    private static void createSchema(final String dbName, final DatabaseType databaseType) {
         try {
             Connection conn = databaseTypeMap.get(databaseType).get(dbName).getConnection();
             RunScript.execute(conn, new InputStreamReader(AbstractSQLTest.class.getClassLoader().getResourceAsStream("jdbc_init.sql")));

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapp
 
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.SQLUnit;
-import org.apache.shardingsphere.spi.DbType;
+import org.apache.shardingsphere.spi.DatabaseType;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -39,7 +39,7 @@ public interface JDBCExecutorWrapper {
      * @param databaseType database type
      * @return SQL route result
      */
-    SQLRouteResult route(String sql, DbType databaseType);
+    SQLRouteResult route(String sql, DatabaseType databaseType);
     
     /**
      * Create statement.

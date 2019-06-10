@@ -21,8 +21,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recognizer.spi.JDBCDriverURLRecognizer;
+import org.apache.shardingsphere.spi.DatabaseType;
 import org.apache.shardingsphere.spi.DatabaseTypes;
-import org.apache.shardingsphere.spi.DbType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -72,7 +72,7 @@ public final class JDBCDriverURLRecognizerEngine {
      * @param url JDBC URL
      * @return database type
      */
-    public static DbType getDatabaseType(final String url) {
+    public static DatabaseType getDatabaseType(final String url) {
         switch (getDriverClassName(url)) {
             case "com.mysql.cj.jdbc.Driver":
             case "com.mysql.jdbc.Driver":

@@ -36,8 +36,8 @@ import org.apache.shardingsphere.core.optimize.pagination.Pagination;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
+import org.apache.shardingsphere.spi.DatabaseType;
 import org.apache.shardingsphere.spi.DatabaseTypes;
-import org.apache.shardingsphere.spi.DbType;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -53,7 +53,7 @@ import java.util.TreeMap;
  */
 public final class DQLMergeEngine implements MergeEngine {
     
-    private final DbType databaseType;
+    private final DatabaseType databaseType;
     
     private final SQLRouteResult routeResult;
     
@@ -64,7 +64,7 @@ public final class DQLMergeEngine implements MergeEngine {
     @Getter
     private final Map<String, Integer> columnLabelIndexMap;
     
-    public DQLMergeEngine(final DbType databaseType, final SQLRouteResult routeResult, final List<QueryResult> queryResults) throws SQLException {
+    public DQLMergeEngine(final DatabaseType databaseType, final SQLRouteResult routeResult, final List<QueryResult> queryResults) throws SQLException {
         this.databaseType = databaseType;
         this.routeResult = routeResult;
         this.selectStatement = (SelectStatement) routeResult.getSqlStatement();

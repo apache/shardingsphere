@@ -31,7 +31,7 @@ import org.apache.shardingsphere.orchestration.internal.registry.config.event.Sc
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recognizer.JDBCDriverURLRecognizerEngine;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.shardingproxy.util.DataSourceConverter;
-import org.apache.shardingsphere.spi.DbType;
+import org.apache.shardingsphere.spi.DatabaseType;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -55,7 +55,7 @@ public final class LogicSchemas {
     
     private final Map<String, LogicSchema> logicSchemas = new ConcurrentHashMap<>();
     
-    private DbType databaseType;
+    private DatabaseType databaseType;
     
     private LogicSchemas() {
         ShardingOrchestrationEventBus.getInstance().register(this);

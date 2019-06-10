@@ -21,7 +21,7 @@ import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.pool.xa.DruidXADataSource;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.spi.DbType;
+import org.apache.shardingsphere.spi.DatabaseType;
 
 import javax.sql.DataSource;
 
@@ -41,7 +41,7 @@ public final class DataSourceUtils {
      * @param databaseName database name
      * @return data source
      */
-    public static DataSource build(final Class<? extends DataSource> dataSourceClass, final DbType databaseType, final String databaseName) {
+    public static DataSource build(final Class<? extends DataSource> dataSourceClass, final DatabaseType databaseType, final String databaseName) {
         if (HikariDataSource.class == dataSourceClass) {
             return createHikariDataSource(databaseType, databaseName);
         }
@@ -60,7 +60,7 @@ public final class DataSourceUtils {
         throw new UnsupportedOperationException(dataSourceClass.getClass().getName());
     }
     
-    private static HikariDataSource createHikariDataSource(final DbType databaseType, final String databaseName) {
+    private static HikariDataSource createHikariDataSource(final DatabaseType databaseType, final String databaseName) {
         HikariDataSource result = new HikariDataSource();
         result.setJdbcUrl(getURL(databaseType, databaseName));
         result.setUsername("root");
@@ -72,7 +72,7 @@ public final class DataSourceUtils {
         return result;
     }
     
-    private static org.apache.commons.dbcp2.BasicDataSource createBasicDataSource(final DbType databaseType, final String databaseName) {
+    private static org.apache.commons.dbcp2.BasicDataSource createBasicDataSource(final DatabaseType databaseType, final String databaseName) {
         org.apache.commons.dbcp2.BasicDataSource result = new org.apache.commons.dbcp2.BasicDataSource();
         result.setUrl(getURL(databaseType, databaseName));
         result.setUsername("root");
@@ -86,7 +86,7 @@ public final class DataSourceUtils {
         return result;
     }
     
-    private static org.apache.tomcat.dbcp.dbcp2.BasicDataSource createTomcatDataSource(final DbType databaseType, final String databaseName) {
+    private static org.apache.tomcat.dbcp.dbcp2.BasicDataSource createTomcatDataSource(final DatabaseType databaseType, final String databaseName) {
         org.apache.tomcat.dbcp.dbcp2.BasicDataSource result = new org.apache.tomcat.dbcp.dbcp2.BasicDataSource();
         result.setUrl(getURL(databaseType, databaseName));
         result.setUsername("root");
@@ -100,19 +100,19 @@ public final class DataSourceUtils {
         return result;
     }
     
-    private static DruidXADataSource createDruidXADataSource(final DbType databaseType, final String databaseName) {
+    private static DruidXADataSource createDruidXADataSource(final DatabaseType databaseType, final String databaseName) {
         DruidXADataSource result = new DruidXADataSource();
         configDruidDataSource(result, databaseType, databaseName);
         return result;
     }
     
-    private static DruidDataSource createDruidDataSource(final DbType databaseType, final String databaseName) {
+    private static DruidDataSource createDruidDataSource(final DatabaseType databaseType, final String databaseName) {
         DruidDataSource result = new DruidDataSource();
         configDruidDataSource(result, databaseType, databaseName);
         return result;
     }
     
-    private static void configDruidDataSource(final DruidDataSource druidDataSource, final DbType databaseType, final String databaseName) {
+    private static void configDruidDataSource(final DruidDataSource druidDataSource, final DatabaseType databaseType, final String databaseName) {
         druidDataSource.setUrl(getURL(databaseType, databaseName));
         druidDataSource.setUsername("root");
         druidDataSource.setPassword("root");
@@ -123,7 +123,7 @@ public final class DataSourceUtils {
         druidDataSource.setTimeBetweenEvictionRunsMillis(20 * 1000);
     }
     
-    private static String getURL(final DbType databaseType, final String databaseName) {
+    private static String getURL(final DatabaseType databaseType, final String databaseName) {
         switch (databaseType.getName()) {
             case "H2":
                 return String.format("jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL", databaseName);

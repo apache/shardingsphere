@@ -38,7 +38,7 @@ import org.apache.shardingsphere.core.parse.sql.statement.ddl.DropTableStatement
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.metadata.JDBCTableMetaDataConnectionManager;
-import org.apache.shardingsphere.spi.DbType;
+import org.apache.shardingsphere.spi.DatabaseType;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -58,7 +58,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @Getter(AccessLevel.PROTECTED)
 public class AbstractStatementExecutor {
     
-    private final DbType databaseType;
+    private final DatabaseType databaseType;
     
     @Getter
     private final int resultSetType;

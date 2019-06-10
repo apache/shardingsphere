@@ -24,7 +24,7 @@ import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.EncryptPreparedStatement;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.EncryptStatement;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationConnection;
-import org.apache.shardingsphere.spi.DbType;
+import org.apache.shardingsphere.spi.DatabaseType;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -43,7 +43,7 @@ import java.sql.Statement;
 @Getter
 public final class EncryptConnection extends AbstractUnsupportedOperationConnection {
     
-    private final DbType databaseType;
+    private final DatabaseType databaseType;
     
     private final Connection connection;
     

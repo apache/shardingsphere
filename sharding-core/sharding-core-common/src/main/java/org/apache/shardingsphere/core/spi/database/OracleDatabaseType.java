@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.core.spi.database;
 
-import org.apache.shardingsphere.spi.DbType;
+import org.apache.shardingsphere.spi.DatabaseType;
 
 /**
  * Database type of Oracle.
  *
  * @author zhangliang
  */
-public final class OracleDatabaseType implements DbType {
+public final class OracleDatabaseType implements DatabaseType {
     
     @Override
     public String getName() {

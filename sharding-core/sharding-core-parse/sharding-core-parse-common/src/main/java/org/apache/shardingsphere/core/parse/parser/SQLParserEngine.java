@@ -24,7 +24,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.core.parse.exception.SQLParsingException;
 import org.apache.shardingsphere.core.parse.rule.registry.ParseRuleRegistry;
 import org.apache.shardingsphere.core.parse.rule.registry.statement.SQLStatementRule;
-import org.apache.shardingsphere.spi.DbType;
+import org.apache.shardingsphere.spi.DatabaseType;
 
 /**
  * SQL parser engine.
@@ -36,7 +36,7 @@ public final class SQLParserEngine {
     
     private final ParseRuleRegistry parseRuleRegistry;
     
-    private final DbType databaseType;
+    private final DatabaseType databaseType;
     
     private final String sql;
     

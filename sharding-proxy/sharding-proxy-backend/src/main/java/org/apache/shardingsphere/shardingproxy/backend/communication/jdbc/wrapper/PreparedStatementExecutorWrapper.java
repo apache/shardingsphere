@@ -36,7 +36,7 @@ import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.MasterSlaveSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSchema;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
-import org.apache.shardingsphere.spi.DbType;
+import org.apache.shardingsphere.spi.DatabaseType;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -61,7 +61,7 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     private final List<Object> parameters;
     
     @Override
-    public SQLRouteResult route(final String sql, final DbType databaseType) {
+    public SQLRouteResult route(final String sql, final DatabaseType databaseType) {
         if (logicSchema instanceof ShardingSchema) {
             return doShardingRoute(sql, databaseType);
         }
@@ -71,7 +71,7 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
         return doEncryptRoute(sql);
     }
     
-    private SQLRouteResult doShardingRoute(final String sql, final DbType databaseType) {
+    private SQLRouteResult doShardingRoute(final String sql, final DatabaseType databaseType) {
         PreparedQueryShardingEngine shardingEngine = new PreparedQueryShardingEngine(sql, logicSchema.getShardingRule(), 
                 ShardingProxyContext.getInstance().getShardingProperties(), logicSchema.getMetaData(), databaseType, logicSchema.getParsingResultCache());
         return shardingEngine.shard(sql, parameters);

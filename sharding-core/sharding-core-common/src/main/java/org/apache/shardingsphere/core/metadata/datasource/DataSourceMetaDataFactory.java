@@ -24,7 +24,7 @@ import org.apache.shardingsphere.core.metadata.datasource.dialect.MySQLDataSourc
 import org.apache.shardingsphere.core.metadata.datasource.dialect.OracleDataSourceMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.dialect.PostgreSQLDataSourceMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.dialect.SQLServerDataSourceMetaData;
-import org.apache.shardingsphere.spi.DbType;
+import org.apache.shardingsphere.spi.DatabaseType;
 
 /**
  * Data source meta data builder.
@@ -41,7 +41,7 @@ public final class DataSourceMetaDataFactory {
      * @param url data source URL
      * @return data source meta data
      */
-    public static DataSourceMetaData newInstance(final DbType databaseType, final String url) {
+    public static DataSourceMetaData newInstance(final DatabaseType databaseType, final String url) {
         switch (databaseType.getName()) {
             case "H2":
                 return new H2DataSourceMetaData(url);

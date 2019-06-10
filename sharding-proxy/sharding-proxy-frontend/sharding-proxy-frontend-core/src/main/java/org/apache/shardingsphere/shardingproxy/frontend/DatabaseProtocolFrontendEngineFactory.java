@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
 import org.apache.shardingsphere.shardingproxy.frontend.spi.DatabaseProtocolFrontendEngine;
-import org.apache.shardingsphere.spi.DbType;
+import org.apache.shardingsphere.spi.DatabaseType;
 
 /**
  * Database protocol frontend engine factory.
@@ -42,7 +42,7 @@ public final class DatabaseProtocolFrontendEngineFactory {
      * @param databaseType database type
      * @return new instance of database protocol frontend engine
      */
-    public static DatabaseProtocolFrontendEngine newInstance(final DbType databaseType) {
+    public static DatabaseProtocolFrontendEngine newInstance(final DatabaseType databaseType) {
         for (DatabaseProtocolFrontendEngine each : NewInstanceServiceLoader.newServiceInstances(DatabaseProtocolFrontendEngine.class)) {
             if (each.getDatabaseType().equals(databaseType.getName())) {
                 return each;

@@ -27,7 +27,7 @@ import org.apache.shardingsphere.core.execute.sql.execute.threadlocal.ExecutorEx
 import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetaDataFactory;
 import org.apache.shardingsphere.core.route.RouteUnit;
-import org.apache.shardingsphere.spi.DbType;
+import org.apache.shardingsphere.spi.DatabaseType;
 
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -46,7 +46,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public abstract class SQLExecuteCallback<T> implements ShardingGroupExecuteCallback<StatementExecuteUnit, T> {
     
-    private final DbType databaseType;
+    private final DatabaseType databaseType;
     
     private final boolean isExceptionThrown;
     

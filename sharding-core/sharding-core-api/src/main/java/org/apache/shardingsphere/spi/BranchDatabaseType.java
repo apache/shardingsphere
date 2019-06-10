@@ -22,12 +22,12 @@ package org.apache.shardingsphere.spi;
  *
  * @author zhangliang
  */
-public interface BranchDatabaseType extends DbType {
+public interface BranchDatabaseType extends DatabaseType {
     
     /**
      * Get trunk database type.
      * 
      * @return trunk database type
      */
-    DbType getTrunkDatabaseType();
+    DatabaseType getTrunkDatabaseType();
 }

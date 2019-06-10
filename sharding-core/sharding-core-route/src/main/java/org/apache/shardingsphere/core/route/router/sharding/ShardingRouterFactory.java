@@ -23,7 +23,7 @@ import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
 import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.spi.DbType;
+import org.apache.shardingsphere.spi.DatabaseType;
 
 /**
  * Sharding router factory.
@@ -43,7 +43,7 @@ public final class ShardingRouterFactory {
      * @param parsingResultCache parsing result cache
      * @return sharding router instance
      */
-    public static ShardingRouter newInstance(final ShardingRule shardingRule, final ShardingMetaData shardingMetaData, final DbType databaseType, final ParsingResultCache parsingResultCache) {
+    public static ShardingRouter newInstance(final ShardingRule shardingRule, final ShardingMetaData shardingMetaData, final DatabaseType databaseType, final ParsingResultCache parsingResultCache) {
         return HintManager.isDatabaseShardingOnly()
                 ? new DatabaseHintSQLRouter(databaseType, shardingRule) : new ParsingSQLRouter(shardingRule, shardingMetaData, databaseType, parsingResultCache);
     }

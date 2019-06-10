@@ -26,7 +26,7 @@ import org.apache.shardingsphere.core.route.type.RoutingResult;
 import org.apache.shardingsphere.core.route.type.hint.DatabaseHintRoutingEngine;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.strategy.route.hint.HintShardingStrategy;
-import org.apache.shardingsphere.spi.DbType;
+import org.apache.shardingsphere.spi.DatabaseType;
 
 import java.util.List;
 
@@ -40,7 +40,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class DatabaseHintSQLRouter implements ShardingRouter {
     
-    private final DbType databaseType;
+    private final DatabaseType databaseType;
     
     private final ShardingRule shardingRule;
     

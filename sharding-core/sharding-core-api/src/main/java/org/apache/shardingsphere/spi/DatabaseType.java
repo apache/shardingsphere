@@ -22,7 +22,7 @@ package org.apache.shardingsphere.spi;
  *
  * @author zhangliang
  */
-public interface DbType {
+public interface DatabaseType {
     
     /**
      * Get database name.

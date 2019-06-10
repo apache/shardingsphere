@@ -29,7 +29,7 @@ import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata.CachedDatabaseMetaData;
 import org.apache.shardingsphere.shardingjdbc.jdbc.metadata.JDBCTableMetaDataConnectionManager;
-import org.apache.shardingsphere.spi.DbType;
+import org.apache.shardingsphere.spi.DatabaseType;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -53,7 +53,7 @@ public final class ShardingContext implements AutoCloseable {
     
     private final ShardingRule shardingRule;
     
-    private final DbType databaseType;
+    private final DatabaseType databaseType;
     
     private final ShardingExecuteEngine executeEngine;
     
@@ -63,7 +63,7 @@ public final class ShardingContext implements AutoCloseable {
     
     private final ParsingResultCache parsingResultCache;
     
-    public ShardingContext(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DbType databaseType, final Properties props) throws SQLException {
+    public ShardingContext(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType, final Properties props) throws SQLException {
         this.shardingRule = shardingRule;
         this.cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap);
         this.databaseType = databaseType;

@@ -28,8 +28,8 @@ import org.apache.shardingsphere.core.parse.entry.EncryptSQLParseEntry;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
+import org.apache.shardingsphere.spi.DatabaseType;
 import org.apache.shardingsphere.spi.DatabaseTypes;
-import org.apache.shardingsphere.spi.DbType;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
@@ -55,7 +55,7 @@ public class EncryptDataSource extends AbstractUnsupportedOperationDataSource im
     
     private final DataSource dataSource;
     
-    private final DbType databaseType;
+    private final DatabaseType databaseType;
     
     private final EncryptRule encryptRule;
     
@@ -114,7 +114,7 @@ public class EncryptDataSource extends AbstractUnsupportedOperationDataSource im
         return result;
     }
     
-    private DbType getDatabaseType() throws SQLException {
+    private DatabaseType getDatabaseType() throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             return DatabaseTypes.getActualDatabaseTypeByProductName(connection.getMetaData().getDatabaseProductName());
         }

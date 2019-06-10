@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.parse.spi;
 
 import org.antlr.v4.runtime.Lexer;
 import org.apache.shardingsphere.core.parse.api.SQLParser;
-import org.apache.shardingsphere.spi.DbType;
+import org.apache.shardingsphere.spi.DatabaseType;
 
 /**
  * SQL parser entry.
@@ -33,7 +33,7 @@ public interface SQLParserEntry {
      * 
      * @return database type
      */
-    DbType getDatabaseType();
+    DatabaseType getDatabaseType();
     
     /**
      * Get SQL lexer class type.

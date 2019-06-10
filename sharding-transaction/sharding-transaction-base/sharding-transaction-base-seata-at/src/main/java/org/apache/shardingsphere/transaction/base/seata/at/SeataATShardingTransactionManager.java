@@ -27,7 +27,7 @@ import io.seata.rm.datasource.DataSourceProxy;
 import io.seata.tm.TMClient;
 import io.seata.tm.api.GlobalTransactionContext;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.spi.DbType;
+import org.apache.shardingsphere.spi.DatabaseType;
 import org.apache.shardingsphere.transaction.core.ResourceDataSource;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;
@@ -51,7 +51,7 @@ public final class SeataATShardingTransactionManager implements ShardingTransact
     private final FileConfiguration configuration = new FileConfiguration("seata.conf");
     
     @Override
-    public void init(final DbType databaseType, final Collection<ResourceDataSource> resourceDataSources) {
+    public void init(final DatabaseType databaseType, final Collection<ResourceDataSource> resourceDataSources) {
         initSeataRPCClient();
         for (ResourceDataSource each : resourceDataSources) {
             dataSourceMap.put(each.getOriginalName(), new DataSourceProxy(each.getDataSource()));

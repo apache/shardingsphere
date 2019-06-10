@@ -41,7 +41,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
-import org.apache.shardingsphere.spi.DbType;
+import org.apache.shardingsphere.spi.DatabaseType;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -61,7 +61,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
     
     private final ShardingMetaData shardingMetaData;
     
-    private final DbType databaseType;
+    private final DatabaseType databaseType;
     
     private final ParsingResultCache parsingResultCache;
     

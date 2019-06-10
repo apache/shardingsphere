@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.core.spi.database;
 
-import org.apache.shardingsphere.spi.DbType;
+import org.apache.shardingsphere.spi.DatabaseType;
 
 /**
  * Database type of PostgreSQL.
  *
  * @author zhangliang
  */
-public final class PostgreSQLDatabaseType implements DbType {
+public final class PostgreSQLDatabaseType implements DatabaseType {
     
     @Override
     public String getName() {

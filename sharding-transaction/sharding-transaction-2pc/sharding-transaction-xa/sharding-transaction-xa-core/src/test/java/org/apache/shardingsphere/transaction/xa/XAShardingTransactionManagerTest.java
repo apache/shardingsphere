@@ -21,8 +21,8 @@ import com.alibaba.druid.pool.xa.DruidXADataSource;
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.spi.DatabaseType;
 import org.apache.shardingsphere.spi.DatabaseTypes;
-import org.apache.shardingsphere.spi.DbType;
 import org.apache.shardingsphere.transaction.core.ResourceDataSource;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.xa.fixture.DataSourceUtils;
@@ -178,7 +178,7 @@ public final class XAShardingTransactionManagerTest {
         return result;
     }
     
-    private Collection<ResourceDataSource> createResourceDataSources(final Class<? extends DataSource> dataSourceClass, final DbType databaseType) {
+    private Collection<ResourceDataSource> createResourceDataSources(final Class<? extends DataSource> dataSourceClass, final DatabaseType databaseType) {
         List<ResourceDataSource> result = new LinkedList<>();
         result.add(new ResourceDataSource("ds1", DataSourceUtils.build(dataSourceClass, databaseType, "demo_ds_1")));
         result.add(new ResourceDataSource("ds2", DataSourceUtils.build(dataSourceClass, databaseType, "demo_ds_2")));

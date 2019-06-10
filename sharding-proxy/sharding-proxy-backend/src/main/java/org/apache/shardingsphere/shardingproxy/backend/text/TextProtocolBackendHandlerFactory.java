@@ -35,7 +35,7 @@ import org.apache.shardingsphere.shardingproxy.backend.text.query.QueryBackendHa
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.ShardingCTLBackendHandlerFactory;
 import org.apache.shardingsphere.shardingproxy.backend.text.transaction.SkipBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.transaction.TransactionBackendHandler;
-import org.apache.shardingsphere.spi.DbType;
+import org.apache.shardingsphere.spi.DatabaseType;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
 
 import java.util.Arrays;
@@ -63,7 +63,7 @@ public final class TextProtocolBackendHandlerFactory {
      * @param backendConnection backend connection
      * @return instance of text protocol backend handler
      */
-    public static TextProtocolBackendHandler newInstance(final DbType databaseType, final String sql, final BackendConnection backendConnection) {
+    public static TextProtocolBackendHandler newInstance(final DatabaseType databaseType, final String sql, final BackendConnection backendConnection) {
         if (sql.toUpperCase().startsWith(ShardingCTLBackendHandlerFactory.SCTL)) {
             return ShardingCTLBackendHandlerFactory.newInstance(sql, backendConnection);
         }
