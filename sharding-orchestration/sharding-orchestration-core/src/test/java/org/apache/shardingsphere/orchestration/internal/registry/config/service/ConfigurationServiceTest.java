@@ -296,6 +296,13 @@ public final class ConfigurationServiceTest {
     }
     
     @Test
+    public void assertIsEncryptRule() {
+        when(regCenter.getDirectly("/test/config/schema/sharding_db/rule")).thenReturn(ENCRYPT_RULE_YAML);
+        ConfigurationService configurationService = new ConfigurationService("test", regCenter);
+        assertTrue(configurationService.isEncryptRule("sharding_db"));
+    }
+    
+    @Test
     public void assertIsNotShardingRule() {
         when(regCenter.getDirectly("/test/config/schema/sharding_db/rule")).thenReturn(MASTER_SLAVE_RULE_YAML);
         ConfigurationService configurationService = new ConfigurationService("test", regCenter);
