@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.parse.rule.jaxb.loader;
 import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.spi.DatabaseType;
+import org.apache.shardingsphere.spi.database.DatabaseType;
 
 /**
  * Rule definition file constant.

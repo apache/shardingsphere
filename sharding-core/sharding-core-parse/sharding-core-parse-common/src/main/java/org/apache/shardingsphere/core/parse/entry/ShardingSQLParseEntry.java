@@ -22,7 +22,7 @@ import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
 import org.apache.shardingsphere.core.parse.rule.registry.ShardingParseRuleRegistry;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.spi.DatabaseType;
+import org.apache.shardingsphere.spi.database.DatabaseType;
 
 /**
  * SQL parse entry for sharding.

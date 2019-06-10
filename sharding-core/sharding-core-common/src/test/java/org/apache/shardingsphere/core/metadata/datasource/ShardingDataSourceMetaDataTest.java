@@ -22,7 +22,7 @@ import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfigura
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.spi.DatabaseTypes;
+import org.apache.shardingsphere.spi.database.DatabaseTypes;
 import org.junit.Before;
 import org.junit.Test;
 

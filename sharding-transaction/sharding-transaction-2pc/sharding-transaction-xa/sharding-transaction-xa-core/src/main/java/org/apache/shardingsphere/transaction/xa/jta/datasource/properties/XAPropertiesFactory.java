@@ -19,7 +19,7 @@ package org.apache.shardingsphere.transaction.xa.jta.datasource.properties;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.spi.DatabaseType;
+import org.apache.shardingsphere.spi.database.DatabaseType;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.H2XAProperties;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.MySQLXAProperties;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.OracleXAProperties;

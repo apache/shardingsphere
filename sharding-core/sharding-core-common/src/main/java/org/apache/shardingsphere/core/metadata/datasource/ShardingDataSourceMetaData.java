@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.metadata.datasource;
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.spi.DatabaseType;
+import org.apache.shardingsphere.spi.database.DatabaseType;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;

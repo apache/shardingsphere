@@ -32,7 +32,7 @@ import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.rule.BaseRule;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.spi.DatabaseType;
+import org.apache.shardingsphere.spi.database.DatabaseType;
 
 import java.util.Collection;
 

@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.core.spi.database;
 
-import org.apache.shardingsphere.spi.BranchDatabaseType;
-import org.apache.shardingsphere.spi.DatabaseType;
-import org.apache.shardingsphere.spi.DatabaseTypes;
+import org.apache.shardingsphere.spi.database.BranchDatabaseType;
+import org.apache.shardingsphere.spi.database.DatabaseType;
+import org.apache.shardingsphere.spi.database.DatabaseTypes;
 
 /**
  * Database type of H2.

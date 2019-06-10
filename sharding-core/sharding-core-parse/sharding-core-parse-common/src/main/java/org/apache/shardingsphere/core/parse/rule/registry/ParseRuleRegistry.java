@@ -31,7 +31,7 @@ import org.apache.shardingsphere.core.parse.rule.registry.filler.FillerRuleDefin
 import org.apache.shardingsphere.core.parse.rule.registry.statement.SQLStatementRule;
 import org.apache.shardingsphere.core.parse.rule.registry.statement.SQLStatementRuleDefinition;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
-import org.apache.shardingsphere.spi.DatabaseType;
+import org.apache.shardingsphere.spi.database.DatabaseType;
 
 import java.util.HashMap;
 import java.util.Map;

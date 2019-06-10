@@ -24,7 +24,7 @@ import org.apache.shardingsphere.core.route.router.masterslave.ShardingMasterSla
 import org.apache.shardingsphere.core.route.router.sharding.ShardingRouter;
 import org.apache.shardingsphere.core.route.router.sharding.ShardingRouterFactory;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.spi.DatabaseType;
+import org.apache.shardingsphere.spi.database.DatabaseType;
 
 import java.util.List;
 

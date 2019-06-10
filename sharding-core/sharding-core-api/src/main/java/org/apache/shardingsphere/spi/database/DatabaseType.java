@@ -15,19 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi;
+package org.apache.shardingsphere.spi.database;
 
 /**
- * Branch database type.
+ * Database type.
  *
  * @author zhangliang
  */
-public interface BranchDatabaseType extends DatabaseType {
+public interface DatabaseType {
     
     /**
-     * Get trunk database type.
+     * Get database name.
      * 
-     * @return trunk database type
+     * @return database name
      */
-    DatabaseType getTrunkDatabaseType();
+    String getName();
+    
+    /**
+     * Get database product name.
+     * 
+     * @return database product name
+     */
+    String getProductName();
 }

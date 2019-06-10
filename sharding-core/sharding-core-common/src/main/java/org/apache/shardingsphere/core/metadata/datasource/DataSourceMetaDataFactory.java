@@ -24,7 +24,7 @@ import org.apache.shardingsphere.core.metadata.datasource.dialect.MySQLDataSourc
 import org.apache.shardingsphere.core.metadata.datasource.dialect.OracleDataSourceMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.dialect.PostgreSQLDataSourceMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.dialect.SQLServerDataSourceMetaData;
-import org.apache.shardingsphere.spi.DatabaseType;
+import org.apache.shardingsphere.spi.database.DatabaseType;
 
 /**
  * Data source meta data builder.

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
 import org.apache.shardingsphere.core.parse.rule.registry.EncryptParseRuleRegistry;
 import org.apache.shardingsphere.core.rule.EncryptRule;
-import org.apache.shardingsphere.spi.DatabaseType;
+import org.apache.shardingsphere.spi.database.DatabaseType;
 
 /**
  * SQL parse entry for encrypt.

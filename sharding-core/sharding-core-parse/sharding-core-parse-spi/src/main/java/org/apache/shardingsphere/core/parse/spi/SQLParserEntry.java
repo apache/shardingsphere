@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.parse.spi;
 
 import org.antlr.v4.runtime.Lexer;
 import org.apache.shardingsphere.core.parse.api.SQLParser;
-import org.apache.shardingsphere.spi.DatabaseType;
+import org.apache.shardingsphere.spi.database.DatabaseType;
 
 /**
  * SQL parser entry.

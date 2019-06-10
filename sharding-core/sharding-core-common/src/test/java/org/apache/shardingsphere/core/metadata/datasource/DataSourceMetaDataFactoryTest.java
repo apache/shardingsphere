@@ -22,7 +22,7 @@ import org.apache.shardingsphere.core.metadata.datasource.dialect.MySQLDataSourc
 import org.apache.shardingsphere.core.metadata.datasource.dialect.OracleDataSourceMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.dialect.PostgreSQLDataSourceMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.dialect.SQLServerDataSourceMetaData;
-import org.apache.shardingsphere.spi.DatabaseTypes;
+import org.apache.shardingsphere.spi.database.DatabaseTypes;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;

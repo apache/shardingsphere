@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.parse.rule.jaxb.loader;
 
-import org.apache.shardingsphere.spi.DatabaseTypes;
+import org.apache.shardingsphere.spi.database.DatabaseTypes;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;

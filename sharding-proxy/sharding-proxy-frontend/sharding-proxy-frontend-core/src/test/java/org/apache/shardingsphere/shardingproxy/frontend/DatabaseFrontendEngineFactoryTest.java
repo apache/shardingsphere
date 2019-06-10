@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.frontend;
 
-import org.apache.shardingsphere.spi.DatabaseTypes;
+import org.apache.shardingsphere.spi.database.DatabaseTypes;
 import org.junit.Test;
 
 public final class DatabaseFrontendEngineFactoryTest {
