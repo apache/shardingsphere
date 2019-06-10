@@ -78,10 +78,6 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
     @Test
     public void assertSupportedSQL() {
         String sql = sqlCasesLoader.getSupportedSQL(sqlCaseId, sqlCaseType, parserResultSetLoader.getParserResult(sqlCaseId).getParameters());
-        // TODO old parser has problem with here, should remove this after remove all old parser
-        if ("select_with_same_table_name_and_alias".equals(sqlCaseId)) {
-            return;
-        }
         new SQLStatementAssert(new ShardingSQLParseEntry(DatabaseTypes.getTrunkDatabaseType(databaseType), getShardingRule(), getShardingTableMetaData(), new ParsingResultCache())
                 .parse(sql, false), sqlCaseId, sqlCaseType).assertSQLStatement();
     }
