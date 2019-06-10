@@ -58,13 +58,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicationEngine {
     
+    private final DbType databaseType = LogicSchemas.getInstance().getDatabaseType();
+    
     private final LogicSchema logicSchema;
     
     private final String sql;
     
     private final JDBCExecuteEngine executeEngine;
-    
-    private final DbType databaseType = LogicSchemas.getInstance().getDatabaseType();
     
     private BackendResponse response;
     

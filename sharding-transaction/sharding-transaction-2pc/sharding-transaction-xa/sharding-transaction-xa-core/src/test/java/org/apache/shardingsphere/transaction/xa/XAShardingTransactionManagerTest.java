@@ -22,6 +22,7 @@ import com.atomikos.jdbc.AtomikosDataSourceBean;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.spi.DatabaseTypes;
 import org.apache.shardingsphere.transaction.core.ResourceDataSource;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.xa.fixture.DataSourceUtils;
@@ -86,7 +87,7 @@ public final class XAShardingTransactionManagerTest {
     @Test
     public void assertRegisterXATransactionalDataSources() {
         Collection<ResourceDataSource> resourceDataSources = createResourceDataSources(DruidXADataSource.class, DatabaseType.MySQL);
-        xaShardingTransactionManager.init(DatabaseType.MySQL, resourceDataSources);
+        xaShardingTransactionManager.init(DatabaseTypes.getActualDatabaseType("MySQL"), resourceDataSources);
         for (ResourceDataSource each : resourceDataSources) {
             verify(xaTransactionManager).registerRecoveryResource(each.getUniqueResourceName(), (XADataSource) each.getDataSource());
         }
@@ -94,14 +95,14 @@ public final class XAShardingTransactionManagerTest {
     
     @Test
     public void assertRegisterAtomikosDataSourceBeans() {
-        xaShardingTransactionManager.init(DatabaseType.MySQL, createAtomikosDataSourceBeanResource());
+        xaShardingTransactionManager.init(DatabaseTypes.getActualDatabaseType("MySQL"), createAtomikosDataSourceBeanResource());
         verify(xaTransactionManager, times(0)).registerRecoveryResource(anyString(), any(XADataSource.class));
     }
     
     @Test
     public void assertRegisterNoneXATransactionalDAtaSources() {
         Collection<ResourceDataSource> resourceDataSources = createResourceDataSources(HikariDataSource.class, DatabaseType.MySQL);
-        xaShardingTransactionManager.init(DatabaseType.MySQL, resourceDataSources);
+        xaShardingTransactionManager.init(DatabaseTypes.getActualDatabaseType("MySQL"), resourceDataSources);
         Map<String, SingleXADataSource> cachedXADatasourceMap = getCachedSingleXADataSourceMap();
         assertThat(cachedXADatasourceMap.size(), is(2));
     }

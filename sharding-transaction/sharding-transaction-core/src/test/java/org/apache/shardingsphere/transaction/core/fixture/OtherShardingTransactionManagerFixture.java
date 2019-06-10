@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.transaction.core.fixture;
 
-import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.spi.DbType;
 import org.apache.shardingsphere.transaction.core.ResourceDataSource;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;
@@ -28,7 +28,7 @@ import java.util.Collection;
 public final class OtherShardingTransactionManagerFixture implements ShardingTransactionManager {
     
     @Override
-    public void init(final DatabaseType databaseType, final Collection<ResourceDataSource> resourceDataSources) {
+    public void init(final DbType databaseType, final Collection<ResourceDataSource> resourceDataSources) {
     }
     
     @Override

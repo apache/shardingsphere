@@ -19,7 +19,7 @@ package org.apache.shardingsphere.transaction.xa;
 
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.spi.DbType;
 import org.apache.shardingsphere.transaction.core.ResourceDataSource;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;
@@ -56,7 +56,7 @@ public final class XAShardingTransactionManager implements ShardingTransactionMa
     };
     
     @Override
-    public void init(final DatabaseType databaseType, final Collection<ResourceDataSource> resourceDataSources) {
+    public void init(final DbType databaseType, final Collection<ResourceDataSource> resourceDataSources) {
         for (ResourceDataSource each : resourceDataSources) {
             DataSource dataSource = each.getDataSource();
             if (dataSource instanceof AtomikosDataSourceBean) {

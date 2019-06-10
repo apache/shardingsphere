@@ -20,7 +20,6 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.adapter;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
 import org.apache.shardingsphere.spi.DatabaseTypes;
 import org.apache.shardingsphere.spi.DbType;
@@ -56,7 +55,7 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
     
     public AbstractDataSourceAdapter(final Map<String, DataSource> dataSourceMap) throws SQLException {
         databaseType = getDatabaseType(dataSourceMap.values());
-        shardingTransactionManagerEngine.init(DatabaseType.valueOf(databaseType.getName()), dataSourceMap);
+        shardingTransactionManagerEngine.init(databaseType, dataSourceMap);
         this.dataSourceMap = dataSourceMap;
     }
     

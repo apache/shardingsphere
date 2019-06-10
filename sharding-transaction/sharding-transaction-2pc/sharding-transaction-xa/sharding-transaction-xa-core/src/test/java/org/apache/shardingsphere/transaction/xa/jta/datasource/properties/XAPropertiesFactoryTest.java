@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.transaction.xa.jta.datasource.properties;
 
-import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.spi.DatabaseTypes;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.H2XAProperties;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.MySQLXAProperties;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.OracleXAProperties;
@@ -32,26 +32,26 @@ public final class XAPropertiesFactoryTest {
     
     @Test
     public void assertCreateXAPropertiesForH2() {
-        assertThat(XAPropertiesFactory.createXAProperties(DatabaseType.H2), instanceOf(H2XAProperties.class));
+        assertThat(XAPropertiesFactory.createXAProperties(DatabaseTypes.getActualDatabaseType("H2")), instanceOf(H2XAProperties.class));
     }
     
     @Test
     public void assertCreateXAPropertiesForMySQL() {
-        assertThat(XAPropertiesFactory.createXAProperties(DatabaseType.MySQL), instanceOf(MySQLXAProperties.class));
+        assertThat(XAPropertiesFactory.createXAProperties(DatabaseTypes.getActualDatabaseType("MySQL")), instanceOf(MySQLXAProperties.class));
     }
     
     @Test
     public void assertCreateXAPropertiesForPostgreSQL() {
-        assertThat(XAPropertiesFactory.createXAProperties(DatabaseType.PostgreSQL), instanceOf(PostgreSQLXAProperties.class));
+        assertThat(XAPropertiesFactory.createXAProperties(DatabaseTypes.getActualDatabaseType("PostgreSQL")), instanceOf(PostgreSQLXAProperties.class));
     }
     
     @Test
     public void assertCreateXAPropertiesForOracle() {
-        assertThat(XAPropertiesFactory.createXAProperties(DatabaseType.Oracle), instanceOf(OracleXAProperties.class));
+        assertThat(XAPropertiesFactory.createXAProperties(DatabaseTypes.getActualDatabaseType("Oracle")), instanceOf(OracleXAProperties.class));
     }
     
     @Test
     public void assertCreateXAPropertiesForSQLServer() {
-        assertThat(XAPropertiesFactory.createXAProperties(DatabaseType.SQLServer), instanceOf(SQLServerXAProperties.class));
+        assertThat(XAPropertiesFactory.createXAProperties(DatabaseTypes.getActualDatabaseType("SQLServer")), instanceOf(SQLServerXAProperties.class));
     }
 }

@@ -23,8 +23,9 @@ import com.google.common.collect.Multimap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.exception.ShardingException;
+import org.apache.shardingsphere.spi.DatabaseTypes;
+import org.apache.shardingsphere.spi.DbType;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XAPropertiesFactory;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.swapper.DataSourceSwapper;
 
@@ -42,17 +43,17 @@ import java.util.Properties;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class XADataSourceFactory {
     
-    private static final Multimap<DatabaseType, String> XA_DRIVER_CLASS_NAMES = LinkedHashMultimap.create();
+    private static final Multimap<DbType, String> XA_DRIVER_CLASS_NAMES = LinkedHashMultimap.create();
     
     private static final DataSourceSwapper SWAPPER = new DataSourceSwapper();
     
     static {
-        XA_DRIVER_CLASS_NAMES.put(DatabaseType.H2, "org.h2.jdbcx.JdbcDataSource");
-        XA_DRIVER_CLASS_NAMES.put(DatabaseType.MySQL, "com.mysql.jdbc.jdbc2.optional.MysqlXADataSource");
-        XA_DRIVER_CLASS_NAMES.put(DatabaseType.MySQL, "com.mysql.cj.jdbc.MysqlXADataSource");
-        XA_DRIVER_CLASS_NAMES.put(DatabaseType.PostgreSQL, "org.postgresql.xa.PGXADataSource");
-        XA_DRIVER_CLASS_NAMES.put(DatabaseType.Oracle, "oracle.jdbc.xa.client.OracleXADataSource");
-        XA_DRIVER_CLASS_NAMES.put(DatabaseType.SQLServer, "com.microsoft.sqlserver.jdbc.SQLServerXADataSource");
+        XA_DRIVER_CLASS_NAMES.put(DatabaseTypes.getActualDatabaseType("H2"), "org.h2.jdbcx.JdbcDataSource");
+        XA_DRIVER_CLASS_NAMES.put(DatabaseTypes.getActualDatabaseType("MySQL"), "com.mysql.jdbc.jdbc2.optional.MysqlXADataSource");
+        XA_DRIVER_CLASS_NAMES.put(DatabaseTypes.getActualDatabaseType("MySQL"), "com.mysql.cj.jdbc.MysqlXADataSource");
+        XA_DRIVER_CLASS_NAMES.put(DatabaseTypes.getActualDatabaseType("PostgreSQL"), "org.postgresql.xa.PGXADataSource");
+        XA_DRIVER_CLASS_NAMES.put(DatabaseTypes.getActualDatabaseType("Oracle"), "oracle.jdbc.xa.client.OracleXADataSource");
+        XA_DRIVER_CLASS_NAMES.put(DatabaseTypes.getActualDatabaseType("SQLServer"), "com.microsoft.sqlserver.jdbc.SQLServerXADataSource");
     }
     
     /**
@@ -61,7 +62,7 @@ public final class XADataSourceFactory {
      * @param databaseType database type
      * @return XA DataSource instance
      */
-    public static XADataSource build(final DatabaseType databaseType) {
+    public static XADataSource build(final DbType databaseType) {
         return createXADataSource(databaseType);
     }
     
@@ -73,14 +74,14 @@ public final class XADataSourceFactory {
      * @return XA data source
      */
     @SneakyThrows
-    public static XADataSource build(final DatabaseType databaseType, final DataSource dataSource) {
+    public static XADataSource build(final DbType databaseType, final DataSource dataSource) {
         XADataSource result = createXADataSource(databaseType);
         Properties xaProperties = XAPropertiesFactory.createXAProperties(databaseType).build(SWAPPER.swap(dataSource));
         PropertyUtils.setProperties(result, xaProperties);
         return result;
     }
     
-    private static XADataSource createXADataSource(final DatabaseType databaseType) {
+    private static XADataSource createXADataSource(final DbType databaseType) {
         XADataSource result = null;
         List<ShardingException> exceptions = new LinkedList<>();
         for (String each : XA_DRIVER_CLASS_NAMES.get(databaseType)) {
