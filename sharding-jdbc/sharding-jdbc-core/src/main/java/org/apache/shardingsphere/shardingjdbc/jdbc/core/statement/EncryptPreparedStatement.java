@@ -159,7 +159,7 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
         SQLUnit sqlUnit = encryptSQLRewriteEngine.generateSQL();
         boolean showSQL = connection.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW);
         if (showSQL) {
-            SQLLogger.logSQL(sql);
+            SQLLogger.logSQL(sqlUnit.getSql());
         }
         return sqlUnit;
     }

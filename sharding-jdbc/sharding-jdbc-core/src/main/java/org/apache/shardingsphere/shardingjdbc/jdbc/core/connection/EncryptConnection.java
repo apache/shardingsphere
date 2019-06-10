@@ -52,7 +52,6 @@ public final class EncryptConnection extends AbstractUnsupportedOperationConnect
 
     private final EncryptSQLParseEntry parseEngine;
 
-
     private final ShardingProperties shardingProperties;
 
     @Override
