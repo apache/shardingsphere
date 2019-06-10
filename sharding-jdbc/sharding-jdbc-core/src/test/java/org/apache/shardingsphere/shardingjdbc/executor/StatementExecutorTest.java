@@ -35,6 +35,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -82,6 +83,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         when(resultSetMetaData.getColumnLabel(1)).thenReturn("column");
         when(resultSetMetaData.getTableName(1)).thenReturn("table_x");
         when(resultSetMetaData.getColumnCount()).thenReturn(1);
+        when(resultSetMetaData.getColumnType(1)).thenReturn(Types.VARCHAR);
         when(resultSet.getString(1)).thenReturn("value");
         when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
         when(statement.executeQuery(DQL_SQL)).thenReturn(resultSet);
@@ -101,6 +103,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         when(resultSetMetaData.getColumnLabel(1)).thenReturn("column");
         when(resultSetMetaData.getTableName(1)).thenReturn("table_x");
         when(resultSetMetaData.getColumnCount()).thenReturn(1);
+        when(resultSetMetaData.getColumnType(1)).thenReturn(Types.INTEGER);
         when(resultSet1.getMetaData()).thenReturn(resultSetMetaData);
         when(resultSet2.getMetaData()).thenReturn(resultSetMetaData);
         when(resultSet1.getInt(1)).thenReturn(1);
