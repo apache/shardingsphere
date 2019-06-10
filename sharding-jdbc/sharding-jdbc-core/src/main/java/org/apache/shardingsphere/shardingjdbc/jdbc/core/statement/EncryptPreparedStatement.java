@@ -19,11 +19,13 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.optimize.OptimizeEngineFactory;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
 import org.apache.shardingsphere.core.rewrite.rewriter.EncryptSQLRewriter;
+import org.apache.shardingsphere.core.route.SQLLogger;
 import org.apache.shardingsphere.core.route.SQLUnit;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractShardingPreparedStatementAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
@@ -150,7 +152,12 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
         SQLRewriteEngine encryptSQLRewriteEngine = new SQLRewriteEngine(connection.getEncryptRule(), sqlStatement, getParameters());
         OptimizeResult optimizeResult = OptimizeEngineFactory.newInstance(connection.getEncryptRule(), sqlStatement, getParameters()).optimize();
         encryptSQLRewriteEngine.init(new EncryptSQLRewriter(connection.getEncryptRule().getEncryptorEngine(), sqlStatement, optimizeResult));
-        return encryptSQLRewriteEngine.generateSQL();
+        SQLUnit sqlUnit = encryptSQLRewriteEngine.generateSQL();
+        boolean showSQL = connection.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW);
+        if (showSQL) {
+            SQLLogger.logSQL(sql);
+        }
+        return sqlUnit;
     }
     
     @Override

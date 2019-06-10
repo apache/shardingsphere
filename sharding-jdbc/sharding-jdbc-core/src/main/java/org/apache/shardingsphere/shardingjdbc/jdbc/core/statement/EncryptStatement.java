@@ -18,11 +18,13 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.optimize.OptimizeEngineFactory;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
 import org.apache.shardingsphere.core.rewrite.rewriter.EncryptSQLRewriter;
+import org.apache.shardingsphere.core.route.SQLLogger;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.EncryptResultSet;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationStatement;
@@ -82,7 +84,12 @@ public final class EncryptStatement extends AbstractUnsupportedOperationStatemen
         SQLRewriteEngine encryptSQLRewriteEngine = new SQLRewriteEngine(connection.getEncryptRule(), sqlStatement, Collections.emptyList());
         OptimizeResult optimizeResult = OptimizeEngineFactory.newInstance(connection.getEncryptRule(), sqlStatement, Collections.emptyList()).optimize();
         encryptSQLRewriteEngine.init(new EncryptSQLRewriter(connection.getEncryptRule().getEncryptorEngine(), sqlStatement, optimizeResult));
-        return encryptSQLRewriteEngine.generateSQL().getSql();
+        String rewritedsql = encryptSQLRewriteEngine.generateSQL().getSql();
+        boolean showSQL = connection.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW);
+        if (showSQL) {
+            SQLLogger.logSQL(rewritedsql);
+        }
+        return rewritedsql;
     }
     
     @Override

@@ -22,6 +22,7 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
 import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
@@ -36,12 +37,7 @@ import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Logger;
 
 /**
@@ -59,16 +55,19 @@ public class EncryptDataSource extends AbstractUnsupportedOperationDataSource im
     private final EncryptRule encryptRule;
     
     private final EncryptSQLParseEntry parseEngine;
+
+    private final ShardingProperties shardingProperties;
     
     @Setter
     private PrintWriter logWriter = new PrintWriter(System.out);
 
     @SneakyThrows
-    public EncryptDataSource(final DataSource dataSource, final EncryptRuleConfiguration encryptRuleConfiguration) {
+    public EncryptDataSource(final DataSource dataSource, final EncryptRuleConfiguration encryptRuleConfiguration, final Properties props) {
         this.dataSource = dataSource;
         databaseType = getDatabaseType();
         encryptRule = new EncryptRule(encryptRuleConfiguration);
         parseEngine = new EncryptSQLParseEntry(databaseType.name(), encryptRule, createEncryptTableMetaData());
+        shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
     }
     
     @SneakyThrows
@@ -122,7 +121,7 @@ public class EncryptDataSource extends AbstractUnsupportedOperationDataSource im
     @Override
     @SneakyThrows
     public EncryptConnection getConnection() {
-        return new EncryptConnection(databaseType, dataSource.getConnection(), encryptRule, parseEngine);
+        return new EncryptConnection(databaseType, dataSource.getConnection(), encryptRule, parseEngine,shardingProperties);
     }
     
     @Override
