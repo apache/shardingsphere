@@ -21,6 +21,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.text.SimpleDateFormat;
 
 /**
  * Query result util.
@@ -84,7 +85,7 @@ public class QueryResultUtil {
             case Types.TIME:
                 return resultSet.getTime(columnIndex);
             case Types.TIMESTAMP:
-                return resultSet.getTimestamp(columnIndex);
+                return null == resultSet.getTimestamp(columnIndex) ? null : new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(resultSet.getTimestamp(columnIndex));
             case Types.CLOB:
                 return resultSet.getClob(columnIndex);
             case Types.BLOB:
