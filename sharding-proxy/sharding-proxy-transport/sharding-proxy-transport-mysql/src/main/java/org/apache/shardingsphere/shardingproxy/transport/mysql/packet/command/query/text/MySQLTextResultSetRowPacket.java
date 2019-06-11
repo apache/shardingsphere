@@ -23,12 +23,13 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacke
 import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Text result set row packet for MySQL.
- * 
+ *
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-query-response.html#packet-ProtocolText::ResultsetRow">ResultsetRow</a>
  *
  * @author zhangliang
@@ -59,6 +60,8 @@ public final class MySQLTextResultSetRowPacket implements MySQLPacket {
             } else {
                 if (each instanceof byte[]) {
                     payload.writeBytesLenenc((byte[]) each);
+                } else if (each instanceof Timestamp) {
+                    payload.writeStringLenenc(each.toString().split("\\.")[0]);
                 } else if (each instanceof BigDecimal) {
                     payload.writeStringLenenc(((BigDecimal) each).toPlainString());
                 } else {
