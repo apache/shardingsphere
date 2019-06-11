@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.spi;
 
 /**
- * Database type based SPI.
+ * Database type aware SPI.
  * 
  * @author zhangliang
  */
-public interface DatabaseTypeBasedSPI {
+public interface DatabaseTypeAwareSPI {
     
     /**
      * Get database type.
