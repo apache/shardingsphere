@@ -36,6 +36,6 @@ public final class DatabaseTypeEnvironment {
     
     @Override
     public String toString() {
-        return databaseType + (isEnabled ? ":Enabled" : ":Disabled");
+        return databaseType.getName() + (isEnabled ? ":Enabled" : ":Disabled");
     }
 }
