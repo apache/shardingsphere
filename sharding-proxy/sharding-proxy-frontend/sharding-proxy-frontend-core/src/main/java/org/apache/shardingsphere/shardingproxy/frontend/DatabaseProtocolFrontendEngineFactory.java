@@ -44,7 +44,7 @@ public final class DatabaseProtocolFrontendEngineFactory {
      */
     public static DatabaseProtocolFrontendEngine newInstance(final DatabaseType databaseType) {
         for (DatabaseProtocolFrontendEngine each : NewInstanceServiceLoader.newServiceInstances(DatabaseProtocolFrontendEngine.class)) {
-            if (each.getDatabaseType().equals(databaseType.getName())) {
+            if (each.getDatabaseType() == databaseType) {
                 return each;
             }
         }

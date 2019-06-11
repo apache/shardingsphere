@@ -72,7 +72,7 @@ public final class SQLParserFactory {
      */
     public static SQLParser newInstance(final DatabaseType databaseType, final String sql) {
         for (SQLParserEntry each : NewInstanceServiceLoader.newServiceInstances(SQLParserEntry.class)) {
-            if (each.getDatabaseType().equals(databaseType)) {
+            if (each.getDatabaseType() == databaseType) {
                 return createSQLParser(sql, each);
             }
         }
