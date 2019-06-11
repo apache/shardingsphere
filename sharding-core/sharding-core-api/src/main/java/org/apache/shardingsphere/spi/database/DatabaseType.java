@@ -32,13 +32,6 @@ public interface DatabaseType {
     String getName();
     
     /**
-     * Get database product name.
-     * 
-     * @return database product name
-     */
-    String getProductName();
-    
-    /**
      * Get data source meta data.
      * 
      * @param url data source URL

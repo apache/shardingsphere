@@ -36,11 +36,6 @@ public final class H2DatabaseType implements BranchDatabaseType {
     }
     
     @Override
-    public String getProductName() {
-        return "H2";
-    }
-    
-    @Override
     public DataSourceMetaData getDataSourceMetaData(final String url) {
         return new H2DataSourceMetaData(url);
     }

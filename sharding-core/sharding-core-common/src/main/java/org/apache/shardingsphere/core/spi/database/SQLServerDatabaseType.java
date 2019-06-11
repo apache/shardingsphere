@@ -34,11 +34,6 @@ public final class SQLServerDatabaseType implements DatabaseType {
     }
     
     @Override
-    public String getProductName() {
-        return "Microsoft SQL Server";
-    }
-    
-    @Override
     public DataSourceMetaData getDataSourceMetaData(final String url) {
         return new SQLServerDataSourceMetaData(url);
     }

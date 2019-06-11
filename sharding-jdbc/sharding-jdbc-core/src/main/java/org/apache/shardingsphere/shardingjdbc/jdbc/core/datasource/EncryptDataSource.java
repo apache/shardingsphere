@@ -121,7 +121,7 @@ public class EncryptDataSource extends AbstractUnsupportedOperationDataSource im
     
     private DatabaseType getDatabaseType() throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
-            return DatabaseTypes.getActualDatabaseTypeByProductName(connection.getMetaData().getDatabaseProductName());
+            return DatabaseTypes.getDatabaseTypeByURL(connection.getMetaData().getURL());
         }
     }
     

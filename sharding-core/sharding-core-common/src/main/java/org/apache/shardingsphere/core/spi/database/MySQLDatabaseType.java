@@ -34,11 +34,6 @@ public final class MySQLDatabaseType implements DatabaseType {
     }
     
     @Override
-    public String getProductName() {
-        return "MySQL";
-    }
-    
-    @Override
     public DataSourceMetaData getDataSourceMetaData(final String url) {
         return new MySQLDataSourceMetaData(url);
     }
