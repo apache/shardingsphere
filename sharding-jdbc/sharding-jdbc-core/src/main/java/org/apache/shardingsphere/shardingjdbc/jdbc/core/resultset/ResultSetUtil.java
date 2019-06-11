@@ -103,6 +103,8 @@ public final class ResultSetUtil {
                 return value;
             case "java.lang.String":
                 return value.toString();
+            case "boolean":
+                return number.intValue() == 1;
             default:
                 throw new ShardingException("Unsupported data type:%s", convertType);
         }
