@@ -20,6 +20,10 @@ package org.apache.shardingsphere.core.parse.constant;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+
 /**
  * Derived column alias.
  *
@@ -47,17 +51,38 @@ public enum DerivedColumn {
     }
     
     /**
-     * Judge is derived column or not.
-     * 
+     * Judge is derived column name or not.
+     *
      * @param columnName column name to be judged
-     * @return is derived column or not
+     * @return is derived column name or not
      */
-    public static boolean isDerivedColumn(final String columnName) {
+    public static boolean isDerivedColumnName(final String columnName) {
         for (DerivedColumn each : DerivedColumn.values()) {
             if (columnName.startsWith(each.pattern)) {
                 return true;
             }
         }
         return false;
+    }
+    
+    /**
+     * Judge is derived column or not.
+     *
+     * @param columnName column name to be judged
+     * @return is derived column or not
+     */
+    public static boolean isDerivedColumn(final String columnName) {
+        for (DerivedColumn each : DerivedColumn.getValues()) {
+            if (columnName.startsWith(each.pattern)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private static Collection<DerivedColumn> getValues() {
+        Collection<DerivedColumn> result = new ArrayList<>(Arrays.asList(DerivedColumn.values()));
+        result.remove(DerivedColumn.AGGREGATION_DISTINCT_DERIVED);
+        return result;
     }
 }
