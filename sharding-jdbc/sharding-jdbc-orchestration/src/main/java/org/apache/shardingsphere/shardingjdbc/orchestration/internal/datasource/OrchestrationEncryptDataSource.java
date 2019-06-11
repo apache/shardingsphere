@@ -50,7 +50,7 @@ import java.util.Properties;
 @Getter(AccessLevel.PROTECTED)
 public class OrchestrationEncryptDataSource extends AbstractOrchestrationDataSource {
     
-    private static final String ENCRYPT_DATASOURCE = "encrypt-datasource";
+    private static final String ENCRYPT_DATASOURCE = "dataSource";
     
     private EncryptDataSource dataSource;
     
