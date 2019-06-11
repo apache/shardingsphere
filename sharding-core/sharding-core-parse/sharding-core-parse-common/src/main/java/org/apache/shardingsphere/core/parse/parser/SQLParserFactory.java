@@ -25,6 +25,7 @@ import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.TokenStream;
+import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.parse.api.SQLParser;
 import org.apache.shardingsphere.core.parse.spi.SQLParserEntry;
 import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
@@ -49,7 +50,7 @@ public final class SQLParserFactory {
         NewInstanceServiceLoader.register(SQLParserEntry.class);
         for (SQLParserEntry each : NewInstanceServiceLoader.newServiceInstances(SQLParserEntry.class)) {
             if (!(each instanceof BranchDatabaseType)) {
-                DATABASE_TYPES.add(each.getDatabaseType());
+                DATABASE_TYPES.add(DatabaseTypes.getActualDatabaseType(each.getDatabaseType()));
             }
         }
     }
@@ -72,7 +73,7 @@ public final class SQLParserFactory {
      */
     public static SQLParser newInstance(final DatabaseType databaseType, final String sql) {
         for (SQLParserEntry each : NewInstanceServiceLoader.newServiceInstances(SQLParserEntry.class)) {
-            if (each.getDatabaseType() == databaseType) {
+            if (DatabaseTypes.getActualDatabaseType(each.getDatabaseType()) == databaseType) {
                 return createSQLParser(sql, each);
             }
         }

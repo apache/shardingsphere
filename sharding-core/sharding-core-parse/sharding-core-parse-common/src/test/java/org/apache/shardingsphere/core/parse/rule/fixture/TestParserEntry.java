@@ -18,16 +18,14 @@
 package org.apache.shardingsphere.core.parse.rule.fixture;
 
 import org.antlr.v4.runtime.Lexer;
-import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.parse.api.SQLParser;
 import org.apache.shardingsphere.core.parse.spi.SQLParserEntry;
-import org.apache.shardingsphere.spi.database.DatabaseType;
 
 public final class TestParserEntry implements SQLParserEntry {
     
     @Override
-    public DatabaseType getDatabaseType() {
-        return DatabaseTypes.getActualDatabaseType("MySQL");
+    public String getDatabaseType() {
+        return "MySQL";
     }
     
     @Override
