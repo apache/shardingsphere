@@ -34,7 +34,6 @@ import java.sql.ResultSetMetaData;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
-import java.text.SimpleDateFormat;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
@@ -211,7 +210,7 @@ public class QueryResultUtilTest {
         long currentTime = System.currentTimeMillis();
         when(resultSetMetaData.getColumnType(1)).thenReturn(Types.TIMESTAMP);
         when(resultSet.getTimestamp(1)).thenReturn(new Timestamp(currentTime));
-        assertThat((String) QueryResultUtil.getValue(resultSet, 1), is(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Timestamp(currentTime))));
+        assertThat((Timestamp) QueryResultUtil.getValue(resultSet, 1), is(new Timestamp(currentTime)));
     }
     
     @Test
