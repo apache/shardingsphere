@@ -15,8 +15,8 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.MySQLXAProperties
-org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.PostgreSQLXAProperties
-org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.OracleXAProperties
-org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.SQLServerXAProperties
-org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.H2XAProperties
+org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.MySQLXADataSourceDefinition
+org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.PostgreSQLXADataSourceDefinition
+org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.OracleXADataSourceDefinition
+org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.SQLServerXADataSourceDefinition
+org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.H2XADataSourceDefinition

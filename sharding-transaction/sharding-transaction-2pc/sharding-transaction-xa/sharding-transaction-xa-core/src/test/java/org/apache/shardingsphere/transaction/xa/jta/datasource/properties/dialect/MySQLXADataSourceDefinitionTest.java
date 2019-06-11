@@ -18,18 +18,27 @@
 package org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect;
 
 import org.apache.shardingsphere.core.config.DatabaseAccessConfiguration;
+import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class MySQLXAPropertiesTest {
+public final class MySQLXADataSourceDefinitionTest {
     
     @Test
-    public void assertBuild() {
-        Properties actual = new MySQLXAProperties().build(new DatabaseAccessConfiguration("jdbc:mysql://127.0.0.1:3306/demo", "root", "root"));
+    public void assertGetXADriverClassName() {
+        assertThat(new MySQLXADataSourceDefinition().getXADriverClassName(), 
+                CoreMatchers.<Collection<String>>is(Arrays.asList("com.mysql.jdbc.jdbc2.optional.MysqlXADataSource", "com.mysql.cj.jdbc.MysqlXADataSource")));
+    }
+    
+    @Test
+    public void assertGetXAProperties() {
+        Properties actual = new MySQLXADataSourceDefinition().getXAProperties(new DatabaseAccessConfiguration("jdbc:mysql://127.0.0.1:3306/demo", "root", "root"));
         assertThat(actual.getProperty("user"), is("root"));
         assertThat(actual.getProperty("password"), is("root"));
         assertThat(actual.getProperty("URL"), is("jdbc:mysql://127.0.0.1:3306/demo"));

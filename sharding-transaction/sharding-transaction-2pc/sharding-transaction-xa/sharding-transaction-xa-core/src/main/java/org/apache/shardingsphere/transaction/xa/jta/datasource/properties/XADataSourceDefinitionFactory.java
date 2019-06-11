@@ -17,30 +17,37 @@
 
 package org.apache.shardingsphere.transaction.xa.jta.datasource.properties;
 
-import org.apache.shardingsphere.core.config.DatabaseAccessConfiguration;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 
-import java.util.Properties;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ServiceLoader;
 
 /**
- * XA properties.
+ * XA data source definition factory.
  *
- * @author zhangliang
+ * @author zhaojun
  */
-public interface XAProperties {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class XADataSourceDefinitionFactory {
+    
+    private static final Map<DatabaseType, XADataSourceDefinition> XA_DATA_SOURCE_DEFINITIONS = new HashMap<>();
+    
+    static {
+        for (XADataSourceDefinition each : ServiceLoader.load(XADataSourceDefinition.class)) {
+            XA_DATA_SOURCE_DEFINITIONS.put(each.getDatabaseType(), each);
+        }
+    }
     
     /**
-     * Get database type.
+     * Get XA data source definition.
      * 
-     * @return database type
+     * @param databaseType database type
+     * @return XA data source definition
      */
-    DatabaseType getDatabaseType();
-    
-    /**
-     * Build XA properties.
-     *
-     * @param databaseAccessConfiguration database access configuration
-     * @return properties for XA
-     */
-    Properties build(DatabaseAccessConfiguration databaseAccessConfiguration);
+    public static XADataSourceDefinition getXADataSourceDefinition(final DatabaseType databaseType) {
+        return XA_DATA_SOURCE_DEFINITIONS.get(databaseType);
+    }
 }

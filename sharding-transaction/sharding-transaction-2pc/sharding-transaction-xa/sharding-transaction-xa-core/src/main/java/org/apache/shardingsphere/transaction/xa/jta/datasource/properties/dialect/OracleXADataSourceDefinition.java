@@ -22,16 +22,18 @@ import org.apache.shardingsphere.core.config.DatabaseAccessConfiguration;
 import org.apache.shardingsphere.core.metadata.datasource.dialect.OracleDataSourceMetaData;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 import org.apache.shardingsphere.spi.database.DatabaseTypes;
-import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XAProperties;
+import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Properties;
 
 /**
- * XA properties for Oracle.
+ * XA data source definition for Oracle.
  *
  * @author zhaojun
  */
-public final class OracleXAProperties implements XAProperties {
+public final class OracleXADataSourceDefinition implements XADataSourceDefinition {
     
     @Override
     public DatabaseType getDatabaseType() {
@@ -39,7 +41,12 @@ public final class OracleXAProperties implements XAProperties {
     }
     
     @Override
-    public Properties build(final DatabaseAccessConfiguration databaseAccessConfiguration) {
+    public Collection<String> getXADriverClassName() {
+        return Collections.singletonList("oracle.jdbc.xa.client.OracleXADataSource");
+    }
+    
+    @Override
+    public Properties getXAProperties(final DatabaseAccessConfiguration databaseAccessConfiguration) {
         Properties result = new Properties();
         OracleDataSourceMetaData dataSourceMetaData = new OracleDataSourceMetaData(databaseAccessConfiguration.getUrl());
         result.setProperty("user", databaseAccessConfiguration.getUsername());

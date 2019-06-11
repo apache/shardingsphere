@@ -15,25 +15,40 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect;
+package org.apache.shardingsphere.transaction.xa.jta.datasource.properties;
 
 import org.apache.shardingsphere.core.config.DatabaseAccessConfiguration;
-import org.junit.Test;
+import org.apache.shardingsphere.spi.database.DatabaseType;
 
+import java.util.Collection;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class SQLServerXAPropertiesTest {
+/**
+ * XA data source definition.
+ *
+ * @author zhangliang
+ */
+public interface XADataSourceDefinition {
     
-    @Test
-    public void assertBuild() {
-        Properties actual = new SQLServerXAProperties().build(new DatabaseAccessConfiguration("jdbc:sqlserver://db.sqlserver:1433;DatabaseName=test_db", "root", "root"));
-        assertThat(actual.getProperty("user"), is("root"));
-        assertThat(actual.getProperty("password"), is("root"));
-        assertThat(actual.getProperty("serverName"), is("db.sqlserver"));
-        assertThat(actual.getProperty("portNumber"), is("1433"));
-        assertThat(actual.getProperty("databaseName"), is("test_db"));
-    }
+    /**
+     * Get database type.
+     * 
+     * @return database type
+     */
+    DatabaseType getDatabaseType();
+    
+    /**
+     * Get XA driver class names.
+     * 
+     * @return XA driver class names
+     */
+    Collection<String> getXADriverClassName();
+    
+    /**
+     * Get XA properties.
+     *
+     * @param databaseAccessConfiguration database access configuration
+     * @return properties for XA
+     */
+    Properties getXAProperties(DatabaseAccessConfiguration databaseAccessConfiguration);
 }
