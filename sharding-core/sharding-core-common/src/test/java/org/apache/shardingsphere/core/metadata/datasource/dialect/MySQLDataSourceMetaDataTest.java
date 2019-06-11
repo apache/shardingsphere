@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.metadata.datasource.dialect;
 
-import org.apache.shardingsphere.core.exception.ShardingException;
+import org.apache.shardingsphere.spi.database.UnrecognizedDatabaseURLException;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -49,7 +49,7 @@ public final class MySQLDataSourceMetaDataTest {
         assertThat(actual.getSchemaName(), is("ds-0"));
     }
     
-    @Test(expected = ShardingException.class)
+    @Test(expected = UnrecognizedDatabaseURLException.class)
     public void assertGetALLPropertiesFailure() {
         new MySQLDataSourceMetaData("jdbc:mysql:xxxxxxxx");
     }
@@ -61,4 +61,3 @@ public final class MySQLDataSourceMetaDataTest {
         assertThat(actual.isInSameDatabaseInstance(target), is(true));
     }
 }
-

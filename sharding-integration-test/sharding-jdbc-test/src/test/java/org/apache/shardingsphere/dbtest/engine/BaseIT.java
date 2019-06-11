@@ -130,8 +130,7 @@ public abstract class BaseIT {
         return result;
     }
     
-    private boolean isExisted(final String dataSourceName, final Collection<String> existedDataSourceNames,
-                              final Map<String, DataSourceMetaData> dataSourceMetaDataMap) {
+    private boolean isExisted(final String dataSourceName, final Collection<String> existedDataSourceNames, final Map<String, DataSourceMetaData> dataSourceMetaDataMap) {
         for (String each : existedDataSourceNames) {
             if (dataSourceMetaDataMap.get(each).isInSameDatabaseInstance(dataSourceMetaDataMap.get(dataSourceName))) {
                 return true;

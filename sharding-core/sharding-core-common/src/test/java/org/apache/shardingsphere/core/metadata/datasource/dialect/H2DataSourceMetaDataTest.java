@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.metadata.datasource.dialect;
 
-import org.apache.shardingsphere.core.exception.ShardingException;
+import org.apache.shardingsphere.spi.database.UnrecognizedDatabaseURLException;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -41,7 +41,7 @@ public class H2DataSourceMetaDataTest {
         assertThat(actual.getSchemaName(), is("ds-0"));
     }
     
-    @Test(expected = ShardingException.class)
+    @Test(expected = UnrecognizedDatabaseURLException.class)
     public void assertGetALLPropertiesFailure() {
         new H2DataSourceMetaData("jdbc:h2:file:/data/sample");
     }

@@ -80,7 +80,7 @@ public final class DatabaseTypes {
             try {
                 each.getDataSourceMetaData(url);
                 return each;
-            } catch (final Exception ignore) {
+            } catch (final UnrecognizedDatabaseURLException ignore) {
             }
         }
         throw new UnsupportedOperationException(String.format("Unsupported database from url: '%s'", url));

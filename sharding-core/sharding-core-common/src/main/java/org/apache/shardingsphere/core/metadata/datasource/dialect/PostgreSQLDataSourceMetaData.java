@@ -19,8 +19,8 @@ package org.apache.shardingsphere.core.metadata.datasource.dialect;
 
 import com.google.common.base.Strings;
 import lombok.Getter;
-import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.spi.database.DataSourceMetaData;
+import org.apache.shardingsphere.spi.database.UnrecognizedDatabaseURLException;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -43,15 +43,14 @@ public final class PostgreSQLDataSourceMetaData implements DataSourceMetaData {
     
     private final Pattern pattern = Pattern.compile("jdbc:postgresql://([\\w\\-\\.]+):?([0-9]*)/([\\w\\-]+)", Pattern.CASE_INSENSITIVE);
     
-    public PostgreSQLDataSourceMetaData(final String url) {
+    public PostgreSQLDataSourceMetaData(final String url) throws UnrecognizedDatabaseURLException {
         Matcher matcher = pattern.matcher(url);
-        if (matcher.find()) {
-            hostName = matcher.group(1);
-            port = Strings.isNullOrEmpty(matcher.group(2)) ? DEFAULT_PORT : Integer.valueOf(matcher.group(2));
-            schemaName = matcher.group(3);
-        } else {
-            throw new ShardingException("The URL of JDBC is not supported. Please refer to this pattern: %s.", pattern.pattern());
+        if (!matcher.find()) {
+            throw new UnrecognizedDatabaseURLException(url, pattern.pattern());
         }
+        hostName = matcher.group(1);
+        port = Strings.isNullOrEmpty(matcher.group(2)) ? DEFAULT_PORT : Integer.valueOf(matcher.group(2));
+        schemaName = matcher.group(3);
     }
   
     @Override
