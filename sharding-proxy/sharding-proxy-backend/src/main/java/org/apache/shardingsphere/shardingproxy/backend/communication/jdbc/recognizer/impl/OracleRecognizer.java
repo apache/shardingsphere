@@ -17,9 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recognizer.impl;
 
-import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recognizer.spi.JDBCDriverURLRecognizer;
-import org.apache.shardingsphere.spi.database.DatabaseType;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -32,8 +30,8 @@ import java.util.Collections;
 public final class OracleRecognizer implements JDBCDriverURLRecognizer {
     
     @Override
-    public DatabaseType getDatabaseType() {
-        return DatabaseTypes.getActualDatabaseType("Oracle");
+    public String getDatabaseType() {
+        return "Oracle";
     }
     
     @Override
