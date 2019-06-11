@@ -31,6 +31,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Aggregation distinct token generator.
@@ -40,7 +41,7 @@ import java.util.LinkedList;
 public final class AggregationDistinctTokenGenerator implements CollectionSQLTokenGenerator<ShardingRule> {
     
     @Override
-    public Collection<AggregationDistinctToken> generateSQLTokens(final SQLStatement sqlStatement, final ShardingRule shardingRule) {
+    public Collection<AggregationDistinctToken> generateSQLTokens(final SQLStatement sqlStatement, final List<Object> parameters, final ShardingRule shardingRule) {
         Collection<AggregationDistinctToken> result = new LinkedList<>();
         for (SQLSegment each : sqlStatement.getSqlSegments()) {
             Collection<AggregationDistinctSelectItemSegment> distinctSelectItemSegments = getAggregationDistinctSelectItemSegment(each);

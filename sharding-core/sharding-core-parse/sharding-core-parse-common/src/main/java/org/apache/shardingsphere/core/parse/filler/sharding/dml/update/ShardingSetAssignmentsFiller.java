@@ -82,7 +82,7 @@ public final class ShardingSetAssignmentsFiller implements SQLSegmentFiller<SetA
         }
         InsertValue insertValue = new InsertValue(columnValues);
         insertStatement.getValues().add(insertValue);
-        insertStatement.getRouteCondition().getOrConditions().add(andCondition);
+        insertStatement.getShardingConditions().getOrConditions().add(andCondition);
         insertStatement.setParametersIndex(insertValue.getParametersCount());
     }
     

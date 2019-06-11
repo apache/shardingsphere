@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.transaction.xa.jta.datasource;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.spi.database.DatabaseType;
 import org.apache.shardingsphere.transaction.xa.jta.connection.SingleXAConnection;
 import org.apache.shardingsphere.transaction.xa.jta.connection.XAConnectionFactory;
 

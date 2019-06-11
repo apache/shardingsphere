@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.optimize.engine.sharding.query;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
 import lombok.RequiredArgsConstructor;
@@ -25,11 +26,15 @@ import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.optimize.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.condition.ShardingConditions;
 import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
+import org.apache.shardingsphere.core.optimize.pagination.Pagination;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
-import org.apache.shardingsphere.core.parse.sql.context.condition.ParseCondition;
+import org.apache.shardingsphere.core.parse.sql.context.condition.Conditions;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationValueSegment;
+import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.strategy.route.value.BetweenRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
@@ -48,17 +53,21 @@ import java.util.Map.Entry;
 @RequiredArgsConstructor
 public final class QueryOptimizeEngine implements OptimizeEngine {
     
-    private final ParseCondition parseCondition;
+    private final SQLStatement sqlStatement;
     
     private final List<Object> parameters;
     
+    private final Conditions conditions;
+    
     @Override
     public OptimizeResult optimize() {
-        List<ShardingCondition> result = new ArrayList<>(parseCondition.getOrConditions().size());
-        for (AndCondition each : parseCondition.getOrConditions()) {
-            result.add(optimize(each.getConditionsMap()));
+        List<ShardingCondition> shardingConditions = new ArrayList<>(conditions.getOrConditions().size());
+        for (AndCondition each : conditions.getOrConditions()) {
+            shardingConditions.add(optimize(each.getConditionsMap()));
         }
-        return new OptimizeResult(new ShardingConditions(result));
+        OptimizeResult result = new OptimizeResult(new ShardingConditions(shardingConditions));
+        result.setPagination(getPagination().orNull());
+        return result;
     }
     
     private ShardingCondition optimize(final Map<Column, List<Condition>> conditionsMap) {
@@ -126,5 +135,16 @@ public final class QueryOptimizeEngine implements OptimizeEngine {
             }
         }
         return result;
+    }
+    
+    private Optional<Pagination> getPagination() {
+        if (sqlStatement instanceof SelectStatement) {
+            PaginationValueSegment offsetSegment = ((SelectStatement) sqlStatement).getOffset();
+            PaginationValueSegment rowCountSegment = ((SelectStatement) sqlStatement).getRowCount();
+            if (null != offsetSegment || null != rowCountSegment) {
+                return Optional.of(new Pagination(offsetSegment, rowCountSegment, parameters));
+            }
+        }
+        return Optional.absent();
     }
 }

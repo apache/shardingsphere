@@ -15,24 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.xa.jta.datasource.properties;
+package org.apache.shardingsphere.core.spi.database;
 
-import org.apache.shardingsphere.core.config.DatabaseAccessConfiguration;
-
-import java.util.Properties;
+import org.apache.shardingsphere.core.metadata.datasource.dialect.SQLServerDataSourceMetaData;
+import org.apache.shardingsphere.spi.database.DataSourceMetaData;
+import org.apache.shardingsphere.spi.database.DatabaseType;
 
 /**
- * XA properties.
+ * Database type of SQLServer.
  *
  * @author zhangliang
  */
-public interface XAProperties {
+public final class SQLServerDatabaseType implements DatabaseType {
     
-    /**
-     * Build XA properties.
-     *
-     * @param databaseAccessConfiguration database access configuration
-     * @return properties for XA
-     */
-    Properties build(DatabaseAccessConfiguration databaseAccessConfiguration);
+    @Override
+    public String getName() {
+        return "SQLServer";
+    }
+    
+    @Override
+    public String getProductName() {
+        return "Microsoft SQL Server";
+    }
+    
+    @Override
+    public DataSourceMetaData getDataSourceMetaData(final String url) {
+        return new SQLServerDataSourceMetaData(url);
+    }
 }

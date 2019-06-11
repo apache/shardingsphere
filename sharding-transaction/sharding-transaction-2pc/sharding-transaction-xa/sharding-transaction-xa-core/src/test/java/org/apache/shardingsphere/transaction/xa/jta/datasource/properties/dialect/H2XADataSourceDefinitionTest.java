@@ -18,22 +18,28 @@
 package org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect;
 
 import org.apache.shardingsphere.core.config.DatabaseAccessConfiguration;
+import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class OracleXAPropertiesTest {
+public final class H2XADataSourceDefinitionTest {
     
     @Test
-    public void assertBuild() {
-        Properties actual = new OracleXAProperties().build(new DatabaseAccessConfiguration("jdbc:oracle:thin:@//db.oracle:9999/test_db", "root", "root"));
+    public void assertGetXADriverClassName() {
+        assertThat(new H2XADataSourceDefinition().getXADriverClassName(), CoreMatchers.<Collection<String>>is(Collections.singletonList("org.h2.jdbcx.JdbcDataSource")));
+    }
+    
+    @Test
+    public void assertGetXAProperties() {
+        Properties actual = new H2XADataSourceDefinition().getXAProperties(new DatabaseAccessConfiguration("jdbc:h2:mem:db0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL", "root", "root"));
         assertThat(actual.getProperty("user"), is("root"));
         assertThat(actual.getProperty("password"), is("root"));
-        assertThat(actual.getProperty("serverName"), is("db.oracle"));
-        assertThat(actual.getProperty("portNumber"), is("9999"));
-        assertThat(actual.getProperty("databaseName"), is("test_db"));
+        assertThat(actual.getProperty("URL"), is("jdbc:h2:mem:db0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL"));
     }
 }

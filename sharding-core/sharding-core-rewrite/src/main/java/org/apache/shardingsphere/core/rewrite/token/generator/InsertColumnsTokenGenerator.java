@@ -25,6 +25,7 @@ import org.apache.shardingsphere.core.rewrite.token.pojo.InsertColumnsToken;
 import org.apache.shardingsphere.core.rule.BaseRule;
 
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Insert columns token generator.
@@ -34,7 +35,7 @@ import java.util.LinkedList;
 public final class InsertColumnsTokenGenerator implements OptionalSQLTokenGenerator<BaseRule> {
     
     @Override
-    public Optional<InsertColumnsToken> generateSQLToken(final SQLStatement sqlStatement, final BaseRule baseRule) {
+    public Optional<InsertColumnsToken> generateSQLToken(final SQLStatement sqlStatement, final List<Object> parameters, final BaseRule baseRule) {
         Optional<InsertColumnsSegment> insertColumnsSegment = sqlStatement.findSQLSegment(InsertColumnsSegment.class);
         if (!(sqlStatement instanceof InsertStatement && insertColumnsSegment.isPresent())) {
             return Optional.absent();

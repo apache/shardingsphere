@@ -15,26 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.constant;
+package org.apache.shardingsphere.core.spi.database;
 
-import org.junit.Test;
+import org.apache.shardingsphere.core.metadata.datasource.dialect.MySQLDataSourceMetaData;
+import org.apache.shardingsphere.spi.database.DataSourceMetaData;
+import org.apache.shardingsphere.spi.database.DatabaseType;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class DatabaseTypeTest {
+/**
+ * Database type of MySQL.
+ *
+ * @author zhangliang
+ */
+public final class MySQLDatabaseType implements DatabaseType {
     
-    @Test
-    public void assertValueFromSuccess() {
-        assertThat(DatabaseType.valueFrom("H2"), is(DatabaseType.H2));
-        assertThat(DatabaseType.valueFrom("MySQL"), is(DatabaseType.MySQL));
-        assertThat(DatabaseType.valueFrom("Oracle"), is(DatabaseType.Oracle));
-        assertThat(DatabaseType.valueFrom("Microsoft SQL Server"), is(DatabaseType.SQLServer));
-        assertThat(DatabaseType.valueFrom("PostgreSQL"), is(DatabaseType.PostgreSQL));
+    @Override
+    public String getName() {
+        return "MySQL";
     }
     
-    @Test(expected = UnsupportedOperationException.class)
-    public void assertValueFromFailure() {
-        DatabaseType.valueFrom("unknown");
+    @Override
+    public String getProductName() {
+        return "MySQL";
+    }
+    
+    @Override
+    public DataSourceMetaData getDataSourceMetaData(final String url) {
+        return new MySQLDataSourceMetaData(url);
     }
 }

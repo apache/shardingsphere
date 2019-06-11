@@ -18,20 +18,30 @@
 package org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect;
 
 import org.apache.shardingsphere.core.config.DatabaseAccessConfiguration;
+import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class H2XAPropertiesTest {
+public final class PostgreSQLXADataSourceDefinitionTest {
     
     @Test
-    public void assertBuild() {
-        Properties actual = new H2XAProperties().build(new DatabaseAccessConfiguration("jdbc:h2:mem:db0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL", "root", "root"));
+    public void assertGetXADriverClassName() {
+        assertThat(new PostgreSQLXADataSourceDefinition().getXADriverClassName(), CoreMatchers.<Collection<String>>is(Collections.singletonList("org.postgresql.xa.PGXADataSource")));
+    }
+    
+    @Test
+    public void assertGetXAProperties() {
+        Properties actual = new PostgreSQLXADataSourceDefinition().getXAProperties(new DatabaseAccessConfiguration("jdbc:postgresql://db.psql:5432/test_db", "root", "root"));
         assertThat(actual.getProperty("user"), is("root"));
         assertThat(actual.getProperty("password"), is("root"));
-        assertThat(actual.getProperty("URL"), is("jdbc:h2:mem:db0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL"));
+        assertThat(actual.getProperty("serverName"), is("db.psql"));
+        assertThat(actual.getProperty("portNumber"), is("5432"));
+        assertThat(actual.getProperty("databaseName"), is("test_db"));
     }
 }

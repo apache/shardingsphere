@@ -23,7 +23,7 @@ import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResult;
 import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResultUnit;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
-import org.apache.shardingsphere.core.parse.sql.context.condition.ParseCondition;
+import org.apache.shardingsphere.core.parse.sql.context.condition.Conditions;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
@@ -154,15 +154,15 @@ public final class EncryptSQLRewriter implements SQLRewriter {
     }
     
     private void appendEncryptColumnPlaceholder(final SQLBuilder sqlBuilder, final EncryptColumnToken encryptColumnToken, final ParameterBuilder parameterBuilder) {
-        Optional<Condition> encryptCondition = getEncryptCondition(sqlStatement.getEncryptCondition(), encryptColumnToken);
+        Optional<Condition> encryptCondition = getEncryptCondition(sqlStatement.getEncryptConditions(), encryptColumnToken);
         Preconditions.checkArgument(!encryptColumnToken.isInWhere() || encryptCondition.isPresent(), "Can not find encrypt condition");
         ShardingPlaceholder result = encryptColumnToken.isInWhere() ? getEncryptColumnPlaceholderFromConditions(encryptColumnToken, encryptCondition.get(), parameterBuilder) 
                 : getEncryptColumnPlaceholderFromUpdateItem(encryptColumnToken, parameterBuilder);
         sqlBuilder.appendPlaceholder(result);
     }
     
-    private Optional<Condition> getEncryptCondition(final ParseCondition encryptCondition, final EncryptColumnToken encryptColumnToken) {
-        for (Condition each : encryptCondition.findConditions(encryptColumnToken.getColumn())) {
+    private Optional<Condition> getEncryptCondition(final Conditions encryptConditions, final EncryptColumnToken encryptColumnToken) {
+        for (Condition each : encryptConditions.findConditions(encryptColumnToken.getColumn())) {
             if (isSameIndexes(each.getPredicateSegment(), encryptColumnToken)) {
                 return Optional.of(each);
             }

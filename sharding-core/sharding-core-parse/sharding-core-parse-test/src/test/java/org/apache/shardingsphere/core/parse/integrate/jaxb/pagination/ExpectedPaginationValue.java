@@ -15,22 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.route.pagination;
+package org.apache.shardingsphere.core.parse.integrate.jaxb.pagination;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationValueSegment;
+import lombok.Setter;
 
-/**
- * Pagination value.
- *
- * @author zhangliang
- */
-@RequiredArgsConstructor
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+
 @Getter
-public final class PaginationValue {
+@Setter
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class ExpectedPaginationValue {
     
-    private final PaginationValueSegment segment;
+    @XmlAttribute
+    private Integer value;
     
-    private final int value;
+    @XmlAttribute(name = "parameter-index")
+    private Integer parameterIndex;
 }

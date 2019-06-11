@@ -19,23 +19,41 @@ package org.apache.shardingsphere.transaction.xa.jta.datasource.properties.diale
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.config.DatabaseAccessConfiguration;
-import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XAProperties;
+import org.apache.shardingsphere.core.metadata.datasource.dialect.PostgreSQLDataSourceMetaData;
+import org.apache.shardingsphere.spi.database.DatabaseType;
+import org.apache.shardingsphere.spi.database.DatabaseTypes;
+import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Properties;
 
 /**
- * XA properties for H2.
+ * XA data source definition for PostgreSQL.
  *
  * @author zhaojun
  */
-public final class H2XAProperties implements XAProperties {
+public final class PostgreSQLXADataSourceDefinition implements XADataSourceDefinition {
     
     @Override
-    public Properties build(final DatabaseAccessConfiguration databaseAccessConfiguration) {
+    public DatabaseType getDatabaseType() {
+        return DatabaseTypes.getActualDatabaseType("PostgreSQL");
+    }
+    
+    @Override
+    public Collection<String> getXADriverClassName() {
+        return Collections.singletonList("org.postgresql.xa.PGXADataSource");
+    }
+    
+    @Override
+    public Properties getXAProperties(final DatabaseAccessConfiguration databaseAccessConfiguration) {
         Properties result = new Properties();
+        PostgreSQLDataSourceMetaData dataSourceMetaData = new PostgreSQLDataSourceMetaData(databaseAccessConfiguration.getUrl());
         result.setProperty("user", databaseAccessConfiguration.getUsername());
         result.setProperty("password", Optional.fromNullable(databaseAccessConfiguration.getPassword()).or(""));
-        result.setProperty("URL", databaseAccessConfiguration.getUrl());
+        result.setProperty("serverName", dataSourceMetaData.getHostName());
+        result.setProperty("portNumber", String.valueOf(dataSourceMetaData.getPort()));
+        result.setProperty("databaseName", dataSourceMetaData.getSchemaName());
         return result;
     }
 }

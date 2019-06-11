@@ -24,6 +24,8 @@ import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertGeneratedKeyToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
+import java.util.List;
+
 /**
  * Insert generated key token generator.
  *
@@ -32,7 +34,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 public final class InsertGeneratedKeyTokenGenerator implements OptionalSQLTokenGenerator<ShardingRule> {
     
     @Override
-    public Optional<InsertGeneratedKeyToken> generateSQLToken(final SQLStatement sqlStatement, final ShardingRule shardingRule) {
+    public Optional<InsertGeneratedKeyToken> generateSQLToken(final SQLStatement sqlStatement, final List<Object> parameters, final ShardingRule shardingRule) {
         Optional<InsertColumnsSegment> insertColumnsSegment = sqlStatement.findSQLSegment(InsertColumnsSegment.class);
         if (!(sqlStatement instanceof InsertStatement && insertColumnsSegment.isPresent())) {
             return Optional.absent();

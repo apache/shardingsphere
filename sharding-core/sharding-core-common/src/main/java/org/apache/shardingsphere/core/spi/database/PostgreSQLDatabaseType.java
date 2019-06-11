@@ -15,42 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.metadata.datasource;
+package org.apache.shardingsphere.core.spi.database;
+
+import org.apache.shardingsphere.core.metadata.datasource.dialect.PostgreSQLDataSourceMetaData;
+import org.apache.shardingsphere.spi.database.DataSourceMetaData;
+import org.apache.shardingsphere.spi.database.DatabaseType;
 
 /**
- * Data source meta data.
+ * Database type of PostgreSQL.
  *
- * @author panjuan
  * @author zhangliang
  */
-public interface DataSourceMetaData {
+public final class PostgreSQLDatabaseType implements DatabaseType {
     
-    /**
-     * Get host name.
-     * 
-     * @return host name
-     */
-    String getHostName();
+    @Override
+    public String getName() {
+        return "PostgreSQL";
+    }
     
-    /**
-     * Get port.
-     * 
-     * @return port
-     */
-    int getPort();
+    @Override
+    public String getProductName() {
+        return "PostgreSQL";
+    }
     
-    /**
-     * Get schema name.
-     * 
-     * @return schema name
-     */
-    String getSchemaName();
-    
-    /**
-     * Judge whether two of data sources are in the same database instance.
-     *
-     * @param dataSourceMetaData data source meta data
-     * @return data sources are in the same database instance or not
-     */
-    boolean isInSameDatabaseInstance(DataSourceMetaData dataSourceMetaData);
+    @Override
+    public DataSourceMetaData getDataSourceMetaData(final String url) {
+        return new PostgreSQLDataSourceMetaData(url);
+    }
 }

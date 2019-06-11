@@ -30,6 +30,7 @@ import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Insert set encrypt value token generator.
@@ -39,7 +40,7 @@ import java.util.LinkedList;
 public final class InsertSetEncryptValueTokenGenerator implements CollectionSQLTokenGenerator<EncryptRule> {
     
     @Override
-    public Collection<InsertSetEncryptValueToken> generateSQLTokens(final SQLStatement sqlStatement, final EncryptRule encryptRule) {
+    public Collection<InsertSetEncryptValueToken> generateSQLTokens(final SQLStatement sqlStatement, final List<Object> parameters, final EncryptRule encryptRule) {
         Optional<SetAssignmentsSegment> setAssignmentsSegment = sqlStatement.findSQLSegment(SetAssignmentsSegment.class);
         if (!(sqlStatement instanceof InsertStatement && setAssignmentsSegment.isPresent())) {
             return Collections.emptyList();

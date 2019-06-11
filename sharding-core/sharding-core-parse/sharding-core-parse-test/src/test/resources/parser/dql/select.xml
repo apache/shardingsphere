@@ -26,7 +26,7 @@
         <tokens>
             <table-token start-index="22" table-name="t_order" length="7" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="EQUAL">
                     <value index="0" literal="1" type="int" />
@@ -35,7 +35,7 @@
                     <value index="1" literal="1" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
     </parser-result>
     
     <parser-result sql-case-id="select_with_same_table_name_and_alias_column_with_owner" parameters="1, 1">
@@ -45,7 +45,7 @@
         <tokens>
             <table-token start-index="52" table-name="t_order" length="7" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="EQUAL">
                     <value index="0" literal="1" type="int" />
@@ -54,7 +54,7 @@
                     <value index="1" literal="1" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
     </parser-result>
     
     <parser-result sql-case-id="select_not_equal_with_single_table" parameters="1">
@@ -112,7 +112,7 @@
         <tokens>
             <table-token start-index="14" table-name="t_order" length="7" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="EQUAL">
                     <value index="0" literal="1" type="int" />
@@ -121,7 +121,7 @@
                     <value index="1" literal="1" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
     </parser-result>
     
     <parser-result sql-case-id="select_equal_with_same_sharding_column" parameters="1, 2">
@@ -131,7 +131,7 @@
         <tokens>
             <table-token start-index="14" table-name="t_order" length="7" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order" operator="EQUAL">
                     <value index="0" literal="1" type="int" />
@@ -140,7 +140,7 @@
                     <value index="1" literal="2" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
     </parser-result>
     
     <parser-result sql-case-id="select_between_with_single_table" parameters="1, 10, 2, 5">
@@ -150,7 +150,7 @@
         <tokens>
             <table-token start-index="14" table-name="t_order" length="7" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="BETWEEN">
                     <value index="0" literal="1" type="int" />
@@ -161,7 +161,7 @@
                     <value index="3" literal="5" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
         <order-by-columns>
             <order-by-column name="user_id" order-direction="ASC" />
             <order-by-column name="order_id" order-direction="ASC" />
@@ -175,7 +175,7 @@
         <tokens>
             <table-token start-index="14" table-name="t_order" length="7" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
                     <value index="0" literal="1" type="int" />
@@ -187,7 +187,7 @@
                     <value index="4" literal="10" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
         <order-by-columns>
             <order-by-column name="user_id" order-direction="ASC" />
             <order-by-column name="order_id" order-direction="ASC" />
@@ -201,7 +201,7 @@
         <tokens>
             <table-token start-index="14" table-name="t_order" length="7" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order" operator="IN">
                     <value index="0" literal="1000" type="int" />
@@ -212,7 +212,7 @@
                     <value index="3" literal="1002" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
         <order-by-columns>
             <order-by-column name="order_id" order-direction="ASC" />
         </order-by-columns>
@@ -225,7 +225,7 @@
         <tokens>
             <table-token start-index="37" table-name="t_order" length="7" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
                     <value index="1" literal="1" type="int" />
@@ -236,7 +236,7 @@
                     <value index="4" literal="10" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
         <select-items>
             <aggregation-select-items>
                 <aggregation-select-item type="COUNT" inner-expression="(0)" alias="orders_count"/>
@@ -253,7 +253,7 @@
             <table-token start-index="16" table-name="t_order" length="7" />
             <table-token start-index="31" table-name="t_order_item" length="12" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
                     <value index="0" literal="1" type="int" />
@@ -264,7 +264,7 @@
                     <value index="3" literal="10" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
         <order-by-columns>
             <order-by-column owner="i" name="item_id" order-direction="ASC" />
         </order-by-columns>
@@ -293,7 +293,7 @@
             <table-token start-index="16" table-name="T_ORDER" length="7" />
             <table-token start-index="31" table-name="T_order_item" length="12" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
                     <value index="0" literal="1" type="int" />
@@ -304,7 +304,7 @@
                     <value index="3" literal="10" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
         <order-by-columns>
             <order-by-column owner="i" name="item_id" order-direction="ASC" />
         </order-by-columns>
@@ -319,7 +319,7 @@
             <table-token start-index="16" table-name="t_order" length="7" />
             <table-token start-index="31" table-name="t_order_item" length="12" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
                     <value index="0" literal="1" type="int" />
@@ -330,17 +330,17 @@
                     <value index="3" literal="10" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
         <order-by-columns>
             <order-by-column owner="i" name="item_id" order-direction="ASC" />
         </order-by-columns>
-        <encrypt-condition>
+        <encrypt-conditions>
             <and-condition>
                 <condition column-name="status" table-name="t_order" operator="EQUAL">
                     <value index="4" literal="init" type="varchar" />
                 </condition>
             </and-condition>
-        </encrypt-condition>
+        </encrypt-conditions>
     </parser-result>
     
     <parser-result sql-case-id="select_keyword_table_name_with_back_quotes" parameters="1, 2, 9, 10, 'init'">
@@ -352,7 +352,7 @@
             <table-token start-index="16" table-name="t_order" length="7" />
             <table-token start-index="31" table-name="t_order_item" length="12" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
                     <value index="0" literal="1" type="int" />
@@ -363,17 +363,17 @@
                     <value index="3" literal="10" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
         <order-by-columns>
             <order-by-column owner="i" name="item_id" order-direction="ASC" />
         </order-by-columns>
-        <encrypt-condition>
+        <encrypt-conditions>
             <and-condition>
                 <condition column-name="status" table-name="t_order" operator="EQUAL">
                     <value index="4" literal="init" type="varchar" />
                 </condition>
             </and-condition>
-        </encrypt-condition>
+        </encrypt-conditions>
     </parser-result>
     
     <parser-result sql-case-id="select_keyword_table_name_with_double_quotes" parameters="1, 2, 9, 10, 'init'">
@@ -385,7 +385,7 @@
             <table-token start-index="16" table-name="t_order" length="7" />
             <table-token start-index="31" table-name="t_order_item" length="12" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
                     <value index="0" literal="1" type="int" />
@@ -396,7 +396,7 @@
                     <value index="3" literal="10" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
         <order-by-columns>
             <order-by-column owner="i" name="item_id" order-direction="ASC" />
         </order-by-columns>
@@ -411,7 +411,7 @@
             <table-token start-index="16" table-name="t_order" length="7" />
             <table-token start-index="31" table-name="t_order_item" length="12" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
                     <value index="0" literal="1" type="int" />
@@ -422,7 +422,7 @@
                     <value index="3" literal="10" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
         <order-by-columns>
             <order-by-column owner="i" name="item_id" order-direction="ASC" />
         </order-by-columns>
@@ -435,13 +435,13 @@
         <tokens>
             <table-token start-index="36" table-name="t_order_item" length="12" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="item_id" table-name="t_order_item" operator="EQUAL">
                     <value index="0" literal="1" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
     </parser-result>
     
     <parser-result sql-case-id="select_with_force_index_join" parameters="1000">
@@ -453,13 +453,13 @@
             <table-token start-index="16" table-name="t_order" length="7" />
             <table-token start-index="56" table-name="t_order_item" length="12" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order" operator="EQUAL">
                     <value index="0" literal="1000" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
     </parser-result>
     
     <parser-result sql-case-id="select_equal_with_geography" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', 100, 200, 1, 2">
@@ -469,7 +469,7 @@
         <tokens>
             <table-token start-index="14" table-name="t_order" length="7" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="EQUAL">
                     <value index="3" literal="1" type="int" />
@@ -478,7 +478,7 @@
                     <value index="4" literal="2" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
     </parser-result>
     
     <parser-result sql-case-id="select_in_with_geography" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', '{&quot;rule3&quot;:&quot;null3&quot;}', 100, 200, 1, 2">
@@ -488,7 +488,7 @@
         <tokens>
             <table-token start-index="14" table-name="t_order" length="7" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="EQUAL">
                     <value index="4" literal="1" type="int" />
@@ -497,7 +497,7 @@
                     <value index="5" literal="2" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
     </parser-result>
     
     <parser-result sql-case-id="select_between_with_geography" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', '{&quot;rule3&quot;:&quot;null3&quot;}', 100, 200, 1">
@@ -507,13 +507,13 @@
         <tokens>
             <table-token start-index="14" table-name="t_place" length="7" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="user_new_id" table-name="t_place" operator="EQUAL">
                     <value index="4" literal="1" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
     </parser-result>
     
     <parser-result sql-case-id="select_with_double_quotes" parameters="1">
@@ -751,13 +751,13 @@
         <tokens>
             <table-token start-index="14" table-name="t_order" length="7" />
         </tokens>
-        <encrypt-condition>
+        <encrypt-conditions>
             <and-condition>
                 <condition column-name="status" table-name="t_order" operator="EQUAL">
                     <value index="0" literal="\'" type="varchar" />
                 </condition>
             </and-condition>
-        </encrypt-condition>
+        </encrypt-conditions>
     </parser-result>
     
     <parser-result sql-case-id="select_escape_with_double_quota" >
@@ -767,13 +767,13 @@
         <tokens>
             <table-token start-index="14" table-name="t_order" length="7" />
         </tokens>
-        <encrypt-condition>
+        <encrypt-conditions>
             <and-condition>
                 <condition column-name="status" table-name="t_order" operator="EQUAL">
                     <value index="0" literal="\&quot;" type="varchar" />
                 </condition>
             </and-condition>
-        </encrypt-condition>
+        </encrypt-conditions>
     </parser-result>
     
     <parser-result sql-case-id="select_with_block_comment" >
@@ -783,13 +783,13 @@
         <tokens>
             <table-token start-index="83" table-name="t_order" length="7" />
         </tokens>
-        <encrypt-condition>
+        <encrypt-conditions>
             <and-condition>
                 <condition column-name="status" table-name="t_order" operator="EQUAL">
                     <value index="0" literal="1" type="varchar" />
                 </condition>
             </and-condition>
-        </encrypt-condition>
+        </encrypt-conditions>
     </parser-result>
     
     <parser-result sql-case-id="select_with_single_comment" >
@@ -799,13 +799,13 @@
         <tokens>
             <table-token start-index="78" table-name="t_order" length="7" />
         </tokens>
-        <encrypt-condition>
+        <encrypt-conditions>
             <and-condition>
                 <condition column-name="status" table-name="t_order" operator="EQUAL">
                     <value index="0" literal="1" type="varchar" />
                 </condition>
             </and-condition>
-        </encrypt-condition>
+        </encrypt-conditions>
     </parser-result>
     
     <parser-result sql-case-id="select_alias_as_single_quote_string">

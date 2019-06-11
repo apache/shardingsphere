@@ -21,6 +21,7 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Maps;
 import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.encryptor.EncryptorRuleConfiguration;
+import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
 import org.h2.tools.RunScript;
@@ -48,7 +49,9 @@ public abstract class AbstractEncryptJDBCDatabaseAndTableTest extends AbstractSQ
             return;
         }
         Map<String, DataSource> dataSources = getDataSources();
-        encryptDataSource = new EncryptDataSource(dataSources.values().iterator().next(), createEncryptRuleConfiguration());
+        Properties props = new Properties();
+        props.put(ShardingPropertiesConstant.SQL_SHOW.getKey(), true);
+        encryptDataSource = new EncryptDataSource(dataSources.values().iterator().next(), createEncryptRuleConfiguration(), props);
     }
     
     private static Map<String, DataSource> getDataSources() {

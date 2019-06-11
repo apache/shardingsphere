@@ -23,13 +23,13 @@ import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.execute.ShardingExecuteEngine;
 import org.apache.shardingsphere.core.execute.ShardingExecuteGroup;
 import org.apache.shardingsphere.core.execute.ShardingGroupExecuteCallback;
-import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.core.rule.ShardingDataSourceNames;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.spi.database.DataSourceMetaData;
 
 import java.sql.Connection;
 import java.sql.ResultSet;

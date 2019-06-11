@@ -15,29 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.integrate.jaxb.pagination;
+package org.apache.shardingsphere.spi.database;
 
-import lombok.Getter;
-import lombok.Setter;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-
-@Getter
-@Setter
-@XmlAccessorType(XmlAccessType.FIELD)
-public final class ExpectedPagination {
+/**
+ * Database type.
+ *
+ * @author zhangliang
+ */
+public interface DatabaseType {
     
-    @XmlAttribute
-    private Integer offset;
+    /**
+     * Get database name.
+     * 
+     * @return database name
+     */
+    String getName();
     
-    @XmlAttribute(name = "row-count")
-    private Integer rowCount;
+    /**
+     * Get database product name.
+     * 
+     * @return database product name
+     */
+    String getProductName();
     
-    @XmlAttribute(name = "offset-index")
-    private Integer offsetParameterIndex;
-    
-    @XmlAttribute(name = "row-count-index")
-    private Integer rowCountParameterIndex;
+    /**
+     * Get data source meta data.
+     * 
+     * @param url data source URL
+     * @return data source meta data
+     */
+    DataSourceMetaData getDataSourceMetaData(String url);
 }

@@ -25,6 +25,7 @@ import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.dbtest.env.IntegrateTestEnvironment;
+import org.apache.shardingsphere.spi.database.DatabaseType;
 
 import javax.sql.DataSource;
 import java.util.Collections;
@@ -46,11 +47,11 @@ public final class DataSourceUtil {
     /**
      * Create data source.
      * 
-     * @param databaseType data base type
+     * @param databaseType database type
      * @param dataSourceName data source name
      * @return data source
      */
-    public static DataSource createDataSource(final String databaseType, final String dataSourceName) {
+    public static DataSource createDataSource(final DatabaseType databaseType, final String dataSourceName) {
         DataSourceCacheKey dataSourceCacheKey = new DataSourceCacheKey(databaseType, dataSourceName);
         if (cache.containsKey(dataSourceCacheKey)) {
             return cache.get(dataSourceCacheKey);
@@ -70,7 +71,7 @@ public final class DataSourceUtil {
         return result;
     }
     
-    private static DataSource createDBCP(final String databaseType, final String dataSourceName) {
+    private static DataSource createDBCP(final DatabaseType databaseType, final String dataSourceName) {
         BasicDataSource result = new BasicDataSource();
         DatabaseEnvironment databaseEnvironment = IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().get(databaseType);
         result.setDriverClassName(databaseEnvironment.getDriverClassName());
@@ -79,13 +80,13 @@ public final class DataSourceUtil {
         result.setPassword(databaseEnvironment.getPassword());
         result.setMaxTotal(15);
         result.setValidationQuery("SELECT 1");
-        if ("Oracle".equals(databaseType)) {
+        if ("Oracle".equals(databaseType.getName())) {
             result.setConnectionInitSqls(Collections.singleton("ALTER SESSION SET CURRENT_SCHEMA = " + dataSourceName));
         }
         return result;
     }
     
-    private static DataSource createHikariCP(final String databaseType, final String dataSourceName) {
+    private static DataSource createHikariCP(final DatabaseType databaseType, final String dataSourceName) {
         HikariConfig result = new HikariConfig();
         DatabaseEnvironment databaseEnvironment = IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().get(databaseType);
         result.setDriverClassName(databaseEnvironment.getDriverClassName());
@@ -95,7 +96,7 @@ public final class DataSourceUtil {
         result.setMaximumPoolSize(15);
         result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
         result.setConnectionTestQuery("SELECT 1");
-        if ("Oracle".equals(databaseType)) {
+        if ("Oracle".equals(databaseType.getName())) {
             result.setConnectionInitSql("ALTER SESSION SET CURRENT_SCHEMA = " + dataSourceName);
         }
         return new HikariDataSource(result);
@@ -105,7 +106,7 @@ public final class DataSourceUtil {
     @EqualsAndHashCode
     static class DataSourceCacheKey {
         
-        private final String databaseType;
+        private final DatabaseType databaseType;
         
         private final String dataSourceName;
     }

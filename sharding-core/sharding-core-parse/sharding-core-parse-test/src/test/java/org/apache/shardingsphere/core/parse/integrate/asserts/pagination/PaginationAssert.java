@@ -19,9 +19,9 @@ package org.apache.shardingsphere.core.parse.integrate.asserts.pagination;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.integrate.asserts.SQLStatementAssertMessage;
-import org.apache.shardingsphere.core.parse.integrate.jaxb.pagination.ExpectedPagination;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.pagination.ExpectedPaginationValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.NumberLiteralPaginationValueSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.ParameterMarkerPaginationValueSegment;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 
@@ -42,34 +42,40 @@ public final class PaginationAssert {
     private final SQLStatementAssertMessage assertMessage;
     
     /**
-     * Assert pagination.
+     * Assert offset.
      * 
-     * @param actual actual pagination
-     * @param expected expected pagination
+     * @param actual actual offset
+     * @param expected expected offset
      */
-    public void assertPagination(final PaginationSegment actual, final ExpectedPagination expected) {
+    public void assertOffset(final PaginationValueSegment actual, final ExpectedPaginationValue expected) {
         if (null == actual) {
-            assertNull(assertMessage.getFullAssertMessage("Pagination should not exist: "), expected);
+            assertNull(assertMessage.getFullAssertMessage("Offset should not exist: "), expected);
             return;
         }
         if (SQLCaseType.Placeholder == sqlCaseType) {
-            if (actual.getOffset().isPresent()) {
-                assertThat(assertMessage.getFullAssertMessage("Pagination offset index assertion error: "),
-                        ((ParameterMarkerPaginationValueSegment) actual.getOffset().get()).getParameterIndex(), is(expected.getOffsetParameterIndex()));
-            }
-            if (actual.getRowCount().isPresent()) {
-                assertThat(assertMessage.getFullAssertMessage("Pagination row count index assertion error: "), 
-                        ((ParameterMarkerPaginationValueSegment) actual.getRowCount().get()).getParameterIndex(), is(expected.getRowCountParameterIndex()));
-            }
+            assertThat(assertMessage.getFullAssertMessage("Offset index assertion error: "),
+                    ((ParameterMarkerPaginationValueSegment) actual).getParameterIndex(), is(expected.getParameterIndex()));
         } else {
-            if (actual.getOffset().isPresent()) {
-                assertThat(assertMessage.getFullAssertMessage("Pagination offset value assertion error: "), 
-                        ((NumberLiteralPaginationValueSegment) actual.getOffset().get()).getValue(), is(expected.getOffset()));
-            }
-            if (actual.getRowCount().isPresent()) {
-                assertThat(assertMessage.getFullAssertMessage("Pagination row count value assertion error: "),
-                        ((NumberLiteralPaginationValueSegment) actual.getRowCount().get()).getValue(), is(expected.getRowCount()));
-            }
+            assertThat(assertMessage.getFullAssertMessage("Offset value assertion error: "), ((NumberLiteralPaginationValueSegment) actual).getValue(), is(expected.getValue()));
+        }
+    }
+    
+    /**
+     * Assert row count.
+     *
+     * @param actual actual row count
+     * @param expected expected row count
+     */
+    public void assertRowCount(final PaginationValueSegment actual, final ExpectedPaginationValue expected) {
+        if (null == actual) {
+            assertNull(assertMessage.getFullAssertMessage("Row count should not exist: "), expected);
+            return;
+        }
+        if (SQLCaseType.Placeholder == sqlCaseType) {
+            assertThat(assertMessage.getFullAssertMessage("Row count index assertion error: "),
+                    ((ParameterMarkerPaginationValueSegment) actual).getParameterIndex(), is(expected.getParameterIndex()));
+        } else {
+            assertThat(assertMessage.getFullAssertMessage("Row count value assertion error: "), ((NumberLiteralPaginationValueSegment) actual).getValue(), is(expected.getValue()));
         }
     }
 }

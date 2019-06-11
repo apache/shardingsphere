@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.merge.dql.pagination;
 
 import org.apache.shardingsphere.core.merge.MergedResult;
 import org.apache.shardingsphere.core.merge.dql.common.DecoratorMergedResult;
-import org.apache.shardingsphere.core.route.pagination.Pagination;
+import org.apache.shardingsphere.core.optimize.pagination.Pagination;
 
 import java.sql.SQLException;
 
@@ -43,12 +43,7 @@ public final class TopAndRowNumberDecoratorMergedResult extends DecoratorMergedR
     }
     
     private boolean skipOffset() throws SQLException {
-        int end;
-        if (null == pagination.getOffset()) {
-            end = 0;
-        } else {
-            end = pagination.getOffset().getSegment().isBoundOpened() ? pagination.getOffsetValue() - 1 : pagination.getOffsetValue();
-        }
+        int end = pagination.getActualOffset();
         for (int i = 0; i < end; i++) {
             if (!getMergedResult().next()) {
                 return true;
@@ -63,9 +58,9 @@ public final class TopAndRowNumberDecoratorMergedResult extends DecoratorMergedR
         if (skipAll) {
             return false;
         }
-        if (pagination.getRowCountValue() < 0) {
+        if (!pagination.getActualRowCount().isPresent()) {
             return getMergedResult().next();
         }
-        return rowNumber++ <= pagination.getRowCountValue() && getMergedResult().next();
+        return rowNumber++ <= pagination.getActualRowCount().get() && getMergedResult().next();
     }
 }

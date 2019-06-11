@@ -28,6 +28,7 @@ import org.apache.shardingsphere.core.parse.entry.ShardingSQLParseEntry;
 import org.apache.shardingsphere.core.parse.integrate.asserts.ParserResultSetLoader;
 import org.apache.shardingsphere.core.parse.integrate.asserts.SQLStatementAssert;
 import org.apache.shardingsphere.core.parse.parser.SQLParserFactory;
+import org.apache.shardingsphere.spi.database.DatabaseTypes;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.SQLCasesLoader;
 import org.junit.Test;
@@ -62,7 +63,7 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
     @Test
     public void parsingSupportedSQL() throws Exception {
         String sql = sqlCasesLoader.getSupportedSQL(sqlCaseId, sqlCaseType, Collections.emptyList());
-        SQLParser sqlParser = SQLParserFactory.newInstance(databaseType, sql);
+        SQLParser sqlParser = SQLParserFactory.newInstance(DatabaseTypes.getTrunkDatabaseType(databaseType), sql);
         Method addErrorListener = sqlParser.getClass().getMethod("addErrorListener", ANTLRErrorListener.class);
         addErrorListener.invoke(sqlParser, new BaseErrorListener() {
             
@@ -77,11 +78,7 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
     @Test
     public void assertSupportedSQL() {
         String sql = sqlCasesLoader.getSupportedSQL(sqlCaseId, sqlCaseType, parserResultSetLoader.getParserResult(sqlCaseId).getParameters());
-        // TODO old parser has problem with here, should remove this after remove all old parser
-        if ("select_with_same_table_name_and_alias".equals(sqlCaseId)) {
-            return;
-        }
-        new SQLStatementAssert(new ShardingSQLParseEntry(databaseType, getShardingRule(), getShardingTableMetaData(), new ParsingResultCache())
-                .parse(sql, false), sqlCaseId, sqlCaseType, databaseType).assertSQLStatement();
+        new SQLStatementAssert(new ShardingSQLParseEntry(DatabaseTypes.getTrunkDatabaseType(databaseType), getShardingRule(), getShardingTableMetaData(), new ParsingResultCache())
+                .parse(sql, false), sqlCaseId, sqlCaseType).assertSQLStatement();
     }
 }

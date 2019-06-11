@@ -48,7 +48,6 @@ import org.apache.shardingsphere.core.rewrite.token.pojo.SelectItemPrefixToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SelectItemsToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.TableToken;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
-import org.apache.shardingsphere.core.route.pagination.Pagination;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
@@ -93,10 +92,10 @@ public final class ShardingSQLRewriter implements SQLRewriter {
             appendIndexPlaceholder(sqlBuilder, (IndexToken) sqlToken);
         } else if (sqlToken instanceof SelectItemsToken) {
             appendSelectItemsPlaceholder(sqlBuilder, (SelectItemsToken) sqlToken);
-        } else if (sqlToken instanceof RowCountToken) {
-            appendLimitRowCountPlaceholder(sqlBuilder, (RowCountToken) sqlToken);
         } else if (sqlToken instanceof OffsetToken) {
-            appendLimitOffsetPlaceholder(sqlBuilder, (OffsetToken) sqlToken);
+            appendOffsetPlaceholder(sqlBuilder, (OffsetToken) sqlToken);
+        } else if (sqlToken instanceof RowCountToken) {
+            appendRowCountPlaceholder(sqlBuilder, (RowCountToken) sqlToken);
         } else if (sqlToken instanceof OrderByToken) {
             appendOrderByPlaceholder(sqlBuilder);
         } else if (sqlToken instanceof AggregationDistinctToken) {
@@ -134,24 +133,12 @@ public final class ShardingSQLRewriter implements SQLRewriter {
         }
     }
     
-    private void appendLimitRowCountPlaceholder(final SQLBuilder sqlBuilder, final RowCountToken rowCountToken) {
-        SelectStatement selectStatement = (SelectStatement) sqlRouteResult.getSqlStatement();
-        sqlBuilder.appendPlaceholder(new LimitRowCountPlaceholder(getRowCount(rowCountToken, isRewrite(), selectStatement, sqlRouteResult.getPagination())));
+    private void appendOffsetPlaceholder(final SQLBuilder sqlBuilder, final OffsetToken offsetToken) {
+        sqlBuilder.appendPlaceholder(new LimitOffsetPlaceholder(offsetToken.getRevisedOffset()));
     }
     
-    private int getRowCount(final RowCountToken rowCountToken, final boolean isRewrite, final SelectStatement selectStatement, final Pagination pagination) {
-        if (!isRewrite) {
-            return rowCountToken.getRowCount();
-        }
-        return isMaxRowCount(selectStatement) ? Integer.MAX_VALUE : pagination.getRevisedRowCount();
-    }
-    
-    private boolean isMaxRowCount(final SelectStatement selectStatement) {
-        return (!selectStatement.getGroupByItems().isEmpty() || !selectStatement.getAggregationSelectItems().isEmpty()) && !selectStatement.isSameGroupByAndOrderByItems();
-    }
-    
-    private void appendLimitOffsetPlaceholder(final SQLBuilder sqlBuilder, final OffsetToken offsetToken) {
-        sqlBuilder.appendPlaceholder(new LimitOffsetPlaceholder(isRewrite() ? 0 : offsetToken.getOffset()));
+    private void appendRowCountPlaceholder(final SQLBuilder sqlBuilder, final RowCountToken rowCountToken) {
+        sqlBuilder.appendPlaceholder(new LimitRowCountPlaceholder(rowCountToken.getRevisedRowCount()));
     }
     
     private void appendOrderByPlaceholder(final SQLBuilder sqlBuilder) {

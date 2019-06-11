@@ -67,14 +67,12 @@ public final class SQLStatementAssert {
     
     private final AlterTableAssert alterTableAssert;
     
-    private final String databaseType;
-    
-    public SQLStatementAssert(final SQLStatement actual, final String sqlCaseId, final SQLCaseType sqlCaseType, final String databaseType) {
-        this(actual, sqlCaseId, sqlCaseType, SQLCasesLoader.getInstance(), ParserResultSetLoader.getInstance(), databaseType);
+    public SQLStatementAssert(final SQLStatement actual, final String sqlCaseId, final SQLCaseType sqlCaseType) {
+        this(actual, sqlCaseId, sqlCaseType, SQLCasesLoader.getInstance(), ParserResultSetLoader.getInstance());
     }
     
     public SQLStatementAssert(final SQLStatement actual, final String sqlCaseId, 
-                              final SQLCaseType sqlCaseType, final SQLCasesLoader sqlLoader, final ParserResultSetLoader parserResultSetLoader, final String databaseType) {
+                              final SQLCaseType sqlCaseType, final SQLCasesLoader sqlLoader, final ParserResultSetLoader parserResultSetLoader) {
         SQLStatementAssertMessage assertMessage = new SQLStatementAssertMessage(sqlLoader, parserResultSetLoader, sqlCaseId, sqlCaseType);
         this.actual = actual;
         expected = parserResultSetLoader.getParserResult(sqlCaseId);
@@ -87,7 +85,6 @@ public final class SQLStatementAssert {
         paginationAssert = new PaginationAssert(sqlCaseType, assertMessage);
         metaAssert = new TableMetaDataAssert(assertMessage);
         alterTableAssert = new AlterTableAssert(assertMessage);
-        this.databaseType = databaseType;
     }
     
     /**
@@ -95,10 +92,8 @@ public final class SQLStatementAssert {
      */
     public void assertSQLStatement() {
         tableAssert.assertTables(actual.getTables(), expected.getTables());
-        conditionAssert.assertConditions(actual.getRouteCondition(), expected.getOrCondition());
-        if ("MySQL".equals(databaseType)) {
-            conditionAssert.assertConditions(actual.getEncryptCondition(), expected.getEncryptCondition());
-        }
+        conditionAssert.assertConditions(actual.getShardingConditions(), expected.getShardingConditions());
+        conditionAssert.assertConditions(actual.getEncryptConditions(), expected.getEncryptConditions());
         indexAssert.assertParametersIndex(actual.getParametersIndex(), expected.getParameters().size());
         if (actual instanceof SelectStatement) {
             assertSelectStatement((SelectStatement) actual);
@@ -118,7 +113,8 @@ public final class SQLStatementAssert {
         itemAssert.assertItems(actual.getItems(), expected.getSelectItems());
         groupByAssert.assertGroupByItems(actual.getGroupByItems(), expected.getGroupByColumns());
         orderByAssert.assertOrderByItems(actual.getOrderByItems(), expected.getOrderByColumns());
-        paginationAssert.assertPagination(actual.getPagination(), expected.getPagination());
+        paginationAssert.assertOffset(actual.getOffset(), expected.getOffset());
+        paginationAssert.assertRowCount(actual.getRowCount(), expected.getRowCount());
     }
     
     private void assertCreateTableStatement(final CreateTableStatement actual) {

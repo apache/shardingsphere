@@ -36,7 +36,7 @@ import java.util.List;
 public final class InsertSetAddGeneratedKeyTokenGenerator implements OptionalSQLTokenGenerator<ShardingRule> {
     
     @Override
-    public Optional<InsertSetAddGeneratedKeyToken> generateSQLToken(final SQLStatement sqlStatement, final ShardingRule shardingRule) {
+    public Optional<InsertSetAddGeneratedKeyToken> generateSQLToken(final SQLStatement sqlStatement, final List<Object> parameters, final ShardingRule shardingRule) {
         Optional<SetAssignmentsSegment> setAssignmentsSegment = sqlStatement.findSQLSegment(SetAssignmentsSegment.class);
         if (!(sqlStatement instanceof InsertStatement && setAssignmentsSegment.isPresent())) {
             return Optional.absent();

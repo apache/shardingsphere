@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.parse.sql.statement;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.constant.SQLType;
-import org.apache.shardingsphere.core.parse.sql.context.condition.ParseCondition;
+import org.apache.shardingsphere.core.parse.sql.context.condition.Conditions;
 import org.apache.shardingsphere.core.parse.sql.context.table.Tables;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 
@@ -54,18 +54,18 @@ public interface SQLStatement {
     Tables getTables();
     
     /**
-     * Get route conditions.
+     * Get sharding conditions.
      *
-     * @return parse condition
+     * @return conditions
      */
-    ParseCondition getRouteCondition();
+    Conditions getShardingConditions();
     
     /**
      * Get encrypt conditions.
      *
-     * @return parse condition
+     * @return conditions
      */
-    ParseCondition getEncryptCondition();
+    Conditions getEncryptConditions();
     
     /**
      * Get index of parameters.

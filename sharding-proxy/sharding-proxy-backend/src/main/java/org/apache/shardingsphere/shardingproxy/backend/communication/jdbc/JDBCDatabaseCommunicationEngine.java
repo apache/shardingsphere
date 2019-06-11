@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.constant.SQLType;
 import org.apache.shardingsphere.core.merge.MergeEngineFactory;
 import org.apache.shardingsphere.core.merge.MergedResult;
@@ -40,6 +39,7 @@ import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateRes
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSchema;
+import org.apache.shardingsphere.spi.database.DatabaseType;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import java.sql.SQLException;
@@ -58,13 +58,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicationEngine {
     
+    private final DatabaseType databaseType = LogicSchemas.getInstance().getDatabaseType();
+    
     private final LogicSchema logicSchema;
     
     private final String sql;
     
     private final JDBCExecuteEngine executeEngine;
-    
-    private final DatabaseType databaseType = LogicSchemas.getInstance().getDatabaseType();
     
     private BackendResponse response;
     
@@ -107,8 +107,8 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
             }
             return response;
         }
-        mergedResult = MergeEngineFactory.newInstance(
-            databaseType, logicSchema.getShardingRule(), routeResult, logicSchema.getMetaData().getTable(), ((QueryResponse) response).getQueryResults()).merge();
+        mergedResult = MergeEngineFactory.newInstance(databaseType, 
+                logicSchema.getShardingRule(), routeResult, logicSchema.getMetaData().getTable(), ((QueryResponse) response).getQueryResults()).merge();
         if (mergedResult instanceof ShowTablesMergedResult) {
             ((ShowTablesMergedResult) mergedResult).resetColumnLabel(logicSchema.getName());
         }

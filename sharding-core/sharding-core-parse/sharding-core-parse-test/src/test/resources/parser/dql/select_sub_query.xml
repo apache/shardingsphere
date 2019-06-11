@@ -24,14 +24,14 @@
         <tokens>
             <table-token start-index="33" table-name="t_order" length="7" />
         </tokens>
-        <or-condition>
+        <sharding-conditions>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order" operator="IN">
                     <value index="0" literal="1" type="int" />
                     <value index="1" literal="2" type="int" />
                 </condition>
             </and-condition>
-        </or-condition>
+        </sharding-conditions>
     </parser-result>
     
     <!-- TODO cannot pass,add later 

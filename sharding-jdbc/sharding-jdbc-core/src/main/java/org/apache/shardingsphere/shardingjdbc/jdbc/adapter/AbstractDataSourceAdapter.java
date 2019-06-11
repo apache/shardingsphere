@@ -20,8 +20,9 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.adapter;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
+import org.apache.shardingsphere.spi.database.DatabaseType;
+import org.apache.shardingsphere.spi.database.DatabaseTypes;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 
 import javax.sql.DataSource;
@@ -62,7 +63,7 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
         DatabaseType result = null;
         for (DataSource each : dataSources) {
             DatabaseType databaseType = getDatabaseType(each);
-            Preconditions.checkState(null == result || result.equals(databaseType), String.format("Database type inconsistent with '%s' and '%s'", result, databaseType));
+            Preconditions.checkState(null == result || result == databaseType, String.format("Database type inconsistent with '%s' and '%s'", result, databaseType));
             result = databaseType;
         }
         return result;
@@ -73,7 +74,7 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
             return ((AbstractDataSourceAdapter) dataSource).databaseType;
         }
         try (Connection connection = dataSource.getConnection()) {
-            return DatabaseType.valueFrom(connection.getMetaData().getDatabaseProductName());
+            return DatabaseTypes.getActualDatabaseTypeByProductName(connection.getMetaData().getDatabaseProductName());
         }
     }
     

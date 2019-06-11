@@ -15,27 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.integrate.jaxb.condition;
+package org.apache.shardingsphere.core.spi.database;
 
-import lombok.Getter;
-import lombok.Setter;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import java.util.LinkedList;
-import java.util.List;
+import org.apache.shardingsphere.core.metadata.datasource.dialect.OracleDataSourceMetaData;
+import org.apache.shardingsphere.spi.database.DataSourceMetaData;
+import org.apache.shardingsphere.spi.database.DatabaseType;
 
 /**
- * Expected and conditions.
+ * Database type of Oracle.
  *
- * @author maxiaoguang
+ * @author zhangliang
  */
-@Getter
-@Setter
-@XmlAccessorType(XmlAccessType.FIELD)
-public final class ExpectedOrCondition {
+public final class OracleDatabaseType implements DatabaseType {
     
-    @XmlElement(name = "and-condition")
-    private List<ExpectedAndCondition> andConditions = new LinkedList<>();
+    @Override
+    public String getName() {
+        return "Oracle";
+    }
+    
+    @Override
+    public String getProductName() {
+        return "Oracle";
+    }
+    
+    @Override
+    public DataSourceMetaData getDataSourceMetaData(final String url) {
+        return new OracleDataSourceMetaData(url);
+    }
 }

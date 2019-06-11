@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
-import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
@@ -29,6 +29,8 @@ import org.apache.shardingsphere.core.parse.entry.EncryptSQLParseEntry;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
+import org.apache.shardingsphere.spi.database.DatabaseType;
+import org.apache.shardingsphere.spi.database.DatabaseTypes;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
@@ -42,6 +44,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.logging.Logger;
 
 /**
@@ -60,15 +63,18 @@ public class EncryptDataSource extends AbstractUnsupportedOperationDataSource im
     
     private final EncryptSQLParseEntry parseEngine;
     
+    private final ShardingProperties shardingProperties;
+    
     @Setter
     private PrintWriter logWriter = new PrintWriter(System.out);
-
+    
     @SneakyThrows
-    public EncryptDataSource(final DataSource dataSource, final EncryptRuleConfiguration encryptRuleConfiguration) {
+    public EncryptDataSource(final DataSource dataSource, final EncryptRuleConfiguration encryptRuleConfiguration, final Properties props) {
         this.dataSource = dataSource;
         databaseType = getDatabaseType();
         encryptRule = new EncryptRule(encryptRuleConfiguration);
-        parseEngine = new EncryptSQLParseEntry(databaseType.name(), encryptRule, createEncryptTableMetaData());
+        shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
+        parseEngine = new EncryptSQLParseEntry(databaseType, encryptRule, createEncryptTableMetaData());
     }
     
     @SneakyThrows
@@ -115,14 +121,14 @@ public class EncryptDataSource extends AbstractUnsupportedOperationDataSource im
     
     private DatabaseType getDatabaseType() throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
-            return DatabaseType.valueFrom(connection.getMetaData().getDatabaseProductName());
+            return DatabaseTypes.getActualDatabaseTypeByProductName(connection.getMetaData().getDatabaseProductName());
         }
     }
-
+    
     @Override
     @SneakyThrows
     public EncryptConnection getConnection() {
-        return new EncryptConnection(databaseType, dataSource.getConnection(), encryptRule, parseEngine);
+        return new EncryptConnection(databaseType, dataSource.getConnection(), encryptRule, parseEngine, shardingProperties);
     }
     
     @Override

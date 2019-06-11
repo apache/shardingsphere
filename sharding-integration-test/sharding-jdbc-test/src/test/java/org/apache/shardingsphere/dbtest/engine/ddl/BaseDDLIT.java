@@ -27,6 +27,7 @@ import org.apache.shardingsphere.dbtest.engine.SingleIT;
 import org.apache.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import org.apache.shardingsphere.dbtest.env.EnvironmentPath;
 import org.apache.shardingsphere.dbtest.env.dataset.DataSetEnvironmentManager;
+import org.apache.shardingsphere.spi.database.DatabaseType;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -56,7 +57,7 @@ public abstract class BaseDDLIT extends SingleIT {
     
     private final DDLIntegrateTestCaseAssertion assertion;
     
-    private final String databaseType;
+    private final DatabaseType databaseType;
     
     public BaseDDLIT(final String sqlCaseId, final String path, final DDLIntegrateTestCaseAssertion assertion, final String shardingRuleType,
                      final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException, SQLException, ParseException {
@@ -78,7 +79,7 @@ public abstract class BaseDDLIT extends SingleIT {
     @Before
     public void initTables() throws SQLException, ParseException, IOException, JAXBException {
         if (getDatabaseTypeEnvironment().isEnabled()) {
-            if ("H2".equals(getDatabaseTypeEnvironment().getDatabaseType())) {
+            if ("H2".equals(getDatabaseTypeEnvironment().getDatabaseType().getName())) {
                 dropTables();
             }
             createTables();
@@ -137,9 +138,9 @@ public abstract class BaseDDLIT extends SingleIT {
     private void assertColumnMetadata(final List<DataSetColumn> actual, final DataSetColumn expect) {
         for (DataSetColumn each : actual) {
             if (expect.getName().equals(each.getName())) {
-                if ("MySQL".equals(databaseType) && "integer".equals(expect.getType())) {
+                if ("MySQL".equals(databaseType.getName()) && "integer".equals(expect.getType())) {
                     assertThat(each.getType(), is("int"));
-                } else if ("PostgreSQL".equals(databaseType) && "integer".equals(expect.getType())) {
+                } else if ("PostgreSQL".equals(databaseType.getName()) && "integer".equals(expect.getType())) {
                     assertThat(each.getType(), is("int4"));
                 } else {
                     assertThat(each.getType(), is(expect.getType()));

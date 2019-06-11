@@ -22,6 +22,7 @@ import org.apache.shardingsphere.shardingproxy.frontend.context.FrontendContext;
 import org.apache.shardingsphere.shardingproxy.frontend.engine.AuthenticationEngine;
 import org.apache.shardingsphere.shardingproxy.frontend.engine.CommandExecuteEngine;
 import org.apache.shardingsphere.shardingproxy.transport.codec.DatabasePacketCodecEngine;
+import org.apache.shardingsphere.spi.database.DatabaseType;
 
 /**
  * Database protocol frontend engine.
@@ -35,7 +36,7 @@ public interface DatabaseProtocolFrontendEngine {
      * 
      * @return database type
      */
-    String getDatabaseType();
+    DatabaseType getDatabaseType();
     
     /**
      * Get frontend context.

@@ -18,9 +18,10 @@
 package org.apache.shardingsphere.core.metadata.datasource;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.spi.database.DataSourceMetaData;
+import org.apache.shardingsphere.spi.database.DatabaseType;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -49,7 +50,7 @@ public final class ShardingDataSourceMetaData {
     private Map<String, DataSourceMetaData> getDataSourceMetaDataMapForSharding(final Map<String, String> dataSourceURLs, final DatabaseType databaseType) {
         Map<String, DataSourceMetaData> result = new LinkedHashMap<>(dataSourceURLs.size(), 1);
         for (Entry<String, String> entry : dataSourceURLs.entrySet()) {
-            result.put(entry.getKey(), DataSourceMetaDataFactory.newInstance(databaseType, entry.getValue()));
+            result.put(entry.getKey(), databaseType.getDataSourceMetaData(entry.getValue()));
         }
         return result;
     }

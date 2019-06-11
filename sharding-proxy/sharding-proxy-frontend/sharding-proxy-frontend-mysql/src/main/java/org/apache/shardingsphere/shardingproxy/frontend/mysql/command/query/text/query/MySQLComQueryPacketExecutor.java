@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingproxy.frontend.mysql.command.query.text.query;
 
-import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorResponse;
@@ -40,6 +39,7 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.My
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.shardingproxy.transport.packet.DatabasePacket;
+import org.apache.shardingsphere.spi.database.DatabaseTypes;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -61,7 +61,7 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
     private int currentSequenceId;
     
     public MySQLComQueryPacketExecutor(final MySQLComQueryPacket comQueryPacket, final BackendConnection backendConnection) {
-        textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(DatabaseType.MySQL, comQueryPacket.getSql(), backendConnection);
+        textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), comQueryPacket.getSql(), backendConnection);
     }
     
     @Override

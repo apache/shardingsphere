@@ -23,7 +23,6 @@ import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.rownum.NumberLiteralRowNumberValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.rownum.ParameterMarkerRowNumberValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.rownum.RowNumberValueSegment;
@@ -60,7 +59,7 @@ public final class ShardingRowNumberPredicateFiller implements SQLSegmentFiller<
         Optional<String> rowNumberAlias = findRowNumberAlias(selectStatement);
         Collection<PredicateSegment> rowNumberPredicates = getRowNumberPredicates(sqlSegment, rowNumberAlias.orNull());
         if (!rowNumberPredicates.isEmpty()) {
-            fillLimit(selectStatement, rowNumberPredicates);
+            fillPagination(selectStatement, rowNumberPredicates);
         }
     }
     
@@ -97,29 +96,26 @@ public final class ShardingRowNumberPredicateFiller implements SQLSegmentFiller<
         return "<".equals(operator) || "<=".equals(operator) || ">".equals(operator) || ">=".equals(operator);
     }
     
-    private void fillLimit(final SelectStatement selectStatement, final Collection<PredicateSegment> rowNumberPredicates) {
-        RowNumberValueSegment rowCount = null;
-        RowNumberValueSegment offset = null;
+    private void fillPagination(final SelectStatement selectStatement, final Collection<PredicateSegment> rowNumberPredicates) {
         for (PredicateSegment each : rowNumberPredicates) {
             ExpressionSegment expression = ((PredicateCompareRightValue) each.getRightValue()).getExpression();
             switch (((PredicateCompareRightValue) each.getRightValue()).getOperator()) {
                 case ">":
-                    offset = createRowNumberValueSegment(expression, false);
+                    selectStatement.setOffset(createRowNumberValueSegment(expression, false));
                     break;
                 case ">=":
-                    offset = createRowNumberValueSegment(expression, true);
+                    selectStatement.setOffset(createRowNumberValueSegment(expression, true));
                     break;
                 case "<":
-                    rowCount = createRowNumberValueSegment(expression, false);
+                    selectStatement.setRowCount(createRowNumberValueSegment(expression, false));
                     break;
                 case "<=":
-                    rowCount = createRowNumberValueSegment(expression, true);
+                    selectStatement.setRowCount(createRowNumberValueSegment(expression, true));
                     break;
                 default:
                     break;
             }
         }
-        selectStatement.setPagination(new PaginationSegment(-1, -1, offset, rowCount));
     }
     
     private RowNumberValueSegment createRowNumberValueSegment(final ExpressionSegment expression, final boolean boundOpened) {

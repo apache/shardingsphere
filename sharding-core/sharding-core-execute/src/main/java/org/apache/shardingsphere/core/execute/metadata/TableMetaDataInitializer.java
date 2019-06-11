@@ -20,11 +20,11 @@ package org.apache.shardingsphere.core.execute.metadata;
 import com.google.common.base.Optional;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.execute.ShardingExecuteEngine;
-import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
+import org.apache.shardingsphere.spi.database.DataSourceMetaData;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
