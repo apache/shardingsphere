@@ -18,31 +18,9 @@
 package org.apache.shardingsphere.spi.database;
 
 /**
- * Data source meta data.
+ * Memorized data source meta data.
  *
- * @author panjuan
  * @author zhangliang
  */
-public interface DataSourceMetaData {
-    
-    /**
-     * Get host name.
-     * 
-     * @return host name
-     */
-    String getHostName();
-    
-    /**
-     * Get port.
-     * 
-     * @return port
-     */
-    int getPort();
-    
-    /**
-     * Get schema name.
-     * 
-     * @return schema name
-     */
-    String getSchemaName();
+public interface MemorizedDataSourceMetaData extends DataSourceMetaData {
 }

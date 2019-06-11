@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.metadata.datasource.dialect;
 
 import lombok.Getter;
-import org.apache.shardingsphere.spi.database.DataSourceMetaData;
+import org.apache.shardingsphere.spi.database.MemorizedDataSourceMetaData;
 import org.apache.shardingsphere.spi.database.UnrecognizedDatabaseURLException;
 
 import java.util.regex.Matcher;
@@ -30,7 +30,7 @@ import java.util.regex.Pattern;
  * @author panjuan
  */
 @Getter
-public final class H2DataSourceMetaData implements DataSourceMetaData {
+public final class H2DataSourceMetaData implements MemorizedDataSourceMetaData {
     
     private static final int DEFAULT_PORT = -1;
     
@@ -47,13 +47,8 @@ public final class H2DataSourceMetaData implements DataSourceMetaData {
         if (!matcher.find()) {
             throw new UnrecognizedDatabaseURLException(url, pattern.pattern());
         }
-        hostName = matcher.group(1);
+        hostName = "";
         port = DEFAULT_PORT;
         schemaName = matcher.group(2);
-    }
-    
-    @Override
-    public boolean isInSameDatabaseInstance(final DataSourceMetaData dataSourceMetaData) {
-        return hostName.equals(dataSourceMetaData.getHostName()) && port == dataSourceMetaData.getPort() && schemaName.equals(dataSourceMetaData.getSchemaName());
     }
 }

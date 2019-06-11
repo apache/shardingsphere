@@ -52,9 +52,4 @@ public final class MySQLDataSourceMetaData implements DataSourceMetaData {
         port = Strings.isNullOrEmpty(matcher.group(3)) ? DEFAULT_PORT : Integer.valueOf(matcher.group(3));
         schemaName = matcher.group(4);
     }
-    
-    @Override
-    public boolean isInSameDatabaseInstance(final DataSourceMetaData dataSourceMetaData) {
-        return hostName.equals(dataSourceMetaData.getHostName()) && port == dataSourceMetaData.getPort();
-    }
 }
