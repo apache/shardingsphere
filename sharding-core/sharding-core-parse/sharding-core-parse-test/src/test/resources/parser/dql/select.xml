@@ -621,8 +621,8 @@
         <select-items>
             <aggregation-select-items>
                 <aggregation-select-item type="AVG" inner-expression="(DISTINCT order_id)" distinct-column="order_id" alias="AGGREGATION_DISTINCT_DERIVED_0">
-                    <derived-column type="COUNT" inner-expression="(DISTINCT order_id)" alias="AVG_DERIVED_COUNT_0" />
-                    <derived-column type="SUM" inner-expression="(DISTINCT order_id)" alias="AVG_DERIVED_SUM_0" />
+                    <derived-column type="COUNT" inner-expression="(DISTINCT order_id)" distinct-column="order_id" alias="AVG_DERIVED_COUNT_0" />
+                    <derived-column type="SUM" inner-expression="(DISTINCT order_id)" distinct-column="order_id" alias="AVG_DERIVED_SUM_0" />
                 </aggregation-select-item>
             </aggregation-select-items>
         </select-items>
