@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.database;
+package org.apache.shardingsphere.core.database;
 
 /**
  * Unrecognized database URL exception.
@@ -23,6 +23,8 @@ package org.apache.shardingsphere.spi.database;
  * @author zhangliang
  */
 public final class UnrecognizedDatabaseURLException extends RuntimeException {
+    
+    private static final long serialVersionUID = -1551117178863766353L;
     
     public UnrecognizedDatabaseURLException(final String url, final String pattern) {
         super(String.format("The URL: '%s' is not recognized. Please refer to this pattern: '%s'.", url, pattern));

@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.core.parse.rule.fixture;
 
 import org.antlr.v4.runtime.Lexer;
+import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.parse.api.SQLParser;
 import org.apache.shardingsphere.core.parse.spi.SQLParserEntry;
 import org.apache.shardingsphere.spi.database.DatabaseType;
-import org.apache.shardingsphere.spi.database.DatabaseTypes;
 
 public final class TestParserEntry implements SQLParserEntry {
     

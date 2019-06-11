@@ -15,7 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.database;
+package org.apache.shardingsphere.core.database;
+
+import org.apache.shardingsphere.spi.database.BranchDatabaseType;
+import org.apache.shardingsphere.spi.database.DatabaseType;
 
 import java.util.Collection;
 import java.util.HashMap;

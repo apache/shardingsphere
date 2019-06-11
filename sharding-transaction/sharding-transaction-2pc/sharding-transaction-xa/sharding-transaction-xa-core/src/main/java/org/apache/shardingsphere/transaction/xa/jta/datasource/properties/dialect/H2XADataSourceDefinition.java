@@ -19,8 +19,8 @@ package org.apache.shardingsphere.transaction.xa.jta.datasource.properties.diale
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.config.DatabaseAccessConfiguration;
+import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.spi.database.DatabaseType;
-import org.apache.shardingsphere.spi.database.DatabaseTypes;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition;
 
 import java.util.Collection;

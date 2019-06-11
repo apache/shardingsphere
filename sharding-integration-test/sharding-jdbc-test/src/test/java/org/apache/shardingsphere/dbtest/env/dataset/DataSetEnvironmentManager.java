@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.dbtest.env.dataset;
 
 import com.google.common.base.Joiner;
+import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.core.util.InlineExpressionParser;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.SQLValue;
@@ -27,7 +28,6 @@ import org.apache.shardingsphere.dbtest.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.dbtest.cases.dataset.metadata.DataSetMetadata;
 import org.apache.shardingsphere.dbtest.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.spi.database.DatabaseType;
-import org.apache.shardingsphere.spi.database.DatabaseTypes;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBContext;

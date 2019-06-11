@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recognizer.impl;
 
+import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recognizer.spi.JDBCDriverURLRecognizer;
 import org.apache.shardingsphere.spi.database.DatabaseType;
-import org.apache.shardingsphere.spi.database.DatabaseTypes;
 
 import java.util.Collection;
 import java.util.Collections;

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.dbtest.engine.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.constant.SQLType;
+import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.parse.rule.registry.MasterSlaveParseRuleRegistry;
 import org.apache.shardingsphere.dbtest.cases.assertion.IntegrateTestCasesLoader;
@@ -28,7 +29,6 @@ import org.apache.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCaseAs
 import org.apache.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import org.apache.shardingsphere.dbtest.env.IntegrateTestEnvironment;
 import org.apache.shardingsphere.spi.database.DatabaseType;
-import org.apache.shardingsphere.spi.database.DatabaseTypes;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.SQLCasesLoader;
 

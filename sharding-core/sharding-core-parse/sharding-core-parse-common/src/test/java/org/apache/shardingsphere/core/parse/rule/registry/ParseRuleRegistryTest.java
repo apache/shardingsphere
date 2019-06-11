@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.core.parse.rule.registry;
 
+import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.parse.sql.segment.ddl.column.ColumnDefinitionSegment;
-import org.apache.shardingsphere.spi.database.DatabaseTypes;
 import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;

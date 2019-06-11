@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.exception;
+package org.apache.shardingsphere.core.config;
 
 /**
  * Sharding rule exception.

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.metadata.datasource.dialect;
 
-import org.apache.shardingsphere.spi.database.UnrecognizedDatabaseURLException;
+import org.apache.shardingsphere.core.database.UnrecognizedDatabaseURLException;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
