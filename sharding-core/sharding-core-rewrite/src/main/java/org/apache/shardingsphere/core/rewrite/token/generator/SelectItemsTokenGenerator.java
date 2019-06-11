@@ -21,6 +21,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.DerivedCommonSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
@@ -70,6 +71,9 @@ public final class SelectItemsTokenGenerator implements OptionalSQLTokenGenerato
     
     private String getDerivedItemText(final SelectItem selectItem) {
         Preconditions.checkState(selectItem.getAlias().isPresent());
+        if (selectItem instanceof AggregationDistinctSelectItem) {
+            return ((AggregationDistinctSelectItem) selectItem).getDistinctColumnName() + " AS " + selectItem.getAlias().get() + " ";
+        }
         return selectItem.getExpression() + " AS " + selectItem.getAlias().get() + " ";
     }
 }

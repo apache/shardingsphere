@@ -925,13 +925,14 @@ public final class ShardingSQLRewriterTest {
     @Test
     public void assertSelectInWithAggregationDistinct() {
         selectStatement.getSqlSegments().add(new TableSegment(49, 55, "table_z"));
-        selectStatement.getSqlSegments().add(new SelectItemsSegment(7, 44, false));
         AggregationDistinctSelectItemSegment selectItemSegment1 = new AggregationDistinctSelectItemSegment(7, 24, "DISTINCT id", AggregationType.COUNT, 12, "id");
         selectItemSegment1.setAlias("a");
         AggregationDistinctSelectItemSegment selectItemSegment2 = new AggregationDistinctSelectItemSegment(27, 42, "DISTINCT id", AggregationType.SUM, 30, "id");
         selectItemSegment2.setAlias("b");
-        selectStatement.getSqlSegments().add(selectItemSegment1);
-        selectStatement.getSqlSegments().add(selectItemSegment2);
+        SelectItemsSegment selectItemsSegment = new SelectItemsSegment(7, 42, true);
+        selectItemsSegment.getSelectItems().add(selectItemSegment1);
+        selectItemsSegment.getSelectItems().add(selectItemSegment2);
+        selectStatement.getSqlSegments().add(selectItemsSegment);
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setRoutingResult(new RoutingResult());
         routeResult.setOptimizeResult(new OptimizeResult(new ShardingConditions(Collections.<ShardingCondition>emptyList())));
