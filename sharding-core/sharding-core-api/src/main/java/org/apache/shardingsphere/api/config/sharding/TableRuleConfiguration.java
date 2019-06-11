@@ -44,6 +44,12 @@ public final class TableRuleConfiguration {
     private KeyGeneratorConfiguration keyGeneratorConfig;
     
     private String logicIndex;
+
+    /**
+     * config to check actual data node exist or not
+     * if its true then system check actual data node is configured
+     */
+    private Boolean checkActualDataNode;
     
     public TableRuleConfiguration(final String logicTable) {
         this(logicTable, null);

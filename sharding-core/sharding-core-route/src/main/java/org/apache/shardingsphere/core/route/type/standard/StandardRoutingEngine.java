@@ -208,6 +208,9 @@ public final class StandardRoutingEngine implements RoutingEngine {
     }
     
     private Collection<DataNode> removeNonExistNodes(final Collection<DataNode> routedDataNodes, final TableRule tableRule) {
+        if(!tableRule.getCheckActualDataNode()){
+            return routedDataNodes;
+        }
         Collection<DataNode> result = new LinkedList<>();
         Set<DataNode> actualDataNodeSet = new HashSet<>(tableRule.getActualDataNodes());
         for (DataNode each : routedDataNodes) {
