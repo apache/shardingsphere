@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.transaction.xa.jta.datasource.properties;
 
 import org.apache.shardingsphere.core.config.DatabaseAccessConfiguration;
-import org.apache.shardingsphere.spi.database.DatabaseType;
+import org.apache.shardingsphere.spi.DatabaseTypeAwareSPI;
 
 import java.util.Collection;
 import java.util.Properties;
@@ -28,14 +28,7 @@ import java.util.Properties;
  *
  * @author zhangliang
  */
-public interface XADataSourceDefinition {
-    
-    /**
-     * Get database type.
-     * 
-     * @return database type
-     */
-    DatabaseType getDatabaseType();
+public interface XADataSourceDefinition extends DatabaseTypeAwareSPI {
     
     /**
      * Get XA driver class names.
