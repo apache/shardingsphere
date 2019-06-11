@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.shardingproxy.frontend.postgresql;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.frontend.context.FrontendContext;
 import org.apache.shardingsphere.shardingproxy.frontend.postgresql.auth.PostgreSQLAuthenticationEngine;
@@ -27,7 +26,6 @@ import org.apache.shardingsphere.shardingproxy.frontend.spi.DatabaseProtocolFron
 import org.apache.shardingsphere.shardingproxy.transport.codec.DatabasePacketCodecEngine;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.codec.PostgreSQLPacketCodecEngine;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.BinaryStatementRegistry;
-import org.apache.shardingsphere.spi.database.DatabaseType;
 
 /**
  * Frontend engine for PostgreSQL protocol.
@@ -47,8 +45,8 @@ public final class PostgreSQLProtocolFrontendEngine implements DatabaseProtocolF
     private final DatabasePacketCodecEngine codecEngine = new PostgreSQLPacketCodecEngine();
     
     @Override
-    public DatabaseType getDatabaseType() {
-        return DatabaseTypes.getActualDatabaseType("PostgreSQL");
+    public String getDatabaseType() {
+        return "PostgreSQL";
     }
     
     @Override
