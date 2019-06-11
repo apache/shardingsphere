@@ -18,56 +18,45 @@
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recognizer;
 
 import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.core.spi.database.H2DatabaseType;
-import org.apache.shardingsphere.core.spi.database.MySQLDatabaseType;
-import org.apache.shardingsphere.core.spi.database.OracleDatabaseType;
-import org.apache.shardingsphere.core.spi.database.PostgreSQLDatabaseType;
-import org.apache.shardingsphere.core.spi.database.SQLServerDatabaseType;
+import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recognizer.impl.H2Recognizer;
+import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recognizer.impl.MySQLRecognizer;
+import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recognizer.impl.OracleRecognizer;
+import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recognizer.impl.PostgreSQLRecognizer;
+import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recognizer.impl.SQLServerRecognizer;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class JDBCDriverURLRecognizerEngineTest {
     
     @Test
-    public void assertGetDriverClassName() {
-        assertThat(JDBCDriverURLRecognizerEngine.getDriverClassName("jdbc:h2:xxx"), is("org.h2.Driver"));
+    public void assertGetJDBCDriverURLRecognizerForMySQL() {
+        assertThat(JDBCDriverURLRecognizerEngine.getJDBCDriverURLRecognizer("jdbc:mysql:xxx"), instanceOf(MySQLRecognizer.class));
+    }
+    
+    @Test
+    public void assertGetJDBCDriverURLRecognizerForPostgreSQL() {
+        assertThat(JDBCDriverURLRecognizerEngine.getJDBCDriverURLRecognizer("jdbc:postgresql:xxx"), instanceOf(PostgreSQLRecognizer.class));
+    }
+    
+    @Test
+    public void assertGetJDBCDriverURLRecognizerForOracle() {
+        assertThat(JDBCDriverURLRecognizerEngine.getJDBCDriverURLRecognizer("jdbc:oracle:xxx"), instanceOf(OracleRecognizer.class));
+    }
+    
+    @Test
+    public void assertGetJDBCDriverURLRecognizerForSQLServer() {
+        assertThat(JDBCDriverURLRecognizerEngine.getJDBCDriverURLRecognizer("jdbc:sqlserver:xxx"), instanceOf(SQLServerRecognizer.class));
+    }
+    
+    @Test
+    public void assertGetJDBCDriverURLRecognizerForH2() {
+        assertThat(JDBCDriverURLRecognizerEngine.getJDBCDriverURLRecognizer("jdbc:h2:xxx"), instanceOf(H2Recognizer.class));
     }
     
     @Test(expected = ShardingException.class)
-    public void assertGetDriverClassNameFailure() {
-        JDBCDriverURLRecognizerEngine.getDriverClassName("xxx");
-    }
-    
-    @Test
-    public void assertGetDatabaseTypeForMySQL() {
-        assertThat(JDBCDriverURLRecognizerEngine.getDatabaseType("jdbc:mysql:xxx"), instanceOf(MySQLDatabaseType.class));
-    }
-    
-    @Test
-    public void assertGetDatabaseTypeForPostgreSQL() {
-        assertThat(JDBCDriverURLRecognizerEngine.getDatabaseType("jdbc:postgresql:xxx"), instanceOf(PostgreSQLDatabaseType.class));
-    }
-    
-    @Test
-    public void assertGetDatabaseTypeForOracle() {
-        assertThat(JDBCDriverURLRecognizerEngine.getDatabaseType("jdbc:oracle:xxx"), instanceOf(OracleDatabaseType.class));
-    }
-    
-    @Test
-    public void assertGetDatabaseTypeForSQLServer() {
-        assertThat(JDBCDriverURLRecognizerEngine.getDatabaseType("jdbc:sqlserver:xxx"), instanceOf(SQLServerDatabaseType.class));
-    }
-    
-    @Test
-    public void assertGetDatabaseTypeForH2() {
-        assertThat(JDBCDriverURLRecognizerEngine.getDatabaseType("jdbc:h2:xxx"), instanceOf(H2DatabaseType.class));
-    }
-    
-    @Test(expected = ShardingException.class)
-    public void assertGetDatabaseTypeFailure() {
-        JDBCDriverURLRecognizerEngine.getDatabaseType("xxx");
+    public void assertGetJDBCDriverURLRecognizerFailure() {
+        JDBCDriverURLRecognizerEngine.getJDBCDriverURLRecognizer("xxx");
     }
 }
