@@ -64,7 +64,6 @@ public final class ShardingDataSourceFactoryTest {
         when(resultSet.next()).thenReturn(false);
         when(dataSource.getConnection()).thenReturn(connection);
         when(connection.getMetaData()).thenReturn(databaseMetaData);
-        when(databaseMetaData.getDatabaseProductName()).thenReturn("H2");
         when(connection.createStatement()).thenReturn(statement);
         when(statement.executeQuery(Mockito.anyString())).thenReturn(resultSet);
         when(statement.getConnection()).thenReturn(connection);

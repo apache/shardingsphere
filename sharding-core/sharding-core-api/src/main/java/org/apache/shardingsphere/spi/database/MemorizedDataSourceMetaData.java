@@ -18,24 +18,9 @@
 package org.apache.shardingsphere.spi.database;
 
 /**
- * Database type.
+ * Memorized data source meta data.
  *
  * @author zhangliang
  */
-public interface DatabaseType {
-    
-    /**
-     * Get database name.
-     * 
-     * @return database name
-     */
-    String getName();
-    
-    /**
-     * Get data source meta data.
-     * 
-     * @param url data source URL
-     * @return data source meta data
-     */
-    DataSourceMetaData getDataSourceMetaData(String url);
+public interface MemorizedDataSourceMetaData extends DataSourceMetaData {
 }

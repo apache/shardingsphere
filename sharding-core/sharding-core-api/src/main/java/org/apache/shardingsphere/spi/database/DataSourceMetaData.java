@@ -45,12 +45,4 @@ public interface DataSourceMetaData {
      * @return schema name
      */
     String getSchemaName();
-    
-    /**
-     * Judge whether two of data sources are in the same database instance.
-     *
-     * @param dataSourceMetaData data source meta data
-     * @return data sources are in the same database instance or not
-     */
-    boolean isInSameDatabaseInstance(DataSourceMetaData dataSourceMetaData);
 }

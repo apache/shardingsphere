@@ -22,6 +22,7 @@ import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.spi.database.DataSourceMetaData;
 import org.apache.shardingsphere.spi.database.DatabaseType;
+import org.apache.shardingsphere.spi.database.MemorizedDataSourceMetaData;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -90,12 +91,18 @@ public final class ShardingDataSourceMetaData {
     }
     
     private boolean isExisted(final String dataSourceName, final Collection<String> existedDataSourceNames) {
+        DataSourceMetaData sample = dataSourceMetaDataMap.get(dataSourceName);
         for (String each : existedDataSourceNames) {
-            if (dataSourceMetaDataMap.get(each).isInSameDatabaseInstance(dataSourceMetaDataMap.get(dataSourceName))) {
+            if (isInSameDatabaseInstance(sample, dataSourceMetaDataMap.get(each))) {
                 return true;
             }
         }
         return false;
+    }
+    
+    private boolean isInSameDatabaseInstance(final DataSourceMetaData sample, final DataSourceMetaData target) {
+        return sample instanceof MemorizedDataSourceMetaData
+                ? target.getSchemaName().equals(sample.getSchemaName()) : target.getHostName().equals(sample.getHostName()) && target.getPort() == sample.getPort();
     }
     
     /**

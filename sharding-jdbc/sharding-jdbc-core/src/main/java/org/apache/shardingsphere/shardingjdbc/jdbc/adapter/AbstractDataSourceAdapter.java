@@ -74,7 +74,7 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
             return ((AbstractDataSourceAdapter) dataSource).databaseType;
         }
         try (Connection connection = dataSource.getConnection()) {
-            return DatabaseTypes.getActualDatabaseTypeByProductName(connection.getMetaData().getDatabaseProductName());
+            return DatabaseTypes.getDatabaseTypeByURL(connection.getMetaData().getURL());
         }
     }
     

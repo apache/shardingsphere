@@ -82,7 +82,7 @@ public final class DataSetEnvironmentManager {
             }
             try (Connection connection = dataSourceMap.get(dataNode.getDataSourceName()).getConnection()) {
                 String insertSQL = generateInsertSQL(generateTableName(dataNode.getTableName(), 
-                        DatabaseTypes.getActualDatabaseTypeByProductName(connection.getMetaData().getDatabaseProductName())), dataSetMetadata.getColumns());
+                        DatabaseTypes.getDatabaseTypeByURL(connection.getMetaData().getURL())), dataSetMetadata.getColumns());
                 executeBatch(connection, insertSQL, sqlValueGroups);
             }
         }
@@ -140,7 +140,7 @@ public final class DataSetEnvironmentManager {
     private void clear(final String dataSourceName, final Collection<String> tableNames) throws SQLException {
         try (Connection connection = dataSourceMap.get(dataSourceName).getConnection()) {
             for (String each : tableNames) {
-                String tableName = generateTableName(each, DatabaseTypes.getActualDatabaseTypeByProductName(connection.getMetaData().getDatabaseProductName()));
+                String tableName = generateTableName(each, DatabaseTypes.getDatabaseTypeByURL(connection.getMetaData().getURL()));
                 try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("TRUNCATE TABLE %s", tableName))) {
                     preparedStatement.executeUpdate();
                     // CHECKSTYLE:OFF

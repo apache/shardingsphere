@@ -70,17 +70,19 @@ public final class DatabaseTypes {
     }
     
     /**
-     * Get actual database type.
-     *
-     * @param productName database product name 
-     * @return actual database type
+     * Get database type by URL.
+     * 
+     * @param url database URL
+     * @return database type
      */
-    public static DatabaseType getActualDatabaseTypeByProductName(final String productName) {
+    public static DatabaseType getDatabaseTypeByURL(final String url) {
         for (DatabaseType each : DATABASE_TYPES.values()) {
-            if (each.getProductName().equals(productName)) {
+            try {
+                each.getDataSourceMetaData(url);
                 return each;
+            } catch (final UnrecognizedDatabaseURLException ignore) {
             }
         }
-        throw new UnsupportedOperationException(String.format("Unsupported database from product name: '%s'", productName));
+        throw new UnsupportedOperationException(String.format("Unsupported database from url: '%s'", url));
     }
 }
