@@ -19,13 +19,13 @@ package org.apache.shardingsphere.dbtest.engine.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.core.constant.SQLType;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.parse.rule.registry.MasterSlaveParseRuleRegistry;
 import org.apache.shardingsphere.dbtest.cases.assertion.IntegrateTestCasesLoader;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCase;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCaseAssertion;
+import org.apache.shardingsphere.dbtest.engine.SQLType;
 import org.apache.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import org.apache.shardingsphere.dbtest.env.IntegrateTestEnvironment;
 import org.apache.shardingsphere.spi.database.DatabaseType;
@@ -65,8 +65,9 @@ public final class IntegrateTestParameters {
             String sqlCaseId = each[0].toString();
             String databaseType = each[1].toString();
             SQLCaseType caseType = (SQLCaseType) each[2];
-            if (sqlType != new SQLParseEngine(MasterSlaveParseRuleRegistry.getInstance(),
-                    DatabaseTypes.getTrunkDatabaseType(databaseType), sqlCasesLoader.getSupportedSQL(sqlCaseId, SQLCaseType.Placeholder, Collections.emptyList()), null, null).parse().getType()) {
+            Class<?> sqlStatementClass = new SQLParseEngine(MasterSlaveParseRuleRegistry.getInstance(), 
+                    DatabaseTypes.getTrunkDatabaseType(databaseType), sqlCasesLoader.getSupportedSQL(sqlCaseId, SQLCaseType.Placeholder, Collections.emptyList()), null, null).parse().getClass();
+            if (!sqlType.getSqlStatementClass().isAssignableFrom(sqlStatementClass)) {
                 continue;
             }
             IntegrateTestCase integrateTestCase = getIntegrateTestCase(sqlCaseId, sqlType);
@@ -117,8 +118,9 @@ public final class IntegrateTestParameters {
             String sqlCaseId = each[0].toString();
             String databaseType = each[1].toString();
             SQLCaseType caseType = (SQLCaseType) each[2];
-            if (sqlType != new SQLParseEngine(MasterSlaveParseRuleRegistry.getInstance(),
-                    DatabaseTypes.getTrunkDatabaseType(databaseType), sqlCasesLoader.getSupportedSQL(sqlCaseId, SQLCaseType.Placeholder, Collections.emptyList()), null, null).parse().getType()) {
+            Class<?> sqlStatementClass = new SQLParseEngine(MasterSlaveParseRuleRegistry.getInstance(), 
+                    DatabaseTypes.getTrunkDatabaseType(databaseType), sqlCasesLoader.getSupportedSQL(sqlCaseId, SQLCaseType.Placeholder, Collections.emptyList()), null, null).parse().getClass();
+            if (!sqlType.getSqlStatementClass().isAssignableFrom(sqlStatementClass)) {
                 continue;
             }
             // TODO only for prepared statement for now

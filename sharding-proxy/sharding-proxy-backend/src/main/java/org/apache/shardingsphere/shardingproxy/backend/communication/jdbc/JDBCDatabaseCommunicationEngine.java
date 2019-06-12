@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.constant.SQLType;
 import org.apache.shardingsphere.core.merge.MergeEngineFactory;
 import org.apache.shardingsphere.core.merge.MergedResult;
 import org.apache.shardingsphere.core.merge.dal.show.ShowTablesMergedResult;
 import org.apache.shardingsphere.core.parse.constant.DerivedColumn;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
@@ -85,7 +85,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
             return new UpdateResponse();
         }
         SQLStatement sqlStatement = routeResult.getSqlStatement();
-        if (isExecuteDDLInXATransaction(sqlStatement.getType())) {
+        if (isExecuteDDLInXATransaction(sqlStatement)) {
             return new ErrorResponse(new TableModifyInTransactionException(sqlStatement.getTables().isSingleTable() ? sqlStatement.getTables().getSingleTableName() : "unknown_table"));
         }
         response = executeEngine.execute(routeResult);
@@ -95,9 +95,9 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         return merge(routeResult);
     }
     
-    private boolean isExecuteDDLInXATransaction(final SQLType sqlType) {
+    private boolean isExecuteDDLInXATransaction(final SQLStatement sqlStatement) {
         BackendConnection connection = executeEngine.getBackendConnection();
-        return TransactionType.XA == connection.getTransactionType() && SQLType.DDL == sqlType && ConnectionStatus.TRANSACTION == connection.getStateHandler().getStatus();
+        return TransactionType.XA == connection.getTransactionType() && sqlStatement instanceof DDLStatement && ConnectionStatus.TRANSACTION == connection.getStateHandler().getStatus();
     }
     
     private BackendResponse merge(final SQLRouteResult routeResult) throws SQLException {
