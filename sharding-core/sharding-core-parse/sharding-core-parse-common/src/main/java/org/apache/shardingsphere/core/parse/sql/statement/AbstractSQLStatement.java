@@ -22,7 +22,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.core.constant.SQLType;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Conditions;
 import org.apache.shardingsphere.core.parse.sql.context.table.Tables;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
@@ -41,8 +40,6 @@ import java.util.LinkedList;
 @Setter
 @ToString
 public abstract class AbstractSQLStatement implements SQLStatement {
-    
-    private final SQLType type;
     
     private final Collection<SQLSegment> sqlSegments = new LinkedList<>();
     

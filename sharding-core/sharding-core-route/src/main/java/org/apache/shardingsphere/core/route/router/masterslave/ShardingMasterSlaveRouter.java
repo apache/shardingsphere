@@ -19,7 +19,8 @@ package org.apache.shardingsphere.core.route.router.masterslave;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
-import org.apache.shardingsphere.core.constant.SQLType;
+import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
@@ -60,7 +61,7 @@ public final class ShardingMasterSlaveRouter {
             }
             toBeRemoved.add(each);
             String actualDataSourceName;
-            if (isMasterRoute(sqlRouteResult.getSqlStatement().getType())) {
+            if (isMasterRoute(sqlRouteResult.getSqlStatement())) {
                 MasterVisitedManager.setMasterVisited();
                 actualDataSourceName = masterSlaveRule.getMasterDataSourceName();
             } else {
@@ -73,8 +74,8 @@ public final class ShardingMasterSlaveRouter {
         sqlRouteResult.getRoutingResult().getRoutingUnits().addAll(toBeAdded);
     }
     
-    private boolean isMasterRoute(final SQLType sqlType) {
-        return SQLType.DQL != sqlType || MasterVisitedManager.isMasterVisited() || HintManager.isMasterRouteOnly();
+    private boolean isMasterRoute(final SQLStatement sqlStatement) {
+        return !(sqlStatement instanceof SelectStatement) || MasterVisitedManager.isMasterVisited() || HintManager.isMasterRouteOnly();
     }
     
     private RoutingUnit createNewRoutingUnit(final String actualDataSourceName, final RoutingUnit originalTableUnit) {

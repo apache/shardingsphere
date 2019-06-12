@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.parse.sql.statement.dml;
 
 import lombok.ToString;
-import org.apache.shardingsphere.core.constant.SQLType;
 import org.apache.shardingsphere.core.parse.sql.statement.AbstractSQLStatement;
 
 /**
@@ -28,8 +27,4 @@ import org.apache.shardingsphere.core.parse.sql.statement.AbstractSQLStatement;
  */
 @ToString(callSuper = true)
 public class DQLStatement extends AbstractSQLStatement {
-    
-    public DQLStatement() {
-        super(SQLType.DQL);
-    }
 }

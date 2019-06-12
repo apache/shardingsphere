@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.parse.sql.statement.tcl;
 
 import lombok.ToString;
-import org.apache.shardingsphere.core.constant.SQLType;
 import org.apache.shardingsphere.core.parse.sql.statement.AbstractSQLStatement;
 
 /**
@@ -29,9 +28,4 @@ import org.apache.shardingsphere.core.parse.sql.statement.AbstractSQLStatement;
  */
 @ToString(callSuper = true)
 public class TCLStatement extends AbstractSQLStatement {
-    
-    public TCLStatement() {
-        super(SQLType.TCL);
-    }
-    
 }

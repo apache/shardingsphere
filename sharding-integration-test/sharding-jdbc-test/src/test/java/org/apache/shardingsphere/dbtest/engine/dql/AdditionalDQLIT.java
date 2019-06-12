@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.dbtest.engine.dql;
 
-import org.apache.shardingsphere.core.constant.SQLType;
 import org.apache.shardingsphere.dbtest.cases.assertion.dql.DQLIntegrateTestCaseAssertion;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.SQLValue;
+import org.apache.shardingsphere.dbtest.engine.SQLType;
 import org.apache.shardingsphere.dbtest.engine.util.IntegrateTestParameters;
 import org.apache.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import org.apache.shardingsphere.dbtest.env.IntegrateTestEnvironment;

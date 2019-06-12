@@ -20,10 +20,10 @@ package org.apache.shardingsphere.shardingproxy.backend.text;
 import com.google.common.base.Optional;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.core.constant.SQLType;
 import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.parse.rule.registry.MasterSlaveParseRuleRegistry;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.statement.ShowDatabasesStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.statement.UseStatement;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
@@ -76,7 +76,7 @@ public final class TextProtocolBackendHandlerFactory {
             return backendConnection.getStateHandler().isInTransaction() ? new TransactionBackendHandler(TransactionOperationType.COMMIT, backendConnection) : new SkipBackendHandler();
         }
         SQLStatement sqlStatement = new SQLParseEngine(MasterSlaveParseRuleRegistry.getInstance(), databaseType, sql, null, null).parse();
-        return SQLType.DAL == sqlStatement.getType() ? createDALBackendHandler(sqlStatement, sql, backendConnection) : new QueryBackendHandler(sql, backendConnection);
+        return sqlStatement instanceof DALStatement ? createDALBackendHandler(sqlStatement, sql, backendConnection) : new QueryBackendHandler(sql, backendConnection);
     }
     
     private static TextProtocolBackendHandler createDALBackendHandler(final SQLStatement sqlStatement, final String sql, final BackendConnection backendConnection) {

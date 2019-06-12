@@ -60,6 +60,6 @@ public final class MergeEngineFactory {
         if (routeResult.getSqlStatement() instanceof DALStatement) {
             return new DALMergeEngine(shardingRule, queryResults, (DALStatement) routeResult.getSqlStatement(), shardingTableMetaData);
         }
-        throw new UnsupportedOperationException(String.format("Cannot support type '%s'", routeResult.getSqlStatement().getType()));
+        throw new UnsupportedOperationException(String.format("Cannot support type '%s'", routeResult.getSqlStatement().getClass().getName()));
     }
 }

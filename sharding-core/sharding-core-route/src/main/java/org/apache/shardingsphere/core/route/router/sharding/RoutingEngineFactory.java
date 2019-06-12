@@ -19,14 +19,18 @@ package org.apache.shardingsphere.core.route.router.sharding;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.core.constant.SQLType;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.statement.ShowDatabasesStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.statement.UseStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.postgresql.statement.ResetParameterStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.postgresql.statement.SetStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dcl.DCLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
 import org.apache.shardingsphere.core.route.type.broadcast.DataSourceGroupBroadcastRoutingEngine;
 import org.apache.shardingsphere.core.route.type.broadcast.DatabaseBroadcastRoutingEngine;
@@ -61,23 +65,23 @@ public final class RoutingEngineFactory {
     public static RoutingEngine newInstance(final ShardingRule shardingRule,
                                             final ShardingDataSourceMetaData shardingDataSourceMetaData, final SQLStatement sqlStatement, final OptimizeResult optimizeResult) {
         Collection<String> tableNames = sqlStatement.getTables().getTableNames();
-        if (SQLType.TCL == sqlStatement.getType()) {
+        if (sqlStatement instanceof TCLStatement) {
             return new DatabaseBroadcastRoutingEngine(shardingRule);
         }
-        if (SQLType.DDL == sqlStatement.getType()) {
+        if (sqlStatement instanceof DDLStatement) {
             return new TableBroadcastRoutingEngine(shardingRule, sqlStatement);
         }
-        if (SQLType.DAL == sqlStatement.getType()) {
+        if (sqlStatement instanceof DALStatement) {
             return getDALRoutingEngine(shardingRule, sqlStatement, tableNames);
         }
-        if (SQLType.DCL == sqlStatement.getType()) {
+        if (sqlStatement instanceof DCLStatement) {
             return getDCLRoutingEngine(shardingRule, sqlStatement, shardingDataSourceMetaData);
         }
         if (shardingRule.isAllInDefaultDataSource(tableNames)) {
             return new DefaultDatabaseRoutingEngine(shardingRule, tableNames);
         }
         if (shardingRule.isAllBroadcastTables(tableNames)) {
-            return SQLType.DQL == sqlStatement.getType() ? new UnicastRoutingEngine(shardingRule, tableNames) : new DatabaseBroadcastRoutingEngine(shardingRule);
+            return sqlStatement instanceof SelectStatement ? new UnicastRoutingEngine(shardingRule, tableNames) : new DatabaseBroadcastRoutingEngine(shardingRule);
         }
         if (optimizeResult.getShardingConditions().isAlwaysFalse() || tableNames.isEmpty()) {
             return new UnicastRoutingEngine(shardingRule, tableNames);

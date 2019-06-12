@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.parse.sql.statement.ddl;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.core.constant.SQLType;
 import org.apache.shardingsphere.core.parse.sql.statement.AbstractSQLStatement;
 
 /**
@@ -32,8 +31,4 @@ import org.apache.shardingsphere.core.parse.sql.statement.AbstractSQLStatement;
 public class DDLStatement extends AbstractSQLStatement {
     
     private String indexName;
-    
-    public DDLStatement() {
-        super(SQLType.DDL);
-    }
 }

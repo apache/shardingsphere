@@ -15,13 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.constant;
+package org.apache.shardingsphere.dbtest.engine;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dcl.DCLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.tcl.TCLStatement;
 
 /**
  * SQL Type.
  * 
  * @author zhangliang
  */
+@RequiredArgsConstructor
+@Getter
 public enum SQLType {
     
     /**
@@ -29,41 +41,38 @@ public enum SQLType {
      * 
      * <p>Such as {@code SELECT}.</p>
      */
-    DQL,
+    DQL(SelectStatement.class),
     
     /**
      * Data Manipulation Language.
      *
      * <p>Such as {@code INSERT}, {@code UPDATE}, {@code DELETE}.</p>
      */
-    DML,
+    DML(DMLStatement.class),
     
     /**
      * Data Definition Language.
      *
      * <p>Such as {@code CREATE}, {@code ALTER}, {@code DROP}, {@code TRUNCATE}.</p>
      */
-    DDL,
+    DDL(DDLStatement.class),
     
     /**
      * Transaction Control Language.
      *
      * <p>Such as {@code SET}, {@code COMMIT}, {@code ROLLBACK}, {@code SAVEPOIINT}, {@code BEGIN}.</p>
      */
-    TCL,
+    TCL(TCLStatement.class),
     
     /**
      * Database administrator Language.
      */
-    DAL,
+    DAL(DALStatement.class),
     
     /**
      * Database control Language.
      */
-    DCL,
+    DCL(DCLStatement.class);
     
-    /**
-     * Database general Language.
-     */
-    GENERAL
+    private final Class<? extends SQLStatement> sqlStatementClass;
 }
