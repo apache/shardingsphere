@@ -18,10 +18,6 @@
 package org.apache.shardingsphere.orchestration.internal.keygen;
 
 import lombok.SneakyThrows;
-import org.apache.curator.test.TestingServer;
-import org.apache.shardingsphere.orchestration.reg.exception.RegistryCenterException;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.*;
@@ -35,14 +31,6 @@ import static org.junit.Assert.assertThat;
 public class LeafSegmentKeyGeneratorTest {
 
     private LeafSegmentKeyGenerator leafSegmentKeyGenerator = new LeafSegmentKeyGenerator();
-
-    private static TestingServer server;
-
-    @Before
-    @SneakyThrows
-    public void startServer(){
-        server = new TestingServer(2181,true);
-    }
 
     @Test
     public void assertGetProperties() {
@@ -318,10 +306,6 @@ public class LeafSegmentKeyGeneratorTest {
         leafSegmentKeyGenerator.setProperties(properties);
         leafSegmentKeyGenerator.generateKey();
     }
-    @After
-    @SneakyThrows
-    public void closeServer(){
-        server.close();
-    }
+
 
 }
