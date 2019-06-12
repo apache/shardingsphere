@@ -22,21 +22,14 @@ import org.apache.shardingsphere.shardingproxy.frontend.context.FrontendContext;
 import org.apache.shardingsphere.shardingproxy.frontend.engine.AuthenticationEngine;
 import org.apache.shardingsphere.shardingproxy.frontend.engine.CommandExecuteEngine;
 import org.apache.shardingsphere.shardingproxy.transport.codec.DatabasePacketCodecEngine;
-import org.apache.shardingsphere.spi.database.DatabaseType;
+import org.apache.shardingsphere.spi.DatabaseTypeAwareSPI;
 
 /**
  * Database protocol frontend engine.
  * 
  * @author zhangliang 
  */
-public interface DatabaseProtocolFrontendEngine {
-    
-    /**
-     * Get database type.
-     * 
-     * @return database type
-     */
-    DatabaseType getDatabaseType();
+public interface DatabaseProtocolFrontendEngine extends DatabaseTypeAwareSPI {
     
     /**
      * Get frontend context.

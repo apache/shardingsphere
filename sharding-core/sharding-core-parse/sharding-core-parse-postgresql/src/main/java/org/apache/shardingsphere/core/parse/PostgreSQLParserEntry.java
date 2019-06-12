@@ -21,8 +21,6 @@ import org.antlr.v4.runtime.Lexer;
 import org.apache.shardingsphere.core.parse.api.SQLParser;
 import org.apache.shardingsphere.core.parse.autogen.PostgreSQLStatementLexer;
 import org.apache.shardingsphere.core.parse.spi.SQLParserEntry;
-import org.apache.shardingsphere.spi.database.DatabaseType;
-import org.apache.shardingsphere.spi.database.DatabaseTypes;
 
 /**
  * SQL parser entry for PostgreSQL.
@@ -32,8 +30,8 @@ import org.apache.shardingsphere.spi.database.DatabaseTypes;
 public final class PostgreSQLParserEntry implements SQLParserEntry {
     
     @Override
-    public DatabaseType getDatabaseType() {
-        return DatabaseTypes.getActualDatabaseType("PostgreSQL");
+    public String getDatabaseType() {
+        return "PostgreSQL";
     }
     
     @Override

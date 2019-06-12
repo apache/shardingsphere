@@ -25,6 +25,7 @@ import org.apache.shardingsphere.api.config.RuleConfiguration;
 import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
+import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.orchestration.internal.eventbus.ShardingOrchestrationEventBus;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.SchemaAddedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.SchemaDeletedEvent;
@@ -90,7 +91,8 @@ public final class LogicSchemas {
      */
     public void init(final Collection<String> localSchemaNames, final Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources,
                      final Map<String, RuleConfiguration> schemaRules, final boolean isUsingRegistry) {
-        databaseType = JDBCDriverURLRecognizerEngine.getJDBCDriverURLRecognizer(schemaDataSources.values().iterator().next().values().iterator().next().getUrl()).getDatabaseType();
+        databaseType = DatabaseTypes.getActualDatabaseType(
+                JDBCDriverURLRecognizerEngine.getJDBCDriverURLRecognizer(schemaDataSources.values().iterator().next().values().iterator().next().getUrl()).getDatabaseType());
         initSchemas(localSchemaNames, schemaDataSources, schemaRules, isUsingRegistry);
     }
     

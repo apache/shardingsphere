@@ -15,33 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.exception;
+package org.apache.shardingsphere.spi;
 
 /**
- * Sharding rule exception.
- *
+ * Database type aware SPI.
+ * 
  * @author zhangliang
  */
-public final class ShardingConfigurationException extends RuntimeException {
-    
-    private static final long serialVersionUID = -1360264079938958332L;
+public interface DatabaseTypeAwareSPI {
     
     /**
-     * Constructs an exception with formatted error message and arguments. 
-     *
-     * @param errorMessage formatted error message
-     * @param args arguments of error message
+     * Get database type.
+     * 
+     * <p>
+     *     The value of database type must registered by SPI for {@code org.apache.shardingsphere.spi.database.DatabaseType}.
+     * </p>
+     * 
+     * @return database type
      */
-    public ShardingConfigurationException(final String errorMessage, final Object... args) {
-        super(String.format(errorMessage, args));
-    }
-    
-    /**
-     * Constructs an exception with cause exception. 
-     *
-     * @param cause cause exception
-     */
-    public ShardingConfigurationException(final Exception cause) {
-        super(cause);
-    }
+    String getDatabaseType();
 }

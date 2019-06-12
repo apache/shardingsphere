@@ -99,6 +99,34 @@
         <row-count value="3" parameter-index="5" />
     </parser-result>
     
+    <parser-result sql-case-id="select_pagination_with_limit_and_offset_keyword" parameters="1, 2, 9, 10, 3, 5">
+        <tables>
+            <table name="t_order" alias="o" />
+            <table name="t_order_item" alias="i" />
+        </tables>
+        <tokens>
+            <table-token start-index="16" table-name="t_order" left-delimiter="`" right-delimiter="`" length="9" />
+            <table-token start-index="33" table-name="t_order_item" left-delimiter="`" right-delimiter="`" length="14" />
+        </tokens>
+        <sharding-conditions>
+            <and-condition>
+                <condition column-name="user_id" table-name="t_order" operator="IN">
+                    <value index="0" literal="1" type="int" />
+                    <value index="1" literal="2" type="int" />
+                </condition>
+                <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
+                    <value index="2" literal="9" type="int" />
+                    <value index="3" literal="10" type="int" />
+                </condition>
+            </and-condition>
+        </sharding-conditions>
+        <order-by-columns>
+            <order-by-column name="item_id" owner="i" order-direction="DESC" />
+        </order-by-columns>
+        <row-count value="3" parameter-index="4" />
+        <offset value="5" parameter-index="5" />
+    </parser-result>
+    
     <parser-result sql-case-id="select_pagination_with_top" parameters="3, 1, 2, 9, 10">
         <tables>
             <table name="t_order" alias="o" />

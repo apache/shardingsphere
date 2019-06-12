@@ -19,6 +19,7 @@ package org.apache.shardingsphere.shardingproxy.frontend;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
 import org.apache.shardingsphere.shardingproxy.frontend.spi.DatabaseProtocolFrontendEngine;
 import org.apache.shardingsphere.spi.database.DatabaseType;
@@ -44,7 +45,7 @@ public final class DatabaseProtocolFrontendEngineFactory {
      */
     public static DatabaseProtocolFrontendEngine newInstance(final DatabaseType databaseType) {
         for (DatabaseProtocolFrontendEngine each : NewInstanceServiceLoader.newServiceInstances(DatabaseProtocolFrontendEngine.class)) {
-            if (each.getDatabaseType() == databaseType) {
+            if (DatabaseTypes.getActualDatabaseType(each.getDatabaseType()) == databaseType) {
                 return each;
             }
         }

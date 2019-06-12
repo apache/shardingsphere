@@ -26,8 +26,6 @@ import org.apache.shardingsphere.shardingproxy.frontend.spi.DatabaseProtocolFron
 import org.apache.shardingsphere.shardingproxy.transport.codec.DatabasePacketCodecEngine;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.codec.PostgreSQLPacketCodecEngine;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.BinaryStatementRegistry;
-import org.apache.shardingsphere.spi.database.DatabaseType;
-import org.apache.shardingsphere.spi.database.DatabaseTypes;
 
 /**
  * Frontend engine for PostgreSQL protocol.
@@ -47,8 +45,8 @@ public final class PostgreSQLProtocolFrontendEngine implements DatabaseProtocolF
     private final DatabasePacketCodecEngine codecEngine = new PostgreSQLPacketCodecEngine();
     
     @Override
-    public DatabaseType getDatabaseType() {
-        return DatabaseTypes.getActualDatabaseType("PostgreSQL");
+    public String getDatabaseType() {
+        return "PostgreSQL";
     }
     
     @Override

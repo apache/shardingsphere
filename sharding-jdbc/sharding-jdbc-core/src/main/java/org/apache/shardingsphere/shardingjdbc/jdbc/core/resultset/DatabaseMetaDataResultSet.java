@@ -30,6 +30,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -100,7 +101,7 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
         for (int i = 1; i <= columnLabelIndexMap.size(); i++) {
             if (tableNameColumnIndex == i) {
                 String tableName = resultSet.getString(i);
-                Collection<String> logicTableNames = shardingRule.getLogicTableNames(tableName);
+                Collection<String> logicTableNames = null == shardingRule ? Collections.<String>emptyList() : shardingRule.getLogicTableNames(tableName);
                 result.addObject(logicTableNames.isEmpty() ? tableName : logicTableNames.iterator().next());
             } else if (indexNameColumnIndex == i) {
                 String tableName = resultSet.getString(tableNameColumnIndex);

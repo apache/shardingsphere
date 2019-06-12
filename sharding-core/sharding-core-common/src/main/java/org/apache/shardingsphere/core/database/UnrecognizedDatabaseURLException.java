@@ -15,27 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.database;
+package org.apache.shardingsphere.core.database;
 
 /**
- * Database type.
+ * Unrecognized database URL exception.
  *
  * @author zhangliang
  */
-public interface DatabaseType {
+public final class UnrecognizedDatabaseURLException extends RuntimeException {
     
-    /**
-     * Get database name.
-     * 
-     * @return database name
-     */
-    String getName();
+    private static final long serialVersionUID = -1551117178863766353L;
     
-    /**
-     * Get data source meta data.
-     * 
-     * @param url data source URL
-     * @return data source meta data
-     */
-    DataSourceMetaData getDataSourceMetaData(String url);
+    public UnrecognizedDatabaseURLException(final String url, final String pattern) {
+        super(String.format("The URL: '%s' is not recognized. Please refer to this pattern: '%s'.", url, pattern));
+    }
 }

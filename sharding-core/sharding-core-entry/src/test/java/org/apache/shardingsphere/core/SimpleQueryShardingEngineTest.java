@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
 import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
@@ -25,7 +26,6 @@ import org.apache.shardingsphere.core.route.StatementRoutingEngine;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.strategy.encrypt.ShardingEncryptorEngine;
-import org.apache.shardingsphere.spi.database.DatabaseTypes;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;

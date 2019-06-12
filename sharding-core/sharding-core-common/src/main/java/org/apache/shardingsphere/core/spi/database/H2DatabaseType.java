@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.core.spi.database;
 
+import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.metadata.datasource.dialect.H2DataSourceMetaData;
 import org.apache.shardingsphere.spi.database.BranchDatabaseType;
 import org.apache.shardingsphere.spi.database.DataSourceMetaData;
 import org.apache.shardingsphere.spi.database.DatabaseType;
-import org.apache.shardingsphere.spi.database.DatabaseTypes;
 
 /**
  * Database type of H2.
@@ -32,11 +32,6 @@ public final class H2DatabaseType implements BranchDatabaseType {
     
     @Override
     public String getName() {
-        return "H2";
-    }
-    
-    @Override
-    public String getProductName() {
         return "H2";
     }
     

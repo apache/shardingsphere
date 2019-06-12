@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.parse;
 
+import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.extractor.SQLSegmentsExtractorEngine;
 import org.apache.shardingsphere.core.parse.filler.SQLStatementFillerEngine;
@@ -28,7 +29,6 @@ import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.rule.BaseRule;
 import org.apache.shardingsphere.spi.database.DatabaseType;
-import org.apache.shardingsphere.spi.database.DatabaseTypes;
 
 import java.util.Collection;
 

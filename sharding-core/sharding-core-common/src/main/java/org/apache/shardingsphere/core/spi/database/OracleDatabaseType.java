@@ -34,11 +34,6 @@ public final class OracleDatabaseType implements DatabaseType {
     }
     
     @Override
-    public String getProductName() {
-        return "Oracle";
-    }
-    
-    @Override
     public DataSourceMetaData getDataSourceMetaData(final String url) {
         return new OracleDataSourceMetaData(url);
     }

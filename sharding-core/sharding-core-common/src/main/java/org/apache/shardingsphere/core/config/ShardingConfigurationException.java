@@ -15,27 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.database;
+package org.apache.shardingsphere.core.config;
 
 /**
- * Database type.
+ * Sharding rule exception.
  *
  * @author zhangliang
  */
-public interface DatabaseType {
+public final class ShardingConfigurationException extends RuntimeException {
+    
+    private static final long serialVersionUID = -1360264079938958332L;
     
     /**
-     * Get database name.
-     * 
-     * @return database name
+     * Constructs an exception with formatted error message and arguments. 
+     *
+     * @param errorMessage formatted error message
+     * @param args arguments of error message
      */
-    String getName();
+    public ShardingConfigurationException(final String errorMessage, final Object... args) {
+        super(String.format(errorMessage, args));
+    }
     
     /**
-     * Get data source meta data.
-     * 
-     * @param url data source URL
-     * @return data source meta data
+     * Constructs an exception with cause exception. 
+     *
+     * @param cause cause exception
      */
-    DataSourceMetaData getDataSourceMetaData(String url);
+    public ShardingConfigurationException(final Exception cause) {
+        super(cause);
+    }
 }

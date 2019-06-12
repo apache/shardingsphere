@@ -22,6 +22,7 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
+import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
@@ -30,7 +31,6 @@ import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
 import org.apache.shardingsphere.spi.database.DatabaseType;
-import org.apache.shardingsphere.spi.database.DatabaseTypes;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
@@ -121,7 +121,7 @@ public class EncryptDataSource extends AbstractUnsupportedOperationDataSource im
     
     private DatabaseType getDatabaseType() throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
-            return DatabaseTypes.getActualDatabaseTypeByProductName(connection.getMetaData().getDatabaseProductName());
+            return DatabaseTypes.getDatabaseTypeByURL(connection.getMetaData().getURL());
         }
     }
     

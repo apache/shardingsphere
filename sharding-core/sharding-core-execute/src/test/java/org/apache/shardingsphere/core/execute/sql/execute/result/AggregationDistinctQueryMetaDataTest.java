@@ -50,6 +50,8 @@ public class AggregationDistinctQueryMetaDataTest {
         Multimap<String, Integer> columnLabelAndIndexMap = HashMultimap.create();
         columnLabelAndIndexMap.put("c", 1);
         columnLabelAndIndexMap.put("a", 2);
+        columnLabelAndIndexMap.put("AVG_DERIVED_COUNT_0", 3);
+        columnLabelAndIndexMap.put("AVG_DERIVED_SUM_0", 4);
         distinctQueryMetaData = new AggregationDistinctQueryMetaData(aggregationDistinctSelectItems, columnLabelAndIndexMap);
     }
     

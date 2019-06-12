@@ -34,11 +34,6 @@ public final class PostgreSQLDatabaseType implements DatabaseType {
     }
     
     @Override
-    public String getProductName() {
-        return "PostgreSQL";
-    }
-    
-    @Override
     public DataSourceMetaData getDataSourceMetaData(final String url) {
         return new PostgreSQLDataSourceMetaData(url);
     }

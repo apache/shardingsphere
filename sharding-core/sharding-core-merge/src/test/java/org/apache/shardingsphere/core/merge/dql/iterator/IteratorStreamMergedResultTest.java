@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.merge.dql.iterator;
 
 import com.google.common.collect.Lists;
+import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.MergedResult;
 import org.apache.shardingsphere.core.merge.dql.DQLMergeEngine;
@@ -27,7 +28,6 @@ import org.apache.shardingsphere.core.optimize.condition.ShardingConditions;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
-import org.apache.shardingsphere.spi.database.DatabaseTypes;
 import org.junit.Before;
 import org.junit.Test;
 
