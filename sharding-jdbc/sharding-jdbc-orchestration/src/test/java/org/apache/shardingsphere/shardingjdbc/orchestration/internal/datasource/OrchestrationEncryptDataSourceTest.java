@@ -55,7 +55,7 @@ public class OrchestrationEncryptDataSourceTest {
     }
     
     private EncryptDataSource getEncryptDatasource() throws URISyntaxException {
-        File yamlFile = new File(OrchestrationMasterSlaveDataSource.class.getResource("/yaml/unit/encrypt.yaml").toURI());
+        File yamlFile = new File(OrchestrationEncryptDataSource.class.getResource("/yaml/unit/encrypt.yaml").toURI());
         return (EncryptDataSource) YamlEncryptDataSourceFactory.createDataSource(yamlFile);
     }
     
