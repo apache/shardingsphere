@@ -24,8 +24,10 @@ import org.apache.shardingsphere.core.parse.filler.api.ShardingRuleAwareFiller;
 import org.apache.shardingsphere.core.parse.sql.context.table.Table;
 import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.DeleteStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
@@ -45,9 +47,13 @@ public final class ShardingTableFiller implements SQLSegmentFiller<TableSegment>
         if (isTableInShardingRule(sqlSegment.getName()) || !(sqlStatement instanceof SelectStatement)) {
             sqlStatement.getTables().add(new Table(sqlSegment.getName(), sqlSegment.getAlias().orNull()));
         }
-        if (sqlStatement instanceof DMLStatement && !sqlStatement.getTables().isSingleTable()) {
+        if (isDMLForModify(sqlStatement) && !sqlStatement.getTables().isSingleTable()) {
             throw new SQLParsingException("Cannot support Multiple-Table.");
         }
+    }
+    
+    private boolean isDMLForModify(final SQLStatement sqlStatement) {
+        return sqlStatement instanceof InsertStatement || sqlStatement instanceof UpdateStatement || sqlStatement instanceof DeleteStatement;
     }
     
     private boolean isTableInShardingRule(final String tableName) {

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.core.parse.sql.statement.ddl;
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.sql.segment.ddl.column.ColumnDefinitionSegment;
@@ -38,6 +39,7 @@ import java.util.TreeSet;
  */
 @Getter
 @Setter
+@ToString(callSuper = true)
 public final class AlterTableStatement extends DDLStatement {
     
     private final Collection<ColumnDefinitionSegment> addedColumnDefinitions = new LinkedList<>();

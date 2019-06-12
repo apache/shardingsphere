@@ -15,14 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.postgresql.statement;
+package org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql;
 
+import lombok.ToString;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
 
 /**
- * Set statement.
+ * Show columns statement.
  *
- * @author loxp
+ * @author zhangyonglun
  */
-public final class SetStatement extends DALStatement {
+@ToString(callSuper = true)
+public final class ShowIndexStatement extends DALStatement {
 }

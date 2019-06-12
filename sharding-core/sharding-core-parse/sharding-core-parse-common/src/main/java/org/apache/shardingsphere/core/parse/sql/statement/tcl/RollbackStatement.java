@@ -17,10 +17,13 @@
 
 package org.apache.shardingsphere.core.parse.sql.statement.tcl;
 
+import lombok.ToString;
+
 /**
  * Rollback statement.
  *
  * @author maxiaoguang
  */
+@ToString(callSuper = true)
 public final class RollbackStatement extends TCLStatement {
 }

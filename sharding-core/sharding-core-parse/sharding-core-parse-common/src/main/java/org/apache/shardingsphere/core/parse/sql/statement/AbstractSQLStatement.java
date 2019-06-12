@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.parse.sql.statement;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Conditions;
@@ -35,7 +34,6 @@ import java.util.LinkedList;
  * @author zhangliang
  * @author panjuan
  */
-@RequiredArgsConstructor
 @Getter
 @Setter
 @ToString

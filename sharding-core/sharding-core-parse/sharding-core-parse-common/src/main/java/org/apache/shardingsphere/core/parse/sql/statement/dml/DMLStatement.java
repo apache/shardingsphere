@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.parse.sql.statement.dml;
 
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.parse.sql.statement.AbstractSQLStatement;
 
@@ -27,8 +26,7 @@ import org.apache.shardingsphere.core.parse.sql.statement.AbstractSQLStatement;
  *
  * @author zhangliang
  */
-@ToString(callSuper = true)
 @Getter
-@Setter
+@ToString(callSuper = true)
 public abstract class DMLStatement extends AbstractSQLStatement {
 }

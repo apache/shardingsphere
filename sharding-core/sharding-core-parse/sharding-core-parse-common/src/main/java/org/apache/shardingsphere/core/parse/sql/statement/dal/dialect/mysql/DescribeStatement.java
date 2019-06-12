@@ -15,14 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.statement;
+package org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql;
 
+import lombok.ToString;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
 
 /**
- * Other show statement.
+ * Describe statement.
  *
  * @author zhangliang
  */
-public final class ShowOtherStatement extends DALStatement {
+@ToString(callSuper = true)
+public final class DescribeStatement extends DALStatement {
 }

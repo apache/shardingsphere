@@ -17,10 +17,13 @@
 
 package org.apache.shardingsphere.core.parse.sql.statement.tcl;
 
+import lombok.ToString;
+
 /**
  * Savepoint statement.
  *
  * @author maxiaoguang
  */
+@ToString(callSuper = true)
 public final class SavepointStatement extends TCLStatement {
 }

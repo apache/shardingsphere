@@ -23,10 +23,10 @@ import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMeta
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.statement.ShowDatabasesStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.statement.UseStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.postgresql.statement.ResetParameterStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.postgresql.statement.SetStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.ShowDatabasesStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.UseStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.postgresql.ResetParameterStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.postgresql.SetStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;

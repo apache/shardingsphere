@@ -34,6 +34,7 @@ import java.util.List;
  * @author panjuan
  */
 @Getter
+@Setter
 @ToString(callSuper = true)
 public final class InsertStatement extends DMLStatement {
     
@@ -41,10 +42,8 @@ public final class InsertStatement extends DMLStatement {
     
     private final List<InsertValue> values = new LinkedList<>();
     
-    @Setter
     private boolean isNeededToAppendGeneratedKey;
     
-    @Setter
     private boolean isNeededToAppendAssistedColumns;
     
     /**
