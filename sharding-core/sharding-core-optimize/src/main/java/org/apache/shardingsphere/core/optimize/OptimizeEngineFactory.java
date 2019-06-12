@@ -24,6 +24,7 @@ import org.apache.shardingsphere.core.optimize.engine.encrypt.EncryptDefaultOpti
 import org.apache.shardingsphere.core.optimize.engine.encrypt.EncryptInsertOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.engine.sharding.insert.InsertOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.engine.sharding.query.QueryOptimizeEngine;
+import org.apache.shardingsphere.core.parse.sql.context.condition.Conditions;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
@@ -56,10 +57,10 @@ public final class OptimizeEngineFactory {
             return new InsertOptimizeEngine(shardingRule, (InsertStatement) sqlStatement, parameters, generatedKey);
         }
         if (sqlStatement instanceof DMLStatement) {
-            return new QueryOptimizeEngine(sqlStatement, parameters, sqlStatement.getShardingConditions());
+            return new QueryOptimizeEngine(sqlStatement, parameters, ((DMLStatement) sqlStatement).getShardingConditions());
         }
         // TODO do with DDL and DAL
-        return new QueryOptimizeEngine(sqlStatement, parameters, sqlStatement.getShardingConditions());
+        return new QueryOptimizeEngine(sqlStatement, parameters, new Conditions());
     }
     
     /**

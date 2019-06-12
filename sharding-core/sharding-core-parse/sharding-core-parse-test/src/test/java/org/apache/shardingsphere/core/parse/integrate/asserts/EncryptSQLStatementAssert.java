@@ -22,6 +22,7 @@ import org.apache.shardingsphere.core.parse.integrate.asserts.insert.InsertNames
 import org.apache.shardingsphere.core.parse.integrate.asserts.table.TableAssert;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.root.ParserResult;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.SQLCasesLoader;
@@ -58,7 +59,9 @@ public final class EncryptSQLStatementAssert {
      */
     public void assertSQLStatement() {
         tableAssert.assertTables(actual.getTables(), expected.getTables());
-        conditionAssert.assertConditions(actual.getEncryptConditions(), expected.getEncryptConditions());
+        if (actual instanceof DMLStatement) {
+            conditionAssert.assertConditions(((DMLStatement) actual).getEncryptConditions(), expected.getEncryptConditions());
+        }
         if (actual instanceof InsertStatement) {
             insertNamesAndValuesAssert.assertInsertNamesAndValues((InsertStatement) actual, expected.getInsertColumnsAndValues());
         }

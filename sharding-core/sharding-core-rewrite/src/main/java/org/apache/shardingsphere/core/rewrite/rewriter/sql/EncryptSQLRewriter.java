@@ -27,7 +27,7 @@ import org.apache.shardingsphere.core.parse.sql.context.condition.Conditions;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
@@ -70,13 +70,13 @@ public final class EncryptSQLRewriter implements SQLRewriter {
     
     private final ShardingEncryptorEngine encryptorEngine;
     
-    private final SQLStatement sqlStatement;
+    private final DMLStatement dmlStatement;
     
     private final InsertOptimizeResult insertOptimizeResult;
     
-    public EncryptSQLRewriter(final ShardingEncryptorEngine encryptorEngine, final SQLStatement sqlStatement, final OptimizeResult optimizeResult) {
+    public EncryptSQLRewriter(final ShardingEncryptorEngine encryptorEngine, final DMLStatement dmlStatement, final OptimizeResult optimizeResult) {
         this.encryptorEngine = encryptorEngine;
-        this.sqlStatement = sqlStatement;
+        this.dmlStatement = dmlStatement;
         this.insertOptimizeResult = getInsertOptimizeResult(optimizeResult);
     }
     
@@ -96,7 +96,7 @@ public final class EncryptSQLRewriter implements SQLRewriter {
     
     private void encryptInsertOptimizeResultUnit(final InsertOptimizeResultUnit unit, final Collection<String> columnNames) {
         for (String each : columnNames) {
-            Optional<ShardingEncryptor> shardingEncryptor = encryptorEngine.getShardingEncryptor(sqlStatement.getTables().getSingleTableName(), each);
+            Optional<ShardingEncryptor> shardingEncryptor = encryptorEngine.getShardingEncryptor(dmlStatement.getTables().getSingleTableName(), each);
             if (shardingEncryptor.isPresent()) {
                 encryptInsertOptimizeResult(unit, each, shardingEncryptor.get());
             }
@@ -105,7 +105,7 @@ public final class EncryptSQLRewriter implements SQLRewriter {
     
     private void encryptInsertOptimizeResult(final InsertOptimizeResultUnit unit, final String columnName, final ShardingEncryptor shardingEncryptor) {
         if (shardingEncryptor instanceof ShardingQueryAssistedEncryptor) {
-            Optional<String> assistedColumnName = encryptorEngine.getAssistedQueryColumn(sqlStatement.getTables().getSingleTableName(), columnName);
+            Optional<String> assistedColumnName = encryptorEngine.getAssistedQueryColumn(dmlStatement.getTables().getSingleTableName(), columnName);
             Preconditions.checkArgument(assistedColumnName.isPresent(), "Can not find assisted query Column Name");
             unit.setColumnValue(assistedColumnName.get(), ((ShardingQueryAssistedEncryptor) shardingEncryptor).queryAssistedEncrypt(unit.getColumnValue(columnName).toString()));
         }
@@ -154,7 +154,7 @@ public final class EncryptSQLRewriter implements SQLRewriter {
     }
     
     private void appendEncryptColumnPlaceholder(final SQLBuilder sqlBuilder, final EncryptColumnToken encryptColumnToken, final ParameterBuilder parameterBuilder) {
-        Optional<Condition> encryptCondition = getEncryptCondition(sqlStatement.getEncryptConditions(), encryptColumnToken);
+        Optional<Condition> encryptCondition = getEncryptCondition(dmlStatement.getEncryptConditions(), encryptColumnToken);
         Preconditions.checkArgument(!encryptColumnToken.isInWhere() || encryptCondition.isPresent(), "Can not find encrypt condition");
         ShardingPlaceholder result = encryptColumnToken.isInWhere() ? getEncryptColumnPlaceholderFromConditions(encryptColumnToken, encryptCondition.get(), parameterBuilder) 
                 : getEncryptColumnPlaceholderFromUpdateItem(encryptColumnToken, parameterBuilder);
@@ -207,7 +207,7 @@ public final class EncryptSQLRewriter implements SQLRewriter {
     
     private ShardingPlaceholder getEncryptColumnPlaceholderFromUpdateItem(final EncryptColumnToken encryptColumnToken, final ParameterBuilder parameterBuilder) {
         ColumnNode columnNode = new ColumnNode(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName());
-        Comparable<?> originalColumnValue = ((UpdateStatement) sqlStatement).getColumnValue(encryptColumnToken.getColumn(), parameterBuilder.getOriginalParameters());
+        Comparable<?> originalColumnValue = ((UpdateStatement) dmlStatement).getColumnValue(encryptColumnToken.getColumn(), parameterBuilder.getOriginalParameters());
         List<Comparable<?>> encryptColumnValues = encryptorEngine.getEncryptColumnValues(columnNode, Collections.<Comparable<?>>singletonList(originalColumnValue));
         encryptParameters(getPositionIndexesFromUpdateItem(encryptColumnToken), encryptColumnValues, parameterBuilder);
         Optional<String> assistedColumnName = encryptorEngine.getAssistedQueryColumn(columnNode.getTableName(), columnNode.getColumnName());
@@ -220,7 +220,7 @@ public final class EncryptSQLRewriter implements SQLRewriter {
     }
     
     private Map<Integer, Integer> getPositionIndexesFromUpdateItem(final EncryptColumnToken encryptColumnToken) {
-        ExpressionSegment result = ((UpdateStatement) sqlStatement).getAssignments().get(encryptColumnToken.getColumn());
+        ExpressionSegment result = ((UpdateStatement) dmlStatement).getAssignments().get(encryptColumnToken.getColumn());
         return result instanceof ParameterMarkerExpressionSegment
                 ? Collections.singletonMap(0, ((ParameterMarkerExpressionSegment) result).getParameterMarkerIndex()) : new LinkedHashMap<Integer, Integer>();
     }
@@ -252,6 +252,6 @@ public final class EncryptSQLRewriter implements SQLRewriter {
     }
     
     private boolean isUsingParameter(final EncryptColumnToken encryptColumnToken) {
-        return ((UpdateStatement) sqlStatement).getAssignments().get(encryptColumnToken.getColumn()) instanceof ParameterMarkerExpressionSegment;
+        return ((UpdateStatement) dmlStatement).getAssignments().get(encryptColumnToken.getColumn()) instanceof ParameterMarkerExpressionSegment;
     }
 }

@@ -54,6 +54,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.Num
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.rownum.NumberLiteralRowNumberValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
@@ -64,6 +65,7 @@ import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
 import org.apache.shardingsphere.core.rewrite.rewriter.parameter.ParameterRewriter;
 import org.apache.shardingsphere.core.rewrite.rewriter.parameter.ShardingParameterRewriter;
 import org.apache.shardingsphere.core.rewrite.rewriter.sql.EncryptSQLRewriter;
+import org.apache.shardingsphere.core.rewrite.rewriter.sql.SQLRewriter;
 import org.apache.shardingsphere.core.rewrite.rewriter.sql.ShardingSQLRewriter;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
@@ -83,6 +85,7 @@ import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -553,7 +556,7 @@ public final class ShardingSQLRewriterTest {
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, routeResult.getSqlStatement(), parameters, routeResult.getRoutingResult().isSingleRouting());
         rewriteEngine.init(Collections.<ParameterRewriter>singletonList(new ShardingParameterRewriter(routeResult)), 
                 Arrays.asList(new ShardingSQLRewriter(shardingRule, routeResult, null), 
-                        new EncryptSQLRewriter(shardingRule.getEncryptRule().getEncryptorEngine(), routeResult.getSqlStatement(), routeResult.getOptimizeResult())));
+                        new EncryptSQLRewriter(shardingRule.getEncryptRule().getEncryptorEngine(), (DMLStatement) routeResult.getSqlStatement(), routeResult.getOptimizeResult())));
         RoutingUnit routingUnit = new RoutingUnit("db0");
         routingUnit.getTableUnits().add(new TableUnit("table_x", "table_x"));
         assertThat(rewriteEngine.generateSQL(routingUnit).getSql(), is("SELECT table_x.id, x.name FROM table_x x, table_y y WHERE table_x.id=? AND x.name=?"));
@@ -943,9 +946,12 @@ public final class ShardingSQLRewriterTest {
     
     private SQLRewriteEngine createSQLRewriteEngine(final List<Object> parameters) {
         SQLRewriteEngine result = new SQLRewriteEngine(shardingRule, routeResult.getSqlStatement(), parameters, routeResult.getRoutingResult().isSingleRouting());
-        result.init(Collections.<ParameterRewriter>singletonList(new ShardingParameterRewriter(routeResult)),
-                Arrays.asList(new ShardingSQLRewriter(shardingRule, routeResult, routeResult.getOptimizeResult()),
-                new EncryptSQLRewriter(shardingRule.getEncryptRule().getEncryptorEngine(), routeResult.getSqlStatement(), routeResult.getOptimizeResult())));
+        Collection<SQLRewriter> sqlRewriters = new LinkedList<>();
+        sqlRewriters.add(new ShardingSQLRewriter(shardingRule, routeResult, routeResult.getOptimizeResult()));
+        if (routeResult.getSqlStatement() instanceof DMLStatement) {
+            sqlRewriters.add(new EncryptSQLRewriter(shardingRule.getEncryptRule().getEncryptorEngine(), (DMLStatement) routeResult.getSqlStatement(), routeResult.getOptimizeResult()));
+        }
+        result.init(Collections.<ParameterRewriter>singletonList(new ShardingParameterRewriter(routeResult)), sqlRewriters);
         return result;
     }
 }

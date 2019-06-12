@@ -21,7 +21,6 @@ import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.core.parse.sql.context.condition.Conditions;
 import org.apache.shardingsphere.core.parse.sql.context.table.Tables;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 
@@ -42,10 +41,6 @@ public abstract class AbstractSQLStatement implements SQLStatement {
     private final Collection<SQLSegment> sqlSegments = new LinkedList<>();
     
     private final Tables tables = new Tables();
-    
-    private final Conditions shardingConditions = new Conditions();
-    
-    private final Conditions encryptConditions = new Conditions();
     
     private String logicSQL;
     
