@@ -63,7 +63,7 @@ public class YamlOrchestrationEncryptDataSourceFactoryTest {
     
     @Test
     public void assertCreateDataSourceByYamlBytesWithDataSource() throws IOException {
-        DataSource dataSource = YamlOrchestrationEncryptDataSourceFactory.createDataSource(getDataSource() ,readBytesFromYamlFile());
+        DataSource dataSource = YamlOrchestrationEncryptDataSourceFactory.createDataSource(getDataSource(), readBytesFromYamlFile());
         assertThat(dataSource, instanceOf(OrchestrationEncryptDataSource.class));
     }
     
