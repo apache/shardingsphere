@@ -32,11 +32,43 @@ import java.util.Collection;
 public interface SQLStatement {
     
     /**
+     * Get logic SQL.
+     *
+     * @return logic SQL
+     */
+    String getLogicSQL();
+    
+    /**
+     * Set logic SQL.
+     *
+     * @param logicSQL logic SQL
+     */
+    void setLogicSQL(String logicSQL);
+    
+    /**
      * Get SQL segments.
      * 
      * @return SQL segments
      */
-    Collection<SQLSegment> getSqlSegments();
+    Collection<SQLSegment> getSQLSegments();
+    
+    /**
+     * Find SQL segment.
+     *
+     * @param sqlSegmentType SQL segment type
+     * @param <T> type of SQL segment
+     * @return SQL segment
+     */
+    <T extends SQLSegment> Optional<T> findSQLSegment(Class<T> sqlSegmentType);
+    
+    /**
+     * Find SQL segment.
+     *
+     * @param sqlSegmentType SQL segment type
+     * @param <T> type of SQL segment
+     * @return SQL segments
+     */
+    <T extends SQLSegment> Collection<T> findSQLSegments(Class<T> sqlSegmentType);
     
     /**
      * Get tables.
@@ -72,36 +104,4 @@ public interface SQLStatement {
      * @param parametersIndex parameters index
      */
     void setParametersIndex(int parametersIndex);
-    
-    /**
-     * Get logic SQL.
-     * 
-     * @return logic SQL
-     */
-    String getLogicSQL();
-    
-    /**
-     * Set logic SQL.
-     * 
-     * @param logicTable logic SQL
-     */
-    void setLogicSQL(String logicTable);
-    
-    /**
-     * Find SQL segment.
-     *
-     * @param sqlSegmentType SQL segment type
-     * @param <T> type of SQL segment
-     * @return SQL segment
-     */
-    <T extends SQLSegment> Optional<T> findSQLSegment(Class<T> sqlSegmentType);
-    
-    /**
-     * Find SQL segment.
-     *
-     * @param sqlSegmentType SQL segment type
-     * @param <T> type of SQL segment
-     * @return SQL segments
-     */
-    <T extends SQLSegment> Collection<T> findSQLSegments(Class<T> sqlSegmentType);
 }

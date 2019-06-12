@@ -39,7 +39,7 @@ public final class IndexTokenGenerator implements CollectionSQLTokenGenerator<Sh
     @Override
     public Collection<IndexToken> generateSQLTokens(final SQLStatement sqlStatement, final List<Object> parameters, final ShardingRule shardingRule) {
         Collection<IndexToken> result = new LinkedList<>();
-        for (SQLSegment each : sqlStatement.getSqlSegments()) {
+        for (SQLSegment each : sqlStatement.getSQLSegments()) {
             if (each instanceof IndexSegment) {
                 Optional<IndexToken> indexToken = createIndexToken(sqlStatement, shardingRule, (IndexSegment) each);
                 if (indexToken.isPresent()) {

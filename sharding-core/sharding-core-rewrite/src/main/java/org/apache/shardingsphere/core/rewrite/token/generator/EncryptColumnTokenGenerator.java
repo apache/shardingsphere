@@ -41,7 +41,7 @@ public final class EncryptColumnTokenGenerator implements CollectionSQLTokenGene
     @Override
     public Collection<EncryptColumnToken> generateSQLTokens(final SQLStatement sqlStatement, final List<Object> parameters, final EncryptRule encryptRule) {
         Collection<EncryptColumnToken> result = new LinkedList<>();
-        for (SQLSegment each : sqlStatement.getSqlSegments()) {
+        for (SQLSegment each : sqlStatement.getSQLSegments()) {
             if (each instanceof SetAssignmentsSegment) {
                 result.addAll(createFromUpdateSetAssignment(sqlStatement, encryptRule, (SetAssignmentsSegment) each));
             }

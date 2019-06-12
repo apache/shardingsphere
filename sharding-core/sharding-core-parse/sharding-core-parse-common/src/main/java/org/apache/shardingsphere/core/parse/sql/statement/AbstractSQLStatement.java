@@ -49,9 +49,14 @@ public abstract class AbstractSQLStatement implements SQLStatement {
     
     private final Conditions encryptConditions = new Conditions();
     
+    private String logicSQL;
+    
     private int parametersIndex;
     
-    private String logicSQL;
+    @Override
+    public final Collection<SQLSegment> getSQLSegments() {
+        return sqlSegments;
+    }
     
     @Override
     @SuppressWarnings("unchecked")
