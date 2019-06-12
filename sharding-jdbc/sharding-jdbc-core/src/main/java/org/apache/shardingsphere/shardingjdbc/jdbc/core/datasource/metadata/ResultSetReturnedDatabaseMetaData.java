@@ -263,7 +263,10 @@ public abstract class ResultSetReturnedDatabaseMetaData extends WrapperAdapter i
     }
     
     private String getActualTableNamePattern(final String tableNamePattern) {
-        return null == tableNamePattern ? tableNamePattern : (shardingRule.findTableRule(tableNamePattern).isPresent() ? "%" + tableNamePattern + "%" : tableNamePattern);
+        if (null == tableNamePattern || null == shardingRule) {
+            return tableNamePattern;
+        }
+        return shardingRule.findTableRule(tableNamePattern).isPresent() ? "%" + tableNamePattern + "%" : tableNamePattern;
     }
     
     private String getActualTable(final String table) {
