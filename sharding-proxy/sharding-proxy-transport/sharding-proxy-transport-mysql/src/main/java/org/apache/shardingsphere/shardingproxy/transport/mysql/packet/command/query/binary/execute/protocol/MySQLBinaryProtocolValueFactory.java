@@ -45,6 +45,7 @@ public final class MySQLBinaryProtocolValueFactory {
         setFloatBinaryProtocolValue();
         setDateBinaryProtocolValue();
         setTimeBinaryProtocolValue();
+        setNullBinaryProtocolValue();
     }
     
     private static void setStringLenencBinaryProtocolValue() {
@@ -106,6 +107,10 @@ public final class MySQLBinaryProtocolValueFactory {
     private static void setTimeBinaryProtocolValue() {
         MySQLTimeBinaryProtocolValue binaryProtocolValue = new MySQLTimeBinaryProtocolValue();
         BINARY_PROTOCOL_VALUES.put(MySQLColumnType.MYSQL_TYPE_TIME, binaryProtocolValue);
+    }
+    
+    private static void setNullBinaryProtocolValue() {
+        BINARY_PROTOCOL_VALUES.put(MySQLColumnType.MYSQL_TYPE_NULL, null);
     }
     
     /**
