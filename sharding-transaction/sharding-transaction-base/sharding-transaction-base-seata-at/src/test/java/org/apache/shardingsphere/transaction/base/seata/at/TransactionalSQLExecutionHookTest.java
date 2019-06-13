@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TransactionalSQLExecutionHookTest {
@@ -58,6 +59,19 @@ public class TransactionalSQLExecutionHookTest {
     @Test
     public void assertStartInTrunkThread() {
         executionHook.start(routeUnit, dataSourceMetaData, true, shardingExecuteDataMap);
+        assertFalse(RootContext.inGlobalTransaction());
+    }
+    
+    @Test
+    public void assertStartInChildThread() {
+        executionHook.start(routeUnit, dataSourceMetaData, false, shardingExecuteDataMap);
+        assertTrue(RootContext.inGlobalTransaction());
+    }
+    
+    @Test
+    public void assertOthers() {
+        executionHook.finishFailure(new RuntimeException());
+        executionHook.finishSuccess();
         assertFalse(RootContext.inGlobalTransaction());
     }
 }
