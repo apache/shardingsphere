@@ -45,10 +45,10 @@ public final class EncryptInsertValuesFiller implements SQLSegmentFiller<InsertV
         InsertValue insertValue = new InsertValue(sqlSegment.getValues());
         insertStatement.getValues().add(insertValue);
         insertStatement.setParametersIndex(insertStatement.getParametersIndex() + insertValue.getParametersCount());
-        reviseInsertStatement(insertStatement, sqlSegment);
+        reviseInsertStatement(insertStatement);
     }
     
-    private void reviseInsertStatement(final InsertStatement insertStatement, final InsertValuesSegment sqlSegment) {
+    private void reviseInsertStatement(final InsertStatement insertStatement) {
         reviseInsertColumnNames(insertStatement);
         setNeededToAppendAssistedColumns(insertStatement);
         

@@ -31,7 +31,6 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.Assignmen
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.SimpleExpressionSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
@@ -76,7 +75,7 @@ public final class ShardingSetAssignmentsFiller implements SQLSegmentFiller<SetA
         List<ExpressionSegment> columnValues = new LinkedList<>();
         for (AssignmentSegment each : sqlSegment.getAssignments()) {
             if (each.getValue() instanceof SimpleExpressionSegment) {
-                fillShardingCondition(andCondition, columnNames.next(), insertStatement.getTables().getSingleTableName(), null, (SimpleExpressionSegment) each.getValue());
+                fillShardingCondition(andCondition, columnNames.next(), insertStatement.getTables().getSingleTableName(), (SimpleExpressionSegment) each.getValue());
             }
             columnValues.add(each.getValue());
         }
@@ -96,9 +95,9 @@ public final class ShardingSetAssignmentsFiller implements SQLSegmentFiller<SetA
     }
     
     private void fillShardingCondition(final AndCondition andCondition,
-                                       final String columnName, final String tableName, final PredicateSegment predicateSegment, final SimpleExpressionSegment simpleExpressionSegment) {
+                                       final String columnName, final String tableName, final SimpleExpressionSegment simpleExpressionSegment) {
         if (shardingRule.isShardingColumn(columnName, tableName)) {
-            andCondition.getConditions().add(new Condition(new Column(columnName, tableName), predicateSegment, simpleExpressionSegment));
+            andCondition.getConditions().add(new Condition(new Column(columnName, tableName), null, simpleExpressionSegment));
         }
     }
     
