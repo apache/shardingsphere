@@ -200,7 +200,7 @@ public final class ShardingSQLRewriterTest {
         insertStatement.setNeededToAppendGeneratedKey(true);
         insertStatement.getSQLSegments().add(new InsertColumnsSegment(30, 30, Collections.singleton(mock(ColumnSegment.class))));
         insertStatement.getSQLSegments().add(new InsertValuesSegment(39, 44, Collections.<ExpressionSegment>emptyList()));
-        insertStatement.setParametersIndex(2);
+        insertStatement.setParametersCount(2);
         insertStatement.getSQLSegments().add(new TableSegment(12, 18, "table_x"));
         InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(Arrays.asList("name", "age", "id"));
         Object[] parameters = {"x", 1, 1};
@@ -224,7 +224,7 @@ public final class ShardingSQLRewriterTest {
         insertStatement.getSQLSegments().add(new InsertColumnsSegment(21, 21, Collections.<ColumnSegment>emptyList()));
         insertStatement.getSQLSegments().add(new InsertValuesSegment(29, 31, Collections.<ExpressionSegment>emptyList()));
         insertStatement.getTables().add(new Table("table_x", null));
-        insertStatement.setParametersIndex(1);
+        insertStatement.setParametersCount(1);
         insertStatement.getSQLSegments().add(new TableSegment(12, 20, "`table_x`"));
         InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(Arrays.asList("name", "id"));
         Object[] parameters = {"Bill", 1};

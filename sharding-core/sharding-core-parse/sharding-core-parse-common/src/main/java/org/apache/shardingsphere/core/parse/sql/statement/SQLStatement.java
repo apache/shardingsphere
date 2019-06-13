@@ -70,23 +70,23 @@ public interface SQLStatement {
     <T extends SQLSegment> Collection<T> findSQLSegments(Class<T> sqlSegmentType);
     
     /**
+     * Get count of parameters.
+     *
+     * @return count of parameters
+     */
+    int getParametersCount();
+    
+    /**
+     * Set count of parameters.
+     *
+     * @param parametersCount count of parameters
+     */
+    void setParametersCount(int parametersCount);
+    
+    /**
      * Get tables.
      * 
      * @return tables
      */
     Tables getTables();
-    
-    /**
-     * Get index of parameters.
-     *
-     * @return index of parameters
-     */
-    int getParametersIndex();
-    
-    /**
-     * Set parameters index.
-     * 
-     * @param parametersIndex parameters index
-     */
-    void setParametersIndex(int parametersIndex);
 }

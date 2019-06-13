@@ -44,7 +44,7 @@ public abstract class AbstractSQLStatement implements SQLStatement {
     
     private String logicSQL;
     
-    private int parametersIndex;
+    private int parametersCount;
     
     @Override
     public final Collection<SQLSegment> getSQLSegments() {

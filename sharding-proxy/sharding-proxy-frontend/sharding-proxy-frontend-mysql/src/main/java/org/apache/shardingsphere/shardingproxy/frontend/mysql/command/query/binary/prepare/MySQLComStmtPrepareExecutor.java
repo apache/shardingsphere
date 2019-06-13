@@ -66,7 +66,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         Collection<DatabasePacket> result = new LinkedList<>();
         int currentSequenceId = 0;
         SQLStatement sqlStatement = shardingSQLParseEntry.parse(packet.getSql(), true);
-        int parametersIndex = sqlStatement.getParametersIndex();
+        int parametersIndex = sqlStatement.getParametersCount();
         result.add(new MySQLComStmtPrepareOKPacket(++currentSequenceId, PREPARED_STATEMENT_REGISTRY.register(packet.getSql(), parametersIndex), getNumColumns(sqlStatement), parametersIndex, 0));
         for (int i = 0; i < parametersIndex; i++) {
             // TODO add column name
