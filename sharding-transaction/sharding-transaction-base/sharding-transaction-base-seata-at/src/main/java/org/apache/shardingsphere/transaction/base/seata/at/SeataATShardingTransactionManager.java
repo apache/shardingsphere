@@ -27,7 +27,6 @@ import io.seata.rm.datasource.DataSourceProxy;
 import io.seata.tm.TMClient;
 import io.seata.tm.api.GlobalTransactionContext;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.core.execute.ShardingExecuteDataMap;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 import org.apache.shardingsphere.transaction.core.ResourceDataSource;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -79,7 +78,7 @@ public final class SeataATShardingTransactionManager implements ShardingTransact
     public void begin() {
         SeataTransactionHolder.set(GlobalTransactionContext.getCurrentOrCreate());
         SeataTransactionHolder.get().begin();
-        ShardingExecuteDataMap.getDataMap().put("SEATA_TX_XID", RootContext.getXID());
+        SeataTransactionBroadcaster.collectGlobalTxId();
     }
     
     @Override

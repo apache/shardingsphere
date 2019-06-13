@@ -17,31 +17,29 @@
 
 package org.apache.shardingsphere.transaction.base.seata.at;
 
-import org.apache.shardingsphere.core.execute.hook.SQLExecutionHook;
-import org.apache.shardingsphere.core.route.RouteUnit;
-import org.apache.shardingsphere.spi.database.DataSourceMetaData;
+import io.seata.core.context.RootContext;
+import org.apache.shardingsphere.core.execute.ShardingExecuteDataMap;
 
 import java.util.Map;
 
 /**
- * Seata transactional SQL execution hook.
+ * Seata transaction broadcaster.
  *
  * @author zhaojun
  */
-public final class TransactionalSQLExecutionHook implements SQLExecutionHook {
+class SeataTransactionBroadcaster {
     
-    @Override
-    public void start(final RouteUnit routeUnit, final DataSourceMetaData dataSourceMetaData, final boolean isTrunkThread, final Map<String, Object> shardingExecuteDataMap) {
-        if (!isTrunkThread) {
-            SeataTransactionBroadcaster.broadcastIfNecessary(shardingExecuteDataMap);
+    private static final String SEATA_TX_XID = "SEATA_TX_XID";
+    
+    static void collectGlobalTxId() {
+        if (RootContext.inGlobalTransaction()) {
+            ShardingExecuteDataMap.getDataMap().put(SEATA_TX_XID, RootContext.getXID());
         }
     }
     
-    @Override
-    public void finishSuccess() {
-    }
-    
-    @Override
-    public void finishFailure(final Exception cause) {
+    static void broadcastIfNecessary(final Map<String, Object> shardingExecuteDataMap) {
+        if (shardingExecuteDataMap.containsKey(SEATA_TX_XID)) {
+            RootContext.bind((String) shardingExecuteDataMap.get(SEATA_TX_XID));
+        }
     }
 }
