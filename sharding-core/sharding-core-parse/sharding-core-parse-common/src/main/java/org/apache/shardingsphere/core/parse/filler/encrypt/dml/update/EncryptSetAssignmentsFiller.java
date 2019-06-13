@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.filler.encrypt.dml;
+package org.apache.shardingsphere.core.parse.filler.encrypt.dml.update;
 
 import lombok.Setter;
 import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
