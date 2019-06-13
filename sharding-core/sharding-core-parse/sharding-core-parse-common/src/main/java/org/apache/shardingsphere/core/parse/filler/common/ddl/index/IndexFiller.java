@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.filler.sharding;
+package org.apache.shardingsphere.core.parse.filler.common.ddl.index;
 
 import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.sql.segment.ddl.index.IndexSegment;
@@ -23,11 +23,11 @@ import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.DDLStatement;
 
 /**
- * Index filler for sharding.
+ * Index filler.
  *
  * @author zhangliang
  */
-public final class ShardingIndexFiller implements SQLSegmentFiller<IndexSegment> {
+public final class IndexFiller implements SQLSegmentFiller<IndexSegment> {
     
     @Override
     public void fill(final IndexSegment sqlSegment, final SQLStatement sqlStatement) {
