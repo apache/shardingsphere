@@ -35,7 +35,7 @@ public final class MySQLDataSourceMetaDataTest {
     
     @Test
     public void assertGetPropertiesWithDefaultPort() {
-        MySQLDataSourceMetaData actual = new MySQLDataSourceMetaData("jdbc:mysql://127.0.0.1/ds_0?serverTimezone=UTC&useSSL=false");
+        MySQLDataSourceMetaData actual = new MySQLDataSourceMetaData("jdbc:mysql:loadbalance://127.0.0.1/ds_0?serverTimezone=UTC&useSSL=false");
         assertThat(actual.getHostName(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(3306));
         assertThat(actual.getSchemaName(), is("ds_0"));
