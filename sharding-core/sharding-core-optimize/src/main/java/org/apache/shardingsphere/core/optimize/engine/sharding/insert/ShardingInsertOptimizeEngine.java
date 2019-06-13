@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.optimize.engine.sharding.insert;
 
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.GeneratedKey;
 import org.apache.shardingsphere.core.optimize.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.condition.ShardingConditions;
@@ -53,8 +52,6 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 public final class ShardingInsertOptimizeEngine implements OptimizeEngine {
-    
-    private final ShardingTableMetaData tableMetaData;
     
     private final ShardingRule shardingRule;
     

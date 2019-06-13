@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.optimize.engine.sharding;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.GeneratedKey;
 import org.apache.shardingsphere.core.optimize.engine.sharding.insert.ShardingInsertOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
@@ -54,8 +53,6 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class ShardingInsertOptimizeEngineTest {
-    
-    private ShardingTableMetaData tableMetaData;
     
     private ShardingRule shardingRule;
     
@@ -206,7 +203,7 @@ public final class ShardingInsertOptimizeEngineTest {
         GeneratedKey generatedKey = new GeneratedKey("order_id");
         generatedKey.getGeneratedKeys().add(1);
         generatedKey.getGeneratedKeys().add(2);
-        OptimizeResult actual = new ShardingInsertOptimizeEngine(tableMetaData, shardingRule, insertValuesStatementWithPlaceholder, insertValuesParameters, generatedKey).optimize();
+        OptimizeResult actual = new ShardingInsertOptimizeEngine(shardingRule, insertValuesStatementWithPlaceholder, insertValuesParameters, generatedKey).optimize();
         assertFalse(actual.getShardingConditions().isAlwaysFalse());
         assertThat(actual.getShardingConditions().getShardingConditions().size(), is(2));
         assertTrue(actual.getInsertOptimizeResult().isPresent());
@@ -231,7 +228,7 @@ public final class ShardingInsertOptimizeEngineTest {
         GeneratedKey generatedKey = new GeneratedKey("order_id");
         generatedKey.getGeneratedKeys().add(1);
         generatedKey.getGeneratedKeys().add(2);
-        OptimizeResult actual = new ShardingInsertOptimizeEngine(tableMetaData, shardingRule, insertValuesStatementWithPlaceholderWithEncrypt, insertValuesParameters, generatedKey).optimize();
+        OptimizeResult actual = new ShardingInsertOptimizeEngine(shardingRule, insertValuesStatementWithPlaceholderWithEncrypt, insertValuesParameters, generatedKey).optimize();
         assertFalse(actual.getShardingConditions().isAlwaysFalse());
         assertThat(actual.getShardingConditions().getShardingConditions().size(), is(2));
         assertTrue(actual.getInsertOptimizeResult().isPresent());
@@ -255,7 +252,7 @@ public final class ShardingInsertOptimizeEngineTest {
         GeneratedKey generatedKey = new GeneratedKey("order_id");
         generatedKey.getGeneratedKeys().add(1);
         generatedKey.getGeneratedKeys().add(1);
-        OptimizeResult actual = new ShardingInsertOptimizeEngine(tableMetaData, shardingRule, insertValuesStatementWithPlaceholder, insertValuesParameters, generatedKey).optimize();
+        OptimizeResult actual = new ShardingInsertOptimizeEngine(shardingRule, insertValuesStatementWithPlaceholder, insertValuesParameters, generatedKey).optimize();
         assertFalse(actual.getShardingConditions().isAlwaysFalse());
         assertThat(actual.getShardingConditions().getShardingConditions().size(), is(2));
         assertTrue(actual.getInsertOptimizeResult().isPresent());
@@ -279,7 +276,7 @@ public final class ShardingInsertOptimizeEngineTest {
         insertValuesStatementWithoutPlaceholderWithQueryEncrypt.getColumnNames().add("status");
         insertValuesStatementWithoutPlaceholderWithQueryEncrypt.getValues().add(
                 new InsertValue(Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(1, 2, 12), new LiteralExpressionSegment(3, 4, "a"))));
-        OptimizeResult actual = new ShardingInsertOptimizeEngine(tableMetaData, shardingRule, insertValuesStatementWithoutPlaceholderWithQueryEncrypt, Collections.emptyList(), generatedKey).optimize();
+        OptimizeResult actual = new ShardingInsertOptimizeEngine(shardingRule, insertValuesStatementWithoutPlaceholderWithQueryEncrypt, Collections.emptyList(), generatedKey).optimize();
         assertThat(actual.getShardingConditions().getShardingConditions().size(), is(1));
         assertTrue(actual.getInsertOptimizeResult().isPresent());
         assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getParameters().length, is(0));
@@ -294,7 +291,7 @@ public final class ShardingInsertOptimizeEngineTest {
         insertValuesStatementWithoutPlaceholder.getColumnNames().add("user_id");
         insertValuesStatementWithoutPlaceholder.getColumnNames().add("status");
         insertValuesStatementWithoutPlaceholder.getValues().add(new InsertValue(Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(1, 2, 12), new LiteralExpressionSegment(3, 4, "a"))));
-        OptimizeResult actual = new ShardingInsertOptimizeEngine(tableMetaData, shardingRule, insertValuesStatementWithoutPlaceholder, Collections.emptyList(), generatedKey).optimize();
+        OptimizeResult actual = new ShardingInsertOptimizeEngine(shardingRule, insertValuesStatementWithoutPlaceholder, Collections.emptyList(), generatedKey).optimize();
         assertThat(actual.getShardingConditions().getShardingConditions().size(), is(1));
         assertTrue(actual.getInsertOptimizeResult().isPresent());
         assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getParameters().length, is(0));
@@ -308,7 +305,7 @@ public final class ShardingInsertOptimizeEngineTest {
         generatedKey.getGeneratedKeys().add(1);
         insertSetStatementWithPlaceholder.getValues().add(
                 new InsertValue(Arrays.<ExpressionSegment>asList(new ParameterMarkerExpressionSegment(1, 2, 0), new ParameterMarkerExpressionSegment(3, 4, 1))));
-        OptimizeResult actual = new ShardingInsertOptimizeEngine(tableMetaData, shardingRule, insertSetStatementWithPlaceholder, insertSetParameters, generatedKey).optimize();
+        OptimizeResult actual = new ShardingInsertOptimizeEngine(shardingRule, insertSetStatementWithPlaceholder, insertSetParameters, generatedKey).optimize();
         assertThat(actual.getShardingConditions().getShardingConditions().size(), is(1));
         assertTrue(actual.getInsertOptimizeResult().isPresent());
         assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getParameters().length, is(3));
@@ -324,7 +321,7 @@ public final class ShardingInsertOptimizeEngineTest {
         generatedKey.getGeneratedKeys().add(1);
         InsertValue insertValue = new InsertValue(Arrays.<ExpressionSegment>asList(new ParameterMarkerExpressionSegment(1, 2, 0), new ParameterMarkerExpressionSegment(3, 4, 1)));
         insertSetStatementWithPlaceholderWithQueryEncrypt.getValues().add(insertValue);
-        OptimizeResult actual = new ShardingInsertOptimizeEngine(tableMetaData, shardingRule, insertSetStatementWithPlaceholderWithQueryEncrypt, insertSetParameters, generatedKey).optimize();
+        OptimizeResult actual = new ShardingInsertOptimizeEngine(shardingRule, insertSetStatementWithPlaceholderWithQueryEncrypt, insertSetParameters, generatedKey).optimize();
         assertThat(actual.getShardingConditions().getShardingConditions().size(), is(1));
         assertTrue(actual.getInsertOptimizeResult().isPresent());
         assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getParameters().length, is(4));
@@ -340,7 +337,7 @@ public final class ShardingInsertOptimizeEngineTest {
         GeneratedKey generatedKey = new GeneratedKey("order_id");
         generatedKey.getGeneratedKeys().add(1);
         insertSetStatementWithoutPlaceholder.getValues().add(new InsertValue(Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(1, 2, 12), new LiteralExpressionSegment(3, 4, "a"))));
-        OptimizeResult actual = new ShardingInsertOptimizeEngine(tableMetaData, shardingRule, insertSetStatementWithoutPlaceholder, Collections.emptyList(), generatedKey).optimize();
+        OptimizeResult actual = new ShardingInsertOptimizeEngine(shardingRule, insertSetStatementWithoutPlaceholder, Collections.emptyList(), generatedKey).optimize();
         assertThat(actual.getShardingConditions().getShardingConditions().size(), is(1));
         assertTrue(actual.getInsertOptimizeResult().isPresent());
         assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getParameters().length, is(0));
@@ -354,7 +351,7 @@ public final class ShardingInsertOptimizeEngineTest {
         generatedKey.getGeneratedKeys().add(1);
         insertSetStatementWithoutPlaceholderWithEncrypt.getValues().add(
                 new InsertValue(Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(1, 2, 12), new LiteralExpressionSegment(3, 4, "a"))));
-        OptimizeResult actual = new ShardingInsertOptimizeEngine(tableMetaData, shardingRule, insertSetStatementWithoutPlaceholderWithEncrypt, Collections.emptyList(), generatedKey).optimize();
+        OptimizeResult actual = new ShardingInsertOptimizeEngine(shardingRule, insertSetStatementWithoutPlaceholderWithEncrypt, Collections.emptyList(), generatedKey).optimize();
         assertThat(actual.getShardingConditions().getShardingConditions().size(), is(1));
         assertTrue(actual.getInsertOptimizeResult().isPresent());
         assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getParameters().length, is(0));
