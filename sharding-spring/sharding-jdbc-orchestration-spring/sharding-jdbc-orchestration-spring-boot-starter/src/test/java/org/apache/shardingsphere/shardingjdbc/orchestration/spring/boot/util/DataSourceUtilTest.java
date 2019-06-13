@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.spring.boot.util;
+package org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.util;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.util.DataSourceUtil;
