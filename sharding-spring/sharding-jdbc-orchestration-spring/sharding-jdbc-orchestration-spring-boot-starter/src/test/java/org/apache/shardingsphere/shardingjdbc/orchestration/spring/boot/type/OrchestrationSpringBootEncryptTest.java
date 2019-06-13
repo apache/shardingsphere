@@ -18,9 +18,11 @@
 package org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.type;
 
 import lombok.SneakyThrows;
+
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
-import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;
+import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
+import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationEncryptDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.util.EmbedTestingServer;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -39,10 +41,10 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = OrchestrationSpringBootMasterSlaveTest.class)
+@SpringBootTest(classes = OrchestrationSpringBootEncryptTest.class)
 @SpringBootApplication
-@ActiveProfiles("masterslave")
-public class OrchestrationSpringBootMasterSlaveTest {
+@ActiveProfiles("encrypt")
+public class OrchestrationSpringBootEncryptTest {
     
     @Resource
     private DataSource dataSource;
@@ -54,14 +56,17 @@ public class OrchestrationSpringBootMasterSlaveTest {
     
     @Test
     @SneakyThrows
-    public void assertWithMasterSlaveDataSource() {
-        assertTrue(dataSource instanceof OrchestrationMasterSlaveDataSource);
-        Field field = OrchestrationMasterSlaveDataSource.class.getDeclaredField("dataSource");
+    public void assertWithEncryptDataSource() {
+        assertTrue(dataSource instanceof OrchestrationEncryptDataSource);
+        Field field = OrchestrationEncryptDataSource.class.getDeclaredField("dataSource");
         field.setAccessible(true);
-        MasterSlaveDataSource masterSlaveDataSource = (MasterSlaveDataSource) field.get(dataSource);
-        for (DataSource each : masterSlaveDataSource.getDataSourceMap().values()) {
-            assertThat(((BasicDataSource) each).getMaxTotal(), is(16));
-            assertThat(((BasicDataSource) each).getUsername(), is("root"));
-        }
+        EncryptDataSource encryptDataSource = (EncryptDataSource) field.get(dataSource);
+        BasicDataSource embedDataSource = (BasicDataSource) encryptDataSource.getDataSource();
+        assertThat(embedDataSource.getMaxTotal(), is(100));
+        assertThat(embedDataSource.getUsername(), is("sa"));
+        EncryptRuleConfiguration encryptRuleConfig = encryptDataSource.getEncryptRule().getEncryptRuleConfig();
+        assertThat(encryptRuleConfig.getEncryptorRuleConfigs().size(), is(1));
+        assertTrue(encryptRuleConfig.getEncryptorRuleConfigs().containsKey("order_encrypt"));
+        assertThat(encryptRuleConfig.getEncryptorRuleConfigs().get("order_encrypt").getType(), is("aes"));
     }
 }
