@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.optimize;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
 import org.apache.shardingsphere.core.optimize.engine.encrypt.EncryptDefaultOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.engine.encrypt.EncryptInsertOptimizeEngine;
@@ -46,15 +47,17 @@ public final class OptimizeEngineFactory {
     /**
      * Create optimize engine instance.
      * 
+     * @param tableMetaData table meta data
      * @param shardingRule sharding rule
      * @param sqlStatement SQL statement
      * @param parameters parameters
      * @param generatedKey generated key
      * @return optimize engine instance
      */
-    public static OptimizeEngine newInstance(final ShardingRule shardingRule, final SQLStatement sqlStatement, final List<Object> parameters, final GeneratedKey generatedKey) {
+    public static OptimizeEngine newInstance(final ShardingTableMetaData tableMetaData, 
+                                             final ShardingRule shardingRule, final SQLStatement sqlStatement, final List<Object> parameters, final GeneratedKey generatedKey) {
         if (sqlStatement instanceof InsertStatement) {
-            return new InsertOptimizeEngine(shardingRule, (InsertStatement) sqlStatement, parameters, generatedKey);
+            return new InsertOptimizeEngine(tableMetaData, shardingRule, (InsertStatement) sqlStatement, parameters, generatedKey);
         }
         if (sqlStatement instanceof DMLStatement) {
             return new QueryOptimizeEngine(sqlStatement, parameters, ((DMLStatement) sqlStatement).getShardingConditions());
