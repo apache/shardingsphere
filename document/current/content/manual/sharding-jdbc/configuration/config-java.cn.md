@@ -275,7 +275,7 @@ ShardingStrategyConfiguration的实现类，用于配置不分片的策略。
 | *名称*             | *数据类型*                    | *说明*                                                                         |
 | ----------------- | ---------------------------- | ------------------------------------------------------------------------------ |
 | column            | String                       | 自增列名称                                                                      |
-| type              | String                       | 自增列值生成器类型，可自定义或选择内置类型：SNOWFLAKE/UUID                           |
+| type              | String                       | 自增列值生成器类型，可自定义或选择内置类型：SNOWFLAKE/UUID/LEAF_SEGMENT                          |
 | props             | Properties                   | 属性配置, 注意：使用SNOWFLAKE算法，需要配置worker.id与max.tolerate.time.difference.milliseconds属性 |  
 
 #### EncryptorRuleConfiguration

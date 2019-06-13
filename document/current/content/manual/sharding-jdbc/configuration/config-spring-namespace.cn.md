@@ -478,7 +478,7 @@ weight = 4
 | *名称*             | *类型*                       | *说明*                                                                           |
 | ----------------- | ---------------------------- | ------------------------------------------------------------------------------- |
 | column            | 属性                          | 自增列名称                                                                       |
-| type              | 属性                          | 自增列值生成器类型，可自定义或选择内置类型：SNOWFLAKE/UUID                            |
+| type              | 属性                          | 自增列值生成器类型，可自定义或选择内置类型：SNOWFLAKE/UUID/LEAF_SEGMENT                            |
 | props-ref         | 属性                          | 属性配置, 注意：使用SNOWFLAKE算法，需要配置worker.id与max.tolerate.time.difference.milliseconds属性 | 
 
 #### \<sharding:encrypt-rules />

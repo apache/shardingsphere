@@ -338,7 +338,7 @@ shardingRule: # sharding的配置
   defaultTableStrategy: #配置参考defaultDatabaseShardingStrategy,区别在于,inline算法的配置中,algorithmExpression的配置算法结果需要是实际的物理表名称,而非数据源名称
   defaultKeyGenerator: #默认的主键生成算法 如果没有设置,默认为SNOWFLAKE算法
     column: # 自增键对应的列名称
-    type: #自增键的类型,主要用于调用内置的主键生成算法有三个可用值:SNOWFLAKE(时间戳+worker id+自增id),UUID(java.util.UUID类生成的随机UUID),LEAF,其中Snowflake算法与UUID算法已经实现,LEAF目前(2018-01-14)尚未实现
+    type: #自增键的类型,主要用于调用内置的主键生成算法有三个可用值:SNOWFLAKE(时间戳+worker id+自增id),UUID(java.util.UUID类生成的随机UUID),LEAF_SEGMENT
     props:
       # 属性配置, 注意：使用SNOWFLAKE算法，需要配置worker.id与max.tolerate.time.difference.milliseconds属性
   tables: #配置表sharding的主要位置
