@@ -25,6 +25,7 @@ import org.apache.shardingsphere.core.constant.ShardingConstant;
 import org.apache.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.EncryptRuleChangedEvent;
+import org.apache.shardingsphere.orchestration.internal.registry.config.event.PropertiesChangedEvent;
 import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlEncryptDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
@@ -115,5 +116,17 @@ public class OrchestrationEncryptDataSourceTest {
         } catch (IllegalStateException ex) {
             assertThat(ex.getMessage(), is("There should be only one datasource for encrypt, but now has 0 datasource(s)"));
         }
+    }
+    
+    @Test
+    public void assertRenewProperties() {
+        encryptDataSource.renew(getPropertiesChangedEvent());
+        assertThat(encryptDataSource.getDataSource().getShardingProperties().getProps().getProperty("sql.show"), is("true"));
+    }
+    
+    private PropertiesChangedEvent getPropertiesChangedEvent() {
+        Properties properties = new Properties();
+        properties.setProperty("sql.show", "true");
+        return new PropertiesChangedEvent(properties);
     }
 }

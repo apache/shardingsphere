@@ -35,7 +35,7 @@ public class OrchestrationEncryptDataSourceFactoryTest {
     
     @Test
     public void assertCreateDataSourceWithDataSource() {
-        DataSource dataSource = OrchestrationEncryptDataSourceFactory.createDataSource(getDataSource(), getEncryptRuleConfiguration(), getOrchestrationConfiguration());
+        DataSource dataSource = OrchestrationEncryptDataSourceFactory.createDataSource(getDataSource(), getEncryptRuleConfiguration(), new Properties(), getOrchestrationConfiguration());
         assertThat(dataSource, instanceOf(OrchestrationEncryptDataSource.class));
     }
     
@@ -47,7 +47,7 @@ public class OrchestrationEncryptDataSourceFactoryTest {
     
     @Test
     public void assertCreateDataSourceWithEmptyRule() {
-        DataSource dataSource = OrchestrationEncryptDataSourceFactory.createDataSource(null, null, getOrchestrationConfiguration());
+        DataSource dataSource = OrchestrationEncryptDataSourceFactory.createDataSource(null, null, null, getOrchestrationConfiguration());
         assertThat(dataSource, instanceOf(OrchestrationEncryptDataSource.class));
     }
     
