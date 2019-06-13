@@ -15,14 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.postgresql.statement;
+package org.apache.shardingsphere.orchestration.internal.registry.config.event;
 
-import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
+import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
+import org.apache.shardingsphere.orchestration.internal.registry.listener.ShardingOrchestrationEvent;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Set statement.
+ * Encrypt rule changed event.
  *
- * @author loxp
+ * @author yangyi
  */
-public final class SetStatement extends DALStatement {
+@RequiredArgsConstructor
+@Getter
+public class EncryptRuleChangedEvent implements ShardingOrchestrationEvent {
+    
+    private final String shardingSchemaName;
+    
+    private final EncryptRuleConfiguration encryptRuleConfiguration;
 }

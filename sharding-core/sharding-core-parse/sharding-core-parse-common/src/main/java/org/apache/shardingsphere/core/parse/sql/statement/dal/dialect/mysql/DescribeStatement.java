@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.statement.dml;
+package org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql;
 
 import lombok.ToString;
-import org.apache.shardingsphere.core.parse.sql.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
 
 /**
- * DQL statement.
+ * Describe statement.
  *
  * @author zhangliang
  */
 @ToString(callSuper = true)
-public class DQLStatement extends AbstractSQLStatement {
+public final class DescribeStatement extends DALStatement {
 }

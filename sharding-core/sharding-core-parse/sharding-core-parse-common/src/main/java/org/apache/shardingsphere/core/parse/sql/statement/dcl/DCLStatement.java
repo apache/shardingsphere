@@ -26,5 +26,5 @@ import org.apache.shardingsphere.core.parse.sql.statement.AbstractSQLStatement;
  * @author panjuan
  */
 @ToString(callSuper = true)
-public class DCLStatement extends AbstractSQLStatement {
+public final class DCLStatement extends AbstractSQLStatement {
 }

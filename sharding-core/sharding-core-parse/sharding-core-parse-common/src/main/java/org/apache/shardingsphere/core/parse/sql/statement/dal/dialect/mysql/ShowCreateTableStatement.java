@@ -15,18 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.database;
+package org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql;
+
+import lombok.ToString;
+import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
 
 /**
- * Unrecognized database URL exception.
+ * Show create table statement.
  *
  * @author zhangliang
  */
-public final class UnrecognizedDatabaseURLException extends RuntimeException {
-    
-    private static final long serialVersionUID = -1551117178863766353L;
-    
-    public UnrecognizedDatabaseURLException(final String url, final String pattern) {
-        super(String.format("The URL: '%s' is not recognized. Please refer to this pattern: '%s'.", url, pattern));
-    }
+@ToString(callSuper = true)
+public final class ShowCreateTableStatement extends DALStatement {
 }

@@ -17,11 +17,14 @@
 
 package org.apache.shardingsphere.core.parse.sql.statement.dal;
 
+import lombok.ToString;
+
 /**
  * Set statement.
  * 
  * @author chenqingyang
  * @author maxiaoguang
  */
+@ToString(callSuper = true)
 public final class SetStatement extends DALStatement {
 }

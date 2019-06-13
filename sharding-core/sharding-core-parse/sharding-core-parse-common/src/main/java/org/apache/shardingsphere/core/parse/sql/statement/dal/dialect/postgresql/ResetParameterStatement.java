@@ -15,14 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.statement;
+package org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.postgresql;
 
+import lombok.ToString;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
 
 /**
- * Show table status statement.
+ * Reset parameter statement.
  *
- * @author zhangliang
+ * @author loxp
  */
-public final class ShowTableStatusStatement extends DALStatement {
+@ToString(callSuper = true)
+public final class ResetParameterStatement extends DALStatement {
 }

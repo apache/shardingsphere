@@ -15,14 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.statement;
+package org.apache.shardingsphere.shardingjdbc.orchestration.internal.yaml;
 
-import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.core.yaml.config.encrypt.YamlRootEncryptRuleConfiguration;
+import org.apache.shardingsphere.orchestration.yaml.config.YamlOrchestrationConfiguration;
+
+import java.util.Properties;
 
 /**
- * Show columns statement.
+ * Orchestration encrypt configuration for YAML.
  *
- * @author zhangliang
+ * @author yangyi
  */
-public final class ShowColumnsStatement extends DALStatement {
+@Getter
+@Setter
+public final class YamlOrchestrationEncryptRuleConfiguration extends YamlRootEncryptRuleConfiguration {
+    
+    private YamlOrchestrationConfiguration orchestration;
+    
+    private Properties props = new Properties();
 }

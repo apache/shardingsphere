@@ -23,6 +23,7 @@ import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesCons
 import org.apache.shardingsphere.core.optimize.OptimizeEngineFactory;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
 import org.apache.shardingsphere.core.rewrite.rewriter.parameter.ParameterRewriter;
 import org.apache.shardingsphere.core.rewrite.rewriter.sql.EncryptSQLRewriter;
@@ -154,14 +155,17 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
         SQLStatement sqlStatement = connection.getParseEngine().parse(sql, true);
         SQLRewriteEngine encryptSQLRewriteEngine = new SQLRewriteEngine(connection.getEncryptRule(), sqlStatement, getParameters());
         OptimizeResult optimizeResult = OptimizeEngineFactory.newInstance(connection.getEncryptRule(), sqlStatement, getParameters()).optimize();
-        encryptSQLRewriteEngine.init(Collections.<ParameterRewriter>emptyList(),
-                Collections.<SQLRewriter>singletonList(new EncryptSQLRewriter(connection.getEncryptRule().getEncryptorEngine(), sqlStatement, optimizeResult)));
-        SQLUnit sqlUnit = encryptSQLRewriteEngine.generateSQL();
+        Collection<SQLRewriter> sqlRewriters = new LinkedList<>();
+        if (sqlStatement instanceof DMLStatement) {
+            sqlRewriters.add(new EncryptSQLRewriter(connection.getEncryptRule().getEncryptorEngine(), (DMLStatement) sqlStatement, optimizeResult));
+        }
+        encryptSQLRewriteEngine.init(Collections.<ParameterRewriter>emptyList(), sqlRewriters);
+        SQLUnit result = encryptSQLRewriteEngine.generateSQL();
         boolean showSQL = connection.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW);
         if (showSQL) {
-            SQLLogger.logSQL(sqlUnit.getSql());
+            SQLLogger.logSQL(result.getSql());
         }
-        return sqlUnit;
+        return result;
     }
     
     @Override

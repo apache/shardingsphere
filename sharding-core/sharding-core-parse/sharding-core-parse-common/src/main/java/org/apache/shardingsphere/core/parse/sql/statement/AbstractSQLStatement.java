@@ -19,10 +19,8 @@ package org.apache.shardingsphere.core.parse.sql.statement;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.core.parse.sql.context.condition.Conditions;
 import org.apache.shardingsphere.core.parse.sql.context.table.Tables;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 
@@ -35,9 +33,7 @@ import java.util.LinkedList;
  * @author zhangliang
  * @author panjuan
  */
-@RequiredArgsConstructor
 @Getter
-@Setter
 @ToString
 public abstract class AbstractSQLStatement implements SQLStatement {
     
@@ -45,13 +41,15 @@ public abstract class AbstractSQLStatement implements SQLStatement {
     
     private final Tables tables = new Tables();
     
-    private final Conditions shardingConditions = new Conditions();
-    
-    private final Conditions encryptConditions = new Conditions();
-    
-    private int parametersIndex;
-    
+    @Setter
     private String logicSQL;
+    
+    private int parametersCount;
+    
+    @Override
+    public final Collection<SQLSegment> getSQLSegments() {
+        return sqlSegments;
+    }
     
     @Override
     @SuppressWarnings("unchecked")
@@ -74,5 +72,10 @@ public abstract class AbstractSQLStatement implements SQLStatement {
             }
         }
         return result;
+    }
+    
+    @Override
+    public void addParametersCount(final int parametersCount) {
+        this.parametersCount += parametersCount;
     }
 }

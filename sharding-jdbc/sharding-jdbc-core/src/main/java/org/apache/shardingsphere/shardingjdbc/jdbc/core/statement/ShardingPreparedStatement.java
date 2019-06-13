@@ -28,7 +28,6 @@ import org.apache.shardingsphere.core.merge.MergeEngine;
 import org.apache.shardingsphere.core.merge.MergeEngineFactory;
 import org.apache.shardingsphere.core.optimize.GeneratedKey;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.DQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
@@ -122,7 +121,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         if (null != currentResultSet) {
             return currentResultSet;
         }
-        if (1 == preparedStatementExecutor.getStatements().size() && routeResult.getSqlStatement() instanceof DQLStatement) {
+        if (1 == preparedStatementExecutor.getStatements().size() && routeResult.getSqlStatement() instanceof SelectStatement) {
             currentResultSet = preparedStatementExecutor.getStatements().iterator().next().getResultSet();
             return currentResultSet;
         }

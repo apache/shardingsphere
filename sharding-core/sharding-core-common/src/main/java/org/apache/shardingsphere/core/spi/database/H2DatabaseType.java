@@ -23,6 +23,9 @@ import org.apache.shardingsphere.spi.database.BranchDatabaseType;
 import org.apache.shardingsphere.spi.database.DataSourceMetaData;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 
+import java.util.Collection;
+import java.util.Collections;
+
 /**
  * Database type of H2.
  *
@@ -33,6 +36,11 @@ public final class H2DatabaseType implements BranchDatabaseType {
     @Override
     public String getName() {
         return "H2";
+    }
+    
+    @Override
+    public Collection<String> getJdbcUrlPrefixAlias() {
+        return Collections.emptyList();
     }
     
     @Override

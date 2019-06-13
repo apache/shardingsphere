@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.parse.filler.common.dal;
 import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.sql.segment.common.SchemaSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.statement.UseStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.UseStatement;
 
 /**
  * Schema filler.

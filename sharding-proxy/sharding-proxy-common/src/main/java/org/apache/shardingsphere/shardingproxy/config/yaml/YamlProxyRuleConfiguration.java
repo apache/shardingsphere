@@ -40,6 +40,8 @@ public final class YamlProxyRuleConfiguration implements YamlConfiguration {
     
     private Map<String, YamlDataSourceParameter> dataSources = new HashMap<>();
     
+    private YamlDataSourceParameter dataSource;
+    
     private YamlShardingRuleConfiguration shardingRule;
     
     private YamlMasterSlaveRuleConfiguration masterSlaveRule;

@@ -33,7 +33,7 @@ public final class WhereFiller implements SQLSegmentFiller<WhereSegment> {
     
     @Override
     public void fill(final WhereSegment sqlSegment, final SQLStatement sqlStatement) {
-        sqlStatement.setParametersIndex(sqlSegment.getParameterCount());
+        sqlStatement.addParametersCount(sqlSegment.getParametersCount());
         if (sqlStatement instanceof DeleteStatement) {
             DeleteStatement deleteStatement = (DeleteStatement) sqlStatement;
             deleteStatement.setWhereStartIndex(sqlSegment.getStartIndex());

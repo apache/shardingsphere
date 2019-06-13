@@ -37,6 +37,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.Pred
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateCompareRightValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateInRightValue;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
@@ -58,7 +59,10 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
     
     @Override
     public void fill(final OrPredicateSegment sqlSegment, final SQLStatement sqlStatement) {
-        sqlStatement.getShardingConditions().getOrConditions().addAll(buildShardingConditions(sqlSegment, sqlStatement).getOrConditions());
+        if (!(sqlStatement instanceof DMLStatement)) {
+            return;
+        }
+        ((DMLStatement) sqlStatement).getShardingConditions().getOrConditions().addAll(buildShardingConditions(sqlSegment, sqlStatement).getOrConditions());
         if (sqlStatement instanceof SelectStatement) {
             shardingRowNumberPredicateFiller.fill(sqlSegment, sqlStatement);
         }

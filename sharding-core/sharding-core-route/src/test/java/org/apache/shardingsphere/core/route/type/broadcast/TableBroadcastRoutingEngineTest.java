@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.route.type.broadcast;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.DDLStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.DQLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.junit.Before;
@@ -79,7 +79,7 @@ public final class TableBroadcastRoutingEngineTest {
     }
     
     private RoutingResult createDQLStatementRoutingResult() {
-        return new TableBroadcastRoutingEngine(shardingRule, new DQLStatement()).route();
+        return new TableBroadcastRoutingEngine(shardingRule, new SelectStatement()).route();
     }
     
     private RoutingResult createDDLStatementRoutingResult() {

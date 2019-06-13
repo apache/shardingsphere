@@ -23,11 +23,13 @@ import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rewrite.token.pojo.EncryptColumnToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -40,13 +42,16 @@ public final class EncryptColumnTokenGenerator implements CollectionSQLTokenGene
     
     @Override
     public Collection<EncryptColumnToken> generateSQLTokens(final SQLStatement sqlStatement, final List<Object> parameters, final EncryptRule encryptRule) {
+        if (!(sqlStatement instanceof DMLStatement)) {
+            return Collections.emptyList();
+        }
         Collection<EncryptColumnToken> result = new LinkedList<>();
-        for (SQLSegment each : sqlStatement.getSqlSegments()) {
+        for (SQLSegment each : sqlStatement.getSQLSegments()) {
             if (each instanceof SetAssignmentsSegment) {
                 result.addAll(createFromUpdateSetAssignment(sqlStatement, encryptRule, (SetAssignmentsSegment) each));
             }
         }
-        result.addAll(createFromWhereCondition(sqlStatement));
+        result.addAll(createFromWhereCondition((DMLStatement) sqlStatement));
         return result;
     }
     
@@ -64,12 +69,12 @@ public final class EncryptColumnTokenGenerator implements CollectionSQLTokenGene
         return result;
     }
     
-    private Collection<EncryptColumnToken> createFromWhereCondition(final SQLStatement sqlStatement) {
+    private Collection<EncryptColumnToken> createFromWhereCondition(final DMLStatement dmlStatement) {
         Collection<EncryptColumnToken> result = new LinkedList<>();
-        if (sqlStatement.getEncryptConditions().getOrConditions().isEmpty()) {
+        if (dmlStatement.getEncryptConditions().getOrConditions().isEmpty()) {
             return result;
         }
-        for (Condition each : sqlStatement.getEncryptConditions().getOrConditions().get(0).getConditions()) {
+        for (Condition each : dmlStatement.getEncryptConditions().getOrConditions().get(0).getConditions()) {
             result.add(new EncryptColumnToken(each.getPredicateSegment().getStartIndex(), each.getPredicateSegment().getStopIndex(), each.getColumn(), true));
         }
         return result;

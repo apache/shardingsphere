@@ -36,9 +36,9 @@ import java.util.Map;
  * @author zhangliang
  * @author panjuan
  */
-@ToString(callSuper = true)
 @Getter
 @Setter
+@ToString(callSuper = true)
 public final class UpdateStatement extends DMLStatement {
     
     private final Map<Column, ExpressionSegment> assignments = new LinkedHashMap<>();

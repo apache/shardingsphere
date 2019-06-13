@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.metadata.datasource.dialect;
 
-import org.apache.shardingsphere.core.database.UnrecognizedDatabaseURLException;
+import org.apache.shardingsphere.core.metadata.datasource.UnrecognizedDatabaseURLException;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -35,7 +35,7 @@ public final class OracleDataSourceMetaDataTest {
     
     @Test
     public void assertGetPropertiesWithDefaultPort() {
-        OracleDataSourceMetaData actual = new OracleDataSourceMetaData("jdbc:oracle:thin:@//127.0.0.1/ds_0");
+        OracleDataSourceMetaData actual = new OracleDataSourceMetaData("jdbc:oracle:oci:@127.0.0.1/ds_0");
         assertThat(actual.getHostName(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(1521));
         assertThat(actual.getSchemaName(), is("ds_0"));

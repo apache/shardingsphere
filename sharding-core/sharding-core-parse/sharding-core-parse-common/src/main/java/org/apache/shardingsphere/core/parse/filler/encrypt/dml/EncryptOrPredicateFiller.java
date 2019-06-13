@@ -35,6 +35,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.Pred
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateCompareRightValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateInRightValue;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
 import java.util.Collection;
@@ -55,18 +56,21 @@ public final class EncryptOrPredicateFiller implements SQLSegmentFiller<OrPredic
     
     @Override
     public void fill(final OrPredicateSegment sqlSegment, final SQLStatement sqlStatement) {
+        if (!(sqlStatement instanceof DMLStatement)) {
+            return;
+        }
         Collection<Integer> stopIndexes = new HashSet<>();
         for (AndPredicate each : sqlSegment.getAndPredicates()) {
             for (PredicateSegment predicate : each.getPredicates()) {
                 if (stopIndexes.add(predicate.getStopIndex())) {
-                    fill(predicate, sqlStatement);
+                    fill(predicate, (DMLStatement) sqlStatement);
                 }
             }
         }
     }
     
-    private void fill(final PredicateSegment predicateSegment, final SQLStatement sqlStatement) {
-        Optional<String> tableName = PredicateUtils.findTableName(predicateSegment, sqlStatement, shardingTableMetaData);
+    private void fill(final PredicateSegment predicateSegment, final DMLStatement dmlStatement) {
+        Optional<String> tableName = PredicateUtils.findTableName(predicateSegment, dmlStatement, shardingTableMetaData);
         if (!tableName.isPresent() || !isNeedEncrypt(predicateSegment, tableName.get())) {
             return;
         }
@@ -74,11 +78,11 @@ public final class EncryptOrPredicateFiller implements SQLSegmentFiller<OrPredic
         Optional<Condition> condition = createCondition(predicateSegment, column);
         if (condition.isPresent()) {
             AndCondition andCondition;
-            if (sqlStatement.getEncryptConditions().getOrConditions().isEmpty()) {
+            if (dmlStatement.getEncryptConditions().getOrConditions().isEmpty()) {
                 andCondition = new AndCondition();
-                sqlStatement.getEncryptConditions().getOrConditions().add(andCondition);
+                dmlStatement.getEncryptConditions().getOrConditions().add(andCondition);
             } else {
-                andCondition = sqlStatement.getEncryptConditions().getOrConditions().get(0);
+                andCondition = dmlStatement.getEncryptConditions().getOrConditions().get(0);
             }
             andCondition.getConditions().add(condition.get());
         }

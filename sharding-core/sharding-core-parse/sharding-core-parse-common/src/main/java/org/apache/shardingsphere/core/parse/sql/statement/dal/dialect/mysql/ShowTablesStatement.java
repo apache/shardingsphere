@@ -15,24 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.filler.sharding;
+package org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql;
 
-import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.sql.segment.ddl.index.IndexSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.ddl.DDLStatement;
+import lombok.ToString;
+import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
 
 /**
- * Index filler for sharding.
+ * Show tables statement.
  *
  * @author zhangliang
  */
-public final class ShardingIndexFiller implements SQLSegmentFiller<IndexSegment> {
-    
-    @Override
-    public void fill(final IndexSegment sqlSegment, final SQLStatement sqlStatement) {
-        if (sqlStatement instanceof DDLStatement) {
-            ((DDLStatement) sqlStatement).setIndexName(sqlSegment.getIndexName());
-        }
-    }
+@ToString(callSuper = true)
+public final class ShowTablesStatement extends DALStatement {
 }

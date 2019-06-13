@@ -59,7 +59,7 @@ public final class PostgreSQLComParseExecutor implements CommandExecutor {
                 DatabaseTypes.getActualDatabaseType("PostgreSQL"), logicSchema.getShardingRule(), logicSchema.getMetaData().getTable(), logicSchema.getParsingResultCache());
         if (!packet.getSql().isEmpty()) {
             SQLStatement sqlStatement = shardingSQLParseEntry.parse(packet.getSql(), true);
-            int parametersIndex = sqlStatement.getParametersIndex();
+            int parametersIndex = sqlStatement.getParametersCount();
             binaryStatementRegistry.register(packet.getStatementId(), packet.getSql(), parametersIndex, packet.getBinaryStatementParameterTypes());
         }
         return Collections.<DatabasePacket>singletonList(new PostgreSQLParseCompletePacket());

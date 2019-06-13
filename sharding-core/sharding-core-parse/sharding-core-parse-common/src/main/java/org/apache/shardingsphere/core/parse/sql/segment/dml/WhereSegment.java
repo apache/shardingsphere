@@ -36,7 +36,7 @@ public final class WhereSegment implements SQLSegment {
     
     private final int stopIndex;
     
-    private final int parameterCount;
+    private final int parametersCount;
     
     private int whereParameterStartIndex;
     

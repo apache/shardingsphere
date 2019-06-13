@@ -15,14 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.statement;
+package org.apache.shardingsphere.core.parse.filler.common.ddl.index;
 
-import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
+import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
+import org.apache.shardingsphere.core.parse.sql.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.ddl.DDLStatement;
 
 /**
- * Other show statement.
+ * Index filler.
  *
  * @author zhangliang
  */
-public final class ShowOtherStatement extends DALStatement {
+public final class IndexFiller implements SQLSegmentFiller<IndexSegment> {
+    
+    @Override
+    public void fill(final IndexSegment sqlSegment, final SQLStatement sqlStatement) {
+        if (sqlStatement instanceof DDLStatement) {
+            ((DDLStatement) sqlStatement).setIndexName(sqlSegment.getIndexName());
+        }
+    }
 }

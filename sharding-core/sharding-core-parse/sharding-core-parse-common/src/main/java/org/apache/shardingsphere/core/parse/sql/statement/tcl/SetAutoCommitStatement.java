@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.parse.sql.statement.tcl;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 /**
  * Set auto commit statement.
@@ -27,6 +28,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
+@ToString(callSuper = true)
 public final class SetAutoCommitStatement extends TCLStatement {
     
     private boolean autoCommit;

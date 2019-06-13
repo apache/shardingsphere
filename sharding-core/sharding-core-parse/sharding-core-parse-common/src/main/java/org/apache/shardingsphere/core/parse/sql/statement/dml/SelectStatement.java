@@ -53,7 +53,7 @@ import java.util.Set;
 @Getter
 @Setter
 @ToString(callSuper = true, exclude = "parentStatement")
-public final class SelectStatement extends DQLStatement {
+public final class SelectStatement extends DMLStatement {
     
     private final Set<SelectItem> items = new LinkedHashSet<>();
     

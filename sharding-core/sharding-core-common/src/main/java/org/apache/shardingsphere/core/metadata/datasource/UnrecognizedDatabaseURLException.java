@@ -15,14 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.statement;
+package org.apache.shardingsphere.core.metadata.datasource;
 
-import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
+import org.apache.shardingsphere.core.exception.ShardingException;
 
 /**
- * Describe statement.
+ * Unrecognized database URL exception.
  *
  * @author zhangliang
  */
-public final class DescribeStatement extends DALStatement {
+public final class UnrecognizedDatabaseURLException extends ShardingException {
+    
+    private static final long serialVersionUID = -1551117178863766353L;
+    
+    public UnrecognizedDatabaseURLException(final String url, final String pattern) {
+        super(String.format("The URL: '%s' is not recognized. Please refer to this pattern: '%s'.", url, pattern));
+    }
 }

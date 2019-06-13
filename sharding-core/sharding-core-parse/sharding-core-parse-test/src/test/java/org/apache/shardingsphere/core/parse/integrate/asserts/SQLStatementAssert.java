@@ -30,6 +30,7 @@ import org.apache.shardingsphere.core.parse.integrate.jaxb.root.ParserResult;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.CreateTableStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
@@ -92,9 +93,11 @@ public final class SQLStatementAssert {
      */
     public void assertSQLStatement() {
         tableAssert.assertTables(actual.getTables(), expected.getTables());
-        conditionAssert.assertConditions(actual.getShardingConditions(), expected.getShardingConditions());
-        conditionAssert.assertConditions(actual.getEncryptConditions(), expected.getEncryptConditions());
-        indexAssert.assertParametersIndex(actual.getParametersIndex(), expected.getParameters().size());
+        if (actual instanceof DMLStatement) {
+            conditionAssert.assertConditions(((DMLStatement) actual).getShardingConditions(), expected.getShardingConditions());
+            conditionAssert.assertConditions(((DMLStatement) actual).getEncryptConditions(), expected.getEncryptConditions());
+        }
+        indexAssert.assertParametersIndex(actual.getParametersCount(), expected.getParameters().size());
         if (actual instanceof SelectStatement) {
             assertSelectStatement((SelectStatement) actual);
         }

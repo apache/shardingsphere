@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.parse.sql.statement;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.parse.sql.context.condition.Conditions;
 import org.apache.shardingsphere.core.parse.sql.context.table.Tables;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 
@@ -32,60 +31,25 @@ import java.util.Collection;
 public interface SQLStatement {
     
     /**
-     * Get SQL segments.
-     * 
-     * @return SQL segments
-     */
-    Collection<SQLSegment> getSqlSegments();
-    
-    /**
-     * Get tables.
-     * 
-     * @return tables
-     */
-    Tables getTables();
-    
-    /**
-     * Get sharding conditions.
-     *
-     * @return conditions
-     */
-    Conditions getShardingConditions();
-    
-    /**
-     * Get encrypt conditions.
-     *
-     * @return conditions
-     */
-    Conditions getEncryptConditions();
-    
-    /**
-     * Get index of parameters.
-     *
-     * @return index of parameters
-     */
-    int getParametersIndex();
-    
-    /**
-     * Set parameters index.
-     * 
-     * @param parametersIndex parameters index
-     */
-    void setParametersIndex(int parametersIndex);
-    
-    /**
      * Get logic SQL.
-     * 
+     *
      * @return logic SQL
      */
     String getLogicSQL();
     
     /**
      * Set logic SQL.
-     * 
-     * @param logicTable logic SQL
+     *
+     * @param logicSQL logic SQL
      */
-    void setLogicSQL(String logicTable);
+    void setLogicSQL(String logicSQL);
+    
+    /**
+     * Get SQL segments.
+     * 
+     * @return SQL segments
+     */
+    Collection<SQLSegment> getSQLSegments();
     
     /**
      * Find SQL segment.
@@ -104,4 +68,25 @@ public interface SQLStatement {
      * @return SQL segments
      */
     <T extends SQLSegment> Collection<T> findSQLSegments(Class<T> sqlSegmentType);
+    
+    /**
+     * Get count of parameters.
+     *
+     * @return count of parameters
+     */
+    int getParametersCount();
+    
+    /**
+     * Add count of parameters.
+     *
+     * @param parametersCount count of parameters
+     */
+    void addParametersCount(int parametersCount);
+    
+    /**
+     * Get tables.
+     * 
+     * @return tables
+     */
+    Tables getTables();
 }

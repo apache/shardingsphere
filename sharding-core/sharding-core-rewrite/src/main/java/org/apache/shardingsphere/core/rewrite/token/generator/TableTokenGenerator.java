@@ -46,7 +46,7 @@ public final class TableTokenGenerator implements CollectionSQLTokenGenerator<Sh
     @Override
     public Collection<TableToken> generateSQLTokens(final SQLStatement sqlStatement, final List<Object> parameters, final ShardingRule shardingRule) {
         Collection<TableToken> result = new LinkedList<>();
-        for (SQLSegment each : sqlStatement.getSqlSegments()) {
+        for (SQLSegment each : sqlStatement.getSQLSegments()) {
             if (each instanceof SelectItemsSegment) {
                 result.addAll(createTableTokens(sqlStatement, shardingRule, (SelectItemsSegment) each));
             } else if (each instanceof ColumnSegment) {

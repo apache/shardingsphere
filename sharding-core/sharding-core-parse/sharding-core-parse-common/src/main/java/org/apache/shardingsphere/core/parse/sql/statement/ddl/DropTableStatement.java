@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.parse.sql.statement.ddl;
 
 import lombok.Getter;
+import lombok.ToString;
 
 /**
  * Drop table statement.
@@ -25,5 +26,6 @@ import lombok.Getter;
  * @author zhangliang
  */
 @Getter
+@ToString(callSuper = true)
 public final class DropTableStatement extends DDLStatement {
 }

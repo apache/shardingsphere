@@ -24,8 +24,11 @@ import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.optimize.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResultUnit;
+import org.apache.shardingsphere.core.parse.exception.SQLParsingException;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
@@ -65,10 +68,17 @@ public final class StandardRoutingEngine implements RoutingEngine {
     private final String logicTableName;
     
     private final OptimizeResult optimizeResult;
-   
+    
     @Override
     public RoutingResult route() {
+        if (isDMLForModify(sqlStatement) && !sqlStatement.getTables().isSingleTable()) {
+            throw new SQLParsingException("Cannot support Multiple-Table for '%s'.", sqlStatement);
+        }
         return generateRoutingResult(getDataNodes(shardingRule.getTableRule(logicTableName)));
+    }
+    
+    private boolean isDMLForModify(final SQLStatement sqlStatement) {
+        return sqlStatement instanceof InsertStatement || sqlStatement instanceof UpdateStatement || sqlStatement instanceof DeleteStatement;
     }
     
     private RoutingResult generateRoutingResult(final Collection<DataNode> routedDataNodes) {

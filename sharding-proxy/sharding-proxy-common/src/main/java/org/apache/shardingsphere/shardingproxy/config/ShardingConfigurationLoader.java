@@ -40,6 +40,8 @@ import java.util.regex.Pattern;
  */
 public final class ShardingConfigurationLoader {
     
+    private static final String DEFAULT_DATASOURCE_NAME = "dataSource";
+    
     private static final String CONFIG_PATH = "/conf/";
     
     private static final String SERVER_CONFIG_FILE = "server.yaml";
@@ -85,6 +87,9 @@ public final class ShardingConfigurationLoader {
             return Optional.absent();
         }
         Preconditions.checkNotNull(result.getSchemaName(), "Property `schemaName` in file `%s` is required.", yamlFile.getName());
+        if (result.getDataSources().isEmpty() && null != result.getDataSource()) {
+            result.getDataSources().put(DEFAULT_DATASOURCE_NAME, result.getDataSource());
+        }
         Preconditions.checkState(!result.getDataSources().isEmpty(), "Data sources configuration in file `%s` is required.", yamlFile.getName());
         return Optional.of(result);
     }
