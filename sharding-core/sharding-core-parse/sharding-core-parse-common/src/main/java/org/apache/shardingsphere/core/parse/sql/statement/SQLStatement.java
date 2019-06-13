@@ -77,11 +77,11 @@ public interface SQLStatement {
     int getParametersCount();
     
     /**
-     * Set count of parameters.
+     * Add count of parameters.
      *
      * @param parametersCount count of parameters
      */
-    void setParametersCount(int parametersCount);
+    void addParametersCount(int parametersCount);
     
     /**
      * Get tables.

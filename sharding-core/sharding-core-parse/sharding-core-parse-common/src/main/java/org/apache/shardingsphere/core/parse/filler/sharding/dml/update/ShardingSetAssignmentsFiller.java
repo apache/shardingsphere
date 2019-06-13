@@ -82,7 +82,7 @@ public final class ShardingSetAssignmentsFiller implements SQLSegmentFiller<SetA
         InsertValue insertValue = new InsertValue(columnValues);
         insertStatement.getValues().add(insertValue);
         insertStatement.getShardingConditions().getOrConditions().add(andCondition);
-        insertStatement.setParametersCount(insertValue.getParametersCount());
+        insertStatement.addParametersCount(insertValue.getParametersCount());
     }
     
     private int getColumnCountExcludeAssistedQueryColumns(final InsertStatement insertStatement) {

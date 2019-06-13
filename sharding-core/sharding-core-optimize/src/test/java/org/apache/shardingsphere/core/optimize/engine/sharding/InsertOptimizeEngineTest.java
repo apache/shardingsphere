@@ -111,7 +111,7 @@ public final class InsertOptimizeEngineTest {
     private void initializeInsertValuesWithPlaceholder() {
         insertValuesStatementWithPlaceholder = new InsertStatement();
         insertValuesStatementWithPlaceholder.getTables().add(new Table("t_order", null));
-        insertValuesStatementWithPlaceholder.setParametersCount(4);
+        insertValuesStatementWithPlaceholder.addParametersCount(4);
         AndCondition andCondition1 = new AndCondition();
         andCondition1.getConditions().add(new Condition(new Column("user_id", "t_order"), null, new ParameterMarkerExpressionSegment(0, 0, 0)));
         insertValuesStatementWithPlaceholder.getShardingConditions().getOrConditions().add(andCondition1);
@@ -128,7 +128,7 @@ public final class InsertOptimizeEngineTest {
     private void initializeInsertValuesWithPlaceholderWithEncrypt() {
         insertValuesStatementWithPlaceholderWithEncrypt = new InsertStatement();
         insertValuesStatementWithPlaceholderWithEncrypt.getTables().add(new Table("t_encrypt", null));
-        insertValuesStatementWithPlaceholderWithEncrypt.setParametersCount(4);
+        insertValuesStatementWithPlaceholderWithEncrypt.addParametersCount(4);
         AndCondition andCondition1 = new AndCondition();
         andCondition1.getConditions().add(new Condition(new Column("user_id", "t_encrypt"), null, new ParameterMarkerExpressionSegment(0, 0, 0)));
         insertValuesStatementWithPlaceholderWithEncrypt.getShardingConditions().getOrConditions().add(andCondition1);
@@ -145,7 +145,7 @@ public final class InsertOptimizeEngineTest {
     private void initializeInsertValuesWithoutPlaceholder() {
         insertValuesStatementWithoutPlaceholder = new InsertStatement();
         insertValuesStatementWithoutPlaceholder.getTables().add(new Table("t_order", null));
-        insertValuesStatementWithoutPlaceholder.setParametersCount(0);
+        insertValuesStatementWithoutPlaceholder.addParametersCount(0);
         AndCondition andCondition = new AndCondition();
         andCondition.getConditions().add(new Condition(new Column("user_id", "t_order"), null, new LiteralExpressionSegment(0, 0, 12)));
         insertValuesStatementWithoutPlaceholder.getShardingConditions().getOrConditions().add(andCondition);
@@ -154,7 +154,7 @@ public final class InsertOptimizeEngineTest {
     private void initializeInsertValuesWithoutPlaceholderWithQueryEncrypt() {
         insertValuesStatementWithoutPlaceholderWithQueryEncrypt = new InsertStatement();
         insertValuesStatementWithoutPlaceholderWithQueryEncrypt.getTables().add(new Table("t_encrypt_query", null));
-        insertValuesStatementWithoutPlaceholderWithQueryEncrypt.setParametersCount(0);
+        insertValuesStatementWithoutPlaceholderWithQueryEncrypt.addParametersCount(0);
         AndCondition andCondition = new AndCondition();
         andCondition.getConditions().add(new Condition(new Column("user_id", "t_encrypt_query"), null, new LiteralExpressionSegment(0, 0, 12)));
         insertValuesStatementWithoutPlaceholderWithQueryEncrypt.getShardingConditions().getOrConditions().add(andCondition);
@@ -163,7 +163,7 @@ public final class InsertOptimizeEngineTest {
     private void initializeInsertSetWithPlaceholder() {
         insertSetStatementWithPlaceholder = new InsertStatement();
         insertSetStatementWithPlaceholder.getTables().add(new Table("t_order", null));
-        insertSetStatementWithPlaceholder.setParametersCount(0);
+        insertSetStatementWithPlaceholder.addParametersCount(0);
         insertSetStatementWithPlaceholder.getColumnNames().add("user_id");
         insertSetStatementWithPlaceholder.getColumnNames().add("status");
         AndCondition andCondition = new AndCondition();
@@ -174,7 +174,7 @@ public final class InsertOptimizeEngineTest {
     private void initializeInsertSetWithPlaceholderWithQueryEncrypt() {
         insertSetStatementWithPlaceholderWithQueryEncrypt = new InsertStatement();
         insertSetStatementWithPlaceholderWithQueryEncrypt.getTables().add(new Table("t_encrypt_query", null));
-        insertSetStatementWithPlaceholderWithQueryEncrypt.setParametersCount(0);
+        insertSetStatementWithPlaceholderWithQueryEncrypt.addParametersCount(0);
         insertSetStatementWithPlaceholderWithQueryEncrypt.getColumnNames().add("user_id");
         insertSetStatementWithPlaceholderWithQueryEncrypt.getColumnNames().add("status");
         AndCondition andCondition = new AndCondition();
@@ -185,7 +185,7 @@ public final class InsertOptimizeEngineTest {
     private void initializeInsertSetWithoutPlaceholder() {
         insertSetStatementWithoutPlaceholder = new InsertStatement();
         insertSetStatementWithoutPlaceholder.getTables().add(new Table("t_order", null));
-        insertSetStatementWithoutPlaceholder.setParametersCount(0);
+        insertSetStatementWithoutPlaceholder.addParametersCount(0);
         insertSetStatementWithoutPlaceholder.getColumnNames().add("user_id");
         insertSetStatementWithoutPlaceholder.getColumnNames().add("status");
         AndCondition andCondition = new AndCondition();
@@ -196,7 +196,7 @@ public final class InsertOptimizeEngineTest {
     private void initializeInsertSetWithoutPlaceholderWithEncrypt() {
         insertSetStatementWithoutPlaceholderWithEncrypt = new InsertStatement();
         insertSetStatementWithoutPlaceholderWithEncrypt.getTables().add(new Table("t_encrypt", null));
-        insertSetStatementWithoutPlaceholderWithEncrypt.setParametersCount(0);
+        insertSetStatementWithoutPlaceholderWithEncrypt.addParametersCount(0);
         insertSetStatementWithoutPlaceholderWithEncrypt.getColumnNames().add("user_id");
         insertSetStatementWithoutPlaceholderWithEncrypt.getColumnNames().add("status");
         AndCondition andCondition = new AndCondition();
