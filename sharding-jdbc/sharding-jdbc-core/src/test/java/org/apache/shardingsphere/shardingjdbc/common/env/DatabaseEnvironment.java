@@ -93,7 +93,7 @@ public final class DatabaseEnvironment {
     private void fillOracle() {
         DatabaseType databaseType = DatabaseTypes.getActualDatabaseType("Oracle");
         DRIVER_CLASS_NAME.put(databaseType, "oracle.jdbc.driver.OracleDriver");
-        URL.put(databaseType, "jdbc:oracle:thin:@db.oracle:1521:test");
+        URL.put(databaseType, "jdbc:oracle:thin:@db.oracle:1521/test");
         USERNAME.put(databaseType, "jdbc");
         PASSWORD.put(databaseType, "jdbc");
         SCHEMA.put(databaseType, "%s");

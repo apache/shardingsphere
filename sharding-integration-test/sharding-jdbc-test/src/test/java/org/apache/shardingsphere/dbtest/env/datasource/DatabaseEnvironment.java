@@ -102,7 +102,7 @@ public final class DatabaseEnvironment {
             case "SQLServer":
                 return String.format("jdbc:sqlserver://%s:%s;DatabaseName=%s", host, port, dataSourceName);
             case "Oracle":
-                return String.format("jdbc:oracle:thin:@%s:%s:%s", host, port, dataSourceName);
+                return String.format("jdbc:oracle:thin:@%s:%s/%s", host, port, dataSourceName);
             default:
                 throw new UnsupportedOperationException(databaseType.getName());
         }
