@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.rewrite.placeholder;
 
-import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.constant.QuoteCharacter;
@@ -37,17 +36,14 @@ public final class IndexPlaceholder implements ShardingPlaceholder, Alterable {
     
     private final String logicIndexName;
     
-    private final String logicTableName;
-    
     private final QuoteCharacter quoteCharacter;
     
     @Override
     public String toString(final RoutingUnit routingUnit, final Map<String, String> logicAndActualTables) {
         StringBuilder result = new StringBuilder();
         result.append(quoteCharacter.getStartDelimiter()).append(logicIndexName);
-        String actualTableName = logicAndActualTables.get(logicTableName);
-        if (!Strings.isNullOrEmpty(actualTableName)) {
-            result.append("_").append(actualTableName);
+        if (!logicAndActualTables.isEmpty()) {
+            result.append("_").append(logicAndActualTables.values().iterator().next());
         }
         result.append(quoteCharacter.getEndDelimiter());
         return result.toString();
