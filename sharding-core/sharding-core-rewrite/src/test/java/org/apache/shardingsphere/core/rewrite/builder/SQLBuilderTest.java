@@ -17,12 +17,9 @@
 
 package org.apache.shardingsphere.core.rewrite.builder;
 
-import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
-import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.core.parse.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.rewrite.placeholder.IndexPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.TablePlaceholder;
-import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -75,7 +72,7 @@ public final class SQLBuilderTest {
     public void assertIndexPlaceholderAppendTableWithoutTableToken() {
         SQLBuilder sqlBuilder = new SQLBuilder();
         sqlBuilder.appendLiterals("CREATE INDEX ");
-        sqlBuilder.appendPlaceholder(new IndexPlaceholder("index_name", "index_name", QuoteCharacter.NONE));
+        sqlBuilder.appendPlaceholder(new IndexPlaceholder("index_name", QuoteCharacter.NONE));
         sqlBuilder.appendLiterals(" ON ");
         sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", QuoteCharacter.NONE));
         sqlBuilder.appendLiterals(" ('column')");
@@ -86,7 +83,7 @@ public final class SQLBuilderTest {
     public void assertIndexPlaceholderAppendTableWithTableToken() {
         SQLBuilder sqlBuilder = new SQLBuilder();
         sqlBuilder.appendLiterals("CREATE INDEX ");
-        sqlBuilder.appendPlaceholder(new IndexPlaceholder("index_name", "table_x", QuoteCharacter.NONE));
+        sqlBuilder.appendPlaceholder(new IndexPlaceholder("index_name", QuoteCharacter.NONE));
         sqlBuilder.appendLiterals(" ON ");
         sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", QuoteCharacter.NONE));
         sqlBuilder.appendLiterals(" ('column')");
@@ -123,7 +120,7 @@ public final class SQLBuilderTest {
     public void assertIndexPlaceholderAppendTableWithoutTableTokenWithBackQuotes() {
         SQLBuilder sqlBuilder = new SQLBuilder();
         sqlBuilder.appendLiterals("CREATE INDEX ");
-        sqlBuilder.appendPlaceholder(new IndexPlaceholder("index_name", "index_name", QuoteCharacter.NONE));
+        sqlBuilder.appendPlaceholder(new IndexPlaceholder("index_name", QuoteCharacter.NONE));
         sqlBuilder.appendLiterals(" ON ");
         sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", QuoteCharacter.BACK_QUOTE));
         sqlBuilder.appendLiterals(" ('column')");
@@ -134,7 +131,7 @@ public final class SQLBuilderTest {
     public void assertIndexPlaceholderAppendTableWithTableTokenWithBackQuotes() {
         SQLBuilder sqlBuilder = new SQLBuilder();
         sqlBuilder.appendLiterals("CREATE INDEX ");
-        sqlBuilder.appendPlaceholder(new IndexPlaceholder("index_name", "table_x", QuoteCharacter.NONE));
+        sqlBuilder.appendPlaceholder(new IndexPlaceholder("index_name", QuoteCharacter.NONE));
         sqlBuilder.appendLiterals(" ON ");
         sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", QuoteCharacter.BACK_QUOTE));
         sqlBuilder.appendLiterals(" ('column')");
@@ -171,7 +168,7 @@ public final class SQLBuilderTest {
     public void assertIndexPlaceholderAppendTableWithoutTableTokenWithDoubleQuotes() {
         SQLBuilder sqlBuilder = new SQLBuilder();
         sqlBuilder.appendLiterals("CREATE INDEX ");
-        sqlBuilder.appendPlaceholder(new IndexPlaceholder("index_name", "index_name", QuoteCharacter.NONE));
+        sqlBuilder.appendPlaceholder(new IndexPlaceholder("index_name", QuoteCharacter.NONE));
         sqlBuilder.appendLiterals(" ON ");
         sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", QuoteCharacter.QUOTE));
         sqlBuilder.appendLiterals(" ('column')");
@@ -182,7 +179,7 @@ public final class SQLBuilderTest {
     public void assertIndexPlaceholderAppendTableWithTableTokenWithDoubleQuotes() {
         SQLBuilder sqlBuilder = new SQLBuilder();
         sqlBuilder.appendLiterals("CREATE INDEX ");
-        sqlBuilder.appendPlaceholder(new IndexPlaceholder("index_name", "table_x", QuoteCharacter.NONE));
+        sqlBuilder.appendPlaceholder(new IndexPlaceholder("index_name", QuoteCharacter.NONE));
         sqlBuilder.appendLiterals(" ON ");
         sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", QuoteCharacter.QUOTE));
         sqlBuilder.appendLiterals(" ('column')");
@@ -193,15 +190,8 @@ public final class SQLBuilderTest {
     
     @Test
     public void assertShardingPlaceholderToString() {
-        assertThat(new IndexPlaceholder("index_name", "table_x", QuoteCharacter.NONE).toString(null, Collections.<String, String>emptyMap()), is("index_name"));
+        assertThat(new IndexPlaceholder("index_name", QuoteCharacter.NONE).toString(null, Collections.<String, String>emptyMap()), is("index_name"));
         assertThat(new TablePlaceholder("table_name", QuoteCharacter.BACK_QUOTE).toString(null, Collections.<String, String>emptyMap()), is("`table_name`"));
-    }
-    
-    private ShardingRule createShardingRule() {
-        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration("LOGIC_TABLE", "ds${0..1}.table_${0..2}");
-        shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
-        return new ShardingRule(shardingRuleConfig, createDataSourceNames());
     }
     
     private Collection<String> createDataSourceNames() {
