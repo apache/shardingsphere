@@ -79,10 +79,10 @@ public final class SQLStatementFillerEngine {
     
     @SuppressWarnings("unchecked")
     private void doFill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final SQLSegmentFiller filler) {
-        if (filler instanceof ShardingRuleAwareFiller) {
+        if (filler instanceof ShardingRuleAwareFiller && rule instanceof ShardingRule) {
             ((ShardingRuleAwareFiller) filler).setShardingRule((ShardingRule) rule);
         }
-        if (filler instanceof EncryptRuleAwareFiller) {
+        if (filler instanceof EncryptRuleAwareFiller && rule instanceof EncryptRule) {
             ((EncryptRuleAwareFiller) filler).setEncryptRule((EncryptRule) rule);
         }
         if (filler instanceof ShardingTableMetaDataAwareFiller) {
