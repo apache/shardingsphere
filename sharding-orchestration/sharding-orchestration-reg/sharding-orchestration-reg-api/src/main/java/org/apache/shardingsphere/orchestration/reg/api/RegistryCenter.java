@@ -109,4 +109,24 @@ public interface RegistryCenter extends TypeBasedSPI {
      * Close.
       */
     void close();
+
+    /**
+     * Initialize the lock of the key.
+     *
+     * @param key key of data
+     */
+    void initLock(final String key);
+
+    /**
+     * Try to get the lock of the key.
+     *
+     * @return get the lock or not
+     */
+    boolean tryLock();
+
+    /**
+     * Try to release the lock of the key.
+     *
+     */
+    void tryRelease();
 }
