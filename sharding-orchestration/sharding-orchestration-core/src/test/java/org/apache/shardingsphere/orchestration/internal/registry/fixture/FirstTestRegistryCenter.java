@@ -81,4 +81,17 @@ public final class FirstTestRegistryCenter implements RegistryCenter {
     public String getType() {
         return "FirstTestRegistryCenter";
     }
+
+    @Override
+    public void initLock(final String key){
+    }
+
+    @Override
+    public boolean tryLock(){
+        return true;
+    }
+
+    @Override
+    public void tryRelease(){
+    }
 }
