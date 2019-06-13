@@ -97,7 +97,7 @@ public final class SQLStatementAssert {
             conditionAssert.assertConditions(((DMLStatement) actual).getShardingConditions(), expected.getShardingConditions());
             conditionAssert.assertConditions(((DMLStatement) actual).getEncryptConditions(), expected.getEncryptConditions());
         }
-        indexAssert.assertParametersIndex(actual.getParametersIndex(), expected.getParameters().size());
+        indexAssert.assertParametersIndex(actual.getParametersCount(), expected.getParameters().size());
         if (actual instanceof SelectStatement) {
             assertSelectStatement((SelectStatement) actual);
         }
