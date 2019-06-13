@@ -15,14 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.database;
+package org.apache.shardingsphere.core.metadata.datasource;
+
+import org.apache.shardingsphere.core.exception.ShardingException;
 
 /**
  * Unrecognized database URL exception.
  *
  * @author zhangliang
  */
-public final class UnrecognizedDatabaseURLException extends RuntimeException {
+public final class UnrecognizedDatabaseURLException extends ShardingException {
     
     private static final long serialVersionUID = -1551117178863766353L;
     
