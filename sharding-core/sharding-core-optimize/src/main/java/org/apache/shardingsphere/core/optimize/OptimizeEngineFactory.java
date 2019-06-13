@@ -23,7 +23,7 @@ import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
 import org.apache.shardingsphere.core.optimize.engine.encrypt.EncryptDefaultOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.engine.encrypt.EncryptInsertOptimizeEngine;
-import org.apache.shardingsphere.core.optimize.engine.sharding.insert.InsertOptimizeEngine;
+import org.apache.shardingsphere.core.optimize.engine.sharding.insert.ShardingInsertOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.engine.sharding.query.QueryOptimizeEngine;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Conditions;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
@@ -45,7 +45,7 @@ import java.util.List;
 public final class OptimizeEngineFactory {
     
     /**
-     * Create optimize engine instance.
+     * Create sharding optimize engine instance.
      * 
      * @param tableMetaData table meta data
      * @param shardingRule sharding rule
@@ -57,7 +57,7 @@ public final class OptimizeEngineFactory {
     public static OptimizeEngine newInstance(final ShardingTableMetaData tableMetaData, 
                                              final ShardingRule shardingRule, final SQLStatement sqlStatement, final List<Object> parameters, final GeneratedKey generatedKey) {
         if (sqlStatement instanceof InsertStatement) {
-            return new InsertOptimizeEngine(tableMetaData, shardingRule, (InsertStatement) sqlStatement, parameters, generatedKey);
+            return new ShardingInsertOptimizeEngine(tableMetaData, shardingRule, (InsertStatement) sqlStatement, parameters, generatedKey);
         }
         if (sqlStatement instanceof DMLStatement) {
             return new QueryOptimizeEngine(sqlStatement, parameters, ((DMLStatement) sqlStatement).getShardingConditions());
