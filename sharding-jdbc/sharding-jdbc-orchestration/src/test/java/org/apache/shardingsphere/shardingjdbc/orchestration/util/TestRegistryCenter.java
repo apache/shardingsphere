@@ -91,7 +91,7 @@ public final class TestRegistryCenter implements RegistryCenter {
     }
 
     @Override
-    public void initLock(String key) {
+    public void initLock(final String key) {
     }
 
     @Override
