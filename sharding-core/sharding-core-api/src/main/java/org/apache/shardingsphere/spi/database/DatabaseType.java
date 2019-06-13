@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.spi.database;
 
+import java.util.Collection;
+
 /**
  * Database type.
  *
@@ -30,6 +32,13 @@ public interface DatabaseType {
      * @return database name
      */
     String getName();
+    
+    /**
+     * Get alias of JDBC URL prefixes.
+     * 
+     * @return Alias of JDBC URL prefixes
+     */
+    Collection<String> getJdbcUrlPrefixAlias();
     
     /**
      * Get data source meta data.

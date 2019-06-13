@@ -21,6 +21,9 @@ import org.apache.shardingsphere.core.metadata.datasource.dialect.SQLServerDataS
 import org.apache.shardingsphere.spi.database.DataSourceMetaData;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 
+import java.util.Collection;
+import java.util.Collections;
+
 /**
  * Database type of SQLServer.
  *
@@ -31,6 +34,11 @@ public final class SQLServerDatabaseType implements DatabaseType {
     @Override
     public String getName() {
         return "SQLServer";
+    }
+    
+    @Override
+    public Collection<String> getJdbcUrlPrefixAlias() {
+        return Collections.singletonList("jdbc:microsoft:sqlserver:");
     }
     
     @Override

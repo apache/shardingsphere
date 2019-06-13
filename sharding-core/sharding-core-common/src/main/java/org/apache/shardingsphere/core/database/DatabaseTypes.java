@@ -80,12 +80,23 @@ public final class DatabaseTypes {
      */
     public static DatabaseType getDatabaseTypeByURL(final String url) {
         for (DatabaseType each : DATABASE_TYPES.values()) {
-            try {
-                each.getDataSourceMetaData(url);
+            if (matchStandardURL(url, each) || matchURLAlias(url, each)) {
                 return each;
-            } catch (final UnrecognizedDatabaseURLException ignore) {
             }
         }
         throw new UnsupportedOperationException(String.format("Unsupported database from url: '%s'", url));
+    }
+    
+    private static boolean matchStandardURL(final String url, final DatabaseType databaseType) {
+        return url.startsWith(String.format("jdbc:%s:", databaseType.getName().toLowerCase()));
+    }
+    
+    private static boolean matchURLAlias(final String url, final DatabaseType databaseType) {
+        for (String each : databaseType.getJdbcUrlPrefixAlias()) {
+            if (url.startsWith(each)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

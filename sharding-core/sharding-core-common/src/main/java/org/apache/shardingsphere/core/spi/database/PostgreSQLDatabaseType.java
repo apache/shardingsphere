@@ -21,6 +21,9 @@ import org.apache.shardingsphere.core.metadata.datasource.dialect.PostgreSQLData
 import org.apache.shardingsphere.spi.database.DataSourceMetaData;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 
+import java.util.Collection;
+import java.util.Collections;
+
 /**
  * Database type of PostgreSQL.
  *
@@ -31,6 +34,11 @@ public final class PostgreSQLDatabaseType implements DatabaseType {
     @Override
     public String getName() {
         return "PostgreSQL";
+    }
+    
+    @Override
+    public Collection<String> getJdbcUrlPrefixAlias() {
+        return Collections.emptyList();
     }
     
     @Override

@@ -21,6 +21,9 @@ import org.apache.shardingsphere.core.metadata.datasource.dialect.OracleDataSour
 import org.apache.shardingsphere.spi.database.DataSourceMetaData;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 
+import java.util.Collection;
+import java.util.Collections;
+
 /**
  * Database type of Oracle.
  *
@@ -31,6 +34,11 @@ public final class OracleDatabaseType implements DatabaseType {
     @Override
     public String getName() {
         return "Oracle";
+    }
+    
+    @Override
+    public Collection<String> getJdbcUrlPrefixAlias() {
+        return Collections.emptyList();
     }
     
     @Override
