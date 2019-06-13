@@ -31,6 +31,7 @@ import org.apache.shardingsphere.orchestration.config.OrchestrationConfiguration
 import org.apache.shardingsphere.orchestration.internal.registry.ShardingOrchestrationFacade;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.EncryptRuleChangedEvent;
+import org.apache.shardingsphere.orchestration.internal.registry.config.event.PropertiesChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.service.ConfigurationService;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.util.DataSourceConverter;
@@ -61,13 +62,13 @@ public class OrchestrationEncryptDataSource extends AbstractOrchestrationDataSou
         Preconditions.checkState(!encryptRuleConfiguration.getEncryptorRuleConfigs().isEmpty(), "No available encrypt rule configuration to load.");
         Map<String, DataSourceConfiguration> dataSourceConfigurations = configService.loadDataSourceConfigurations(ShardingConstant.LOGIC_SCHEMA_NAME);
         checkDataSourceConfiguration(dataSourceConfigurations);
-        dataSource = new EncryptDataSource(DataSourceConverter.getDataSourceMap(dataSourceConfigurations).values().iterator().next(), encryptRuleConfiguration);
+        dataSource = new EncryptDataSource(DataSourceConverter.getDataSourceMap(dataSourceConfigurations).values().iterator().next(), encryptRuleConfiguration, configService.loadProperties());
         initShardingOrchestrationFacade();
     }
     
     public OrchestrationEncryptDataSource(final EncryptDataSource dataSource, final OrchestrationConfiguration orchestrationConfig) {
         super(new ShardingOrchestrationFacade(orchestrationConfig, Collections.singletonList(ShardingConstant.LOGIC_SCHEMA_NAME)));
-        this.dataSource = new EncryptDataSource(dataSource.getDataSource(), dataSource.getEncryptRule().getEncryptRuleConfig());
+        this.dataSource = new EncryptDataSource(dataSource.getDataSource(), dataSource.getEncryptRule().getEncryptRuleConfig(), dataSource.getShardingProperties().getProps());
         initShardingOrchestrationFacade(
             Collections.singletonMap(ShardingConstant.LOGIC_SCHEMA_NAME, DataSourceConverter.getDataSourceConfigurationMap(Collections.singletonMap(ENCRYPT_DATASOURCE, dataSource.getDataSource()))),
             getRuleConfigurationMap(), new Properties());
@@ -99,7 +100,8 @@ public class OrchestrationEncryptDataSource extends AbstractOrchestrationDataSou
         Map<String, DataSourceConfiguration> dataSourceConfigurations = dataSourceChangedEvent.getDataSourceConfigurations();
         dataSource.close();
         checkDataSourceConfiguration(dataSourceConfigurations);
-        dataSource = new EncryptDataSource(DataSourceConverter.getDataSourceMap(dataSourceConfigurations).values().iterator().next(), dataSource.getEncryptRule().getEncryptRuleConfig());
+        dataSource = new EncryptDataSource(DataSourceConverter.getDataSourceMap(dataSourceConfigurations).values().iterator().next(),
+            dataSource.getEncryptRule().getEncryptRuleConfig(), dataSource.getShardingProperties().getProps());
         getDataSourceConfigurations().clear();
         getDataSourceConfigurations().putAll(dataSourceConfigurations);
     }
@@ -112,6 +114,17 @@ public class OrchestrationEncryptDataSource extends AbstractOrchestrationDataSou
     @Subscribe
     @SneakyThrows
     public final synchronized void renew(final EncryptRuleChangedEvent encryptRuleChangedEvent) {
-        dataSource = new EncryptDataSource(dataSource.getDataSource(), encryptRuleChangedEvent.getEncryptRuleConfiguration());
+        dataSource = new EncryptDataSource(dataSource.getDataSource(), encryptRuleChangedEvent.getEncryptRuleConfiguration(), dataSource.getShardingProperties().getProps());
+    }
+    
+    /**
+     * Renew properties.
+     *
+     * @param propertiesChangedEvent properties changed event
+     */
+    @SneakyThrows
+    @Subscribe
+    public final synchronized void renew(final PropertiesChangedEvent propertiesChangedEvent) {
+        dataSource = new EncryptDataSource(dataSource.getDataSource(), dataSource.getEncryptRule().getEncryptRuleConfig(), propertiesChangedEvent.getProps());
     }
 }

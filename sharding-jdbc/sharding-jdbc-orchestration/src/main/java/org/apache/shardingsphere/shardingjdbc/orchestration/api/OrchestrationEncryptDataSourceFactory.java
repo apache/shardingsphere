@@ -23,6 +23,7 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSo
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationEncryptDataSource;
 
 import javax.sql.DataSource;
+import java.util.Properties;
 
 /**
  * Orchhestration encrypt data source factory.
@@ -36,14 +37,16 @@ public class OrchestrationEncryptDataSourceFactory {
      *
      * @param dataSource data source
      * @param encryptRuleConfig encrypt rule configuration
+     * @param props properties
      * @param orchestrationConfig orchestration configuration
      * @return orchestration encrypt data source
      */
-    public static DataSource createDataSource(final DataSource dataSource, final EncryptRuleConfiguration encryptRuleConfig, final OrchestrationConfiguration orchestrationConfig) {
+    public static DataSource createDataSource(final DataSource dataSource, final EncryptRuleConfiguration encryptRuleConfig, final Properties props,
+        final OrchestrationConfiguration orchestrationConfig) {
         if (null == encryptRuleConfig || encryptRuleConfig.getEncryptorRuleConfigs().isEmpty()) {
             return createDataSource(orchestrationConfig);
         }
-        return new OrchestrationEncryptDataSource(new EncryptDataSource(dataSource, encryptRuleConfig), orchestrationConfig);
+        return new OrchestrationEncryptDataSource(new EncryptDataSource(dataSource, encryptRuleConfig, props), orchestrationConfig);
     }
     
     /**

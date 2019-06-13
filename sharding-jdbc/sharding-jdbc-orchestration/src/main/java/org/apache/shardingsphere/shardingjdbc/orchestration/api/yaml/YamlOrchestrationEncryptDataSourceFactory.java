@@ -31,6 +31,7 @@ import org.apache.shardingsphere.shardingjdbc.orchestration.internal.yaml.YamlOr
 import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
+import java.util.Properties;
 
 /**
  * Orchestration encrypt data source factory for YAML.
@@ -53,7 +54,7 @@ public class YamlOrchestrationEncryptDataSourceFactory {
      */
     public static DataSource createDataSource(final File yamlFile) throws IOException {
         YamlOrchestrationEncryptRuleConfiguration config = unmarshal(yamlFile);
-        return createDataSource(config.getDataSource(), config.getEncryptRule(), config.getOrchestration());
+        return createDataSource(config.getDataSource(), config.getEncryptRule(), config.getOrchestration(), config.getProps());
     }
     
     /**
@@ -66,7 +67,7 @@ public class YamlOrchestrationEncryptDataSourceFactory {
      */
     public static DataSource createDataSource(final DataSource dataSource, final File yamlFile) throws IOException {
         YamlOrchestrationEncryptRuleConfiguration config = unmarshal(yamlFile);
-        return createDataSource(dataSource, config.getEncryptRule(), config.getOrchestration());
+        return createDataSource(dataSource, config.getEncryptRule(), config.getOrchestration(), config.getProps());
     }
     
     /**
@@ -78,7 +79,7 @@ public class YamlOrchestrationEncryptDataSourceFactory {
      */
     public static DataSource createDataSource(final byte[] yamlBytes) throws IOException {
         YamlOrchestrationEncryptRuleConfiguration config = unmarshal(yamlBytes);
-        return createDataSource(config.getDataSource(), config.getEncryptRule(), config.getOrchestration());
+        return createDataSource(config.getDataSource(), config.getEncryptRule(), config.getOrchestration(), config.getProps());
     }
     
     /**
@@ -91,15 +92,15 @@ public class YamlOrchestrationEncryptDataSourceFactory {
      */
     public static DataSource createDataSource(final DataSource dataSource, final byte[] yamlBytes) throws IOException {
         YamlOrchestrationEncryptRuleConfiguration config = unmarshal(yamlBytes);
-        return createDataSource(dataSource, config.getEncryptRule(), config.getOrchestration());
+        return createDataSource(dataSource, config.getEncryptRule(), config.getOrchestration(), config.getProps());
     }
     
     private static DataSource createDataSource(final DataSource dataSource, final YamlEncryptRuleConfiguration yamlEncryptRuleConfiguration,
-                                               final YamlOrchestrationConfiguration yamlOrchestrationConfiguration) {
+                                               final YamlOrchestrationConfiguration yamlOrchestrationConfiguration, final Properties properties) {
         if (null == yamlEncryptRuleConfiguration) {
             return new OrchestrationEncryptDataSource(ORCHESTRATION_SWAPPER.swap(yamlOrchestrationConfiguration));
         } else {
-            EncryptDataSource encryptDataSource = new EncryptDataSource(dataSource, ENCRYPT_RULE_SWAPPER.swap(yamlEncryptRuleConfiguration));
+            EncryptDataSource encryptDataSource = new EncryptDataSource(dataSource, ENCRYPT_RULE_SWAPPER.swap(yamlEncryptRuleConfiguration), properties);
             return new OrchestrationEncryptDataSource(encryptDataSource, ORCHESTRATION_SWAPPER.swap(yamlOrchestrationConfiguration));
         }
     }
