@@ -39,7 +39,7 @@ import java.util.Properties;
  * @author yangyi
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class YamlOrchestrationEncryptDataSourceFactory {
+public final class YamlOrchestrationEncryptDataSourceFactory {
     
     private static final OrchestrationConfigurationYamlSwapper ORCHESTRATION_SWAPPER = new OrchestrationConfigurationYamlSwapper();
     

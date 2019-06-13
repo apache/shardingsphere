@@ -32,7 +32,7 @@ import java.net.URISyntaxException;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
-public class YamlOrchestrationEncryptDataSourceFactoryTest {
+public final class YamlOrchestrationEncryptDataSourceFactoryTest {
     
     @Test
     public void assertCreateDataSourceByYamlFile() throws URISyntaxException, IOException {

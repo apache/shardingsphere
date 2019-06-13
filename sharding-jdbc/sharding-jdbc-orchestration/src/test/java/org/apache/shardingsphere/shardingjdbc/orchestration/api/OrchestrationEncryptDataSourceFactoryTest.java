@@ -31,7 +31,7 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
-public class OrchestrationEncryptDataSourceFactoryTest {
+public final class OrchestrationEncryptDataSourceFactoryTest {
     
     @Test
     public void assertCreateDataSourceWithDataSource() {

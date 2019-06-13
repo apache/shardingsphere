@@ -30,7 +30,7 @@ import java.util.Properties;
  *
  * @author yangyi
  */
-public class OrchestrationEncryptDataSourceFactory {
+public final class OrchestrationEncryptDataSourceFactory {
     
     /**
      * Create orchestration encrypt data source.
