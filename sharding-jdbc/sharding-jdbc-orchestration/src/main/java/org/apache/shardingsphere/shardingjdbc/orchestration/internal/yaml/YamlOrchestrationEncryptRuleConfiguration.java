@@ -15,24 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.yaml.config.encrypt;
+package org.apache.shardingsphere.shardingjdbc.orchestration.internal.yaml;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.core.yaml.config.YamlConfiguration;
+import org.apache.shardingsphere.core.yaml.config.encrypt.YamlRootEncryptRuleConfiguration;
+import org.apache.shardingsphere.orchestration.yaml.config.YamlOrchestrationConfiguration;
 
-import javax.sql.DataSource;
+import java.util.Properties;
 
 /**
- * Root encrypt rule configuration for YAML.
+ * Orchestration encrypt configuration for YAML.
  *
- * @author panjuan
+ * @author yangyi
  */
 @Getter
 @Setter
-public class YamlRootEncryptRuleConfiguration implements YamlConfiguration {
+public final class YamlOrchestrationEncryptRuleConfiguration extends YamlRootEncryptRuleConfiguration {
     
-    private DataSource dataSource;
+    private YamlOrchestrationConfiguration orchestration;
     
-    private YamlEncryptRuleConfiguration encryptRule;
+    private Properties props = new Properties();
 }

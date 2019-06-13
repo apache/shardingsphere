@@ -15,24 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.yaml.config.encrypt;
+package org.apache.shardingsphere.orchestration.internal.registry.config.event;
+
+import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
+import org.apache.shardingsphere.orchestration.internal.registry.listener.ShardingOrchestrationEvent;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.core.yaml.config.YamlConfiguration;
-
-import javax.sql.DataSource;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Root encrypt rule configuration for YAML.
+ * Encrypt rule changed event.
  *
- * @author panjuan
+ * @author yangyi
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public class YamlRootEncryptRuleConfiguration implements YamlConfiguration {
+public class EncryptRuleChangedEvent implements ShardingOrchestrationEvent {
     
-    private DataSource dataSource;
+    private final String shardingSchemaName;
     
-    private YamlEncryptRuleConfiguration encryptRule;
+    private final EncryptRuleConfiguration encryptRuleConfiguration;
 }
