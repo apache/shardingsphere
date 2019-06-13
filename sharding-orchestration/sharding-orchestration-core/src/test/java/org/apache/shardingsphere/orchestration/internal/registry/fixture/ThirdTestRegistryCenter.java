@@ -23,7 +23,11 @@ import org.apache.shardingsphere.orchestration.reg.api.RegistryCenter;
 import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import org.apache.shardingsphere.orchestration.reg.listener.DataChangedEventListener;
 
-import java.util.*;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Properties;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 
 public final class ThirdTestRegistryCenter implements RegistryCenter {
@@ -32,7 +36,7 @@ public final class ThirdTestRegistryCenter implements RegistryCenter {
     @Setter
     private Properties properties = new Properties();
 
-    private Map<String,String> keys = new HashMap<String,String>();
+    private Map<String, String> keys = new HashMap<>();
 
     private ReentrantLock lock = new ReentrantLock();
     
@@ -62,12 +66,12 @@ public final class ThirdTestRegistryCenter implements RegistryCenter {
 
     @Override
     public void persist(final String key, final String value) {
-        keys.put(key,value);
+        keys.put(key, value);
     }
 
     @Override
     public void update(final String key, final String value) {
-        keys.put(key,value);
+        keys.put(key, value);
     }
     
     @Override
@@ -88,17 +92,18 @@ public final class ThirdTestRegistryCenter implements RegistryCenter {
     }
 
     @Override
-    public void initLock(final String key){
+    public void initLock(final String key) {
         lock = new ReentrantLock();
     }
 
     @Override
-    public boolean tryLock(){
+    public boolean tryLock() {
         return lock.tryLock();
     }
 
     @Override
-    public void tryRelease(){
+    public void tryRelease() {
         lock.unlock();
     }
+
 }

@@ -39,7 +39,7 @@ import java.util.concurrent.SynchronousQueue;
  */
 public final class LeafSegmentKeyGenerator implements ShardingKeyGenerator {
 
-    private static final String TYPE = "LEAFSEGMENT";
+    private static final String TYPE = "LEAF_SEGMENT";
 
     private static final String NAMESPACE = "leaf_segment";
 
@@ -194,9 +194,7 @@ public final class LeafSegmentKeyGenerator implements ShardingKeyGenerator {
     }
 
     private String getRegistryCenterType() {
-        String result = properties.getProperty("registryCenterType",DEFAULT_REGISTRY_CENTER);
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(result));
-        return result;
+        return properties.getProperty("registryCenterType", DEFAULT_REGISTRY_CENTER);
     }
 
 }
