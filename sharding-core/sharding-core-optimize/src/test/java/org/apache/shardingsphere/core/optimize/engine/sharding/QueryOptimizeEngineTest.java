@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.optimize.engine.sharding;
 import com.google.common.collect.Range;
 import org.apache.shardingsphere.core.optimize.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.condition.ShardingConditions;
-import org.apache.shardingsphere.core.optimize.engine.sharding.query.QueryOptimizeEngine;
+import org.apache.shardingsphere.core.optimize.engine.sharding.dql.QueryOptimizeEngine;
 import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;

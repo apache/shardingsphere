@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.optimize.engine.sharding;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.core.optimize.GeneratedKey;
-import org.apache.shardingsphere.core.optimize.engine.sharding.insert.InsertOptimizeEngine;
+import org.apache.shardingsphere.core.optimize.engine.sharding.dml.InsertOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
