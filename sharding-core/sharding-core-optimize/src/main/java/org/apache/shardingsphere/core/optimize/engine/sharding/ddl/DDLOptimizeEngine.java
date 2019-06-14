@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.optimize.engine.sharding.ddl;
 
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.metadata.ShardingMetaData;
+import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.condition.ShardingConditions;
 import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
@@ -39,7 +39,7 @@ public final class DDLOptimizeEngine implements OptimizeEngine {
     
     private final DDLStatement ddlStatement;
     
-    private final ShardingMetaData shardingMetaData;
+    private final ShardingTableMetaData shardingTableMetaData;
     
     @Override
     public OptimizeResult optimize() {
@@ -55,7 +55,7 @@ public final class DDLOptimizeEngine implements OptimizeEngine {
     }
     
     private void setLogicTableName(final OptimizeResult result) {
-        Optional<String> logicTableName = shardingMetaData.getTable().getLogicTableName(ddlStatement.getIndexName());
+        Optional<String> logicTableName = shardingTableMetaData.getLogicTableName(ddlStatement.getIndexName());
         if (logicTableName.isPresent()) {
             result.setLogicTableNameForDropIndex(logicTableName.get());
         }
