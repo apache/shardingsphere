@@ -27,7 +27,7 @@ import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.parse.api.SQLParser;
 import org.apache.shardingsphere.core.parse.entry.EncryptSQLParseEntry;
 import org.apache.shardingsphere.core.parse.integrate.asserts.EncryptSQLStatementAssert;
-import org.apache.shardingsphere.core.parse.integrate.engine.sharding.AbstractBaseIntegrateSQLParsingTest;
+import org.apache.shardingsphere.core.parse.integrate.engine.AbstractBaseIntegrateSQLParsingTest;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.EncryptParserResultSetRegistry;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.ParserResultSetRegistry;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.root.ParserResult;
@@ -40,8 +40,6 @@ import org.apache.shardingsphere.test.sql.EncryptSQLCasesLoader;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.SQLCasesLoader;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import java.io.File;
@@ -51,7 +49,6 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
 
-@RunWith(Parameterized.class)
 @RequiredArgsConstructor
 public final class EncryptIntegrateParsingTest extends AbstractBaseIntegrateSQLParsingTest {
     

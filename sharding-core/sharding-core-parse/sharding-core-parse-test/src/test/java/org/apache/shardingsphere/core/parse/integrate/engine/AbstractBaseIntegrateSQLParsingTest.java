@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.integrate.engine.sharding;
+package org.apache.shardingsphere.core.parse.integrate.engine;
 
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
