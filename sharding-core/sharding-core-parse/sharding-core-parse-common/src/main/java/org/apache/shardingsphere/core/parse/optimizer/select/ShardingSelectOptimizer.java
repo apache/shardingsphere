@@ -43,13 +43,13 @@ import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import java.util.List;
 
 /**
- * Select optimizer.
+ * Select optimizer for sharding.
  *
  * @author duhongjun
  * @author panjuan
  */
 @Setter
-public final class SelectOptimizer implements SQLStatementOptimizer, ShardingTableMetaDataAware {
+public final class ShardingSelectOptimizer implements SQLStatementOptimizer, ShardingTableMetaDataAware {
     
     private ShardingTableMetaData shardingTableMetaData;
     
