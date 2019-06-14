@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.parse.sql.context.selectitem;
 
 import com.google.common.base.Optional;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.shardingsphere.core.constant.AggregationType;
 
@@ -27,6 +28,7 @@ import org.apache.shardingsphere.core.constant.AggregationType;
  * @author panjuan
  */
 @Getter
+@EqualsAndHashCode
 public final class AggregationDistinctSelectItem extends AggregationSelectItem {
     
     private final String distinctColumnName;
