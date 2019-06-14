@@ -33,7 +33,7 @@ public final class ShardingParseErrorSQLCasesRegistry {
     private SQLCasesLoader sqlCasesLoader;
     
     private ShardingParseErrorSQLCasesRegistry() {
-        sqlCasesLoader = new SQLCasesLoader("parse_error_sql");
+        sqlCasesLoader = new SQLCasesLoader("sql/parse_error");
     }
     
     /**

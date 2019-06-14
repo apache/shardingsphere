@@ -33,7 +33,7 @@ public final class ShardingSQLCasesRegistry {
     private SQLCasesLoader sqlCasesLoader;
     
     private ShardingSQLCasesRegistry() {
-        sqlCasesLoader = new SQLCasesLoader("sql");
+        sqlCasesLoader = new SQLCasesLoader("sql/sharding");
     }
     
     /**

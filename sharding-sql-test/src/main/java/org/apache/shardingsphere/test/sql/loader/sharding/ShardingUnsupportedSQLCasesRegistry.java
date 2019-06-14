@@ -33,7 +33,7 @@ public final class ShardingUnsupportedSQLCasesRegistry {
     private SQLCasesLoader sqlCasesLoader;
     
     private ShardingUnsupportedSQLCasesRegistry() {
-        sqlCasesLoader = new SQLCasesLoader("unsupported_sql");
+        sqlCasesLoader = new SQLCasesLoader("sql/unsupported");
     }
     
     /**

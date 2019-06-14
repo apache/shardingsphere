@@ -33,7 +33,7 @@ public final class EncryptSQLCasesRegistry {
     private SQLCasesLoader sqlCasesLoader;
     
     private EncryptSQLCasesRegistry() {
-        sqlCasesLoader = new SQLCasesLoader("encrypt_sql");
+        sqlCasesLoader = new SQLCasesLoader("sql/encrypt");
     }
     
     /**

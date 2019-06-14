@@ -33,8 +33,6 @@ import java.util.List;
 @XmlRootElement(name = "sql-cases")
 @Getter
 public final class SQLCases {
-    @XmlAttribute
-    private String namespace;
     
     @XmlAttribute(name = "db-types")
     private String databaseTypes;
