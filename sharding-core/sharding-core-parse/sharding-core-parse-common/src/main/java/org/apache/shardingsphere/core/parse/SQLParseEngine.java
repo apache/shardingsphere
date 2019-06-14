@@ -21,8 +21,6 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.extractor.SQLSegmentsExtractorEngine;
-import org.apache.shardingsphere.core.parse.extractor.util.ExtractorUtils;
-import org.apache.shardingsphere.core.parse.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.filler.SQLStatementFillerEngine;
 import org.apache.shardingsphere.core.parse.optimizer.SQLStatementOptimizerEngine;
 import org.apache.shardingsphere.core.parse.parser.SQLAST;
@@ -34,7 +32,6 @@ import org.apache.shardingsphere.core.rule.BaseRule;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -68,20 +65,10 @@ public final class SQLParseEngine {
      */
     public SQLStatement parse() {
         SQLAST ast = parserEngine.parse();
-        Map<ParserRuleContext, Integer> parameterMarkerIndexes = getParameterMarkerIndexes(ast.getParserRuleContext());
+        Map<ParserRuleContext, Integer> parameterMarkerIndexes = ast.getParameterMarkerIndexes();
         Collection<SQLSegment> sqlSegments = extractorEngine.extract(ast, parameterMarkerIndexes);
         SQLStatement result = fillerEngine.fill(sqlSegments, parameterMarkerIndexes.size(), ast.getSqlStatementRule());
         optimizerEngine.optimize(ast.getSqlStatementRule(), result);
-        return result;
-    }
-    
-    private Map<ParserRuleContext, Integer> getParameterMarkerIndexes(final ParserRuleContext rootNode) {
-        Collection<ParserRuleContext> placeholderNodes = ExtractorUtils.getAllDescendantNodes(rootNode, RuleName.PARAMETER_MARKER);
-        Map<ParserRuleContext, Integer> result = new HashMap<>(placeholderNodes.size(), 1);
-        int index = 0;
-        for (ParserRuleContext each : placeholderNodes) {
-            result.put(each, index++);
-        }
         return result;
     }
 }

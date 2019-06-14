@@ -22,6 +22,8 @@ import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.rule.registry.statement.SQLStatementRule;
 
+import java.util.Map;
+
 /**
  * Abstract syntax tree of SQL.
  *
@@ -32,6 +34,8 @@ import org.apache.shardingsphere.core.parse.rule.registry.statement.SQLStatement
 public final class SQLAST {
     
     private final ParserRuleContext parserRuleContext;
+    
+    private final Map<ParserRuleContext, Integer> parameterMarkerIndexes;
     
     private final SQLStatementRule sqlStatementRule;
 }
