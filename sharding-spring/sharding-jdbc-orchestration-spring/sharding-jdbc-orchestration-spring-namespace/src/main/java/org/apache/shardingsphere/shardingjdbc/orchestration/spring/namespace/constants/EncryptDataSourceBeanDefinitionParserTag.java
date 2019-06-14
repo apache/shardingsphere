@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
  * @author yangyi
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class EncryptDataSourceBeanDefinitionParserTag {
+public final class EncryptDataSourceBeanDefinitionParserTag {
     
     public static final String ROOT_TAG = "encrypt-data-source";
     

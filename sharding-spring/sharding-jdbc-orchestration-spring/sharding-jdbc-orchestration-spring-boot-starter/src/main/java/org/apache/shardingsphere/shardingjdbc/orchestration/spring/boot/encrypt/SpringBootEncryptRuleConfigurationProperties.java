@@ -26,5 +26,5 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author yangyi
  */
 @ConfigurationProperties(prefix = "spring.shardingsphere.encrypt")
-public class SpringBootEncryptRuleConfigurationProperties extends YamlEncryptRuleConfiguration {
+public final class SpringBootEncryptRuleConfigurationProperties extends YamlEncryptRuleConfiguration {
 }
