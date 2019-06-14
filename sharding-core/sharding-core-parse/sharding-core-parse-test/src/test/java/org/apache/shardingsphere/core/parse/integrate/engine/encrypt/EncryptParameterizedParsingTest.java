@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.integrate.engine.sharding;
+package org.apache.shardingsphere.core.parse.integrate.engine.encrypt;
 
+import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.ANTLRErrorListener;
 import org.antlr.v4.runtime.BaseErrorListener;
@@ -24,31 +25,36 @@ import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.parse.api.SQLParser;
-import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
-import org.apache.shardingsphere.core.parse.entry.ShardingSQLParseEntry;
-import org.apache.shardingsphere.core.parse.integrate.asserts.ShardingSQLStatementAssert;
-import org.apache.shardingsphere.core.parse.integrate.engine.AbstractBaseIntegrateSQLParsingTest;
+import org.apache.shardingsphere.core.parse.entry.EncryptSQLParseEntry;
+import org.apache.shardingsphere.core.parse.integrate.asserts.EncryptSQLStatementAssert;
+import org.apache.shardingsphere.core.parse.integrate.engine.AbstractBaseParameterizedParsingTest;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.EncryptParserResultSetRegistry;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.ParserResultSetRegistry;
-import org.apache.shardingsphere.core.parse.integrate.jaxb.ShardingParserResultSetRegistry;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.root.ParserResult;
 import org.apache.shardingsphere.core.parse.parser.SQLParserFactory;
+import org.apache.shardingsphere.core.rule.EncryptRule;
+import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptRuleConfiguration;
+import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.core.yaml.swapper.impl.EncryptRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.test.sql.EncryptSQLCasesLoader;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.SQLCasesLoader;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Method;
+import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
 @RequiredArgsConstructor
-public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrateSQLParsingTest {
+public final class EncryptParameterizedParsingTest extends AbstractBaseParameterizedParsingTest {
     
-    private static SQLCasesLoader sqlCasesLoader = SQLCasesLoader.getInstance();
+    private static SQLCasesLoader sqlCasesLoader = EncryptSQLCasesLoader.getInstance();
     
-    private static ParserResultSetRegistry parserResultSetLoader = ShardingParserResultSetRegistry.getInstance().getRegistry();
+    private static ParserResultSetRegistry parserResultSetRegistry = EncryptParserResultSetRegistry.getInstance().getRegistry();
     
     private final String sqlCaseId;
     
@@ -58,8 +64,14 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
     
     @Parameters(name = "{0} ({2}) -> {1}")
     public static Collection<Object[]> getTestParameters() {
-        assertThat(sqlCasesLoader.countAllSupportedSQLCases(), is(parserResultSetLoader.countAllTestCases()));
         return sqlCasesLoader.getSupportedSQLTestParameters();
+    }
+    
+    private static EncryptRule buildShardingRule() throws IOException {
+        URL url = AbstractBaseParameterizedParsingTest.class.getClassLoader().getResource("yaml/encrypt-rule.yaml");
+        Preconditions.checkNotNull(url, "Cannot found parser rule yaml configuration.");
+        YamlEncryptRuleConfiguration encryptConfig = YamlEngine.unmarshal(new File(url.getFile()), YamlEncryptRuleConfiguration.class);
+        return new EncryptRule(new EncryptRuleConfigurationYamlSwapper().swap(encryptConfig));
     }
     
     @Test
@@ -78,9 +90,13 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
     }
     
     @Test
-    public void assertSupportedSQL() {
-        String sql = sqlCasesLoader.getSupportedSQL(sqlCaseId, sqlCaseType, parserResultSetLoader.get(sqlCaseId).getParameters());
-        new ShardingSQLStatementAssert(new ShardingSQLParseEntry(DatabaseTypes.getTrunkDatabaseType(databaseType), getShardingRule(), getShardingTableMetaData(), new ParsingResultCache())
-                .parse(sql, false), sqlCaseId, sqlCaseType).assertSQLStatement();
+    public void assertSupportedSQL() throws Exception {
+        ParserResult parserResult = parserResultSetRegistry.get(sqlCaseId);
+        if (null != parserResult) {
+            String sql = sqlCasesLoader.getSupportedSQL(sqlCaseId, sqlCaseType, parserResult.getParameters());
+            EncryptSQLParseEntry encryptSQLParseEntry = new EncryptSQLParseEntry(
+                    DatabaseTypes.getActualDatabaseType(databaseType), buildShardingRule(), AbstractBaseParameterizedParsingTest.getShardingTableMetaData());
+            new EncryptSQLStatementAssert(encryptSQLParseEntry.parse(sql, false), sqlCaseId, sqlCaseType, sqlCasesLoader, parserResultSetRegistry).assertSQLStatement();
+        }
     }
 }

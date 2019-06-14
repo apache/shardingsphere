@@ -22,7 +22,7 @@ import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
 import org.apache.shardingsphere.core.parse.entry.ShardingSQLParseEntry;
 import org.apache.shardingsphere.core.parse.exception.SQLParsingException;
-import org.apache.shardingsphere.core.parse.integrate.engine.AbstractBaseIntegrateSQLParsingTest;
+import org.apache.shardingsphere.core.parse.integrate.engine.AbstractBaseParameterizedParsingTest;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.SQLCasesLoader;
 import org.junit.Test;
@@ -32,7 +32,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 @RequiredArgsConstructor
-public final class IntegrateUnsupportedSQLParsingTest extends AbstractBaseIntegrateSQLParsingTest {
+public final class ShardingParameterizedUnsupportedParsingTest extends AbstractBaseParameterizedParsingTest {
     
     private static SQLCasesLoader sqlCasesLoader = SQLCasesLoader.getInstance();
     
