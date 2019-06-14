@@ -26,7 +26,6 @@ import org.apache.shardingsphere.core.parse.integrate.asserts.orderby.OrderByAss
 import org.apache.shardingsphere.core.parse.integrate.asserts.pagination.PaginationAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.table.AlterTableAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.table.TableAssert;
-import org.apache.shardingsphere.core.parse.integrate.jaxb.ParserResultSetRegistry;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.ShardingParserResultSetRegistry;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.root.ParserResult;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
@@ -71,13 +70,9 @@ public final class ShardingSQLStatementAssert {
     private final AlterTableAssert alterTableAssert;
     
     public ShardingSQLStatementAssert(final SQLStatement actual, final String sqlCaseId, final SQLCaseType sqlCaseType) {
-        this(actual, sqlCaseId, sqlCaseType, SQLCasesLoader.getInstance(), ShardingParserResultSetRegistry.getInstance().getRegistry());
-    }
-    
-    public ShardingSQLStatementAssert(final SQLStatement actual, final String sqlCaseId, final SQLCaseType sqlCaseType, final SQLCasesLoader sqlLoader, final ParserResultSetRegistry registry) {
-        SQLStatementAssertMessage assertMessage = new SQLStatementAssertMessage(sqlLoader, registry, sqlCaseId, sqlCaseType);
+        SQLStatementAssertMessage assertMessage = new SQLStatementAssertMessage(SQLCasesLoader.getInstance(), ShardingParserResultSetRegistry.getInstance().getRegistry(), sqlCaseId, sqlCaseType);
         this.actual = actual;
-        expected = registry.get(sqlCaseId);
+        expected = ShardingParserResultSetRegistry.getInstance().getRegistry().get(sqlCaseId);
         tableAssert = new TableAssert(assertMessage);
         conditionAssert = new ConditionAssert(assertMessage);
         indexAssert = new IndexAssert(sqlCaseType, assertMessage);

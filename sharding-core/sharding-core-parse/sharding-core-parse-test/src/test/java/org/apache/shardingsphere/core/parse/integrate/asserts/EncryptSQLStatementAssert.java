@@ -20,13 +20,13 @@ package org.apache.shardingsphere.core.parse.integrate.asserts;
 import org.apache.shardingsphere.core.parse.integrate.asserts.condition.ConditionAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.insert.InsertNamesAndValuesAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.table.TableAssert;
-import org.apache.shardingsphere.core.parse.integrate.jaxb.ParserResultSetRegistry;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.EncryptParserResultSetRegistry;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.root.ParserResult;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
+import org.apache.shardingsphere.test.sql.EncryptSQLCasesLoader;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
-import org.apache.shardingsphere.test.sql.SQLCasesLoader;
 
 /**
  * SQL statement assert for encrypt.
@@ -45,10 +45,11 @@ public final class EncryptSQLStatementAssert {
     
     private final InsertNamesAndValuesAssert insertNamesAndValuesAssert;
     
-    public EncryptSQLStatementAssert(final SQLStatement actual, final String sqlCaseId, final SQLCaseType sqlCaseType, final SQLCasesLoader sqlLoader, final ParserResultSetRegistry registry) {
-        SQLStatementAssertMessage assertMessage = new SQLStatementAssertMessage(sqlLoader, registry, sqlCaseId, sqlCaseType);
+    public EncryptSQLStatementAssert(final SQLStatement actual, final String sqlCaseId, final SQLCaseType sqlCaseType) {
+        SQLStatementAssertMessage assertMessage = new SQLStatementAssertMessage(
+                EncryptSQLCasesLoader.getInstance(), EncryptParserResultSetRegistry.getInstance().getRegistry(), sqlCaseId, sqlCaseType);
         this.actual = actual;
-        expected = registry.get(sqlCaseId);
+        expected = EncryptParserResultSetRegistry.getInstance().getRegistry().get(sqlCaseId);
         tableAssert = new TableAssert(assertMessage);
         conditionAssert = new ConditionAssert(assertMessage);
         insertNamesAndValuesAssert = new InsertNamesAndValuesAssert(assertMessage, sqlCaseType);

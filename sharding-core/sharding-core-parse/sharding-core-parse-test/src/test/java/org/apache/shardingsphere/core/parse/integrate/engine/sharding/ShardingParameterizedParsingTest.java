@@ -46,7 +46,7 @@ public final class ShardingParameterizedParsingTest {
     
     private static SQLCasesLoader sqlCasesLoader = SQLCasesLoader.getInstance();
     
-    private static ParserResultSetRegistry parserResultSetLoader = ShardingParserResultSetRegistry.getInstance().getRegistry();
+    private static ParserResultSetRegistry parserResultSetRegistry = ShardingParserResultSetRegistry.getInstance().getRegistry();
     
     private static ShardingRule shardingRule = ParsingTestCaseFixtureBuilder.buildShardingRule();
     
@@ -62,15 +62,14 @@ public final class ShardingParameterizedParsingTest {
     
     @Parameters(name = "{0} ({2}) -> {1}")
     public static Collection<Object[]> getTestParameters() {
-        assertThat(sqlCasesLoader.countAllSupportedSQLCases(), is(parserResultSetLoader.countAllTestCases()));
+        assertThat(sqlCasesLoader.countAllSupportedSQLCases(), is(parserResultSetRegistry.countAllTestCases()));
         return sqlCasesLoader.getSupportedSQLTestParameters();
     }
     
     @Test
     public void assertSupportedSQL() {
-        String sql = sqlCasesLoader.getSupportedSQL(sqlCaseId, sqlCaseType, parserResultSetLoader.get(sqlCaseId).getParameters());
-        SQLStatement sqlStatement = new ShardingSQLParseEntry(
-                DatabaseTypes.getTrunkDatabaseType(databaseType), shardingRule, shardingTableMetaData, parsingResultCache).parse(sql, false);
+        String sql = sqlCasesLoader.getSupportedSQL(sqlCaseId, sqlCaseType, parserResultSetRegistry.get(sqlCaseId).getParameters());
+        SQLStatement sqlStatement = new ShardingSQLParseEntry(DatabaseTypes.getTrunkDatabaseType(databaseType), shardingRule, shardingTableMetaData, parsingResultCache).parse(sql, false);
         new ShardingSQLStatementAssert(sqlStatement, sqlCaseId, sqlCaseType).assertSQLStatement();
     }
 }
