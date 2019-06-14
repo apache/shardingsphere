@@ -50,7 +50,6 @@ public final class TableRuleTest {
         assertTrue(actual.getActualDataNodes().contains(new DataNode("ds1", "LOGIC_TABLE")));
         assertNull(actual.getDatabaseShardingStrategy());
         assertNull(actual.getTableShardingStrategy());
-        assertNull(actual.getLogicIndex());
     }
     
     @Test
@@ -73,7 +72,6 @@ public final class TableRuleTest {
         assertNotNull(actual.getTableShardingStrategy());
         assertThat(actual.getGenerateKeyColumn(), is("col_1"));
         assertThat(actual.getShardingKeyGenerator(), instanceOf(IncrementShardingKeyGenerator.class));
-        assertThat(actual.getLogicIndex(), is("logic_index"));
     }
     
     @Test
@@ -119,8 +117,7 @@ public final class TableRuleTest {
         TableRule actual = new TableRule(new TableRuleConfiguration("LOGIC_TABLE", "ds${0..1}.table_${0..2}"), createShardingDataSourceNames(), null);
         String actualString = "TableRule(logicTable=logic_table, actualDataNodes=[DataNode(dataSourceName=ds0, tableName=table_0), DataNode(dataSourceName=ds0, tableName=table_1), " 
                 + "DataNode(dataSourceName=ds0, tableName=table_2), DataNode(dataSourceName=ds1, tableName=table_0), DataNode(dataSourceName=ds1, tableName=table_1), " 
-                + "DataNode(dataSourceName=ds1, tableName=table_2)], databaseShardingStrategy=null, tableShardingStrategy=null, generateKeyColumn=null, shardingKeyGenerator=null, " 
-                + "logicIndex=null)";
+                + "DataNode(dataSourceName=ds1, tableName=table_2)], databaseShardingStrategy=null, tableShardingStrategy=null, generateKeyColumn=null, shardingKeyGenerator=null)";
         assertThat(actual.toString(), is(actualString));
     }
     
