@@ -107,8 +107,10 @@ public final class RoutingEngineFactory {
         return new DataSourceGroupBroadcastRoutingEngine(shardingRule);
     }
     
-    private static RoutingEngine getDCLRoutingEngine(final ShardingRule shardingRule, final SQLStatement sqlStatement, final OptimizeResult optimizeResult, final ShardingDataSourceMetaData shardingDataSourceMetaData) {
-        return isGrantForSingleTable(sqlStatement) ? new TableBroadcastRoutingEngine(shardingRule, sqlStatement, optimizeResult) : new InstanceBroadcastRoutingEngine(shardingRule, shardingDataSourceMetaData);
+    private static RoutingEngine getDCLRoutingEngine(final ShardingRule shardingRule, 
+                                                     final SQLStatement sqlStatement, final OptimizeResult optimizeResult, final ShardingDataSourceMetaData shardingDataSourceMetaData) {
+        return isGrantForSingleTable(sqlStatement) 
+                ? new TableBroadcastRoutingEngine(shardingRule, sqlStatement, optimizeResult) : new InstanceBroadcastRoutingEngine(shardingRule, shardingDataSourceMetaData);
     }
     
     private static boolean isGrantForSingleTable(final SQLStatement sqlStatement) {
