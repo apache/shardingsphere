@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.core.route.type.broadcast;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
@@ -46,6 +46,8 @@ public final class TableBroadcastRoutingEngine implements RoutingEngine {
     
     private final SQLStatement sqlStatement;
     
+    private final OptimizeResult optimizeResult;
+    
     @Override
     public RoutingResult route() {
         RoutingResult result = new RoutingResult();
@@ -56,14 +58,10 @@ public final class TableBroadcastRoutingEngine implements RoutingEngine {
     }
     
     private Collection<String> getLogicTableNames() {
-        if (isOperateIndexWithoutTable()) {
-            return Collections.singletonList(shardingRule.getLogicTableName(((DDLStatement) sqlStatement).getIndexName()));
+        if (optimizeResult.getLogicTableNameForDropIndex().isPresent()) {
+            return Collections.singletonList(optimizeResult.getLogicTableNameForDropIndex().get());
         }
         return sqlStatement.getTables().getTableNames();
-    }
-    
-    private boolean isOperateIndexWithoutTable() {
-        return sqlStatement instanceof DDLStatement && sqlStatement.getTables().isEmpty();
     }
     
     private Collection<RoutingUnit> getAllRoutingUnits(final String logicTableName) {
