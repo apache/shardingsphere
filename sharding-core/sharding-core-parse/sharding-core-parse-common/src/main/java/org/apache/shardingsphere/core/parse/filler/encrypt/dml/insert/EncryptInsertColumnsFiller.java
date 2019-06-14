@@ -47,16 +47,16 @@ public final class EncryptInsertColumnsFiller implements SQLSegmentFiller<Insert
     public void fill(final InsertColumnsSegment sqlSegment, final SQLStatement sqlStatement) {
         if (sqlStatement instanceof InsertStatement) {
             InsertStatement insertStatement = (InsertStatement) sqlStatement;
-            Collection<String> assistedQueryColumns = encryptRule.getEncryptorEngine().getAssistedQueryColumns(insertStatement.getTables().getSingleTableName());
             if (sqlSegment.getColumns().isEmpty()) {
-                fillFromMetaData(insertStatement, assistedQueryColumns);
+                fillFromMetaData(insertStatement);
             } else {
                 fillFromSQL(sqlSegment, insertStatement);
             }
         }
     }
     
-    private void fillFromMetaData(final InsertStatement insertStatement, final Collection<String> assistedQueryColumns) {
+    private void fillFromMetaData(final InsertStatement insertStatement) {
+        Collection<String> assistedQueryColumns = encryptRule.getEncryptorEngine().getAssistedQueryColumns(insertStatement.getTables().getSingleTableName());
         for (String each : shardingTableMetaData.getAllColumnNames(insertStatement.getTables().getSingleTableName())) {
             if (!assistedQueryColumns.contains(each)) {
                 insertStatement.getColumnNames().add(each);

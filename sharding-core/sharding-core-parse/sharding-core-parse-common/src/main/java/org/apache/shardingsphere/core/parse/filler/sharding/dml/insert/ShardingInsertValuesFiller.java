@@ -82,21 +82,11 @@ public final class ShardingInsertValuesFiller implements SQLSegmentFiller<Insert
     
     private void reviseInsertStatement(final InsertStatement insertStatement, final InsertValuesSegment sqlSegment) {
         Collection<String> insertColumns = new ArrayList<>(insertStatement.getColumnNames());
-        insertColumns.removeAll(getAssistedQueryColumns(insertStatement));
         Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTables().getSingleTableName());
         if (insertStatement.getColumnNames().size() != sqlSegment.getValues().size() && generateKeyColumnName.isPresent()) {
             insertColumns.remove(generateKeyColumnName.get());
         }
         insertStatement.getColumnNames().clear();
         insertStatement.getColumnNames().addAll(insertColumns);
-    }
-    
-    private Collection<String> getAssistedQueryColumns(final InsertStatement insertStatement) {
-        Collection<String> result = new ArrayList<>();
-        Collection<String> assistedQueryColumns = shardingRule.getEncryptRule().getEncryptorEngine().getAssistedQueryColumns(insertStatement.getTables().getSingleTableName());
-        if (!assistedQueryColumns.isEmpty()) {
-            result.addAll(assistedQueryColumns);
-        }
-        return result;
     }
 }
