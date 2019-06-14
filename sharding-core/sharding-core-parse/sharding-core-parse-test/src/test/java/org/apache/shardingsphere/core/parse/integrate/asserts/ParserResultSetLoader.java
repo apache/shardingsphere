@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.parse.integrate.asserts;
 
 import com.google.common.base.Preconditions;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.root.ParserResult;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.root.ParserResultSet;
 
@@ -41,7 +40,7 @@ public class ParserResultSetLoader {
     protected Map<String, ParserResult> parserResultMap;
     
     protected ParserResultSetLoader() {
-        parserResultMap = loadParserResultSet("parser/");
+        parserResultMap = loadParserResultSet("sharding/");
     }
     
     /**
@@ -65,14 +64,16 @@ public class ParserResultSetLoader {
         return result;
     }
     
-    @SneakyThrows
     protected Map<String, ParserResult> loadParserResultSet(final File file) {
         Map<String, ParserResult> result = new HashMap<>(Short.MAX_VALUE, 1);
         try {
             if (file.isDirectory()) {
-                for (File each : file.listFiles()) {
-                    result.putAll(loadParserResultSet(each));
-                } 
+                File[] files = file.listFiles();
+                if (null != files) {
+                    for (File each : files) {
+                        result.putAll(loadParserResultSet(each));
+                    }
+                }
             } else {
                 ParserResultSet resultSet = (ParserResultSet) JAXBContext.newInstance(ParserResultSet.class).createUnmarshaller().unmarshal(file);
                 for (ParserResult each : resultSet.getParserResults()) {
@@ -83,7 +84,7 @@ public class ParserResultSetLoader {
                     }
                 }
             }
-        } catch (JAXBException ex) {
+        } catch (final JAXBException ex) {
             throw new RuntimeException(ex);
         }
         return result;
