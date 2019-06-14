@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource;
 
+import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -83,7 +84,7 @@ public class EncryptDataSource extends AbstractUnsupportedOperationDataSource im
         try (Connection connection = dataSource.getConnection()) {
             for (String each : encryptRule.getEncryptTableNames()) {
                 if (isTableExist(connection, each)) {
-                    tables.put(each, new TableMetaData(getColumnMetaDataList(connection, each)));
+                    tables.put(each, new TableMetaData(getColumnMetaDataList(connection, each), getLogicIndexes(connection, each)));
                 }
             }
         }
@@ -117,6 +118,27 @@ public class EncryptDataSource extends AbstractUnsupportedOperationDataSource im
             }
         }
         return result;
+    }
+    
+    private Collection<String> getLogicIndexes(final Connection connection, final String actualTableName) throws SQLException {
+        Collection<String> result = new HashSet<>();
+        try (ResultSet resultSet = connection.getMetaData().getIndexInfo(connection.getCatalog(), connection.getCatalog(), actualTableName, false, false)) {
+            while (resultSet.next()) {
+                Optional<String> logicIndex = getLogicIndex(resultSet.getString("INDEX_NAME"), actualTableName);
+                if (logicIndex.isPresent()) {
+                    result.add(logicIndex.get());
+                }
+            }
+        }
+        return result;
+    }
+    
+    private Optional<String> getLogicIndex(final String actualIndexName, final String actualTableName) {
+        String indexNameSuffix = "_" + actualTableName;
+        if (actualIndexName.contains(indexNameSuffix)) {
+            return Optional.of(actualIndexName.replace(indexNameSuffix, ""));
+        }
+        return Optional.absent();
     }
     
     private DatabaseType getDatabaseType() throws SQLException {
