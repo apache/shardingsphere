@@ -46,6 +46,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.logging.Logger;
 
 /**
@@ -120,8 +121,8 @@ public class EncryptDataSource extends AbstractUnsupportedOperationDataSource im
         return result;
     }
     
-    private Collection<String> getLogicIndexes(final Connection connection, final String actualTableName) throws SQLException {
-        Collection<String> result = new HashSet<>();
+    private Set<String> getLogicIndexes(final Connection connection, final String actualTableName) throws SQLException {
+        Set<String> result = new HashSet<>();
         try (ResultSet resultSet = connection.getMetaData().getIndexInfo(connection.getCatalog(), connection.getCatalog(), actualTableName, false, false)) {
             while (resultSet.next()) {
                 Optional<String> logicIndex = getLogicIndex(resultSet.getString("INDEX_NAME"), actualTableName);
