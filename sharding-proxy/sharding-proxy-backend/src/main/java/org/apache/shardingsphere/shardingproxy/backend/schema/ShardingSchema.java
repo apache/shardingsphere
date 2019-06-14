@@ -28,7 +28,6 @@ import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.CreateIndexStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.CreateTableStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.DropTableStatement;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
@@ -146,13 +145,9 @@ public final class ShardingSchema extends LogicSchema {
     }
     
     private Optional<String> getLogicTableName(final DropIndexStatement dropIndexStatement) {
-        if (isOperateIndexWithoutTable(dropIndexStatement)) {
+        if (dropIndexStatement.getTables().isEmpty()) {
             return getMetaData().getTable().getLogicTableName(dropIndexStatement.getIndexName());
         }
         return Optional.of(dropIndexStatement.getTables().getSingleTableName());
-    }
-    
-    private boolean isOperateIndexWithoutTable(final SQLStatement sqlStatement) {
-        return sqlStatement instanceof DDLStatement && sqlStatement.getTables().isEmpty();
     }
 }

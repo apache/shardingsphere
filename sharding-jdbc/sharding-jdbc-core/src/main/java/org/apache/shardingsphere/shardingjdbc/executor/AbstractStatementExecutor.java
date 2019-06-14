@@ -36,7 +36,6 @@ import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.CreateIndexStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.CreateTableStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.DropTableStatement;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
@@ -201,14 +200,10 @@ public class AbstractStatementExecutor {
     }
     
     private Optional<String> getLogicTableName(final ShardingContext shardingContext, final DropIndexStatement dropIndexStatement) {
-        if (isOperateIndexWithoutTable()) {
+        if (dropIndexStatement.getTables().isEmpty()) {
             return shardingContext.getMetaData().getTable().getLogicTableName(dropIndexStatement.getIndexName());
         }
         return Optional.of(dropIndexStatement.getTables().getSingleTableName());
-    }
-    
-    private boolean isOperateIndexWithoutTable() {
-        return sqlStatement instanceof DDLStatement && sqlStatement.getTables().isEmpty();
     }
     
     private TableMetaDataInitializer getTableMetaDataInitializer() {
