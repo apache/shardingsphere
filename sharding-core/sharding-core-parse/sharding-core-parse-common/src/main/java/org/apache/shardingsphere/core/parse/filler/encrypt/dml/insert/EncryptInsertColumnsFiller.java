@@ -53,9 +53,6 @@ public final class EncryptInsertColumnsFiller implements SQLSegmentFiller<Insert
             } else {
                 fillFromSQL(sqlSegment, insertStatement);
             }
-            if (!assistedQueryColumns.isEmpty()) {
-                insertStatement.setNeededToAppendAssistedColumns(true);
-            }
         }
     }
     

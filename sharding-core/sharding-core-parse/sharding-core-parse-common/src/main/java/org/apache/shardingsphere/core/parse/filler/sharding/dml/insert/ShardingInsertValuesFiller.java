@@ -81,12 +81,6 @@ public final class ShardingInsertValuesFiller implements SQLSegmentFiller<Insert
     }
     
     private void reviseInsertStatement(final InsertStatement insertStatement, final InsertValuesSegment sqlSegment) {
-        reviseInsertColumnNames(insertStatement, sqlSegment);
-        setNeededToAppendGeneratedKey(insertStatement);
-        setNeededToAppendAssistedColumns(insertStatement);
-    }
-    
-    private void reviseInsertColumnNames(final InsertStatement insertStatement, final InsertValuesSegment sqlSegment) {
         Collection<String> insertColumns = new ArrayList<>(insertStatement.getColumnNames());
         insertColumns.removeAll(getAssistedQueryColumns(insertStatement));
         Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTables().getSingleTableName());
@@ -95,20 +89,6 @@ public final class ShardingInsertValuesFiller implements SQLSegmentFiller<Insert
         }
         insertStatement.getColumnNames().clear();
         insertStatement.getColumnNames().addAll(insertColumns);
-    }
-    
-    private void setNeededToAppendGeneratedKey(final InsertStatement insertStatement) {
-        Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTables().getSingleTableName());
-        if (generateKeyColumnName.isPresent() && !insertStatement.getColumnNames().contains(generateKeyColumnName.get())) {
-            insertStatement.setNeededToAppendGeneratedKey(true);
-        }
-    }
-    
-    private void setNeededToAppendAssistedColumns(final InsertStatement insertStatement) {
-        Collection<String> assistedQueryColumns = getAssistedQueryColumns(insertStatement);
-        if (!assistedQueryColumns.isEmpty()) {
-            insertStatement.setNeededToAppendAssistedColumns(true);
-        }
     }
     
     private Collection<String> getAssistedQueryColumns(final InsertStatement insertStatement) {

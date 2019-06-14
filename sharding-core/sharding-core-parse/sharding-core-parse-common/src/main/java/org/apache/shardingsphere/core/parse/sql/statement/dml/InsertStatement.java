@@ -41,17 +41,4 @@ public final class InsertStatement extends DMLStatement {
     private final Collection<String> columnNames = new LinkedList<>();
     
     private final List<InsertValue> values = new LinkedList<>();
-    
-    private boolean isNeededToAppendGeneratedKey;
-    
-    private boolean isNeededToAppendAssistedColumns;
-    
-    /**
-     * Is needed to append columns.
-     * 
-     * @return append columns or not
-     */
-    public boolean isNeededToAppendColumns() {
-        return isNeededToAppendGeneratedKey || isNeededToAppendAssistedColumns;
-    }
 }
