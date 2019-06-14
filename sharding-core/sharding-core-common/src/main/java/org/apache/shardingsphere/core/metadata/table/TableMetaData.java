@@ -24,6 +24,7 @@ import lombok.ToString;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Table metadata.
@@ -37,9 +38,9 @@ public final class TableMetaData {
     
     private final Map<String, ColumnMetaData> columns;
     
-    private final Collection<String> logicIndexes;
+    private final Set<String> logicIndexes;
     
-    public TableMetaData(final Collection<ColumnMetaData> columnMetaDataList, final Collection<String> logicIndexes) {
+    public TableMetaData(final Collection<ColumnMetaData> columnMetaDataList, final Set<String> logicIndexes) {
         columns = getColumns(columnMetaDataList);
         this.logicIndexes = logicIndexes;
     }
