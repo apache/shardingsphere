@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.integrate.engine;
+package org.apache.shardingsphere.core.parse.integrate.engine.sharding;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
@@ -31,7 +31,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 @RequiredArgsConstructor
-public final class IntegrateUnsupportedSQLParsingTest extends AbstractBaseIntegrateSQLParsingTest {
+public final class IntegrateSQLParsingExceptionTest extends AbstractBaseIntegrateSQLParsingTest {
     
     private static SQLCasesLoader sqlCasesLoader = SQLCasesLoader.getInstance();
     
@@ -43,12 +43,12 @@ public final class IntegrateUnsupportedSQLParsingTest extends AbstractBaseIntegr
     
     @Parameters(name = "{0} ({2}) -> {1}")
     public static Collection<Object[]> getTestParameters() {
-        return sqlCasesLoader.getUnsupportedSQLTestParameters();
+        return sqlCasesLoader.getSQLParsingErrorTestParameters();
     }
     
     @Test(expected = SQLParsingException.class)
-    public void assertUnsupportedSQL() {
+    public void assertSQLParsingExceptionSQL() {
         new ShardingSQLParseEntry(DatabaseTypes.getTrunkDatabaseType(databaseType), getShardingRule(), getShardingTableMetaData(), new ParsingResultCache())
-                .parse(sqlCasesLoader.getUnsupportedSQL(sqlCaseId, sqlCaseType, Collections.emptyList()), false);
+                .parse(sqlCasesLoader.getSQLParsingErrorSQL(sqlCaseId, sqlCaseType, Collections.emptyList()), false);
     }
 }
