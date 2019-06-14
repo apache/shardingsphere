@@ -312,8 +312,9 @@
     
     <parser-result sql-case-id="select_sharding_route_with_broadcast_table" parameters="1, 2, 9, 10, 'init'">
         <tables>
-            <table name="t_order" alias="o"/>
-            <table name="t_order_item" alias="i"/>
+            <table name="t_order" alias="o" />
+            <table name="t_order_item" alias="i" />
+            <table name="t_broadcast_table" alias="c" />
         </tables>
         <tokens>
             <table-token start-index="16" table-name="t_order" length="7" />
@@ -345,8 +346,9 @@
     
     <parser-result sql-case-id="select_keyword_table_name_with_back_quotes" parameters="1, 2, 9, 10, 'init'">
         <tables>
-            <table name="t_order" alias="o"/>
-            <table name="t_order_item" alias="i"/>
+            <table name="t_order" alias="o" />
+            <table name="t_order_item" alias="i" />
+            <table name="select" alias="c" />
         </tables>
         <tokens>
             <table-token start-index="16" table-name="t_order" length="7" />
@@ -378,8 +380,9 @@
     
     <parser-result sql-case-id="select_keyword_table_name_with_double_quotes" parameters="1, 2, 9, 10, 'init'">
         <tables>
-            <table name="t_order" alias="o"/>
-            <table name="t_order_item" alias="i"/>
+            <table name="t_order" alias="o" />
+            <table name="t_order_item" alias="i" />
+            <table name="select" alias="c" />
         </tables>
         <tokens>
             <table-token start-index="16" table-name="t_order" length="7" />
@@ -404,8 +407,9 @@
     
     <parser-result sql-case-id="select_keyword_table_name_with_square_brackets" parameters="1, 2, 9, 10, 'init'">
         <tables>
-            <table name="t_order" alias="o"/>
-            <table name="t_order_item" alias="i"/>
+            <table name="t_order" alias="o" />
+            <table name="t_order_item" alias="i" />
+            <table name="select" alias="c" />
         </tables>
         <tokens>
             <table-token start-index="16" table-name="t_order" length="7" />

@@ -15,38 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.filler.sharding;
+package org.apache.shardingsphere.core.parse.filler.common;
 
-import lombok.Setter;
 import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.filler.api.ShardingRuleAwareFiller;
 import org.apache.shardingsphere.core.parse.sql.context.table.Table;
 import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Table filler for sharding.
+ * Table filler.
  *
  * @author duhongjun
  * @author zhangliang
  * @author panjuan
  */
-@Setter
-public final class ShardingTableFiller implements SQLSegmentFiller<TableSegment>, ShardingRuleAwareFiller {
-    
-    private ShardingRule shardingRule;
+public final class TableFiller implements SQLSegmentFiller<TableSegment> {
     
     @Override
     public void fill(final TableSegment sqlSegment, final SQLStatement sqlStatement) {
-        if (isTableInShardingRule(sqlSegment.getName()) || !(sqlStatement instanceof SelectStatement)) {
-            sqlStatement.getTables().add(new Table(sqlSegment.getName(), sqlSegment.getAlias().orNull()));
-        }
-    }
-    
-    private boolean isTableInShardingRule(final String tableName) {
-        return shardingRule.contains(tableName) || shardingRule.findBindingTableRule(tableName).isPresent() || shardingRule.isBroadcastTable(tableName)
-                || shardingRule.getShardingDataSourceNames().getDataSourceNames().contains(shardingRule.getShardingDataSourceNames().getDefaultDataSourceName());
+        sqlStatement.getTables().add(new Table(sqlSegment.getName(), sqlSegment.getAlias().orNull()));
     }
 }
