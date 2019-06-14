@@ -17,11 +17,18 @@
 
 package org.apache.shardingsphere.core.parse.filler.encrypt.dml.insert;
 
+import lombok.Setter;
+import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.parse.filler.api.EncryptRuleAwareFiller;
 import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
+import org.apache.shardingsphere.core.parse.filler.api.ShardingTableMetaDataAwareFiller;
 import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
+import org.apache.shardingsphere.core.rule.EncryptRule;
+
+import java.util.Collection;
 
 /**
  * Insert values filler for encrypt.
@@ -29,10 +36,31 @@ import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
  * @author zhangliang
  * @author panjuan
  */
-public final class EncryptInsertValuesFiller implements SQLSegmentFiller<InsertValuesSegment> {
+@Setter
+public final class EncryptInsertValuesFiller implements SQLSegmentFiller<InsertValuesSegment>, EncryptRuleAwareFiller, ShardingTableMetaDataAwareFiller {
+    
+    private EncryptRule encryptRule;
+    
+    private ShardingTableMetaData shardingTableMetaData;
     
     @Override
     public void fill(final InsertValuesSegment sqlSegment, final SQLStatement sqlStatement) {
+        if (((InsertStatement) sqlStatement).getColumnNames().isEmpty()) {
+            fillColumnNamesFromMetaData((InsertStatement) sqlStatement);
+        }
+        fillValues(sqlSegment, sqlStatement);
+    }
+    
+    private void fillColumnNamesFromMetaData(final InsertStatement insertStatement) {
+        Collection<String> assistedQueryColumns = encryptRule.getEncryptorEngine().getAssistedQueryColumns(insertStatement.getTables().getSingleTableName());
+        for (String each : shardingTableMetaData.getAllColumnNames(insertStatement.getTables().getSingleTableName())) {
+            if (!assistedQueryColumns.contains(each)) {
+                insertStatement.getColumnNames().add(each);
+            }
+        }
+    }
+    
+    private void fillValues(final InsertValuesSegment sqlSegment, final SQLStatement sqlStatement) {
         InsertValue insertValue = new InsertValue(sqlSegment.getValues());
         ((InsertStatement) sqlStatement).getValues().add(insertValue);
         sqlStatement.addParametersCount(insertValue.getParametersCount());
