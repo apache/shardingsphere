@@ -71,7 +71,7 @@ public final class EncryptIntegrateParsingTest extends AbstractBaseIntegrateSQLP
     }
     
     private static EncryptRule buildShardingRule() throws IOException {
-        URL url = AbstractBaseIntegrateSQLParsingTest.class.getClassLoader().getResource("yaml/encrypt-rule-for-parser.yaml");
+        URL url = AbstractBaseIntegrateSQLParsingTest.class.getClassLoader().getResource("yaml/encrypt-rule.yaml");
         Preconditions.checkNotNull(url, "Cannot found parser rule yaml configuration.");
         YamlEncryptRuleConfiguration encryptConfig = YamlEngine.unmarshal(new File(url.getFile()), YamlEncryptRuleConfiguration.class);
         return new EncryptRule(new EncryptRuleConfigurationYamlSwapper().swap(encryptConfig));
