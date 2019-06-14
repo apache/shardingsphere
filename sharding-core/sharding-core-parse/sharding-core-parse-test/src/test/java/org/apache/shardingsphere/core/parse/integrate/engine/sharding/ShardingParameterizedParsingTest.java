@@ -50,6 +50,8 @@ public final class ShardingParameterizedParsingTest {
     
     private static ShardingRule shardingRule = ParsingTestCaseFixtureBuilder.buildShardingRule();
     
+    private static ParsingResultCache parsingResultCache = new ParsingResultCache();
+    
     private static ShardingTableMetaData shardingTableMetaData = ParsingTestCaseFixtureBuilder.buildShardingTableMetaData();
     
     private final String sqlCaseId;
@@ -68,7 +70,7 @@ public final class ShardingParameterizedParsingTest {
     public void assertSupportedSQL() {
         String sql = sqlCasesLoader.getSupportedSQL(sqlCaseId, sqlCaseType, parserResultSetLoader.get(sqlCaseId).getParameters());
         SQLStatement sqlStatement = new ShardingSQLParseEntry(
-                DatabaseTypes.getTrunkDatabaseType(databaseType), shardingRule, shardingTableMetaData, new ParsingResultCache()).parse(sql, false);
+                DatabaseTypes.getTrunkDatabaseType(databaseType), shardingRule, shardingTableMetaData, parsingResultCache).parse(sql, false);
         new ShardingSQLStatementAssert(sqlStatement, sqlCaseId, sqlCaseType).assertSQLStatement();
     }
 }

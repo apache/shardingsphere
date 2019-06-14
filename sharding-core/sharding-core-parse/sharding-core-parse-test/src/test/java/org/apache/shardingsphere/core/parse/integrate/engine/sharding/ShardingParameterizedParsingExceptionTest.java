@@ -45,6 +45,8 @@ public final class ShardingParameterizedParsingExceptionTest {
     
     private static ShardingTableMetaData shardingTableMetaData = ParsingTestCaseFixtureBuilder.buildShardingTableMetaData();
     
+    private static ParsingResultCache parsingResultCache = new ParsingResultCache();
+    
     private final String sqlCaseId;
     
     private final String databaseType;
@@ -59,6 +61,6 @@ public final class ShardingParameterizedParsingExceptionTest {
     @Test(expected = SQLParsingException.class)
     public void assertSQLParsingExceptionSQL() {
         String sql = sqlCasesLoader.getSQLParsingErrorSQL(sqlCaseId, sqlCaseType, Collections.emptyList());
-        new ShardingSQLParseEntry(DatabaseTypes.getTrunkDatabaseType(databaseType), shardingRule, shardingTableMetaData, new ParsingResultCache()).parse(sql, false);
+        new ShardingSQLParseEntry(DatabaseTypes.getTrunkDatabaseType(databaseType), shardingRule, shardingTableMetaData, parsingResultCache).parse(sql, false);
     }
 }
