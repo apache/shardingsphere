@@ -19,23 +19,13 @@ package org.apache.shardingsphere.core.parse.optimizer;
 
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.rule.BaseRule;
 
 /**
  * SQL statement optimizer.
  *
  * @author zhangliang
- * 
- * @param <T> type of base rule
  */
-public interface SQLStatementOptimizer<T extends BaseRule> {
-    
-    /**
-     * Set rule.
-     * 
-     * @param rule rule
-     */
-    void setRule(T rule);
+public interface SQLStatementOptimizer {
     
     /**
      * Optimize SQL statement.

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.parse.optimizer.insert;
 
 import lombok.Setter;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.parse.aware.ShardingRuleAware;
 import org.apache.shardingsphere.core.parse.optimizer.SQLStatementOptimizer;
 import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
@@ -38,9 +39,9 @@ import java.util.Iterator;
  * @author zhangliang
  */
 @Setter
-public final class ShardingInsertOptimizer implements SQLStatementOptimizer<ShardingRule> {
+public final class ShardingInsertOptimizer implements SQLStatementOptimizer, ShardingRuleAware {
     
-    private ShardingRule rule;
+    private ShardingRule shardingRule;
     
     @Override
     public void optimize(final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
@@ -62,7 +63,7 @@ public final class ShardingInsertOptimizer implements SQLStatementOptimizer<Shar
     }
     
     private void fillShardingCondition(final AndCondition andCondition, final String tableName, final String columnName, final SimpleExpressionSegment expressionSegment) {
-        if (rule.isShardingColumn(columnName, tableName)) {
+        if (shardingRule.isShardingColumn(columnName, tableName)) {
             andCondition.getConditions().add(new Condition(new Column(columnName, tableName), null, expressionSegment));
         }
     }
