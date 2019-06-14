@@ -42,11 +42,11 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
- * SQL statement assert.
+ * SQL statement assert for sharding.
  *
  * @author zhangliang
  */
-public final class SQLStatementAssert {
+public final class ShardingSQLStatementAssert {
     
     private final SQLStatement actual;
     
@@ -70,11 +70,11 @@ public final class SQLStatementAssert {
     
     private final AlterTableAssert alterTableAssert;
     
-    public SQLStatementAssert(final SQLStatement actual, final String sqlCaseId, final SQLCaseType sqlCaseType) {
+    public ShardingSQLStatementAssert(final SQLStatement actual, final String sqlCaseId, final SQLCaseType sqlCaseType) {
         this(actual, sqlCaseId, sqlCaseType, SQLCasesLoader.getInstance(), ShardingParserResultSetRegistry.getInstance().getRegistry());
     }
     
-    public SQLStatementAssert(final SQLStatement actual, final String sqlCaseId, final SQLCaseType sqlCaseType, final SQLCasesLoader sqlLoader, final ParserResultSetRegistry registry) {
+    public ShardingSQLStatementAssert(final SQLStatement actual, final String sqlCaseId, final SQLCaseType sqlCaseType, final SQLCasesLoader sqlLoader, final ParserResultSetRegistry registry) {
         SQLStatementAssertMessage assertMessage = new SQLStatementAssertMessage(sqlLoader, registry, sqlCaseId, sqlCaseType);
         this.actual = actual;
         expected = registry.get(sqlCaseId);

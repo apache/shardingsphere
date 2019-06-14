@@ -29,7 +29,7 @@ import org.apache.shardingsphere.test.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.SQLCasesLoader;
 
 /**
- * Encrypt SQL statement assert.
+ * SQL statement assert for encrypt.
  *
  * @author duhongjun
  */

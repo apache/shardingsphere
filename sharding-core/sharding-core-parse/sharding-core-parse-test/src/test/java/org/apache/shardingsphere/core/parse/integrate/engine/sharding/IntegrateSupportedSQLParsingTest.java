@@ -26,7 +26,7 @@ import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.parse.api.SQLParser;
 import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
 import org.apache.shardingsphere.core.parse.entry.ShardingSQLParseEntry;
-import org.apache.shardingsphere.core.parse.integrate.asserts.SQLStatementAssert;
+import org.apache.shardingsphere.core.parse.integrate.asserts.ShardingSQLStatementAssert;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.ParserResultSetRegistry;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.ShardingParserResultSetRegistry;
 import org.apache.shardingsphere.core.parse.parser.SQLParserFactory;
@@ -79,7 +79,7 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
     @Test
     public void assertSupportedSQL() {
         String sql = sqlCasesLoader.getSupportedSQL(sqlCaseId, sqlCaseType, parserResultSetLoader.get(sqlCaseId).getParameters());
-        new SQLStatementAssert(new ShardingSQLParseEntry(DatabaseTypes.getTrunkDatabaseType(databaseType), getShardingRule(), getShardingTableMetaData(), new ParsingResultCache())
+        new ShardingSQLStatementAssert(new ShardingSQLParseEntry(DatabaseTypes.getTrunkDatabaseType(databaseType), getShardingRule(), getShardingTableMetaData(), new ParsingResultCache())
                 .parse(sql, false), sqlCaseId, sqlCaseType).assertSQLStatement();
     }
 }
