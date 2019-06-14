@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.aware.EncryptRuleAware;
 import org.apache.shardingsphere.core.parse.aware.ShardingRuleAware;
+import org.apache.shardingsphere.core.parse.aware.ShardingTableMetaDataAware;
 import org.apache.shardingsphere.core.parse.rule.registry.statement.SQLStatementRule;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.rule.BaseRule;
@@ -46,7 +47,6 @@ public final class SQLStatementOptimizerEngine {
      * @param sqlStatementRule SQL statement rule
      * @param sqlStatement SQL statement
      */
-    @SuppressWarnings("unchecked")
     public void optimize(final SQLStatementRule sqlStatementRule, final SQLStatement sqlStatement) {
         Optional<SQLStatementOptimizer> optimizer = sqlStatementRule.getOptimizer();
         if (optimizer.isPresent()) {
@@ -56,7 +56,10 @@ public final class SQLStatementOptimizerEngine {
             if (optimizer.get() instanceof EncryptRuleAware && rule instanceof EncryptRule) {
                 ((EncryptRuleAware) optimizer.get()).setEncryptRule((EncryptRule) rule);
             }
-            optimizer.get().optimize(sqlStatement, shardingTableMetaData);
+            if (optimizer.get() instanceof ShardingTableMetaDataAware) {
+                ((ShardingTableMetaDataAware) optimizer.get()).setShardingTableMetaData(shardingTableMetaData);
+            }
+            optimizer.get().optimize(sqlStatement);
         }
     }
 }

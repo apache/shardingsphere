@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.parse.optimizer.insert;
 
 import lombok.Setter;
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.aware.ShardingRuleAware;
 import org.apache.shardingsphere.core.parse.optimizer.SQLStatementOptimizer;
 import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
@@ -44,7 +43,7 @@ public final class ShardingInsertOptimizer implements SQLStatementOptimizer, Sha
     private ShardingRule shardingRule;
     
     @Override
-    public void optimize(final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
+    public void optimize(final SQLStatement sqlStatement) {
         InsertStatement insertStatement = (InsertStatement) sqlStatement;
         for (InsertValue each : insertStatement.getValues()) {
             fillCondition(each, insertStatement);

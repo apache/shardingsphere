@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.parse.optimizer;
 
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
 /**
@@ -31,7 +30,6 @@ public interface SQLStatementOptimizer {
      * Optimize SQL statement.
      *
      * @param sqlStatement SQL statement
-     * @param shardingTableMetaData sharding table meta data
      */
-    void optimize(SQLStatement sqlStatement, ShardingTableMetaData shardingTableMetaData);
+    void optimize(SQLStatement sqlStatement);
 }
