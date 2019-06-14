@@ -68,8 +68,6 @@ public final class TableRule {
     
     private final ShardingKeyGenerator shardingKeyGenerator;
     
-    private final String logicIndex;
-    
     public TableRule(final String defaultDataSourceName, final String logicTableName) {
         logicTable = logicTableName.toLowerCase();
         actualDataNodes = Collections.singletonList(new DataNode(defaultDataSourceName, logicTableName));
@@ -79,7 +77,6 @@ public final class TableRule {
         tableShardingStrategy = null;
         generateKeyColumn = null;
         shardingKeyGenerator = null;
-        logicIndex = null;
     }
     
     public TableRule(final Collection<String> dataSourceNames, final String logicTableName) {
@@ -91,7 +88,6 @@ public final class TableRule {
         tableShardingStrategy = null;
         generateKeyColumn = null;
         shardingKeyGenerator = null;
-        logicIndex = null;
     }
     
     public TableRule(final TableRuleConfiguration tableRuleConfig, final ShardingDataSourceNames shardingDataSourceNames, final String defaultGenerateKeyColumn) {
@@ -106,7 +102,6 @@ public final class TableRule {
         generateKeyColumn = getGenerateKeyColumn(tableRuleConfig.getKeyGeneratorConfig(), defaultGenerateKeyColumn);
         shardingKeyGenerator = containsKeyGeneratorConfiguration(tableRuleConfig)
                 ? new ShardingKeyGeneratorServiceLoader().newService(tableRuleConfig.getKeyGeneratorConfig().getType(), tableRuleConfig.getKeyGeneratorConfig().getProperties()) : null;
-        logicIndex = null == tableRuleConfig.getLogicIndex() ? null : tableRuleConfig.getLogicIndex().toLowerCase();
     }
     
     private Set<String> getActualTables() {
