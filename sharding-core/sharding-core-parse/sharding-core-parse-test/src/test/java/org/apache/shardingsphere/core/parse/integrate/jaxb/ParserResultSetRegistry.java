@@ -55,26 +55,29 @@ public final class ParserResultSetRegistry {
     
     private Map<String, ParserResult> load(final File file) {
         Map<String, ParserResult> result = new HashMap<>(Short.MAX_VALUE, 1);
-        try {
-            if (file.isDirectory()) {
-                File[] files = file.listFiles();
-                if (null != files) {
-                    for (File each : files) {
-                        result.putAll(load(each));
-                    }
-                }
-            } else {
-                ParserResultSet resultSet = (ParserResultSet) JAXBContext.newInstance(ParserResultSet.class).createUnmarshaller().unmarshal(file);
-                for (ParserResult each : resultSet.getParserResults()) {
-                    if (null != resultSet.getNamespace()) {
-                        result.put(resultSet.getNamespace() + "." + each.getSqlCaseId(), each);
-                    } else {
-                        result.put(each.getSqlCaseId(), each);
-                    }
+        if (file.isDirectory()) {
+            File[] files = file.listFiles();
+            if (null != files) {
+                for (File each : files) {
+                    result.putAll(load(each));
                 }
             }
-        } catch (final JAXBException ex) {
+        } else {
+            result.putAll(getParserResults(file));
+        }
+        return result;
+    }
+    
+    private Map<String, ParserResult> getParserResults(final File file) {
+        ParserResultSet resultSet;
+        try {
+            resultSet = (ParserResultSet) JAXBContext.newInstance(ParserResultSet.class).createUnmarshaller().unmarshal(file);
+        } catch (JAXBException ex) {
             throw new RuntimeException(ex);
+        }
+        final Map<String, ParserResult> result = new HashMap<>(resultSet.getParserResults().size(), 1);
+        for (ParserResult each : resultSet.getParserResults()) {
+            result.put(each.getSqlCaseId(), each);
         }
         return result;
     }
