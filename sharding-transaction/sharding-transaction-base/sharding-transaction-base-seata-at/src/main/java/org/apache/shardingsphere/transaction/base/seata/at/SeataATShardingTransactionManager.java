@@ -87,6 +87,7 @@ public final class SeataATShardingTransactionManager implements ShardingTransact
         try {
             SeataTransactionHolder.get().commit();
         } finally {
+            SeataTransactionBroadcaster.clear();
             SeataTransactionHolder.clear();
         }
     }
@@ -97,6 +98,7 @@ public final class SeataATShardingTransactionManager implements ShardingTransact
         try {
             SeataTransactionHolder.get().rollback();
         } finally {
+            SeataTransactionBroadcaster.clear();
             SeataTransactionHolder.clear();
         }
     }

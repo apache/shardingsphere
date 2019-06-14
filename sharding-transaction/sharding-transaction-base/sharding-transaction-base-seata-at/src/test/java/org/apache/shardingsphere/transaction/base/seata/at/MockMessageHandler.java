@@ -73,7 +73,7 @@ public final class MockMessageHandler extends ChannelDuplexHandler {
     
     static {
         XID.setIpAddress("127.0.0.1");
-        XID.setPort(8091);
+        XID.setPort(8891);
     }
     
     @Override

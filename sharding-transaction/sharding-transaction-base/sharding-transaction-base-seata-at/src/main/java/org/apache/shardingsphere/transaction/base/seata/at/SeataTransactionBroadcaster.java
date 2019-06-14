@@ -38,8 +38,12 @@ class SeataTransactionBroadcaster {
     }
     
     static void broadcastIfNecessary(final Map<String, Object> shardingExecuteDataMap) {
-        if (shardingExecuteDataMap.containsKey(SEATA_TX_XID)) {
+        if (shardingExecuteDataMap.containsKey(SEATA_TX_XID) && !RootContext.inGlobalTransaction()) {
             RootContext.bind((String) shardingExecuteDataMap.get(SEATA_TX_XID));
         }
+    }
+
+    static void clear() {
+        ShardingExecuteDataMap.getDataMap().remove(SEATA_TX_XID);
     }
 }

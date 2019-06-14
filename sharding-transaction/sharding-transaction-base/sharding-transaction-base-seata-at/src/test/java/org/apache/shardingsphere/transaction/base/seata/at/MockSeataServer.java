@@ -59,7 +59,7 @@ public final class MockSeataServer {
         this.bootstrap = new ServerBootstrap();
         this.bossGroup = new NioEventLoopGroup(1);
         this.workerGroup = new NioEventLoopGroup();
-        port = 8091;
+        port = 8891;
     }
     
     /**
