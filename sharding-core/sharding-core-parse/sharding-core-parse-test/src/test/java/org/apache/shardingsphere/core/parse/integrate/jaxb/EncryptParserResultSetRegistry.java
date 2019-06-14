@@ -20,23 +20,23 @@ package org.apache.shardingsphere.core.parse.integrate.jaxb;
 import lombok.Getter;
 
 /**
- * Encrypt parser result set.
+ * Encrypt parser result set registry.
  *
  * @author zhangliang
  */
-public final class EncryptParserResultSet {
+public final class EncryptParserResultSetRegistry {
     
-    private static final EncryptParserResultSet INSTANCE = new EncryptParserResultSet();
+    private static final EncryptParserResultSetRegistry INSTANCE = new EncryptParserResultSetRegistry();
     
     @Getter
-    private final ParserResultSetLoader parserResultSetLoader = new ParserResultSetLoader("encrypt/");
+    private final ParserResultSetRegistry registry = new ParserResultSetRegistry("encrypt/");
     
     /**
      * Get singleton instance.
      *
      * @return singleton instance
      */
-    public static EncryptParserResultSet getInstance() {
+    public static EncryptParserResultSetRegistry getInstance() {
         return INSTANCE;
     }
 }

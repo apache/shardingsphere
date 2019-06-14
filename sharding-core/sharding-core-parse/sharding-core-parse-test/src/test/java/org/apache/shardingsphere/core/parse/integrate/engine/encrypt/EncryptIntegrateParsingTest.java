@@ -28,8 +28,8 @@ import org.apache.shardingsphere.core.parse.api.SQLParser;
 import org.apache.shardingsphere.core.parse.entry.EncryptSQLParseEntry;
 import org.apache.shardingsphere.core.parse.integrate.asserts.EncryptSQLStatementAssert;
 import org.apache.shardingsphere.core.parse.integrate.engine.sharding.AbstractBaseIntegrateSQLParsingTest;
-import org.apache.shardingsphere.core.parse.integrate.jaxb.EncryptParserResultSet;
-import org.apache.shardingsphere.core.parse.integrate.jaxb.ParserResultSetLoader;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.EncryptParserResultSetRegistry;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.ParserResultSetRegistry;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.root.ParserResult;
 import org.apache.shardingsphere.core.parse.parser.SQLParserFactory;
 import org.apache.shardingsphere.core.rule.EncryptRule;
@@ -57,7 +57,7 @@ public final class EncryptIntegrateParsingTest extends AbstractBaseIntegrateSQLP
     
     private static SQLCasesLoader sqlCasesLoader = EncryptSQLCasesLoader.getInstance();
     
-    private static ParserResultSetLoader parserResultSetLoader = EncryptParserResultSet.getInstance().getParserResultSetLoader();
+    private static ParserResultSetRegistry parserResultSetRegistry = EncryptParserResultSetRegistry.getInstance().getRegistry();
     
     private final String sqlCaseId;
     
@@ -94,12 +94,12 @@ public final class EncryptIntegrateParsingTest extends AbstractBaseIntegrateSQLP
     
     @Test
     public void assertSupportedSQL() throws Exception {
-        ParserResult parserResult = parserResultSetLoader.getParserResult(sqlCaseId);
+        ParserResult parserResult = parserResultSetRegistry.get(sqlCaseId);
         if (null != parserResult) {
             String sql = sqlCasesLoader.getSupportedSQL(sqlCaseId, sqlCaseType, parserResult.getParameters());
             EncryptSQLParseEntry encryptSQLParseEntry = new EncryptSQLParseEntry(
                     DatabaseTypes.getActualDatabaseType(databaseType), buildShardingRule(), AbstractBaseIntegrateSQLParsingTest.getShardingTableMetaData());
-            new EncryptSQLStatementAssert(encryptSQLParseEntry.parse(sql, false), sqlCaseId, sqlCaseType, sqlCasesLoader, parserResultSetLoader).assertSQLStatement();
+            new EncryptSQLStatementAssert(encryptSQLParseEntry.parse(sql, false), sqlCaseId, sqlCaseType, sqlCasesLoader, parserResultSetRegistry).assertSQLStatement();
         }
     }
 }

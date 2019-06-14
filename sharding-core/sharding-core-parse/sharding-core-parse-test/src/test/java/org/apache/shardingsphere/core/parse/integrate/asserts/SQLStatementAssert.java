@@ -26,8 +26,8 @@ import org.apache.shardingsphere.core.parse.integrate.asserts.orderby.OrderByAss
 import org.apache.shardingsphere.core.parse.integrate.asserts.pagination.PaginationAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.table.AlterTableAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.table.TableAssert;
-import org.apache.shardingsphere.core.parse.integrate.jaxb.ParserResultSetLoader;
-import org.apache.shardingsphere.core.parse.integrate.jaxb.ShardingParserResultSet;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.ParserResultSetRegistry;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.ShardingParserResultSetRegistry;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.root.ParserResult;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.AlterTableStatement;
@@ -71,14 +71,13 @@ public final class SQLStatementAssert {
     private final AlterTableAssert alterTableAssert;
     
     public SQLStatementAssert(final SQLStatement actual, final String sqlCaseId, final SQLCaseType sqlCaseType) {
-        this(actual, sqlCaseId, sqlCaseType, SQLCasesLoader.getInstance(), ShardingParserResultSet.getInstance().getParserResultSetLoader());
+        this(actual, sqlCaseId, sqlCaseType, SQLCasesLoader.getInstance(), ShardingParserResultSetRegistry.getInstance().getRegistry());
     }
     
-    public SQLStatementAssert(final SQLStatement actual, final String sqlCaseId, 
-                              final SQLCaseType sqlCaseType, final SQLCasesLoader sqlLoader, final ParserResultSetLoader parserResultSetLoader) {
-        SQLStatementAssertMessage assertMessage = new SQLStatementAssertMessage(sqlLoader, parserResultSetLoader, sqlCaseId, sqlCaseType);
+    public SQLStatementAssert(final SQLStatement actual, final String sqlCaseId, final SQLCaseType sqlCaseType, final SQLCasesLoader sqlLoader, final ParserResultSetRegistry registry) {
+        SQLStatementAssertMessage assertMessage = new SQLStatementAssertMessage(sqlLoader, registry, sqlCaseId, sqlCaseType);
         this.actual = actual;
-        expected = parserResultSetLoader.getParserResult(sqlCaseId);
+        expected = registry.get(sqlCaseId);
         tableAssert = new TableAssert(assertMessage);
         conditionAssert = new ConditionAssert(assertMessage);
         indexAssert = new IndexAssert(sqlCaseType, assertMessage);

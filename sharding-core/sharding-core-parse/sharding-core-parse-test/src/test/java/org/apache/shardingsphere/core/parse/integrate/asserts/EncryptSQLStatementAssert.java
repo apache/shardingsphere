@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.parse.integrate.asserts;
 import org.apache.shardingsphere.core.parse.integrate.asserts.condition.ConditionAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.insert.InsertNamesAndValuesAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.table.TableAssert;
-import org.apache.shardingsphere.core.parse.integrate.jaxb.ParserResultSetLoader;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.ParserResultSetRegistry;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.root.ParserResult;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
@@ -45,11 +45,10 @@ public final class EncryptSQLStatementAssert {
     
     private final InsertNamesAndValuesAssert insertNamesAndValuesAssert;
     
-    public EncryptSQLStatementAssert(final SQLStatement actual, final String sqlCaseId, 
-                                     final SQLCaseType sqlCaseType, final SQLCasesLoader sqlLoader, final ParserResultSetLoader parserResultSetLoader) {
-        SQLStatementAssertMessage assertMessage = new SQLStatementAssertMessage(sqlLoader, parserResultSetLoader, sqlCaseId, sqlCaseType);
+    public EncryptSQLStatementAssert(final SQLStatement actual, final String sqlCaseId, final SQLCaseType sqlCaseType, final SQLCasesLoader sqlLoader, final ParserResultSetRegistry registry) {
+        SQLStatementAssertMessage assertMessage = new SQLStatementAssertMessage(sqlLoader, registry, sqlCaseId, sqlCaseType);
         this.actual = actual;
-        expected = parserResultSetLoader.getParserResult(sqlCaseId);
+        expected = registry.get(sqlCaseId);
         tableAssert = new TableAssert(assertMessage);
         conditionAssert = new ConditionAssert(assertMessage);
         insertNamesAndValuesAssert = new InsertNamesAndValuesAssert(assertMessage, sqlCaseType);

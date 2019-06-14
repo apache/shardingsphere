@@ -27,8 +27,8 @@ import org.apache.shardingsphere.core.parse.api.SQLParser;
 import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
 import org.apache.shardingsphere.core.parse.entry.ShardingSQLParseEntry;
 import org.apache.shardingsphere.core.parse.integrate.asserts.SQLStatementAssert;
-import org.apache.shardingsphere.core.parse.integrate.jaxb.ParserResultSetLoader;
-import org.apache.shardingsphere.core.parse.integrate.jaxb.ShardingParserResultSet;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.ParserResultSetRegistry;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.ShardingParserResultSetRegistry;
 import org.apache.shardingsphere.core.parse.parser.SQLParserFactory;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.SQLCasesLoader;
@@ -47,7 +47,7 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
     
     private static SQLCasesLoader sqlCasesLoader = SQLCasesLoader.getInstance();
     
-    private static ParserResultSetLoader parserResultSetLoader = ShardingParserResultSet.getInstance().getParserResultSetLoader();
+    private static ParserResultSetRegistry parserResultSetLoader = ShardingParserResultSetRegistry.getInstance().getRegistry();
     
     private final String sqlCaseId;
     
@@ -57,7 +57,7 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
     
     @Parameters(name = "{0} ({2}) -> {1}")
     public static Collection<Object[]> getTestParameters() {
-        assertThat(sqlCasesLoader.countAllSupportedSQLCases(), is(parserResultSetLoader.countAllParserTestCases()));
+        assertThat(sqlCasesLoader.countAllSupportedSQLCases(), is(parserResultSetLoader.countAllTestCases()));
         return sqlCasesLoader.getSupportedSQLTestParameters();
     }
     
@@ -78,7 +78,7 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
     
     @Test
     public void assertSupportedSQL() {
-        String sql = sqlCasesLoader.getSupportedSQL(sqlCaseId, sqlCaseType, parserResultSetLoader.getParserResult(sqlCaseId).getParameters());
+        String sql = sqlCasesLoader.getSupportedSQL(sqlCaseId, sqlCaseType, parserResultSetLoader.get(sqlCaseId).getParameters());
         new SQLStatementAssert(new ShardingSQLParseEntry(DatabaseTypes.getTrunkDatabaseType(databaseType), getShardingRule(), getShardingTableMetaData(), new ParsingResultCache())
                 .parse(sql, false), sqlCaseId, sqlCaseType).assertSQLStatement();
     }

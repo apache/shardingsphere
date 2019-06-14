@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.parse.integrate.asserts;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.integrate.jaxb.ParserResultSetLoader;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.ParserResultSetRegistry;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.SQLCasesLoader;
 
@@ -34,7 +34,7 @@ public final class SQLStatementAssertMessage {
     
     private final SQLCasesLoader sqlCasesLoader;
     
-    private final ParserResultSetLoader parserResultSetLoader;
+    private final ParserResultSetRegistry parserResultSetRegistry;
     
     private final String sqlCaseId;
     
@@ -56,10 +56,10 @@ public final class SQLStatementAssertMessage {
             result.append(sqlCasesLoader.getSupportedSQL(sqlCaseId, sqlCaseType, Collections.emptyList()));
             result.append(System.getProperty("line.separator"));
             result.append("SQL Params  : ");
-            result.append(parserResultSetLoader.getParserResult(sqlCaseId).getParameters());
+            result.append(parserResultSetRegistry.get(sqlCaseId).getParameters());
             result.append(System.getProperty("line.separator"));
         } else {
-            result.append(sqlCasesLoader.getSupportedSQL(sqlCaseId, sqlCaseType, parserResultSetLoader.getParserResult(sqlCaseId).getParameters()));
+            result.append(sqlCasesLoader.getSupportedSQL(sqlCaseId, sqlCaseType, parserResultSetRegistry.get(sqlCaseId).getParameters()));
         }
         result.append(System.getProperty("line.separator"));
         result.append(assertMessage);

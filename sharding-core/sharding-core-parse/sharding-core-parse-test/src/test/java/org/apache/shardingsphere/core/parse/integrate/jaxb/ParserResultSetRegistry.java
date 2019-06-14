@@ -29,38 +29,38 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Parser result set loader.
+ * Parser result set registry.
  *
  * @author zhangliang
  */
-public final class ParserResultSetLoader {
+public final class ParserResultSetRegistry {
     
     private Map<String, ParserResult> parserResultMap;
     
-    public ParserResultSetLoader(final String rootDirectory) {
-        parserResultMap = loadParserResultSet(rootDirectory);
+    public ParserResultSetRegistry(final String rootDirectory) {
+        parserResultMap = load(rootDirectory);
     }
     
-    private Map<String, ParserResult> loadParserResultSet(final String dirName) {
-        URL url = ParserResultSetLoader.class.getClassLoader().getResource(dirName);
-        Preconditions.checkNotNull(url, "Cannot found parser test cases.");
+    private Map<String, ParserResult> load(final String directory) {
+        URL url = ParserResultSetRegistry.class.getClassLoader().getResource(directory);
+        Preconditions.checkNotNull(url, "Cannot find parse test cases.");
         File[] files = new File(url.getPath()).listFiles();
-        Preconditions.checkNotNull(files, "Cannot found parser test cases.");
+        Preconditions.checkNotNull(files, "Cannot find parse test cases.");
         Map<String, ParserResult> result = new HashMap<>(Short.MAX_VALUE, 1);
         for (File each : files) {
-            result.putAll(loadParserResultSet(each));
+            result.putAll(load(each));
         }
         return result;
     }
     
-    private Map<String, ParserResult> loadParserResultSet(final File file) {
+    private Map<String, ParserResult> load(final File file) {
         Map<String, ParserResult> result = new HashMap<>(Short.MAX_VALUE, 1);
         try {
             if (file.isDirectory()) {
                 File[] files = file.listFiles();
                 if (null != files) {
                     for (File each : files) {
-                        result.putAll(loadParserResultSet(each));
+                        result.putAll(load(each));
                     }
                 }
             } else {
@@ -80,22 +80,22 @@ public final class ParserResultSetLoader {
     }
     
     /**
-     * Get parser assert.
+     * Get parser result.
      * 
      * @param sqlCaseId SQL case ID
-     * @return parser assert
+     * @return parser result
      */
-    public ParserResult getParserResult(final String sqlCaseId) {
+    public ParserResult get(final String sqlCaseId) {
         Preconditions.checkState(parserResultMap.containsKey(sqlCaseId), "Can't find SQL of id: %s", sqlCaseId);
         return parserResultMap.get(sqlCaseId);
     }
     
     /**
-     * Count all parser test cases.
+     * Count all test cases.
      *
-     * @return count of all parser test cases
+     * @return count of all test cases
      */
-    public int countAllParserTestCases() {
+    public int countAllTestCases() {
         return parserResultMap.size();
     }
 }
