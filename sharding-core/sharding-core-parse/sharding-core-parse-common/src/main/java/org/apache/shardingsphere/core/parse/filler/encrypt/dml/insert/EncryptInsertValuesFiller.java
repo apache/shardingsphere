@@ -48,7 +48,7 @@ public final class EncryptInsertValuesFiller implements SQLSegmentFiller<InsertV
         if (((InsertStatement) sqlStatement).getColumnNames().isEmpty()) {
             fillColumnsFromMetaData((InsertStatement) sqlStatement);
         }
-        fillValues(sqlSegment, sqlStatement);
+        fillValues(sqlSegment, (InsertStatement) sqlStatement);
     }
     
     private void fillColumnsFromMetaData(final InsertStatement insertStatement) {
@@ -60,9 +60,7 @@ public final class EncryptInsertValuesFiller implements SQLSegmentFiller<InsertV
         }
     }
     
-    private void fillValues(final InsertValuesSegment sqlSegment, final SQLStatement sqlStatement) {
-        InsertValue insertValue = new InsertValue(sqlSegment.getValues());
-        ((InsertStatement) sqlStatement).getValues().add(insertValue);
-        sqlStatement.addParametersCount(insertValue.getParametersCount());
+    private void fillValues(final InsertValuesSegment sqlSegment, final InsertStatement insertStatement) {
+        insertStatement.getValues().add(new InsertValue(sqlSegment.getValues()));
     }
 }

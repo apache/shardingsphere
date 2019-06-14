@@ -60,13 +60,15 @@ public final class SQLStatementFillerEngine {
      * Fill SQL statement.
      *
      * @param sqlSegments SQL segments
+     * @param parameterMarkerCount parameter marker count
      * @param rule SQL statement rule
      * @return SQL statement
      */
     @SneakyThrows
-    public SQLStatement fill(final Collection<SQLSegment> sqlSegments, final SQLStatementRule rule) {
+    public SQLStatement fill(final Collection<SQLSegment> sqlSegments, final int parameterMarkerCount, final SQLStatementRule rule) {
         SQLStatement result = rule.getSqlStatementClass().newInstance();
         result.setLogicSQL(sql);
+        result.setParametersCount(parameterMarkerCount);
         result.getSQLSegments().addAll(sqlSegments);
         for (SQLSegment each : sqlSegments) {
             Optional<SQLSegmentFiller> filler = parseRuleRegistry.findSQLSegmentFiller(databaseType, each.getClass());

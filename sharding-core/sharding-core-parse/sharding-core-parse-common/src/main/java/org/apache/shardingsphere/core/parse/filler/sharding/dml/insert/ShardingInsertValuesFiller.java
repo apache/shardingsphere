@@ -82,9 +82,7 @@ public final class ShardingInsertValuesFiller implements SQLSegmentFiller<Insert
     }
     
     private void fillValues(final InsertValuesSegment sqlSegment, final InsertStatement insertStatement) {
-        InsertValue insertValue = new InsertValue(sqlSegment.getValues());
-        insertStatement.getValues().add(insertValue);
-        insertStatement.addParametersCount(insertValue.getParametersCount());
+        insertStatement.getValues().add(new InsertValue(sqlSegment.getValues()));
     }
     
     private void fillCondition(final InsertValuesSegment sqlSegment, final InsertStatement insertStatement) {
