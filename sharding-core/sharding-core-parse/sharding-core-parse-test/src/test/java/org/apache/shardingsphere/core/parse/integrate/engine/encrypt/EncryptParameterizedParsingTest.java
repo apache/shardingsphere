@@ -27,9 +27,9 @@ import org.apache.shardingsphere.core.parse.integrate.jaxb.EncryptParserResultSe
 import org.apache.shardingsphere.core.parse.integrate.jaxb.ParserResultSetRegistry;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.rule.EncryptRule;
-import org.apache.shardingsphere.test.sql.EncryptSQLCasesLoader;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
-import org.apache.shardingsphere.test.sql.SQLCasesLoader;
+import org.apache.shardingsphere.test.sql.loader.SQLCasesLoader;
+import org.apache.shardingsphere.test.sql.loader.encrypt.EncryptSQLCasesRegistry;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -41,7 +41,7 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public final class EncryptParameterizedParsingTest {
     
-    private static SQLCasesLoader sqlCasesLoader = EncryptSQLCasesLoader.getInstance();
+    private static SQLCasesLoader sqlCasesLoader = EncryptSQLCasesRegistry.getInstance().getSqlCasesLoader();
     
     private static ParserResultSetRegistry parserResultSetRegistry = EncryptParserResultSetRegistry.getInstance().getRegistry();
     
@@ -57,12 +57,12 @@ public final class EncryptParameterizedParsingTest {
     
     @Parameters(name = "{0} ({2}) -> {1}")
     public static Collection<Object[]> getTestParameters() {
-        return sqlCasesLoader.getSupportedSQLTestParameters();
+        return sqlCasesLoader.getSQLTestParameters();
     }
     
     @Test
     public void assertSupportedSQL() {
-        String sql = sqlCasesLoader.getSupportedSQL(sqlCaseId, sqlCaseType, parserResultSetRegistry.get(sqlCaseId).getParameters());
+        String sql = sqlCasesLoader.getSQL(sqlCaseId, sqlCaseType, parserResultSetRegistry.get(sqlCaseId).getParameters());
         SQLStatement sqlStatement = new EncryptSQLParseEntry(DatabaseTypes.getActualDatabaseType(databaseType), encryptRule, shardingTableMetaData).parse(sql, false);
         new EncryptSQLStatementAssert(sqlStatement, sqlCaseId, sqlCaseType).assertSQLStatement();
     }

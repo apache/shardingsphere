@@ -25,8 +25,8 @@ import org.apache.shardingsphere.core.parse.integrate.jaxb.root.ParserResult;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.test.sql.EncryptSQLCasesLoader;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
+import org.apache.shardingsphere.test.sql.loader.encrypt.EncryptSQLCasesRegistry;
 
 /**
  * SQL statement assert for encrypt.
@@ -47,7 +47,7 @@ public final class EncryptSQLStatementAssert {
     
     public EncryptSQLStatementAssert(final SQLStatement actual, final String sqlCaseId, final SQLCaseType sqlCaseType) {
         SQLStatementAssertMessage assertMessage = new SQLStatementAssertMessage(
-                EncryptSQLCasesLoader.getInstance(), EncryptParserResultSetRegistry.getInstance().getRegistry(), sqlCaseId, sqlCaseType);
+                EncryptSQLCasesRegistry.getInstance().getSqlCasesLoader(), EncryptParserResultSetRegistry.getInstance().getRegistry(), sqlCaseId, sqlCaseType);
         this.actual = actual;
         expected = EncryptParserResultSetRegistry.getInstance().getRegistry().get(sqlCaseId);
         tableAssert = new TableAssert(assertMessage);

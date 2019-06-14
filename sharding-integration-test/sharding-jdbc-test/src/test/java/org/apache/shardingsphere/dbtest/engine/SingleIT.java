@@ -25,7 +25,7 @@ import org.apache.shardingsphere.dbtest.cases.assertion.root.SQLValue;
 import org.apache.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import org.apache.shardingsphere.dbtest.env.IntegrateTestEnvironment;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
-import org.apache.shardingsphere.test.sql.SQLCasesLoader;
+import org.apache.shardingsphere.test.sql.loader.sharding.ShardingSQLCasesRegistry;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
@@ -49,9 +49,8 @@ public abstract class SingleIT extends BaseIT {
     
     private final String expectedDataFile;
     
-    public SingleIT(final String sqlCaseId, final String path, final IntegrateTestCaseAssertion assertion, final String shardingRuleType,
-                    final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType)
-            throws IOException, JAXBException, SQLException, ParseException {
+    public SingleIT(final String sqlCaseId, final String path, final IntegrateTestCaseAssertion assertion, 
+                    final String shardingRuleType, final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException, SQLException, ParseException {
         super(shardingRuleType, databaseTypeEnvironment);
         this.assertion = assertion;
         this.caseType = caseType;
@@ -64,6 +63,6 @@ public abstract class SingleIT extends BaseIT {
         for (SQLValue each : assertion.getSQLValues()) {
             parameters.add(each.toString());
         }
-        return SQLCasesLoader.getInstance().getSupportedSQL(sqlCaseId, caseType, parameters);
+        return ShardingSQLCasesRegistry.getInstance().getSqlCasesLoader().getSQL(sqlCaseId, caseType, parameters);
     }
 }

@@ -29,7 +29,8 @@ import org.apache.shardingsphere.core.parse.integrate.jaxb.ShardingParserResultS
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
-import org.apache.shardingsphere.test.sql.SQLCasesLoader;
+import org.apache.shardingsphere.test.sql.loader.SQLCasesLoader;
+import org.apache.shardingsphere.test.sql.loader.sharding.ShardingSQLCasesRegistry;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -44,7 +45,7 @@ import static org.junit.Assert.assertThat;
 @RequiredArgsConstructor
 public final class ShardingParameterizedParsingTest {
     
-    private static SQLCasesLoader sqlCasesLoader = SQLCasesLoader.getInstance();
+    private static SQLCasesLoader sqlCasesLoader = ShardingSQLCasesRegistry.getInstance().getSqlCasesLoader();
     
     private static ParserResultSetRegistry parserResultSetRegistry = ShardingParserResultSetRegistry.getInstance().getRegistry();
     
@@ -62,13 +63,13 @@ public final class ShardingParameterizedParsingTest {
     
     @Parameters(name = "{0} ({2}) -> {1}")
     public static Collection<Object[]> getTestParameters() {
-        assertThat(sqlCasesLoader.countAllSupportedSQLCases(), is(parserResultSetRegistry.countAllTestCases()));
-        return sqlCasesLoader.getSupportedSQLTestParameters();
+        assertThat(sqlCasesLoader.countAllSQLCases(), is(parserResultSetRegistry.countAllTestCases()));
+        return sqlCasesLoader.getSQLTestParameters();
     }
     
     @Test
     public void assertSupportedSQL() {
-        String sql = sqlCasesLoader.getSupportedSQL(sqlCaseId, sqlCaseType, parserResultSetRegistry.get(sqlCaseId).getParameters());
+        String sql = sqlCasesLoader.getSQL(sqlCaseId, sqlCaseType, parserResultSetRegistry.get(sqlCaseId).getParameters());
         SQLStatement sqlStatement = new ShardingSQLParseEntry(DatabaseTypes.getTrunkDatabaseType(databaseType), shardingRule, shardingTableMetaData, parsingResultCache).parse(sql, false);
         new ShardingSQLStatementAssert(sqlStatement, sqlCaseId, sqlCaseType).assertSQLStatement();
     }

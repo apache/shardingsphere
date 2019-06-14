@@ -35,7 +35,7 @@ import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
-import org.apache.shardingsphere.test.sql.SQLCasesLoader;
+import org.apache.shardingsphere.test.sql.loader.sharding.ShardingSQLCasesRegistry;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -70,7 +70,8 @@ public final class ShardingSQLStatementAssert {
     private final AlterTableAssert alterTableAssert;
     
     public ShardingSQLStatementAssert(final SQLStatement actual, final String sqlCaseId, final SQLCaseType sqlCaseType) {
-        SQLStatementAssertMessage assertMessage = new SQLStatementAssertMessage(SQLCasesLoader.getInstance(), ShardingParserResultSetRegistry.getInstance().getRegistry(), sqlCaseId, sqlCaseType);
+        SQLStatementAssertMessage assertMessage = new SQLStatementAssertMessage(
+                ShardingSQLCasesRegistry.getInstance().getSqlCasesLoader(), ShardingParserResultSetRegistry.getInstance().getRegistry(), sqlCaseId, sqlCaseType);
         this.actual = actual;
         expected = ShardingParserResultSetRegistry.getInstance().getRegistry().get(sqlCaseId);
         tableAssert = new TableAssert(assertMessage);

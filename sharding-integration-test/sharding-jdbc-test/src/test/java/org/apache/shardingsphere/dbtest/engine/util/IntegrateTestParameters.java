@@ -30,7 +30,8 @@ import org.apache.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import org.apache.shardingsphere.dbtest.env.IntegrateTestEnvironment;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
-import org.apache.shardingsphere.test.sql.SQLCasesLoader;
+import org.apache.shardingsphere.test.sql.loader.SQLCasesLoader;
+import org.apache.shardingsphere.test.sql.loader.sharding.ShardingSQLCasesRegistry;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -45,7 +46,7 @@ import java.util.LinkedList;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class IntegrateTestParameters {
     
-    private static SQLCasesLoader sqlCasesLoader = SQLCasesLoader.getInstance();
+    private static SQLCasesLoader sqlCasesLoader = ShardingSQLCasesRegistry.getInstance().getSqlCasesLoader();
     
     private static IntegrateTestCasesLoader integrateTestCasesLoader = IntegrateTestCasesLoader.getInstance();
     
@@ -61,12 +62,12 @@ public final class IntegrateTestParameters {
         // TODO sqlCasesLoader size should eq integrateTestCasesLoader size
         // assertThat(sqlCasesLoader.countAllSupportedSQLCases(), is(integrateTestCasesLoader.countAllDataSetTestCases()));
         Collection<Object[]> result = new LinkedList<>();
-        for (Object[] each : sqlCasesLoader.getSupportedSQLTestParameters()) {
+        for (Object[] each : sqlCasesLoader.getSQLTestParameters()) {
             String sqlCaseId = each[0].toString();
             String databaseType = each[1].toString();
             SQLCaseType caseType = (SQLCaseType) each[2];
             Class<?> sqlStatementClass = new SQLParseEngine(MasterSlaveParseRuleRegistry.getInstance(), 
-                    DatabaseTypes.getTrunkDatabaseType(databaseType), sqlCasesLoader.getSupportedSQL(sqlCaseId, SQLCaseType.Placeholder, Collections.emptyList()), null, null).parse().getClass();
+                    DatabaseTypes.getTrunkDatabaseType(databaseType), sqlCasesLoader.getSQL(sqlCaseId, SQLCaseType.Placeholder, Collections.emptyList()), null, null).parse().getClass();
             if (!sqlType.getSqlStatementClass().isAssignableFrom(sqlStatementClass)) {
                 continue;
             }
@@ -114,12 +115,12 @@ public final class IntegrateTestParameters {
         // TODO sqlCasesLoader size should eq integrateTestCasesLoader size
         // assertThat(sqlCasesLoader.countAllSupportedSQLCases(), is(integrateTestCasesLoader.countAllDataSetTestCases()));
         Collection<Object[]> result = new LinkedList<>();
-        for (Object[] each : sqlCasesLoader.getSupportedSQLTestParameters()) {
+        for (Object[] each : sqlCasesLoader.getSQLTestParameters()) {
             String sqlCaseId = each[0].toString();
             String databaseType = each[1].toString();
             SQLCaseType caseType = (SQLCaseType) each[2];
             Class<?> sqlStatementClass = new SQLParseEngine(MasterSlaveParseRuleRegistry.getInstance(), 
-                    DatabaseTypes.getTrunkDatabaseType(databaseType), sqlCasesLoader.getSupportedSQL(sqlCaseId, SQLCaseType.Placeholder, Collections.emptyList()), null, null).parse().getClass();
+                    DatabaseTypes.getTrunkDatabaseType(databaseType), sqlCasesLoader.getSQL(sqlCaseId, SQLCaseType.Placeholder, Collections.emptyList()), null, null).parse().getClass();
             if (!sqlType.getSqlStatementClass().isAssignableFrom(sqlStatementClass)) {
                 continue;
             }

@@ -26,7 +26,8 @@ import org.apache.shardingsphere.core.parse.exception.SQLParsingException;
 import org.apache.shardingsphere.core.parse.fixture.ParsingTestCaseFixtureBuilder;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
-import org.apache.shardingsphere.test.sql.SQLCasesLoader;
+import org.apache.shardingsphere.test.sql.loader.SQLCasesLoader;
+import org.apache.shardingsphere.test.sql.loader.sharding.ShardingUnsupportedSQLCasesRegistry;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -39,7 +40,7 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public final class ShardingParameterizedUnsupportedParsingTest {
     
-    private static SQLCasesLoader sqlCasesLoader = SQLCasesLoader.getInstance();
+    private static SQLCasesLoader sqlCasesLoader = ShardingUnsupportedSQLCasesRegistry.getInstance().getSqlCasesLoader();
     
     private static ShardingRule shardingRule = ParsingTestCaseFixtureBuilder.buildShardingRule();
     
@@ -55,12 +56,12 @@ public final class ShardingParameterizedUnsupportedParsingTest {
     
     @Parameters(name = "{0} ({2}) -> {1}")
     public static Collection<Object[]> getTestParameters() {
-        return sqlCasesLoader.getUnsupportedSQLTestParameters();
+        return sqlCasesLoader.getSQLTestParameters();
     }
     
     @Test(expected = SQLParsingException.class)
     public void assertUnsupportedSQL() {
-        String sql = sqlCasesLoader.getUnsupportedSQL(sqlCaseId, sqlCaseType, Collections.emptyList());
+        String sql = sqlCasesLoader.getSQL(sqlCaseId, sqlCaseType, Collections.emptyList());
         new ShardingSQLParseEntry(DatabaseTypes.getTrunkDatabaseType(databaseType), shardingRule, shardingTableMetaData, parsingResultCache).parse(sql, false);
     }
 }
