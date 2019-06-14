@@ -49,7 +49,7 @@ public final class ShardingParameterizedParsingExceptionTest extends AbstractBas
     
     @Test(expected = SQLParsingException.class)
     public void assertSQLParsingExceptionSQL() {
-        new ShardingSQLParseEntry(DatabaseTypes.getTrunkDatabaseType(databaseType), getShardingRule(), getShardingTableMetaData(), new ParsingResultCache())
-                .parse(sqlCasesLoader.getSQLParsingErrorSQL(sqlCaseId, sqlCaseType, Collections.emptyList()), false);
+        String sql = sqlCasesLoader.getSQLParsingErrorSQL(sqlCaseId, sqlCaseType, Collections.emptyList());
+        new ShardingSQLParseEntry(DatabaseTypes.getTrunkDatabaseType(databaseType), getShardingRule(), getShardingTableMetaData(), new ParsingResultCache()).parse(sql, false);
     }
 }

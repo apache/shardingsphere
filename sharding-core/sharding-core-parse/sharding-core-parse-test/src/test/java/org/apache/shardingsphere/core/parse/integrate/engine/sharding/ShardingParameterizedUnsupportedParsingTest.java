@@ -49,7 +49,7 @@ public final class ShardingParameterizedUnsupportedParsingTest extends AbstractB
     
     @Test(expected = SQLParsingException.class)
     public void assertUnsupportedSQL() {
-        new ShardingSQLParseEntry(DatabaseTypes.getTrunkDatabaseType(databaseType), getShardingRule(), getShardingTableMetaData(), new ParsingResultCache())
-                .parse(sqlCasesLoader.getUnsupportedSQL(sqlCaseId, sqlCaseType, Collections.emptyList()), false);
+        String sql = sqlCasesLoader.getUnsupportedSQL(sqlCaseId, sqlCaseType, Collections.emptyList());
+        new ShardingSQLParseEntry(DatabaseTypes.getTrunkDatabaseType(databaseType), getShardingRule(), getShardingTableMetaData(), new ParsingResultCache()).parse(sql, false);
     }
 }

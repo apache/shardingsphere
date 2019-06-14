@@ -19,19 +19,13 @@ package org.apache.shardingsphere.core.parse.integrate.engine.encrypt;
 
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
-import org.antlr.v4.runtime.ANTLRErrorListener;
-import org.antlr.v4.runtime.BaseErrorListener;
-import org.antlr.v4.runtime.RecognitionException;
-import org.antlr.v4.runtime.Recognizer;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
-import org.apache.shardingsphere.core.parse.api.SQLParser;
 import org.apache.shardingsphere.core.parse.entry.EncryptSQLParseEntry;
 import org.apache.shardingsphere.core.parse.integrate.asserts.EncryptSQLStatementAssert;
 import org.apache.shardingsphere.core.parse.integrate.engine.AbstractBaseParameterizedParsingTest;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.EncryptParserResultSetRegistry;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.ParserResultSetRegistry;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.root.ParserResult;
-import org.apache.shardingsphere.core.parse.parser.SQLParserFactory;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
@@ -44,10 +38,8 @@ import org.junit.runners.Parameterized.Parameters;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.Collection;
-import java.util.Collections;
 
 @RequiredArgsConstructor
 public final class EncryptParameterizedParsingTest extends AbstractBaseParameterizedParsingTest {
@@ -72,21 +64,6 @@ public final class EncryptParameterizedParsingTest extends AbstractBaseParameter
         Preconditions.checkNotNull(url, "Cannot found parser rule yaml configuration.");
         YamlEncryptRuleConfiguration encryptConfig = YamlEngine.unmarshal(new File(url.getFile()), YamlEncryptRuleConfiguration.class);
         return new EncryptRule(new EncryptRuleConfigurationYamlSwapper().swap(encryptConfig));
-    }
-    
-    @Test
-    public void parsingSupportedSQL() throws Exception {
-        String sql = sqlCasesLoader.getSupportedSQL(sqlCaseId, sqlCaseType, Collections.emptyList());
-        SQLParser sqlParser = SQLParserFactory.newInstance(DatabaseTypes.getTrunkDatabaseType(databaseType), sql);
-        Method addErrorListener = sqlParser.getClass().getMethod("addErrorListener", ANTLRErrorListener.class);
-        addErrorListener.invoke(sqlParser, new BaseErrorListener() {
-            
-            @Override
-            public void syntaxError(final Recognizer<?, ?> recognizer, final Object offendingSymbol, final int line, final int charPositionInLine, final String msg, final RecognitionException ex) {
-                throw new RuntimeException();
-            }
-        });
-        sqlParser.execute();
     }
     
     @Test
