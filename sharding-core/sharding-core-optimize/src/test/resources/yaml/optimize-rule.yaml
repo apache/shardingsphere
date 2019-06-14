@@ -44,7 +44,6 @@ shardingRule:
         column: order_id
         props:
           worker.id: 123
-      logicIndex: order_index
     t_encrypt:
       actualDataNodes: ds_${0..1}.t_encrypt_${0..1}
       databaseStrategy:
