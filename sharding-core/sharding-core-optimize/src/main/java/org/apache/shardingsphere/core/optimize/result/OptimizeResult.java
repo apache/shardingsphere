@@ -64,4 +64,13 @@ public final class OptimizeResult {
     public Optional<InsertOptimizeResult> getInsertOptimizeResult() {
         return Optional.fromNullable(insertOptimizeResult);
     }
+    
+    /**
+     * Get logic table name for drop index.
+     * 
+     * @return logic table name for drop index
+     */
+    public Optional<String> getLogicTableNameForDropIndex() {
+        return Optional.fromNullable(logicTableNameForDropIndex);
+    }
 }
