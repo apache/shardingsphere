@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.route.type.broadcast;
 
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
+import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
@@ -32,6 +33,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 public final class TableBroadcastRoutingEngineTest {
     
@@ -79,13 +81,13 @@ public final class TableBroadcastRoutingEngineTest {
     }
     
     private RoutingResult createDQLStatementRoutingResult() {
-        return new TableBroadcastRoutingEngine(shardingRule, new SelectStatement()).route();
+        return new TableBroadcastRoutingEngine(shardingRule, new SelectStatement(), mock(OptimizeResult.class)).route();
     }
     
     private RoutingResult createDDLStatementRoutingResult() {
         DDLStatement ddlStatement = new DDLStatement();
         ddlStatement.setLogicSQL("CREATE INDEX t_order_index on t_order");
         ddlStatement.setIndexName("t_order_index");
-        return new TableBroadcastRoutingEngine(shardingRule, ddlStatement).route();
+        return new TableBroadcastRoutingEngine(shardingRule, ddlStatement, mock(OptimizeResult.class)).route();
     }
 }
