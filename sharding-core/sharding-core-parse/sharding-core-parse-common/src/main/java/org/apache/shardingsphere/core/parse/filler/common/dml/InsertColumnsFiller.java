@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.filler.sharding.dml.insert;
+package org.apache.shardingsphere.core.parse.filler.common.dml;
 
 import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
@@ -29,7 +29,7 @@ import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
  * @author zhangliang
  * @author panjuan
  */
-public final class ShardingInsertColumnsFiller implements SQLSegmentFiller<InsertColumnsSegment> {
+public final class InsertColumnsFiller implements SQLSegmentFiller<InsertColumnsSegment> {
     
     @Override
     public void fill(final InsertColumnsSegment sqlSegment, final SQLStatement sqlStatement) {
