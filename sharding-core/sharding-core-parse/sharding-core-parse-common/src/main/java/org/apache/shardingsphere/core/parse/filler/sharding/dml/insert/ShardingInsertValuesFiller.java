@@ -51,42 +51,33 @@ public final class ShardingInsertValuesFiller implements SQLSegmentFiller<Insert
     public void fill(final InsertValuesSegment sqlSegment, final SQLStatement sqlStatement) {
         InsertStatement insertStatement = (InsertStatement) sqlStatement;
         AndCondition andCondition = new AndCondition();
-        Iterator<String> columnNames = getColumnNames(sqlSegment, insertStatement);
+        Collection<String> columnNames = getColumnNames(sqlSegment, insertStatement);
+        insertStatement.getColumnNames().clear();
+        insertStatement.getColumnNames().addAll(columnNames);
+        Iterator<String> columnNamesIterator = columnNames.iterator();
         for (ExpressionSegment each : sqlSegment.getValues()) {
             if (each instanceof SimpleExpressionSegment) {
-                fillShardingCondition(andCondition, insertStatement.getTables().getSingleTableName(), columnNames.next(), (SimpleExpressionSegment) each);
+                fillShardingCondition(andCondition, insertStatement.getTables().getSingleTableName(), columnNamesIterator.next(), (SimpleExpressionSegment) each);
             }
         }
         insertStatement.getShardingConditions().getOrConditions().add(andCondition);
         InsertValue insertValue = new InsertValue(sqlSegment.getValues());
         insertStatement.getValues().add(insertValue);
         insertStatement.addParametersCount(insertValue.getParametersCount());
-        reviseInsertStatement(insertStatement, sqlSegment);
     }
     
-    private Iterator<String> getColumnNames(final InsertValuesSegment sqlSegment, final InsertStatement insertStatement) {
+    private Collection<String> getColumnNames(final InsertValuesSegment sqlSegment, final InsertStatement insertStatement) {
         Collection<String> result = new ArrayList<>(insertStatement.getColumnNames());
-        result.removeAll(shardingRule.getEncryptRule().getEncryptorEngine().getAssistedQueryColumns(insertStatement.getTables().getSingleTableName()));
         Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTables().getSingleTableName());
         if (insertStatement.getColumnNames().size() != sqlSegment.getValues().size() && generateKeyColumnName.isPresent()) {
             result.remove(generateKeyColumnName.get());
         }
-        return result.iterator();
+        return result;
     }
     
     private void fillShardingCondition(final AndCondition andCondition, final String tableName, final String columnName, final SimpleExpressionSegment expressionSegment) {
         if (shardingRule.isShardingColumn(columnName, tableName)) {
             andCondition.getConditions().add(new Condition(new Column(columnName, tableName), null, expressionSegment));
         }
-    }
-    
-    private void reviseInsertStatement(final InsertStatement insertStatement, final InsertValuesSegment sqlSegment) {
-        Collection<String> insertColumns = new ArrayList<>(insertStatement.getColumnNames());
-        Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTables().getSingleTableName());
-        if (insertStatement.getColumnNames().size() != sqlSegment.getValues().size() && generateKeyColumnName.isPresent()) {
-            insertColumns.remove(generateKeyColumnName.get());
-        }
-        insertStatement.getColumnNames().clear();
-        insertStatement.getColumnNames().addAll(insertColumns);
     }
 }
