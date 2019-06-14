@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.backend.schema;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
@@ -133,11 +134,17 @@ public final class ShardingSchema extends LogicSchema {
     }
     
     private void refreshTableMetaData(final CreateIndexStatement createIndexStatement) {
+        if (Strings.isNullOrEmpty(createIndexStatement.getIndexName())) {
+            return;
+        }
         String tableName = createIndexStatement.getTables().getSingleTableName();
         getMetaData().getTable().get(tableName).getLogicIndexes().add(createIndexStatement.getIndexName());
     }
     
     private void refreshTableMetaData(final DropIndexStatement dropIndexStatement) {
+        if (Strings.isNullOrEmpty(dropIndexStatement.getIndexName())) {
+            return;
+        }
         Optional<String> logicTableName = getLogicTableName(dropIndexStatement);
         if (logicTableName.isPresent()) {
             getMetaData().getTable().get(logicTableName.get()).getLogicIndexes().remove(dropIndexStatement.getIndexName());

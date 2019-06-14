@@ -19,6 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.executor;
 
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -188,11 +189,17 @@ public class AbstractStatementExecutor {
     }
     
     private void refreshTableMetaData(final ShardingContext shardingContext, final CreateIndexStatement createIndexStatement) {
+        if (Strings.isNullOrEmpty(createIndexStatement.getIndexName())) {
+            return;
+        }
         String tableName = createIndexStatement.getTables().getSingleTableName();
         shardingContext.getMetaData().getTable().get(tableName).getLogicIndexes().add(createIndexStatement.getIndexName());
     }
     
     private void refreshTableMetaData(final ShardingContext shardingContext, final DropIndexStatement dropIndexStatement) {
+        if (Strings.isNullOrEmpty(dropIndexStatement.getIndexName())) {
+            return;
+        }
         Optional<String> logicTableName = getLogicTableName(shardingContext, dropIndexStatement);
         if (logicTableName.isPresent()) {
             shardingContext.getMetaData().getTable().get(logicTableName.get()).getLogicIndexes().remove(dropIndexStatement.getIndexName());
