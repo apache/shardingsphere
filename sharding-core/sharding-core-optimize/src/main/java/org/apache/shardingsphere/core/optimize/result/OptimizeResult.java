@@ -46,6 +46,8 @@ public final class OptimizeResult {
     
     private Pagination pagination;
     
+    private String logicTableNameForDropIndex;
+    
     public OptimizeResult(final ShardingConditions shardingConditions) {
         this(shardingConditions, null);
     }
