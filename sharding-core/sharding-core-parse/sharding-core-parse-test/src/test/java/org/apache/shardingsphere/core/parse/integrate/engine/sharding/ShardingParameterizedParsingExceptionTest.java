@@ -19,22 +19,31 @@ package org.apache.shardingsphere.core.parse.integrate.engine.sharding;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
+import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
 import org.apache.shardingsphere.core.parse.entry.ShardingSQLParseEntry;
 import org.apache.shardingsphere.core.parse.exception.SQLParsingException;
-import org.apache.shardingsphere.core.parse.integrate.engine.AbstractBaseParameterizedParsingTest;
+import org.apache.shardingsphere.core.parse.fixture.ParsingTestCaseFixtureBuilder;
+import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.SQLCasesLoader;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import java.util.Collection;
 import java.util.Collections;
 
+@RunWith(Parameterized.class)
 @RequiredArgsConstructor
-public final class ShardingParameterizedParsingExceptionTest extends AbstractBaseParameterizedParsingTest {
+public final class ShardingParameterizedParsingExceptionTest {
     
     private static SQLCasesLoader sqlCasesLoader = SQLCasesLoader.getInstance();
+    
+    private static ShardingRule shardingRule = ParsingTestCaseFixtureBuilder.buildShardingRule();
+    
+    private static ShardingTableMetaData shardingTableMetaData = ParsingTestCaseFixtureBuilder.buildShardingTableMetaData();
     
     private final String sqlCaseId;
     
@@ -50,6 +59,6 @@ public final class ShardingParameterizedParsingExceptionTest extends AbstractBas
     @Test(expected = SQLParsingException.class)
     public void assertSQLParsingExceptionSQL() {
         String sql = sqlCasesLoader.getSQLParsingErrorSQL(sqlCaseId, sqlCaseType, Collections.emptyList());
-        new ShardingSQLParseEntry(DatabaseTypes.getTrunkDatabaseType(databaseType), getShardingRule(), getShardingTableMetaData(), new ParsingResultCache()).parse(sql, false);
+        new ShardingSQLParseEntry(DatabaseTypes.getTrunkDatabaseType(databaseType), shardingRule, shardingTableMetaData, new ParsingResultCache()).parse(sql, false);
     }
 }

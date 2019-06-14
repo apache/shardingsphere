@@ -15,56 +15,68 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.integrate.engine;
+package org.apache.shardingsphere.core.parse.fixture;
 
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
-import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
+import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlRootShardingConfiguration;
 import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.core.yaml.swapper.impl.EncryptRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.impl.ShardingRuleConfigurationYamlSwapper;
-import org.junit.BeforeClass;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-@RunWith(Parameterized.class)
-public abstract class AbstractBaseParameterizedParsingTest {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ParsingTestCaseFixtureBuilder {
     
-    @Getter(AccessLevel.PROTECTED)
-    private static ShardingRule shardingRule;
-    
-    @Getter(AccessLevel.PROTECTED)
-    private static ShardingTableMetaData shardingTableMetaData;
-    
-    @BeforeClass
-    public static void setUp() throws IOException {
-        shardingRule = buildShardingRule();
-        shardingTableMetaData = buildShardingTableMetaData();
-    }
-    
-    private static ShardingRule buildShardingRule() throws IOException {
-        URL url = AbstractBaseParameterizedParsingTest.class.getClassLoader().getResource("yaml/sharding-rule.yaml");
+    /**
+     * Build sharding rule.
+     * 
+     * @return sharding rule
+     */
+    @SneakyThrows
+    public static ShardingRule buildShardingRule() {
+        URL url = ParsingTestCaseFixtureBuilder.class.getClassLoader().getResource("yaml/sharding-rule.yaml");
         Preconditions.checkNotNull(url, "Cannot find parse rule yaml configuration.");
         YamlRootShardingConfiguration yamlShardingConfig = YamlEngine.unmarshal(new File(url.getFile()), YamlRootShardingConfiguration.class);
         return new ShardingRule(new ShardingRuleConfigurationYamlSwapper().swap(yamlShardingConfig.getShardingRule()), yamlShardingConfig.getDataSources().keySet());
     }
     
-    private static ShardingTableMetaData buildShardingTableMetaData() {
+    /**
+     * Build encrypt rule.
+     *
+     * @return encrypt rule
+     */
+    @SneakyThrows
+    public static EncryptRule buildEncryptRule() {
+        URL url = ParsingTestCaseFixtureBuilder.class.getClassLoader().getResource("yaml/encrypt-rule.yaml");
+        Preconditions.checkNotNull(url, "Cannot find parse rule yaml configuration.");
+        YamlEncryptRuleConfiguration encryptConfig = YamlEngine.unmarshal(new File(url.getFile()), YamlEncryptRuleConfiguration.class);
+        return new EncryptRule(new EncryptRuleConfigurationYamlSwapper().swap(encryptConfig));
+    }
+    
+    /**
+     * Build sharding table meta data.
+     * 
+     * @return sharding table meta data
+     */
+    public static ShardingTableMetaData buildShardingTableMetaData() {
         Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(3, 1);
-        tableMetaDataMap.put("t_order", 
+        tableMetaDataMap.put("t_order",
                 new TableMetaData(Arrays.asList(new ColumnMetaData("order_id", "int", true), new ColumnMetaData("user_id", "int", false), new ColumnMetaData("status", "int", false))));
-        tableMetaDataMap.put("t_order_item", new TableMetaData(Arrays.asList(new ColumnMetaData("item_id", "int", true), new ColumnMetaData("order_id", "int", false), 
+        tableMetaDataMap.put("t_order_item", new TableMetaData(Arrays.asList(new ColumnMetaData("item_id", "int", true), new ColumnMetaData("order_id", "int", false),
                 new ColumnMetaData("user_id", "int", false), new ColumnMetaData("status", "varchar", false), new ColumnMetaData("c_date", "timestamp", false))));
         tableMetaDataMap.put("t_encrypt", new TableMetaData(Arrays.asList(new ColumnMetaData("id", "int", true), new ColumnMetaData("name", "varchar", false),
                 new ColumnMetaData("mobile", "varchar", false), new ColumnMetaData("status", "int", false))));

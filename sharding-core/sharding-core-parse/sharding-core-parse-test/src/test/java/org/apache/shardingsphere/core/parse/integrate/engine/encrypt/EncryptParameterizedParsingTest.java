@@ -17,36 +17,37 @@
 
 package org.apache.shardingsphere.core.parse.integrate.engine.encrypt;
 
-import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
+import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.entry.EncryptSQLParseEntry;
+import org.apache.shardingsphere.core.parse.fixture.ParsingTestCaseFixtureBuilder;
 import org.apache.shardingsphere.core.parse.integrate.asserts.EncryptSQLStatementAssert;
-import org.apache.shardingsphere.core.parse.integrate.engine.AbstractBaseParameterizedParsingTest;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.EncryptParserResultSetRegistry;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.ParserResultSetRegistry;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.root.ParserResult;
 import org.apache.shardingsphere.core.rule.EncryptRule;
-import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptRuleConfiguration;
-import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.core.yaml.swapper.impl.EncryptRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.test.sql.EncryptSQLCasesLoader;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.SQLCasesLoader;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
 import java.util.Collection;
 
+@RunWith(Parameterized.class)
 @RequiredArgsConstructor
-public final class EncryptParameterizedParsingTest extends AbstractBaseParameterizedParsingTest {
+public final class EncryptParameterizedParsingTest {
     
     private static SQLCasesLoader sqlCasesLoader = EncryptSQLCasesLoader.getInstance();
     
     private static ParserResultSetRegistry parserResultSetRegistry = EncryptParserResultSetRegistry.getInstance().getRegistry();
+    
+    private static EncryptRule encryptRule = ParsingTestCaseFixtureBuilder.buildEncryptRule();
+    
+    private static ShardingTableMetaData shardingTableMetaData = ParsingTestCaseFixtureBuilder.buildShardingTableMetaData();
     
     private final String sqlCaseId;
     
@@ -59,21 +60,11 @@ public final class EncryptParameterizedParsingTest extends AbstractBaseParameter
         return sqlCasesLoader.getSupportedSQLTestParameters();
     }
     
-    private static EncryptRule buildShardingRule() throws IOException {
-        URL url = AbstractBaseParameterizedParsingTest.class.getClassLoader().getResource("yaml/encrypt-rule.yaml");
-        Preconditions.checkNotNull(url, "Cannot found parser rule yaml configuration.");
-        YamlEncryptRuleConfiguration encryptConfig = YamlEngine.unmarshal(new File(url.getFile()), YamlEncryptRuleConfiguration.class);
-        return new EncryptRule(new EncryptRuleConfigurationYamlSwapper().swap(encryptConfig));
-    }
-    
     @Test
-    public void assertSupportedSQL() throws Exception {
+    public void assertSupportedSQL() {
         ParserResult parserResult = parserResultSetRegistry.get(sqlCaseId);
-        if (null != parserResult) {
-            String sql = sqlCasesLoader.getSupportedSQL(sqlCaseId, sqlCaseType, parserResult.getParameters());
-            EncryptSQLParseEntry encryptSQLParseEntry = new EncryptSQLParseEntry(
-                    DatabaseTypes.getActualDatabaseType(databaseType), buildShardingRule(), AbstractBaseParameterizedParsingTest.getShardingTableMetaData());
-            new EncryptSQLStatementAssert(encryptSQLParseEntry.parse(sql, false), sqlCaseId, sqlCaseType, sqlCasesLoader, parserResultSetRegistry).assertSQLStatement();
-        }
+        String sql = sqlCasesLoader.getSupportedSQL(sqlCaseId, sqlCaseType, parserResult.getParameters());
+        EncryptSQLParseEntry encryptSQLParseEntry = new EncryptSQLParseEntry(DatabaseTypes.getActualDatabaseType(databaseType), encryptRule, shardingTableMetaData);
+        new EncryptSQLStatementAssert(encryptSQLParseEntry.parse(sql, false), sqlCaseId, sqlCaseType, sqlCasesLoader, parserResultSetRegistry).assertSQLStatement();
     }
 }

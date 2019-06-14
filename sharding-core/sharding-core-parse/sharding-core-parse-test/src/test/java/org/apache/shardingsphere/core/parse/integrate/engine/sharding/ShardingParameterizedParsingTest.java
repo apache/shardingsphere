@@ -19,16 +19,20 @@ package org.apache.shardingsphere.core.parse.integrate.engine.sharding;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
+import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
 import org.apache.shardingsphere.core.parse.entry.ShardingSQLParseEntry;
+import org.apache.shardingsphere.core.parse.fixture.ParsingTestCaseFixtureBuilder;
 import org.apache.shardingsphere.core.parse.integrate.asserts.ShardingSQLStatementAssert;
-import org.apache.shardingsphere.core.parse.integrate.engine.AbstractBaseParameterizedParsingTest;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.ParserResultSetRegistry;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.ShardingParserResultSetRegistry;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.SQLCasesLoader;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import java.util.Collection;
@@ -36,12 +40,17 @@ import java.util.Collection;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+@RunWith(Parameterized.class)
 @RequiredArgsConstructor
-public final class ShardingParameterizedParsingTest extends AbstractBaseParameterizedParsingTest {
+public final class ShardingParameterizedParsingTest {
     
     private static SQLCasesLoader sqlCasesLoader = SQLCasesLoader.getInstance();
     
     private static ParserResultSetRegistry parserResultSetLoader = ShardingParserResultSetRegistry.getInstance().getRegistry();
+    
+    private static ShardingRule shardingRule = ParsingTestCaseFixtureBuilder.buildShardingRule();
+    
+    private static ShardingTableMetaData shardingTableMetaData = ParsingTestCaseFixtureBuilder.buildShardingTableMetaData();
     
     private final String sqlCaseId;
     
@@ -59,7 +68,7 @@ public final class ShardingParameterizedParsingTest extends AbstractBaseParamete
     public void assertSupportedSQL() {
         String sql = sqlCasesLoader.getSupportedSQL(sqlCaseId, sqlCaseType, parserResultSetLoader.get(sqlCaseId).getParameters());
         SQLStatement sqlStatement = new ShardingSQLParseEntry(
-                DatabaseTypes.getTrunkDatabaseType(databaseType), getShardingRule(), getShardingTableMetaData(), new ParsingResultCache()).parse(sql, false);
+                DatabaseTypes.getTrunkDatabaseType(databaseType), shardingRule, shardingTableMetaData, new ParsingResultCache()).parse(sql, false);
         new ShardingSQLStatementAssert(sqlStatement, sqlCaseId, sqlCaseType).assertSQLStatement();
     }
 }
