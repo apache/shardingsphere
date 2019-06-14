@@ -309,22 +309,6 @@ public final class ShardingRuleTest {
     }
     
     @Test
-    public void assertGetLogicTableNameSuccess() {
-        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        TableRuleConfiguration tableRuleConfig = createTableRuleConfigWithLogicIndex();
-        shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
-        assertThat(new ShardingRule(shardingRuleConfig, createDataSourceNames()).getLogicTableName("index_table"), is("logic_table"));
-    }
-    
-    @Test(expected = ShardingConfigurationException.class)
-    public void assertGetLogicTableNameFailure() {
-        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        TableRuleConfiguration tableRuleConfig = createTableRuleConfigWithLogicIndex();
-        shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
-        new ShardingRule(shardingRuleConfig, createDataSourceNames()).getLogicTableName("");
-    }
-    
-    @Test
     public void assertGetDataNodeByLogicTable() {
         assertThat(createMaximumShardingRule().getDataNode("logic_table"), is(new DataNode("ds_0.table_0")));
     }
