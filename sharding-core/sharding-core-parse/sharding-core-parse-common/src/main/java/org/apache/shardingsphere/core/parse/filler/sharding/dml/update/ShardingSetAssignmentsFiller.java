@@ -23,16 +23,20 @@ import org.apache.shardingsphere.core.parse.aware.ShardingRuleAware;
 import org.apache.shardingsphere.core.parse.aware.ShardingTableMetaDataAware;
 import org.apache.shardingsphere.core.parse.exception.SQLParsingException;
 import org.apache.shardingsphere.core.parse.filler.SQLSegmentFiller;
+import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
+import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
 import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.SimpleExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -66,11 +70,17 @@ public final class ShardingSetAssignmentsFiller implements SQLSegmentFiller<SetA
         if (sqlSegment.getAssignments().size() != columnCount) {
             throw new SQLParsingException("INSERT INTO column size mismatch value size.");
         }
+        AndCondition andCondition = new AndCondition();
+        Iterator<String> columnNames = insertStatement.getColumnNames().iterator();
         List<ExpressionSegment> columnValues = new LinkedList<>();
         for (AssignmentSegment each : sqlSegment.getAssignments()) {
+            if (each.getValue() instanceof SimpleExpressionSegment) {
+                fillShardingCondition(andCondition, columnNames.next(), insertStatement.getTables().getSingleTableName(), (SimpleExpressionSegment) each.getValue());
+            }
             columnValues.add(each.getValue());
         }
         insertStatement.getValues().add(new InsertValue(columnValues));
+        insertStatement.getShardingConditions().getOrConditions().add(andCondition);
     }
     
     private int getColumnCountExcludeAssistedQueryColumns(final InsertStatement insertStatement) {
@@ -80,6 +90,13 @@ public final class ShardingSetAssignmentsFiller implements SQLSegmentFiller<SetA
         }
         Integer assistedQueryColumnCount = shardingRule.getEncryptRule().getEncryptorEngine().getAssistedQueryColumnCount(insertStatement.getTables().getSingleTableName());
         return insertStatement.getColumnNames().size() - assistedQueryColumnCount;
+    }
+    
+    private void fillShardingCondition(final AndCondition andCondition,
+                                       final String columnName, final String tableName, final SimpleExpressionSegment simpleExpressionSegment) {
+        if (shardingRule.isShardingColumn(columnName, tableName)) {
+            andCondition.getConditions().add(new Condition(new Column(columnName, tableName), null, simpleExpressionSegment));
+        }
     }
     
     private void fillUpdate(final SetAssignmentsSegment sqlSegment, final UpdateStatement updateStatement) {
