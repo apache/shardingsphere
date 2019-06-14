@@ -35,6 +35,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -62,13 +63,15 @@ public abstract class AbstractBaseIntegrateSQLParsingTest {
     
     private static ShardingTableMetaData buildShardingTableMetaData() {
         Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(3, 1);
-        tableMetaDataMap.put("t_order", 
-                new TableMetaData(Arrays.asList(new ColumnMetaData("order_id", "int", true), new ColumnMetaData("user_id", "int", false), new ColumnMetaData("status", "int", false))));
+        tableMetaDataMap.put("t_order", new TableMetaData(Arrays.asList(new ColumnMetaData("order_id", "int", true), new ColumnMetaData("user_id", "int", false), 
+                        new ColumnMetaData("status", "int", false)), Collections.<String>emptyList()));
         tableMetaDataMap.put("t_order_item", new TableMetaData(Arrays.asList(new ColumnMetaData("item_id", "int", true), new ColumnMetaData("order_id", "int", false), 
-                new ColumnMetaData("user_id", "int", false), new ColumnMetaData("status", "varchar", false), new ColumnMetaData("c_date", "timestamp", false))));
-        tableMetaDataMap.put("t_place", new TableMetaData(Arrays.asList(new ColumnMetaData("user_new_id", "int", true), new ColumnMetaData("user_new_id", "int", false))));
+                new ColumnMetaData("user_id", "int", false), new ColumnMetaData("status", "varchar", false), 
+                new ColumnMetaData("c_date", "timestamp", false)), Collections.<String>emptyList()));
+        tableMetaDataMap.put("t_place", new TableMetaData(Arrays.asList(new ColumnMetaData("user_new_id", "int", true), 
+                new ColumnMetaData("user_new_id", "int", false)), Collections.<String>emptyList()));
         tableMetaDataMap.put("t_encrypt", new TableMetaData(Arrays.asList(new ColumnMetaData("id", "int", true), new ColumnMetaData("name", "varchar", false),
-                new ColumnMetaData("mobile", "varchar", false), new ColumnMetaData("status", "int", false))));
+                new ColumnMetaData("mobile", "varchar", false), new ColumnMetaData("status", "int", false)), Collections.<String>emptyList()));
         return new ShardingTableMetaData(tableMetaDataMap);
     }
 }
