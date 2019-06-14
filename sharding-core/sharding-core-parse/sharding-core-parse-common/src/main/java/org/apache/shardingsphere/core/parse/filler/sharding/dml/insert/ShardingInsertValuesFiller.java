@@ -19,8 +19,10 @@ package org.apache.shardingsphere.core.parse.filler.sharding.dml.insert;
 
 import com.google.common.base.Optional;
 import lombok.Setter;
+import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.filler.api.ShardingRuleAwareFiller;
+import org.apache.shardingsphere.core.parse.filler.api.ShardingTableMetaDataAwareFiller;
 import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
@@ -32,7 +34,6 @@ import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -43,36 +44,58 @@ import java.util.Iterator;
  * @author panjuan
  */
 @Setter
-public final class ShardingInsertValuesFiller implements SQLSegmentFiller<InsertValuesSegment>, ShardingRuleAwareFiller {
+public final class ShardingInsertValuesFiller implements SQLSegmentFiller<InsertValuesSegment>, ShardingRuleAwareFiller, ShardingTableMetaDataAwareFiller {
     
     private ShardingRule shardingRule;
+    
+    private ShardingTableMetaData shardingTableMetaData;
     
     @Override
     public void fill(final InsertValuesSegment sqlSegment, final SQLStatement sqlStatement) {
         InsertStatement insertStatement = (InsertStatement) sqlStatement;
-        AndCondition andCondition = new AndCondition();
-        Collection<String> columnNames = getColumnNames(sqlSegment, insertStatement);
-        insertStatement.getColumnNames().clear();
-        insertStatement.getColumnNames().addAll(columnNames);
-        Iterator<String> columnNamesIterator = columnNames.iterator();
-        for (ExpressionSegment each : sqlSegment.getValues()) {
-            if (each instanceof SimpleExpressionSegment) {
-                fillShardingCondition(andCondition, insertStatement.getTables().getSingleTableName(), columnNamesIterator.next(), (SimpleExpressionSegment) each);
+        fillColumns(sqlSegment, insertStatement);
+        fillValues(sqlSegment, insertStatement);
+        fillCondition(sqlSegment, insertStatement);
+    }
+    
+    private void fillColumns(final InsertValuesSegment sqlSegment, final InsertStatement insertStatement) {
+        if (insertStatement.getColumnNames().isEmpty()) {
+            fillColumnsFromMetaData(insertStatement);
+        }
+        reviseColumnNamesForGenerateKeyColumn(sqlSegment, insertStatement);
+    }
+    
+    private void fillColumnsFromMetaData(final InsertStatement insertStatement) {
+        Collection<String> assistedQueryColumns = shardingRule.getEncryptRule().getEncryptorEngine().getAssistedQueryColumns(insertStatement.getTables().getSingleTableName());
+        for (String each : shardingTableMetaData.getAllColumnNames(insertStatement.getTables().getSingleTableName())) {
+            if (!assistedQueryColumns.contains(each)) {
+                insertStatement.getColumnNames().add(each);
             }
         }
-        insertStatement.getShardingConditions().getOrConditions().add(andCondition);
+    }
+    
+    private void reviseColumnNamesForGenerateKeyColumn(final InsertValuesSegment sqlSegment, final InsertStatement insertStatement) {
+        Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTables().getSingleTableName());
+        if (generateKeyColumnName.isPresent() && insertStatement.getColumnNames().size() != sqlSegment.getValues().size()) {
+            insertStatement.getColumnNames().remove(generateKeyColumnName.get());
+        }
+    }
+    
+    private void fillValues(final InsertValuesSegment sqlSegment, final InsertStatement insertStatement) {
         InsertValue insertValue = new InsertValue(sqlSegment.getValues());
         insertStatement.getValues().add(insertValue);
         insertStatement.addParametersCount(insertValue.getParametersCount());
     }
     
-    private Collection<String> getColumnNames(final InsertValuesSegment sqlSegment, final InsertStatement insertStatement) {
-        Collection<String> result = new ArrayList<>(insertStatement.getColumnNames());
-        Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTables().getSingleTableName());
-        if (insertStatement.getColumnNames().size() != sqlSegment.getValues().size() && generateKeyColumnName.isPresent()) {
-            result.remove(generateKeyColumnName.get());
+    private void fillCondition(final InsertValuesSegment sqlSegment, final InsertStatement insertStatement) {
+        AndCondition andCondition = new AndCondition();
+        Iterator<String> columnNames = insertStatement.getColumnNames().iterator();
+        for (ExpressionSegment each : sqlSegment.getValues()) {
+            if (each instanceof SimpleExpressionSegment) {
+                fillShardingCondition(andCondition, insertStatement.getTables().getSingleTableName(), columnNames.next(), (SimpleExpressionSegment) each);
+            }
         }
-        return result;
+        insertStatement.getShardingConditions().getOrConditions().add(andCondition);
     }
     
     private void fillShardingCondition(final AndCondition andCondition, final String tableName, final String columnName, final SimpleExpressionSegment expressionSegment) {

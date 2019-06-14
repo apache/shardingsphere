@@ -17,18 +17,11 @@
 
 package org.apache.shardingsphere.core.parse.filler.sharding.dml.insert;
 
-import lombok.Setter;
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.filler.api.ShardingRuleAwareFiller;
-import org.apache.shardingsphere.core.parse.filler.api.ShardingTableMetaDataAwareFiller;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.rule.ShardingRule;
-
-import java.util.Collection;
 
 /**
  * Insert columns filler.
@@ -36,37 +29,15 @@ import java.util.Collection;
  * @author zhangliang
  * @author panjuan
  */
-@Setter
-public final class ShardingInsertColumnsFiller implements SQLSegmentFiller<InsertColumnsSegment>, ShardingRuleAwareFiller, ShardingTableMetaDataAwareFiller {
-    
-    private ShardingRule shardingRule;
-    
-    private ShardingTableMetaData shardingTableMetaData;
+public final class ShardingInsertColumnsFiller implements SQLSegmentFiller<InsertColumnsSegment> {
     
     @Override
     public void fill(final InsertColumnsSegment sqlSegment, final SQLStatement sqlStatement) {
         if (sqlStatement instanceof InsertStatement) {
             InsertStatement insertStatement = (InsertStatement) sqlStatement;
-            if (sqlSegment.getColumns().isEmpty()) {
-                fillFromMetaData(insertStatement);
-            } else {
-                fillFromSQL(sqlSegment, insertStatement);
+            for (ColumnSegment each : sqlSegment.getColumns()) {
+                insertStatement.getColumnNames().add(each.getName());
             }
-        }
-    }
-    
-    private void fillFromMetaData(final InsertStatement insertStatement) {
-        Collection<String> assistedQueryColumns = shardingRule.getEncryptRule().getEncryptorEngine().getAssistedQueryColumns(insertStatement.getTables().getSingleTableName());
-        for (String each : shardingTableMetaData.getAllColumnNames(insertStatement.getTables().getSingleTableName())) {
-            if (!assistedQueryColumns.contains(each)) {
-                insertStatement.getColumnNames().add(each);
-            }
-        }
-    }
-    
-    private void fillFromSQL(final InsertColumnsSegment sqlSegment, final InsertStatement insertStatement) {
-        for (ColumnSegment each : sqlSegment.getColumns()) {
-            insertStatement.getColumnNames().add(each.getName());
         }
     }
 }
