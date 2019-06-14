@@ -37,10 +37,19 @@ public final class TableMetaData {
     
     private final Map<String, ColumnMetaData> columns;
     
-    public TableMetaData(final Collection<ColumnMetaData> columnMetaDataList) {
+    private final Collection<String> logicIndexes;
+    
+    public TableMetaData(final Collection<ColumnMetaData> columnMetaDataList, final Collection<String> logicIndexes) {
+        columns = getColumns(columnMetaDataList);
+        this.logicIndexes = logicIndexes;
+    }
+    
+    private Map<String, ColumnMetaData> getColumns(final Collection<ColumnMetaData> columnMetaDataList) {
+        final Map<String, ColumnMetaData> columns;
         columns = new LinkedHashMap<>(columnMetaDataList.size(), 1);
         for (ColumnMetaData each : columnMetaDataList) {
             columns.put(each.getColumnName(), each);
         }
+        return columns;
     }
 }

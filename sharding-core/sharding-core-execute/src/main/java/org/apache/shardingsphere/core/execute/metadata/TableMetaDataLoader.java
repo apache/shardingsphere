@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.execute.metadata;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.exception.ShardingException;
@@ -92,8 +93,7 @@ public final class TableMetaDataLoader {
         Collection<TableMetaData> result = new LinkedList<>();
         try (Connection connection = connectionManager.getConnection(dataSourceName)) {
             for (DataNode each : dataNodes) {
-                result.add(new TableMetaData(
-                        isTableExist(connection, catalog, each.getTableName()) ? getColumnMetaDataList(connection, catalog, each.getTableName()) : Collections.<ColumnMetaData>emptyList()));
+                result.add(createTableMetaData(connection, catalog, each.getTableName()));
             }
         }
         return result;
@@ -124,6 +124,13 @@ public final class TableMetaDataLoader {
         return result;
     }
     
+    private TableMetaData createTableMetaData(final Connection connection, final String catalog, final String actualTableName) throws SQLException {
+        if (isTableExist(connection, catalog, actualTableName)) {
+            return new TableMetaData(getColumnMetaDataList(connection, catalog, actualTableName), getLogicIndexes(connection, catalog, actualTableName));
+        }
+        return new TableMetaData(Collections.<ColumnMetaData>emptyList(), Collections.<String>emptyList());
+    }
+    
     private boolean isTableExist(final Connection connection, final String catalog, final String actualTableName) throws SQLException {
         try (ResultSet resultSet = connection.getMetaData().getTables(catalog, null, actualTableName, null)) {
             return resultSet.next();
@@ -151,6 +158,27 @@ public final class TableMetaDataLoader {
             }
         }
         return result;
+    }
+    
+    private Collection<String> getLogicIndexes(final Connection connection, final String catalog, final String actualTableName) throws SQLException {
+        Collection<String> result = new HashSet<>();
+        try (ResultSet resultSet = connection.getMetaData().getIndexInfo(catalog, catalog, actualTableName, false, false)) {
+            while (resultSet.next()) {
+                Optional<String> logicIndex = getLogicIndex(resultSet.getString("INDEX_NAME"), actualTableName);
+                if (logicIndex.isPresent()) {
+                    result.add(logicIndex.get());
+                }
+            }
+        }
+        return result;
+    }
+    
+    private Optional<String> getLogicIndex(final String actualIndexName, final String actualTableName) {
+        String indexNameSuffix = "_" + actualTableName;
+        if (actualIndexName.contains(indexNameSuffix)) {
+            return Optional.of(actualIndexName.replace(indexNameSuffix, ""));
+        }
+        return Optional.absent();
     }
     
     private void checkUniformed(final String logicTableName, final List<TableMetaData> actualTableMetaDataList) {
