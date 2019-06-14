@@ -25,15 +25,23 @@ import org.apache.shardingsphere.core.rule.BaseRule;
  * SQL statement optimizer.
  *
  * @author zhangliang
+ * 
+ * @param <T> type of base rule
  */
-public interface SQLStatementOptimizer {
+public interface SQLStatementOptimizer<T extends BaseRule> {
+    
+    /**
+     * Set rule.
+     * 
+     * @param rule rule
+     */
+    void setRule(T rule);
     
     /**
      * Optimize SQL statement.
      *
      * @param sqlStatement SQL statement
-     * @param rule rule
      * @param shardingTableMetaData sharding table meta data
      */
-    void optimize(SQLStatement sqlStatement, BaseRule rule, ShardingTableMetaData shardingTableMetaData);
+    void optimize(SQLStatement sqlStatement, ShardingTableMetaData shardingTableMetaData);
 }

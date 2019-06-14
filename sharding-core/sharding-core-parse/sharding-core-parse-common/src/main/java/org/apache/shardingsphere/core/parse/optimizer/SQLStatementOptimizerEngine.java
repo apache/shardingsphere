@@ -42,10 +42,12 @@ public final class SQLStatementOptimizerEngine {
      * @param sqlStatementRule SQL statement rule
      * @param sqlStatement SQL statement
      */
+    @SuppressWarnings("unchecked")
     public void optimize(final SQLStatementRule sqlStatementRule, final SQLStatement sqlStatement) {
         Optional<SQLStatementOptimizer> optimizer = sqlStatementRule.getOptimizer();
         if (optimizer.isPresent()) {
-            optimizer.get().optimize(sqlStatement, rule, shardingTableMetaData);
+            optimizer.get().setRule(rule);
+            optimizer.get().optimize(sqlStatement, shardingTableMetaData);
         }
     }
 }

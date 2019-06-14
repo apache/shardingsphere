@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.parse.optimizer.select;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import lombok.Setter;
 import org.apache.shardingsphere.core.constant.AggregationType;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.constant.DerivedColumn;
@@ -37,7 +38,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.OrderByIt
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.TextOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.core.rule.BaseRule;
+import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.List;
 
@@ -47,10 +48,13 @@ import java.util.List;
  * @author duhongjun
  * @author panjuan
  */
-public final class SelectOptimizer implements SQLStatementOptimizer {
+@Setter
+public final class SelectOptimizer implements SQLStatementOptimizer<ShardingRule> {
+    
+    private ShardingRule rule;
     
     @Override
-    public void optimize(final SQLStatement sqlStatement, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
+    public void optimize(final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
         appendDerivedColumns((SelectStatement) sqlStatement, shardingTableMetaData);
         appendDerivedOrderBy((SelectStatement) sqlStatement);
         addSubqueryCondition(sqlStatement);
