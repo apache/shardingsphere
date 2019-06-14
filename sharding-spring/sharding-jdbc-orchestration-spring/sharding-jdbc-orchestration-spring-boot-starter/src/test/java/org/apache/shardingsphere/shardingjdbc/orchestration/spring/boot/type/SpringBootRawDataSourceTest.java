@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.spring.boot.type;
+package org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.type;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -24,15 +24,19 @@ import org.apache.shardingsphere.core.constant.ShardingConstant;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.util.InlineExpressionParser;
+import org.apache.shardingsphere.core.yaml.swapper.impl.EncryptRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.impl.MasterSlaveRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.impl.ShardingRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.internal.registry.ShardingOrchestrationFacade;
 import org.apache.shardingsphere.orchestration.yaml.swapper.OrchestrationConfigurationYamlSwapper;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
+import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationEncryptDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.common.SpringBootPropertiesConfigurationProperties;
+import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.encrypt.SpringBootEncryptRuleConfigurationProperties;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.masterslave.SpringBootMasterSlaveRuleConfigurationProperties;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.orchestration.SpringBootOrchestrationConfigurationProperties;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.sharding.SpringBootShardingRuleConfigurationProperties;
@@ -63,7 +67,8 @@ import java.util.Map;
 @Configuration
 @EnableConfigurationProperties({
         SpringBootShardingRuleConfigurationProperties.class, SpringBootMasterSlaveRuleConfigurationProperties.class,
-        SpringBootPropertiesConfigurationProperties.class, SpringBootOrchestrationConfigurationProperties.class})
+        SpringBootPropertiesConfigurationProperties.class, SpringBootOrchestrationConfigurationProperties.class,
+        SpringBootEncryptRuleConfigurationProperties.class})
 @ConditionalOnProperty(prefix = "spring.shardingsphere", name = "enabled", havingValue = "true", matchIfMissing = true)
 @RequiredArgsConstructor
 public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
@@ -74,6 +79,8 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     
     private final SpringBootMasterSlaveRuleConfigurationProperties masterSlaveProperties;
     
+    private final SpringBootEncryptRuleConfigurationProperties encryptProperties;
+    
     private final SpringBootPropertiesConfigurationProperties propProperties;
     
     private final SpringBootOrchestrationConfigurationProperties orchestrationProperties;
@@ -81,6 +88,8 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     private final ShardingRuleConfigurationYamlSwapper shardingSwapper = new ShardingRuleConfigurationYamlSwapper();
     
     private final MasterSlaveRuleConfigurationYamlSwapper masterSlaveSwapper = new MasterSlaveRuleConfigurationYamlSwapper();
+    
+    private final EncryptRuleConfigurationYamlSwapper encryptSwapper = new EncryptRuleConfigurationYamlSwapper();
     
     private final OrchestrationConfigurationYamlSwapper orchestrationSwapper = new OrchestrationConfigurationYamlSwapper();
     
@@ -93,7 +102,7 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     @Bean
     public DataSource dataSource() throws SQLException {
         Preconditions.checkState(isValidConfiguration(), "The orchestration configuration is invalid, please choose one from Sharding rule and Master-slave rule.");
-        return isShardingRule() ? createShardingDataSource() : createMasterSlaveDataSource();
+        return isShardingRule() ? createShardingDataSource() : isEncryptRule() ? createEncryptDataSource() : createMasterSlaveDataSource();
     }
     
     private boolean isValidConfiguration() {
@@ -101,8 +110,11 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     }
     
     private boolean isValidRuleConfiguration() {
-        return (shardingProperties.getTables().isEmpty() && !Strings.isNullOrEmpty(masterSlaveProperties.getMasterDataSourceName()))
-                || (!shardingProperties.getTables().isEmpty() && Strings.isNullOrEmpty(masterSlaveProperties.getMasterDataSourceName()));
+        int validConfigCount = 0;
+        validConfigCount += shardingProperties.getTables().isEmpty() ? 0 : 1;
+        validConfigCount += Strings.isNullOrEmpty(masterSlaveProperties.getMasterDataSourceName()) ? 0 : 1;
+        validConfigCount += encryptProperties.getEncryptors().isEmpty() ? 0 : 1;
+        return 1 == validConfigCount;
     }
     
     private boolean isValidOrchestrationConfiguration() {
@@ -124,6 +136,21 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
         }
     }
     
+    private boolean isEncryptRule() {
+        return isValidRuleConfiguration() ? isEncryptRuleByLocal() : isEncryptRuleByRegistry();
+    }
+    
+    private boolean isEncryptRuleByLocal() {
+        return !encryptProperties.getEncryptors().isEmpty();
+    }
+    
+    private boolean isEncryptRuleByRegistry() {
+        try (ShardingOrchestrationFacade shardingOrchestrationFacade = new ShardingOrchestrationFacade(
+            orchestrationSwapper.swap(orchestrationProperties), Collections.singletonList(ShardingConstant.LOGIC_SCHEMA_NAME))) {
+            return shardingOrchestrationFacade.getConfigService().isEncryptRule(ShardingConstant.LOGIC_SCHEMA_NAME);
+        }
+    }
+    
     private DataSource createShardingDataSource() throws SQLException {
         if (shardingProperties.getTables().isEmpty()) {
             return new OrchestrationShardingDataSource(orchestrationSwapper.swap(orchestrationProperties));
@@ -142,6 +169,14 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
         return new OrchestrationMasterSlaveDataSource(masterSlaveDataSource, orchestrationSwapper.swap(orchestrationProperties));
     }
     
+    private DataSource createEncryptDataSource() {
+        if (encryptProperties.getEncryptors().isEmpty()) {
+            return new OrchestrationEncryptDataSource(orchestrationSwapper.swap(orchestrationProperties));
+        }
+        EncryptDataSource encryptDataSource = new EncryptDataSource(dataSourceMap.values().iterator().next(), encryptSwapper.swap(encryptProperties), propProperties.getProps());
+        return new OrchestrationEncryptDataSource(encryptDataSource, orchestrationSwapper.swap(orchestrationProperties));
+    }
+    
     @Override
     public final void setEnvironment(final Environment environment) {
         String prefix = "spring.shardingsphere.datasource.";
@@ -157,7 +192,10 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     private List<String> getDataSourceNames(final Environment environment, final String prefix) {
         StandardEnvironment standardEnv = (StandardEnvironment) environment;
         standardEnv.setIgnoreUnresolvableNestedPlaceholders(true);
-        String dataSources = standardEnv.getProperty(prefix + "names");
+        String dataSources = standardEnv.getProperty(prefix + "name");
+        if (StringUtils.isEmpty(dataSources)) {
+            dataSources = standardEnv.getProperty(prefix + "names");
+        }
         if (StringUtils.isEmpty(dataSources)) {
             return Collections.emptyList();
         }
