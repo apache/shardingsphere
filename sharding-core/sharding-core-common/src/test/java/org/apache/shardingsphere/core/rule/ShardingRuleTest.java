@@ -397,12 +397,6 @@ public final class ShardingRuleTest {
         return Arrays.asList("master_ds_0", "slave_ds_0", "master_ds_1", "slave_ds_1");
     }
     
-    private TableRuleConfiguration createTableRuleConfigWithLogicIndex() {
-        TableRuleConfiguration result = new TableRuleConfiguration("LOGIC_TABLE", "ds_${0..1}.table_${0..2}");
-        result.setLogicIndex("INDEX_TABLE");
-        return result;
-    }
-    
     private TableRuleConfiguration createTableRuleConfigWithAllStrategies() {
         TableRuleConfiguration result = new TableRuleConfiguration("LOGIC_TABLE", "ds_${0..1}.table_${0..2}");
         result.setDatabaseShardingStrategyConfig(new StandardShardingStrategyConfiguration("column", new PreciseShardingAlgorithmFixture()));

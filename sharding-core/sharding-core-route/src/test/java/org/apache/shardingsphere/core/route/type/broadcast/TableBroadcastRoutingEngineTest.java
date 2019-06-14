@@ -44,7 +44,6 @@ public final class TableBroadcastRoutingEngineTest {
     @Before
     public void setEngineContext() {
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration("t_order", "ds${0..1}.t_order_${0..2}");
-        tableRuleConfig.setLogicIndex("t_order_index");
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
         shardingRule = new ShardingRule(shardingRuleConfig, Arrays.asList("ds0", "ds1"));

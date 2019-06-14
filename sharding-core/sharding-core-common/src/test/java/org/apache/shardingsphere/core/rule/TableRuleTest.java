@@ -58,7 +58,6 @@ public final class TableRuleTest {
         tableRuleConfig.setDatabaseShardingStrategyConfig(new NoneShardingStrategyConfiguration());
         tableRuleConfig.setTableShardingStrategyConfig(new NoneShardingStrategyConfiguration());
         tableRuleConfig.setKeyGeneratorConfig(new KeyGeneratorConfiguration("INCREMENT", "col_1", new Properties()));
-        tableRuleConfig.setLogicIndex("LOGIC_INDEX");
         TableRule actual = new TableRule(tableRuleConfig, createShardingDataSourceNames(), null);
         assertThat(actual.getLogicTable(), is("logic_table"));
         assertThat(actual.getActualDataNodes().size(), is(6));
