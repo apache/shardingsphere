@@ -55,7 +55,7 @@ public final class SQLParseEngine {
         parserEngine = new SQLParserEngine(parseRuleRegistry, trunkDatabaseType, sql);
         extractorEngine = new SQLSegmentsExtractorEngine();
         fillerEngine = new SQLStatementFillerEngine(parseRuleRegistry, trunkDatabaseType, sql, rule, shardingTableMetaData);
-        optimizerEngine = new SQLStatementOptimizerEngine(shardingTableMetaData);
+        optimizerEngine = new SQLStatementOptimizerEngine(rule, shardingTableMetaData);
     }
     
     /**
