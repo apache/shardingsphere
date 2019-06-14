@@ -26,6 +26,8 @@ import org.apache.shardingsphere.core.parse.integrate.asserts.orderby.OrderByAss
 import org.apache.shardingsphere.core.parse.integrate.asserts.pagination.PaginationAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.table.AlterTableAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.table.TableAssert;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.ParserResultSetLoader;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.ShardingParserResultSet;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.root.ParserResult;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.AlterTableStatement;
@@ -69,7 +71,7 @@ public final class SQLStatementAssert {
     private final AlterTableAssert alterTableAssert;
     
     public SQLStatementAssert(final SQLStatement actual, final String sqlCaseId, final SQLCaseType sqlCaseType) {
-        this(actual, sqlCaseId, sqlCaseType, SQLCasesLoader.getInstance(), ParserResultSetLoader.getInstance());
+        this(actual, sqlCaseId, sqlCaseType, SQLCasesLoader.getInstance(), ShardingParserResultSet.getInstance().getParserResultSetLoader());
     }
     
     public SQLStatementAssert(final SQLStatement actual, final String sqlCaseId, 

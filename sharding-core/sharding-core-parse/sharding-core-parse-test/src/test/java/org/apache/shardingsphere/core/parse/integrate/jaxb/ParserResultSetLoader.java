@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.integrate.asserts;
+package org.apache.shardingsphere.core.parse.integrate.jaxb;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.root.ParserResult;
@@ -33,26 +33,15 @@ import java.util.Map;
  *
  * @author zhangliang
  */
-public class ParserResultSetLoader {
+public final class ParserResultSetLoader {
     
-    private static final ParserResultSetLoader INSTANCE = new ParserResultSetLoader();
+    private Map<String, ParserResult> parserResultMap;
     
-    protected Map<String, ParserResult> parserResultMap;
-    
-    protected ParserResultSetLoader() {
-        parserResultMap = loadParserResultSet("sharding/");
+    public ParserResultSetLoader(final String rootDirectory) {
+        parserResultMap = loadParserResultSet(rootDirectory);
     }
     
-    /**
-     * Get singleton instance.
-     *
-     * @return singleton instance
-     */
-    public static ParserResultSetLoader getInstance() {
-        return INSTANCE;
-    }
-    
-    protected Map<String, ParserResult> loadParserResultSet(final String dirName) {
+    private Map<String, ParserResult> loadParserResultSet(final String dirName) {
         URL url = ParserResultSetLoader.class.getClassLoader().getResource(dirName);
         Preconditions.checkNotNull(url, "Cannot found parser test cases.");
         File[] files = new File(url.getPath()).listFiles();
@@ -64,7 +53,7 @@ public class ParserResultSetLoader {
         return result;
     }
     
-    protected Map<String, ParserResult> loadParserResultSet(final File file) {
+    private Map<String, ParserResult> loadParserResultSet(final File file) {
         Map<String, ParserResult> result = new HashMap<>(Short.MAX_VALUE, 1);
         try {
             if (file.isDirectory()) {
