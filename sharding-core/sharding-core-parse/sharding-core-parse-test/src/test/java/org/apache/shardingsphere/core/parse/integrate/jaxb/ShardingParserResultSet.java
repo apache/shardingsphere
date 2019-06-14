@@ -15,27 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.integrate.asserts;
+package org.apache.shardingsphere.core.parse.integrate.jaxb;
+
+import lombok.Getter;
 
 /**
- * Encrypt parser result set loader.
+ * Sharding parser result set.
  *
- * @author duhongjun
+ * @author zhangliang
  */
-public class EncryptParserResultSetLoader extends ParserResultSetLoader {
+public final class ShardingParserResultSet {
     
-    private static final EncryptParserResultSetLoader INSTANCE = new EncryptParserResultSetLoader();
+    private static final ShardingParserResultSet INSTANCE = new ShardingParserResultSet();
     
-    protected EncryptParserResultSetLoader() {
-        parserResultMap = loadParserResultSet("encrypt/");
-    }
+    @Getter
+    private final ParserResultSetLoader parserResultSetLoader = new ParserResultSetLoader("sharding/");
     
     /**
      * Get singleton instance.
      *
      * @return singleton instance
      */
-    public static EncryptParserResultSetLoader getInstance() {
+    public static ShardingParserResultSet getInstance() {
         return INSTANCE;
     }
 }

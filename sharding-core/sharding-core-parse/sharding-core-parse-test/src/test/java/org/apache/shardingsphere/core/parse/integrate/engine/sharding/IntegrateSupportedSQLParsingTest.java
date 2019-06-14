@@ -26,8 +26,9 @@ import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.parse.api.SQLParser;
 import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
 import org.apache.shardingsphere.core.parse.entry.ShardingSQLParseEntry;
-import org.apache.shardingsphere.core.parse.integrate.asserts.ParserResultSetLoader;
 import org.apache.shardingsphere.core.parse.integrate.asserts.SQLStatementAssert;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.ParserResultSetLoader;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.ShardingParserResultSet;
 import org.apache.shardingsphere.core.parse.parser.SQLParserFactory;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.SQLCasesLoader;
@@ -46,7 +47,7 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
     
     private static SQLCasesLoader sqlCasesLoader = SQLCasesLoader.getInstance();
     
-    private static ParserResultSetLoader parserResultSetLoader = ParserResultSetLoader.getInstance();
+    private static ParserResultSetLoader parserResultSetLoader = ShardingParserResultSet.getInstance().getParserResultSetLoader();
     
     private final String sqlCaseId;
     

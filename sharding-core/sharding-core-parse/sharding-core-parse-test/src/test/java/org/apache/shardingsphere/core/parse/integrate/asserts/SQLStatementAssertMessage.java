@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.parse.integrate.asserts;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.ParserResultSetLoader;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.SQLCasesLoader;
 

@@ -26,10 +26,10 @@ import org.antlr.v4.runtime.Recognizer;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.parse.api.SQLParser;
 import org.apache.shardingsphere.core.parse.entry.EncryptSQLParseEntry;
-import org.apache.shardingsphere.core.parse.integrate.asserts.EncryptParserResultSetLoader;
 import org.apache.shardingsphere.core.parse.integrate.asserts.EncryptSQLStatementAssert;
-import org.apache.shardingsphere.core.parse.integrate.asserts.ParserResultSetLoader;
 import org.apache.shardingsphere.core.parse.integrate.engine.sharding.AbstractBaseIntegrateSQLParsingTest;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.EncryptParserResultSet;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.ParserResultSetLoader;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.root.ParserResult;
 import org.apache.shardingsphere.core.parse.parser.SQLParserFactory;
 import org.apache.shardingsphere.core.rule.EncryptRule;
@@ -57,7 +57,7 @@ public final class EncryptIntegrateParsingTest extends AbstractBaseIntegrateSQLP
     
     private static SQLCasesLoader sqlCasesLoader = EncryptSQLCasesLoader.getInstance();
     
-    private static ParserResultSetLoader parserResultSetLoader = EncryptParserResultSetLoader.getInstance();
+    private static ParserResultSetLoader parserResultSetLoader = EncryptParserResultSet.getInstance().getParserResultSetLoader();
     
     private final String sqlCaseId;
     

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.core.parse.integrate.asserts;
 import org.apache.shardingsphere.core.parse.integrate.asserts.condition.ConditionAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.insert.InsertNamesAndValuesAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.table.TableAssert;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.ParserResultSetLoader;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.root.ParserResult;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
