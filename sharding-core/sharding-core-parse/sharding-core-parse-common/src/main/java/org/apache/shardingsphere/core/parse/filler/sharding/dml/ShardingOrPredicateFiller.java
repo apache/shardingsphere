@@ -20,9 +20,9 @@ package org.apache.shardingsphere.core.parse.filler.sharding.dml;
 import com.google.common.base.Optional;
 import lombok.Setter;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.filler.api.ShardingRuleAwareFiller;
-import org.apache.shardingsphere.core.parse.filler.api.ShardingTableMetaDataAwareFiller;
+import org.apache.shardingsphere.core.parse.aware.ShardingRuleAware;
+import org.apache.shardingsphere.core.parse.aware.ShardingTableMetaDataAware;
+import org.apache.shardingsphere.core.parse.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.filler.common.dml.PredicateUtils;
 import org.apache.shardingsphere.core.parse.filler.encrypt.dml.EncryptOrPredicateFiller;
 import org.apache.shardingsphere.core.parse.filler.sharding.dml.select.ShardingRowNumberPredicateFiller;
@@ -49,7 +49,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
  * @author panjuan
  */
 @Setter
-public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredicateSegment>, ShardingRuleAwareFiller, ShardingTableMetaDataAwareFiller {
+public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredicateSegment>, ShardingRuleAware, ShardingTableMetaDataAware {
     
     private final ShardingRowNumberPredicateFiller shardingRowNumberPredicateFiller = new ShardingRowNumberPredicateFiller();
     

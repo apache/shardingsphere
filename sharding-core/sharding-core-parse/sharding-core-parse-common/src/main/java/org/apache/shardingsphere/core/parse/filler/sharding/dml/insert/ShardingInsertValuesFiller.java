@@ -20,9 +20,9 @@ package org.apache.shardingsphere.core.parse.filler.sharding.dml.insert;
 import com.google.common.base.Optional;
 import lombok.Setter;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.filler.api.ShardingRuleAwareFiller;
-import org.apache.shardingsphere.core.parse.filler.api.ShardingTableMetaDataAwareFiller;
+import org.apache.shardingsphere.core.parse.aware.ShardingRuleAware;
+import org.apache.shardingsphere.core.parse.aware.ShardingTableMetaDataAware;
+import org.apache.shardingsphere.core.parse.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
@@ -38,7 +38,7 @@ import java.util.Collection;
  * @author panjuan
  */
 @Setter
-public final class ShardingInsertValuesFiller implements SQLSegmentFiller<InsertValuesSegment>, ShardingRuleAwareFiller, ShardingTableMetaDataAwareFiller {
+public final class ShardingInsertValuesFiller implements SQLSegmentFiller<InsertValuesSegment>, ShardingRuleAware, ShardingTableMetaDataAware {
     
     private ShardingRule shardingRule;
     

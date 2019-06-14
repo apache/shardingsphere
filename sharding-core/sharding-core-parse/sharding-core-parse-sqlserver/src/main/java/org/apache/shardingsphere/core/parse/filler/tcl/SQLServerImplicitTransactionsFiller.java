@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.parse.filler.tcl;
 
-import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
+import org.apache.shardingsphere.core.parse.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.tcl.ImplicitTransactionsSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;

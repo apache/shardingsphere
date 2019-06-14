@@ -21,10 +21,9 @@ import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parse.filler.api.EncryptRuleAwareFiller;
-import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.filler.api.ShardingRuleAwareFiller;
-import org.apache.shardingsphere.core.parse.filler.api.ShardingTableMetaDataAwareFiller;
+import org.apache.shardingsphere.core.parse.aware.EncryptRuleAware;
+import org.apache.shardingsphere.core.parse.aware.ShardingRuleAware;
+import org.apache.shardingsphere.core.parse.aware.ShardingTableMetaDataAware;
 import org.apache.shardingsphere.core.parse.rule.registry.ParseRuleRegistry;
 import org.apache.shardingsphere.core.parse.rule.registry.statement.SQLStatementRule;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
@@ -81,14 +80,14 @@ public final class SQLStatementFillerEngine {
     
     @SuppressWarnings("unchecked")
     private void doFill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final SQLSegmentFiller filler) {
-        if (filler instanceof ShardingRuleAwareFiller && rule instanceof ShardingRule) {
-            ((ShardingRuleAwareFiller) filler).setShardingRule((ShardingRule) rule);
+        if (filler instanceof ShardingRuleAware && rule instanceof ShardingRule) {
+            ((ShardingRuleAware) filler).setShardingRule((ShardingRule) rule);
         }
-        if (filler instanceof EncryptRuleAwareFiller && rule instanceof EncryptRule) {
-            ((EncryptRuleAwareFiller) filler).setEncryptRule((EncryptRule) rule);
+        if (filler instanceof EncryptRuleAware && rule instanceof EncryptRule) {
+            ((EncryptRuleAware) filler).setEncryptRule((EncryptRule) rule);
         }
-        if (filler instanceof ShardingTableMetaDataAwareFiller) {
-            ((ShardingTableMetaDataAwareFiller) filler).setShardingTableMetaData(shardingTableMetaData);
+        if (filler instanceof ShardingTableMetaDataAware) {
+            ((ShardingTableMetaDataAware) filler).setShardingTableMetaData(shardingTableMetaData);
         }
         filler.fill(sqlSegment, sqlStatement);
     }

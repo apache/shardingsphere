@@ -19,9 +19,9 @@ package org.apache.shardingsphere.core.parse.filler.encrypt.dml.insert;
 
 import lombok.Setter;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parse.filler.api.EncryptRuleAwareFiller;
-import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.filler.api.ShardingTableMetaDataAwareFiller;
+import org.apache.shardingsphere.core.parse.aware.EncryptRuleAware;
+import org.apache.shardingsphere.core.parse.aware.ShardingTableMetaDataAware;
+import org.apache.shardingsphere.core.parse.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
@@ -37,7 +37,7 @@ import java.util.Collection;
  * @author panjuan
  */
 @Setter
-public final class EncryptInsertValuesFiller implements SQLSegmentFiller<InsertValuesSegment>, EncryptRuleAwareFiller, ShardingTableMetaDataAwareFiller {
+public final class EncryptInsertValuesFiller implements SQLSegmentFiller<InsertValuesSegment>, EncryptRuleAware, ShardingTableMetaDataAware {
     
     private EncryptRule encryptRule;
     

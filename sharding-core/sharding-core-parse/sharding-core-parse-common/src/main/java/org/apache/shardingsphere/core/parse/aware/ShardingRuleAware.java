@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.filler.api;
+package org.apache.shardingsphere.core.parse.aware;
 
-import org.apache.shardingsphere.core.rule.EncryptRule;
+import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Encrypt rule aware.
+ * Sharding rule aware.
  *
  * @author zhangliang
  */
-public interface EncryptRuleAwareFiller {
+public interface ShardingRuleAware {
     
     /**
-     * Set encrypt rule.
-     *
-     * @param encryptRule encrypt rule
+     * Set sharding rule.
+     * 
+     * @param shardingRule sharding rule
      */
-    void setEncryptRule(EncryptRule encryptRule);
+    void setShardingRule(ShardingRule shardingRule);
 }

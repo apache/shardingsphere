@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.parse.rule.registry;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
+import org.apache.shardingsphere.core.parse.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.parser.SQLParserFactory;
 import org.apache.shardingsphere.core.parse.rule.jaxb.entity.extractor.ExtractorRuleDefinitionEntity;
 import org.apache.shardingsphere.core.parse.rule.jaxb.entity.filler.FillerRuleDefinitionEntity;

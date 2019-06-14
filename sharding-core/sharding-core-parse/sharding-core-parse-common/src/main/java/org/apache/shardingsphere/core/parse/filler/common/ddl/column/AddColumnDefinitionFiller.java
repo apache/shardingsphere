@@ -19,8 +19,8 @@ package org.apache.shardingsphere.core.parse.filler.common.ddl.column;
 
 import lombok.Setter;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.filler.api.ShardingTableMetaDataAwareFiller;
+import org.apache.shardingsphere.core.parse.aware.ShardingTableMetaDataAware;
+import org.apache.shardingsphere.core.parse.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.sql.segment.ddl.column.alter.AddColumnDefinitionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.AlterTableStatement;
@@ -31,7 +31,7 @@ import org.apache.shardingsphere.core.parse.sql.statement.ddl.AlterTableStatemen
  * @author duhongjun
  */
 @Setter
-public final class AddColumnDefinitionFiller implements SQLSegmentFiller<AddColumnDefinitionSegment>, ShardingTableMetaDataAwareFiller {
+public final class AddColumnDefinitionFiller implements SQLSegmentFiller<AddColumnDefinitionSegment>, ShardingTableMetaDataAware {
     
     private ShardingTableMetaData shardingTableMetaData;
     
