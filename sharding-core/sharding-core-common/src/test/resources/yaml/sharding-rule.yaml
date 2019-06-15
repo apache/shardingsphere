@@ -83,7 +83,6 @@ shardingRule:
         column: order_id
         props:
           worker.id: 123
-      logicIndex: order_index
     t_order_item:
       actualDataNodes: ds_${0..1}.t_order_item_${0..1}
       tableStrategy:

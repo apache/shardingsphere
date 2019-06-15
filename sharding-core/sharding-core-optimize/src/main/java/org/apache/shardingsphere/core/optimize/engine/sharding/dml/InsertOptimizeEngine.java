@@ -51,7 +51,7 @@ import java.util.List;
  * @author panjuan
  */
 @RequiredArgsConstructor
-public final class ShardingInsertOptimizeEngine implements OptimizeEngine {
+public final class InsertOptimizeEngine implements OptimizeEngine {
     
     private final ShardingRule shardingRule;
     
