@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.filler.api;
+package org.apache.shardingsphere.core.parse.aware;
 
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.rule.EncryptRule;
 
 /**
- * Sharding table meta data aware.
+ * Encrypt rule aware.
  *
  * @author zhangliang
  */
-public interface ShardingTableMetaDataAwareFiller {
+public interface EncryptRuleAware {
     
     /**
-     * Set sharding table meta data.
+     * Set encrypt rule.
      *
-     * @param metaData sharding table meta data
+     * @param encryptRule encrypt rule
      */
-    void setShardingTableMetaData(ShardingTableMetaData metaData);
+    void setEncryptRule(EncryptRule encryptRule);
 }

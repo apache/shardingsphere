@@ -446,16 +446,6 @@ public class ShardingRule implements BaseRule {
     }
     
     /**
-     * Judge contains table in sharding rule.
-     *
-     * @param logicTableName logic table name
-     * @return contains table in sharding rule or not
-     */
-    public boolean contains(final String logicTableName) {
-        return findTableRule(logicTableName).isPresent() || findBindingTableRule(logicTableName).isPresent() || isBroadcastTable(logicTableName);
-    }
-    
-    /**
      * Get sharding logic table names.
      *
      * @param logicTableNames logic table names

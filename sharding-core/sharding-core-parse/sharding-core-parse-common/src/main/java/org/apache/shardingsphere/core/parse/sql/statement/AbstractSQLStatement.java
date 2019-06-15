@@ -34,6 +34,7 @@ import java.util.LinkedList;
  * @author panjuan
  */
 @Getter
+@Setter
 @ToString
 public abstract class AbstractSQLStatement implements SQLStatement {
     
@@ -41,7 +42,6 @@ public abstract class AbstractSQLStatement implements SQLStatement {
     
     private final Tables tables = new Tables();
     
-    @Setter
     private String logicSQL;
     
     private int parametersCount;
@@ -72,10 +72,5 @@ public abstract class AbstractSQLStatement implements SQLStatement {
             }
         }
         return result;
-    }
-    
-    @Override
-    public void addParametersCount(final int parametersCount) {
-        this.parametersCount += parametersCount;
     }
 }

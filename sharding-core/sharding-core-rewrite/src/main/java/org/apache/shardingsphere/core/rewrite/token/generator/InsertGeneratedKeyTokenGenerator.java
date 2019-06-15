@@ -43,14 +43,15 @@ public final class InsertGeneratedKeyTokenGenerator implements OptionalSQLTokenG
     }
     
     private Optional<InsertGeneratedKeyToken> createInsertGeneratedKeyToken(final InsertStatement insertStatement, final InsertColumnsSegment segment, final ShardingRule shardingRule) {
-        Optional<String> generatedKeyColumn = shardingRule.findGenerateKeyColumnName(insertStatement.getTables().getSingleTableName());
-        if (insertStatement.isNeededToAppendGeneratedKey()) {
-            return Optional.of(new InsertGeneratedKeyToken(segment.getStopIndex(), generatedKeyColumn.get(), isToAddCloseParenthesis(insertStatement, segment)));
-        }
-        return Optional.absent();
+        String tableName = insertStatement.getTables().getSingleTableName();
+        Optional<String> generatedKeyColumnName = shardingRule.findGenerateKeyColumnName(tableName);
+        return generatedKeyColumnName.isPresent() && !insertStatement.getColumnNames().contains(generatedKeyColumnName.get())
+                ? Optional.of(new InsertGeneratedKeyToken(segment.getStopIndex(), generatedKeyColumnName.get(), isToAddCloseParenthesis(tableName, segment, shardingRule)))
+                : Optional.<InsertGeneratedKeyToken>absent();
     }
     
-    private boolean isToAddCloseParenthesis(final InsertStatement insertStatement, final InsertColumnsSegment segment) {
-        return !insertStatement.isNeededToAppendAssistedColumns() && segment.getColumns().isEmpty();
+    private boolean isToAddCloseParenthesis(final String tableName, final InsertColumnsSegment segment, final ShardingRule shardingRule) {
+        return segment.getColumns().isEmpty() && shardingRule.getEncryptRule().getEncryptorEngine().getAssistedQueryColumns(tableName).isEmpty();
     }
+    
 }

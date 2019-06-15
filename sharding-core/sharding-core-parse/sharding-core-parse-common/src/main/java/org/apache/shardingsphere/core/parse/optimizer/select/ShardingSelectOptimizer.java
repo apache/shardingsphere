@@ -19,12 +19,14 @@ package org.apache.shardingsphere.core.parse.optimizer.select;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import lombok.Setter;
 import org.apache.shardingsphere.core.constant.AggregationType;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.parse.aware.ShardingTableMetaDataAware;
 import org.apache.shardingsphere.core.parse.constant.DerivedColumn;
 import org.apache.shardingsphere.core.parse.optimizer.SQLStatementOptimizer;
-import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Conditions;
+import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.DerivedCommonSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.DistinctSelectItem;
@@ -41,16 +43,18 @@ import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import java.util.List;
 
 /**
- * Select optimizer.
+ * Select optimizer for sharding.
  *
  * @author duhongjun
  * @author panjuan
  */
-public final class SelectOptimizer implements SQLStatementOptimizer {
+@Setter
+public final class ShardingSelectOptimizer implements SQLStatementOptimizer, ShardingTableMetaDataAware {
+    
+    private ShardingTableMetaData shardingTableMetaData;
     
     @Override
-    public void optimize(final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
-        
+    public void optimize(final SQLStatement sqlStatement) {
         appendDerivedColumns((SelectStatement) sqlStatement, shardingTableMetaData);
         appendDerivedOrderBy((SelectStatement) sqlStatement);
         addSubqueryCondition(sqlStatement);

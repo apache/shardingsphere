@@ -187,8 +187,9 @@
     
     <parser-result sql-case-id="select_or_mix_and_with_binding_and_broadcast_tables" parameters="1, 2, 3, 'init'">
         <tables>
-            <table name="t_order" alias="o"/>
-            <table name="t_order_item" alias="i"/>
+            <table name="t_order" alias="o" />
+            <table name="t_order_item" alias="i" />
+            <table name="t_broadcast_table" alias="c" />
         </tables>
         <tokens>
             <table-token start-index="16" table-name="t_order" length="7" />

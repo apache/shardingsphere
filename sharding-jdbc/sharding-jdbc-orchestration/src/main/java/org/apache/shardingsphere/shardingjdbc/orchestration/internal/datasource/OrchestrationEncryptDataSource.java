@@ -40,8 +40,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Properties;
-
 
 /**
  * Orchestration encrypt datasource.
@@ -71,7 +69,7 @@ public class OrchestrationEncryptDataSource extends AbstractOrchestrationDataSou
         this.dataSource = new EncryptDataSource(dataSource.getDataSource(), dataSource.getEncryptRule().getEncryptRuleConfig(), dataSource.getShardingProperties().getProps());
         initShardingOrchestrationFacade(
             Collections.singletonMap(ShardingConstant.LOGIC_SCHEMA_NAME, DataSourceConverter.getDataSourceConfigurationMap(Collections.singletonMap(ENCRYPT_DATASOURCE, dataSource.getDataSource()))),
-            getRuleConfigurationMap(), new Properties());
+            getRuleConfigurationMap(), dataSource.getShardingProperties().getProps());
     }
     
     private void checkDataSourceConfiguration(final Map<String, DataSourceConfiguration> dataSourceConfigurations) {

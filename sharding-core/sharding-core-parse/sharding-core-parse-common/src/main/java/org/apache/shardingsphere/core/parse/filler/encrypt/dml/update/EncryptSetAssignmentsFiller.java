@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.parse.filler.encrypt.dml.update;
 
 import lombok.Setter;
-import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
+import org.apache.shardingsphere.core.parse.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
 import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
@@ -52,9 +52,7 @@ public final class EncryptSetAssignmentsFiller implements SQLSegmentFiller<SetAs
         for (AssignmentSegment each : sqlSegment.getAssignments()) {
             insertStatement.getColumnNames().add(each.getColumn().getName());
         }
-        InsertValue insertValue = getInsertValue(sqlSegment);
-        insertStatement.getValues().add(insertValue);
-        insertStatement.addParametersCount(insertValue.getParametersCount());
+        insertStatement.getValues().add(getInsertValue(sqlSegment));
     }
     
     private InsertValue getInsertValue(final SetAssignmentsSegment sqlSegment) {

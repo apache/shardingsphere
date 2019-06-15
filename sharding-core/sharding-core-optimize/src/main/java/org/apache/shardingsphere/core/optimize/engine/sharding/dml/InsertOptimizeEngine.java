@@ -44,14 +44,14 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Insert optimize engine.
+ * Insert optimize engine for sharding.
  *
  * @author zhangliang
  * @author maxiaoguang
  * @author panjuan
  */
 @RequiredArgsConstructor
-public final class InsertOptimizeEngine implements OptimizeEngine {
+public final class ShardingInsertOptimizeEngine implements OptimizeEngine {
     
     private final ShardingRule shardingRule;
     

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.parse.rule.registry.filler;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
+import org.apache.shardingsphere.core.parse.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.rule.jaxb.entity.filler.FillerRuleDefinitionEntity;
 import org.apache.shardingsphere.core.parse.rule.jaxb.entity.filler.FillerRuleEntity;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;

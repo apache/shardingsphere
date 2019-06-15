@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.parse;
 
+import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.extractor.SQLSegmentsExtractorEngine;
@@ -31,6 +32,7 @@ import org.apache.shardingsphere.core.rule.BaseRule;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * SQL parse engine.
@@ -53,7 +55,7 @@ public final class SQLParseEngine {
         parserEngine = new SQLParserEngine(parseRuleRegistry, trunkDatabaseType, sql);
         extractorEngine = new SQLSegmentsExtractorEngine();
         fillerEngine = new SQLStatementFillerEngine(parseRuleRegistry, trunkDatabaseType, sql, rule, shardingTableMetaData);
-        optimizerEngine = new SQLStatementOptimizerEngine(shardingTableMetaData);
+        optimizerEngine = new SQLStatementOptimizerEngine(rule, shardingTableMetaData);
     }
     
     /**
@@ -63,8 +65,9 @@ public final class SQLParseEngine {
      */
     public SQLStatement parse() {
         SQLAST ast = parserEngine.parse();
-        Collection<SQLSegment> sqlSegments = extractorEngine.extract(ast);
-        SQLStatement result = fillerEngine.fill(sqlSegments, ast.getSqlStatementRule());
+        Map<ParserRuleContext, Integer> parameterMarkerIndexes = ast.getParameterMarkerIndexes();
+        Collection<SQLSegment> sqlSegments = extractorEngine.extract(ast, parameterMarkerIndexes);
+        SQLStatement result = fillerEngine.fill(sqlSegments, parameterMarkerIndexes.size(), ast.getSqlStatementRule());
         optimizerEngine.optimize(ast.getSqlStatementRule(), result);
         return result;
     }

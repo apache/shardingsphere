@@ -15,24 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.filler.encrypt;
+package org.apache.shardingsphere.core.parse.filler;
 
-import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.sql.context.table.Table;
-import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
 /**
- * Table filler for encrypt.
+ * SQL segment filler.
  *
- * @author duhongjun
  * @author zhangliang
+ * @author duhongjun
+ * 
+ * @param <T> type of SQL segment
  */
-public final class EncryptTableFiller implements SQLSegmentFiller<TableSegment> {
+public interface SQLSegmentFiller<T extends SQLSegment> {
     
-    @Override
-    public void fill(final TableSegment sqlSegment, final SQLStatement sqlStatement) {
-        // TODO filter encrypt rule
-        sqlStatement.getTables().add(new Table(sqlSegment.getName(), sqlSegment.getAlias().orNull()));
-    }
+    /**
+     * Fill for sharding SQL segment to SQL statement.
+     *
+     * @param sqlSegment SQL segment
+     * @param sqlStatement SQL statement
+     */
+    void fill(T sqlSegment, SQLStatement sqlStatement);
 }

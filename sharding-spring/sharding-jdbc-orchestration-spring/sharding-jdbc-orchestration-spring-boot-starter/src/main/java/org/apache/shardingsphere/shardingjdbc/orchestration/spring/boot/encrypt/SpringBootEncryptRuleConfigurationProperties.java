@@ -15,26 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.filler.api;
+package org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.encrypt;
 
-import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptRuleConfiguration;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * SQL segment filler.
+ * Encrypt rule configuration properties.
  *
- * @author zhangliang
- * @author duhongjun
- * 
- * @param <T> type of SQL segment
+ * @author yangyi
  */
-public interface SQLSegmentFiller<T extends SQLSegment> {
-    
-    /**
-     * Fill for sharding SQL segment to SQL statement.
-     *
-     * @param sqlSegment SQL segment
-     * @param sqlStatement SQL statement
-     */
-    void fill(T sqlSegment, SQLStatement sqlStatement);
+@ConfigurationProperties(prefix = "spring.shardingsphere.encrypt")
+public final class SpringBootEncryptRuleConfigurationProperties extends YamlEncryptRuleConfiguration {
 }

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shardingjdbc.orchestration.spring.namespace.handler;
 
+import org.apache.shardingsphere.shardingjdbc.orchestration.spring.namespace.constants.EncryptDataSourceBeanDefinitionParserTag;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.namespace.constants.MasterSlaveDataSourceBeanDefinitionParserTag;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.namespace.constants.RegistryCenterBeanDefinitionParserTag;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.namespace.constants.ShardingDataSourceBeanDefinitionParserTag;
@@ -36,5 +37,6 @@ public final class OrchestrationNamespaceHandler extends NamespaceHandlerSupport
         registerBeanDefinitionParser(RegistryCenterBeanDefinitionParserTag.ROOT_TAG, new RegBeanDefinitionParser());
         registerBeanDefinitionParser(ShardingDataSourceBeanDefinitionParserTag.ROOT_TAG, new DataSourceBeanDefinitionParser());
         registerBeanDefinitionParser(MasterSlaveDataSourceBeanDefinitionParserTag.ROOT_TAG, new DataSourceBeanDefinitionParser());
+        registerBeanDefinitionParser(EncryptDataSourceBeanDefinitionParserTag.ROOT_TAG, new DataSourceBeanDefinitionParser());
     }
 }

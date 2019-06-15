@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.shardingjdbc.spring.boot.registry.TestRegistryCenter
+org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.registry.TestRegistryCenter

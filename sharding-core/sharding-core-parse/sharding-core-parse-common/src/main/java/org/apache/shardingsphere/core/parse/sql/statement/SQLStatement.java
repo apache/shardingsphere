@@ -45,6 +45,20 @@ public interface SQLStatement {
     void setLogicSQL(String logicSQL);
     
     /**
+     * Get count of parameters.
+     *
+     * @return count of parameters
+     */
+    int getParametersCount();
+    
+    /**
+     * Set count of parameters.
+     *
+     * @param parametersCount count of parameters
+     */
+    void setParametersCount(int parametersCount);
+    
+    /**
      * Get SQL segments.
      * 
      * @return SQL segments
@@ -68,20 +82,6 @@ public interface SQLStatement {
      * @return SQL segments
      */
     <T extends SQLSegment> Collection<T> findSQLSegments(Class<T> sqlSegmentType);
-    
-    /**
-     * Get count of parameters.
-     *
-     * @return count of parameters
-     */
-    int getParametersCount();
-    
-    /**
-     * Add count of parameters.
-     *
-     * @param parametersCount count of parameters
-     */
-    void addParametersCount(int parametersCount);
     
     /**
      * Get tables.

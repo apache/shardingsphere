@@ -18,8 +18,11 @@
 package org.apache.shardingsphere.shardingjdbc.orchestration.spring.namespace.parser;
 
 import com.google.common.base.Strings;
+
+import org.apache.shardingsphere.shardingjdbc.orchestration.spring.datasource.OrchestrationSpringEncryptDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.datasource.OrchestrationSpringMasterSlaveDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.datasource.OrchestrationSpringShardingDataSource;
+import org.apache.shardingsphere.shardingjdbc.orchestration.spring.namespace.constants.EncryptDataSourceBeanDefinitionParserTag;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.namespace.constants.ShardingDataSourceBeanDefinitionParserTag;
 import org.apache.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -38,10 +41,19 @@ public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinition
     
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
-        BeanDefinitionBuilder factory = ShardingDataSourceBeanDefinitionParserTag.ROOT_TAG.equals(element.getLocalName())
-                ? BeanDefinitionBuilder.rootBeanDefinition(OrchestrationSpringShardingDataSource.class) : BeanDefinitionBuilder.rootBeanDefinition(OrchestrationSpringMasterSlaveDataSource.class);
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(getOrchestrationDataSourceClass(element.getLocalName()));
         configureFactory(element, factory);
         return factory.getBeanDefinition();
+    }
+    
+    private Class<?> getOrchestrationDataSourceClass(final String localName) {
+        if (ShardingDataSourceBeanDefinitionParserTag.ROOT_TAG.equals(localName)) {
+            return OrchestrationSpringShardingDataSource.class;
+        } else if (EncryptDataSourceBeanDefinitionParserTag.ROOT_TAG.equals(localName)) {
+            return OrchestrationSpringEncryptDataSource.class;
+        } else {
+            return OrchestrationSpringMasterSlaveDataSource.class;
+        }
     }
     
     private void configureFactory(final Element element, final BeanDefinitionBuilder factory) {

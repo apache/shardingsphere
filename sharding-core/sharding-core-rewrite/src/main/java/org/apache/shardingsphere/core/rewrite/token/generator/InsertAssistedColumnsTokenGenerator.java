@@ -45,13 +45,11 @@ public final class InsertAssistedColumnsTokenGenerator implements OptionalSQLTok
     }
     
     private Optional<InsertAssistedColumnsToken> createInsertAssistedColumnsToken(final InsertStatement insertStatement, final InsertColumnsSegment segment, final EncryptRule encryptRule) {
-        if (insertStatement.isNeededToAppendAssistedColumns()) {
-            return Optional.of(new InsertAssistedColumnsToken(segment.getStopIndex(), getQueryAssistedColumsn(insertStatement, encryptRule), segment.getColumns().isEmpty()));
-        }
-        return Optional.absent();
+        return encryptRule.getEncryptorEngine().getAssistedQueryColumns(insertStatement.getTables().getSingleTableName()).isEmpty() ? Optional.<InsertAssistedColumnsToken>absent()
+                : Optional.of(new InsertAssistedColumnsToken(segment.getStopIndex(), getQueryAssistedColumns(insertStatement, encryptRule), segment.getColumns().isEmpty()));
     }
     
-    private Collection<String> getQueryAssistedColumsn(final InsertStatement insertStatement, final EncryptRule encryptRule) {
+    private Collection<String> getQueryAssistedColumns(final InsertStatement insertStatement, final EncryptRule encryptRule) {
         Collection<String> result = new LinkedList<>();
         for (String each : insertStatement.getColumnNames()) {
             Optional<String> assistedColumnName = encryptRule.getEncryptorEngine().getAssistedQueryColumn(insertStatement.getTables().getSingleTableName(), each);

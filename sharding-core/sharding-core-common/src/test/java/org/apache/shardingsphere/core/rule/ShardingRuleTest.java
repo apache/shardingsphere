@@ -324,26 +324,6 @@ public final class ShardingRuleTest {
     }
     
     @Test
-    public void assertContainsWithTableRule() {
-        assertTrue(createMaximumShardingRule().contains("LOGIC_TABLE"));
-    }
-    
-    @Test
-    public void assertContainsWithBindingTableRule() {
-        assertTrue(createMaximumShardingRule().contains("SUB_LOGIC_TABLE"));
-    }
-    
-    @Test
-    public void assertContainsWithBroadcastTableRule() {
-        assertTrue(createMaximumShardingRule().contains("BROADCAST_TABLE"));
-    }
-    
-    @Test
-    public void assertNotContains() {
-        assertFalse(createMaximumShardingRule().contains("NEW_TABLE"));
-    }
-    
-    @Test
     public void assertGetShardingLogicTableNames() {
         ShardingRule actual = createMaximumShardingRule();
         assertThat(actual.getShardingLogicTableNames(Arrays.asList("LOGIC_TABLE", "BROADCAST_TABLE")), CoreMatchers.<Collection<String>>is(Collections.singletonList("LOGIC_TABLE")));

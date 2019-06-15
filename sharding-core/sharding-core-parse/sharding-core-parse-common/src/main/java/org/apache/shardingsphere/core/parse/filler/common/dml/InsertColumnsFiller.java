@@ -15,12 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.filler.sharding.dml.insert;
+package org.apache.shardingsphere.core.parse.filler.common.dml;
 
-import lombok.Setter;
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.filler.api.ShardingTableMetaDataAwareFiller;
+import org.apache.shardingsphere.core.parse.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
@@ -32,33 +29,15 @@ import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
  * @author zhangliang
  * @author panjuan
  */
-@Setter
-public final class ShardingInsertColumnsFiller implements SQLSegmentFiller<InsertColumnsSegment>, ShardingTableMetaDataAwareFiller {
-    
-    private ShardingTableMetaData shardingTableMetaData;
+public final class InsertColumnsFiller implements SQLSegmentFiller<InsertColumnsSegment> {
     
     @Override
     public void fill(final InsertColumnsSegment sqlSegment, final SQLStatement sqlStatement) {
         if (sqlStatement instanceof InsertStatement) {
             InsertStatement insertStatement = (InsertStatement) sqlStatement;
-            if (sqlSegment.getColumns().isEmpty()) {
-                fillFromMetaData(insertStatement);
-            } else {
-                fillFromSQL(sqlSegment, insertStatement);
+            for (ColumnSegment each : sqlSegment.getColumns()) {
+                insertStatement.getColumnNames().add(each.getName());
             }
-        }
-    }
-    
-    private void fillFromMetaData(final InsertStatement insertStatement) {
-        String tableName = insertStatement.getTables().getSingleTableName();
-        for (String each : shardingTableMetaData.getAllColumnNames(tableName)) {
-            insertStatement.getColumnNames().add(each);
-        }
-    }
-    
-    private void fillFromSQL(final InsertColumnsSegment sqlSegment, final InsertStatement insertStatement) {
-        for (ColumnSegment each : sqlSegment.getColumns()) {
-            insertStatement.getColumnNames().add(each.getName());
         }
     }
 }

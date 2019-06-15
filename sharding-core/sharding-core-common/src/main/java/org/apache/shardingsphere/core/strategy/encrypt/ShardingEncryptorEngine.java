@@ -29,12 +29,14 @@ import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 import org.apache.shardingsphere.spi.encrypt.ShardingQueryAssistedEncryptor;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Sharding encryptor engine.
@@ -105,13 +107,15 @@ public final class ShardingEncryptorEngine {
      * Get assisted query columns.
      *
      * @param logicTableName logic table name
-     * @return assisted query column
+     * @return assisted query columns
      */
     public Collection<String> getAssistedQueryColumns(final String logicTableName) {
-        Collection<String> result = new LinkedHashSet<>();
+        Collection<String> assistedQueryColumns = new HashSet<>();
         for (ShardingEncryptorStrategy each : shardingEncryptorStrategies.values()) {
-            result.addAll(each.getAssistedQueryColumns(logicTableName));
+            assistedQueryColumns.addAll(each.getAssistedQueryColumns(logicTableName));
         }
+        Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        result.addAll(assistedQueryColumns);
         return result;
     }
     

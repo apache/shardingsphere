@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.core.parse.filler.dal;
 
 import lombok.Setter;
-import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.filler.api.ShardingRuleAwareFiller;
+import org.apache.shardingsphere.core.parse.aware.ShardingRuleAware;
+import org.apache.shardingsphere.core.parse.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.sql.context.table.Table;
 import org.apache.shardingsphere.core.parse.sql.segment.dal.ShowLikeSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
@@ -31,7 +31,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
  * @author zhangliang
  */
 @Setter
-public final class MySQLShowLikeFiller implements SQLSegmentFiller<ShowLikeSegment>, ShardingRuleAwareFiller {
+public final class MySQLShowLikeFiller implements SQLSegmentFiller<ShowLikeSegment>, ShardingRuleAware {
     
     private ShardingRule shardingRule;
     
