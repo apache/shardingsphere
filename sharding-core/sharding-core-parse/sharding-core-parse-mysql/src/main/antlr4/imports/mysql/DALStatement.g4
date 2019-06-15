@@ -72,5 +72,5 @@ showWhereClause_
     ;
 
 setVariable
-    : SET
+    : SET variable_?
     ;

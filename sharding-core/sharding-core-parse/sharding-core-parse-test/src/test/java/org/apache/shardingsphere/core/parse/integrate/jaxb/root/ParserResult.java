@@ -88,14 +88,17 @@ public final class ParserResult {
     @XmlElement(name = "alter-table")
     private ExpectedAlterTable alterTable;
     
-    @XmlAttribute(name = "tcl-actual-statement-class-type")
-    private String tclActualStatementClassType;
-    
     @XmlElement(name = "encrypt-conditions")
     private ExpectedConditions encryptConditions = new ExpectedConditions();
     
     @XmlElement(name = "insert-columns-and-values")
     private ExpectedInsertColumnsAndValues insertColumnsAndValues = new ExpectedInsertColumnsAndValues();
+    
+    @XmlAttribute(name = "tcl-actual-statement-class-type")
+    private String tclActualStatementClassType;
+    
+    @XmlAttribute(name = "auto-commit")
+    private boolean autoCommit;
     
     /**
      * Get parameters.

@@ -67,7 +67,12 @@ identifier_
     ;
 
 variable_
-    : (AT_ AT_)? (GLOBAL | PERSIST | PERSIST_ONLY | SESSION)? DOT_? identifier_
+    : (AT_? AT_)? (GLOBAL | PERSIST | PERSIST_ONLY | SESSION)? DOT_? identifier_
+    ;
+
+scope_
+    : (GLOBAL | PERSIST | PERSIST_ONLY | SESSION)
+    | AT_ AT_ (GLOBAL | PERSIST | PERSIST_ONLY | SESSION) DOT_
     ;
 
 unreservedWord_
@@ -93,7 +98,7 @@ unreservedWord_
     | BOOLEAN | MAX | MIN | SUM | COUNT | AVG | BIT_AND
     | BIT_OR | BIT_XOR | GROUP_CONCAT | JSON_ARRAYAGG | JSON_OBJECTAGG | STD | STDDEV
     | STDDEV_POP | STDDEV_SAMP | VAR_POP | VAR_SAMP | VARIANCE | EXTENDED | STATUS
-    | FIELDS | INDEXES | USER | ROLE | OJ | AUTOCOMMIT
+    | FIELDS | INDEXES | USER | ROLE | OJ | AUTOCOMMIT | OFF
     ;
 
 schemaName

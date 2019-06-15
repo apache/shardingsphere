@@ -31,7 +31,9 @@
     <sql-case id="beginTransaction" value="BEGIN TRANSACTION" db-types="SQLServer" />
     <sql-case id="beginWithName" value="BEGIN TRANSACTION transaction1" db-types="SQLServer" />
     <sql-case id="setAutoCommitOn" value="SET AUTOCOMMIT = 1" db-types="MySQL" />
+    <sql-case id="setAutoCommitOnWithScope" value="SET @@SESSION.AUTOCOMMIT = ON" db-types="MySQL" />
     <sql-case id="setAutoCommitOff" value="SET AUTOCOMMIT = 0" db-types="MySQL" />
+    <sql-case id="setAutoCommitOffWithScope" value="SET SESSION AUTOCOMMIT = OFF" db-types="MySQL" />
     <sql-case id="setImplicitTransactionsOn" value="SET IMPLICIT_TRANSACTIONS ON" db-types="SQLServer" />
     <sql-case id="setImplicitTransactionsOff" value="IF @@TRANCOUNT > 0 COMMIT TRAN SET IMPLICIT_TRANSACTIONS OFF" db-types="SQLServer" />
     <sql-case id="rollbackToSavepoint" value="ROLLBACK TO savepoint1" />

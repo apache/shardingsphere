@@ -33,6 +33,7 @@ import org.apache.shardingsphere.core.parse.sql.statement.ddl.AlterTableStatemen
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.tcl.SetAutoCommitStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.loader.sharding.ShardingSQLCasesRegistry;
@@ -129,5 +130,8 @@ public final class ShardingSQLStatementAssert {
     
     private void assertTCLStatement(final TCLStatement actual) {
         assertThat(actual.getClass().getName(), is(expected.getTclActualStatementClassType()));
+        if (actual instanceof SetAutoCommitStatement) {
+            assertThat(((SetAutoCommitStatement) actual).isAutoCommit(), is(expected.isAutoCommit()));
+        }
     }
 }
