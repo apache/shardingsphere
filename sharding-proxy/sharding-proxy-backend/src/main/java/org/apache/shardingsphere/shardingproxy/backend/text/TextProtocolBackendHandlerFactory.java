@@ -23,8 +23,11 @@ import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.parse.rule.registry.MasterSlaveParseRuleRegistry;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dal.SetStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.ShowDatabasesStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.ShowOtherStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.UseStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.postgresql.ShowStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.tcl.BeginTransactionStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.tcl.CommitStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.tcl.RollbackStatement;
@@ -42,9 +45,6 @@ import org.apache.shardingsphere.shardingproxy.backend.text.transaction.Transact
 import org.apache.shardingsphere.spi.database.DatabaseType;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
 
-import java.util.Arrays;
-import java.util.List;
-
 /**
  * Text protocol backend handler factory.
  *
@@ -52,8 +52,6 @@ import java.util.List;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TextProtocolBackendHandlerFactory {
-    
-    private static final List<String> GUI_SQL = Arrays.asList("SET", "SHOW VARIABLES LIKE", "SHOW CHARACTER SET", "SHOW COLLATION");
     
     /**
      * Create new instance of text protocol backend handler.
@@ -71,7 +69,10 @@ public final class TextProtocolBackendHandlerFactory {
         if (sqlStatement instanceof TCLStatement) {
             return createTCLBackendHandler((TCLStatement) sqlStatement, backendConnection);
         }
-        return sqlStatement instanceof DALStatement ? createDALBackendHandler(sqlStatement, sql, backendConnection) : new QueryBackendHandler(sql, backendConnection);
+        if (sqlStatement instanceof DALStatement) {
+            return createDALBackendHandler((DALStatement) sqlStatement, sql, backendConnection);
+        }
+        return new QueryBackendHandler(sql, backendConnection);
     }
     
     private static TextProtocolBackendHandler createTCLBackendHandler(final TCLStatement tclStatement, final BackendConnection backendConnection) {
@@ -93,18 +94,15 @@ public final class TextProtocolBackendHandlerFactory {
         return new BroadcastBackendHandler(tclStatement.getLogicSQL(), backendConnection);
     }
     
-    private static TextProtocolBackendHandler createDALBackendHandler(final SQLStatement sqlStatement, final String sql, final BackendConnection backendConnection) {
-        // TODO we should refactor the broadcast logic in future, exclude those broadcast SQL temporary.
-        for (String each : GUI_SQL) {
-            if (sql.toUpperCase().startsWith(each)) {
-                return new BroadcastBackendHandler(sql, backendConnection);
-            }
+    private static TextProtocolBackendHandler createDALBackendHandler(final DALStatement dalStatement, final String sql, final BackendConnection backendConnection) {
+        if (dalStatement instanceof UseStatement) {
+            return new UseDatabaseBackendHandler((UseStatement) dalStatement, backendConnection);
         }
-        if (sqlStatement instanceof UseStatement) {
-            return new UseDatabaseBackendHandler((UseStatement) sqlStatement, backendConnection);
-        }
-        if (sqlStatement instanceof ShowDatabasesStatement) {
+        if (dalStatement instanceof ShowDatabasesStatement) {
             return new ShowDatabasesBackendHandler(backendConnection);
+        }
+        if (dalStatement instanceof SetStatement || dalStatement instanceof ShowOtherStatement || dalStatement instanceof ShowStatement) {
+            return new BroadcastBackendHandler(sql, backendConnection);
         }
         return new UnicastBackendHandler(sql, backendConnection);
     }
