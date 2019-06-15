@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.parse.sql.context.selectitem;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
@@ -34,6 +35,7 @@ import java.util.Set;
  */
 @RequiredArgsConstructor
 @Getter
+@EqualsAndHashCode
 public final class DistinctSelectItem implements SelectItem {
     
     private final Set<String> distinctColumnNames;
