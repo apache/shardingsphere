@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.text;
 
-import com.google.common.base.Optional;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.parse.SQLParseEngine;
@@ -26,6 +25,9 @@ import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.ShowDatabasesStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.UseStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.tcl.BeginTransactionStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.tcl.CommitStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.tcl.RollbackStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.tcl.SetAutoCommitStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
@@ -65,11 +67,6 @@ public final class TextProtocolBackendHandlerFactory {
         if (sql.toUpperCase().startsWith(ShardingCTLBackendHandlerFactory.SCTL)) {
             return ShardingCTLBackendHandlerFactory.newInstance(sql, backendConnection);
         }
-        // TODO use sql parser engine instead of string compare
-        Optional<TransactionOperationType> transactionOperationType = TransactionOperationType.getOperationType(sql.toUpperCase());
-        if (transactionOperationType.isPresent()) {
-            return new TransactionBackendHandler(transactionOperationType.get(), backendConnection);
-        }
         SQLStatement sqlStatement = new SQLParseEngine(MasterSlaveParseRuleRegistry.getInstance(), databaseType, sql, null, null).parse();
         if (sqlStatement instanceof TCLStatement) {
             return createTCLBackendHandler((TCLStatement) sqlStatement, backendConnection);
@@ -78,10 +75,22 @@ public final class TextProtocolBackendHandlerFactory {
     }
     
     private static TextProtocolBackendHandler createTCLBackendHandler(final TCLStatement tclStatement, final BackendConnection backendConnection) {
-        if (tclStatement instanceof SetAutoCommitStatement && ((SetAutoCommitStatement) tclStatement).isAutoCommit()) {
-            return backendConnection.getStateHandler().isInTransaction() ? new TransactionBackendHandler(TransactionOperationType.COMMIT, backendConnection) : new SkipBackendHandler();
+        if (tclStatement instanceof BeginTransactionStatement) {
+            return new TransactionBackendHandler(TransactionOperationType.BEGIN, backendConnection);
         }
-        return new SkipBackendHandler();
+        if (tclStatement instanceof SetAutoCommitStatement) {
+            if (((SetAutoCommitStatement) tclStatement).isAutoCommit()) {
+                return backendConnection.getStateHandler().isInTransaction() ? new TransactionBackendHandler(TransactionOperationType.COMMIT, backendConnection) : new SkipBackendHandler();
+            }
+            return new TransactionBackendHandler(TransactionOperationType.BEGIN, backendConnection);
+        }
+        if (tclStatement instanceof CommitStatement) {
+            return new TransactionBackendHandler(TransactionOperationType.COMMIT, backendConnection);
+        }
+        if (tclStatement instanceof RollbackStatement) {
+            return new TransactionBackendHandler(TransactionOperationType.ROLLBACK, backendConnection);
+        }
+        return new BroadcastBackendHandler(tclStatement.getLogicSQL(), backendConnection);
     }
     
     private static TextProtocolBackendHandler createDALBackendHandler(final SQLStatement sqlStatement, final String sql, final BackendConnection backendConnection) {
