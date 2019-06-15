@@ -36,10 +36,8 @@ shardingRule:
         column: id
         props:
           worker.id: 123
-      logicIndex: logic_index
     table_y:
       actualDataNodes: db${0..1}.table_y
-      logicIndex: logic_index
     table_z:
       actualDataNodes: db${0..1}.table_z
     table_k:

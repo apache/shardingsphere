@@ -74,12 +74,12 @@ public class ShardingDataSourceMetaDataTest {
     
     @Test
     public void assertGetAllInstanceDataSourceNamesForMasterSlaveShardingRule() {
-        assertEquals(masterSlaveShardingDataSourceMetaData.getAllInstanceDataSourceNames(), Lists.newArrayList("single", "ms_2"));
+        assertEquals(masterSlaveShardingDataSourceMetaData.getAllInstanceDataSourceNames(), Lists.newArrayList("ms_0", "ms_2"));
     }
     
     @Test
     public void assertGetAllInstanceDataSourceNamesForShardingRule() {
-        assertEquals(shardingDataSourceMetaData.getAllInstanceDataSourceNames(), Lists.newArrayList("ds_0"));
+        assertEquals(shardingDataSourceMetaData.getAllInstanceDataSourceNames(), Lists.newArrayList("ds_1"));
     }
     
     @Test

@@ -104,7 +104,6 @@ public final class YamlEngineShardingConfigurationTest {
         assertThat(actual.getShardingRule().getTables().get("t_order").getTableStrategy().getInline().getAlgorithmExpression(), is("t_order_${order_id % 2}"));
         assertThat(actual.getShardingRule().getTables().get("t_order").getKeyGenerator().getColumn(), is("order_id"));
         assertThat(actual.getShardingRule().getTables().get("t_order").getKeyGenerator().getType(), is("SNOWFLAKE"));
-        assertThat(actual.getShardingRule().getTables().get("t_order").getLogicIndex(), is("order_index"));
     }
     
     private void assertTOrderItem(final YamlRootShardingConfiguration actual) {

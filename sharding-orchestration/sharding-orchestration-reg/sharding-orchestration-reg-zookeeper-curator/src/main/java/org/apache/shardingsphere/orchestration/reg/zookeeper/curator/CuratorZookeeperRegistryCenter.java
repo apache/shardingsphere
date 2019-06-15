@@ -311,5 +311,4 @@ public final class CuratorZookeeperRegistryCenter implements RegistryCenter {
     public void tryRelease() {
         leafLock.release();
     }
-
 }

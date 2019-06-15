@@ -46,6 +46,8 @@ public final class OptimizeResult {
     
     private Pagination pagination;
     
+    private String logicTableNameForDropIndex;
+    
     public OptimizeResult(final ShardingConditions shardingConditions) {
         this(shardingConditions, null);
     }
@@ -61,5 +63,14 @@ public final class OptimizeResult {
      */
     public Optional<InsertOptimizeResult> getInsertOptimizeResult() {
         return Optional.fromNullable(insertOptimizeResult);
+    }
+    
+    /**
+     * Get logic table name for drop index.
+     * 
+     * @return logic table name for drop index
+     */
+    public Optional<String> getLogicTableNameForDropIndex() {
+        return Optional.fromNullable(logicTableNameForDropIndex);
     }
 }

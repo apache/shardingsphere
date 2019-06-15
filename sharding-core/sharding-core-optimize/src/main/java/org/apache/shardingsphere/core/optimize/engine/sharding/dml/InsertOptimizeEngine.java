@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.engine.sharding.insert;
+package org.apache.shardingsphere.core.optimize.engine.sharding.dml;
 
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
@@ -51,7 +51,7 @@ import java.util.List;
  * @author panjuan
  */
 @RequiredArgsConstructor
-public final class ShardingInsertOptimizeEngine implements OptimizeEngine {
+public final class InsertOptimizeEngine implements OptimizeEngine {
     
     private final ShardingRule shardingRule;
     

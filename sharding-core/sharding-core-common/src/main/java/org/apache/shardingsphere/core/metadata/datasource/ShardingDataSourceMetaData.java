@@ -25,10 +25,10 @@ import org.apache.shardingsphere.spi.database.DatabaseType;
 import org.apache.shardingsphere.spi.database.MemorizedDataSourceMetaData;
 
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Sharding data source meta data.
@@ -49,7 +49,7 @@ public final class ShardingDataSourceMetaData {
     }
     
     private Map<String, DataSourceMetaData> getDataSourceMetaDataMapForSharding(final Map<String, String> dataSourceURLs, final DatabaseType databaseType) {
-        Map<String, DataSourceMetaData> result = new LinkedHashMap<>(dataSourceURLs.size(), 1);
+        Map<String, DataSourceMetaData> result = new ConcurrentHashMap<>(dataSourceURLs.size(), 1);
         for (Entry<String, String> entry : dataSourceURLs.entrySet()) {
             result.put(entry.getKey(), databaseType.getDataSourceMetaData(entry.getValue()));
         }
@@ -57,7 +57,7 @@ public final class ShardingDataSourceMetaData {
     }
     
     private Map<String, DataSourceMetaData> getDataSourceMetaDataMapForMasterSlave(final ShardingRule shardingRule, final Map<String, DataSourceMetaData> dataSourceMetaDataMap) {
-        Map<String, DataSourceMetaData> result = new LinkedHashMap<>(dataSourceMetaDataMap);
+        Map<String, DataSourceMetaData> result = new ConcurrentHashMap<>(dataSourceMetaDataMap);
         for (Entry<String, DataSourceMetaData> entry : dataSourceMetaDataMap.entrySet()) {
             Optional<MasterSlaveRule> masterSlaveRule = shardingRule.findMasterSlaveRule(entry.getKey());
             if (masterSlaveRule.isPresent() && masterSlaveRule.get().getMasterDataSourceName().equals(entry.getKey())) {

@@ -35,6 +35,7 @@ import org.apache.shardingsphere.core.yaml.swapper.impl.ShardingRuleConfiguratio
 import java.io.File;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -75,11 +76,13 @@ public final class ParsingTestCaseFixtureBuilder {
     public static ShardingTableMetaData buildShardingTableMetaData() {
         Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(3, 1);
         tableMetaDataMap.put("t_order",
-                new TableMetaData(Arrays.asList(new ColumnMetaData("order_id", "int", true), new ColumnMetaData("user_id", "int", false), new ColumnMetaData("status", "int", false))));
+                new TableMetaData(Arrays.asList(new ColumnMetaData("order_id", "int", true), new ColumnMetaData("user_id", "int", false), 
+                        new ColumnMetaData("status", "int", false)), Collections.<String>emptySet()));
         tableMetaDataMap.put("t_order_item", new TableMetaData(Arrays.asList(new ColumnMetaData("item_id", "int", true), new ColumnMetaData("order_id", "int", false),
-                new ColumnMetaData("user_id", "int", false), new ColumnMetaData("status", "varchar", false), new ColumnMetaData("c_date", "timestamp", false))));
+                new ColumnMetaData("user_id", "int", false), new ColumnMetaData("status", "varchar", false), 
+                new ColumnMetaData("c_date", "timestamp", false)), Collections.<String>emptySet()));
         tableMetaDataMap.put("t_encrypt", new TableMetaData(Arrays.asList(new ColumnMetaData("id", "int", true), new ColumnMetaData("name", "varchar", false),
-                new ColumnMetaData("mobile", "varchar", false), new ColumnMetaData("status", "int", false))));
+                new ColumnMetaData("mobile", "varchar", false), new ColumnMetaData("status", "int", false)), Collections.<String>emptySet()));
         return new ShardingTableMetaData(tableMetaDataMap);
     }
 }

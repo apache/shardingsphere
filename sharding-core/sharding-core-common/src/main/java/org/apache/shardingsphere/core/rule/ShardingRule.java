@@ -362,21 +362,6 @@ public class ShardingRule implements BaseRule {
     }
     
     /**
-     * Get logic table name base on logic index name.
-     *
-     * @param logicIndexName logic index name
-     * @return logic table name
-     */
-    public String getLogicTableName(final String logicIndexName) {
-        for (TableRule each : tableRules) {
-            if (logicIndexName.equals(each.getLogicIndex())) {
-                return each.getLogicTable();
-            }
-        }
-        throw new ShardingConfigurationException("Cannot find logic table name with logic index name: '%s'", logicIndexName);
-    }
-    
-    /**
      * Get logic table names base on actual table name.
      *
      * @param actualTableName actual table name

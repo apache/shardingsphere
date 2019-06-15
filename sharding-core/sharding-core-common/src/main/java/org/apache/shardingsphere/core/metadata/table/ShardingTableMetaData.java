@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.core.metadata.table;
 
+import com.google.common.base.Optional;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Sharding table meta data.
@@ -30,12 +32,16 @@ import java.util.Map;
  * @author panjuan
  * @author zhaojun
  * @author zhangliang
+ * @author panjuan
  */
-@RequiredArgsConstructor
 public final class ShardingTableMetaData {
     
     @Getter
     private final Map<String, TableMetaData> tables;
+    
+    public ShardingTableMetaData(final Map<String, TableMetaData> tables) {
+        this.tables = new ConcurrentHashMap<>(tables);
+    }
     
     /**
      * Get table meta data by table name.
@@ -94,5 +100,20 @@ public final class ShardingTableMetaData {
      */
     public Collection<String> getAllColumnNames(final String tableName) {
         return tables.containsKey(tableName) ? tables.get(tableName).getColumns().keySet() : Collections.<String>emptyList();
+    }
+    
+    /**
+     * Get logic table name.
+     * 
+     * @param logicIndexName logic index name
+     * @return logic table name
+     */
+    public Optional<String> getLogicTableName(final String logicIndexName) {
+        for (Entry<String, TableMetaData> entry : tables.entrySet()) {
+            if (entry.getValue().getLogicIndexes().contains(logicIndexName)) {
+                return Optional.of(entry.getKey());
+            }
+        }
+        return Optional.absent();
     }
 }

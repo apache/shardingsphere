@@ -15,29 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.yaml.config.sharding;
+package org.apache.shardingsphere.core.parse.sql.statement.ddl;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.core.yaml.config.YamlConfiguration;
+import lombok.ToString;
 
 /**
- * Table rule configuration for YAML.
+ * Drop index statement.
  *
- * @author caohao
  * @author panjuan
  */
 @Getter
-@Setter
-public class YamlTableRuleConfiguration implements YamlConfiguration {
-    
-    private String logicTable;
-    
-    private String actualDataNodes;
-    
-    private YamlShardingStrategyConfiguration databaseStrategy;
-    
-    private YamlShardingStrategyConfiguration tableStrategy;
-    
-    private YamlKeyGeneratorConfiguration keyGenerator;
+@ToString(callSuper = true)
+public final class DropIndexStatement extends DDLStatement {
 }

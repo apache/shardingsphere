@@ -37,13 +37,10 @@ public final class IndexToken extends SQLToken implements Substitutable {
     
     private final QuoteCharacter quoteCharacter;
     
-    private final String tableName;
-    
-    public IndexToken(final int startIndex, final int stopIndex, final String indexName, final QuoteCharacter quoteCharacter, final String tableName) {
+    public IndexToken(final int startIndex, final int stopIndex, final String indexName, final QuoteCharacter quoteCharacter) {
         super(startIndex);
         this.stopIndex = stopIndex;
         this.indexName = indexName;
         this.quoteCharacter = quoteCharacter;
-        this.tableName = tableName;
     }
 }

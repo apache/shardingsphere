@@ -31,7 +31,6 @@ shardingRule:
           shardingColumn: order_id
           preciseAlgorithmClassName: org.apache.shardingsphere.dbtest.fixture.PreciseModuloAlgorithm
           rangeAlgorithmClassName: org.apache.shardingsphere.dbtest.fixture.RangeModuloAlgorithm
-      logicIndex: order_index
     t_order_item:
       actualDataNodes: db_ms_${0..9}.t_order_item_${0..9}
       databaseStrategy:

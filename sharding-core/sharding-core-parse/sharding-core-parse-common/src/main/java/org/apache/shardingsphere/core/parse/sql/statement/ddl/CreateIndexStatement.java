@@ -15,24 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.engine.sharding.query;
+package org.apache.shardingsphere.core.parse.sql.statement.ddl;
 
-import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
+import lombok.Getter;
+import lombok.ToString;
 
 /**
- * Always false sharding value.
+ * Create index statement.
  *
- * @author zhangliang
+ * @author panjuan
  */
-public final class AlwaysFalseShardingValue implements RouteValue {
-    
-    @Override
-    public String getColumnName() {
-        return "";
-    }
-    
-    @Override
-    public String getTableName() {
-        return "";
-    }
+@Getter
+@ToString(callSuper = true)
+public final class CreateIndexStatement extends DDLStatement {
 }

@@ -15,29 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.yaml.config.sharding;
+package org.apache.shardingsphere.core.optimize.engine.sharding.dql;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.core.yaml.config.YamlConfiguration;
+import org.apache.shardingsphere.core.optimize.condition.ShardingCondition;
 
 /**
- * Table rule configuration for YAML.
+ * Always false sharding condition.
  *
- * @author caohao
- * @author panjuan
+ * @author maxiaoguang
  */
-@Getter
-@Setter
-public class YamlTableRuleConfiguration implements YamlConfiguration {
-    
-    private String logicTable;
-    
-    private String actualDataNodes;
-    
-    private YamlShardingStrategyConfiguration databaseStrategy;
-    
-    private YamlShardingStrategyConfiguration tableStrategy;
-    
-    private YamlKeyGeneratorConfiguration keyGenerator;
+public final class AlwaysFalseShardingCondition extends ShardingCondition {
 }
