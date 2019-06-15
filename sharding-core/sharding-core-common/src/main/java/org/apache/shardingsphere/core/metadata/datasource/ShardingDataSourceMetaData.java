@@ -49,7 +49,7 @@ public final class ShardingDataSourceMetaData {
     }
     
     private Map<String, DataSourceMetaData> getDataSourceMetaDataMapForSharding(final Map<String, String> dataSourceURLs, final DatabaseType databaseType) {
-        Map<String, DataSourceMetaData> result = new ConcurrentHashMap<>(dataSourceURLs.size());
+        Map<String, DataSourceMetaData> result = new ConcurrentHashMap<>(dataSourceURLs.size(), 1);
         for (Entry<String, String> entry : dataSourceURLs.entrySet()) {
             result.put(entry.getKey(), databaseType.getDataSourceMetaData(entry.getValue()));
         }
