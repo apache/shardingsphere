@@ -77,15 +77,22 @@ public final class TextProtocolBackendHandlerFactoryTest {
     }
     
     @Test
-    public void assertNewTransactionBackendHandlerInstanceOfCommitOperate() {
+    public void assertNewTransactionBackendHandlerInstanceOfCommit() {
         ConnectionStateHandler stateHandler = mock(ConnectionStateHandler.class);
         when(backendConnection.getStateHandler()).thenReturn(stateHandler);
         when(stateHandler.isInTransaction()).thenReturn(true);
         String sql = "SET AUTOCOMMIT=1";
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), sql, backendConnection);
         assertThat(actual, instanceOf(TransactionBackendHandler.class));
-        sql = "SET @@SESSION.AUTOCOMMIT = ON";
-        actual = TextProtocolBackendHandlerFactory.newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), sql, backendConnection);
+    }
+    
+    @Test
+    public void assertNewTransactionBackendHandlerInstanceOfCommitWithScope() {
+        ConnectionStateHandler stateHandler = mock(ConnectionStateHandler.class);
+        when(backendConnection.getStateHandler()).thenReturn(stateHandler);
+        when(stateHandler.isInTransaction()).thenReturn(true);
+        String sql = "SET @@SESSION.AUTOCOMMIT = ON";
+        TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), sql, backendConnection);
         assertThat(actual, instanceOf(TransactionBackendHandler.class));
     }
     
