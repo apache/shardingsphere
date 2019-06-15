@@ -15,11 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql;
+package org.apache.shardingsphere.test.sql.loader;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.test.sql.SQLCase;
+import org.apache.shardingsphere.test.sql.SQLCaseType;
+import org.apache.shardingsphere.test.sql.SQLCases;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -43,33 +46,16 @@ import java.util.jar.JarFile;
  * 
  * @author zhangliang 
  */
-public class SQLCasesLoader {
+public final class SQLCasesLoader {
     
-    private static final SQLCasesLoader INSTANCE = new SQLCasesLoader();
+    private final Map<String, SQLCase> sqlCases;
     
-    protected Map<String, SQLCase> supportedSQLCaseMap;
-    
-    protected Map<String, SQLCase> unsupportedSQLCaseMap;
-    
-    private final Map<String, SQLCase> parseErrorSQLCaseMap;
-    
-    protected SQLCasesLoader() {
-        supportedSQLCaseMap = loadSQLCases("sql");
-        unsupportedSQLCaseMap = loadSQLCases("unsupported_sql");
-        parseErrorSQLCaseMap = loadSQLCases("parse_error_sql");
-    }
-    
-    /**
-     * Get singleton instance.
-     * 
-     * @return singleton instance
-     */
-    public static SQLCasesLoader getInstance() {
-        return INSTANCE;
+    public SQLCasesLoader(final String rootDirection) {
+        sqlCases = loadSQLCases(rootDirection);
     }
     
     @SneakyThrows
-    protected static Map<String, SQLCase> loadSQLCases(final String path) {
+    private static Map<String, SQLCase> loadSQLCases(final String path) {
         File file = new File(SQLCasesLoader.class.getProtectionDomain().getCodeSource().getLocation().getPath());
         return file.isFile() ? loadSQLCasesFromJar(path, file) : loadSQLCasesFromTargetDirectory(path);
     }
@@ -129,55 +115,24 @@ public class SQLCasesLoader {
             if (null == each.getDatabaseTypes()) {
                 each.setDatabaseTypes(sqlCases.getDatabaseTypes());
             }
-            if (null != sqlCases.getNamespace()) {
-                each.setId(sqlCases.getNamespace() + "." + each.getId());
-            }
             sqlCaseMap.put(each.getId(), each);
         }
     }
     
     /**
-     * Get supported SQL.
+     * Get SQL.
      *
      * @param sqlCaseId SQL case ID
      * @param sqlCaseType SQL case type
      * @param parameters SQL parameters
      * @return SQL
      */
-    public String getSupportedSQL(final String sqlCaseId, final SQLCaseType sqlCaseType, final List<?> parameters) {
-        return getSQL(supportedSQLCaseMap, sqlCaseId, sqlCaseType, parameters);
-    }
-    
-    /**
-     * Get unsupported SQL.
-     * 
-     * @param sqlCaseId SQL case ID
-     * @param sqlCaseType SQL case type
-     * @param parameters SQL parameters
-     * @return SQL
-     */
-    public String getUnsupportedSQL(final String sqlCaseId, final SQLCaseType sqlCaseType, final List<?> parameters) {
-        return getSQL(unsupportedSQLCaseMap, sqlCaseId, sqlCaseType, parameters);
-    }
-    
-    /**
-     * Get SQLParsingException error's SQL.
-     *
-     * @param sqlCaseId SQL case ID
-     * @param sqlCaseType SQL case type
-     * @param parameters SQL parameters
-     * @return SQL
-     */
-    public String getSQLParsingErrorSQL(final String sqlCaseId, final SQLCaseType sqlCaseType, final List<?> parameters) {
-        return getSQL(parseErrorSQLCaseMap, sqlCaseId, sqlCaseType, parameters);
-    }
-    
-    private String getSQL(final Map<String, SQLCase> sqlCaseMap, final String sqlCaseId, final SQLCaseType sqlCaseType, final List<?> parameters) {
+    public String getSQL(final String sqlCaseId, final SQLCaseType sqlCaseType, final List<?> parameters) {
         switch (sqlCaseType) {
             case Literal:
-                return getLiteralSQL(getSQLFromMap(sqlCaseId, sqlCaseMap), parameters);
+                return getLiteralSQL(getSQLFromMap(sqlCaseId, sqlCases), parameters);
             case Placeholder:
-                return getPlaceholderSQL(getSQLFromMap(sqlCaseId, sqlCaseMap));
+                return getPlaceholderSQL(getSQLFromMap(sqlCaseId, sqlCases));
             default:
                 throw new UnsupportedOperationException(sqlCaseType.name());
         }
@@ -201,35 +156,13 @@ public class SQLCasesLoader {
     }
     
     /**
-     * Get test parameters for junit parameterized test case for supported SQL.
+     * Get test parameters for junit parameterized test cases.
      *
-     * @return test parameters for junit parameterized test case for supported SQL
+     * @return test parameters for junit parameterized test cases
      */
-    public Collection<Object[]> getSupportedSQLTestParameters() {
-        return getTestParameters(supportedSQLCaseMap);
-    }
-    
-    /**
-     * Get test parameters for junit parameterized test case for unsupported SQL.
-     *
-     * @return test parameters for junit parameterized test case for unsupported SQL
-     */
-    public Collection<Object[]> getUnsupportedSQLTestParameters() {
-        return getTestParameters(unsupportedSQLCaseMap);
-    }
-    
-    /**
-     * Get test parameters for junit parameterized test case for sql parsing error SQL.
-     *
-     * @return test parameters for junit parameterized test case for parsing error SQL
-     */
-    public Collection<Object[]> getSQLParsingErrorTestParameters() {
-        return getTestParameters(parseErrorSQLCaseMap);
-    }
-    
-    private Collection<Object[]> getTestParameters(final Map<String, SQLCase> sqlCaseMap) {
+    public Collection<Object[]> getSQLTestParameters() {
         Collection<Object[]> result = new LinkedList<>();
-        for (SQLCase each : sqlCaseMap.values()) {
+        for (SQLCase each : sqlCases.values()) {
             result.addAll(getTestParameters(each));
         }
         return result;
@@ -275,7 +208,7 @@ public class SQLCasesLoader {
      *
      * @return count of all supported SQL cases
      */
-    public int countAllSupportedSQLCases() {
-        return supportedSQLCaseMap.size();
+    public int countAllSQLCases() {
+        return sqlCases.size();
     }
 }

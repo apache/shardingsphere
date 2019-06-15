@@ -15,19 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql;
+package org.apache.shardingsphere.test.sql.loader.sharding;
+
+import lombok.Getter;
+import org.apache.shardingsphere.test.sql.loader.SQLCasesLoader;
 
 /**
- * Encrypt SQL cases loader.
- *
- * @author duhongjun
+ * SQL cases registry for sharding.
+ * 
+ * @author zhangliang 
  */
-public class EncryptSQLCasesLoader extends SQLCasesLoader {
+public final class ShardingSQLCasesRegistry {
     
-    private static final EncryptSQLCasesLoader INSTANCE = new EncryptSQLCasesLoader();
+    private static final ShardingSQLCasesRegistry INSTANCE = new ShardingSQLCasesRegistry();
     
-    protected EncryptSQLCasesLoader() {
-        supportedSQLCaseMap = loadSQLCases("encrypt_sql");
+    @Getter
+    private SQLCasesLoader sqlCasesLoader;
+    
+    private ShardingSQLCasesRegistry() {
+        sqlCasesLoader = new SQLCasesLoader("sql/sharding");
     }
     
     /**
@@ -35,7 +41,7 @@ public class EncryptSQLCasesLoader extends SQLCasesLoader {
      * 
      * @return singleton instance
      */
-    public static EncryptSQLCasesLoader getInstance() {
+    public static ShardingSQLCasesRegistry getInstance() {
         return INSTANCE;
     }
 }

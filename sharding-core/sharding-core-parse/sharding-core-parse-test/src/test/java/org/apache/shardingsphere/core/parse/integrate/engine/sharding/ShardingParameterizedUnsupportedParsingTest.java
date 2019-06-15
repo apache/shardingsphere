@@ -15,25 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.integrate.engine;
+package org.apache.shardingsphere.core.parse.integrate.engine.sharding;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
+import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
 import org.apache.shardingsphere.core.parse.entry.ShardingSQLParseEntry;
 import org.apache.shardingsphere.core.parse.exception.SQLParsingException;
+import org.apache.shardingsphere.core.parse.fixture.ParsingTestCaseFixtureBuilder;
+import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
-import org.apache.shardingsphere.test.sql.SQLCasesLoader;
+import org.apache.shardingsphere.test.sql.loader.SQLCasesLoader;
+import org.apache.shardingsphere.test.sql.loader.sharding.ShardingUnsupportedSQLCasesRegistry;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import java.util.Collection;
 import java.util.Collections;
 
+@RunWith(Parameterized.class)
 @RequiredArgsConstructor
-public final class IntegrateUnsupportedSQLParsingTest extends AbstractBaseIntegrateSQLParsingTest {
+public final class ShardingParameterizedUnsupportedParsingTest {
     
-    private static SQLCasesLoader sqlCasesLoader = SQLCasesLoader.getInstance();
+    private static SQLCasesLoader sqlCasesLoader = ShardingUnsupportedSQLCasesRegistry.getInstance().getSqlCasesLoader();
+    
+    private static ShardingRule shardingRule = ParsingTestCaseFixtureBuilder.buildShardingRule();
+    
+    private static ShardingTableMetaData shardingTableMetaData = ParsingTestCaseFixtureBuilder.buildShardingTableMetaData();
+    
+    private static ParsingResultCache parsingResultCache = new ParsingResultCache();
     
     private final String sqlCaseId;
     
@@ -43,12 +56,12 @@ public final class IntegrateUnsupportedSQLParsingTest extends AbstractBaseIntegr
     
     @Parameters(name = "{0} ({2}) -> {1}")
     public static Collection<Object[]> getTestParameters() {
-        return sqlCasesLoader.getUnsupportedSQLTestParameters();
+        return sqlCasesLoader.getSQLTestParameters();
     }
     
     @Test(expected = SQLParsingException.class)
     public void assertUnsupportedSQL() {
-        new ShardingSQLParseEntry(DatabaseTypes.getTrunkDatabaseType(databaseType), getShardingRule(), getShardingTableMetaData(), new ParsingResultCache())
-                .parse(sqlCasesLoader.getUnsupportedSQL(sqlCaseId, sqlCaseType, Collections.emptyList()), false);
+        String sql = sqlCasesLoader.getSQL(sqlCaseId, sqlCaseType, Collections.emptyList());
+        new ShardingSQLParseEntry(DatabaseTypes.getTrunkDatabaseType(databaseType), shardingRule, shardingTableMetaData, parsingResultCache).parse(sql, false);
     }
 }

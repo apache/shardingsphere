@@ -76,8 +76,7 @@ public final class PropertyUtil {
         for (Entry<String, Object> entry : dataSourceProps.entrySet()) {
             String key = entry.getKey();
             Object value = entry.getValue();
-            if (value instanceof String && ((String) value).contains(
-                    PlaceholderConfigurerSupport.DEFAULT_PLACEHOLDER_PREFIX)) {
+            if (value instanceof String && ((String) value).contains(PlaceholderConfigurerSupport.DEFAULT_PLACEHOLDER_PREFIX)) {
                 String resolvedValue = (String) getPropertyMethod.invoke(resolverObject, prefixParam + key);
                 propertiesWithPlaceholderResolved.put(key, resolvedValue);
             } else {

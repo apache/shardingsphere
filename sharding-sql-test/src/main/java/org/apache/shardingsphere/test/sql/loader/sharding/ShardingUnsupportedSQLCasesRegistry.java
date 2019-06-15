@@ -15,28 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql;
+package org.apache.shardingsphere.test.sql.loader.sharding;
 
 import lombok.Getter;
-
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.LinkedList;
-import java.util.List;
+import org.apache.shardingsphere.test.sql.loader.SQLCasesLoader;
 
 /**
- * SQL test cases for xml root tag.
+ * SQL cases registry for sharding unsupported.
  * 
  * @author zhangliang 
  */
-@XmlRootElement(name = "sql-cases")
-@Getter
-public final class SQLCases {
+public final class ShardingUnsupportedSQLCasesRegistry {
     
-    @XmlAttribute(name = "db-types")
-    private String databaseTypes;
+    private static final ShardingUnsupportedSQLCasesRegistry INSTANCE = new ShardingUnsupportedSQLCasesRegistry();
     
-    @XmlElement(name = "sql-case")
-    private List<SQLCase> sqlCases = new LinkedList<>();
+    @Getter
+    private SQLCasesLoader sqlCasesLoader;
+    
+    private ShardingUnsupportedSQLCasesRegistry() {
+        sqlCasesLoader = new SQLCasesLoader("sql/unsupported");
+    }
+    
+    /**
+     * Get singleton instance.
+     * 
+     * @return singleton instance
+     */
+    public static ShardingUnsupportedSQLCasesRegistry getInstance() {
+        return INSTANCE;
+    }
 }

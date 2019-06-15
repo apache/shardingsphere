@@ -45,13 +45,7 @@ shardingRule:
         type: SNOWFLAKE
         column: item_id
         props:
-          worker.id: 123        
-    t_place:
-      actualDataNodes: db${0..1}.t_place
-      tableStrategy: 
-        complex:
-          shardingColumns: user_new_id, guid
-          algorithmClassName: org.apache.shardingsphere.core.parse.fixture.ComplexKeysShardingAlgorithmFixture
+          worker.id: 123
   bindingTables:
     - t_order, t_order_item
   encryptRule:

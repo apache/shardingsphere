@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.parse.extractor.impl.dml.update;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.extractor.api.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.extractor.impl.common.column.ColumnExtractor;
@@ -37,7 +36,6 @@ import java.util.Map;
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
 public final class AssignmentExtractor implements OptionalSQLSegmentExtractor {
     
     private final ColumnExtractor columnExtractor = new ColumnExtractor();

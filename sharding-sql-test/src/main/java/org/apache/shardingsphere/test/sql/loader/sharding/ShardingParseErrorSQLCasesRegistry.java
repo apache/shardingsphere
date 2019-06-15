@@ -15,27 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.integrate.asserts;
+package org.apache.shardingsphere.test.sql.loader.sharding;
+
+import lombok.Getter;
+import org.apache.shardingsphere.test.sql.loader.SQLCasesLoader;
 
 /**
- * Encrypt parser result set loader.
- *
- * @author duhongjun
+ * SQL cases registry for sharding parse error.
+ * 
+ * @author zhangliang 
  */
-public class EncryptParserResultSetLoader extends ParserResultSetLoader {
+public final class ShardingParseErrorSQLCasesRegistry {
     
-    private static final EncryptParserResultSetLoader INSTANCE = new EncryptParserResultSetLoader();
+    private static final ShardingParseErrorSQLCasesRegistry INSTANCE = new ShardingParseErrorSQLCasesRegistry();
     
-    protected EncryptParserResultSetLoader() {
-        parserResultMap = loadParserResultSet("encrypt/");
+    @Getter
+    private SQLCasesLoader sqlCasesLoader;
+    
+    private ShardingParseErrorSQLCasesRegistry() {
+        sqlCasesLoader = new SQLCasesLoader("sql/parse_error");
     }
     
     /**
      * Get singleton instance.
-     *
+     * 
      * @return singleton instance
      */
-    public static EncryptParserResultSetLoader getInstance() {
+    public static ShardingParseErrorSQLCasesRegistry getInstance() {
         return INSTANCE;
     }
 }

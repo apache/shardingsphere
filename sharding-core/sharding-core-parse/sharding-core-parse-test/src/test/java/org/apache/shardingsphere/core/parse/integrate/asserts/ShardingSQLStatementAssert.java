@@ -26,6 +26,7 @@ import org.apache.shardingsphere.core.parse.integrate.asserts.orderby.OrderByAss
 import org.apache.shardingsphere.core.parse.integrate.asserts.pagination.PaginationAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.table.AlterTableAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.table.TableAssert;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.ShardingParserResultSetRegistry;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.root.ParserResult;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.AlterTableStatement;
@@ -34,17 +35,17 @@ import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
-import org.apache.shardingsphere.test.sql.SQLCasesLoader;
+import org.apache.shardingsphere.test.sql.loader.sharding.ShardingSQLCasesRegistry;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
- * SQL statement assert.
+ * SQL statement assert for sharding.
  *
  * @author zhangliang
  */
-public final class SQLStatementAssert {
+public final class ShardingSQLStatementAssert {
     
     private final SQLStatement actual;
     
@@ -68,15 +69,11 @@ public final class SQLStatementAssert {
     
     private final AlterTableAssert alterTableAssert;
     
-    public SQLStatementAssert(final SQLStatement actual, final String sqlCaseId, final SQLCaseType sqlCaseType) {
-        this(actual, sqlCaseId, sqlCaseType, SQLCasesLoader.getInstance(), ParserResultSetLoader.getInstance());
-    }
-    
-    public SQLStatementAssert(final SQLStatement actual, final String sqlCaseId, 
-                              final SQLCaseType sqlCaseType, final SQLCasesLoader sqlLoader, final ParserResultSetLoader parserResultSetLoader) {
-        SQLStatementAssertMessage assertMessage = new SQLStatementAssertMessage(sqlLoader, parserResultSetLoader, sqlCaseId, sqlCaseType);
+    public ShardingSQLStatementAssert(final SQLStatement actual, final String sqlCaseId, final SQLCaseType sqlCaseType) {
+        SQLStatementAssertMessage assertMessage = new SQLStatementAssertMessage(
+                ShardingSQLCasesRegistry.getInstance().getSqlCasesLoader(), ShardingParserResultSetRegistry.getInstance().getRegistry(), sqlCaseId, sqlCaseType);
         this.actual = actual;
-        expected = parserResultSetLoader.getParserResult(sqlCaseId);
+        expected = ShardingParserResultSetRegistry.getInstance().getRegistry().get(sqlCaseId);
         tableAssert = new TableAssert(assertMessage);
         conditionAssert = new ConditionAssert(assertMessage);
         indexAssert = new IndexAssert(sqlCaseType, assertMessage);

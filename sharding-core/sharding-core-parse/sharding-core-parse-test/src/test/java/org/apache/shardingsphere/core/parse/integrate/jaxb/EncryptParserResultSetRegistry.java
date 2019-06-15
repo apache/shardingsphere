@@ -15,28 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql;
+package org.apache.shardingsphere.core.parse.integrate.jaxb;
 
 import lombok.Getter;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.LinkedList;
-import java.util.List;
-
 /**
- * SQL test cases for xml root tag.
- * 
- * @author zhangliang 
+ * Encrypt parser result set registry.
+ *
+ * @author zhangliang
  */
-@XmlRootElement(name = "sql-cases")
-@Getter
-public final class SQLCases {
+public final class EncryptParserResultSetRegistry {
     
-    @XmlAttribute(name = "db-types")
-    private String databaseTypes;
+    private static final EncryptParserResultSetRegistry INSTANCE = new EncryptParserResultSetRegistry();
     
-    @XmlElement(name = "sql-case")
-    private List<SQLCase> sqlCases = new LinkedList<>();
+    @Getter
+    private final ParserResultSetRegistry registry = new ParserResultSetRegistry("encrypt/");
+    
+    /**
+     * Get singleton instance.
+     *
+     * @return singleton instance
+     */
+    public static EncryptParserResultSetRegistry getInstance() {
+        return INSTANCE;
+    }
 }
