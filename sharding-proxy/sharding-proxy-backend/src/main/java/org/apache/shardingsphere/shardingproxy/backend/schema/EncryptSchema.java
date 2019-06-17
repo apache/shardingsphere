@@ -70,7 +70,7 @@ public final class EncryptSchema extends LogicSchema {
      */
     @Subscribe
     @SneakyThrows
-    public final synchronized void renew(final EncryptRuleChangedEvent encryptRuleChangedEvent) {
+    public synchronized void renew(final EncryptRuleChangedEvent encryptRuleChangedEvent) {
         encryptRule = new EncryptRule(encryptRuleChangedEvent.getEncryptRuleConfiguration());
         parseEngine = new EncryptSQLParseEntry(LogicSchemas.getInstance().getDatabaseType(), encryptRule, metaData.getTable());
     }
