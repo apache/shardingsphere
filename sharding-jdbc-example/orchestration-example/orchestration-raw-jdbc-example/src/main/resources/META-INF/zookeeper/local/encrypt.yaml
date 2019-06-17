@@ -1,0 +1,24 @@
+orchestration:
+  name: demo_yaml_ds_encrypt
+  overwrite: true
+  registry:
+    type: zookeeper
+    serverLists: localhost:2181
+    namespace: orchestration-yaml-demo
+
+dataSource: !!com.zaxxer.hikari.HikariDataSource
+  driverClassName: com.mysql.jdbc.Driver
+  jdbcUrl: jdbc:mysql://localhost:3306/demo_ds
+  username: root
+  password:
+
+encryptRule:
+  encryptors:
+    order_encryptor:
+      type: aes
+      qualifiedColumns: t_order.status
+      props:
+        aes.key.value: 123456
+
+props:
+  sql.show: true

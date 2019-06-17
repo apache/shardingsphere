@@ -24,6 +24,7 @@ import org.apache.shardingsphere.example.common.service.CommonService;
 import org.apache.shardingsphere.example.type.RegistryCenterType;
 import org.apache.shardingsphere.example.type.ShardingType;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
+import org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml.YamlOrchestrationEncryptDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml.YamlOrchestrationMasterSlaveDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml.YamlOrchestrationShardingDataSourceFactory;
 
@@ -39,8 +40,9 @@ import java.sql.SQLException;
  */
 public class YamlConfigurationExample {
     
-    private static ShardingType shardingType = ShardingType.SHARDING_DATABASES_AND_TABLES;
+//    private static ShardingType shardingType = ShardingType.SHARDING_DATABASES_AND_TABLES;
 //    private static ShardingType shardingType = ShardingType.MASTER_SLAVE;
+    private static ShardingType shardingType = ShardingType.ENCRYPT;
     
     private static boolean loadConfigFromRegCenter = false;
 //    private static boolean loadConfigFromRegCenter = true;
@@ -66,6 +68,9 @@ public class YamlConfigurationExample {
             case MASTER_SLAVE:
                 yamlFilePath = String.format("/META-INF/%s/%s/master-slave.yaml", registryCenterType.name().toLowerCase(), loadConfigFromRegCenter ? "cloud" : "local");
                 return YamlOrchestrationMasterSlaveDataSourceFactory.createDataSource(getFile(yamlFilePath));
+            case ENCRYPT:
+                yamlFilePath = String.format("/META-INF/%s/%s/encrypt.yaml", registryCenterType.name().toLowerCase(), loadConfigFromRegCenter ? "cloud" : "local");
+                return YamlOrchestrationEncryptDataSourceFactory.createDataSource(getFile(yamlFilePath));
             default:
                 throw new UnsupportedOperationException(shardingType.name());
         }
