@@ -346,16 +346,16 @@ masterSlaveRule: #省略读写分离配置，与Sharding-JDBC配置一致
 
 ### 数据脱敏
 ```yaml
-dataSources: #省略数据源配置
-shardingRule: #省略分片规则配
-  encryptRule:
-    encryptors:
-      encryptor_name: #加密器名字
-        type: #加解密器类型，可自定义或选择内置类型：MD5/AES
-        qualifiedColumns: #加解密字段，格式为：表名.列名，例如：tb.col1。多个列，请用逗号分隔
-        assistedQueryColumns: #辅助查询字段，针对ShardingQueryAssistedEncryptor类型的加解密器进行辅助查询
-        props: #属性配置, 比如AES算法的KEY属性：aes.key.value
-          aes.key.value:
+dataSource: #省略数据源配置
+
+encryptRule:
+  encryptors:
+    encryptor_name: #加密器名字
+      type: #加解密器类型，可自定义或选择内置类型：MD5/AES
+      qualifiedColumns: #加解密字段，格式为：表名.列名，例如：tb.col1。多个列，请用逗号分隔
+      assistedQueryColumns: #辅助查询字段，针对ShardingQueryAssistedEncryptor类型的加解密器进行辅助查询
+      props: #属性配置, 比如AES算法的KEY属性：aes.key.value
+        aes.key.value:
 ```
 
 ## 全局配置项说明
