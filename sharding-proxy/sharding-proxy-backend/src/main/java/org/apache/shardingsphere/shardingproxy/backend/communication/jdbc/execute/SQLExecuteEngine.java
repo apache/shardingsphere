@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute;
 
-import org.apache.shardingsphere.core.routing.SQLRouteResult;
+import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 
 import java.sql.SQLException;

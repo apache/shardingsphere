@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<sql-cases db-types="Oracle" namespace="oracle.tcl.savepoint">
-    <sql-case id="savepoint" value="SAVEPOINT savepoint1" />
-</sql-cases>

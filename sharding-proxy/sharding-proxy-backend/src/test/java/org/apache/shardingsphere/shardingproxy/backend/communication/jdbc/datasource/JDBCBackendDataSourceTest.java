@@ -20,6 +20,7 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.datas
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.ConnectionMode;
+import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -28,6 +29,7 @@ import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,7 +47,7 @@ import static org.junit.Assert.assertTrue;
 
 public final class JDBCBackendDataSourceTest {
     
-    private JDBCBackendDataSource jdbcBackendDataSource = new JDBCBackendDataSource();
+    private JDBCBackendDataSource jdbcBackendDataSource = new JDBCBackendDataSource(Collections.<String, YamlDataSourceParameter>emptyMap());
     
     @Before
     public void setUp() {
@@ -60,7 +62,7 @@ public final class JDBCBackendDataSourceTest {
     }
     
     private Map<String, DataSource> mockDataSources(final int size) {
-        Map<String, DataSource> result = new HashMap<>(size);
+        Map<String, DataSource> result = new HashMap<>(size, 1);
         for (int i = 0; i < size; i++) {
             result.put("ds_" + i, new MockDataSource());
         }
@@ -111,7 +113,7 @@ public final class JDBCBackendDataSourceTest {
         private final String datasourceName;
         
         private final int connectionSize;
-    
+        
         @Override
         public List<Connection> call() throws SQLException {
             return jdbcBackendDataSource.getConnections(connectionMode, datasourceName, connectionSize);

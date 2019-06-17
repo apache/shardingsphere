@@ -21,8 +21,10 @@ import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
-import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
+import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
+import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.parse.entry.MasterSlaveSQLParseEntry;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.MasterSlaveRuleChangedEvent;
@@ -30,8 +32,6 @@ import org.apache.shardingsphere.orchestration.internal.registry.state.event.Dis
 import org.apache.shardingsphere.orchestration.internal.registry.state.schema.OrchestrationShardingSchema;
 import org.apache.shardingsphere.orchestration.internal.rule.OrchestrationMasterSlaveRule;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
-import org.apache.shardingsphere.shardingproxy.runtime.ExecutorContext;
-import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 
 import java.util.Map;
 
@@ -45,12 +45,19 @@ public final class MasterSlaveSchema extends LogicSchema {
     
     private MasterSlaveRule masterSlaveRule;
     
+    private final ShardingRule shardingRule;
+    
     private final ShardingMetaData metaData;
+    
+    private final MasterSlaveSQLParseEntry parseEngine;
     
     public MasterSlaveSchema(final String name, final Map<String, YamlDataSourceParameter> dataSources, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final boolean isUsingRegistry) {
         super(name, dataSources);
         masterSlaveRule = createMasterSlaveRule(masterSlaveRuleConfig, isUsingRegistry);
+        // TODO we should remove it after none-sharding parsingEngine completed.
+        shardingRule = new ShardingRule(new ShardingRuleConfiguration(), getDataSources().keySet());
         metaData = createShardingMetaData();
+        parseEngine = new MasterSlaveSQLParseEntry(LogicSchemas.getInstance().getDatabaseType());
     }
     
     private MasterSlaveRule createMasterSlaveRule(final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final boolean isUsingRegistry) {
@@ -58,10 +65,9 @@ public final class MasterSlaveSchema extends LogicSchema {
     }
     
     private ShardingMetaData createShardingMetaData() {
-        return new ShardingMetaData(getDataSourceURLs(getDataSources()), new ShardingRule(new ShardingRuleConfiguration(), getDataSources().keySet()),
-                LogicSchemas.getInstance().getDatabaseType(), ExecutorContext.getInstance().getExecuteEngine(), new ProxyTableMetaDataConnectionManager(getBackendDataSource()),
-                GlobalRegistry.getInstance().getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY), 
-                GlobalRegistry.getInstance().getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.CHECK_TABLE_METADATA_ENABLED));
+        ShardingDataSourceMetaData shardingDataSourceMetaData = new ShardingDataSourceMetaData(getDataSourceURLs(getDataSources()), shardingRule, LogicSchemas.getInstance().getDatabaseType());
+        ShardingTableMetaData shardingTableMetaData = new ShardingTableMetaData(getTableMetaDataInitializer(shardingDataSourceMetaData).load(shardingRule));
+        return new ShardingMetaData(shardingDataSourceMetaData, shardingTableMetaData);
     }
     
     /**

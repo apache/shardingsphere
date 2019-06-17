@@ -17,16 +17,19 @@
 
 package org.apache.shardingsphere.shardingproxy.config.yaml;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Data source parameters for yaml.
+ * Data source parameters for YAML.
  *
  * @author zhangyonglun
+ * @author panjuan
  */
 @Getter
 @Setter
+@EqualsAndHashCode
 public final class YamlDataSourceParameter {
     
     private String url;

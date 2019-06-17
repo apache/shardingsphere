@@ -24,6 +24,8 @@ import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorRespo
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.exception.InvalidShardingCTLFormatException;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.exception.UnsupportedShardingCTLTypeException;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
 /**
@@ -46,18 +48,18 @@ public final class ShardingCTLSetBackendHandler implements TextProtocolBackendHa
     public BackendResponse execute() {
         Optional<ShardingCTLSetStatement> shardingTCLStatement = new ShardingCTLSetParser(sql).doParse();
         if (!shardingTCLStatement.isPresent()) {
-            return new ErrorResponse(0, "", "Please review your sctl format, should be sctl:set xxx=yyy.");
+            return new ErrorResponse(new InvalidShardingCTLFormatException(sql));
         }
         switch (shardingTCLStatement.get().getKey()) {
             case "TRANSACTION_TYPE":
                 try {
                     backendConnection.setTransactionType(TransactionType.valueOf(shardingTCLStatement.get().getValue()));
                 } catch (final IllegalArgumentException ex) {
-                    return new ErrorResponse(0, "", String.format("Could not support this sctl grammar [%s].", sql));
+                    return new ErrorResponse(new UnsupportedShardingCTLTypeException(sql));
                 }
                 break;
             default:
-                return new ErrorResponse(0, "", String.format("Could not support this sctl grammar [%s].", sql));
+                return new ErrorResponse(new UnsupportedShardingCTLTypeException(sql));
         }
         return new UpdateResponse();
     }

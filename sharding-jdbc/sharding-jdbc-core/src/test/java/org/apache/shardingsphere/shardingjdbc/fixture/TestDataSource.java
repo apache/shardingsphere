@@ -20,7 +20,6 @@ package org.apache.shardingsphere.shardingjdbc.fixture;
 import lombok.EqualsAndHashCode;
 import lombok.Setter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
-import org.mockito.Mockito;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -29,6 +28,7 @@ import java.sql.SQLException;
 import java.util.Collections;
 
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @Setter
@@ -45,10 +45,10 @@ public final class TestDataSource extends AbstractDataSourceAdapter {
     }
     
     private static DataSource getDataSource() throws SQLException {
-        DataSource result = Mockito.mock(DataSource.class);
-        Connection connection = Mockito.mock(Connection.class);
-        DatabaseMetaData metaData = Mockito.mock(DatabaseMetaData.class);
-        when(metaData.getDatabaseProductName()).thenReturn("H2");
+        DataSource result = mock(DataSource.class);
+        Connection connection = mock(Connection.class);
+        DatabaseMetaData metaData = mock(DatabaseMetaData.class);
+        when(metaData.getURL()).thenReturn("jdbc:h2:mem:test_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL");
         when(connection.getMetaData()).thenReturn(metaData);
         when(result.getConnection()).thenReturn(connection);
         return result;
@@ -56,9 +56,8 @@ public final class TestDataSource extends AbstractDataSourceAdapter {
     
     @Override
     public Connection getConnection() throws SQLException {
-        Connection result = Mockito.mock(Connection.class);
-        DatabaseMetaData metaData = Mockito.mock(DatabaseMetaData.class);
-        when(metaData.getDatabaseProductName()).thenReturn("H2");
+        Connection result = mock(Connection.class);
+        DatabaseMetaData metaData = mock(DatabaseMetaData.class);
         when(result.getMetaData()).thenReturn(metaData);
         when(result.getMetaData().getURL()).thenReturn("jdbc:h2:mem:demo_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         if (throwExceptionWhenClosing) {

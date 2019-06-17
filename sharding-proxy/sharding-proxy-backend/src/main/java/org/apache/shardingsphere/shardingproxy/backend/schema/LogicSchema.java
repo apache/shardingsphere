@@ -17,20 +17,22 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.schema;
 
-import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
+import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
+import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import org.apache.shardingsphere.core.execute.metadata.TableMetaDataInitializer;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
-import org.apache.shardingsphere.core.metadata.table.TableMetaData;
-import org.apache.shardingsphere.core.metadata.table.TableMetaDataFactory;
-import org.apache.shardingsphere.core.parsing.antlr.sql.statement.ddl.AlterTableStatement;
-import org.apache.shardingsphere.core.parsing.antlr.sql.statement.ddl.CreateTableStatement;
-import org.apache.shardingsphere.core.parsing.antlr.sql.statement.ddl.DropTableStatement;
-import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
+import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
+import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.orchestration.internal.eventbus.ShardingOrchestrationEventBus;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
+import org.apache.shardingsphere.shardingproxy.backend.executor.BackendExecutorContext;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
+import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 import org.apache.shardingsphere.shardingproxy.util.DataSourceConverter;
 
 import java.util.LinkedHashMap;
@@ -47,15 +49,39 @@ public abstract class LogicSchema {
     
     private final String name;
     
-    private final Map<String, YamlDataSourceParameter> dataSources;
+    private final ParsingResultCache parsingResultCache;
     
     private JDBCBackendDataSource backendDataSource;
     
     public LogicSchema(final String name, final Map<String, YamlDataSourceParameter> dataSources) {
         this.name = name;
-        this.dataSources = dataSources;
+        parsingResultCache = new ParsingResultCache();
         backendDataSource = new JDBCBackendDataSource(dataSources);
         ShardingOrchestrationEventBus.getInstance().register(this);
+    }
+    
+    /**
+     * Get sharding meta data.
+     * 
+     * @return sharding meta data.
+     */
+    public abstract ShardingMetaData getMetaData();
+    
+    /**
+     * Get Sharding rule.
+     * 
+     * @return sharding rule
+     */
+    // TODO : It is used in many places, but we can consider how to optimize it because of being irrational for logic schema.
+    public abstract ShardingRule getShardingRule();
+    
+    /**
+     * Get data source parameters.
+     * 
+     * @return data source parameters
+     */
+    public Map<String, YamlDataSourceParameter> getDataSources() {
+        return backendDataSource.getDataSourceParameters();
     }
     
     protected final Map<String, String> getDataSourceURLs(final Map<String, YamlDataSourceParameter> dataSourceParameters) {
@@ -66,12 +92,13 @@ public abstract class LogicSchema {
         return result;
     }
     
-    /**
-     * Get sharding meta data.
-     * 
-     * @return sharding meta data.
-     */
-    public abstract ShardingMetaData getMetaData();
+    protected final TableMetaDataInitializer getTableMetaDataInitializer(final ShardingDataSourceMetaData shardingDataSourceMetaData) {
+        ShardingProperties shardingProperties = ShardingProxyContext.getInstance().getShardingProperties();
+        return new TableMetaDataInitializer(
+                shardingDataSourceMetaData, BackendExecutorContext.getInstance().getExecuteEngine(), new ProxyTableMetaDataConnectionManager(getBackendDataSource()),
+                shardingProperties.<Integer>getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY),
+                shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.CHECK_TABLE_METADATA_ENABLED));
+    }
     
     /**
      * Renew data source configuration.
@@ -84,10 +111,7 @@ public abstract class LogicSchema {
         if (!name.equals(dataSourceChangedEvent.getShardingSchemaName())) {
             return;
         }
-        backendDataSource.close();
-        dataSources.clear();
-        dataSources.putAll(DataSourceConverter.getDataSourceParameterMap(dataSourceChangedEvent.getDataSourceConfigurations()));
-        backendDataSource = new JDBCBackendDataSource(dataSources);
+        backendDataSource.renew(DataSourceConverter.getDataSourceParameterMap(dataSourceChangedEvent.getDataSourceConfigurations()));
     }
     
     /**
@@ -95,35 +119,6 @@ public abstract class LogicSchema {
      * 
      * @param sqlStatement SQL statement
      */
-    public final void refreshTableMetaData(final SQLStatement sqlStatement) {
-        if (sqlStatement instanceof CreateTableStatement) {
-            refreshTableMetaData((CreateTableStatement) sqlStatement);
-        } else if (sqlStatement instanceof AlterTableStatement) {
-            refreshTableMetaData((AlterTableStatement) sqlStatement);
-        } else if (sqlStatement instanceof DropTableStatement) {
-            refreshTableMetaData((DropTableStatement) sqlStatement);
-        }
-    }
-    
-    private void refreshTableMetaData(final CreateTableStatement createTableStatement) {
-        getMetaData().getTable().put(createTableStatement.getTables().getSingleTableName(), TableMetaDataFactory.newInstance(createTableStatement));
-    }
-    
-    private void refreshTableMetaData(final AlterTableStatement alterTableStatement) {
-        String logicTableName = alterTableStatement.getTables().getSingleTableName();
-        TableMetaData newTableMetaData = TableMetaDataFactory.newInstance(alterTableStatement, getMetaData().getTable().get(logicTableName));
-        Optional<String> newTableName = alterTableStatement.getNewTableName();
-        if (newTableName.isPresent()) {
-            getMetaData().getTable().put(newTableName.get(), newTableMetaData);
-            getMetaData().getTable().remove(logicTableName);
-        } else {
-            getMetaData().getTable().put(logicTableName, newTableMetaData);
-        }
-    }
-    
-    private void refreshTableMetaData(final DropTableStatement dropTableStatement) {
-        for (String each : dropTableStatement.getTables().getTableNames()) {
-            getMetaData().getTable().remove(each);
-        }
+    public void refreshTableMetaData(final SQLStatement sqlStatement) {
     }
 }

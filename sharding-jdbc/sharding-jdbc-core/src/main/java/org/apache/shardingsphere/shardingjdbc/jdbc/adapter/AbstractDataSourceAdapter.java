@@ -20,8 +20,9 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.adapter;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
+import org.apache.shardingsphere.spi.database.DatabaseType;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 
 import javax.sql.DataSource;
@@ -62,7 +63,7 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
         DatabaseType result = null;
         for (DataSource each : dataSources) {
             DatabaseType databaseType = getDatabaseType(each);
-            Preconditions.checkState(null == result || result.equals(databaseType), String.format("Database type inconsistent with '%s' and '%s'", result, databaseType));
+            Preconditions.checkState(null == result || result == databaseType, String.format("Database type inconsistent with '%s' and '%s'", result, databaseType));
             result = databaseType;
         }
         return result;
@@ -73,7 +74,7 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
             return ((AbstractDataSourceAdapter) dataSource).databaseType;
         }
         try (Connection connection = dataSource.getConnection()) {
-            return DatabaseType.valueFrom(connection.getMetaData().getDatabaseProductName());
+            return DatabaseTypes.getDatabaseTypeByURL(connection.getMetaData().getURL());
         }
     }
     
@@ -89,14 +90,28 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
     
     @Override
     public void close() throws Exception {
-        for (DataSource each : dataSourceMap.values()) {
-            try {
-                Method method = each.getClass().getDeclaredMethod("close");
-                method.setAccessible(true);
-                method.invoke(each);
-            } catch (final ReflectiveOperationException ignored) {
-            }
+        close(dataSourceMap.keySet());
+    }
+    
+    /**
+     * Close dataSources.
+     * 
+     * @param dataSourceNames data source names
+     * @throws Exception exception
+     */
+    public void close(final Collection<String> dataSourceNames) throws Exception {
+        for (String each : dataSourceNames) {
+            close(dataSourceMap.get(each));
         }
         shardingTransactionManagerEngine.close();
+    }
+    
+    private void close(final DataSource dataSource) {
+        try {
+            Method method = dataSource.getClass().getDeclaredMethod("close");
+            method.setAccessible(true);
+            method.invoke(dataSource);
+        } catch (final ReflectiveOperationException ignored) {
+        }
     }
 }

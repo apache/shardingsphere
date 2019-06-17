@@ -1,0 +1,48 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<dataset>
+    <metadata>
+        <column name="order_id" />
+        <column name="user_id" />
+        <column name="status" />
+        <column name="order_id" />
+        <column name="order_id" />
+        <column name="user_id" />
+        <column name="status" />
+    </metadata>
+    <row values="1000, 10, init, 1000, 1000, 10, init" />
+    <row values="1001, 10, init, 1001, 1001, 10, init" />
+    <row values="1002, 10, init, 1002, 1002, 10, init" />
+    <row values="1003, 10, init, 1003, 1003, 10, init" />
+    <row values="1004, 10, init, 1004, 1004, 10, init" />
+    <row values="1005, 10, init, 1005, 1005, 10, init" />
+    <row values="1006, 10, init, 1006, 1006, 10, init" />
+    <row values="1007, 10, init, 1007, 1007, 10, init" />
+    <row values="1008, 10, init, 1008, 1008, 10, init" />
+    <row values="1009, 10, init, 1009, 1009, 10, init" />
+    <row values="1100, 11, init, 1100, 1100, 11, init" />
+    <row values="1101, 11, init, 1101, 1101, 11, init" />
+    <row values="1102, 11, init, 1102, 1102, 11, init" />
+    <row values="1103, 11, init, 1103, 1103, 11, init" />
+    <row values="1104, 11, init, 1104, 1104, 11, init" />
+    <row values="1105, 11, init, 1105, 1105, 11, init" />
+    <row values="1106, 11, init, 1106, 1106, 11, init" />
+    <row values="1107, 11, init, 1107, 1107, 11, init" />
+    <row values="1108, 11, init, 1108, 1108, 11, init" />
+    <row values="1109, 11, init, 1109, 1109, 11, init" />
+</dataset>

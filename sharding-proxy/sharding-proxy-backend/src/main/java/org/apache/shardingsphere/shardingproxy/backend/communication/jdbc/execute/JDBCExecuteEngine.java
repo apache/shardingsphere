@@ -19,25 +19,25 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execu
 
 import lombok.Getter;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
-import org.apache.shardingsphere.core.executor.ShardingExecuteGroup;
-import org.apache.shardingsphere.core.executor.StatementExecuteUnit;
-import org.apache.shardingsphere.core.executor.sql.execute.SQLExecuteTemplate;
-import org.apache.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
-import org.apache.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareTemplate;
-import org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
-import org.apache.shardingsphere.core.routing.SQLRouteResult;
+import org.apache.shardingsphere.core.execute.ShardingExecuteGroup;
+import org.apache.shardingsphere.core.execute.StatementExecuteUnit;
+import org.apache.shardingsphere.core.execute.sql.execute.SQLExecuteTemplate;
+import org.apache.shardingsphere.core.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
+import org.apache.shardingsphere.core.execute.sql.prepare.SQLExecutePrepareTemplate;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
+import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.callback.ProxyJDBCExecutePrepareCallback;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.callback.ProxySQLExecuteCallback;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.ExecuteQueryResponse;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.ExecuteResponse;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapper.JDBCExecutorWrapper;
+import org.apache.shardingsphere.shardingproxy.backend.executor.BackendExecutorContext;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
-import org.apache.shardingsphere.shardingproxy.runtime.ExecutorContext;
-import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
+import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -65,9 +65,9 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
     public JDBCExecuteEngine(final BackendConnection backendConnection, final JDBCExecutorWrapper jdbcExecutorWrapper) {
         this.backendConnection = backendConnection;
         this.jdbcExecutorWrapper = jdbcExecutorWrapper;
-        int maxConnectionsSizePerQuery = GlobalRegistry.getInstance().getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY);
+        int maxConnectionsSizePerQuery = ShardingProxyContext.getInstance().getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY);
         sqlExecutePrepareTemplate = new SQLExecutePrepareTemplate(maxConnectionsSizePerQuery);
-        sqlExecuteTemplate = new SQLExecuteTemplate(ExecutorContext.getInstance().getExecuteEngine(), backendConnection.isSerialExecute());
+        sqlExecuteTemplate = new SQLExecuteTemplate(BackendExecutorContext.getInstance().getExecuteEngine(), backendConnection.isSerialExecute());
     }
     
     @SuppressWarnings("unchecked")

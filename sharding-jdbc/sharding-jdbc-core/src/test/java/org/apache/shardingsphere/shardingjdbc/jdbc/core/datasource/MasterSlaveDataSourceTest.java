@@ -19,9 +19,9 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource;
 
 import org.apache.shardingsphere.api.config.masterslave.LoadBalanceStrategyConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.core.constant.DatabaseType;
-import org.apache.shardingsphere.core.hint.HintManagerHolder;
-import org.apache.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
+import org.apache.shardingsphere.api.hint.HintManager;
+import org.apache.shardingsphere.core.route.router.masterslave.MasterVisitedManager;
+import org.apache.shardingsphere.core.spi.database.H2DatabaseType;
 import org.apache.shardingsphere.shardingjdbc.api.MasterSlaveDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.fixture.TestDataSource;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.MasterSlaveConnection;
@@ -70,7 +70,7 @@ public final class MasterSlaveDataSourceTest {
     @Before
     @After
     public void reset() {
-        HintManagerHolder.clear();
+        HintManager.clear();
         MasterVisitedManager.clear();
         TransactionTypeHolder.clear();
     }
@@ -79,8 +79,8 @@ public final class MasterSlaveDataSourceTest {
     public void assertGetDatabaseProductNameWhenDataBaseProductNameDifferent() throws SQLException {
         DataSource masterDataSource = mock(DataSource.class);
         DataSource slaveDataSource = mock(DataSource.class);
-        Connection masterConnection = mockConnection("MySQL");
-        final Connection slaveConnection = mockConnection("H2");
+        Connection masterConnection = mockConnection("jdbc:mysql://localhost:3306/test_ds");
+        final Connection slaveConnection = mockConnection("jdbc:h2:mem:test_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL");
         Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
         dataSourceMap.put("masterDataSource", masterDataSource);
         dataSourceMap.put("slaveDataSource", slaveDataSource);
@@ -89,7 +89,7 @@ public final class MasterSlaveDataSourceTest {
         MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration(
                 "ds", "masterDataSource", Collections.singletonList("slaveDataSource"), new LoadBalanceStrategyConfiguration("ROUND_ROBIN"));
         try {
-            ((MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, masterSlaveRuleConfig, new Properties())).getDatabaseType();
+            MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, masterSlaveRuleConfig, new Properties());
         } finally {
             verify(masterConnection).close();
             verify(slaveConnection).close();
@@ -101,9 +101,9 @@ public final class MasterSlaveDataSourceTest {
         DataSource masterDataSource = mock(DataSource.class);
         DataSource slaveDataSource1 = mock(DataSource.class);
         DataSource slaveDataSource2 = mock(DataSource.class);
-        Connection masterConnection = mockConnection("H2");
-        Connection slaveConnection1 = mockConnection("H2");
-        Connection slaveConnection2 = mockConnection("H2");
+        Connection masterConnection = mockConnection("jdbc:h2:mem:test_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL");
+        Connection slaveConnection1 = mockConnection("jdbc:h2:mem:test_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL");
+        Connection slaveConnection2 = mockConnection("jdbc:h2:mem:test_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL");
         when(masterDataSource.getConnection()).thenReturn(masterConnection);
         when(slaveDataSource1.getConnection()).thenReturn(slaveConnection1);
         when(slaveDataSource2.getConnection()).thenReturn(slaveConnection2);
@@ -113,16 +113,16 @@ public final class MasterSlaveDataSourceTest {
         dataSourceMap.put("slaveDataSource2", slaveDataSource2);
         assertThat(((MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, 
                 new MasterSlaveRuleConfiguration("ds", "masterDataSource", Arrays.asList("slaveDataSource1", "slaveDataSource2"), new LoadBalanceStrategyConfiguration("ROUND_ROBIN")),
-                new Properties())).getDatabaseType(), is(DatabaseType.H2));
+                new Properties())).getDatabaseType(), instanceOf(H2DatabaseType.class));
         verify(slaveConnection1).close();
         verify(slaveConnection2).close();
     }
     
-    private Connection mockConnection(final String dataBaseProductName) throws SQLException {
+    private Connection mockConnection(final String url) throws SQLException {
         Connection result = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
         when(result.getMetaData()).thenReturn(databaseMetaData);
-        when(databaseMetaData.getDatabaseProductName()).thenReturn(dataBaseProductName);
+        when(databaseMetaData.getURL()).thenReturn(url);
         return result;
     }
     
@@ -137,6 +137,6 @@ public final class MasterSlaveDataSourceTest {
         MasterSlaveConnection connection = masterSlaveDataSource.getConnection();
         assertNotNull(connection.getDataSourceMap());
         assertThat(connection.getDataSourceMap().values().size(), is(2));
-        assertThat(connection.getTransactionType(), is(TransactionType.XA));
+        assertThat(connection.getTransactionType(), is(TransactionType.LOCAL));
     }
 }

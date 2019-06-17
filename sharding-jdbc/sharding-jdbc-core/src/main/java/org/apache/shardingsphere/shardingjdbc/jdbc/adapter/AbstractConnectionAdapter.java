@@ -22,13 +22,12 @@ import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.Getter;
 import org.apache.shardingsphere.core.constant.ConnectionMode;
-import org.apache.shardingsphere.core.hint.HintManagerHolder;
-import org.apache.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
-import org.apache.shardingsphere.core.spi.hook.SPIRootInvokeHook;
+import org.apache.shardingsphere.core.execute.hook.RootInvokeHook;
+import org.apache.shardingsphere.core.execute.hook.SPIRootInvokeHook;
+import org.apache.shardingsphere.core.route.router.masterslave.MasterVisitedManager;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteCallback;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteTemplate;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationConnection;
-import org.apache.shardingsphere.spi.hook.RootInvokeHook;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
@@ -75,15 +74,18 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     
     private final ShardingTransactionManager shardingTransactionManager;
     
-    private ShardingTransactionManagerEngine shardingTransactionManagerEngine;
-    
     private TransactionType transactionType;
     
     protected AbstractConnectionAdapter(final ShardingTransactionManagerEngine shardingTransactionManagerEngine, final TransactionType transactionType) {
         rootInvokeHook.start();
         this.transactionType = transactionType;
-        this.shardingTransactionManagerEngine = shardingTransactionManagerEngine;
         shardingTransactionManager = shardingTransactionManagerEngine.getTransactionManager(transactionType);
+    }
+    
+    protected AbstractConnectionAdapter() {
+        rootInvokeHook.start();
+        this.transactionType = TransactionType.LOCAL;
+        shardingTransactionManager = null;
     }
     
     /**
@@ -192,8 +194,8 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         this.autoCommit = autoCommit;
         if (TransactionType.LOCAL == transactionType) {
             setAutoCommitForLocalTransaction(autoCommit);
-        } else if (!autoCommit) {
-            shardingTransactionManager.begin();
+        } else {
+            setAutoCommitForShardingTransaction(autoCommit);
         }
     }
     
@@ -206,6 +208,28 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
                 connection.setAutoCommit(autoCommit);
             }
         });
+    }
+    
+    private void setAutoCommitForShardingTransaction(final boolean autoCommit) throws SQLException {
+        if (autoCommit && !shardingTransactionManager.isInTransaction() || !autoCommit && shardingTransactionManager.isInTransaction()) {
+            return;
+        }
+        if (autoCommit && shardingTransactionManager.isInTransaction()) {
+            shardingTransactionManager.commit();
+            return;
+        }
+        if (!autoCommit && !shardingTransactionManager.isInTransaction()) {
+            recordMethodInvocation(Connection.class, "setAutoCommit", new Class[]{boolean.class}, new Object[]{true});
+            forceExecuteTemplate.execute(cachedConnections.values(), new ForceExecuteCallback<Connection>() {
+        
+                @Override
+                public void execute(final Connection connection) throws SQLException {
+                    connection.close();
+                }
+            });
+            cachedConnections.clear();
+            shardingTransactionManager.begin();
+        }
     }
     
     @Override
@@ -249,7 +273,6 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     @Override
     public final void close() throws SQLException {
         closed = true;
-        HintManagerHolder.clear();
         MasterVisitedManager.clear();
         TransactionTypeHolder.clear();
         int connectionSize = cachedConnections.size();

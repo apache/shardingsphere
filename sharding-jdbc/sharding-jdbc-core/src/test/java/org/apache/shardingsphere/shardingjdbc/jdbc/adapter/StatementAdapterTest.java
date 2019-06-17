@@ -18,12 +18,13 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.adapter;
 
 import com.google.common.collect.Lists;
-import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.shardingjdbc.common.base.AbstractShardingJDBCDatabaseAndTableTest;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingPreparedStatement;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingStatement;
 import org.apache.shardingsphere.shardingjdbc.jdbc.util.JDBCTestSQL;
+import org.apache.shardingsphere.spi.database.DatabaseType;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -59,7 +60,7 @@ public final class StatementAdapterTest extends AbstractShardingJDBCDatabaseAndT
     public void init() {
         ShardingConnection shardingConnection = getShardingDataSource().getConnection();
         shardingConnections.add(shardingConnection);
-        statements.put(DatabaseType.H2, shardingConnection.createStatement());
+        statements.put(DatabaseTypes.getActualDatabaseType("H2"), shardingConnection.createStatement());
     }
     
     @After
@@ -97,7 +98,7 @@ public final class StatementAdapterTest extends AbstractShardingJDBCDatabaseAndT
         assertThat(actual.isPoolable(), is(poolable));
         assertThat(actual.getRoutedStatements().size(), is(4));
         for (Statement each : actual.getRoutedStatements()) {
-            // H2数据库未实现setPoolable方法
+            // H2 do not implements method `setPoolable()`
             assertFalse(each.isPoolable());
         }
     }
@@ -244,7 +245,7 @@ public final class StatementAdapterTest extends AbstractShardingJDBCDatabaseAndT
         for (Entry<DatabaseType, Statement> each : statements.entrySet()) {
             each.getValue().executeQuery(sql);
             each.getValue().setMaxFieldSize(10);
-            assertThat(each.getValue().getMaxFieldSize(), is(DatabaseType.H2 == each.getKey() ? 0 : 10));
+            assertThat(each.getValue().getMaxFieldSize(), is(DatabaseTypes.getActualDatabaseType("H2") == each.getKey() ? 0 : 10));
         }
     }
     

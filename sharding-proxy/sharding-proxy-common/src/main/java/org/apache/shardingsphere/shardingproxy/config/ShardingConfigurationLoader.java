@@ -19,7 +19,6 @@ package org.apache.shardingsphere.shardingproxy.config;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlProxyRuleConfiguration;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlProxyServerConfiguration;
@@ -41,6 +40,8 @@ import java.util.regex.Pattern;
  */
 public final class ShardingConfigurationLoader {
     
+    private static final String DEFAULT_DATASOURCE_NAME = "dataSource";
+    
     private static final String CONFIG_PATH = "/conf/";
     
     private static final String SERVER_CONFIG_FILE = "server.yaml";
@@ -48,9 +49,9 @@ public final class ShardingConfigurationLoader {
     private static final Pattern RULE_CONFIG_FILE_PATTERN = Pattern.compile("config-.+\\.yaml");
     
     /**
-     * Load proxy configuration.
+     * Load configuration of Sharding-Proxy.
      *
-     * @return proxy configuration
+     * @return configuration of Sharding-Proxy
      * @throws IOException IO exception
      */
     public ShardingConfiguration load() throws IOException {
@@ -76,7 +77,7 @@ public final class ShardingConfigurationLoader {
     private YamlProxyServerConfiguration loadServerConfiguration(final File yamlFile) throws IOException {
         YamlProxyServerConfiguration result = YamlEngine.unmarshal(yamlFile, YamlProxyServerConfiguration.class);
         Preconditions.checkNotNull(result, "Server configuration file `%s` is invalid.", yamlFile.getName());
-        Preconditions.checkState(!Strings.isNullOrEmpty(result.getAuthentication().getUsername()) || null != result.getOrchestration(), "Authority configuration is invalid.");
+        Preconditions.checkState(null != result.getAuthentication() || null != result.getOrchestration(), "Authority configuration is invalid.");
         return result;
     }
     
@@ -86,9 +87,10 @@ public final class ShardingConfigurationLoader {
             return Optional.absent();
         }
         Preconditions.checkNotNull(result.getSchemaName(), "Property `schemaName` in file `%s` is required.", yamlFile.getName());
+        if (result.getDataSources().isEmpty() && null != result.getDataSource()) {
+            result.getDataSources().put(DEFAULT_DATASOURCE_NAME, result.getDataSource());
+        }
         Preconditions.checkState(!result.getDataSources().isEmpty(), "Data sources configuration in file `%s` is required.", yamlFile.getName());
-        Preconditions.checkState(null != result.getShardingRule() || null != result.getMasterSlaveRule() || null != serverConfiguration.getOrchestration(),
-                "Configuration invalid in file `%s`, local and orchestration configuration are required at least one.", yamlFile.getName());
         return Optional.of(result);
     }
     

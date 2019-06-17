@@ -26,7 +26,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.core.constant.ConnectionMode;
 import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
+import org.apache.shardingsphere.core.route.router.masterslave.MasterVisitedManager;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -62,6 +62,9 @@ public final class BackendConnection implements AutoCloseable {
     @Setter
     private int connectionId;
     
+    @Setter
+    private String userName;
+    
     private final Multimap<String, Connection> cachedConnections = LinkedHashMultimap.create();
     
     private final Collection<Statement> cachedStatements = new CopyOnWriteArrayList<>();
@@ -70,6 +73,7 @@ public final class BackendConnection implements AutoCloseable {
     
     private final Collection<MethodInvocation> methodInvocations = new ArrayList<>();
     
+    @Getter
     private final ResourceSynchronizer resourceSynchronizer = new ResourceSynchronizer();
     
     private final ConnectionStateHandler stateHandler = new ConnectionStateHandler(resourceSynchronizer);
@@ -87,7 +91,6 @@ public final class BackendConnection implements AutoCloseable {
         if (null == schemaName) {
             throw new ShardingException("Please select database, then switch transaction type.");
         }
-        //TODO switch transaction type will not effect running transaction now, need to remove this logic.
         if (isSwitchFailed()) {
             throw new ShardingException("Failed to switch transaction type, please terminate current transaction.");
         }
@@ -111,7 +114,7 @@ public final class BackendConnection implements AutoCloseable {
     private boolean isSwitchFailed() {
         int retryCount = 0;
         while (stateHandler.isInTransaction() && retryCount < MAXIMUM_RETRY_COUNT) {
-            resourceSynchronizer.doAwait();
+            resourceSynchronizer.doAwaitUntil();
             ++retryCount;
             log.warn("Current transaction have not terminated, retry count:[{}].", retryCount);
         }
@@ -132,7 +135,6 @@ public final class BackendConnection implements AutoCloseable {
      * @throws SQLException SQL exception
      */
     public List<Connection> getConnections(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
-        stateHandler.setRunningStatusIfNecessary();
         if (stateHandler.isInTransaction()) {
             return getConnectionsWithTransaction(connectionMode, dataSourceName, connectionSize);
         } else {
@@ -237,8 +239,8 @@ public final class BackendConnection implements AutoCloseable {
     public synchronized void close(final boolean forceClose) throws SQLException {
         Collection<SQLException> exceptions = new LinkedList<>();
         MasterVisitedManager.clear();
-        exceptions.addAll(closeStatements());
         exceptions.addAll(closeResultSets());
+        exceptions.addAll(closeStatements());
         if (!stateHandler.isInTransaction() || forceClose) {
             exceptions.addAll(releaseConnections(forceClose));
         }

@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.transaction.core;
 
-import com.google.common.base.Optional;
-
 /**
  * Transaction operation type.
  *
@@ -27,27 +25,5 @@ import com.google.common.base.Optional;
  */
 public enum TransactionOperationType {
     
-    BEGIN, COMMIT, ROLLBACK, SET_TRANSACTION, IGNORE;
-    
-    /**
-     * Get operation type.
-     * 
-     * @param sql SQL
-     * @return transaction operation type
-     */
-    // TODO :hongjun move to TCLParser, need parse comment etc
-    public static Optional<TransactionOperationType> getOperationType(final String sql) {
-        switch (sql.toUpperCase()) {
-            case "BEGIN":
-            case "START TRANSACTION":
-            case "SET AUTOCOMMIT=0":
-                return Optional.of(TransactionOperationType.BEGIN);
-            case "COMMIT":
-                return Optional.of(TransactionOperationType.COMMIT);
-            case "ROLLBACK":
-                return Optional.of(TransactionOperationType.ROLLBACK);
-            default:
-                return Optional.absent();
-        }
-    }
+    BEGIN, COMMIT, ROLLBACK
 }

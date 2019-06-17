@@ -38,7 +38,7 @@ public class ConnectionStateHandler {
      *
      * @param update new update status
      */
-    public void getAndSetStatus(final ConnectionStatus update) {
+    public void setStatus(final ConnectionStatus update) {
         status.getAndSet(update);
         if (ConnectionStatus.TERMINATED == status.get()) {
             resourceSynchronizer.doNotify();
@@ -57,8 +57,8 @@ public class ConnectionStateHandler {
     /**
      * Change connection status to running if necessary.
      */
-    void setRunningStatusIfNecessary() {
-        if (ConnectionStatus.TRANSACTION != status.get()) {
+    public void setRunningStatusIfNecessary() {
+        if (ConnectionStatus.TRANSACTION != status.get() && ConnectionStatus.RUNNING != status.get()) {
             status.getAndSet(ConnectionStatus.RUNNING);
         }
     }
@@ -89,7 +89,7 @@ public class ConnectionStateHandler {
     public void waitUntilConnectionReleasedIfNecessary() throws InterruptedException {
         if (ConnectionStatus.RUNNING == status.get() || ConnectionStatus.TERMINATED == status.get()) {
             while (!status.compareAndSet(ConnectionStatus.RELEASE, ConnectionStatus.RUNNING)) {
-                resourceSynchronizer.doAwait();
+                resourceSynchronizer.doAwaitUntil();
             }
         }
     }

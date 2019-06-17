@@ -18,16 +18,16 @@
 package org.apache.shardingsphere.shardingjdbc.executor;
 
 import org.apache.shardingsphere.core.constant.ConnectionMode;
-import org.apache.shardingsphere.core.executor.ShardingExecuteGroup;
-import org.apache.shardingsphere.core.executor.StatementExecuteUnit;
-import org.apache.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
-import org.apache.shardingsphere.core.executor.sql.execute.result.MemoryQueryResult;
-import org.apache.shardingsphere.core.executor.sql.execute.result.StreamQueryResult;
-import org.apache.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
-import org.apache.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareCallback;
-import org.apache.shardingsphere.core.merger.QueryResult;
-import org.apache.shardingsphere.core.routing.RouteUnit;
-import org.apache.shardingsphere.core.routing.SQLRouteResult;
+import org.apache.shardingsphere.core.execute.ShardingExecuteGroup;
+import org.apache.shardingsphere.core.execute.StatementExecuteUnit;
+import org.apache.shardingsphere.core.execute.sql.execute.SQLExecuteCallback;
+import org.apache.shardingsphere.core.execute.sql.execute.result.MemoryQueryResult;
+import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
+import org.apache.shardingsphere.core.execute.sql.execute.result.StreamQueryResult;
+import org.apache.shardingsphere.core.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
+import org.apache.shardingsphere.core.execute.sql.prepare.SQLExecutePrepareCallback;
+import org.apache.shardingsphere.core.route.RouteUnit;
+import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 
@@ -103,8 +103,8 @@ public final class StatementExecutor extends AbstractStatementExecutor {
         ResultSet resultSet = statement.executeQuery(routeUnit.getSqlUnit().getSql());
         ShardingRule shardingRule = getConnection().getShardingContext().getShardingRule();
         getResultSets().add(resultSet);
-        return ConnectionMode.MEMORY_STRICTLY == connectionMode ? new StreamQueryResult(resultSet, shardingRule.getAllActualTableNames(), shardingRule.getShardingEncryptorEngine()) 
-                : new MemoryQueryResult(resultSet, shardingRule.getAllActualTableNames(), shardingRule.getShardingEncryptorEngine());
+        return ConnectionMode.MEMORY_STRICTLY == connectionMode ? new StreamQueryResult(resultSet, shardingRule) 
+                : new MemoryQueryResult(resultSet, shardingRule);
     }
     
     /**

@@ -18,14 +18,13 @@
 package org.apache.shardingsphere.transaction.xa.jta.datasource;
 
 import com.atomikos.beans.PropertyUtils;
-import com.google.common.collect.LinkedHashMultimap;
-import com.google.common.collect.Multimap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XAPropertiesFactory;
+import org.apache.shardingsphere.spi.database.DatabaseType;
+import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition;
+import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinitionFactory;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.swapper.DataSourceSwapper;
 
 import javax.sql.DataSource;
@@ -42,18 +41,7 @@ import java.util.Properties;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class XADataSourceFactory {
     
-    private static final Multimap<DatabaseType, String> XA_DRIVER_CLASS_NAMES = LinkedHashMultimap.create();
-    
     private static final DataSourceSwapper SWAPPER = new DataSourceSwapper();
-    
-    static {
-        XA_DRIVER_CLASS_NAMES.put(DatabaseType.H2, "org.h2.jdbcx.JdbcDataSource");
-        XA_DRIVER_CLASS_NAMES.put(DatabaseType.MySQL, "com.mysql.jdbc.jdbc2.optional.MysqlXADataSource");
-        XA_DRIVER_CLASS_NAMES.put(DatabaseType.MySQL, "com.mysql.cj.jdbc.MysqlXADataSource");
-        XA_DRIVER_CLASS_NAMES.put(DatabaseType.PostgreSQL, "org.postgresql.xa.PGXADataSource");
-        XA_DRIVER_CLASS_NAMES.put(DatabaseType.Oracle, "oracle.jdbc.xa.client.OracleXADataSource");
-        XA_DRIVER_CLASS_NAMES.put(DatabaseType.SQLServer, "com.microsoft.sqlserver.jdbc.SQLServerXADataSource");
-    }
     
     /**
      * Create XA DataSource instance.
@@ -62,7 +50,7 @@ public final class XADataSourceFactory {
      * @return XA DataSource instance
      */
     public static XADataSource build(final DatabaseType databaseType) {
-        return createXADataSource(databaseType);
+        return createXADataSource(XADataSourceDefinitionFactory.getXADataSourceDefinition(databaseType));
     }
     
     /**
@@ -74,16 +62,17 @@ public final class XADataSourceFactory {
      */
     @SneakyThrows
     public static XADataSource build(final DatabaseType databaseType, final DataSource dataSource) {
-        XADataSource result = createXADataSource(databaseType);
-        Properties xaProperties = XAPropertiesFactory.createXAProperties(databaseType).build(SWAPPER.swap(dataSource));
+        XADataSourceDefinition xaDataSourceDefinition = XADataSourceDefinitionFactory.getXADataSourceDefinition(databaseType);
+        XADataSource result = createXADataSource(xaDataSourceDefinition);
+        Properties xaProperties = xaDataSourceDefinition.getXAProperties(SWAPPER.swap(dataSource));
         PropertyUtils.setProperties(result, xaProperties);
         return result;
     }
     
-    private static XADataSource createXADataSource(final DatabaseType databaseType) {
+    private static XADataSource createXADataSource(final XADataSourceDefinition xaDataSourceDefinition) {
         XADataSource result = null;
         List<ShardingException> exceptions = new LinkedList<>();
-        for (String each : XA_DRIVER_CLASS_NAMES.get(databaseType)) {
+        for (String each : xaDataSourceDefinition.getXADriverClassName()) {
             try {
                 result = loadXADataSource(each);
             } catch (final ShardingException ex) {
@@ -92,7 +81,7 @@ public final class XADataSourceFactory {
         }
         if (null == result && !exceptions.isEmpty()) {
             if (exceptions.size() > 1) {
-                throw new ShardingException("Failed to create [%s] XA DataSource", databaseType);
+                throw new ShardingException("Failed to create [%s] XA DataSource", xaDataSourceDefinition);
             } else {
                 throw exceptions.iterator().next();
             }

@@ -37,7 +37,7 @@ public final class ConnectionStateHandlerTest {
             @Override
             @SneakyThrows
             public void run() {
-                connectionStateHandler.getAndSetStatus(ConnectionStatus.RUNNING);
+                connectionStateHandler.setStatus(ConnectionStatus.RUNNING);
                 connectionStateHandler.waitUntilConnectionReleasedIfNecessary();
                 if (ConnectionStatus.RUNNING != connectionStateHandler.getStatus()) {
                     flag.getAndSet(false);
@@ -66,7 +66,7 @@ public final class ConnectionStateHandlerTest {
             @Override
             @SneakyThrows
             public void run() {
-                connectionStateHandler.getAndSetStatus(ConnectionStatus.TERMINATED);
+                connectionStateHandler.setStatus(ConnectionStatus.TERMINATED);
                 connectionStateHandler.waitUntilConnectionReleasedIfNecessary();
                 if (ConnectionStatus.RUNNING != connectionStateHandler.getStatus()) {
                     flag.getAndSet(false);

@@ -27,7 +27,9 @@ import java.util.concurrent.locks.ReentrantLock;
  *
  * @author zhaojun
  */
-class ResourceSynchronizer {
+public class ResourceSynchronizer {
+    
+    private static final long DEFAULT_TIMEOUT_MILLISECONDS = 200;
     
     private final Lock lock = new ReentrantLock();
     
@@ -36,12 +38,26 @@ class ResourceSynchronizer {
     /**
      * Do await.
      *
-     * @throws InterruptedException interrupted exception
      */
-    void doAwait() throws InterruptedException {
+    public void doAwait() {
         lock.lock();
         try {
-            condition.await(200, TimeUnit.MILLISECONDS);
+            condition.await();
+        } catch (final InterruptedException ignore) {
+        } finally {
+            lock.unlock();
+        }
+    }
+    
+    /**
+     * Do await until default timeout milliseconds.
+     *
+     * @throws InterruptedException interrupted exception
+     */
+    void doAwaitUntil() throws InterruptedException {
+        lock.lock();
+        try {
+            condition.await(DEFAULT_TIMEOUT_MILLISECONDS, TimeUnit.MILLISECONDS);
         } finally {
             lock.unlock();
         }
@@ -50,7 +66,7 @@ class ResourceSynchronizer {
     /**
      * Do notify.
      */
-    void doNotify() {
+    public void doNotify() {
         lock.lock();
         try {
             condition.signalAll();

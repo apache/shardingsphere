@@ -23,6 +23,7 @@ import javax.sql.DataSource;
 import java.sql.DatabaseMetaData;
 import java.sql.RowIdLifetime;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.Map;
 
 /**
@@ -428,8 +429,16 @@ public final class CachedDatabaseMetaData extends AdaptedDatabaseMetaData {
         supportsStatementPooling = databaseMetaData.supportsStatementPooling();
         supportsStoredFunctionsUsingCallSyntax = databaseMetaData.supportsStoredFunctionsUsingCallSyntax();
         autoCommitFailureClosesAllResultSets = databaseMetaData.autoCommitFailureClosesAllResultSets();
-        rowIdLifetime = databaseMetaData.getRowIdLifetime();
+        rowIdLifetime = getRowIdLifetimeFromOriginMetaData(databaseMetaData);
         generatedKeyAlwaysReturned = isGeneratedKeyAlwaysReturned(databaseMetaData);
+    }
+    
+    private RowIdLifetime getRowIdLifetimeFromOriginMetaData(final DatabaseMetaData databaseMetaData) throws SQLException {
+        try {
+            return databaseMetaData.getRowIdLifetime();
+        } catch (final SQLFeatureNotSupportedException ignore) {
+            return RowIdLifetime.ROWID_UNSUPPORTED;
+        }
     }
     
     private boolean isGeneratedKeyAlwaysReturned(final DatabaseMetaData databaseMetaData) throws SQLException {

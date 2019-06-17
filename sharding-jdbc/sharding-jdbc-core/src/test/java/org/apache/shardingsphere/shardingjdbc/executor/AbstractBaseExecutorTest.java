@@ -20,16 +20,18 @@ package org.apache.shardingsphere.shardingjdbc.executor;
 import com.google.common.base.Optional;
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
-import org.apache.shardingsphere.core.encrypt.ShardingEncryptorEngine;
-import org.apache.shardingsphere.core.executor.ShardingExecuteEngine;
-import org.apache.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
+import org.apache.shardingsphere.core.database.DatabaseTypes;
+import org.apache.shardingsphere.core.execute.ShardingExecuteEngine;
+import org.apache.shardingsphere.core.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
+import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.rule.TableRule;
+import org.apache.shardingsphere.core.strategy.encrypt.ShardingEncryptorEngine;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
-import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
+import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.After;
@@ -67,7 +69,7 @@ public abstract class AbstractBaseExecutorTest {
         ShardingContext shardingContext = mock(ShardingContext.class);
         when(shardingContext.getExecuteEngine()).thenReturn(executeEngine);
         when(shardingContext.getShardingProperties()).thenReturn(getShardingProperties());
-        when(shardingContext.getDatabaseType()).thenReturn(DatabaseType.H2);
+        when(shardingContext.getDatabaseType()).thenReturn(DatabaseTypes.getActualDatabaseType("H2"));
         ShardingRule shardingRule = getShardingRule();
         when(shardingContext.getShardingRule()).thenReturn(shardingRule);
         DataSource dataSource = mock(DataSource.class);
@@ -86,7 +88,10 @@ public abstract class AbstractBaseExecutorTest {
         when(shardingEncryptor.decrypt(anyString())).thenReturn("decryptValue");
         ShardingEncryptorEngine shardingEncryptorEngine = mock(ShardingEncryptorEngine.class);
         when(shardingEncryptorEngine.getShardingEncryptor(anyString(), anyString())).thenReturn(Optional.of(shardingEncryptor));
-        when(shardingRule.getShardingEncryptorEngine()).thenReturn(shardingEncryptorEngine);
+        EncryptRule encryptRule = mock(EncryptRule.class);
+        when(encryptRule.getEncryptorEngine()).thenReturn(shardingEncryptorEngine);
+        when(shardingRule.getEncryptRule()).thenReturn(encryptRule);
+        when(shardingRule.findTableRuleByActualTable("table_x")).thenReturn(Optional.<TableRule>absent());
         return shardingRule;
     }
     

@@ -1,7 +1,0 @@
-<dataset update-count="20">
-    <metadata data-nodes="tbl.t_order_${0..9}">
-        <column name="order_id" type="numeric" />
-        <column name="user_id" type="numeric" />
-        <column name="status" type="varchar" />
-    </metadata>
-</dataset>

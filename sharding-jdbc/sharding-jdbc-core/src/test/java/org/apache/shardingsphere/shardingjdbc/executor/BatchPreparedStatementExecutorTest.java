@@ -19,11 +19,11 @@ package org.apache.shardingsphere.shardingjdbc.executor;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.ConnectionMode;
-import org.apache.shardingsphere.core.executor.ShardingExecuteGroup;
-import org.apache.shardingsphere.core.executor.StatementExecuteUnit;
-import org.apache.shardingsphere.core.routing.BatchRouteUnit;
-import org.apache.shardingsphere.core.routing.RouteUnit;
-import org.apache.shardingsphere.core.routing.SQLUnit;
+import org.apache.shardingsphere.core.execute.ShardingExecuteGroup;
+import org.apache.shardingsphere.core.execute.StatementExecuteUnit;
+import org.apache.shardingsphere.core.route.BatchRouteUnit;
+import org.apache.shardingsphere.core.route.RouteUnit;
+import org.apache.shardingsphere.core.route.SQLUnit;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
@@ -127,9 +127,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         executeGroups.add(new ShardingExecuteGroup<>(preparedStatementExecuteUnits));
         Collection<BatchRouteUnit> routeUnits = new LinkedList<>();
         for (PreparedStatement each : preparedStatements) {
-            List<List<Object>> parameterSets = new LinkedList<>();
-            parameterSets.add(Collections.singletonList((Object) 1));
-            RouteUnit routeUnit = new RouteUnit("ds_0", new SQLUnit(SQL, parameterSets));
+            RouteUnit routeUnit = new RouteUnit("ds_0", new SQLUnit(SQL, Collections.singletonList((Object) 1)));
             BatchRouteUnit batchRouteUnit = new BatchRouteUnit(routeUnit);
             batchRouteUnit.mapAddBatchCount(0);
             batchRouteUnit.mapAddBatchCount(1);

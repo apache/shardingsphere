@@ -48,9 +48,12 @@ public final class BroadcastBackendHandler implements TextProtocolBackendHandler
     @Override
     public BackendResponse execute() {
         Collection<BackendResponse> responses = new LinkedList<>();
+        String originalSchema = backendConnection.getSchemaName();
         for (String each : LogicSchemas.getInstance().getSchemaNames()) {
+            backendConnection.setCurrentSchema(each);
             responses.add(databaseCommunicationEngineFactory.newTextProtocolInstance(LogicSchemas.getInstance().getLogicSchema(each), sql, backendConnection).execute());
         }
+        backendConnection.setCurrentSchema(originalSchema);
         for (BackendResponse each : responses) {
             if (each instanceof ErrorResponse) {
                 return each;

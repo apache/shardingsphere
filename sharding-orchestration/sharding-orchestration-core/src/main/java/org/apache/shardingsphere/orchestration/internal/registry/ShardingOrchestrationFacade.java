@@ -55,7 +55,7 @@ public final class ShardingOrchestrationFacade implements AutoCloseable {
     private final ShardingOrchestrationListenerManager listenerManager;
     
     public ShardingOrchestrationFacade(final OrchestrationConfiguration orchestrationConfig, final Collection<String> shardingSchemaNames) {
-        regCenter = RegistryCenterLoader.load(orchestrationConfig.getRegCenterConfig());
+        regCenter = new RegistryCenterServiceLoader().load(orchestrationConfig.getRegCenterConfig());
         isOverwrite = orchestrationConfig.isOverwrite();
         configService = new ConfigurationService(orchestrationConfig.getName(), regCenter);
         stateService = new StateService(orchestrationConfig.getName(), regCenter);

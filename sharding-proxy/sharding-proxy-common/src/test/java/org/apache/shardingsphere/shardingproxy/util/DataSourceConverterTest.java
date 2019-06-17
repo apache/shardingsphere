@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.util;
 
+import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 import org.hamcrest.CoreMatchers;
@@ -26,24 +27,23 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 
 public final class DataSourceConverterTest {
     
     @Test
     public void assertGetDataSourceParameterMap() {
         Map<String, DataSourceConfiguration> dataSourceConfigurationMap = new HashMap<>(2, 1);
-        DataSourceConfiguration dataSourceConfiguration0 = mock(DataSourceConfiguration.class);
+        DataSourceConfiguration dataSourceConfiguration0 = new DataSourceConfiguration(HikariDataSource.class.getName());
+        dataSourceConfiguration0.getProperties().put("url", "jdbc:mysql://localhost:3306/demo_ds_0");
         dataSourceConfigurationMap.put("ds_0", dataSourceConfiguration0);
-        DataSourceConfiguration dataSourceConfiguration1 = mock(DataSourceConfiguration.class);
+        DataSourceConfiguration dataSourceConfiguration1 = new DataSourceConfiguration(HikariDataSource.class.getName());
+        dataSourceConfiguration1.getProperties().put("url", "jdbc:mysql://localhost:3306/demo_ds_1");
         dataSourceConfigurationMap.put("ds_1", dataSourceConfiguration1);
         Map<String, YamlDataSourceParameter> actual = DataSourceConverter.getDataSourceParameterMap(dataSourceConfigurationMap);
         assertThat(actual.size(), is(2));
-        assertTrue(actual.containsKey("ds_0"));
-        assertTrue(actual.containsKey("ds_1"));
+        assertThat(actual.get("ds_0").getUrl(), is("jdbc:mysql://localhost:3306/demo_ds_0"));
+        assertThat(actual.get("ds_1").getUrl(), is("jdbc:mysql://localhost:3306/demo_ds_1"));
     }
     
     @Test
@@ -53,21 +53,19 @@ public final class DataSourceConverterTest {
         dataSourceParameterMap.put("ds_1", crateDataSourceParameter());
         Map<String, DataSourceConfiguration> actual = DataSourceConverter.getDataSourceConfigurationMap(dataSourceParameterMap);
         assertThat(actual.size(), is(2));
-        assertNotNull(actual.get("ds_0"));
-        assertNotNull(actual.get("ds_1"));
-        assertThatParameter(actual.get("ds_0"));
-        assertThatParameter(actual.get("ds_1"));
+        assertParameter(actual.get("ds_0"));
+        assertParameter(actual.get("ds_1"));
     }
     
     private YamlDataSourceParameter crateDataSourceParameter() {
         YamlDataSourceParameter result = new YamlDataSourceParameter();
-        result.setUsername("root");
         result.setUrl("jdbc:mysql://localhost:3306/demo_ds");
+        result.setUsername("root");
         result.setPassword("root");
         return result;
     }
     
-    private void assertThatParameter(final DataSourceConfiguration actual) {
+    private void assertParameter(final DataSourceConfiguration actual) {
         Map<String, Object> properties = actual.getProperties();
         assertThat(properties.get("maxPoolSize"), CoreMatchers.<Object>is(50));
         assertThat(properties.get("minPoolSize"), CoreMatchers.<Object>is(1));

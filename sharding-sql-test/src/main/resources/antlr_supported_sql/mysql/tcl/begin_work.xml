@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<sql-cases db-types="MySQL" namespace="mysql.tcl.beginWork">
-    <sql-case id="begin" value="BEGIN" />
-    <sql-case id="begin_read_only" value="START TRANSACTION READ ONLY" />
-</sql-cases>

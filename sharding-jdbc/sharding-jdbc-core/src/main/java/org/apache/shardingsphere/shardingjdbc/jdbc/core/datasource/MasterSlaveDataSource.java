@@ -18,14 +18,13 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource;
 
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
+import org.apache.shardingsphere.core.parse.entry.MasterSlaveSQLParseEntry;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.MasterSlaveConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata.CachedDatabaseMetaData;
-import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -42,12 +41,13 @@ import java.util.Properties;
  * @author zhaojun
  */
 @Getter
-@Slf4j
 public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     
     private final DatabaseMetaData cachedDatabaseMetaData;
     
     private final MasterSlaveRule masterSlaveRule;
+    
+    private final MasterSlaveSQLParseEntry parseEngine;
     
     private final ShardingProperties shardingProperties;
     
@@ -55,6 +55,7 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
         super(dataSourceMap);
         cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap);
         this.masterSlaveRule = new MasterSlaveRule(masterSlaveRuleConfig);
+        parseEngine = new MasterSlaveSQLParseEntry(getDatabaseType());
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
     }
     
@@ -63,6 +64,7 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
         cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap);
         this.masterSlaveRule = masterSlaveRule;
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
+        parseEngine = new MasterSlaveSQLParseEntry(getDatabaseType());
     }
     
     private DatabaseMetaData createCachedDatabaseMetaData(final Map<String, DataSource> dataSourceMap) throws SQLException {
@@ -73,6 +75,6 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     
     @Override
     public final MasterSlaveConnection getConnection() {
-        return new MasterSlaveConnection(this, getDataSourceMap(), getShardingTransactionManagerEngine(), TransactionTypeHolder.get());
+        return new MasterSlaveConnection(this, getDataSourceMap(), parseEngine);
     }
 }

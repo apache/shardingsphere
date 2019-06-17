@@ -20,12 +20,15 @@ package org.apache.shardingsphere.orchestration.yaml.swapper;
 import org.apache.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import org.apache.shardingsphere.orchestration.yaml.config.YamlOrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.yaml.config.YamlRegistryCenterConfiguration;
 import org.junit.Test;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public final class OrchestrationConfigurationYamlSwapperTest {
     
@@ -36,20 +39,21 @@ public final class OrchestrationConfigurationYamlSwapperTest {
         RegistryCenterConfiguration registryCenterConfiguration = mock(RegistryCenterConfiguration.class);
         YamlOrchestrationConfiguration actual = orchestrationConfigurationYamlSwapper.swap(new OrchestrationConfiguration("orche_ds", registryCenterConfiguration, true));
         assertThat(actual.getName(), is("orche_ds"));
-        assertThat(actual.getRegistry(), is(registryCenterConfiguration));
+        assertThat(actual.getRegistry(), instanceOf(YamlRegistryCenterConfiguration.class));
         assertTrue(actual.isOverwrite());
     }
     
     @Test
     public void assertSwapToConfiguration() {
         YamlOrchestrationConfiguration yamlConfiguration = new YamlOrchestrationConfiguration();
+        YamlRegistryCenterConfiguration registryCenterConfiguration = mock(YamlRegistryCenterConfiguration.class);
+        when(registryCenterConfiguration.getType()).thenReturn("type");
         yamlConfiguration.setName("orche_ds");
-        RegistryCenterConfiguration registryCenterConfiguration = mock(RegistryCenterConfiguration.class);
         yamlConfiguration.setRegistry(registryCenterConfiguration);
         yamlConfiguration.setOverwrite(true);
         OrchestrationConfiguration actual = orchestrationConfigurationYamlSwapper.swap(yamlConfiguration);
         assertThat(actual.getName(), is("orche_ds"));
-        assertThat(actual.getRegCenterConfig(), is(registryCenterConfiguration));
+        assertThat(actual.getRegCenterConfig(), instanceOf(RegistryCenterConfiguration.class));
         assertTrue(actual.isOverwrite());
     }
 }

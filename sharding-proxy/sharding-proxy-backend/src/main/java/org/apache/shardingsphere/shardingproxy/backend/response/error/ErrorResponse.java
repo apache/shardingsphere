@@ -20,9 +20,6 @@ package org.apache.shardingsphere.shardingproxy.backend.response.error;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
-
-import java.sql.SQLException;
 
 /**
  * Error response.
@@ -33,17 +30,5 @@ import java.sql.SQLException;
 @Getter
 public final class ErrorResponse implements BackendResponse {
     
-    private final int errorCode;
-    
-    private final String sqlState;
-    
-    private final String errorMessage;
-    
-    public ErrorResponse(final MySQLServerErrorCode errorCode, final Object... errorMessageArguments) {
-        this(errorCode.getErrorCode(), errorCode.getSqlState(), String.format(errorCode.getErrorMessage(), errorMessageArguments));
-    }
-    
-    public ErrorResponse(final SQLException cause) {
-        this(cause.getErrorCode(), cause.getSQLState(), cause.getMessage());
-    }
+    private final Exception cause;
 }

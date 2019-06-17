@@ -19,13 +19,11 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recog
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recognizer.spi.JDBCDriverURLRecognizer;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.ServiceLoader;
 
 /**
@@ -36,56 +34,35 @@ import java.util.ServiceLoader;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class JDBCDriverURLRecognizerEngine {
     
-    private static final Map<String, String> URL_PREFIX_AND_DRIVER_CLASS_NAME_MAPPER = new HashMap<>();
+    private static final Collection<JDBCDriverURLRecognizer> JDBC_DRIVER_URL_RECOGNIZERS = new LinkedList<>();
     
     static {
-        load();
-    }
-    
-    private static void load() {
         for (JDBCDriverURLRecognizer each : ServiceLoader.load(JDBCDriverURLRecognizer.class)) {
-            for (String prefix : each.getURLPrefixes()) {
-                URL_PREFIX_AND_DRIVER_CLASS_NAME_MAPPER.put(prefix, each.getDriverClassName());
-            }
+            JDBC_DRIVER_URL_RECOGNIZERS.add(each);
         }
     }
     
     /**
-     * Get JDBC driver class name.
+     * Get JDBC driver URL recognizer.
      * 
      * @param url JDBC URL
-     * @return driver class name
+     * @return JDBC driver URL recognizer
      */
-    public static String getDriverClassName(final String url) {
-        for (Entry<String, String> entry : URL_PREFIX_AND_DRIVER_CLASS_NAME_MAPPER.entrySet()) {
-            if (url.startsWith(entry.getKey())) {
-                return entry.getValue();
+    public static JDBCDriverURLRecognizer getJDBCDriverURLRecognizer(final String url) {
+        for (JDBCDriverURLRecognizer each : JDBC_DRIVER_URL_RECOGNIZERS) {
+            if (isMatchURL(url, each)) {
+                return each;
             }
         }
         throw new ShardingException("Cannot resolve JDBC url `%s`. Please implements `%s` and add to SPI.", url, JDBCDriverURLRecognizer.class.getName());
     }
     
-    /**
-     * Get database type.
-     *
-     * @param url JDBC URL
-     * @return database type
-     */
-    public static DatabaseType getDatabaseType(final String url) {
-        switch (getDriverClassName(url)) {
-            case "com.mysql.cj.jdbc.Driver":
-            case "com.mysql.jdbc.Driver":
-                return DatabaseType.MySQL;
-            case "org.postgresql.Driver":
-                return DatabaseType.PostgreSQL;
-            case "oracle.jdbc.driver.OracleDriver":
-                return DatabaseType.Oracle;
-            case "com.microsoft.sqlserver.jdbc.SQLServerDriver":
-                return DatabaseType.SQLServer;
-            case "org.h2.Driver":
-                return DatabaseType.H2;
-            default:
-                throw new ShardingException("Cannot resolve JDBC url `%s`", url);
+    private static boolean isMatchURL(final String url, final JDBCDriverURLRecognizer jdbcDriverURLRecognizer) {
+        for (String each : jdbcDriverURLRecognizer.getURLPrefixes()) {
+            if (url.startsWith(each)) {
+                return true;
+            }
         }
+        return false;
     }
 }

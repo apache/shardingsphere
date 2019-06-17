@@ -32,7 +32,8 @@ import static org.junit.Assert.assertThat;
 @RunWith(MockitoJUnitRunner.class)
 public final class AuthenticationChangedListenerTest {
     
-    private static final String AUTHENTICATION_YAML = "password: root\nusername: root\n";
+    private static final String AUTHENTICATION_YAML = "  users:\n" + "    root1:\n      password: root1\n" 
+            + "      authorizedSchemas: sharding_db\n" + "    root2:\n" + "      password: root2\n" + "      authorizedSchemas: sharding_db,ms_db";
     
     private AuthenticationChangedListener authenticationChangedListener;
     
@@ -46,7 +47,7 @@ public final class AuthenticationChangedListenerTest {
     
     @Test
     public void assertCreateShardingOrchestrationEvent() {
-        assertThat(
-                authenticationChangedListener.createShardingOrchestrationEvent(new DataChangedEvent("test", AUTHENTICATION_YAML, ChangedType.UPDATED)).getAuthentication().getUsername(), is("root"));
+        assertThat(authenticationChangedListener.createShardingOrchestrationEvent(
+                new DataChangedEvent("test", AUTHENTICATION_YAML, ChangedType.UPDATED)).getAuthentication().getUsers().get("root1").getPassword(), is("root1"));
     }
 }

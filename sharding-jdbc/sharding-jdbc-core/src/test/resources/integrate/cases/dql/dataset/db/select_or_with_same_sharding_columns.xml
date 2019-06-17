@@ -1,9 +1,0 @@
-<dataset>
-    <metadata>
-        <column name="order_id" />
-        <column name="user_id" />
-        <column name="status" />
-    </metadata>
-    <row values="1000, 10, init" />
-    <row values="1001, 10, init" />
-</dataset>

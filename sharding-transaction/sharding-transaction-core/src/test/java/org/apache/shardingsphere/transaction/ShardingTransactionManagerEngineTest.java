@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.transaction;
 
-import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.core.fixture.ShardingTransactionManagerFixture;
 import org.junit.Test;
@@ -44,7 +44,7 @@ public final class ShardingTransactionManagerEngineTest {
         Runnable caller = mock(Runnable.class);
         ShardingTransactionManagerFixture shardingTransactionManager = (ShardingTransactionManagerFixture) shardingTransactionManagerEngine.getTransactionManager(TransactionType.XA);
         shardingTransactionManager.setCaller(caller);
-        shardingTransactionManagerEngine.init(DatabaseType.H2, mock(Map.class));
+        shardingTransactionManagerEngine.init(DatabaseTypes.getActualDatabaseType("H2"), mock(Map.class));
         verify(caller).run();
     }
 }

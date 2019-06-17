@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<sql-cases>
-    <sql-case id="show_index_with_index_with_table" value="SHOW INDEX FROM t_order" db-types="MySQL" />
-    <sql-case id="show_index_with_indexes_with_table_and_database" value="SHOW INDEXES FROM t_order FROM sharding_db" db-types="MySQL" />
-    <sql-case id="show_index_with_keys_with_database_and_table" value="SHOW KEYS FROM sharding_db.t_order" db-types="MySQL" />
-    <sql-case id="show_index_with_table_back_quotes" value="SHOW INDEXES FROM `t_order` FROM sharding_db" db-types="MySQL" />
-    <sql-case id="show_index_with_database_back_quotes" value="SHOW INDEXES FROM t_order FROM `sharding_db`" db-types="MySQL" />
-    <sql-case id="show_index_with_back_quotes" value="SHOW KEYS FROM `sharding_db`.`t_order`" db-types="MySQL" />
-</sql-cases>

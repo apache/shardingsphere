@@ -18,26 +18,32 @@
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapper;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.core.PreparedQueryShardingEngine;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
-import org.apache.shardingsphere.core.parsing.SQLJudgeEngine;
-import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import org.apache.shardingsphere.core.rewrite.MasterSlaveSQLRewriteEngine;
-import org.apache.shardingsphere.core.routing.PreparedStatementRoutingEngine;
-import org.apache.shardingsphere.core.routing.RouteUnit;
-import org.apache.shardingsphere.core.routing.SQLRouteResult;
-import org.apache.shardingsphere.core.routing.SQLUnit;
-import org.apache.shardingsphere.core.routing.router.masterslave.MasterSlaveRouter;
+import org.apache.shardingsphere.core.optimize.OptimizeEngineFactory;
+import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
+import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
+import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
+import org.apache.shardingsphere.core.rewrite.rewriter.parameter.ParameterRewriter;
+import org.apache.shardingsphere.core.rewrite.rewriter.sql.EncryptSQLRewriter;
+import org.apache.shardingsphere.core.rewrite.rewriter.sql.SQLRewriter;
+import org.apache.shardingsphere.core.route.RouteUnit;
+import org.apache.shardingsphere.core.route.SQLRouteResult;
+import org.apache.shardingsphere.core.route.SQLUnit;
+import org.apache.shardingsphere.core.route.router.masterslave.MasterSlaveRouter;
+import org.apache.shardingsphere.shardingproxy.backend.schema.EncryptSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.MasterSlaveSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSchema;
-import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
+import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
+import org.apache.shardingsphere.spi.database.DatabaseType;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -51,7 +57,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapper {
     
-    private static final GlobalRegistry GLOBAL_REGISTRY = GlobalRegistry.getInstance();
+    private static final ShardingProxyContext SHARDING_PROXY_CONTEXT = ShardingProxyContext.getInstance();
     
     private final LogicSchema logicSchema;
     
@@ -59,31 +65,54 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     
     @Override
     public SQLRouteResult route(final String sql, final DatabaseType databaseType) {
-        return logicSchema instanceof MasterSlaveSchema ? doMasterSlaveRoute(sql) : doShardingRoute(sql, databaseType);
+        if (logicSchema instanceof ShardingSchema) {
+            return doShardingRoute(sql, databaseType);
+        }
+        if (logicSchema instanceof MasterSlaveSchema) {
+            return doMasterSlaveRoute(sql);
+        }
+        return doEncryptRoute(sql);
+    }
+    
+    private SQLRouteResult doShardingRoute(final String sql, final DatabaseType databaseType) {
+        PreparedQueryShardingEngine shardingEngine = new PreparedQueryShardingEngine(sql, logicSchema.getShardingRule(), 
+                ShardingProxyContext.getInstance().getShardingProperties(), logicSchema.getMetaData(), databaseType, logicSchema.getParsingResultCache());
+        return shardingEngine.shard(sql, parameters);
     }
     
     private SQLRouteResult doMasterSlaveRoute(final String sql) {
-        SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
-        String rewriteSQL = new MasterSlaveSQLRewriteEngine(((MasterSlaveSchema) logicSchema).getMasterSlaveRule(), sql, sqlStatement, logicSchema.getMetaData()).rewrite();
+        SQLStatement sqlStatement = ((MasterSlaveSchema) logicSchema).getParseEngine().parse(sql, true);
+        SQLRewriteEngine sqlRewriteEngine = new SQLRewriteEngine(sqlStatement);
+        sqlRewriteEngine.init(Collections.<ParameterRewriter>emptyList(), Collections.<SQLRewriter>emptyList());
+        String rewriteSQL = sqlRewriteEngine.generateSQL().getSql();
         SQLRouteResult result = new SQLRouteResult(sqlStatement);
-        for (String each : new MasterSlaveRouter(
-                ((MasterSlaveSchema) logicSchema).getMasterSlaveRule(), GLOBAL_REGISTRY.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW)).route(rewriteSQL)) {
-            result.getRouteUnits().add(new RouteUnit(each, new SQLUnit(rewriteSQL, new ArrayList<>(Collections.singleton(parameters)))));
+        for (String each : new MasterSlaveRouter(((MasterSlaveSchema) logicSchema).getMasterSlaveRule(), ((MasterSlaveSchema) logicSchema).getParseEngine(),
+                SHARDING_PROXY_CONTEXT.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW)).route(rewriteSQL, true)) {
+            result.getRouteUnits().add(new RouteUnit(each, new SQLUnit(rewriteSQL, parameters)));
         }
         return result;
     }
     
-    private SQLRouteResult doShardingRoute(final String sql, final DatabaseType databaseType) {
-        return new PreparedStatementRoutingEngine(sql, ((ShardingSchema) logicSchema).getShardingRule(), logicSchema.getMetaData(),
-                databaseType, GLOBAL_REGISTRY.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW)).route(parameters);
+    private SQLRouteResult doEncryptRoute(final String sql) {
+        EncryptSchema encryptSchema = (EncryptSchema) logicSchema;
+        SQLStatement sqlStatement = encryptSchema.getParseEngine().parse(sql, true);
+        SQLRewriteEngine sqlRewriteEngine = new SQLRewriteEngine(encryptSchema.getEncryptRule(), sqlStatement, parameters);
+        OptimizeResult optimizeResult = OptimizeEngineFactory.newInstance(encryptSchema.getEncryptRule(), sqlStatement, parameters).optimize();
+        Collection<SQLRewriter> sqlRewriters = new LinkedList<>();
+        if (sqlStatement instanceof DMLStatement) {
+            sqlRewriters.add(new EncryptSQLRewriter(encryptSchema.getEncryptRule().getEncryptorEngine(), (DMLStatement) sqlStatement, optimizeResult));
+        }
+        sqlRewriteEngine.init(Collections.<ParameterRewriter>emptyList(), sqlRewriters);
+        SQLRouteResult result = new SQLRouteResult(sqlStatement);
+        result.getRouteUnits().add(new RouteUnit(logicSchema.getDataSources().keySet().iterator().next(), new SQLUnit(sqlRewriteEngine.generateSQL().getSql(), parameters)));
+        return result;
     }
     
     @Override
     public Statement createStatement(final Connection connection, final SQLUnit sqlUnit, final boolean isReturnGeneratedKeys) throws SQLException {
         PreparedStatement result = isReturnGeneratedKeys ? connection.prepareStatement(sqlUnit.getSql(), Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(sqlUnit.getSql());
-        List<Object> parameters = getRoutedParameters(sqlUnit);
-        for (int i = 0; i < parameters.size(); i++) {
-            result.setObject(i + 1, parameters.get(i));
+        for (int i = 0; i < sqlUnit.getParameters().size(); i++) {
+            result.setObject(i + 1, sqlUnit.getParameters().get(i));
         }
         return result;
     }
@@ -91,13 +120,5 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     @Override
     public boolean executeSQL(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
         return ((PreparedStatement) statement).execute();
-    }
-    
-    private List<Object> getRoutedParameters(final SQLUnit sqlUnit) {
-        List<Object> result = new LinkedList<>();
-        for (List<Object> each : sqlUnit.getParameterSets()) {
-            result.addAll(each);
-        }
-        return result;
     }
 }

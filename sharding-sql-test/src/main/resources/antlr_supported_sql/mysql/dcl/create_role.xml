@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<sql-cases db-types="MySQL" namespace="mysql.dcl.createRole">
-    <sql-case id="create_role" value="CREATE ROLE role1" />
-    <sql-case id="create_roles" value="CREATE ROLE role1, role2" />
-    <sql-case id="create_role_if_not_exists" value="CREATE ROLE IF NOT EXISTS role1" />
-</sql-cases>

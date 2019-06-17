@@ -18,14 +18,18 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
-import org.apache.shardingsphere.core.executor.ShardingExecuteEngine;
+import org.apache.shardingsphere.core.execute.ShardingExecuteEngine;
+import org.apache.shardingsphere.core.execute.metadata.TableMetaDataInitializer;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
+import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
+import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata.CachedDatabaseMetaData;
 import org.apache.shardingsphere.shardingjdbc.jdbc.metadata.JDBCTableMetaDataConnectionManager;
+import org.apache.shardingsphere.spi.database.DatabaseType;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -57,17 +61,19 @@ public final class ShardingContext implements AutoCloseable {
     
     private final ShardingMetaData metaData;
     
+    private final ParsingResultCache parsingResultCache;
+    
     public ShardingContext(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType, final Properties props) throws SQLException {
         this.shardingRule = shardingRule;
         this.cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap);
         this.databaseType = databaseType;
-        
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
         int executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
         executeEngine = new ShardingExecuteEngine(executorSize);
-        metaData = new ShardingMetaData(getDataSourceURLs(dataSourceMap), shardingRule, databaseType, executeEngine, new JDBCTableMetaDataConnectionManager(dataSourceMap), 
-                shardingProperties.<Integer>getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY), 
-                shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.CHECK_TABLE_METADATA_ENABLED));
+        ShardingDataSourceMetaData shardingDataSourceMetaData = new ShardingDataSourceMetaData(getDataSourceURLs(dataSourceMap), shardingRule, databaseType);
+        ShardingTableMetaData shardingTableMetaData = new ShardingTableMetaData(getTableMetaDataInitializer(dataSourceMap, shardingDataSourceMetaData).load(shardingRule));
+        metaData = new ShardingMetaData(shardingDataSourceMetaData, shardingTableMetaData);
+        parsingResultCache = new ParsingResultCache();
     }
     
     private DatabaseMetaData createCachedDatabaseMetaData(final Map<String, DataSource> dataSourceMap) throws SQLException {
@@ -88,6 +94,12 @@ public final class ShardingContext implements AutoCloseable {
         try (Connection connection = dataSource.getConnection()) {
             return connection.getMetaData().getURL();
         }
+    }
+    
+    private TableMetaDataInitializer getTableMetaDataInitializer(final Map<String, DataSource> dataSourceMap, final ShardingDataSourceMetaData shardingDataSourceMetaData) {
+        return new TableMetaDataInitializer(shardingDataSourceMetaData, executeEngine, new JDBCTableMetaDataConnectionManager(dataSourceMap),
+                shardingProperties.<Integer>getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY),
+                shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.CHECK_TABLE_METADATA_ENABLED));
     }
     
     @Override
