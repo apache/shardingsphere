@@ -32,7 +32,6 @@ import org.apache.shardingsphere.core.parse.entry.ShardingSQLParseEntry;
 import org.apache.shardingsphere.core.parse.hook.ParsingHook;
 import org.apache.shardingsphere.core.parse.hook.SPIParsingHook;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
@@ -86,10 +85,9 @@ public final class ParsingSQLRouter implements ShardingRouter {
     
     @Override
     public SQLRouteResult route(final SQLStatement sqlStatement, final List<Object> parameters) {
-        Optional<GeneratedKey> generatedKey = sqlStatement instanceof InsertStatement
-                ? GeneratedKey.getGenerateKey(shardingRule, parameters, (InsertStatement) sqlStatement) : Optional.<GeneratedKey>absent();
+        OptimizeResult optimizeResult = OptimizeEngineFactory.newInstance(shardingRule, sqlStatement, parameters, shardingMetaData.getTable()).optimize();
+        Optional<GeneratedKey> generatedKey = optimizeResult.getGeneratedKey();
         SQLRouteResult result = new SQLRouteResult(sqlStatement, generatedKey.orNull());
-        OptimizeResult optimizeResult = OptimizeEngineFactory.newInstance(shardingRule, sqlStatement, parameters, generatedKey.orNull(), shardingMetaData.getTable()).optimize();
         if (generatedKey.isPresent()) {
             setGeneratedKeys(result, generatedKey.get());
         }

@@ -59,12 +59,11 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
     
     private final List<Object> parameters;
     
-    private final GeneratedKey generatedKey;
-    
     @Override
     public OptimizeResult optimize() {
         List<AndCondition> andConditions = insertStatement.getShardingConditions().getOrConditions();
-        Iterator<Comparable<?>> generatedKeys = createGeneratedKeys();
+        Optional<GeneratedKey> generatedKey = GeneratedKey.getGenerateKey(shardingRule, parameters, insertStatement);
+        Iterator<Comparable<?>> generatedKeys = generatedKey.isPresent() ? createGeneratedKeys(generatedKey.get()) : null;
         List<ShardingCondition> shardingConditions = new ArrayList<>(andConditions.size());
         InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(insertStatement.getColumnNames());
         int parametersCount = 0;
@@ -86,10 +85,14 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
             }
             shardingConditions.add(shardingCondition);
         }
-        return new OptimizeResult(new ShardingConditions(shardingConditions), insertOptimizeResult);
+        OptimizeResult result = new OptimizeResult(new ShardingConditions(shardingConditions), insertOptimizeResult);
+        if (generatedKey.isPresent()) {
+            result.setGeneratedKey(generatedKey.get());
+        }
+        return result;
     }
     
-    private Iterator<Comparable<?>> createGeneratedKeys() {
+    private Iterator<Comparable<?>> createGeneratedKeys(final GeneratedKey generatedKey) {
         return isNeededToAppendGeneratedKey() ? generatedKey.getGeneratedKeys().iterator() : null;
     }
     

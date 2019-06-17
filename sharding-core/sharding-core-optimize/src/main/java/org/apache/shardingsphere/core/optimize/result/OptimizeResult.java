@@ -22,6 +22,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.apache.shardingsphere.core.optimize.GeneratedKey;
 import org.apache.shardingsphere.core.optimize.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.condition.ShardingConditions;
 import org.apache.shardingsphere.core.optimize.pagination.Pagination;
@@ -46,6 +47,8 @@ public final class OptimizeResult {
     
     private Pagination pagination;
     
+    private GeneratedKey generatedKey;
+    
     private String logicTableNameForDropIndex;
     
     public OptimizeResult(final ShardingConditions shardingConditions) {
@@ -63,6 +66,15 @@ public final class OptimizeResult {
      */
     public Optional<InsertOptimizeResult> getInsertOptimizeResult() {
         return Optional.fromNullable(insertOptimizeResult);
+    }
+    
+    /**
+     * Get generated key.
+     * 
+     * @return generated key
+     */
+    public Optional<GeneratedKey> getGeneratedKey() {
+        return Optional.fromNullable(generatedKey);
     }
     
     /**
