@@ -39,31 +39,27 @@ import java.util.concurrent.SynchronousQueue;
  */
 public final class LeafSegmentKeyGenerator implements ShardingKeyGenerator {
 
-    private static final String TYPE = "LEAF_SEGMENT";
+    private static final String DEFAULT_NAMESPACE = "leaf_segment";
 
-    private static final String NAMESPACE = "leaf_segment";
+    private static final String DEFAULT_STEP = "10000";
+
+    private static final String DEFAULT_INITIAL_VALUE = "1";
+
+    private static final String DEFAULT_REGISTRY_CENTER = "zookeeper";
+
+    private static final float DEFAULT_THRESHOLD = 0.5F;
 
     private static final String SLANTING_BAR = "/";
 
     private static final String REGULAR_PATTERN = "^((?!/).)*$";
 
-    private static final String STEP = "10000";
+    private final ExecutorService incrementCacheIdExecutor;
 
-    private static final String INITIAL_VALUE = "1";
-
-    private static final String DEFAULT_REGISTRY_CENTER = "zookeeper";
-
-    private static final float THRESHOLD = 0.5F;
-
-    private boolean isInitialized = Boolean.FALSE;
+    private final SynchronousQueue<Long> cacheIdQueue;
 
     private RegistryCenter leafRegistryCenter;
 
     private long id;
-
-    private ExecutorService incrementCacheIdExecutor;
-
-    private SynchronousQueue<Long> cacheIdQueue;
 
     private long step;
 
@@ -71,20 +67,24 @@ public final class LeafSegmentKeyGenerator implements ShardingKeyGenerator {
     @Setter
     private Properties properties = new Properties();
 
+    public LeafSegmentKeyGenerator() {
+        incrementCacheIdExecutor = Executors.newSingleThreadExecutor();
+        cacheIdQueue = new SynchronousQueue<>();
+    }
+
     @Override
     public String getType() {
-        return TYPE;
+        return "LEAF_SEGMENT";
     }
 
     @Override
     public synchronized Comparable<?> generateKey() {
         String leafKey = getLeafKey();
-        if (isInitialized == Boolean.FALSE) {
+        if (leafRegistryCenter == null) {
             initLeafSegmentKeyGenerator(leafKey);
-            isInitialized = Boolean.TRUE;
             return id;
         }
-        id = generateKeyWhenLeafKeyStoredInCenter(leafKey);
+        increaseIdWhenLeafKeyStoredInCenter(leafKey);
         return id;
     }
 
@@ -98,25 +98,22 @@ public final class LeafSegmentKeyGenerator implements ShardingKeyGenerator {
             leafRegistryCenter.persist(leafKey, String.valueOf(id));
             leafRegistryCenter.initLock(leafKey);
         }
-        incrementCacheIdExecutor = Executors.newSingleThreadExecutor();
-        cacheIdQueue = new SynchronousQueue<>();
         step = getStep();
     }
 
-    private long generateKeyWhenLeafKeyStoredInCenter(final String leafKey) {
+    private void increaseIdWhenLeafKeyStoredInCenter(final String leafKey) {
         ++id;
-        if (((id % step) >= (step * THRESHOLD - 1)) && cacheIdQueue.isEmpty()) {
+        if (((id % step) >= (step * DEFAULT_THRESHOLD - 1)) && cacheIdQueue.isEmpty()) {
             incrementCacheIdAsynchronous(leafKey, step);
         }
         if ((id % step) == (step - 1)) {
             id = tryTakeCacheId();
         }
-        return id;
     }
 
     private RegistryCenterConfiguration getRegistryCenterConfiguration() {
         RegistryCenterConfiguration result = new RegistryCenterConfiguration(getRegistryCenterType(), properties);
-        result.setNamespace(NAMESPACE);
+        result.setNamespace(DEFAULT_NAMESPACE);
         result.setServerLists(getServerList());
         result.setDigest(getDigest());
         return result;
@@ -124,6 +121,7 @@ public final class LeafSegmentKeyGenerator implements ShardingKeyGenerator {
 
     private void incrementCacheIdAsynchronous(final String leafKey, final long step) {
         incrementCacheIdExecutor.execute(new Runnable() {
+
             @Override
             public void run() {
                 long id = incrementCacheId(leafKey, step);
@@ -165,13 +163,13 @@ public final class LeafSegmentKeyGenerator implements ShardingKeyGenerator {
     }
 
     private long getStep() {
-        long result = Long.parseLong(properties.getProperty("step", STEP));
+        long result = Long.parseLong(properties.getProperty("step", DEFAULT_STEP));
         Preconditions.checkArgument(result > 0L && result < Long.MAX_VALUE);
         return result;
     }
 
     private long getInitialValue() {
-        long result = Long.parseLong(properties.getProperty("initialValue", INITIAL_VALUE));
+        long result = Long.parseLong(properties.getProperty("initialValue", DEFAULT_INITIAL_VALUE));
         Preconditions.checkArgument(result >= 0L && result < Long.MAX_VALUE);
         return result;
     }

@@ -33,7 +33,7 @@ import java.util.concurrent.Executors;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class LeafSegmentKeyGeneratorTest {
+public final class LeafSegmentKeyGeneratorTest {
 
     private LeafSegmentKeyGenerator leafSegmentKeyGenerator = new LeafSegmentKeyGenerator();
 
