@@ -90,4 +90,4 @@ we prefer to add encrypt & decrypt example recently.
 ### how to use sharding-proxy with jdbc.
 we prefer to add a docker base example recently.
 
-### [how to use docker to config sharding-jdbc & sharding-proxy](./docker/docker-compose.md)(Optional)
+### [how to use docker to config sharding-jdbc & sharding-proxy](./docker/docker-compose.md) (Optional)
