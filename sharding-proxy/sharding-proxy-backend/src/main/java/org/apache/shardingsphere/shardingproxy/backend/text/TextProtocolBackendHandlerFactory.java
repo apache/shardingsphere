@@ -25,9 +25,7 @@ import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.SetStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.ShowDatabasesStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.ShowOtherStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.UseStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.postgresql.ShowStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.tcl.BeginTransactionStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.tcl.CommitStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.tcl.RollbackStatement;
@@ -101,7 +99,7 @@ public final class TextProtocolBackendHandlerFactory {
         if (dalStatement instanceof ShowDatabasesStatement) {
             return new ShowDatabasesBackendHandler(backendConnection);
         }
-        if (dalStatement instanceof SetStatement || dalStatement instanceof ShowOtherStatement || dalStatement instanceof ShowStatement) {
+        if (dalStatement instanceof SetStatement) {
             return new BroadcastBackendHandler(sql, backendConnection);
         }
         return new UnicastBackendHandler(sql, backendConnection);

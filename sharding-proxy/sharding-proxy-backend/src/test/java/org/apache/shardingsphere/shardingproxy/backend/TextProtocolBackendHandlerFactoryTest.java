@@ -26,6 +26,7 @@ import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendH
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandlerFactory;
 import org.apache.shardingsphere.shardingproxy.backend.text.admin.BroadcastBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.admin.ShowDatabasesBackendHandler;
+import org.apache.shardingsphere.shardingproxy.backend.text.admin.UnicastBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.admin.UseDatabaseBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.query.QueryBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.set.ShardingCTLSetBackendHandler;
@@ -153,13 +154,16 @@ public final class TextProtocolBackendHandlerFactoryTest {
     public void assertNewInstanceWithShow() {
         String sql = "SHOW VARIABLES LIKE %x%";
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
-        assertThat(actual, instanceOf(BroadcastBackendHandler.class));
+        assertThat(actual, instanceOf(UnicastBackendHandler.class));
+        sql = "SHOW VARIABLES WHERE Variable_name ='language'";
+        actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
+        assertThat(actual, instanceOf(UnicastBackendHandler.class));
         sql = "SHOW CHARACTER SET";
         actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
-        assertThat(actual, instanceOf(BroadcastBackendHandler.class));
+        assertThat(actual, instanceOf(UnicastBackendHandler.class));
         sql = "SHOW COLLATION";
         actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
-        assertThat(actual, instanceOf(BroadcastBackendHandler.class));
+        assertThat(actual, instanceOf(UnicastBackendHandler.class));
     }
     
     @Test
