@@ -63,19 +63,19 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
     public OptimizeResult optimize() {
         List<AndCondition> andConditions = insertStatement.getShardingConditions().getOrConditions();
         Optional<GeneratedKey> generatedKey = GeneratedKey.getGenerateKey(shardingRule, parameters, insertStatement);
-        Iterator<Comparable<?>> generatedKeys = generatedKey.isPresent() ? createGeneratedKeys(generatedKey.get()) : null;
+        Iterator<Comparable<?>> generatedValues = generatedKey.isPresent() ? createGeneratedValues(generatedKey.get()) : null;
         List<ShardingCondition> shardingConditions = new ArrayList<>(andConditions.size());
         InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(insertStatement.getColumnNames());
         int parametersCount = 0;
         for (int i = 0; i < andConditions.size(); i++) {
             InsertValue insertValue = insertStatement.getValues().get(i);
-            ExpressionSegment[] currentColumnValues = createCurrentColumnValues(insertValue);
-            Object[] currentParameters = createCurrentParameters(parametersCount, insertValue);
+            ExpressionSegment[] currentColumnValues = createCurrentColumnValues(generatedKey.orNull(), insertValue);
+            Object[] currentParameters = createCurrentParameters(generatedKey.orNull(), parametersCount, insertValue);
             parametersCount = parametersCount + insertValue.getParametersCount();
             ShardingCondition shardingCondition = createShardingCondition(andConditions.get(i));
             insertOptimizeResult.addUnit(currentColumnValues, currentParameters, insertValue.getParametersCount());
-            if (isNeededToAppendGeneratedKey()) {
-                Comparable<?> currentGeneratedKey = generatedKeys.next();
+            if (generatedKey.isPresent() && generatedKey.get().isGenerated()) {
+                Comparable<?> currentGeneratedKey = generatedValues.next();
                 fillWithGeneratedKeyName(insertOptimizeResult);
                 fillInsertOptimizeResultUnit(insertOptimizeResult.getUnits().get(i), currentGeneratedKey);
                 fillShardingCondition(shardingCondition, currentGeneratedKey);
@@ -92,41 +92,34 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
         return result;
     }
     
-    private Iterator<Comparable<?>> createGeneratedKeys(final GeneratedKey generatedKey) {
-        return isNeededToAppendGeneratedKey() ? generatedKey.getGeneratedKeys().iterator() : null;
+    private Iterator<Comparable<?>> createGeneratedValues(final GeneratedKey generatedKey) {
+        return generatedKey.isGenerated() ? generatedKey.getGeneratedValues().iterator() : null;
     }
     
-    private ExpressionSegment[] createCurrentColumnValues(final InsertValue insertValue) {
-        ExpressionSegment[] result = new ExpressionSegment[insertValue.getAssignments().size() + getIncrement()];
+    private ExpressionSegment[] createCurrentColumnValues(final GeneratedKey generatedKey, final InsertValue insertValue) {
+        ExpressionSegment[] result = new ExpressionSegment[insertValue.getAssignments().size() + getIncrement(generatedKey)];
         insertValue.getAssignments().toArray(result);
         return result;
     }
     
-    private Object[] createCurrentParameters(final int beginIndex, final InsertValue insertValue) {
+    private Object[] createCurrentParameters(final GeneratedKey generatedKey, final int beginIndex, final InsertValue insertValue) {
         if (0 == insertValue.getParametersCount()) {
             return new Object[0];
         }
-        Object[] result = new Object[insertValue.getParametersCount() + getIncrement()];
+        Object[] result = new Object[insertValue.getParametersCount() + getIncrement(generatedKey)];
         parameters.subList(beginIndex, beginIndex + insertValue.getParametersCount()).toArray(result);
         return result;
     }
     
-    private int getIncrement() {
+    private int getIncrement(final GeneratedKey generatedKey) {
         int result = 0;
-        if (isNeededToAppendGeneratedKey()) {
+        if (null != generatedKey && generatedKey.isGenerated()) {
             result += 1;
         }
         if (isNeededToAppendQueryAssistedColumn()) {
             result += shardingRule.getEncryptRule().getEncryptorEngine().getAssistedQueryColumnCount(insertStatement.getTables().getSingleTableName());
         }
         return result;
-    }
-    
-    private boolean isNeededToAppendGeneratedKey() {
-        String tableName = insertStatement.getTables().getSingleTableName();
-        Optional<String> generateKeyColumn = shardingRule.findGenerateKeyColumnName(tableName);
-        int valueSize = insertStatement.getValues().isEmpty() ? 0 : insertStatement.getValues().get(0).getAssignments().size();
-        return insertStatement.getColumnNames().size() != valueSize || generateKeyColumn.isPresent() && !insertStatement.getColumnNames().contains(generateKeyColumn.get());
     }
     
     private ShardingCondition createShardingCondition(final AndCondition andCondition) {

@@ -178,7 +178,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         Optional<GeneratedKey> generatedKey = getGeneratedKey();
         if (preparedStatementExecutor.isReturnGeneratedKeys() && generatedKey.isPresent()) {
             Preconditions.checkState(routeResult.getOptimizeResult().getGeneratedKey().isPresent());
-            return new GeneratedKeysResultSet(routeResult.getOptimizeResult().getGeneratedKey().get().getGeneratedKeys().iterator(), generatedKey.get().getColumnName(), this);
+            return new GeneratedKeysResultSet(routeResult.getOptimizeResult().getGeneratedKey().get().getGeneratedValues().iterator(), generatedKey.get().getColumnName(), this);
         }
         if (1 == preparedStatementExecutor.getStatements().size()) {
             return preparedStatementExecutor.getStatements().iterator().next().getGeneratedKeys();

@@ -46,7 +46,9 @@ public final class GeneratedKey {
     
     private final String columnName;
     
-    private final List<Comparable<?>> generatedKeys = new LinkedList<>();
+    private final boolean generated;
+    
+    private final List<Comparable<?>> generatedValues = new LinkedList<>();
     
     /**
      * Get generate key.
@@ -61,25 +63,24 @@ public final class GeneratedKey {
         if (!generateKeyColumnName.isPresent()) {
             return Optional.absent();
         }
-        return isContainsGenerateKeyColumn(insertStatement, generateKeyColumnName.get()) 
+        return containsGenerateKeyColumn(insertStatement, generateKeyColumnName.get()) 
                 ? findGeneratedKey(parameters, insertStatement, generateKeyColumnName.get()) : Optional.of(createGeneratedKey(shardingRule, insertStatement, generateKeyColumnName.get()));
     }
     
-    private static boolean isContainsGenerateKeyColumn(final InsertStatement insertStatement, final String generateKeyColumnName) {
-        int valuesCount = insertStatement.getValues().isEmpty() ? 0 : insertStatement.getValues().get(0).getAssignments().size();
-        return valuesCount == insertStatement.getColumnNames().size() && insertStatement.getColumnNames().contains(generateKeyColumnName);
+    private static boolean containsGenerateKeyColumn(final InsertStatement insertStatement, final String generateKeyColumnName) {
+        return insertStatement.getColumnNames().contains(generateKeyColumnName) && !insertStatement.containsDefaultValues();
     }
     
     private static Optional<GeneratedKey> findGeneratedKey(final List<Object> parameters, final InsertStatement insertStatement, final String generateKeyColumnName) {
         GeneratedKey result = null;
         for (ExpressionSegment each : findGenerateKeyExpressionSegments(insertStatement, generateKeyColumnName)) {
             if (null == result) {
-                result = new GeneratedKey(generateKeyColumnName);
+                result = new GeneratedKey(generateKeyColumnName, false);
             }
             if (each instanceof ParameterMarkerExpressionSegment) {
-                result.getGeneratedKeys().add((Comparable<?>) parameters.get(((ParameterMarkerExpressionSegment) each).getParameterMarkerIndex()));
+                result.getGeneratedValues().add((Comparable<?>) parameters.get(((ParameterMarkerExpressionSegment) each).getParameterMarkerIndex()));
             } else if (each instanceof LiteralExpressionSegment) {
-                result.getGeneratedKeys().add((Comparable<?>) ((LiteralExpressionSegment) each).getLiterals());
+                result.getGeneratedValues().add((Comparable<?>) ((LiteralExpressionSegment) each).getLiterals());
             }
         }
         return Optional.fromNullable(result);
@@ -98,9 +99,8 @@ public final class GeneratedKey {
     }
     
     private static Collection<String> getColumnNames(final InsertStatement insertStatement, final String generateKeyColumnName) {
-        int valuesCount = insertStatement.getValues().isEmpty() ? 0 : insertStatement.getValues().get(0).getAssignments().size();
         Collection<String> result = new ArrayList<>(insertStatement.getColumnNames());
-        if (valuesCount != insertStatement.getColumnNames().size()) {
+        if (insertStatement.containsDefaultValues()) {
             result.remove(generateKeyColumnName);
         }
         return result;
@@ -117,9 +117,9 @@ public final class GeneratedKey {
     
     private static GeneratedKey createGeneratedKey(final ShardingRule shardingRule, final InsertStatement insertStatement, final String generateKeyColumnName) {
         String tableName = insertStatement.getTables().getSingleTableName();
-        GeneratedKey result = new GeneratedKey(generateKeyColumnName);
+        GeneratedKey result = new GeneratedKey(generateKeyColumnName, true);
         for (int i = 0; i < insertStatement.getValues().size(); i++) {
-            result.getGeneratedKeys().add(shardingRule.generateKey(tableName));
+            result.getGeneratedValues().add(shardingRule.generateKey(tableName));
         }
         return result;
     }

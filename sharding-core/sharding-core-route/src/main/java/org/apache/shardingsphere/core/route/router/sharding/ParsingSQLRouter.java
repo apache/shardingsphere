@@ -63,7 +63,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
     
     private final ParsingResultCache parsingResultCache;
     
-    private final List<Comparable<?>> recordedGeneratedKeys = new LinkedList<>();
+    private final List<Comparable<?>> generatedValues = new LinkedList<>();
     
     private final ParsingHook parsingHook = new SPIParsingHook();
     
@@ -102,9 +102,9 @@ public final class ParsingSQLRouter implements ShardingRouter {
     
     private void setOptimizeResult(final OptimizeResult optimizeResult, final SQLRouteResult sqlRouteResult) {
         if (optimizeResult.getGeneratedKey().isPresent()) {
-            recordedGeneratedKeys.addAll(optimizeResult.getGeneratedKey().get().getGeneratedKeys());
-            optimizeResult.getGeneratedKey().get().getGeneratedKeys().clear();
-            optimizeResult.getGeneratedKey().get().getGeneratedKeys().addAll(recordedGeneratedKeys);
+            generatedValues.addAll(optimizeResult.getGeneratedKey().get().getGeneratedValues());
+            optimizeResult.getGeneratedKey().get().getGeneratedValues().clear();
+            optimizeResult.getGeneratedKey().get().getGeneratedValues().addAll(generatedValues);
         }
         sqlRouteResult.setOptimizeResult(optimizeResult);
     }

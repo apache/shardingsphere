@@ -290,7 +290,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
         Optional<GeneratedKey> generatedKey = getGeneratedKey();
         if (returnGeneratedKeys && generatedKey.isPresent()) {
             Preconditions.checkState(routeResult.getOptimizeResult().getGeneratedKey().isPresent());
-            return new GeneratedKeysResultSet(routeResult.getOptimizeResult().getGeneratedKey().get().getGeneratedKeys().iterator(), generatedKey.get().getColumnName(), this);
+            return new GeneratedKeysResultSet(routeResult.getOptimizeResult().getGeneratedKey().get().getGeneratedValues().iterator(), generatedKey.get().getColumnName(), this);
         }
         if (1 == getRoutedStatements().size()) {
             return getRoutedStatements().iterator().next().getGeneratedKeys();
