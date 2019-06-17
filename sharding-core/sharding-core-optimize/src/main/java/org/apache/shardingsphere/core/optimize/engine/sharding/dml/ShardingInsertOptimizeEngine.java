@@ -29,9 +29,6 @@ import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResul
 import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
 import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
@@ -75,9 +72,9 @@ public final class ShardingInsertOptimizeEngine implements OptimizeEngine {
         for (int i = 0; i < andConditions.size(); i++) {
             AndCondition andCondition = andConditions.get(i);
             InsertValue insertValue = insertStatement.getValues().get(i);
-            ExpressionSegment[] eachInsertValues = createEachInsertValues(insertValue, isGeneratedValue);
-            Object[] eachParameters = createEachParameters(insertValue, parametersCount, isGeneratedValue);
-            InsertOptimizeResultUnit unit = insertOptimizeResult.addUnit(eachInsertValues, eachParameters, insertValue.getParametersCount());
+            int derivedColumnsCount = getDerivedColumnsCount(isGeneratedValue);
+            InsertOptimizeResultUnit unit = insertOptimizeResult.addUnit(
+                    insertValue.getValues(derivedColumnsCount), insertValue.getParameters(parameters, parametersCount, derivedColumnsCount), insertValue.getParametersCount());
             RouteCondition routeCondition = new RouteCondition();
             routeCondition.getRouteValues().addAll(getRouteValues(andCondition));
             if (isGeneratedValue) {
@@ -105,21 +102,6 @@ public final class ShardingInsertOptimizeEngine implements OptimizeEngine {
         }
     }
     
-    private ExpressionSegment[] createEachInsertValues(final InsertValue insertValue, final boolean isGeneratedValue) {
-        ExpressionSegment[] result = new ExpressionSegment[insertValue.getAssignments().size() + getDerivedColumnsCount(isGeneratedValue)];
-        insertValue.getAssignments().toArray(result);
-        return result;
-    }
-    
-    private Object[] createEachParameters(final InsertValue insertValue, final int parametersBeginIndex, final boolean isGeneratedValue) {
-        if (0 == insertValue.getParametersCount()) {
-            return new Object[0];
-        }
-        Object[] result = new Object[insertValue.getParametersCount() + getDerivedColumnsCount(isGeneratedValue)];
-        parameters.subList(parametersBeginIndex, parametersBeginIndex + insertValue.getParametersCount()).toArray(result);
-        return result;
-    }
-    
     private int getDerivedColumnsCount(final boolean isGeneratedValue) {
         int assistedQueryColumnsCount = shardingRule.getEncryptRule().getEncryptorEngine().getAssistedQueryColumnCount(insertStatement.getTables().getSingleTableName());
         return isGeneratedValue ? assistedQueryColumnsCount + 1 : assistedQueryColumnsCount;
@@ -134,7 +116,7 @@ public final class ShardingInsertOptimizeEngine implements OptimizeEngine {
     }
     
     private void fillGeneratedKeyUnit(final String generatedKeyColumnName, final Comparable<?> generatedValue, final InsertOptimizeResultUnit unit, final RouteCondition routeCondition) {
-        fillUnit(generatedValue, unit);
+        unit.addInsertValue(generatedValue, parameters);
         String tableName = insertStatement.getTables().getSingleTableName();
         if (shardingRule.isShardingColumn(generatedKeyColumnName, tableName)) {
             routeCondition.getRouteValues().add(new ListRouteValue<>(generatedKeyColumnName, tableName, Collections.<Comparable<?>>singletonList(generatedValue)));
@@ -144,19 +126,8 @@ public final class ShardingInsertOptimizeEngine implements OptimizeEngine {
     private void fillAssistedQueryUnit(final Collection<String> columnNames, final InsertOptimizeResultUnit unit) {
         for (String each : columnNames) {
             if (shardingRule.getEncryptRule().getEncryptorEngine().getAssistedQueryColumn(insertStatement.getTables().getSingleTableName(), each).isPresent()) {
-                fillUnit((Comparable<?>) unit.getColumnValue(each), unit);
+                unit.addInsertValue((Comparable<?>) unit.getColumnValue(each), parameters);
             }
-        }
-    }
-    
-    private void fillUnit(final Comparable<?> insertValue, final InsertOptimizeResultUnit unit) {
-        if (parameters.isEmpty()) {
-            // TODO fix start index and stop index
-            unit.addColumnValue(new LiteralExpressionSegment(0, 0, insertValue));
-        } else {
-            // TODO fix start index and stop index
-            unit.addColumnValue(new ParameterMarkerExpressionSegment(0, 0, parameters.size() - 1));
-            unit.addColumnParameter(insertValue);
         }
     }
     
