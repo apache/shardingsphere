@@ -87,9 +87,8 @@ public final class ParsingSQLRouter implements ShardingRouter {
     public SQLRouteResult route(final SQLStatement sqlStatement, final List<Object> parameters) {
         OptimizeResult optimizeResult = OptimizeEngineFactory.newInstance(shardingRule, sqlStatement, parameters, shardingMetaData.getTable()).optimize();
         Optional<GeneratedKey> generatedKey = optimizeResult.getGeneratedKey();
-        SQLRouteResult result = new SQLRouteResult(sqlStatement, generatedKey.orNull());
         if (generatedKey.isPresent()) {
-            setGeneratedKeys(result, generatedKey.get());
+            setGeneratedKeys(optimizeResult, generatedKey.get());
         }
         boolean needMerge = false;
         if (sqlStatement instanceof SelectStatement) {
@@ -103,15 +102,17 @@ public final class ParsingSQLRouter implements ShardingRouter {
         if (needMerge) {
             Preconditions.checkState(1 == routingResult.getRoutingUnits().size(), "Must have one sharding with subquery.");
         }
+        SQLRouteResult result = new SQLRouteResult(sqlStatement);
         result.setRoutingResult(routingResult);
         result.setOptimizeResult(optimizeResult);
         return result;
     }
     
-    private void setGeneratedKeys(final SQLRouteResult sqlRouteResult, final GeneratedKey generatedKey) {
+    private void setGeneratedKeys(final OptimizeResult optimizeResult, final GeneratedKey generatedKey) {
         generatedKeys.addAll(generatedKey.getGeneratedKeys());
-        sqlRouteResult.getGeneratedKey().getGeneratedKeys().clear();
-        sqlRouteResult.getGeneratedKey().getGeneratedKeys().addAll(generatedKeys);
+        Preconditions.checkState(optimizeResult.getGeneratedKey().isPresent());
+        optimizeResult.getGeneratedKey().get().getGeneratedKeys().clear();
+        optimizeResult.getGeneratedKey().get().getGeneratedKeys().addAll(generatedKeys);
     }
     
     private boolean isNeedMergeShardingValues(final SelectStatement selectStatement) {
