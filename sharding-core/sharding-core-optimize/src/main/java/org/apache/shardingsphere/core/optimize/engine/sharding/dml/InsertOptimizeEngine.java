@@ -62,27 +62,40 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
     @Override
     public OptimizeResult optimize() {
         InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(insertStatement.getColumnNames());
+        String tableName = insertStatement.getTables().getSingleTableName();
         List<AndCondition> andConditions = insertStatement.getShardingConditions().getOrConditions();
         List<RouteCondition> routeConditions = new ArrayList<>(andConditions.size());
         Optional<GeneratedKey> generatedKey = GeneratedKey.getGenerateKey(shardingRule, parameters, insertStatement);
-        Iterator<Comparable<?>> generatedValues = generatedKey.isPresent() && generatedKey.get().isGenerated() ? generatedKey.get().getGeneratedValues().iterator() : null;
+        boolean isGeneratedValue = generatedKey.isPresent() && generatedKey.get().isGenerated();
+        if (isGeneratedValue) {
+            insertOptimizeResult.getColumnNames().add(generatedKey.get().getColumnName());
+        }
+        for (String each : shardingRule.getEncryptRule().getEncryptorEngine().getAssistedQueryColumns(insertStatement.getTables().getSingleTableName())) {
+            insertOptimizeResult.getColumnNames().add(each);
+        }
+        Iterator<Comparable<?>> generatedValues = isGeneratedValue ? generatedKey.get().getGeneratedValues().iterator() : null;
         int parametersCount = 0;
         for (int i = 0; i < andConditions.size(); i++) {
             InsertValue insertValue = insertStatement.getValues().get(i);
-            boolean isGeneratedValue = generatedKey.isPresent() && generatedKey.get().isGenerated();
             ExpressionSegment[] currentInsertValues = createCurrentInsertValues(insertValue, isGeneratedValue);
             Object[] currentParameters = createCurrentParameters(insertValue, parametersCount, isGeneratedValue);
             parametersCount += insertValue.getParametersCount();
-            RouteCondition routeCondition = createShardingCondition(andConditions.get(i));
-            insertOptimizeResult.addUnit(currentInsertValues, currentParameters, insertValue.getParametersCount());
-            if (generatedKey.isPresent() && generatedKey.get().isGenerated()) {
-                Comparable<?> currentGeneratedKey = generatedValues.next();
-                fillWithGeneratedKeyName(insertOptimizeResult);
-                fillInsertOptimizeResultUnit(insertOptimizeResult.getUnits().get(i), currentGeneratedKey);
-                fillRouteCondition(routeCondition, currentGeneratedKey);
+            InsertOptimizeResultUnit unit = insertOptimizeResult.addUnit(currentInsertValues, currentParameters, insertValue.getParametersCount());
+            RouteCondition routeCondition = new RouteCondition();
+            routeCondition.getRouteValues().addAll(getRouteValues(andConditions.get(i)));
+            if (isGeneratedValue) {
+                Comparable<?> generatedValue = generatedValues.next();
+                fillInsertOptimizeResultUnit(unit, generatedValue);
+                if (shardingRule.isShardingColumn(generatedKey.get().getColumnName(), tableName)) {
+                    routeCondition.getRouteValues().add(new ListRouteValue<>(generatedKey.get().getColumnName(), tableName, Collections.<Comparable<?>>singletonList(generatedValue)));
+                }
             }
-            if (isNeededToAppendQueryAssistedColumn()) {
-                fillWithQueryAssistedColumn(insertOptimizeResult, i);
+            if (shardingRule.getEncryptRule().getEncryptorEngine().isHasShardingQueryAssistedEncryptor(tableName)) {
+                for (String each : insertOptimizeResult.getColumnNames()) {
+                    if (shardingRule.getEncryptRule().getEncryptorEngine().getAssistedQueryColumn(insertStatement.getTables().getSingleTableName(), each).isPresent()) {
+                        fillInsertOptimizeResultUnit(unit, (Comparable<?>) unit.getColumnValue(each));
+                    }
+                }
             }
             routeConditions.add(routeCondition);
         }
@@ -113,12 +126,6 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
         return isGeneratedValue ? assistedQueryColumnsCount + 1 : assistedQueryColumnsCount;
     }
     
-    private RouteCondition createShardingCondition(final AndCondition andCondition) {
-        RouteCondition result = new RouteCondition();
-        result.getRouteValues().addAll(getRouteValues(andCondition));
-        return result;
-    }
-    
     private Collection<ListRouteValue> getRouteValues(final AndCondition andCondition) {
         Collection<ListRouteValue> result = new LinkedList<>();
         for (Condition each : andCondition.getConditions()) {
@@ -127,46 +134,14 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
         return result;
     }
     
-    private void fillWithGeneratedKeyName(final InsertOptimizeResult insertOptimizeResult) {
-        String generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTables().getSingleTableName()).get();
-        insertOptimizeResult.getColumnNames().add(generateKeyColumnName);
-    }
-    
-    private void fillRouteCondition(final RouteCondition routeCondition, final Comparable<?> currentGeneratedKey) {
-        String tableName = insertStatement.getTables().getSingleTableName();
-        String generateKeyColumnName = shardingRule.findGenerateKeyColumnName(tableName).get();
-        if (shardingRule.isShardingColumn(generateKeyColumnName, tableName)) {
-            routeCondition.getRouteValues().add(new ListRouteValue<>(generateKeyColumnName, tableName, Collections.<Comparable<?>>singletonList(currentGeneratedKey)));
-        }
-    }
-    
-    private boolean isNeededToAppendQueryAssistedColumn() {
-        return shardingRule.getEncryptRule().getEncryptorEngine().isHasShardingQueryAssistedEncryptor(insertStatement.getTables().getSingleTableName());
-    }
-    
-    private void fillWithQueryAssistedColumn(final InsertOptimizeResult insertOptimizeResult, final int insertOptimizeResultIndex) {
-        Collection<String> assistedColumnNames = new LinkedList<>();
-        for (String each : insertOptimizeResult.getColumnNames()) {
-            InsertOptimizeResultUnit unit = insertOptimizeResult.getUnits().get(insertOptimizeResultIndex);
-            Optional<String> assistedColumnName = shardingRule.getEncryptRule().getEncryptorEngine().getAssistedQueryColumn(insertStatement.getTables().getSingleTableName(), each);
-            if (assistedColumnName.isPresent()) {
-                assistedColumnNames.add(assistedColumnName.get());
-                fillInsertOptimizeResultUnit(unit, (Comparable<?>) unit.getColumnValue(each));
-            }
-        }
-        if (!assistedColumnNames.isEmpty()) {
-            insertOptimizeResult.getColumnNames().addAll(assistedColumnNames);
-        }
-    }
-    
-    private void fillInsertOptimizeResultUnit(final InsertOptimizeResultUnit unit, final Comparable<?> columnValue) {
-        if (!parameters.isEmpty()) {
+    private void fillInsertOptimizeResultUnit(final InsertOptimizeResultUnit unit, final Comparable<?> insertValue) {
+        if (parameters.isEmpty()) {
             // TODO fix start index and stop index
-            unit.addColumnValue(new ParameterMarkerExpressionSegment(0, 0, parameters.size() - 1));
-            unit.addColumnParameter(columnValue);
+            unit.addColumnValue(new LiteralExpressionSegment(0, 0, insertValue));
         } else {
             // TODO fix start index and stop index
-            unit.addColumnValue(new LiteralExpressionSegment(0, 0, columnValue));
+            unit.addColumnValue(new ParameterMarkerExpressionSegment(0, 0, parameters.size() - 1));
+            unit.addColumnParameter(insertValue);
         }
     }
 }

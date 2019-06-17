@@ -44,11 +44,14 @@ public final class InsertOptimizeResult {
     /**
      * Add insert optimize result uint.
      *
-     * @param columnValues column values
-     * @param columnParameters column parameters
+     * @param insertValues insert values
+     * @param parameters SQL parameters
      * @param startIndexOfAppendedParameters start index of appended parameters
+     * @return insert optimize result unit
      */
-    public void addUnit(final ExpressionSegment[] columnValues, final Object[] columnParameters, final int startIndexOfAppendedParameters) {
-        this.units.add(new InsertOptimizeResultUnit(columnNames, columnValues, columnParameters, startIndexOfAppendedParameters));
+    public InsertOptimizeResultUnit addUnit(final ExpressionSegment[] insertValues, final Object[] parameters, final int startIndexOfAppendedParameters) {
+        InsertOptimizeResultUnit result = new InsertOptimizeResultUnit(columnNames, insertValues, parameters, startIndexOfAppendedParameters);
+        units.add(result);
+        return result;
     }
 }
