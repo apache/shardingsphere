@@ -26,7 +26,7 @@ import javax.sql.DataSource;
 import java.util.Properties;
 
 /**
- * Orchhestration encrypt data source factory.
+ * Orchestration encrypt data source factory.
  *
  * @author yangyi
  */
