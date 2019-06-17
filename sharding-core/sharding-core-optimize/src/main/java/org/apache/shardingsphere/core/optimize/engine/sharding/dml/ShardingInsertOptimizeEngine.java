@@ -68,11 +68,11 @@ public final class ShardingInsertOptimizeEngine implements OptimizeEngine {
             appendGeneratedKeyColumn(generatedKey.get(), insertOptimizeResult);
         }
         appendAssistedQueryColumns(insertOptimizeResult);
+        int derivedColumnsCount = getDerivedColumnsCount(isGeneratedValue);
         int parametersCount = 0;
         for (int i = 0; i < andConditions.size(); i++) {
             AndCondition andCondition = andConditions.get(i);
             InsertValue insertValue = insertStatement.getValues().get(i);
-            int derivedColumnsCount = getDerivedColumnsCount(isGeneratedValue);
             InsertOptimizeResultUnit unit = insertOptimizeResult.addUnit(
                     insertValue.getValues(derivedColumnsCount), insertValue.getParameters(parameters, parametersCount, derivedColumnsCount), insertValue.getParametersCount());
             RouteCondition routeCondition = new RouteCondition();
