@@ -22,7 +22,6 @@ import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
-import org.apache.shardingsphere.core.optimize.GeneratedKey;
 import org.apache.shardingsphere.core.optimize.OptimizeEngineFactory;
 import org.apache.shardingsphere.core.optimize.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.condition.ShardingConditions;
@@ -86,10 +85,6 @@ public final class ParsingSQLRouter implements ShardingRouter {
     @Override
     public SQLRouteResult route(final SQLStatement sqlStatement, final List<Object> parameters) {
         OptimizeResult optimizeResult = OptimizeEngineFactory.newInstance(shardingRule, sqlStatement, parameters, shardingMetaData.getTable()).optimize();
-        Optional<GeneratedKey> generatedKey = optimizeResult.getGeneratedKey();
-        if (generatedKey.isPresent()) {
-            setGeneratedKeys(optimizeResult, generatedKey.get());
-        }
         boolean needMerge = false;
         if (sqlStatement instanceof SelectStatement) {
             needMerge = isNeedMergeShardingValues((SelectStatement) sqlStatement);
@@ -104,15 +99,17 @@ public final class ParsingSQLRouter implements ShardingRouter {
         }
         SQLRouteResult result = new SQLRouteResult(sqlStatement);
         result.setRoutingResult(routingResult);
+        setGeneratedKeys(optimizeResult);
         result.setOptimizeResult(optimizeResult);
         return result;
     }
     
-    private void setGeneratedKeys(final OptimizeResult optimizeResult, final GeneratedKey generatedKey) {
-        generatedKeys.addAll(generatedKey.getGeneratedKeys());
-        Preconditions.checkState(optimizeResult.getGeneratedKey().isPresent());
-        optimizeResult.getGeneratedKey().get().getGeneratedKeys().clear();
-        optimizeResult.getGeneratedKey().get().getGeneratedKeys().addAll(generatedKeys);
+    private void setGeneratedKeys(final OptimizeResult optimizeResult) {
+        if (optimizeResult.getGeneratedKey().isPresent()) {
+            generatedKeys.addAll(optimizeResult.getGeneratedKey().get().getGeneratedKeys());
+            optimizeResult.getGeneratedKey().get().getGeneratedKeys().clear();
+            optimizeResult.getGeneratedKey().get().getGeneratedKeys().addAll(generatedKeys);
+        }
     }
     
     private boolean isNeedMergeShardingValues(final SelectStatement selectStatement) {

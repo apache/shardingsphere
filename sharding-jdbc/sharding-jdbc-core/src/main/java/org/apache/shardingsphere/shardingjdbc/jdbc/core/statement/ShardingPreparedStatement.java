@@ -187,10 +187,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     }
     
     private Optional<GeneratedKey> getGeneratedKey() {
-        if (null != routeResult && routeResult.getSqlStatement() instanceof InsertStatement) {
-            return routeResult.getOptimizeResult().getGeneratedKey();
-        }
-        return Optional.absent();
+        return null != routeResult && routeResult.getSqlStatement() instanceof InsertStatement ? routeResult.getOptimizeResult().getGeneratedKey() : Optional.<GeneratedKey>absent();
     }
     
     private void initPreparedStatementExecutor() throws SQLException {
