@@ -23,8 +23,8 @@ import com.google.common.collect.Range;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.ShardingOperator;
 import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.core.optimize.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimize.condition.ShardingConditions;
+import org.apache.shardingsphere.core.optimize.condition.RouteCondition;
+import org.apache.shardingsphere.core.optimize.condition.RouteConditions;
 import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
 import org.apache.shardingsphere.core.optimize.pagination.Pagination;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
@@ -61,24 +61,24 @@ public final class QueryOptimizeEngine implements OptimizeEngine {
     
     @Override
     public OptimizeResult optimize() {
-        List<ShardingCondition> shardingConditions = new ArrayList<>(conditions.getOrConditions().size());
+        List<RouteCondition> routeConditions = new ArrayList<>(conditions.getOrConditions().size());
         for (AndCondition each : conditions.getOrConditions()) {
-            shardingConditions.add(optimize(each.getConditionsMap()));
+            routeConditions.add(optimize(each.getConditionsMap()));
         }
-        OptimizeResult result = new OptimizeResult(new ShardingConditions(shardingConditions));
+        OptimizeResult result = new OptimizeResult(new RouteConditions(routeConditions));
         result.setPagination(getPagination().orNull());
         return result;
     }
     
-    private ShardingCondition optimize(final Map<Column, List<Condition>> conditionsMap) {
-        ShardingCondition result = new ShardingCondition();
+    private RouteCondition optimize(final Map<Column, List<Condition>> conditionsMap) {
+        RouteCondition result = new RouteCondition();
         for (Entry<Column, List<Condition>> entry : conditionsMap.entrySet()) {
             try {
                 RouteValue shardingValue = optimize(entry.getKey(), entry.getValue());
                 if (shardingValue instanceof AlwaysFalseShardingValue) {
-                    return new AlwaysFalseShardingCondition();
+                    return new AlwaysFalseRouteCondition();
                 }
-                result.getShardingValues().add(shardingValue);
+                result.getRouteValues().add(shardingValue);
             } catch (final ClassCastException ex) {
                 throw new ShardingException("Found different types for sharding value `%s`.", entry.getKey());
             }

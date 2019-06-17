@@ -83,7 +83,7 @@ public final class RoutingEngineFactory {
         if (shardingRule.isAllBroadcastTables(tableNames)) {
             return sqlStatement instanceof SelectStatement ? new UnicastRoutingEngine(shardingRule, tableNames) : new DatabaseBroadcastRoutingEngine(shardingRule);
         }
-        if (optimizeResult.getShardingConditions().isAlwaysFalse() || tableNames.isEmpty()) {
+        if (optimizeResult.getRouteConditions().isAlwaysFalse() || tableNames.isEmpty()) {
             return new UnicastRoutingEngine(shardingRule, tableNames);
         }
         Collection<String> shardingTableNames = shardingRule.getShardingLogicTableNames(tableNames);

@@ -15,14 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.engine.sharding.dql;
+package org.apache.shardingsphere.core.optimize.condition;
 
-import org.apache.shardingsphere.core.optimize.condition.ShardingCondition;
+import lombok.Getter;
+import lombok.ToString;
+import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Always false sharding condition.
- *
+ * Route condition.
+ * 
  * @author maxiaoguang
  */
-public final class AlwaysFalseShardingCondition extends ShardingCondition {
+@Getter
+@ToString
+public class RouteCondition {
+    
+    private final List<RouteValue> routeValues = new LinkedList<>();
 }

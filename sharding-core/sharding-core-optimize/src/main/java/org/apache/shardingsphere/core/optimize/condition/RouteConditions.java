@@ -18,20 +18,37 @@
 package org.apache.shardingsphere.core.optimize.condition;
 
 import lombok.Getter;
-import lombok.ToString;
-import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.optimize.engine.sharding.dql.AlwaysFalseRouteCondition;
 
-import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Sharding condition.
- * 
+ * Route conditions.
+ *
+ * @author zhangliang
  * @author maxiaoguang
  */
+@RequiredArgsConstructor
 @Getter
-@ToString
-public class ShardingCondition {
+public final class RouteConditions {
     
-    private final List<RouteValue> shardingValues = new LinkedList<>();
+    private final List<RouteCondition> routeConditions;
+    
+    /**
+     * Judge sharding conditions is always false or not.
+     *
+     * @return sharding conditions is always false or not
+     */
+    public boolean isAlwaysFalse() {
+        if (routeConditions.isEmpty()) {
+            return false;
+        }
+        for (RouteCondition each : routeConditions) {
+            if (!(each instanceof AlwaysFalseRouteCondition)) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

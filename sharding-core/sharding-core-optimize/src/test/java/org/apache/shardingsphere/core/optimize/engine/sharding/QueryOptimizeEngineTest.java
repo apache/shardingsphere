@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.core.optimize.engine.sharding;
 
 import com.google.common.collect.Range;
-import org.apache.shardingsphere.core.optimize.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimize.condition.ShardingConditions;
+import org.apache.shardingsphere.core.optimize.condition.RouteCondition;
+import org.apache.shardingsphere.core.optimize.condition.RouteConditions;
 import org.apache.shardingsphere.core.optimize.engine.sharding.dql.QueryOptimizeEngine;
 import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
@@ -54,8 +54,8 @@ public final class QueryOptimizeEngineTest {
         andCondition.getConditions().add(condition2);
         Conditions conditions = new Conditions();
         conditions.getOrConditions().add(andCondition);
-        ShardingConditions shardingConditions = new QueryOptimizeEngine(new SelectStatement(), Collections.emptyList(), conditions).optimize().getShardingConditions();
-        assertTrue(shardingConditions.isAlwaysFalse());
+        RouteConditions routeConditions = new QueryOptimizeEngine(new SelectStatement(), Collections.emptyList(), conditions).optimize().getRouteConditions();
+        assertTrue(routeConditions.isAlwaysFalse());
     }
     
     @Test
@@ -67,8 +67,8 @@ public final class QueryOptimizeEngineTest {
         andCondition.getConditions().add(condition2);
         Conditions conditions = new Conditions();
         conditions.getOrConditions().add(andCondition);
-        ShardingConditions shardingConditions = new QueryOptimizeEngine(new SelectStatement(), Collections.emptyList(), conditions).optimize().getShardingConditions();
-        assertTrue(shardingConditions.isAlwaysFalse());
+        RouteConditions routeConditions = new QueryOptimizeEngine(new SelectStatement(), Collections.emptyList(), conditions).optimize().getRouteConditions();
+        assertTrue(routeConditions.isAlwaysFalse());
     }
     
     @Test
@@ -80,8 +80,8 @@ public final class QueryOptimizeEngineTest {
         andCondition.getConditions().add(condition2);
         Conditions conditions = new Conditions();
         conditions.getOrConditions().add(andCondition);
-        ShardingConditions shardingConditions = new QueryOptimizeEngine(new SelectStatement(), Collections.emptyList(), conditions).optimize().getShardingConditions();
-        assertTrue(shardingConditions.isAlwaysFalse());
+        RouteConditions routeConditions = new QueryOptimizeEngine(new SelectStatement(), Collections.emptyList(), conditions).optimize().getRouteConditions();
+        assertTrue(routeConditions.isAlwaysFalse());
     }
     
     @SuppressWarnings("unchecked")
@@ -94,10 +94,10 @@ public final class QueryOptimizeEngineTest {
         andCondition.getConditions().add(condition2);
         Conditions conditions = new Conditions();
         conditions.getOrConditions().add(andCondition);
-        ShardingConditions shardingConditions = new QueryOptimizeEngine(new SelectStatement(), Collections.emptyList(), conditions).optimize().getShardingConditions();
-        assertFalse(shardingConditions.isAlwaysFalse());
-        ShardingCondition shardingCondition = shardingConditions.getShardingConditions().get(0);
-        RouteValue shardingValue = shardingCondition.getShardingValues().get(0);
+        RouteConditions routeConditions = new QueryOptimizeEngine(new SelectStatement(), Collections.emptyList(), conditions).optimize().getRouteConditions();
+        assertFalse(routeConditions.isAlwaysFalse());
+        RouteCondition routeCondition = routeConditions.getRouteConditions().get(0);
+        RouteValue shardingValue = routeCondition.getRouteValues().get(0);
         Collection<Comparable<?>> values = ((ListRouteValue<Comparable<?>>) shardingValue).getValues();
         assertThat(values.size(), is(1));
         assertTrue(values.containsAll(Collections.singleton(1)));
@@ -113,10 +113,10 @@ public final class QueryOptimizeEngineTest {
         andCondition.getConditions().add(condition2);
         Conditions parseCondition = new Conditions();
         parseCondition.getOrConditions().add(andCondition);
-        ShardingConditions shardingConditions = new QueryOptimizeEngine(new SelectStatement(), Collections.emptyList(), parseCondition).optimize().getShardingConditions();
-        assertFalse(shardingConditions.isAlwaysFalse());
-        ShardingCondition shardingCondition = shardingConditions.getShardingConditions().get(0);
-        RouteValue shardingValue = shardingCondition.getShardingValues().get(0);
+        RouteConditions routeConditions = new QueryOptimizeEngine(new SelectStatement(), Collections.emptyList(), parseCondition).optimize().getRouteConditions();
+        assertFalse(routeConditions.isAlwaysFalse());
+        RouteCondition routeCondition = routeConditions.getRouteConditions().get(0);
+        RouteValue shardingValue = routeCondition.getRouteValues().get(0);
         Range<Comparable<?>> values = ((BetweenRouteValue<Comparable<?>>) shardingValue).getValueRange();
         assertThat(values.lowerEndpoint(), CoreMatchers.<Comparable>is(1));
         assertThat(values.upperEndpoint(), CoreMatchers.<Comparable>is(2));
@@ -132,10 +132,10 @@ public final class QueryOptimizeEngineTest {
         andCondition.getConditions().add(condition2);
         Conditions parseCondition = new Conditions();
         parseCondition.getOrConditions().add(andCondition);
-        ShardingConditions shardingConditions = new QueryOptimizeEngine(new SelectStatement(), Collections.emptyList(), parseCondition).optimize().getShardingConditions();
-        assertFalse(shardingConditions.isAlwaysFalse());
-        ShardingCondition shardingCondition = shardingConditions.getShardingConditions().get(0);
-        RouteValue shardingValue = shardingCondition.getShardingValues().get(0);
+        RouteConditions routeConditions = new QueryOptimizeEngine(new SelectStatement(), Collections.emptyList(), parseCondition).optimize().getRouteConditions();
+        assertFalse(routeConditions.isAlwaysFalse());
+        RouteCondition routeCondition = routeConditions.getRouteConditions().get(0);
+        RouteValue shardingValue = routeCondition.getRouteValues().get(0);
         Collection<Comparable<?>> values = ((ListRouteValue<Comparable<?>>) shardingValue).getValues();
         assertThat(values.size(), is(2));
         assertTrue(values.containsAll(Arrays.asList(1, 2)));

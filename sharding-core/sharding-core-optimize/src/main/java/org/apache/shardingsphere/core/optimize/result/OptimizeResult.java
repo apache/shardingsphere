@@ -23,8 +23,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.core.optimize.GeneratedKey;
-import org.apache.shardingsphere.core.optimize.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimize.condition.ShardingConditions;
+import org.apache.shardingsphere.core.optimize.condition.RouteCondition;
+import org.apache.shardingsphere.core.optimize.condition.RouteConditions;
 import org.apache.shardingsphere.core.optimize.pagination.Pagination;
 import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResult;
 
@@ -40,7 +40,7 @@ import java.util.Collections;
 @Setter
 public final class OptimizeResult {
     
-    private final ShardingConditions shardingConditions;
+    private final RouteConditions routeConditions;
     
     @Getter(AccessLevel.NONE)
     private final InsertOptimizeResult insertOptimizeResult;
@@ -51,12 +51,12 @@ public final class OptimizeResult {
     
     private String logicTableNameForDropIndex;
     
-    public OptimizeResult(final ShardingConditions shardingConditions) {
-        this(shardingConditions, null);
+    public OptimizeResult(final RouteConditions routeConditions) {
+        this(routeConditions, null);
     }
     
     public OptimizeResult(final InsertOptimizeResult insertOptimizeResult) {
-        this(new ShardingConditions(Collections.<ShardingCondition>emptyList()), insertOptimizeResult);
+        this(new RouteConditions(Collections.<RouteCondition>emptyList()), insertOptimizeResult);
     }
     
     /**

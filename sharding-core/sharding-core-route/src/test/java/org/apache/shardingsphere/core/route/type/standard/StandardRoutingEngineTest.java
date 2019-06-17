@@ -20,8 +20,8 @@ package org.apache.shardingsphere.core.route.type.standard;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfiguration;
-import org.apache.shardingsphere.core.optimize.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimize.condition.ShardingConditions;
+import org.apache.shardingsphere.core.optimize.condition.RouteCondition;
+import org.apache.shardingsphere.core.optimize.condition.RouteConditions;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
@@ -52,15 +52,15 @@ public final class StandardRoutingEngineTest {
         shardingRuleConfig.getTableRuleConfigs().add(new TableRuleConfiguration("t_order", "ds_${0..1}.t_order_${0..1}"));
         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "ds_${user_id % 2}"));
         shardingRuleConfig.setDefaultTableShardingStrategyConfig(new InlineShardingStrategyConfiguration("order_id", "t_order_${order_id % 2}"));
-        List<ShardingCondition> shardingConditions = new ArrayList<>();
+        List<RouteCondition> routeConditions = new ArrayList<>();
         RouteValue shardingValue1 = new ListRouteValue<>("user_id", "t_order", Collections.singleton(1L));
         RouteValue shardingValue2 = new ListRouteValue<>("order_id", "t_order", Collections.singleton(1L));
-        ShardingCondition shardingCondition = new ShardingCondition();
-        shardingCondition.getShardingValues().add(shardingValue1);
-        shardingCondition.getShardingValues().add(shardingValue2);
-        shardingConditions.add(shardingCondition);
+        RouteCondition routeCondition = new RouteCondition();
+        routeCondition.getRouteValues().add(shardingValue1);
+        routeCondition.getRouteValues().add(shardingValue2);
+        routeConditions.add(routeCondition);
         ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, Arrays.asList("ds_0", "ds_1"));
-        standardRoutingEngine = new StandardRoutingEngine(mock(SQLStatement.class), shardingRule, "t_order", new OptimizeResult(new ShardingConditions(shardingConditions)));
+        standardRoutingEngine = new StandardRoutingEngine(mock(SQLStatement.class), shardingRule, "t_order", new OptimizeResult(new RouteConditions(routeConditions)));
     }
     
     @Test
