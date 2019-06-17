@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.optimize.engine.sharding;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.core.optimize.engine.sharding.dml.InsertOptimizeEngine;
+import org.apache.shardingsphere.core.optimize.engine.sharding.dml.ShardingInsertOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
@@ -51,7 +51,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class InsertOptimizeEngineTest {
+public final class ShardingInsertOptimizeEngineTest {
     
     private ShardingRule shardingRule;
     
@@ -77,7 +77,7 @@ public final class InsertOptimizeEngineTest {
     
     @Before
     public void setUp() throws IOException {
-        URL url = InsertOptimizeEngineTest.class.getClassLoader().getResource("yaml/optimize-rule.yaml");
+        URL url = ShardingInsertOptimizeEngineTest.class.getClassLoader().getResource("yaml/optimize-rule.yaml");
         Preconditions.checkNotNull(url, "Cannot found rewrite rule yaml configuration.");
         YamlRootShardingConfiguration yamlShardingConfig = YamlEngine.unmarshal(new File(url.getFile()), YamlRootShardingConfiguration.class);
         shardingRule = new ShardingRule(new ShardingRuleConfigurationYamlSwapper().swap(yamlShardingConfig.getShardingRule()), yamlShardingConfig.getDataSources().keySet());
@@ -197,7 +197,7 @@ public final class InsertOptimizeEngineTest {
     
     @Test
     public void assertOptimizeInsertValuesWithPlaceholderWithGeneratedKey() {
-        OptimizeResult actual = new InsertOptimizeEngine(shardingRule, insertValuesStatementWithPlaceholder, insertValuesParameters).optimize();
+        OptimizeResult actual = new ShardingInsertOptimizeEngine(shardingRule, insertValuesStatementWithPlaceholder, insertValuesParameters).optimize();
         assertFalse(actual.getRouteConditions().isAlwaysFalse());
         assertThat(actual.getRouteConditions().getRouteConditions().size(), is(2));
         assertTrue(actual.getInsertOptimizeResult().isPresent());
@@ -219,7 +219,7 @@ public final class InsertOptimizeEngineTest {
     
     @Test
     public void assertOptimizeInsertValuesWithPlaceholderWithGeneratedKeyWithEncrypt() {
-        OptimizeResult actual = new InsertOptimizeEngine(shardingRule, insertValuesStatementWithPlaceholderWithEncrypt, insertValuesParameters).optimize();
+        OptimizeResult actual = new ShardingInsertOptimizeEngine(shardingRule, insertValuesStatementWithPlaceholderWithEncrypt, insertValuesParameters).optimize();
         assertFalse(actual.getRouteConditions().isAlwaysFalse());
         assertThat(actual.getRouteConditions().getRouteConditions().size(), is(2));
         assertTrue(actual.getInsertOptimizeResult().isPresent());
@@ -240,7 +240,7 @@ public final class InsertOptimizeEngineTest {
     
     @Test
     public void assertOptimizeInsertValuesWithPlaceholderWithoutGeneratedKey() {
-        OptimizeResult actual = new InsertOptimizeEngine(shardingRule, insertValuesStatementWithPlaceholder, insertValuesParameters).optimize();
+        OptimizeResult actual = new ShardingInsertOptimizeEngine(shardingRule, insertValuesStatementWithPlaceholder, insertValuesParameters).optimize();
         assertFalse(actual.getRouteConditions().isAlwaysFalse());
         assertThat(actual.getRouteConditions().getRouteConditions().size(), is(2));
         assertTrue(actual.getInsertOptimizeResult().isPresent());
@@ -262,7 +262,7 @@ public final class InsertOptimizeEngineTest {
         insertValuesStatementWithoutPlaceholderWithQueryEncrypt.getColumnNames().add("status");
         insertValuesStatementWithoutPlaceholderWithQueryEncrypt.getValues().add(
                 new InsertValue(Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(1, 2, 12), new LiteralExpressionSegment(3, 4, "a"))));
-        OptimizeResult actual = new InsertOptimizeEngine(shardingRule, insertValuesStatementWithoutPlaceholderWithQueryEncrypt, Collections.emptyList()).optimize();
+        OptimizeResult actual = new ShardingInsertOptimizeEngine(shardingRule, insertValuesStatementWithoutPlaceholderWithQueryEncrypt, Collections.emptyList()).optimize();
         assertThat(actual.getRouteConditions().getRouteConditions().size(), is(1));
         assertTrue(actual.getInsertOptimizeResult().isPresent());
         assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getParameters().length, is(0));
@@ -275,7 +275,7 @@ public final class InsertOptimizeEngineTest {
         insertValuesStatementWithoutPlaceholder.getColumnNames().add("user_id");
         insertValuesStatementWithoutPlaceholder.getColumnNames().add("status");
         insertValuesStatementWithoutPlaceholder.getValues().add(new InsertValue(Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(1, 2, 12), new LiteralExpressionSegment(3, 4, "a"))));
-        OptimizeResult actual = new InsertOptimizeEngine(shardingRule, insertValuesStatementWithoutPlaceholder, Collections.emptyList()).optimize();
+        OptimizeResult actual = new ShardingInsertOptimizeEngine(shardingRule, insertValuesStatementWithoutPlaceholder, Collections.emptyList()).optimize();
         assertThat(actual.getRouteConditions().getRouteConditions().size(), is(1));
         assertTrue(actual.getInsertOptimizeResult().isPresent());
         assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getParameters().length, is(0));
@@ -287,7 +287,7 @@ public final class InsertOptimizeEngineTest {
     public void assertOptimizeInsertSetWithPlaceholderWithGeneratedKey() {
         insertSetStatementWithPlaceholder.getValues().add(
                 new InsertValue(Arrays.<ExpressionSegment>asList(new ParameterMarkerExpressionSegment(1, 2, 0), new ParameterMarkerExpressionSegment(3, 4, 1))));
-        OptimizeResult actual = new InsertOptimizeEngine(shardingRule, insertSetStatementWithPlaceholder, insertSetParameters).optimize();
+        OptimizeResult actual = new ShardingInsertOptimizeEngine(shardingRule, insertSetStatementWithPlaceholder, insertSetParameters).optimize();
         assertThat(actual.getRouteConditions().getRouteConditions().size(), is(1));
         assertTrue(actual.getInsertOptimizeResult().isPresent());
         assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getParameters().length, is(3));
@@ -301,7 +301,7 @@ public final class InsertOptimizeEngineTest {
     public void assertOptimizeInsertSetWithPlaceholderWithGeneratedKeyWithQueryEncrypt() {
         InsertValue insertValue = new InsertValue(Arrays.<ExpressionSegment>asList(new ParameterMarkerExpressionSegment(1, 2, 0), new ParameterMarkerExpressionSegment(3, 4, 1)));
         insertSetStatementWithPlaceholderWithQueryEncrypt.getValues().add(insertValue);
-        OptimizeResult actual = new InsertOptimizeEngine(shardingRule, insertSetStatementWithPlaceholderWithQueryEncrypt, insertSetParameters).optimize();
+        OptimizeResult actual = new ShardingInsertOptimizeEngine(shardingRule, insertSetStatementWithPlaceholderWithQueryEncrypt, insertSetParameters).optimize();
         assertThat(actual.getRouteConditions().getRouteConditions().size(), is(1));
         assertTrue(actual.getInsertOptimizeResult().isPresent());
         assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getParameters().length, is(4));
@@ -315,7 +315,7 @@ public final class InsertOptimizeEngineTest {
     @Test
     public void assertOptimizeInsertSetWithoutPlaceholderWithGeneratedKey() {
         insertSetStatementWithoutPlaceholder.getValues().add(new InsertValue(Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(1, 2, 12), new LiteralExpressionSegment(3, 4, "a"))));
-        OptimizeResult actual = new InsertOptimizeEngine(shardingRule, insertSetStatementWithoutPlaceholder, Collections.emptyList()).optimize();
+        OptimizeResult actual = new ShardingInsertOptimizeEngine(shardingRule, insertSetStatementWithoutPlaceholder, Collections.emptyList()).optimize();
         assertThat(actual.getRouteConditions().getRouteConditions().size(), is(1));
         assertTrue(actual.getInsertOptimizeResult().isPresent());
         assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getParameters().length, is(0));
@@ -327,7 +327,7 @@ public final class InsertOptimizeEngineTest {
     public void assertOptimizeInsertSetWithoutPlaceholderWithGeneratedKeyWithEncrypt() {
         insertSetStatementWithoutPlaceholderWithEncrypt.getValues().add(
                 new InsertValue(Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(1, 2, 12), new LiteralExpressionSegment(3, 4, "a"))));
-        OptimizeResult actual = new InsertOptimizeEngine(shardingRule, insertSetStatementWithoutPlaceholderWithEncrypt, Collections.emptyList()).optimize();
+        OptimizeResult actual = new ShardingInsertOptimizeEngine(shardingRule, insertSetStatementWithoutPlaceholderWithEncrypt, Collections.emptyList()).optimize();
         assertThat(actual.getRouteConditions().getRouteConditions().size(), is(1));
         assertTrue(actual.getInsertOptimizeResult().isPresent());
         assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getParameters().length, is(0));
