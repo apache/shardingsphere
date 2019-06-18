@@ -31,7 +31,10 @@ import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
 import org.apache.shardingsphere.core.parse.entry.ShardingSQLParseEntry;
 import org.apache.shardingsphere.core.parse.hook.ParsingHook;
 import org.apache.shardingsphere.core.parse.hook.SPIParsingHook;
+import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
+import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
@@ -42,6 +45,8 @@ import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -88,11 +93,17 @@ public final class ParsingSQLRouter implements ShardingRouter {
     @Override
     public SQLRouteResult route(final SQLStatement sqlStatement, final List<Object> parameters) {
         OptimizeResult optimizeResult = OptimizeEngineFactory.newInstance(shardingRule, sqlStatement, parameters, shardingMetaData.getTable()).optimize();
-        appendGeneratedKeyCondition(sqlStatement, optimizeResult);
+        RouteConditions routeConditions = null;
+        if (sqlStatement instanceof InsertStatement) {
+            List<RouteCondition> routeConditionList = getRouteConditions((InsertStatement) sqlStatement, parameters);
+            appendGeneratedKeyCondition(sqlStatement, optimizeResult, routeConditionList);
+            routeConditions = new RouteConditions(routeConditionList);
+            optimizeResult.setRouteConditions(routeConditions);
+        }
         boolean needMergeShardingValues = isNeedMergeShardingValues(sqlStatement);
         if (needMergeShardingValues) {
             checkSubqueryShardingValues(sqlStatement, optimizeResult.getRouteConditions());
-            mergeShardingValues(optimizeResult.getRouteConditions());
+            mergeShardingValues(null == routeConditions ? optimizeResult.getRouteConditions() : routeConditions);
         }
         RoutingResult routingResult = RoutingEngineFactory.newInstance(shardingRule, shardingMetaData.getDataSource(), sqlStatement, optimizeResult).route();
         if (needMergeShardingValues) {
@@ -104,7 +115,25 @@ public final class ParsingSQLRouter implements ShardingRouter {
         return result;
     }
     
-    private void appendGeneratedKeyCondition(final SQLStatement sqlStatement, final OptimizeResult optimizeResult) {
+    private List<RouteCondition> getRouteConditions(final InsertStatement insertStatement, final List<Object> parameters) {
+        List<RouteCondition> result = new ArrayList<>(insertStatement.getShardingConditions().getOrConditions().size());
+        for (AndCondition each : insertStatement.getShardingConditions().getOrConditions()) {
+            RouteCondition routeCondition = new RouteCondition();
+            routeCondition.getRouteValues().addAll(getRouteValues(each, parameters));
+            result.add(routeCondition);
+        }
+        return result;
+    }
+    
+    private Collection<ListRouteValue> getRouteValues(final AndCondition andCondition, final List<Object> parameters) {
+        Collection<ListRouteValue> result = new LinkedList<>();
+        for (Condition each : andCondition.getConditions()) {
+            result.add(new ListRouteValue<>(each.getColumn().getName(), each.getColumn().getTableName(), each.getConditionValues(parameters)));
+        }
+        return result;
+    }
+    
+    private void appendGeneratedKeyCondition(final SQLStatement sqlStatement, final OptimizeResult optimizeResult, final List<RouteCondition> routeConditions) {
         if (!optimizeResult.getGeneratedKey().isPresent() || optimizeResult.getGeneratedKey().get().isGenerated()) {
             return;
         }
@@ -112,7 +141,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
         GeneratedKey generatedKey = optimizeResult.getGeneratedKey().get();
         String generatedKeyColumnName = generatedKey.getColumnName();
         Iterator<Comparable<?>> generatedValues = generatedKey.getGeneratedValues().iterator();
-        for (RouteCondition each : optimizeResult.getRouteConditions().getRouteConditions()) {
+        for (RouteCondition each : routeConditions) {
             if (shardingRule.isShardingColumn(generatedKeyColumnName, tableName)) {
                 each.getRouteValues().add(new ListRouteValue<>(generatedKeyColumnName, tableName, Collections.<Comparable<?>>singletonList(generatedValues.next())));
             }

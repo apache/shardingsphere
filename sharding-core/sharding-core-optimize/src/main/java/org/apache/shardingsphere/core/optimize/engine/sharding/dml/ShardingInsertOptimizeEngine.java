@@ -27,16 +27,13 @@ import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResult;
 import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResultUnit;
 import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
-import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
 import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -59,7 +56,6 @@ public final class ShardingInsertOptimizeEngine implements OptimizeEngine {
     public OptimizeResult optimize() {
         InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(insertStatement.getColumnNames());
         List<AndCondition> andConditions = insertStatement.getShardingConditions().getOrConditions();
-        List<RouteCondition> routeConditions = new ArrayList<>(andConditions.size());
         Optional<GeneratedKey> generatedKey = GeneratedKey.getGenerateKey(shardingRule, parameters, insertStatement);
         boolean isGeneratedValue = generatedKey.isPresent() && generatedKey.get().isGenerated();
         Iterator<Comparable<?>> generatedValues = isGeneratedValue ? generatedKey.get().getGeneratedValues().iterator() : null;
@@ -70,21 +66,18 @@ public final class ShardingInsertOptimizeEngine implements OptimizeEngine {
         int derivedColumnsCount = getDerivedColumnsCount(isGeneratedValue);
         int parametersCount = 0;
         for (int i = 0; i < andConditions.size(); i++) {
-            AndCondition andCondition = andConditions.get(i);
             InsertValue insertValue = insertStatement.getValues().get(i);
             InsertOptimizeResultUnit unit = insertOptimizeResult.addUnit(
                     insertValue.getValues(derivedColumnsCount), insertValue.getParameters(parameters, parametersCount, derivedColumnsCount), insertValue.getParametersCount());
-            RouteCondition routeCondition = new RouteCondition();
-            routeCondition.getRouteValues().addAll(getRouteValues(andCondition));
             if (isGeneratedValue) {
                 unit.addInsertValue(generatedValues.next(), parameters);
             }
             if (shardingRule.getEncryptRule().getEncryptorEngine().isHasShardingQueryAssistedEncryptor(insertStatement.getTables().getSingleTableName())) {
                 fillAssistedQueryUnit(insertOptimizeResult.getColumnNames(), unit);
             }
-            routeConditions.add(routeCondition);
             parametersCount += insertValue.getParametersCount();
         }
+        List<RouteCondition> routeConditions = new ArrayList<>();
         return generatedKey.isPresent()
                 ? createOptimizeResult(insertOptimizeResult, routeConditions, generatedKey.get()) : new OptimizeResult(new RouteConditions(routeConditions), insertOptimizeResult);
     }
@@ -104,14 +97,6 @@ public final class ShardingInsertOptimizeEngine implements OptimizeEngine {
     private int getDerivedColumnsCount(final boolean isGeneratedValue) {
         int assistedQueryColumnsCount = shardingRule.getEncryptRule().getEncryptorEngine().getAssistedQueryColumnCount(insertStatement.getTables().getSingleTableName());
         return isGeneratedValue ? assistedQueryColumnsCount + 1 : assistedQueryColumnsCount;
-    }
-    
-    private Collection<ListRouteValue> getRouteValues(final AndCondition andCondition) {
-        Collection<ListRouteValue> result = new LinkedList<>();
-        for (Condition each : andCondition.getConditions()) {
-            result.add(new ListRouteValue<>(each.getColumn().getName(), each.getColumn().getTableName(), each.getConditionValues(parameters)));
-        }
-        return result;
     }
     
     private void fillAssistedQueryUnit(final Collection<String> columnNames, final InsertOptimizeResultUnit unit) {

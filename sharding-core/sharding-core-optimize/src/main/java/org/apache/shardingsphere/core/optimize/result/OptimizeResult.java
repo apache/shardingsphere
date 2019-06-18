@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.optimize.result;
 import com.google.common.base.Optional;
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.core.optimize.condition.RouteCondition;
 import org.apache.shardingsphere.core.optimize.condition.RouteConditions;
@@ -35,12 +34,11 @@ import java.util.Collections;
  *
  * @author panjuan
  */
-@RequiredArgsConstructor
 @Getter
 @Setter
 public final class OptimizeResult {
     
-    private final RouteConditions routeConditions;
+    private RouteConditions routeConditions;
     
     @Getter(AccessLevel.NONE)
     private final InsertOptimizeResult insertOptimizeResult;
@@ -57,6 +55,11 @@ public final class OptimizeResult {
     
     public OptimizeResult(final InsertOptimizeResult insertOptimizeResult) {
         this(new RouteConditions(Collections.<RouteCondition>emptyList()), insertOptimizeResult);
+    }
+    
+    public OptimizeResult(final RouteConditions routeConditions, final InsertOptimizeResult insertOptimizeResult) {
+        this.routeConditions = routeConditions;
+        this.insertOptimizeResult = insertOptimizeResult;
     }
     
     /**
