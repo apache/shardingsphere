@@ -27,6 +27,7 @@ public class SpringNamespaceExample {
     
     private static ShardingType shardingType = ShardingType.SHARDING_DATABASES_AND_TABLES;
 //    private static ShardingType shardingType = ShardingType.MASTER_SLAVE;
+//    private static ShardingType shardingType = ShardingType.ENCRYPT;
     
     private static boolean loadConfigFromRegCenter = false;
 //    private static boolean loadConfigFromRegCenter = true;
@@ -49,6 +50,8 @@ public class SpringNamespaceExample {
                 return String.format("META-INF/%s/%s/application-sharding-databases-tables.xml", registryCenterType.name().toLowerCase(), loadConfigFromRegCenter ? "cloud" : "local");
             case MASTER_SLAVE:
                 return String.format("META-INF/%s/%s/application-master-slave.xml", registryCenterType.name().toLowerCase(), loadConfigFromRegCenter ? "cloud" : "local");
+            case ENCRYPT:
+                return String.format("META-INF/%s/%s/application-encrypt.xml", registryCenterType.name().toLowerCase(), loadConfigFromRegCenter ? "cloud" : "local");
             default:
                 throw new UnsupportedOperationException(shardingType.name());
         }

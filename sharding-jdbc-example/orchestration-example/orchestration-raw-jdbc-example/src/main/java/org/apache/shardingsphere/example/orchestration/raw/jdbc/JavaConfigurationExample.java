@@ -23,8 +23,10 @@ import org.apache.shardingsphere.example.common.jdbc.service.CommonServiceImpl;
 import org.apache.shardingsphere.example.common.service.CommonService;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.orchestration.raw.jdbc.config.RegistryCenterConfigurationUtil;
+import org.apache.shardingsphere.example.orchestration.raw.jdbc.config.cloud.CloudEncryptConfiguration;
 import org.apache.shardingsphere.example.orchestration.raw.jdbc.config.cloud.CloudMasterSlaveConfiguration;
 import org.apache.shardingsphere.example.orchestration.raw.jdbc.config.cloud.CloudShardingDatabasesAndTablesConfiguration;
+import org.apache.shardingsphere.example.orchestration.raw.jdbc.config.local.LocalEncryptConfiguration;
 import org.apache.shardingsphere.example.orchestration.raw.jdbc.config.local.LocalMasterSlaveConfiguration;
 import org.apache.shardingsphere.example.orchestration.raw.jdbc.config.local.LocalShardingDatabasesAndTablesConfiguration;
 import org.apache.shardingsphere.example.type.RegistryCenterType;
@@ -44,6 +46,7 @@ public class JavaConfigurationExample {
     
     private static ShardingType shardingType = ShardingType.SHARDING_DATABASES_AND_TABLES;
 //    private static ShardingType shardingType = ShardingType.MASTER_SLAVE;
+//    private static ShardingType shardingType = ShardingType.ENCRYPT;
     
     private static boolean loadConfigFromRegCenter = false;
 //    private static boolean loadConfigFromRegCenter = true;
@@ -69,6 +72,9 @@ public class JavaConfigurationExample {
                 break;
             case MASTER_SLAVE:
                 configuration = loadConfigFromRegCenter ? new CloudMasterSlaveConfiguration(registryCenterConfig) : new LocalMasterSlaveConfiguration(registryCenterConfig);
+                break;
+            case ENCRYPT:
+                configuration = loadConfigFromRegCenter ? new CloudEncryptConfiguration(registryCenterConfig) : new LocalEncryptConfiguration(registryCenterConfig);
                 break;
             default:
                 throw new UnsupportedOperationException(shardingType.name());
