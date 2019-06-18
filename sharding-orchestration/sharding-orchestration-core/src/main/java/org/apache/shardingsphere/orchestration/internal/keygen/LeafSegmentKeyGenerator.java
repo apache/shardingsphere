@@ -80,7 +80,7 @@ public final class LeafSegmentKeyGenerator implements ShardingKeyGenerator {
     @Override
     public synchronized Comparable<?> generateKey() {
         String leafKey = getLeafKey();
-        if (leafRegistryCenter == null) {
+        if (null == leafRegistryCenter) {
             initLeafSegmentKeyGenerator(leafKey);
             return id;
         }
@@ -194,5 +194,4 @@ public final class LeafSegmentKeyGenerator implements ShardingKeyGenerator {
     private String getRegistryCenterType() {
         return properties.getProperty("registryCenterType", DEFAULT_REGISTRY_CENTER);
     }
-
 }
