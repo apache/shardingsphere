@@ -24,7 +24,6 @@ import org.apache.shardingsphere.core.optimize.engine.sharding.dml.QueryOptimize
 import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
-import org.apache.shardingsphere.core.parse.sql.context.condition.Conditions;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
@@ -52,9 +51,9 @@ public final class QueryOptimizeEngineTest {
         AndCondition andCondition = new AndCondition();
         andCondition.getConditions().add(condition1);
         andCondition.getConditions().add(condition2);
-        Conditions conditions = new Conditions();
-        conditions.getOrConditions().add(andCondition);
-        RouteConditions routeConditions = new QueryOptimizeEngine(new SelectStatement(), Collections.emptyList(), conditions).optimize().getRouteConditions();
+        SelectStatement selectStatement = new SelectStatement();
+        selectStatement.getShardingConditions().getOrConditions().add(andCondition);
+        RouteConditions routeConditions = new QueryOptimizeEngine(selectStatement, Collections.emptyList()).optimize().getRouteConditions();
         assertTrue(routeConditions.isAlwaysFalse());
     }
     
@@ -65,9 +64,9 @@ public final class QueryOptimizeEngineTest {
         AndCondition andCondition = new AndCondition();
         andCondition.getConditions().add(condition1);
         andCondition.getConditions().add(condition2);
-        Conditions conditions = new Conditions();
-        conditions.getOrConditions().add(andCondition);
-        RouteConditions routeConditions = new QueryOptimizeEngine(new SelectStatement(), Collections.emptyList(), conditions).optimize().getRouteConditions();
+        SelectStatement selectStatement = new SelectStatement();
+        selectStatement.getShardingConditions().getOrConditions().add(andCondition);
+        RouteConditions routeConditions = new QueryOptimizeEngine(selectStatement, Collections.emptyList()).optimize().getRouteConditions();
         assertTrue(routeConditions.isAlwaysFalse());
     }
     
@@ -78,9 +77,9 @@ public final class QueryOptimizeEngineTest {
         AndCondition andCondition = new AndCondition();
         andCondition.getConditions().add(condition1);
         andCondition.getConditions().add(condition2);
-        Conditions conditions = new Conditions();
-        conditions.getOrConditions().add(andCondition);
-        RouteConditions routeConditions = new QueryOptimizeEngine(new SelectStatement(), Collections.emptyList(), conditions).optimize().getRouteConditions();
+        SelectStatement selectStatement = new SelectStatement();
+        selectStatement.getShardingConditions().getOrConditions().add(andCondition);
+        RouteConditions routeConditions = new QueryOptimizeEngine(selectStatement, Collections.emptyList()).optimize().getRouteConditions();
         assertTrue(routeConditions.isAlwaysFalse());
     }
     
@@ -92,9 +91,9 @@ public final class QueryOptimizeEngineTest {
         AndCondition andCondition = new AndCondition();
         andCondition.getConditions().add(condition1);
         andCondition.getConditions().add(condition2);
-        Conditions conditions = new Conditions();
-        conditions.getOrConditions().add(andCondition);
-        RouteConditions routeConditions = new QueryOptimizeEngine(new SelectStatement(), Collections.emptyList(), conditions).optimize().getRouteConditions();
+        SelectStatement selectStatement = new SelectStatement();
+        selectStatement.getShardingConditions().getOrConditions().add(andCondition);
+        RouteConditions routeConditions = new QueryOptimizeEngine(selectStatement, Collections.emptyList()).optimize().getRouteConditions();
         assertFalse(routeConditions.isAlwaysFalse());
         RouteCondition routeCondition = routeConditions.getRouteConditions().get(0);
         RouteValue shardingValue = routeCondition.getRouteValues().get(0);
@@ -111,9 +110,9 @@ public final class QueryOptimizeEngineTest {
         AndCondition andCondition = new AndCondition();
         andCondition.getConditions().add(condition1);
         andCondition.getConditions().add(condition2);
-        Conditions parseCondition = new Conditions();
-        parseCondition.getOrConditions().add(andCondition);
-        RouteConditions routeConditions = new QueryOptimizeEngine(new SelectStatement(), Collections.emptyList(), parseCondition).optimize().getRouteConditions();
+        SelectStatement selectStatement = new SelectStatement();
+        selectStatement.getShardingConditions().getOrConditions().add(andCondition);
+        RouteConditions routeConditions = new QueryOptimizeEngine(selectStatement, Collections.emptyList()).optimize().getRouteConditions();
         assertFalse(routeConditions.isAlwaysFalse());
         RouteCondition routeCondition = routeConditions.getRouteConditions().get(0);
         RouteValue shardingValue = routeCondition.getRouteValues().get(0);
@@ -130,9 +129,9 @@ public final class QueryOptimizeEngineTest {
         AndCondition andCondition = new AndCondition();
         andCondition.getConditions().add(condition1);
         andCondition.getConditions().add(condition2);
-        Conditions parseCondition = new Conditions();
-        parseCondition.getOrConditions().add(andCondition);
-        RouteConditions routeConditions = new QueryOptimizeEngine(new SelectStatement(), Collections.emptyList(), parseCondition).optimize().getRouteConditions();
+        SelectStatement selectStatement = new SelectStatement();
+        selectStatement.getShardingConditions().getOrConditions().add(andCondition);
+        RouteConditions routeConditions = new QueryOptimizeEngine(selectStatement, Collections.emptyList()).optimize().getRouteConditions();
         assertFalse(routeConditions.isAlwaysFalse());
         RouteCondition routeCondition = routeConditions.getRouteConditions().get(0);
         RouteValue shardingValue = routeCondition.getRouteValues().get(0);

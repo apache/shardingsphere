@@ -31,9 +31,7 @@ import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
-import org.apache.shardingsphere.core.parse.sql.context.condition.Conditions;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationValueSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.strategy.route.value.BetweenRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
@@ -53,16 +51,14 @@ import java.util.Map.Entry;
 @RequiredArgsConstructor
 public final class QueryOptimizeEngine implements OptimizeEngine {
     
-    private final SQLStatement sqlStatement;
+    private final SelectStatement selectStatement;
     
     private final List<Object> parameters;
     
-    private final Conditions conditions;
-    
     @Override
     public OptimizeResult optimize() {
-        List<RouteCondition> routeConditions = new ArrayList<>(conditions.getOrConditions().size());
-        for (AndCondition each : conditions.getOrConditions()) {
+        List<RouteCondition> routeConditions = new ArrayList<>(selectStatement.getShardingConditions().getOrConditions().size());
+        for (AndCondition each : selectStatement.getShardingConditions().getOrConditions()) {
             routeConditions.add(optimize(each.getConditionsMap()));
         }
         OptimizeResult result = new OptimizeResult(new RouteConditions(routeConditions));
@@ -138,12 +134,10 @@ public final class QueryOptimizeEngine implements OptimizeEngine {
     }
     
     private Optional<Pagination> getPagination() {
-        if (sqlStatement instanceof SelectStatement) {
-            PaginationValueSegment offsetSegment = ((SelectStatement) sqlStatement).getOffset();
-            PaginationValueSegment rowCountSegment = ((SelectStatement) sqlStatement).getRowCount();
-            if (null != offsetSegment || null != rowCountSegment) {
-                return Optional.of(new Pagination(offsetSegment, rowCountSegment, parameters));
-            }
+        PaginationValueSegment offsetSegment = selectStatement.getOffset();
+        PaginationValueSegment rowCountSegment = selectStatement.getRowCount();
+        if (null != offsetSegment || null != rowCountSegment) {
+            return Optional.of(new Pagination(offsetSegment, rowCountSegment, parameters));
         }
         return Optional.absent();
     }
