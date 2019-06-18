@@ -89,8 +89,9 @@ public final class ShardingInsertValuesFiller implements SQLSegmentFiller<Insert
         AndCondition andCondition = new AndCondition();
         Iterator<String> columnNames = insertStatement.getColumnNames().iterator();
         for (ExpressionSegment each : segment.getValues()) {
+            String columnName = columnNames.next();
             if (each instanceof SimpleExpressionSegment) {
-                fillShardingCondition(andCondition, insertStatement.getTables().getSingleTableName(), columnNames.next(), (SimpleExpressionSegment) each);
+                fillShardingCondition(andCondition, insertStatement.getTables().getSingleTableName(), columnName, (SimpleExpressionSegment) each);
             }
         }
         insertStatement.getShardingConditions().getOrConditions().add(andCondition);
