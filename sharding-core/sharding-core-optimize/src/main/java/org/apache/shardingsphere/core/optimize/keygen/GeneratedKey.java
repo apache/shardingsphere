@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize;
+package org.apache.shardingsphere.core.optimize.keygen;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
