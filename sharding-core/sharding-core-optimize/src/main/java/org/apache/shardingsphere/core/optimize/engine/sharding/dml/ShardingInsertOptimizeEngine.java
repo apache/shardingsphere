@@ -35,7 +35,6 @@ import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -78,7 +77,7 @@ public final class ShardingInsertOptimizeEngine implements OptimizeEngine {
             RouteCondition routeCondition = new RouteCondition();
             routeCondition.getRouteValues().addAll(getRouteValues(andCondition));
             if (isGeneratedValue) {
-                fillGeneratedKeyUnit(generatedKey.get().getColumnName(), generatedValues.next(), unit, routeCondition);
+                unit.addInsertValue(generatedValues.next(), parameters);
             }
             if (shardingRule.getEncryptRule().getEncryptorEngine().isHasShardingQueryAssistedEncryptor(insertStatement.getTables().getSingleTableName())) {
                 fillAssistedQueryUnit(insertOptimizeResult.getColumnNames(), unit);
@@ -113,14 +112,6 @@ public final class ShardingInsertOptimizeEngine implements OptimizeEngine {
             result.add(new ListRouteValue<>(each.getColumn().getName(), each.getColumn().getTableName(), each.getConditionValues(parameters)));
         }
         return result;
-    }
-    
-    private void fillGeneratedKeyUnit(final String generatedKeyColumnName, final Comparable<?> generatedValue, final InsertOptimizeResultUnit unit, final RouteCondition routeCondition) {
-        unit.addInsertValue(generatedValue, parameters);
-        String tableName = insertStatement.getTables().getSingleTableName();
-        if (shardingRule.isShardingColumn(generatedKeyColumnName, tableName)) {
-            routeCondition.getRouteValues().add(new ListRouteValue<>(generatedKeyColumnName, tableName, Collections.<Comparable<?>>singletonList(generatedValue)));
-        }
     }
     
     private void fillAssistedQueryUnit(final Collection<String> columnNames, final InsertOptimizeResultUnit unit) {

@@ -209,12 +209,10 @@ public final class ShardingInsertOptimizeEngineTest {
         assertThat(actual.getInsertOptimizeResult().get().getUnits().get(1).getParameters()[0], CoreMatchers.<Object>is(11));
         assertThat(actual.getInsertOptimizeResult().get().getUnits().get(1).getParameters()[1], CoreMatchers.<Object>is("init"));
         assertThat(actual.getInsertOptimizeResult().get().getUnits().get(1).getParameters()[2], CoreMatchers.<Object>is(1));
-        assertThat(actual.getRouteConditions().getRouteConditions().get(0).getRouteValues().size(), is(2));
-        assertThat(actual.getRouteConditions().getRouteConditions().get(1).getRouteValues().size(), is(2));
+        assertThat(actual.getRouteConditions().getRouteConditions().get(0).getRouteValues().size(), is(1));
+        assertThat(actual.getRouteConditions().getRouteConditions().get(1).getRouteValues().size(), is(1));
         assertShardingValue((ListRouteValue) actual.getRouteConditions().getRouteConditions().get(0).getRouteValues().get(0), 10);
-        assertShardingValue((ListRouteValue) actual.getRouteConditions().getRouteConditions().get(0).getRouteValues().get(1), 1);
         assertShardingValue((ListRouteValue) actual.getRouteConditions().getRouteConditions().get(1).getRouteValues().get(0), 11);
-        assertShardingValue((ListRouteValue) actual.getRouteConditions().getRouteConditions().get(1).getRouteValues().get(1), 1);
     }
     
     @Test
@@ -230,12 +228,10 @@ public final class ShardingInsertOptimizeEngineTest {
         assertThat(actual.getInsertOptimizeResult().get().getUnits().get(1).getParameters()[0], CoreMatchers.<Object>is(11));
         assertThat(actual.getInsertOptimizeResult().get().getUnits().get(1).getParameters()[1], CoreMatchers.<Object>is("init"));
         assertThat(actual.getInsertOptimizeResult().get().getUnits().get(1).getParameters()[2], CoreMatchers.<Object>is(1));
-        assertThat(actual.getRouteConditions().getRouteConditions().get(0).getRouteValues().size(), is(2));
-        assertThat(actual.getRouteConditions().getRouteConditions().get(1).getRouteValues().size(), is(2));
+        assertThat(actual.getRouteConditions().getRouteConditions().get(0).getRouteValues().size(), is(1));
+        assertThat(actual.getRouteConditions().getRouteConditions().get(1).getRouteValues().size(), is(1));
         assertShardingValue((ListRouteValue) actual.getRouteConditions().getRouteConditions().get(0).getRouteValues().get(0), 10);
-        assertShardingValue((ListRouteValue) actual.getRouteConditions().getRouteConditions().get(0).getRouteValues().get(1), 1);
         assertShardingValue((ListRouteValue) actual.getRouteConditions().getRouteConditions().get(1).getRouteValues().get(0), 11);
-        assertShardingValue((ListRouteValue) actual.getRouteConditions().getRouteConditions().get(1).getRouteValues().get(1), 1);
     }
     
     @Test
@@ -250,8 +246,8 @@ public final class ShardingInsertOptimizeEngineTest {
         assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getParameters()[1], CoreMatchers.<Object>is("init"));
         assertThat(actual.getInsertOptimizeResult().get().getUnits().get(1).getParameters()[0], CoreMatchers.<Object>is(11));
         assertThat(actual.getInsertOptimizeResult().get().getUnits().get(1).getParameters()[1], CoreMatchers.<Object>is("init"));
-        assertThat(actual.getRouteConditions().getRouteConditions().get(0).getRouteValues().size(), is(2));
-        assertThat(actual.getRouteConditions().getRouteConditions().get(1).getRouteValues().size(), is(2));
+        assertThat(actual.getRouteConditions().getRouteConditions().get(0).getRouteValues().size(), is(1));
+        assertThat(actual.getRouteConditions().getRouteConditions().get(1).getRouteValues().size(), is(1));
         assertShardingValue((ListRouteValue) actual.getRouteConditions().getRouteConditions().get(0).getRouteValues().get(0), 10);
         assertShardingValue((ListRouteValue) actual.getRouteConditions().getRouteConditions().get(1).getRouteValues().get(0), 11);
     }
@@ -267,7 +263,6 @@ public final class ShardingInsertOptimizeEngineTest {
         assertTrue(actual.getInsertOptimizeResult().isPresent());
         assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getParameters().length, is(0));
         assertShardingValue((ListRouteValue) actual.getRouteConditions().getRouteConditions().get(0).getRouteValues().get(0), 12);
-        assertShardingValue((ListRouteValue) actual.getRouteConditions().getRouteConditions().get(0).getRouteValues().get(1), 1);
     }
     
     @Test
@@ -280,7 +275,6 @@ public final class ShardingInsertOptimizeEngineTest {
         assertTrue(actual.getInsertOptimizeResult().isPresent());
         assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getParameters().length, is(0));
         assertShardingValue((ListRouteValue) actual.getRouteConditions().getRouteConditions().get(0).getRouteValues().get(0), 12);
-        assertShardingValue((ListRouteValue) actual.getRouteConditions().getRouteConditions().get(0).getRouteValues().get(1), 1);
     }
     
     @Test
@@ -320,7 +314,6 @@ public final class ShardingInsertOptimizeEngineTest {
         assertTrue(actual.getInsertOptimizeResult().isPresent());
         assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getParameters().length, is(0));
         assertShardingValue((ListRouteValue) actual.getRouteConditions().getRouteConditions().get(0).getRouteValues().get(0), 12);
-        assertShardingValue((ListRouteValue) actual.getRouteConditions().getRouteConditions().get(0).getRouteValues().get(1), 1);
     }
     
     @Test
@@ -332,7 +325,6 @@ public final class ShardingInsertOptimizeEngineTest {
         assertTrue(actual.getInsertOptimizeResult().isPresent());
         assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getParameters().length, is(0));
         assertShardingValue((ListRouteValue) actual.getRouteConditions().getRouteConditions().get(0).getRouteValues().get(0), 12);
-        assertShardingValue((ListRouteValue) actual.getRouteConditions().getRouteConditions().get(0).getRouteValues().get(1), 1);
     }
     
     private void assertShardingValue(final ListRouteValue actual, final int expected) {
