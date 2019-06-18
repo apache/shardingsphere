@@ -69,6 +69,22 @@ weight = 1
      }
 ```
 
+### 数据脱敏
+
+```java
+    DataSource getEncryptDataSource() throws SQLException {
+        return EncryptDataSourceFactory.createDataSource(DataSourceUtil.createDataSource("demo_ds"), getOrderEncryptRuleConfiguration());
+    }
+
+    private static EncryptRuleConfiguration getOrderEncryptRuleConfiguration() {
+        EncryptRuleConfiguration encryptRuleConfiguration = new EncryptRuleConfiguration();
+        Properties properties = new Properties();
+        properties.setProperty("aes.key.value", "123456");
+        EncryptorRuleConfiguration encryptorRuleConfiguration = new EncryptorRuleConfiguration("AES", "t_order.order_id", properties);
+        encryptRuleConfiguration.getEncryptorRuleConfigs().put("user_encryptor", encryptorRuleConfiguration);
+    }
+```
+
 ### 数据分片 + 读写分离
 
 ```java
@@ -174,6 +190,7 @@ weight = 1
 
 ```java
     DataSource getDataSource() throws SQLException {
+        // OrchestrationShardingDataSourceFactory 可替换成 OrchestrationMasterSlaveDataSourceFactory 或 OrchestrationEncryptDataSourceFactory
         return OrchestrationShardingDataSourceFactory.createDataSource(
                 createDataSourceMap(), createShardingRuleConfig(), new HashMap<String, Object>(), new Properties(), 
                 new OrchestrationConfiguration("orchestration-sharding-data-source", getRegistryCenterConfiguration(), false));
@@ -332,6 +349,21 @@ ShardingStrategyConfiguration的实现类，用于配置不分片的策略。
 | max.connections.size.per.query (?) | int       | 每个物理数据库为每次查询分配的最大连接数量。默认值: 1    |
 | check.table.metadata.enabled (?)   | boolean   | 是否在启动时检查分表元数据一致性，默认值: false         |
 
+### 数据脱敏
+
+#### EncryptDataSourceFactory
+
+| *名称*                 | *数据类型*                    | *说明*             |
+| --------------------- | ---------------------------- | ------------------ |
+| dataSource            | DataSource                   | 数据源，任意连接池    |
+| encryptRuleConfig     | EncryptRuleConfiguration     | 数据脱敏规则         |
+| props (?)             | Properties                   | 属性配置            |
+
+#### EncryptRuleConfiguration
+
+| *名称*                    | *数据类型*                       | *说明*           |
+| ------------------------ | ------------------------------- | ---------------- |
+| encryptorRuleConfigs     | Map\<String, EncryptorRuleConfiguration\> | 加解密器名称与配置，加解密器配置内容同上 |
 
 ### 治理
 
@@ -354,6 +386,17 @@ ShardingStrategyConfiguration的实现类，用于配置不分片的策略。
 | --------------------- | ---------------------------- | ------------------------------ |
 | dataSourceMap         | Map\<String, DataSource\>    | 同MasterSlaveDataSourceFactory |
 | masterSlaveRuleConfig | MasterSlaveRuleConfiguration | 同MasterSlaveDataSourceFactory |
+| props (?)             | Properties                   | 同ShardingDataSourceFactory    |
+| orchestrationConfig   | OrchestrationConfiguration   | 治理规则配置                 |
+
+#### OrchestrationEncryptDataSourceFactory
+
+数据脱敏 + 治理的数据源工厂。
+
+| *名称*                 | *数据类型*                    | *说明*                         |
+| --------------------- | ---------------------------- | ------------------------------ |
+| dataSource            | DataSource                   | 同EncryptDataSourceFactory     |
+| encryptRuleConfig     | EncryptRuleConfiguration     | 同EncryptDataSourceFactory     |
 | props (?)             | Properties                   | 同ShardingDataSourceFactory    |
 | orchestrationConfig   | OrchestrationConfiguration   | 治理规则配置                 |
 
