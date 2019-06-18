@@ -20,13 +20,12 @@ package org.apache.shardingsphere.core.optimize;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.optimize.engine.DefaultOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
-import org.apache.shardingsphere.core.optimize.engine.encrypt.EncryptDefaultOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.engine.encrypt.EncryptInsertOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.engine.sharding.ddl.DDLOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.engine.sharding.dml.QueryOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.engine.sharding.dml.ShardingInsertOptimizeEngine;
-import org.apache.shardingsphere.core.parse.sql.context.condition.Conditions;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
@@ -66,7 +65,7 @@ public final class OptimizeEngineFactory {
             return new DDLOptimizeEngine((DDLStatement) sqlStatement, shardingTableMetaData);
         }
         // TODO do with DAL
-        return new QueryOptimizeEngine(sqlStatement, parameters, new Conditions());
+        return new DefaultOptimizeEngine();
     }
     
     /**
@@ -81,6 +80,6 @@ public final class OptimizeEngineFactory {
         if (sqlStatement instanceof InsertStatement) {
             return new EncryptInsertOptimizeEngine(encryptRule, (InsertStatement) sqlStatement, parameters);
         }
-        return new EncryptDefaultOptimizeEngine();
+        return new DefaultOptimizeEngine();
     }
 }

@@ -15,17 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.engine.encrypt;
+package org.apache.shardingsphere.core.optimize.engine;
 
-import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 
 /**
- * Encrypt default optimize engine.
+ * Default optimize engine.
  *
  * @author panjuan
  */
-public final class EncryptDefaultOptimizeEngine implements OptimizeEngine {
+public final class DefaultOptimizeEngine implements OptimizeEngine {
     
     @Override
     public OptimizeResult optimize() {
