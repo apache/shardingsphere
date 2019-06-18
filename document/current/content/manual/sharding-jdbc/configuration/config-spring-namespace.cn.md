@@ -157,6 +157,39 @@ weight = 4
 </beans>
 ```
 
+### 数据脱敏
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:encrypt="http://shardingsphere.apache.org/schema/shardingsphere/encrypt"
+       xmlns:bean="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                        http://www.springframework.org/schema/beans/spring-beans.xsd 
+                        http://shardingsphere.apache.org/schema/shardingsphere/encrypt
+                        http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd 
+                        http://www.springframework.org/schema/util 
+                        http://www.springframework.org/schema/util/spring-util.xsd">
+   
+    <bean id="ds" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds?useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
+        <property name="username" value="root"/>
+        <property name="password" value=""/>
+    </bean>
+    
+    <bean:properties id="props">
+        <prop key="aes.key.value">123456</prop>
+    </bean:properties>
+    
+    <encrypt:data-source id="encryptDataSource" data-source-name="ds" >
+        <encrypt:encryptor-rule id="pwd_encryptor" type="assistedTest" qualified-columns="t_user.pwd" assisted-query-columns="t_user.assisted_query_pwd" />
+        <encrypt:encryptor-rule id="name_encryptor" type="AES" qualified-columns="t_user.user_name" props-ref="props" />
+    </encrypt:data-source>
+</beans>
+```
+
 ### 数据分片 + 读写分离
 
 ```xml
@@ -529,6 +562,28 @@ weight = 4
 | max.connections.size.per.query (?) | 属性   | 每个物理数据库为每次查询分配的最大连接数量。默认值: 1 |
 | check.table.metadata.enabled (?)   | 属性   | 是否在启动时检查分表元数据一致性，默认值: false       |
 
+### 数据脱敏
+
+命名空间：http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd
+
+#### \<encrypt:data-source />
+
+| *名称*                  | *类型* | *说明*                                        |
+| ----------------------- | ----- | -------------------------------------------- |
+| id                      | 属性  | Spring Bean Id                                |
+| data-source-name        | 属性  | 加密数据源Bean Id                              |
+| props (?)               | 标签  | 属性配置                                       |
+
+#### \<encrypt:encryptor-rule />
+
+| *名称*                  | *类型* | *说明*                                                    |
+| ----------------------- | ----- | --------------------------------------------------------- |
+| id                      | 属性  | 加密器的名称                                                |
+| type                    | 属性  | 加解密器类型，可自定义或选择内置类型：MD5/AES                   |
+| qualified-columns       | 属性  | 加解密字段，格式为：表名.列名，例如：tb.col1。多个列，请用逗号分隔 |
+| assisted-query-columns  | 属性  | 辅助查询字段，针对ShardingQueryAssistedEncryptor类型的加解密器进行辅助查询|
+| props-re                | 属性  | 属性配置                                                    |
+
 ### 数据分片 + 治理
 
 命名空间：http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd
@@ -547,6 +602,19 @@ weight = 4
 命名空间：http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd
 
 #### \<orchestration:master-slave-data-source />
+
+| *名称*              | *类型* | *说明*                                                                  |
+| ------------------- | ----- | ---------------------------------------------------------------------- |
+| id                  | 属性   | ID                                                                     |
+| data-source-ref (?) | 属性   | 被治理的数据库id                                                         |
+| registry-center-ref | 属性   | 注册中心id                                                              |
+| overwrite           | 属性   | 本地配置是否覆盖注册中心配置。如果可覆盖，每次启动都以本地配置为准。缺省为不覆盖 |
+
+### 数据脱敏 + 治理
+
+命名空间：http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd
+
+#### \<orchestration:encrypt-data-source />
 
 | *名称*              | *类型* | *说明*                                                                  |
 | ------------------- | ----- | ---------------------------------------------------------------------- |

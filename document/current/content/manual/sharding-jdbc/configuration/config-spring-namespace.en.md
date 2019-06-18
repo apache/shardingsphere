@@ -157,6 +157,39 @@ Inline expression identifier can can use `${...} ` or `$->{...}`, but the former
 </beans>
 ```
 
+### Data Masking
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:encrypt="http://shardingsphere.apache.org/schema/shardingsphere/encrypt"
+       xmlns:bean="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                        http://www.springframework.org/schema/beans/spring-beans.xsd 
+                        http://shardingsphere.apache.org/schema/shardingsphere/encrypt
+                        http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd 
+                        http://www.springframework.org/schema/util 
+                        http://www.springframework.org/schema/util/spring-util.xsd">
+   
+    <bean id="ds" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds?useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
+        <property name="username" value="root"/>
+        <property name="password" value=""/>
+    </bean>
+    
+    <bean:properties id="props">
+        <prop key="aes.key.value">123456</prop>
+    </bean:properties>
+    
+    <encrypt:data-source id="encryptDataSource" data-source-name="ds" >
+        <encrypt:encryptor-rule id="pwd_encryptor" type="assistedTest" qualified-columns="t_user.pwd" assisted-query-columns="t_user.assisted_query_pwd" />
+        <encrypt:encryptor-rule id="name_encryptor" type="AES" qualified-columns="t_user.user_name" props-ref="props" />
+    </encrypt:data-source>
+</beans>
+```
+
 ### Sharding + Read-write splitting
 
 ```xml
@@ -540,6 +573,29 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/masterslave/ma
 | max.connections.size.per.query (?) | Attribute | The maximum connection number that each physical database allocates to each query; default value: 1 |
 | check.table.metadata.enabled (?)   | Attribute | Whether to check meta-data consistency of sharding table when it initializes; default value: false |
 
+### Data Masking
+
+Namespace: http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd
+
+#### \<encrypt:data-source />
+
+| *Name*                  | *Type*    | *Explanation*                                                |
+| ----------------------- | --------- | ------------------------------------------------------------ |
+| id                      | Attribute | Spring Bean Id                                               |
+| data-source-name        | Attribute | Encrypt data source Bean Id                                  |
+| props (?)               | Tag       | Attribute configurations                                     |
+
+#### \<encrypt:encryptor-rule />
+
+| *Name*                  | *Type*    | *Explanation*                                               |
+| ----------------------- | --------- | ----------------------------------------------------------- |
+| id                      | Attribute | Names of Encryptor                                          |
+| type                    | Attribute | Types of Encryptor, including MD5/AES or customize type     |
+| qualified-columns       | Attribute | Columns of Encrypt, format: tableName.columnName, such as tb.col1 . If multiple columns, use comma separated |
+| assisted-query-columns  | Attribute | Assisted query columns, do assisted query for the ShardingQueryAssistedEncryptor type |
+| props-re                | Attribute | Attribute configurations                                    |
+
+
 ### Data Sharding + Orchestration
 
 Namespace: http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd
@@ -565,6 +621,20 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/orchestration/
 | data-source-ref (?) | Attribute | The id of data source to be orchestrated                    |
 | registry-center-ref | Attribute | The id of registry center                                   |
 | overwrite           | Attribute | Use local configuration to overwrite registry center or not |
+
+### Data Masking + Orchestration
+
+Namespace: http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd
+
+#### \<orchestration:encrypt-data-source />
+
+| *Name*              | *Type*    | *Description*                                               |
+| ------------------- | --------- | ----------------------------------------------------------- |
+| id                  | Attribute | ID                                                          |
+| data-source-ref (?) | Attribute | The id of data source to be orchestrated                    |
+| registry-center-ref | Attribute | The id of registry center                                   |
+| overwrite           | Attribute | Use local configuration to overwrite registry center or not |
+
 
 ### Orchestration registry center
 
