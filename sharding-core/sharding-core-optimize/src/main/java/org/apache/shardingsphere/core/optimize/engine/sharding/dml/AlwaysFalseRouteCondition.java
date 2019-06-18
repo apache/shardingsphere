@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.engine.sharding.dql;
+package org.apache.shardingsphere.core.optimize.engine.sharding.dml;
 
 import org.apache.shardingsphere.core.optimize.condition.RouteCondition;
 
