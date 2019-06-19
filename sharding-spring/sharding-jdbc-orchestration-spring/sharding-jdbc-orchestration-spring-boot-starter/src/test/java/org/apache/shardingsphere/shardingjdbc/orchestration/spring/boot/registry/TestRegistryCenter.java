@@ -24,10 +24,14 @@ import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfigurati
 import org.apache.shardingsphere.orchestration.reg.listener.DataChangedEventListener;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 public final class TestRegistryCenter implements RegistryCenter {
+    
+    private static final Map<String, String> REGISTRY_DATA = new LinkedHashMap<>();
     
     @Getter
     @Setter
@@ -39,17 +43,17 @@ public final class TestRegistryCenter implements RegistryCenter {
     
     @Override
     public String get(final String key) {
-        return "";
+        return REGISTRY_DATA.get(key);
     }
     
     @Override
     public String getDirectly(final String key) {
-        return "";
+        return REGISTRY_DATA.get(key);
     }
     
     @Override
     public boolean isExisted(final String key) {
-        return true;
+        return REGISTRY_DATA.containsKey(key);
     }
     
     @Override
@@ -59,14 +63,17 @@ public final class TestRegistryCenter implements RegistryCenter {
     
     @Override
     public void persist(final String key, final String value) {
+        REGISTRY_DATA.put(key, value);
     }
     
     @Override
     public void update(final String key, final String value) {
+        REGISTRY_DATA.put(key, value);
     }
     
     @Override
     public void persistEphemeral(final String key, final String value) {
+        REGISTRY_DATA.put(key, value);
     }
     
     @Override
@@ -75,22 +82,23 @@ public final class TestRegistryCenter implements RegistryCenter {
     
     @Override
     public void close() {
+        REGISTRY_DATA.clear();
     }
     
     @Override
     public String getType() {
         return "TestRegistry";
     }
-
+    
     @Override
     public void initLock(final String key) {
     }
-
+    
     @Override
     public boolean tryLock() {
         return true;
     }
-
+    
     @Override
     public void tryRelease() {
     }
