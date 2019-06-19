@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.optimize.engine.sharding.dml;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +30,6 @@ import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationValueSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.strategy.route.value.BetweenRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
@@ -44,7 +42,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Query optimize engine.
+ * Select optimize engine for sharding.
  *
  * @author zhangliang
  */
@@ -62,7 +60,7 @@ public final class ShardingSelectOptimizeEngine implements OptimizeEngine {
             routeConditions.add(optimize(each.getConditionsMap()));
         }
         OptimizeResult result = new OptimizeResult(new RouteConditions(routeConditions));
-        result.setPagination(getPagination().orNull());
+        setPagination(result);
         return result;
     }
     
@@ -133,12 +131,9 @@ public final class ShardingSelectOptimizeEngine implements OptimizeEngine {
         return result;
     }
     
-    private Optional<Pagination> getPagination() {
-        PaginationValueSegment offsetSegment = selectStatement.getOffset();
-        PaginationValueSegment rowCountSegment = selectStatement.getRowCount();
-        if (null != offsetSegment || null != rowCountSegment) {
-            return Optional.of(new Pagination(offsetSegment, rowCountSegment, parameters));
+    private void setPagination(final OptimizeResult result) {
+        if (null != selectStatement.getOffset() || null != selectStatement.getRowCount()) {
+            result.setPagination(new Pagination(selectStatement.getOffset(), selectStatement.getRowCount(), parameters));
         }
-        return Optional.absent();
     }
 }
