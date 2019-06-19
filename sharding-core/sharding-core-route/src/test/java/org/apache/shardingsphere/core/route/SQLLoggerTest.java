@@ -40,16 +40,16 @@ import static org.mockito.Mockito.inOrder;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class SQLLoggerTest {
-
+    
     private String sql;
-
+    
     private Collection<String> dataSourceNames;
-
+    
     private Collection<RouteUnit> routeUnits;
-
+    
     @Mock
     private Logger logger;
-
+    
     @Before
     public void setUp() throws NoSuchFieldException, IllegalAccessException {
         this.sql = "select * from user";
@@ -58,7 +58,7 @@ public final class SQLLoggerTest {
         Field field = SQLLogger.class.getDeclaredField("log");
         setFinalStatic(field, logger);
     }
-
+    
     @Test
     public void assertLogSQLShard() {
         SQLLogger.logSQL(sql, false, null, routeUnits);
@@ -70,7 +70,7 @@ public final class SQLLoggerTest {
         inOrder.verify(logger).info("Actual SQL: {} ::: {}", new Object[]{"db2", sql});
         inOrder.verify(logger).info("Actual SQL: {} ::: {}", new Object[]{"db3", sql});
     }
-
+    
     @Test
     public void assertLogSQLShardSimple() {
         SQLLogger.logSQL(sql, true, null, routeUnits);
@@ -80,7 +80,7 @@ public final class SQLLoggerTest {
         inOrder.verify(logger).info("SQLStatement: {}", new Object[]{null});
         inOrder.verify(logger).info("Actual SQL(simple): {} ::: {}", new Object[]{buildDataSourceNamesSet(), routeUnits.size()});
     }
-
+    
     @Test
     public void assertLogSQLMasterSlave() {
         SQLLogger.logSQL(sql, dataSourceNames);
@@ -88,7 +88,15 @@ public final class SQLLoggerTest {
         inOrder.verify(logger).info("Rule Type: master-slave", new Object[]{});
         inOrder.verify(logger).info("SQL: {} ::: DataSources: {}", new Object[]{sql, Joiner.on(",").join(dataSourceNames)});
     }
-
+    
+    @Test
+    public void assertLogSQLEncrypt() {
+        SQLLogger.logSQL(sql);
+        InOrder inOrder = inOrder(logger);
+        inOrder.verify(logger).info("Rule Type: encrypt", new Object[]{});
+        inOrder.verify(logger).info("SQL: {}", new Object[]{sql});
+    }
+    
     private Set<String> buildDataSourceNamesSet() {
         Set<String> dataSourceNamesSet = new HashSet<>(routeUnits.size());
         for (RouteUnit each : routeUnits) {
@@ -96,7 +104,7 @@ public final class SQLLoggerTest {
         }
         return dataSourceNamesSet;
     }
-
+    
     private Collection<RouteUnit> mockRouteUnits(final Collection<String> dataSourceNames, final String sql) {
         List<RouteUnit> results = new LinkedList<>();
         for (String dsName : dataSourceNames) {
@@ -104,7 +112,7 @@ public final class SQLLoggerTest {
         }
         return results;
     }
-
+    
     private Collection<RouteUnit> mockOneShard(final String dsName, final int size, final String sql) {
         Collection<RouteUnit> result = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
@@ -112,7 +120,7 @@ public final class SQLLoggerTest {
         }
         return result;
     }
-
+    
     private static void setFinalStatic(final Field field, final Object newValue) throws NoSuchFieldException, IllegalAccessException {
         field.setAccessible(true);
         Field modifiersField = Field.class.getDeclaredField("modifiers");

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.fixture;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.spi.database.DatabaseType;
 import org.apache.shardingsphere.transaction.core.ResourceDataSource;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
 import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;

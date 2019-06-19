@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.merge.dql.pagination;
 
 import org.apache.shardingsphere.core.merge.MergedResult;
 import org.apache.shardingsphere.core.merge.dql.common.DecoratorMergedResult;
-import org.apache.shardingsphere.core.route.pagination.Pagination;
+import org.apache.shardingsphere.core.optimize.pagination.Pagination;
 
 import java.sql.SQLException;
 
@@ -60,9 +60,6 @@ public final class RowNumberDecoratorMergedResult extends DecoratorMergedResult 
         }
         if (!pagination.getActualRowCount().isPresent()) {
             return getMergedResult().next();
-        }
-        if (pagination.getRowCountSegment().isBoundOpened()) {
-            return rowNumber++ <= pagination.getActualRowCount().get() && getMergedResult().next();
         }
         return rowNumber++ < pagination.getActualRowCount().get() && getMergedResult().next();
     }

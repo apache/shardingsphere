@@ -48,7 +48,6 @@ public final class TableRuleConfigurationYamlSwapper implements YamlSwapper<Yaml
         if (null != data.getKeyGeneratorConfig()) {
             result.setKeyGenerator(keyGeneratorConfigurationYamlSwapper.swap(data.getKeyGeneratorConfig()));
         }
-        result.setLogicIndex(data.getLogicIndex());
         return result;
     }
     
@@ -65,7 +64,6 @@ public final class TableRuleConfigurationYamlSwapper implements YamlSwapper<Yaml
         if (null != yamlConfiguration.getKeyGenerator()) {
             result.setKeyGeneratorConfig(keyGeneratorConfigurationYamlSwapper.swap(yamlConfiguration.getKeyGenerator()));
         }
-        result.setLogicIndex(yamlConfiguration.getLogicIndex());
         return result;
     }
 }

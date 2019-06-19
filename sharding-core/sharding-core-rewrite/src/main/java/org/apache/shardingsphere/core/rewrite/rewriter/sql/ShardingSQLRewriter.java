@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.rewrite.rewriter.sql;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Strings;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResult;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.OrderByItemSegment;
@@ -118,11 +117,7 @@ public final class ShardingSQLRewriter implements SQLRewriter {
     }
     
     private void appendIndexPlaceholder(final SQLBuilder sqlBuilder, final IndexToken indexToken) {
-        String logicTableName = indexToken.getTableName().toLowerCase();
-        if (Strings.isNullOrEmpty(logicTableName)) {
-            logicTableName = shardingRule.getLogicTableName(indexToken.getIndexName());
-        }
-        sqlBuilder.appendPlaceholder(new IndexPlaceholder(indexToken.getIndexName(), logicTableName, indexToken.getQuoteCharacter()));
+        sqlBuilder.appendPlaceholder(new IndexPlaceholder(indexToken.getIndexName(), indexToken.getQuoteCharacter()));
     }
     
     private void appendSelectItemsPlaceholder(final SQLBuilder sqlBuilder, final SelectItemsToken selectItemsToken) {

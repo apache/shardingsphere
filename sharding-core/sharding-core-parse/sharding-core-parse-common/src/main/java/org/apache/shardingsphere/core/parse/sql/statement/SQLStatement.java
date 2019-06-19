@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.core.parse.sql.statement;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.constant.SQLType;
-import org.apache.shardingsphere.core.parse.sql.context.condition.ParseCondition;
 import org.apache.shardingsphere.core.parse.sql.context.table.Tables;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 
@@ -33,67 +31,39 @@ import java.util.Collection;
 public interface SQLStatement {
     
     /**
-     * Get SQL type.
-     *
-     * @return SQL type
-     */
-    SQLType getType();
-    
-    /**
-     * Get SQL segments.
-     * 
-     * @return SQL segments
-     */
-    Collection<SQLSegment> getSqlSegments();
-    
-    /**
-     * Get tables.
-     * 
-     * @return tables
-     */
-    Tables getTables();
-    
-    /**
-     * Get route conditions.
-     *
-     * @return parse condition
-     */
-    ParseCondition getRouteCondition();
-    
-    /**
-     * Get encrypt conditions.
-     *
-     * @return parse condition
-     */
-    ParseCondition getEncryptCondition();
-    
-    /**
-     * Get index of parameters.
-     *
-     * @return index of parameters
-     */
-    int getParametersIndex();
-    
-    /**
-     * Set parameters index.
-     * 
-     * @param parametersIndex parameters index
-     */
-    void setParametersIndex(int parametersIndex);
-    
-    /**
      * Get logic SQL.
-     * 
+     *
      * @return logic SQL
      */
     String getLogicSQL();
     
     /**
      * Set logic SQL.
-     * 
-     * @param logicTable logic SQL
+     *
+     * @param logicSQL logic SQL
      */
-    void setLogicSQL(String logicTable);
+    void setLogicSQL(String logicSQL);
+    
+    /**
+     * Get count of parameters.
+     *
+     * @return count of parameters
+     */
+    int getParametersCount();
+    
+    /**
+     * Set count of parameters.
+     *
+     * @param parametersCount count of parameters
+     */
+    void setParametersCount(int parametersCount);
+    
+    /**
+     * Get SQL segments.
+     * 
+     * @return SQL segments
+     */
+    Collection<SQLSegment> getSQLSegments();
     
     /**
      * Find SQL segment.
@@ -112,4 +82,11 @@ public interface SQLStatement {
      * @return SQL segments
      */
     <T extends SQLSegment> Collection<T> findSQLSegments(Class<T> sqlSegmentType);
+    
+    /**
+     * Get tables.
+     * 
+     * @return tables
+     */
+    Tables getTables();
 }

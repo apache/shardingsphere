@@ -21,10 +21,9 @@ import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parse.filler.api.EncryptRuleAwareFiller;
-import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.filler.api.ShardingRuleAwareFiller;
-import org.apache.shardingsphere.core.parse.filler.api.ShardingTableMetaDataAwareFiller;
+import org.apache.shardingsphere.core.parse.aware.EncryptRuleAware;
+import org.apache.shardingsphere.core.parse.aware.ShardingRuleAware;
+import org.apache.shardingsphere.core.parse.aware.ShardingTableMetaDataAware;
 import org.apache.shardingsphere.core.parse.rule.registry.ParseRuleRegistry;
 import org.apache.shardingsphere.core.parse.rule.registry.statement.SQLStatementRule;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
@@ -32,6 +31,7 @@ import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.rule.BaseRule;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.spi.database.DatabaseType;
 
 import java.util.Collection;
 
@@ -47,7 +47,7 @@ public final class SQLStatementFillerEngine {
     
     private final ParseRuleRegistry parseRuleRegistry;
     
-    private final String databaseType;
+    private final DatabaseType databaseType;
     
     private final String sql;
     
@@ -59,14 +59,16 @@ public final class SQLStatementFillerEngine {
      * Fill SQL statement.
      *
      * @param sqlSegments SQL segments
+     * @param parameterMarkerCount parameter marker count
      * @param rule SQL statement rule
      * @return SQL statement
      */
     @SneakyThrows
-    public SQLStatement fill(final Collection<SQLSegment> sqlSegments, final SQLStatementRule rule) {
+    public SQLStatement fill(final Collection<SQLSegment> sqlSegments, final int parameterMarkerCount, final SQLStatementRule rule) {
         SQLStatement result = rule.getSqlStatementClass().newInstance();
         result.setLogicSQL(sql);
-        result.getSqlSegments().addAll(sqlSegments);
+        result.setParametersCount(parameterMarkerCount);
+        result.getSQLSegments().addAll(sqlSegments);
         for (SQLSegment each : sqlSegments) {
             Optional<SQLSegmentFiller> filler = parseRuleRegistry.findSQLSegmentFiller(databaseType, each.getClass());
             if (filler.isPresent()) {
@@ -78,14 +80,14 @@ public final class SQLStatementFillerEngine {
     
     @SuppressWarnings("unchecked")
     private void doFill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final SQLSegmentFiller filler) {
-        if (filler instanceof ShardingRuleAwareFiller) {
-            ((ShardingRuleAwareFiller) filler).setShardingRule((ShardingRule) rule);
+        if (filler instanceof ShardingRuleAware && rule instanceof ShardingRule) {
+            ((ShardingRuleAware) filler).setShardingRule((ShardingRule) rule);
         }
-        if (filler instanceof EncryptRuleAwareFiller) {
-            ((EncryptRuleAwareFiller) filler).setEncryptRule((EncryptRule) rule);
+        if (filler instanceof EncryptRuleAware && rule instanceof EncryptRule) {
+            ((EncryptRuleAware) filler).setEncryptRule((EncryptRule) rule);
         }
-        if (filler instanceof ShardingTableMetaDataAwareFiller) {
-            ((ShardingTableMetaDataAwareFiller) filler).setShardingTableMetaData(shardingTableMetaData);
+        if (filler instanceof ShardingTableMetaDataAware) {
+            ((ShardingTableMetaDataAware) filler).setShardingTableMetaData(shardingTableMetaData);
         }
         filler.fill(sqlSegment, sqlStatement);
     }

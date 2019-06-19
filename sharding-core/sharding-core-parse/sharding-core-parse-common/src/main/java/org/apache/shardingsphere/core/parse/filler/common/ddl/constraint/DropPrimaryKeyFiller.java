@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.parse.filler.common.ddl.constraint;
 
-import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
+import org.apache.shardingsphere.core.parse.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.sql.segment.ddl.constraint.DropPrimaryKeySegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.AlterTableStatement;

@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.dbtest.engine.dml;
 
-import org.apache.shardingsphere.core.constant.SQLType;
 import org.apache.shardingsphere.dbtest.cases.assertion.dml.DMLIntegrateTestCaseAssertion;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.SQLValue;
+import org.apache.shardingsphere.dbtest.engine.SQLType;
 import org.apache.shardingsphere.dbtest.engine.util.IntegrateTestParameters;
 import org.apache.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import org.apache.shardingsphere.dbtest.env.IntegrateTestEnvironment;
@@ -87,7 +87,7 @@ public final class AdditionalDMLIT extends BaseDMLIT {
     @Test
     public void assertExecuteUpdateWithColumnIndexes() throws JAXBException, IOException, SQLException, ParseException {
         // TODO fix masterslave
-        if (!getDatabaseTypeEnvironment().isEnabled() || "PostgreSQL".equals(getDatabaseTypeEnvironment().getDatabaseType()) || "masterslave".equals(getShardingRuleType())) {
+        if (!getDatabaseTypeEnvironment().isEnabled() || "PostgreSQL".equals(getDatabaseTypeEnvironment().getDatabaseType().getName()) || "masterslave".equals(getShardingRuleType())) {
             return;
         }
         int actualUpdateCount;
@@ -115,7 +115,7 @@ public final class AdditionalDMLIT extends BaseDMLIT {
     @Test
     public void assertExecuteUpdateWithColumnNames() throws JAXBException, IOException, SQLException, ParseException {
         // TODO fix masterslave
-        if (!getDatabaseTypeEnvironment().isEnabled() || "PostgreSQL".equals(getDatabaseTypeEnvironment().getDatabaseType()) || "masterslave".equals(getShardingRuleType())) {
+        if (!getDatabaseTypeEnvironment().isEnabled() || "PostgreSQL".equals(getDatabaseTypeEnvironment().getDatabaseType().getName()) || "masterslave".equals(getShardingRuleType())) {
             return;
         }
         int actualUpdateCount;
@@ -205,7 +205,7 @@ public final class AdditionalDMLIT extends BaseDMLIT {
     @Test
     public void assertExecuteWithColumnIndexes() throws JAXBException, IOException, SQLException, ParseException {
         // TODO fix masterslave
-        if (!getDatabaseTypeEnvironment().isEnabled() || "PostgreSQL".equals(getDatabaseTypeEnvironment().getDatabaseType()) || "masterslave".equals(getShardingRuleType())) {
+        if (!getDatabaseTypeEnvironment().isEnabled() || "PostgreSQL".equals(getDatabaseTypeEnvironment().getDatabaseType().getName()) || "masterslave".equals(getShardingRuleType())) {
             return;
         }
         int actualUpdateCount;
@@ -235,7 +235,7 @@ public final class AdditionalDMLIT extends BaseDMLIT {
     @Test
     public void assertExecuteWithColumnNames() throws JAXBException, IOException, SQLException, ParseException {
         // TODO fix masterslave
-        if (!getDatabaseTypeEnvironment().isEnabled() || "PostgreSQL".equals(getDatabaseTypeEnvironment().getDatabaseType()) || "masterslave".equals(getShardingRuleType())) {
+        if (!getDatabaseTypeEnvironment().isEnabled() || "PostgreSQL".equals(getDatabaseTypeEnvironment().getDatabaseType().getName()) || "masterslave".equals(getShardingRuleType())) {
             return;
         }
         int actualUpdateCount;

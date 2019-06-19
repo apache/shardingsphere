@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.dbtest.env.authority;
 
+import org.apache.shardingsphere.spi.database.DatabaseType;
+
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -39,9 +41,9 @@ public final class AuthorityEnvironmentManager {
     
     private final Map<String, DataSource> instanceDataSourceMap;
     
-    private final String databaseType;
+    private final DatabaseType databaseType;
     
-    public AuthorityEnvironmentManager(final String path, final Map<String, DataSource> instanceDataSourceMap, final String databaseType) throws IOException, JAXBException {
+    public AuthorityEnvironmentManager(final String path, final Map<String, DataSource> instanceDataSourceMap, final DatabaseType databaseType) throws IOException, JAXBException {
         try (FileReader reader = new FileReader(path)) {
             authorityEnvironment = (AuthorityEnvironment) JAXBContext.newInstance(AuthorityEnvironment.class).createUnmarshaller().unmarshal(reader);
         }

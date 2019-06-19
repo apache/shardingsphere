@@ -62,19 +62,18 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     public Collection<DatabasePacket> execute() {
         // TODO we should use none-sharding parsing engine in future.
         ShardingSQLParseEntry shardingSQLParseEntry = new ShardingSQLParseEntry(
-                LogicSchemas.getInstance().getDatabaseType().name(), logicSchema.getShardingRule(), logicSchema.getMetaData().getTable(), logicSchema.getParsingResultCache());
+                LogicSchemas.getInstance().getDatabaseType(), logicSchema.getShardingRule(), logicSchema.getMetaData().getTable(), logicSchema.getParsingResultCache());
         Collection<DatabasePacket> result = new LinkedList<>();
         int currentSequenceId = 0;
         SQLStatement sqlStatement = shardingSQLParseEntry.parse(packet.getSql(), true);
-        int parametersIndex = sqlStatement.getParametersIndex();
-        result.add(new MySQLComStmtPrepareOKPacket(
-                ++currentSequenceId, PREPARED_STATEMENT_REGISTRY.register(packet.getSql(), parametersIndex), getNumColumns(sqlStatement), parametersIndex, 0));
-        for (int i = 0; i < parametersIndex; i++) {
+        int parametersCount = sqlStatement.getParametersCount();
+        result.add(new MySQLComStmtPrepareOKPacket(++currentSequenceId, PREPARED_STATEMENT_REGISTRY.register(packet.getSql(), parametersCount), getNumColumns(sqlStatement), parametersCount, 0));
+        for (int i = 0; i < parametersCount; i++) {
             // TODO add column name
             result.add(new MySQLColumnDefinition41Packet(++currentSequenceId, schemaName,
                     sqlStatement.getTables().isSingleTable() ? sqlStatement.getTables().getSingleTableName() : "", "", "", "", 100, MySQLColumnType.MYSQL_TYPE_VARCHAR, 0));
         }
-        if (parametersIndex > 0) {
+        if (parametersCount > 0) {
             result.add(new MySQLEofPacket(++currentSequenceId));
         }
         // TODO add If numColumns > 0

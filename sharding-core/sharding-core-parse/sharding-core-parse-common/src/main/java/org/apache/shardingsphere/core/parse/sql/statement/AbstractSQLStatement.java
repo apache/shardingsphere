@@ -19,11 +19,8 @@ package org.apache.shardingsphere.core.parse.sql.statement;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.core.constant.SQLType;
-import org.apache.shardingsphere.core.parse.sql.context.condition.ParseCondition;
 import org.apache.shardingsphere.core.parse.sql.context.table.Tables;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 
@@ -36,25 +33,23 @@ import java.util.LinkedList;
  * @author zhangliang
  * @author panjuan
  */
-@RequiredArgsConstructor
 @Getter
 @Setter
 @ToString
 public abstract class AbstractSQLStatement implements SQLStatement {
     
-    private final SQLType type;
-    
     private final Collection<SQLSegment> sqlSegments = new LinkedList<>();
     
     private final Tables tables = new Tables();
     
-    private final ParseCondition routeCondition = new ParseCondition();
-    
-    private final ParseCondition encryptCondition = new ParseCondition();
-    
-    private int parametersIndex;
-    
     private String logicSQL;
+    
+    private int parametersCount;
+    
+    @Override
+    public final Collection<SQLSegment> getSQLSegments() {
+        return sqlSegments;
+    }
     
     @Override
     @SuppressWarnings("unchecked")

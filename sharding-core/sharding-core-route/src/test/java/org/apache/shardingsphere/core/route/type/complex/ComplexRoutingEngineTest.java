@@ -20,8 +20,8 @@ package org.apache.shardingsphere.core.route.type.complex;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfiguration;
-import org.apache.shardingsphere.core.optimize.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimize.condition.ShardingConditions;
+import org.apache.shardingsphere.core.optimize.condition.RouteCondition;
+import org.apache.shardingsphere.core.optimize.condition.RouteConditions;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
@@ -63,15 +63,15 @@ public final class ComplexRoutingEngineTest {
     
     @Test
     public void assertRoutingForBindingTables() {
-        List<ShardingCondition> shardingConditions = new ArrayList<>();
+        List<RouteCondition> routeConditions = new ArrayList<>();
         RouteValue shardingValue1 = new ListRouteValue<>("user_id", "t_order", Collections.singleton(1L));
         RouteValue shardingValue2 = new ListRouteValue<>("order_id", "t_order", Collections.singleton(1L));
-        ShardingCondition shardingCondition = new ShardingCondition();
-        shardingCondition.getShardingValues().add(shardingValue1);
-        shardingCondition.getShardingValues().add(shardingValue2);
-        shardingConditions.add(shardingCondition);
+        RouteCondition routeCondition = new RouteCondition();
+        routeCondition.getRouteValues().add(shardingValue1);
+        routeCondition.getRouteValues().add(shardingValue2);
+        routeConditions.add(routeCondition);
         ComplexRoutingEngine complexRoutingEngine = new ComplexRoutingEngine(
-                mock(SQLStatement.class), shardingRule, Arrays.asList("t_order", "t_order_item"), new OptimizeResult(new ShardingConditions(shardingConditions)));
+                mock(SQLStatement.class), shardingRule, Arrays.asList("t_order", "t_order_item"), new OptimizeResult(new RouteConditions(routeConditions)));
         RoutingResult routingResult = complexRoutingEngine.route();
         List<RoutingUnit> tableUnitList = new ArrayList<>(routingResult.getRoutingUnits());
         assertThat(routingResult, instanceOf(RoutingResult.class));
@@ -84,15 +84,15 @@ public final class ComplexRoutingEngineTest {
     
     @Test
     public void assertRoutingForShardingTableJoinBroadcastTable() {
-        List<ShardingCondition> shardingConditions = new ArrayList<>();
+        List<RouteCondition> routeConditions = new ArrayList<>();
         RouteValue shardingValue1 = new ListRouteValue<>("user_id", "t_order", Collections.singleton(1L));
         RouteValue shardingValue2 = new ListRouteValue<>("order_id", "t_order", Collections.singleton(1L));
-        ShardingCondition shardingCondition = new ShardingCondition();
-        shardingCondition.getShardingValues().add(shardingValue1);
-        shardingCondition.getShardingValues().add(shardingValue2);
-        shardingConditions.add(shardingCondition);
+        RouteCondition routeCondition = new RouteCondition();
+        routeCondition.getRouteValues().add(shardingValue1);
+        routeCondition.getRouteValues().add(shardingValue2);
+        routeConditions.add(routeCondition);
         ComplexRoutingEngine complexRoutingEngine = 
-                new ComplexRoutingEngine(mock(SQLStatement.class), shardingRule, Arrays.asList("t_order", "t_config"), new OptimizeResult(new ShardingConditions(shardingConditions)));
+                new ComplexRoutingEngine(mock(SQLStatement.class), shardingRule, Arrays.asList("t_order", "t_config"), new OptimizeResult(new RouteConditions(routeConditions)));
         RoutingResult routingResult = complexRoutingEngine.route();
         List<RoutingUnit> tableUnitList = new ArrayList<>(routingResult.getRoutingUnits());
         assertThat(routingResult, instanceOf(RoutingResult.class));

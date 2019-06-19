@@ -105,5 +105,4 @@ public final class ThirdTestRegistryCenter implements RegistryCenter {
     public void tryRelease() {
         lock.unlock();
     }
-
 }

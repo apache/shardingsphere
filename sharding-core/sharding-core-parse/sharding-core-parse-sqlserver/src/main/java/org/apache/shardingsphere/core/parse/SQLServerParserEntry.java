@@ -22,9 +22,6 @@ import org.apache.shardingsphere.core.parse.api.SQLParser;
 import org.apache.shardingsphere.core.parse.autogen.SQLServerStatementLexer;
 import org.apache.shardingsphere.core.parse.spi.SQLParserEntry;
 
-import java.util.Collection;
-import java.util.Collections;
-
 /**
  * SQL parser entry for SQLServer.
  *
@@ -35,11 +32,6 @@ public final class SQLServerParserEntry implements SQLParserEntry {
     @Override
     public String getDatabaseType() {
         return "SQLServer";
-    }
-    
-    @Override
-    public Collection<String> getDatabaseTypeAliases() {
-        return Collections.emptyList();
     }
     
     @Override

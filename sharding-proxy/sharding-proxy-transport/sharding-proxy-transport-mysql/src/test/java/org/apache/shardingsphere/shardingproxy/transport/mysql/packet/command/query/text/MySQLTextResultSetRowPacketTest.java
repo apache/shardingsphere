@@ -24,6 +24,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -49,10 +50,12 @@ public final class MySQLTextResultSetRowPacketTest {
     
     @Test
     public void assertWrite() {
-        MySQLTextResultSetRowPacket actual = new MySQLTextResultSetRowPacket(1, Arrays.<Object>asList(null, "value", BigDecimal.ONE, new byte[] {}));
+        long now = System.currentTimeMillis();
+        MySQLTextResultSetRowPacket actual = new MySQLTextResultSetRowPacket(1, Arrays.<Object>asList(null, "value", BigDecimal.ONE, new byte[] {}, new Timestamp(now)));
         actual.write(payload);
         verify(payload).writeInt1(0xfb);
         verify(payload).writeStringLenenc("value");
         verify(payload).writeStringLenenc("1");
+        verify(payload).writeStringLenenc((new Timestamp(now)).toString().split("\\.")[0]);
     }
 }

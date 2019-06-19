@@ -39,11 +39,14 @@ public final class SelectItemPrefixTokenGenerator implements OptionalSQLTokenGen
         if (!(sqlStatement instanceof SelectStatement)) {
             return Optional.absent();
         }
-        Optional<AggregationDistinctSelectItemSegment> distinctSelectItemSegment = sqlStatement.findSQLSegment(AggregationDistinctSelectItemSegment.class);
         Optional<SelectItemsSegment> selectItemsSegment = sqlStatement.findSQLSegment(SelectItemsSegment.class);
-        if (distinctSelectItemSegment.isPresent() && selectItemsSegment.isPresent()) {
+        if (selectItemsSegment.isPresent() && isContainAggregationDistinctSelectItemSegment(selectItemsSegment.get())) {
             return Optional.of(new SelectItemPrefixToken(selectItemsSegment.get().getStartIndex()));
         }
         return Optional.absent();
+    }
+    
+    private boolean isContainAggregationDistinctSelectItemSegment(final SelectItemsSegment selectItemsSegment) {
+        return !selectItemsSegment.findSelectItemSegments(AggregationDistinctSelectItemSegment.class).isEmpty();
     }
 }

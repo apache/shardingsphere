@@ -20,8 +20,14 @@ package org.apache.shardingsphere.core.parse.optimizer;
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.parse.aware.EncryptRuleAware;
+import org.apache.shardingsphere.core.parse.aware.ShardingRuleAware;
+import org.apache.shardingsphere.core.parse.aware.ShardingTableMetaDataAware;
 import org.apache.shardingsphere.core.parse.rule.registry.statement.SQLStatementRule;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.rule.BaseRule;
+import org.apache.shardingsphere.core.rule.EncryptRule;
+import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
  * SQL statement optimizer engine.
@@ -31,18 +37,29 @@ import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 @RequiredArgsConstructor
 public final class SQLStatementOptimizerEngine {
     
+    private final BaseRule rule;
+    
     private final ShardingTableMetaData shardingTableMetaData;
     
     /**
      * Optimize SQL statement.
      *
-     * @param rule SQL statement rule
+     * @param sqlStatementRule SQL statement rule
      * @param sqlStatement SQL statement
      */
-    public void optimize(final SQLStatementRule rule, final SQLStatement sqlStatement) {
-        Optional<SQLStatementOptimizer> optimizer = rule.getOptimizer();
+    public void optimize(final SQLStatementRule sqlStatementRule, final SQLStatement sqlStatement) {
+        Optional<SQLStatementOptimizer> optimizer = sqlStatementRule.getOptimizer();
         if (optimizer.isPresent()) {
-            optimizer.get().optimize(sqlStatement, shardingTableMetaData);
+            if (optimizer.get() instanceof ShardingRuleAware && rule instanceof ShardingRule) {
+                ((ShardingRuleAware) optimizer.get()).setShardingRule((ShardingRule) rule);
+            }
+            if (optimizer.get() instanceof EncryptRuleAware && rule instanceof EncryptRule) {
+                ((EncryptRuleAware) optimizer.get()).setEncryptRule((EncryptRule) rule);
+            }
+            if (optimizer.get() instanceof ShardingTableMetaDataAware) {
+                ((ShardingTableMetaDataAware) optimizer.get()).setShardingTableMetaData(shardingTableMetaData);
+            }
+            optimizer.get().optimize(sqlStatement);
         }
     }
 }

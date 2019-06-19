@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.rewrite.rewriter;
 
 import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.encryptor.EncryptorRuleConfiguration;
-import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
@@ -27,6 +27,7 @@ import org.apache.shardingsphere.core.optimize.OptimizeEngineFactory;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.parse.entry.EncryptSQLParseEntry;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
 import org.apache.shardingsphere.core.rewrite.rewriter.parameter.ParameterRewriter;
 import org.apache.shardingsphere.core.rewrite.rewriter.sql.EncryptSQLRewriter;
@@ -39,7 +40,6 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -49,21 +49,17 @@ import static org.junit.Assert.assertThat;
 
 public final class EncryptSQLRewriterTest {
     
-    private final DatabaseType databaseType = DatabaseType.MySQL;
-    
     private EncryptRule encryptRule;
     
-    private EncryptSQLParseEntry encryptSQLParseEngine;
-    
     private List<Object> parameters;
+    
+    private EncryptSQLParseEntry encryptSQLParseEntry;
     
     @Before
     public void setUp() {
         encryptRule = new EncryptRule(createEncryptRuleConfiguration());
-        parameters = new LinkedList<>();
-        parameters.add(1);
-        parameters.add(2);
-        encryptSQLParseEngine = new EncryptSQLParseEntry(databaseType.name(), encryptRule, createShardingTableMetaData());
+        parameters = Arrays.<Object>asList(1, 2);
+        encryptSQLParseEntry = new EncryptSQLParseEntry(DatabaseTypes.getActualDatabaseType("MySQL"), encryptRule, createShardingTableMetaData());
     }
     
     private EncryptRuleConfiguration createEncryptRuleConfiguration() {
@@ -81,8 +77,8 @@ public final class EncryptSQLRewriterTest {
         ColumnMetaData columnMetaData2 = new ColumnMetaData("col2", "VARCHAR(10)", false);
         ColumnMetaData queryColumnMetaData1 = new ColumnMetaData("query1", "VARCHAR(10)", false);
         ColumnMetaData queryColumnMetaData2 = new ColumnMetaData("query2", "VARCHAR(10)", false);
-        TableMetaData encryptTableMetaData = new TableMetaData(Arrays.asList(columnMetaData1, columnMetaData2));
-        TableMetaData queryTableMetaData = new TableMetaData(Arrays.asList(columnMetaData1, columnMetaData2, queryColumnMetaData1, queryColumnMetaData2));
+        TableMetaData encryptTableMetaData = new TableMetaData(Arrays.asList(columnMetaData1, columnMetaData2), Collections.<String>emptySet());
+        TableMetaData queryTableMetaData = new TableMetaData(Arrays.asList(columnMetaData1, columnMetaData2, queryColumnMetaData1, queryColumnMetaData2), Collections.<String>emptySet());
         Map<String, TableMetaData> tables = new LinkedHashMap<>();
         tables.put("t_encrypt", encryptTableMetaData);
         tables.put("t_query_encrypt", queryTableMetaData);
@@ -185,11 +181,12 @@ public final class EncryptSQLRewriterTest {
     }
     
     private SQLUnit getSQLUnit(final String sql, final List<Object> parameters) {
-        SQLStatement sqlStatement = encryptSQLParseEngine.parse(sql, false);
+        // TODO panjuan: should mock sqlStatement, do not call parse module on rewrite test case
+        SQLStatement sqlStatement = encryptSQLParseEntry.parse(sql, false);
         SQLRewriteEngine sqlRewriteEngine = new SQLRewriteEngine(encryptRule, sqlStatement, parameters);
         OptimizeResult optimizeResult = OptimizeEngineFactory.newInstance(encryptRule, sqlStatement, parameters).optimize();
-        sqlRewriteEngine.init(
-                Collections.<ParameterRewriter>emptyList(), Collections.<SQLRewriter>singletonList(new EncryptSQLRewriter(encryptRule.getEncryptorEngine(), sqlStatement, optimizeResult)));
+        sqlRewriteEngine.init(Collections.<ParameterRewriter>emptyList(), 
+                Collections.<SQLRewriter>singletonList(new EncryptSQLRewriter(encryptRule.getEncryptorEngine(), (DMLStatement) sqlStatement, optimizeResult)));
         return sqlRewriteEngine.generateSQL();
     }
 }

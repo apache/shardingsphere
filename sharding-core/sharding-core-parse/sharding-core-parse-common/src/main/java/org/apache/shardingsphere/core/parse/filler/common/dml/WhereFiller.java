@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.parse.filler.common.dml;
 
-import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
+import org.apache.shardingsphere.core.parse.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.WhereSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.DeleteStatement;
@@ -33,7 +33,6 @@ public final class WhereFiller implements SQLSegmentFiller<WhereSegment> {
     
     @Override
     public void fill(final WhereSegment sqlSegment, final SQLStatement sqlStatement) {
-        sqlStatement.setParametersIndex(sqlSegment.getParameterCount());
         if (sqlStatement instanceof DeleteStatement) {
             DeleteStatement deleteStatement = (DeleteStatement) sqlStatement;
             deleteStatement.setWhereStartIndex(sqlSegment.getStartIndex());

@@ -18,8 +18,10 @@
 package org.apache.shardingsphere.core.parse.filler.encrypt.dml.insert;
 
 import lombok.Setter;
-import org.apache.shardingsphere.core.parse.filler.api.EncryptRuleAwareFiller;
-import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
+import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.parse.aware.EncryptRuleAware;
+import org.apache.shardingsphere.core.parse.aware.ShardingTableMetaDataAware;
+import org.apache.shardingsphere.core.parse.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
@@ -35,33 +37,30 @@ import java.util.Collection;
  * @author panjuan
  */
 @Setter
-public final class EncryptInsertValuesFiller implements SQLSegmentFiller<InsertValuesSegment>, EncryptRuleAwareFiller {
+public final class EncryptInsertValuesFiller implements SQLSegmentFiller<InsertValuesSegment>, EncryptRuleAware, ShardingTableMetaDataAware {
     
     private EncryptRule encryptRule;
     
+    private ShardingTableMetaData shardingTableMetaData;
+    
     @Override
     public void fill(final InsertValuesSegment sqlSegment, final SQLStatement sqlStatement) {
-        InsertStatement insertStatement = (InsertStatement) sqlStatement;
-        InsertValue insertValue = new InsertValue(sqlSegment.getValues());
-        insertStatement.getValues().add(insertValue);
-        insertStatement.setParametersIndex(insertStatement.getParametersIndex() + insertValue.getParametersCount());
-        reviseInsertStatement(insertStatement, sqlSegment);
-    }
-    
-    private void reviseInsertStatement(final InsertStatement insertStatement, final InsertValuesSegment sqlSegment) {
-        reviseInsertColumnNames(insertStatement);
-        setNeededToAppendAssistedColumns(insertStatement);
-        
-    }
-    
-    private void reviseInsertColumnNames(final InsertStatement insertStatement) {
-        insertStatement.getColumnNames().removeAll(encryptRule.getEncryptorEngine().getAssistedQueryColumns(insertStatement.getTables().getSingleTableName()));
-    }
-    
-    private void setNeededToAppendAssistedColumns(final InsertStatement insertStatement) {
-        Collection<String> assistedQueryColumns = encryptRule.getEncryptorEngine().getAssistedQueryColumns(insertStatement.getTables().getSingleTableName());
-        if (!assistedQueryColumns.isEmpty()) {
-            insertStatement.setNeededToAppendAssistedColumns(true);
+        if (((InsertStatement) sqlStatement).getColumnNames().isEmpty()) {
+            fillColumnsFromMetaData((InsertStatement) sqlStatement);
         }
+        fillValues(sqlSegment, (InsertStatement) sqlStatement);
+    }
+    
+    private void fillColumnsFromMetaData(final InsertStatement insertStatement) {
+        Collection<String> assistedQueryColumns = encryptRule.getEncryptorEngine().getAssistedQueryColumns(insertStatement.getTables().getSingleTableName());
+        for (String each : shardingTableMetaData.getAllColumnNames(insertStatement.getTables().getSingleTableName())) {
+            if (!assistedQueryColumns.contains(each)) {
+                insertStatement.getColumnNames().add(each);
+            }
+        }
+    }
+    
+    private void fillValues(final InsertValuesSegment sqlSegment, final InsertStatement insertStatement) {
+        insertStatement.getValues().add(new InsertValue(sqlSegment.getValues()));
     }
 }

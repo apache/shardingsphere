@@ -24,6 +24,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegme
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Insert value.
@@ -49,6 +50,36 @@ public final class InsertValue {
                 result++;
             }
         }
+        return result;
+    }
+    
+    /**
+     * Get values.
+     * 
+     * @param derivedColumnsCount derived columns count
+     * @return values
+     */
+    public ExpressionSegment[] getValues(final int derivedColumnsCount) {
+        ExpressionSegment[] result = new ExpressionSegment[assignments.size() + derivedColumnsCount];
+        assignments.toArray(result);
+        return result;
+    }
+    
+    /**
+     * Get parameters of this insert value segment.
+     * 
+     * @param parameters SQL parameters
+     * @param parametersBeginIndex begin index on this insert value segment of parameters
+     * @param derivedColumnsCount derived columns count
+     * @return parameters of this insert value segment
+     */
+    public Object[] getParameters(final List<Object> parameters, final int parametersBeginIndex, final int derivedColumnsCount) {
+        int parametersCount = getParametersCount();
+        if (0 == parametersCount) {
+            return new Object[0];
+        }
+        Object[] result = new Object[parametersCount + derivedColumnsCount];
+        parameters.subList(parametersBeginIndex, parametersBeginIndex + parametersCount).toArray(result);
         return result;
     }
 }

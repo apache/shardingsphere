@@ -29,7 +29,8 @@ import io.seata.rm.datasource.DataSourceProxy;
 import io.seata.tm.api.GlobalTransactionContext;
 import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.core.database.DatabaseTypes;
+import org.apache.shardingsphere.core.execute.ShardingExecuteDataMap;
 import org.apache.shardingsphere.transaction.core.ResourceDataSource;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.After;
@@ -91,11 +92,12 @@ public class SeataATShardingTransactionManagerTest {
     
     @Before
     public void setUp() {
-        seataATShardingTransactionManager.init(DatabaseType.MySQL, getResourceDataSources());
+        seataATShardingTransactionManager.init(DatabaseTypes.getActualDatabaseType("MySQL"), getResourceDataSources());
     }
     
     @After
     public void tearDown() {
+        ShardingExecuteDataMap.getDataMap().clear();
         RootContext.unbind();
         SeataTransactionHolder.clear();
         seataATShardingTransactionManager.close();
@@ -132,6 +134,7 @@ public class SeataATShardingTransactionManagerTest {
     @Test
     public void assertBegin() {
         seataATShardingTransactionManager.begin();
+        assertTrue(ShardingExecuteDataMap.getDataMap().containsKey("SEATA_TX_XID"));
         assertTrue(seataATShardingTransactionManager.isInTransaction());
         assertResult();
     }

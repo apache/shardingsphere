@@ -30,7 +30,7 @@ import javax.sql.DataSource;
  */
 @Getter
 @Setter
-public final class YamlRootEncryptRuleConfiguration implements YamlConfiguration {
+public class YamlRootEncryptRuleConfiguration implements YamlConfiguration {
     
     private DataSource dataSource;
     

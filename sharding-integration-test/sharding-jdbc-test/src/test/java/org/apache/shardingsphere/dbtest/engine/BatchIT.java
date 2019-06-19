@@ -19,7 +19,6 @@ package org.apache.shardingsphere.dbtest.engine;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.core.constant.SQLType;
 import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.core.util.InlineExpressionParser;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCase;
@@ -33,7 +32,7 @@ import org.apache.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import org.apache.shardingsphere.dbtest.env.EnvironmentPath;
 import org.apache.shardingsphere.dbtest.env.dataset.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
-import org.apache.shardingsphere.test.sql.SQLCasesLoader;
+import org.apache.shardingsphere.test.sql.loader.sharding.ShardingSQLCasesRegistry;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -78,7 +77,7 @@ public abstract class BatchIT extends BaseIT {
                    final String shardingRuleType, final DatabaseTypeEnvironment databaseTypeEnvironment) throws IOException, JAXBException, SQLException {
         super(shardingRuleType, databaseTypeEnvironment);
         this.integrateTestCase = integrateTestCase;
-        sql = SQLCasesLoader.getInstance().getSupportedSQL(sqlCaseId, SQLCaseType.Placeholder, Collections.emptyList());
+        sql = ShardingSQLCasesRegistry.getInstance().getSqlCasesLoader().getSQL(sqlCaseId, SQLCaseType.Placeholder, Collections.emptyList());
         expectedDataFiles = new LinkedList<>();
         for (IntegrateTestCaseAssertion each : integrateTestCase.getIntegrateTestCaseAssertions()) {
             expectedDataFiles.add(getExpectedDataFile(integrateTestCase.getPath(), shardingRuleType, databaseTypeEnvironment.getDatabaseType(), each.getExpectedDataFile()));

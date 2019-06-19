@@ -22,8 +22,15 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.core.parse.exception.SQLParsingException;
+import org.apache.shardingsphere.core.parse.extractor.util.ExtractorUtils;
+import org.apache.shardingsphere.core.parse.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.rule.registry.ParseRuleRegistry;
 import org.apache.shardingsphere.core.parse.rule.registry.statement.SQLStatementRule;
+import org.apache.shardingsphere.spi.database.DatabaseType;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * SQL parser engine.
@@ -35,7 +42,7 @@ public final class SQLParserEngine {
     
     private final ParseRuleRegistry parseRuleRegistry;
     
-    private final String databaseType;
+    private final DatabaseType databaseType;
     
     private final String sql;
     
@@ -53,6 +60,16 @@ public final class SQLParserEngine {
         if (null == sqlStatementRule) {
             throw new SQLParsingException(String.format("Unsupported SQL of `%s`", sql));
         }
-        return new SQLAST((ParserRuleContext) parseTree, sqlStatementRule);
+        return new SQLAST((ParserRuleContext) parseTree, getParameterMarkerIndexes((ParserRuleContext) parseTree), sqlStatementRule);
+    }
+    
+    private Map<ParserRuleContext, Integer> getParameterMarkerIndexes(final ParserRuleContext rootNode) {
+        Collection<ParserRuleContext> placeholderNodes = ExtractorUtils.getAllDescendantNodes(rootNode, RuleName.PARAMETER_MARKER);
+        Map<ParserRuleContext, Integer> result = new HashMap<>(placeholderNodes.size(), 1);
+        int index = 0;
+        for (ParserRuleContext each : placeholderNodes) {
+            result.put(each, index++);
+        }
+        return result;
     }
 }

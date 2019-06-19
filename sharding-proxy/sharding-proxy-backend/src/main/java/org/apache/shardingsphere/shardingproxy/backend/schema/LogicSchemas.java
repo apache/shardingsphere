@@ -25,13 +25,14 @@ import org.apache.shardingsphere.api.config.RuleConfiguration;
 import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
-import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.orchestration.internal.eventbus.ShardingOrchestrationEventBus;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.SchemaAddedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.SchemaDeletedEvent;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recognizer.JDBCDriverURLRecognizerEngine;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.shardingproxy.util.DataSourceConverter;
+import org.apache.shardingsphere.spi.database.DatabaseType;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -90,7 +91,8 @@ public final class LogicSchemas {
      */
     public void init(final Collection<String> localSchemaNames, final Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources,
                      final Map<String, RuleConfiguration> schemaRules, final boolean isUsingRegistry) {
-        databaseType = JDBCDriverURLRecognizerEngine.getDatabaseType(schemaDataSources.values().iterator().next().values().iterator().next().getUrl());
+        databaseType = DatabaseTypes.getActualDatabaseType(
+                JDBCDriverURLRecognizerEngine.getJDBCDriverURLRecognizer(schemaDataSources.values().iterator().next().values().iterator().next().getUrl()).getDatabaseType());
         initSchemas(localSchemaNames, schemaDataSources, schemaRules, isUsingRegistry);
     }
     

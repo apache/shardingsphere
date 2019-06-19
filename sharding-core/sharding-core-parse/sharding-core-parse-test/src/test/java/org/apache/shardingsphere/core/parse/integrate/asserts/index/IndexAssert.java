@@ -37,16 +37,16 @@ public final class IndexAssert {
     private final SQLStatementAssertMessage assertMessage;
     
     /**
-     * Assert parameters index.
+     * Assert parameters count.
      * 
-     * @param actual actual parameters index
-     * @param expected expected parameters index
+     * @param actual actual parameters count
+     * @param expected expected parameters count
      */
-    public void assertParametersIndex(final int actual, final int expected) {
+    public void assertParametersCount(final int actual, final int expected) {
         if (SQLCaseType.Placeholder == sqlCaseType) {
-            assertThat(assertMessage.getFullAssertMessage("Parameters index assertion error: "), actual, is(expected));
+            assertThat(assertMessage.getFullAssertMessage("Parameters count assertion error: "), actual, is(expected));
         } else {
-            assertThat(assertMessage.getFullAssertMessage("Parameters index assertion error: "), actual, is(0));
+            assertThat(assertMessage.getFullAssertMessage("Parameters count assertion error: "), actual, is(0));
         }
     }
 }

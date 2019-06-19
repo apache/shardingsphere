@@ -23,6 +23,7 @@ import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
 
 import javax.sql.DataSource;
+import java.util.Properties;
 
 /**
  * Encrypt data source factory.
@@ -40,6 +41,18 @@ public final class EncryptDataSourceFactory {
      * @return encrypt data source
      */
     public static DataSource createDataSource(final DataSource dataSource, final EncryptRuleConfiguration encryptRuleConfiguration) {
-        return new EncryptDataSource(dataSource, encryptRuleConfiguration);
+        return createDataSource(dataSource, encryptRuleConfiguration, new Properties());
+    }
+    
+    /**
+     * Create encrypt data source.
+     * 
+     * @param dataSource data source
+     * @param encryptRuleConfiguration encrypt rule configuration
+     * @param props properties
+     * @return encrypt data source
+     */
+    public static DataSource createDataSource(final DataSource dataSource, final EncryptRuleConfiguration encryptRuleConfiguration, final Properties props) {
+        return new EncryptDataSource(dataSource, encryptRuleConfiguration, props);
     }
 }

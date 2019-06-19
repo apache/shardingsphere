@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.parse.filler.common.dml;
 import com.google.common.base.Optional;
 import lombok.Setter;
 import org.apache.shardingsphere.core.parse.constant.DerivedColumn;
-import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
+import org.apache.shardingsphere.core.parse.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.DistinctSelectItem;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.SelectItemsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.AggregationDistinctSelectItemSegment;

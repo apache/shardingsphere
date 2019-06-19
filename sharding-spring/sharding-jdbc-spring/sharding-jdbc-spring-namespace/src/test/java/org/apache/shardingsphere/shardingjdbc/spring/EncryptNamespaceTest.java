@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.shardingjdbc.spring;
 
+import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
+import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.strategy.encrypt.impl.AESShardingEncryptor;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
@@ -35,10 +37,16 @@ public class EncryptNamespaceTest extends AbstractJUnit4SpringContextTests {
         EncryptRule encryptRule = getEncryptRuleRule();
         assertTrue(encryptRule.getEncryptorEngine().getShardingEncryptor("t_order", "user_id").isPresent());
         assertTrue(encryptRule.getEncryptorEngine().getShardingEncryptor("t_order", "user_id").get() instanceof AESShardingEncryptor);
+        assertTrue(getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW));
     }
     
     private EncryptRule getEncryptRuleRule() {
         EncryptDataSource encryptDataSource = applicationContext.getBean("encryptDataSource", EncryptDataSource.class);
         return (EncryptRule) FieldValueUtil.getFieldValue(encryptDataSource, "encryptRule", true);
+    }
+    
+    private ShardingProperties getShardingProperties() {
+        EncryptDataSource encryptDataSource = applicationContext.getBean("encryptDataSource", EncryptDataSource.class);
+        return encryptDataSource.getShardingProperties();
     }
 }

@@ -25,7 +25,7 @@ dataSources:
     driverClassName: org.h2.Driver
     jdbcUrl: jdbc:h2:mem:db1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     username: sa
-    password: 
+    password:
 
 shardingRule:
   tables:
@@ -36,10 +36,8 @@ shardingRule:
         column: id
         props:
           worker.id: 123
-      logicIndex: logic_index
     table_y:
       actualDataNodes: db${0..1}.table_y
-      logicIndex: logic_index
     table_z:
       actualDataNodes: db${0..1}.table_z
     table_k:
@@ -50,7 +48,7 @@ shardingRule:
         type: SNOWFLAKE
         column: id
         props:
-          worker.id: 123        
+          worker.id: 123
   bindingTables:
     - table_x, table_y
   encryptRule:

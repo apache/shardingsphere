@@ -1,0 +1,303 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.shardingsphere.core.optimize.engine.sharding;
+
+import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.core.optimize.engine.sharding.dml.ShardingInsertOptimizeEngine;
+import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
+import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
+import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
+import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
+import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
+import org.apache.shardingsphere.core.parse.sql.context.table.Table;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
+import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
+import org.apache.shardingsphere.core.yaml.config.sharding.YamlRootShardingConfiguration;
+import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.core.yaml.swapper.impl.ShardingRuleConfigurationYamlSwapper;
+import org.hamcrest.CoreMatchers;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
+public final class ShardingInsertOptimizeEngineTest {
+    
+    private ShardingRule shardingRule;
+    
+    private InsertStatement insertValuesStatementWithPlaceholder;
+    
+    private InsertStatement insertValuesStatementWithoutPlaceholder;
+    
+    private InsertStatement insertSetStatementWithPlaceholder;
+    
+    private InsertStatement insertSetStatementWithoutPlaceholder;
+    
+    private InsertStatement insertValuesStatementWithPlaceholderWithEncrypt;
+    
+    private InsertStatement insertSetStatementWithoutPlaceholderWithEncrypt;
+    
+    private InsertStatement insertSetStatementWithPlaceholderWithQueryEncrypt;
+    
+    private InsertStatement insertValuesStatementWithoutPlaceholderWithQueryEncrypt;
+    
+    private List<Object> insertValuesParameters;
+    
+    private List<Object> insertSetParameters;
+    
+    @Before
+    public void setUp() throws IOException {
+        URL url = ShardingInsertOptimizeEngineTest.class.getClassLoader().getResource("yaml/optimize-rule.yaml");
+        Preconditions.checkNotNull(url, "Cannot found rewrite rule yaml configuration.");
+        YamlRootShardingConfiguration yamlShardingConfig = YamlEngine.unmarshal(new File(url.getFile()), YamlRootShardingConfiguration.class);
+        shardingRule = new ShardingRule(new ShardingRuleConfigurationYamlSwapper().swap(yamlShardingConfig.getShardingRule()), yamlShardingConfig.getDataSources().keySet());
+        initializeInsertValuesWithPlaceholder();
+        initializeInsertValuesWithoutPlaceholder();
+        initializeInsertSetWithoutPlaceholder();
+        initializeInsertSetWithPlaceholder();
+        initializeInsertValuesParameters();
+        initializeInsertSetParameters();
+        initializeInsertValuesWithPlaceholderWithEncrypt();
+        initializeInsertSetWithoutPlaceholderWithEncrypt();
+        initializeInsertSetWithPlaceholderWithQueryEncrypt();
+        initializeInsertValuesWithoutPlaceholderWithQueryEncrypt();
+    }
+    
+    private void initializeInsertValuesParameters() {
+        insertValuesParameters = new ArrayList<>(4);
+        insertValuesParameters.add(10);
+        insertValuesParameters.add("init");
+        insertValuesParameters.add(11);
+        insertValuesParameters.add("init");
+    }
+    
+    private void initializeInsertSetParameters() {
+        insertSetParameters = new ArrayList<>(2);
+        insertSetParameters.add(12);
+        insertSetParameters.add("a");
+    }
+    
+    private void initializeInsertValuesWithPlaceholder() {
+        insertValuesStatementWithPlaceholder = new InsertStatement();
+        insertValuesStatementWithPlaceholder.getTables().add(new Table("t_order", null));
+        AndCondition andCondition1 = new AndCondition();
+        andCondition1.getConditions().add(new Condition(new Column("user_id", "t_order"), null, new ParameterMarkerExpressionSegment(0, 0, 0)));
+        insertValuesStatementWithPlaceholder.getShardingConditions().getOrConditions().add(andCondition1);
+        AndCondition andCondition2 = new AndCondition();
+        andCondition2.getConditions().add(new Condition(new Column("user_id", "t_order"), null, new ParameterMarkerExpressionSegment(0, 0, 2)));
+        insertValuesStatementWithPlaceholder.getShardingConditions().getOrConditions().add(andCondition2);
+        insertValuesStatementWithPlaceholder.getColumnNames().add("user_id");
+        insertValuesStatementWithPlaceholder.getColumnNames().add("status");
+        InsertValue insertValue = new InsertValue(Arrays.<ExpressionSegment>asList(new ParameterMarkerExpressionSegment(1, 2, 0), new ParameterMarkerExpressionSegment(3, 4, 1)));
+        insertValuesStatementWithPlaceholder.getValues().add(insertValue);
+        insertValuesStatementWithPlaceholder.getValues().add(insertValue);
+    }
+    
+    private void initializeInsertValuesWithPlaceholderWithEncrypt() {
+        insertValuesStatementWithPlaceholderWithEncrypt = new InsertStatement();
+        insertValuesStatementWithPlaceholderWithEncrypt.getTables().add(new Table("t_encrypt", null));
+        AndCondition andCondition1 = new AndCondition();
+        andCondition1.getConditions().add(new Condition(new Column("user_id", "t_encrypt"), null, new ParameterMarkerExpressionSegment(0, 0, 0)));
+        insertValuesStatementWithPlaceholderWithEncrypt.getShardingConditions().getOrConditions().add(andCondition1);
+        AndCondition andCondition2 = new AndCondition();
+        andCondition2.getConditions().add(new Condition(new Column("user_id", "t_encrypt"), null, new ParameterMarkerExpressionSegment(0, 0, 2)));
+        insertValuesStatementWithPlaceholderWithEncrypt.getShardingConditions().getOrConditions().add(andCondition2);
+        insertValuesStatementWithPlaceholderWithEncrypt.getColumnNames().add("user_id");
+        insertValuesStatementWithPlaceholderWithEncrypt.getColumnNames().add("status");
+        InsertValue insertValue = new InsertValue(Arrays.<ExpressionSegment>asList(new ParameterMarkerExpressionSegment(1, 2, 0), new ParameterMarkerExpressionSegment(3, 4, 1)));
+        insertValuesStatementWithPlaceholderWithEncrypt.getValues().add(insertValue);
+        insertValuesStatementWithPlaceholderWithEncrypt.getValues().add(insertValue);
+    }
+    
+    private void initializeInsertValuesWithoutPlaceholder() {
+        insertValuesStatementWithoutPlaceholder = new InsertStatement();
+        insertValuesStatementWithoutPlaceholder.getTables().add(new Table("t_order", null));
+        AndCondition andCondition = new AndCondition();
+        andCondition.getConditions().add(new Condition(new Column("user_id", "t_order"), null, new LiteralExpressionSegment(0, 0, 12)));
+        insertValuesStatementWithoutPlaceholder.getShardingConditions().getOrConditions().add(andCondition);
+    }
+    
+    private void initializeInsertValuesWithoutPlaceholderWithQueryEncrypt() {
+        insertValuesStatementWithoutPlaceholderWithQueryEncrypt = new InsertStatement();
+        insertValuesStatementWithoutPlaceholderWithQueryEncrypt.getTables().add(new Table("t_encrypt_query", null));
+        AndCondition andCondition = new AndCondition();
+        andCondition.getConditions().add(new Condition(new Column("user_id", "t_encrypt_query"), null, new LiteralExpressionSegment(0, 0, 12)));
+        insertValuesStatementWithoutPlaceholderWithQueryEncrypt.getShardingConditions().getOrConditions().add(andCondition);
+    }
+    
+    private void initializeInsertSetWithPlaceholder() {
+        insertSetStatementWithPlaceholder = new InsertStatement();
+        insertSetStatementWithPlaceholder.getTables().add(new Table("t_order", null));
+        insertSetStatementWithPlaceholder.getColumnNames().add("user_id");
+        insertSetStatementWithPlaceholder.getColumnNames().add("status");
+        AndCondition andCondition = new AndCondition();
+        andCondition.getConditions().add(new Condition(new Column("user_id", "t_order"), null, new LiteralExpressionSegment(0, 0, 12)));
+        insertSetStatementWithPlaceholder.getShardingConditions().getOrConditions().add(andCondition);
+    }
+    
+    private void initializeInsertSetWithPlaceholderWithQueryEncrypt() {
+        insertSetStatementWithPlaceholderWithQueryEncrypt = new InsertStatement();
+        insertSetStatementWithPlaceholderWithQueryEncrypt.getTables().add(new Table("t_encrypt_query", null));
+        insertSetStatementWithPlaceholderWithQueryEncrypt.getColumnNames().add("user_id");
+        insertSetStatementWithPlaceholderWithQueryEncrypt.getColumnNames().add("status");
+        AndCondition andCondition = new AndCondition();
+        andCondition.getConditions().add(new Condition(new Column("user_id", "t_encrypt_query"), null, new LiteralExpressionSegment(0, 0, 12)));
+        insertSetStatementWithPlaceholderWithQueryEncrypt.getShardingConditions().getOrConditions().add(andCondition);
+    }
+    
+    private void initializeInsertSetWithoutPlaceholder() {
+        insertSetStatementWithoutPlaceholder = new InsertStatement();
+        insertSetStatementWithoutPlaceholder.getTables().add(new Table("t_order", null));
+        insertSetStatementWithoutPlaceholder.getColumnNames().add("user_id");
+        insertSetStatementWithoutPlaceholder.getColumnNames().add("status");
+        AndCondition andCondition = new AndCondition();
+        andCondition.getConditions().add(new Condition(new Column("user_id", "t_order"), null, new LiteralExpressionSegment(0, 0, 12)));
+        insertSetStatementWithoutPlaceholder.getShardingConditions().getOrConditions().add(andCondition);
+    }
+    
+    private void initializeInsertSetWithoutPlaceholderWithEncrypt() {
+        insertSetStatementWithoutPlaceholderWithEncrypt = new InsertStatement();
+        insertSetStatementWithoutPlaceholderWithEncrypt.getTables().add(new Table("t_encrypt", null));
+        insertSetStatementWithoutPlaceholderWithEncrypt.getColumnNames().add("user_id");
+        insertSetStatementWithoutPlaceholderWithEncrypt.getColumnNames().add("status");
+        AndCondition andCondition = new AndCondition();
+        andCondition.getConditions().add(new Condition(new Column("user_id", "t_encrypt"), null, new LiteralExpressionSegment(0, 0, 12)));
+        insertSetStatementWithoutPlaceholderWithEncrypt.getShardingConditions().getOrConditions().add(andCondition);
+    }
+    
+    @Test
+    public void assertOptimizeInsertValuesWithPlaceholderWithGeneratedKey() {
+        OptimizeResult actual = new ShardingInsertOptimizeEngine(shardingRule, insertValuesStatementWithPlaceholder, insertValuesParameters).optimize();
+        assertTrue(actual.getInsertOptimizeResult().isPresent());
+        assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getParameters().length, is(3));
+        assertThat(actual.getInsertOptimizeResult().get().getUnits().get(1).getParameters().length, is(3));
+        assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getParameters()[0], CoreMatchers.<Object>is(10));
+        assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getParameters()[1], CoreMatchers.<Object>is("init"));
+        assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getParameters()[2], CoreMatchers.<Object>is(1));
+        assertThat(actual.getInsertOptimizeResult().get().getUnits().get(1).getParameters()[0], CoreMatchers.<Object>is(11));
+        assertThat(actual.getInsertOptimizeResult().get().getUnits().get(1).getParameters()[1], CoreMatchers.<Object>is("init"));
+        assertThat(actual.getInsertOptimizeResult().get().getUnits().get(1).getParameters()[2], CoreMatchers.<Object>is(1));
+    }
+    
+    @Test
+    public void assertOptimizeInsertValuesWithPlaceholderWithGeneratedKeyWithEncrypt() {
+        OptimizeResult actual = new ShardingInsertOptimizeEngine(shardingRule, insertValuesStatementWithPlaceholderWithEncrypt, insertValuesParameters).optimize();
+        assertTrue(actual.getInsertOptimizeResult().isPresent());
+        assertThat(actual.getInsertOptimizeResult().get().getUnits().get(1).getParameters().length, is(3));
+        assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getParameters()[0], CoreMatchers.<Object>is(10));
+        assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getParameters()[1], CoreMatchers.<Object>is("init"));
+        assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getParameters()[2], CoreMatchers.<Object>is(1));
+        assertThat(actual.getInsertOptimizeResult().get().getUnits().get(1).getParameters()[0], CoreMatchers.<Object>is(11));
+        assertThat(actual.getInsertOptimizeResult().get().getUnits().get(1).getParameters()[1], CoreMatchers.<Object>is("init"));
+        assertThat(actual.getInsertOptimizeResult().get().getUnits().get(1).getParameters()[2], CoreMatchers.<Object>is(1));
+    }
+    
+    @Test
+    public void assertOptimizeInsertValuesWithPlaceholderWithoutGeneratedKey() {
+        OptimizeResult actual = new ShardingInsertOptimizeEngine(shardingRule, insertValuesStatementWithPlaceholder, insertValuesParameters).optimize();
+        assertTrue(actual.getInsertOptimizeResult().isPresent());
+        assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getParameters().length, is(3));
+        assertThat(actual.getInsertOptimizeResult().get().getUnits().get(1).getParameters().length, is(3));
+        assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getParameters()[0], CoreMatchers.<Object>is(10));
+        assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getParameters()[1], CoreMatchers.<Object>is("init"));
+        assertThat(actual.getInsertOptimizeResult().get().getUnits().get(1).getParameters()[0], CoreMatchers.<Object>is(11));
+        assertThat(actual.getInsertOptimizeResult().get().getUnits().get(1).getParameters()[1], CoreMatchers.<Object>is("init"));
+    }
+    
+    @Test
+    public void assertOptimizeInsertValuesWithoutPlaceholderWithGeneratedKeyWithQueryEncrypt() {
+        insertValuesStatementWithoutPlaceholderWithQueryEncrypt.getColumnNames().add("user_id");
+        insertValuesStatementWithoutPlaceholderWithQueryEncrypt.getColumnNames().add("status");
+        insertValuesStatementWithoutPlaceholderWithQueryEncrypt.getValues().add(
+                new InsertValue(Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(1, 2, 12), new LiteralExpressionSegment(3, 4, "a"))));
+        OptimizeResult actual = new ShardingInsertOptimizeEngine(shardingRule, insertValuesStatementWithoutPlaceholderWithQueryEncrypt, Collections.emptyList()).optimize();
+        assertTrue(actual.getInsertOptimizeResult().isPresent());
+        assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getParameters().length, is(0));
+    }
+    
+    @Test
+    public void assertOptimizeInsertValuesWithoutPlaceholderWithGeneratedKey() {
+        insertValuesStatementWithoutPlaceholder.getColumnNames().add("user_id");
+        insertValuesStatementWithoutPlaceholder.getColumnNames().add("status");
+        insertValuesStatementWithoutPlaceholder.getValues().add(new InsertValue(Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(1, 2, 12), new LiteralExpressionSegment(3, 4, "a"))));
+        OptimizeResult actual = new ShardingInsertOptimizeEngine(shardingRule, insertValuesStatementWithoutPlaceholder, Collections.emptyList()).optimize();
+        assertTrue(actual.getInsertOptimizeResult().isPresent());
+        assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getParameters().length, is(0));
+    }
+    
+    @Test
+    public void assertOptimizeInsertSetWithPlaceholderWithGeneratedKey() {
+        insertSetStatementWithPlaceholder.getValues().add(
+                new InsertValue(Arrays.<ExpressionSegment>asList(new ParameterMarkerExpressionSegment(1, 2, 0), new ParameterMarkerExpressionSegment(3, 4, 1))));
+        OptimizeResult actual = new ShardingInsertOptimizeEngine(shardingRule, insertSetStatementWithPlaceholder, insertSetParameters).optimize();
+        assertTrue(actual.getInsertOptimizeResult().isPresent());
+        assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getParameters().length, is(3));
+        assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getParameters()[0], CoreMatchers.<Object>is(12));
+        assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getParameters()[1], CoreMatchers.<Object>is("a"));
+        assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getParameters()[2], CoreMatchers.<Object>is(1));
+    }
+    
+    @Test
+    public void assertOptimizeInsertSetWithPlaceholderWithGeneratedKeyWithQueryEncrypt() {
+        InsertValue insertValue = new InsertValue(Arrays.<ExpressionSegment>asList(new ParameterMarkerExpressionSegment(1, 2, 0), new ParameterMarkerExpressionSegment(3, 4, 1)));
+        insertSetStatementWithPlaceholderWithQueryEncrypt.getValues().add(insertValue);
+        OptimizeResult actual = new ShardingInsertOptimizeEngine(shardingRule, insertSetStatementWithPlaceholderWithQueryEncrypt, insertSetParameters).optimize();
+        assertTrue(actual.getInsertOptimizeResult().isPresent());
+        assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getParameters().length, is(4));
+        assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getParameters()[0], CoreMatchers.<Object>is(12));
+        assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getParameters()[1], CoreMatchers.<Object>is("a"));
+        assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getParameters()[2], CoreMatchers.<Object>is(1));
+        assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getParameters()[3], CoreMatchers.<Object>is(12));
+    }
+    
+    @Test
+    public void assertOptimizeInsertSetWithoutPlaceholderWithGeneratedKey() {
+        insertSetStatementWithoutPlaceholder.getValues().add(new InsertValue(Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(1, 2, 12), new LiteralExpressionSegment(3, 4, "a"))));
+        OptimizeResult actual = new ShardingInsertOptimizeEngine(shardingRule, insertSetStatementWithoutPlaceholder, Collections.emptyList()).optimize();
+        assertTrue(actual.getInsertOptimizeResult().isPresent());
+        assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getParameters().length, is(0));
+    }
+    
+    @Test
+    public void assertOptimizeInsertSetWithoutPlaceholderWithGeneratedKeyWithEncrypt() {
+        insertSetStatementWithoutPlaceholderWithEncrypt.getValues().add(
+                new InsertValue(Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(1, 2, 12), new LiteralExpressionSegment(3, 4, "a"))));
+        OptimizeResult actual = new ShardingInsertOptimizeEngine(shardingRule, insertSetStatementWithoutPlaceholderWithEncrypt, Collections.emptyList()).optimize();
+        assertTrue(actual.getInsertOptimizeResult().isPresent());
+        assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getParameters().length, is(0));
+    }
+    
+    private void assertShardingValue(final ListRouteValue actual, final int expected) {
+        assertThat(actual.getValues().size(), is(1));
+        assertThat((int) actual.getValues().iterator().next(), is(expected));
+    }
+}

@@ -22,13 +22,10 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.extractor.api.CollectionSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.extractor.api.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.extractor.api.SQLSegmentExtractor;
-import org.apache.shardingsphere.core.parse.extractor.util.ExtractorUtils;
-import org.apache.shardingsphere.core.parse.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.parser.SQLAST;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -43,11 +40,11 @@ public final class SQLSegmentsExtractorEngine {
      * Extract SQL segments.
      * 
      * @param ast SQL AST
+     * @param parameterMarkerIndexes parameter marker indexes
      * @return SQL segments
      */
-    public Collection<SQLSegment> extract(final SQLAST ast) {
+    public Collection<SQLSegment> extract(final SQLAST ast, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Collection<SQLSegment> result = new LinkedList<>();
-        Map<ParserRuleContext, Integer> parameterMarkerIndexes = getParameterMarkerIndexes(ast.getParserRuleContext());
         for (SQLSegmentExtractor each : ast.getSqlStatementRule().getExtractors()) {
             if (each instanceof OptionalSQLSegmentExtractor) {
                 Optional<? extends SQLSegment> sqlSegment = ((OptionalSQLSegmentExtractor) each).extract(ast.getParserRuleContext(), parameterMarkerIndexes);
@@ -57,16 +54,6 @@ public final class SQLSegmentsExtractorEngine {
             } else if (each instanceof CollectionSQLSegmentExtractor) {
                 result.addAll(((CollectionSQLSegmentExtractor) each).extract(ast.getParserRuleContext(), parameterMarkerIndexes));
             }
-        }
-        return result;
-    }
-    
-    private Map<ParserRuleContext, Integer> getParameterMarkerIndexes(final ParserRuleContext rootNode) {
-        Collection<ParserRuleContext> placeholderNodes = ExtractorUtils.getAllDescendantNodes(rootNode, RuleName.PARAMETER_MARKER);
-        Map<ParserRuleContext, Integer> result = new HashMap<>(placeholderNodes.size(), 1);
-        int index = 0;
-        for (ParserRuleContext each : placeholderNodes) {
-            result.put(each, index++);
         }
         return result;
     }

@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.core.parse.filler.sharding.dml.insert;
 
 import lombok.Setter;
+import org.apache.shardingsphere.core.parse.aware.ShardingRuleAware;
 import org.apache.shardingsphere.core.parse.exception.SQLParsingException;
-import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.filler.api.ShardingRuleAwareFiller;
+import org.apache.shardingsphere.core.parse.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
@@ -32,7 +32,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
  * @author zhangliang
  */
 @Setter
-public final class ShardingOnDuplicateKeyColumnsFiller implements SQLSegmentFiller<OnDuplicateKeyColumnsSegment>, ShardingRuleAwareFiller {
+public final class ShardingOnDuplicateKeyColumnsFiller implements SQLSegmentFiller<OnDuplicateKeyColumnsSegment>, ShardingRuleAware {
     
     private ShardingRule shardingRule;
     

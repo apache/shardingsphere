@@ -30,6 +30,11 @@ import java.util.Collections;
 public final class MySQLRecognizer implements JDBCDriverURLRecognizer {
     
     @Override
+    public String getDatabaseType() {
+        return "MySQL";
+    }
+    
+    @Override
     public Collection<String> getURLPrefixes() {
         return Collections.singletonList("jdbc:mysql:");
     }

@@ -28,7 +28,7 @@ import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.ShardingStrategyConfiguration;
-import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
+import org.apache.shardingsphere.core.config.ShardingConfigurationException;
 import org.apache.shardingsphere.core.spi.algorithm.keygen.ShardingKeyGeneratorServiceLoader;
 import org.apache.shardingsphere.core.strategy.route.ShardingStrategy;
 import org.apache.shardingsphere.core.strategy.route.ShardingStrategyFactory;
@@ -362,21 +362,6 @@ public class ShardingRule implements BaseRule {
     }
     
     /**
-     * Get logic table name base on logic index name.
-     *
-     * @param logicIndexName logic index name
-     * @return logic table name
-     */
-    public String getLogicTableName(final String logicIndexName) {
-        for (TableRule each : tableRules) {
-            if (logicIndexName.equals(each.getLogicIndex())) {
-                return each.getLogicTable();
-            }
-        }
-        throw new ShardingConfigurationException("Cannot find logic table name with logic index name: '%s'", logicIndexName);
-    }
-    
-    /**
      * Get logic table names base on actual table name.
      *
      * @param actualTableName actual table name
@@ -458,16 +443,6 @@ public class ShardingRule implements BaseRule {
             }
         }
         return Optional.absent();
-    }
-    
-    /**
-     * Judge contains table in sharding rule.
-     *
-     * @param logicTableName logic table name
-     * @return contains table in sharding rule or not
-     */
-    public boolean contains(final String logicTableName) {
-        return findTableRule(logicTableName).isPresent() || findBindingTableRule(logicTableName).isPresent() || isBroadcastTable(logicTableName);
     }
     
     /**

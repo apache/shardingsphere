@@ -131,4 +131,21 @@ public final class InsertOptimizeResultUnit {
     public ExpressionSegment getColumnSQLExpression(final String columnName) {
         return values[getColumnIndex(columnName)];
     }
+    
+    /**
+     * Add insert value.
+     * 
+     * @param insertValue insert value
+     * @param parameters SQL parameters
+     */
+    public void addInsertValue(final Comparable<?> insertValue, final List<Object> parameters) {
+        if (parameters.isEmpty()) {
+            // TODO fix start index and stop index
+            addColumnValue(new LiteralExpressionSegment(0, 0, insertValue));
+        } else {
+            // TODO fix start index and stop index
+            addColumnValue(new ParameterMarkerExpressionSegment(0, 0, parameters.size() - 1));
+            addColumnParameter(insertValue);
+        }
+    }
 }

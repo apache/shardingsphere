@@ -243,6 +243,10 @@ UNKNOWN
     : U N K N O W N
     ;
 
+OFF
+    : O F F
+    ;
+
 ALWAYS
     : A L W A Y S
     ;

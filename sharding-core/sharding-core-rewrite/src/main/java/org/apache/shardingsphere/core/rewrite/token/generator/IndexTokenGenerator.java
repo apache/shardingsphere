@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
-import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.rewrite.token.pojo.IndexToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.core.rule.TableRule;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -33,39 +31,22 @@ import java.util.List;
  * Index token generator.
  *
  * @author zhangliang
+ * @author panjuan
  */
 public final class IndexTokenGenerator implements CollectionSQLTokenGenerator<ShardingRule> {
     
     @Override
     public Collection<IndexToken> generateSQLTokens(final SQLStatement sqlStatement, final List<Object> parameters, final ShardingRule shardingRule) {
         Collection<IndexToken> result = new LinkedList<>();
-        for (SQLSegment each : sqlStatement.getSqlSegments()) {
+        for (SQLSegment each : sqlStatement.getSQLSegments()) {
             if (each instanceof IndexSegment) {
-                Optional<IndexToken> indexToken = createIndexToken(sqlStatement, shardingRule, (IndexSegment) each);
-                if (indexToken.isPresent()) {
-                    result.add(indexToken.get());
-                }
+                result.add(createIndexToken((IndexSegment) each));
             }
         }
         return result;
     }
     
-    private Optional<IndexToken> createIndexToken(final SQLStatement sqlStatement, final ShardingRule shardingRule, final IndexSegment segment) {
-        Optional<String> tableName = findTableNameOfIndex(sqlStatement, shardingRule, segment);
-        return tableName.isPresent()
-                ? Optional.of(new IndexToken(segment.getStartIndex(), segment.getStopIndex(), segment.getIndexName(), segment.getQuoteCharacter(), tableName.get()))
-                : Optional.<IndexToken>absent();
-    }
-    
-    private Optional<String> findTableNameOfIndex(final SQLStatement sqlStatement, final ShardingRule shardingRule, final IndexSegment segment) {
-        if (sqlStatement.getTables().isSingleTable()) {
-            return Optional.of(sqlStatement.getTables().getSingleTableName());
-        }
-        for (TableRule each : shardingRule.getTableRules()) {
-            if (segment.getIndexName().equalsIgnoreCase(each.getLogicIndex())) {
-                return Optional.of(each.getLogicTable());
-            }
-        }
-        return Optional.absent();
+    private IndexToken createIndexToken(final IndexSegment segment) {
+        return new IndexToken(segment.getStartIndex(), segment.getStopIndex(), segment.getIndexName(), segment.getQuoteCharacter());
     }
 }

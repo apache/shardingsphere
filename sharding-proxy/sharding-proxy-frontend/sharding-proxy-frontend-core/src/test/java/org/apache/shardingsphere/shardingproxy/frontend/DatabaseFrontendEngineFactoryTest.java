@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.shardingproxy.frontend;
 
-import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.junit.Test;
 
 public final class DatabaseFrontendEngineFactoryTest {
     
     @Test(expected = UnsupportedOperationException.class)
     public void assertNewInstanceWhenUnsupported() {
-        DatabaseProtocolFrontendEngineFactory.newInstance(DatabaseType.Oracle);
+        DatabaseProtocolFrontendEngineFactory.newInstance(DatabaseTypes.getActualDatabaseType("Oracle"));
     }
 }

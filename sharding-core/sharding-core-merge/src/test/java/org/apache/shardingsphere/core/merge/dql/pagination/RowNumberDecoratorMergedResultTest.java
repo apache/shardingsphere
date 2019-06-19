@@ -18,15 +18,18 @@
 package org.apache.shardingsphere.core.merge.dql.pagination;
 
 import com.google.common.collect.Lists;
-import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.MergedResult;
 import org.apache.shardingsphere.core.merge.dql.DQLMergeEngine;
 import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
+import org.apache.shardingsphere.core.optimize.condition.RouteCondition;
+import org.apache.shardingsphere.core.optimize.condition.RouteConditions;
+import org.apache.shardingsphere.core.optimize.pagination.Pagination;
+import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.rownum.NumberLiteralRowNumberValueSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
-import org.apache.shardingsphere.core.route.pagination.Pagination;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -64,20 +67,21 @@ public final class RowNumberDecoratorMergedResultTest {
             queryResults.add(new TestQueryResult(each));
         }
         routeResult = new SQLRouteResult(new SelectStatement());
+        routeResult.setOptimizeResult(new OptimizeResult(new RouteConditions(Collections.<RouteCondition>emptyList())));
     }
     
     @Test
     public void assertNextForSkipAll() throws SQLException {
-        routeResult.setPagination(new Pagination(new NumberLiteralRowNumberValueSegment(0, 0, Integer.MAX_VALUE, true), null, Collections.emptyList()));
-        mergeEngine = new DQLMergeEngine(DatabaseType.Oracle, routeResult, queryResults);
+        routeResult.getOptimizeResult().setPagination(new Pagination(new NumberLiteralRowNumberValueSegment(0, 0, Integer.MAX_VALUE, true), null, Collections.emptyList()));
+        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("Oracle"), routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertFalse(actual.next());
     }
     
     @Test
     public void assertNextWithoutOffsetWithoutRowCount() throws SQLException {
-        routeResult.setPagination(new Pagination(null, null, Collections.emptyList()));
-        mergeEngine = new DQLMergeEngine(DatabaseType.Oracle, routeResult, queryResults);
+        routeResult.getOptimizeResult().setPagination(new Pagination(null, null, Collections.emptyList()));
+        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("Oracle"), routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
         for (int i = 0; i < 8; i++) {
             assertTrue(actual.next());
@@ -87,8 +91,9 @@ public final class RowNumberDecoratorMergedResultTest {
     
     @Test
     public void assertNextForRowCountBoundOpenedFalse() throws SQLException {
-        routeResult.setPagination(new Pagination(new NumberLiteralRowNumberValueSegment(0, 0, 2, true), new NumberLiteralRowNumberValueSegment(0, 0, 4, false), Collections.emptyList()));
-        mergeEngine = new DQLMergeEngine(DatabaseType.Oracle, routeResult, queryResults);
+        routeResult.getOptimizeResult().setPagination(
+                new Pagination(new NumberLiteralRowNumberValueSegment(0, 0, 2, true), new NumberLiteralRowNumberValueSegment(0, 0, 4, false), Collections.emptyList()));
+        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("Oracle"), routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertTrue(actual.next());
         assertTrue(actual.next());
@@ -97,8 +102,9 @@ public final class RowNumberDecoratorMergedResultTest {
     
     @Test
     public void assertNextForRowCountBoundOpenedTrue() throws SQLException {
-        routeResult.setPagination(new Pagination(new NumberLiteralRowNumberValueSegment(0, 0, 2, true), new NumberLiteralRowNumberValueSegment(0, 0, 4, true), Collections.emptyList()));
-        mergeEngine = new DQLMergeEngine(DatabaseType.Oracle, routeResult, queryResults);
+        routeResult.getOptimizeResult().setPagination(
+                new Pagination(new NumberLiteralRowNumberValueSegment(0, 0, 2, true), new NumberLiteralRowNumberValueSegment(0, 0, 4, true), Collections.emptyList()));
+        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("Oracle"), routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertTrue(actual.next());
         assertTrue(actual.next());

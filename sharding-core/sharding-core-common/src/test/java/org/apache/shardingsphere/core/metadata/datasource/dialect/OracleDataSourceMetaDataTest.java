@@ -17,16 +17,16 @@
 
 package org.apache.shardingsphere.core.metadata.datasource.dialect;
 
-import org.apache.shardingsphere.core.exception.ShardingException;
+import org.apache.shardingsphere.core.metadata.datasource.UnrecognizedDatabaseURLException;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class OracleDataSourceMetaDataTest {
+public final class OracleDataSourceMetaDataTest {
     
     @Test
-    public void assertGetALLProperties() {
+    public void assertGetPropertiesWithPort() {
         OracleDataSourceMetaData actual = new OracleDataSourceMetaData("jdbc:oracle:thin:@//127.0.0.1:9999/ds_0");
         assertThat(actual.getHostName(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(9999));
@@ -34,30 +34,15 @@ public class OracleDataSourceMetaDataTest {
     }
     
     @Test
-    public void assertGetALLPropertiesWithDefaultPort() {
-        OracleDataSourceMetaData actual = new OracleDataSourceMetaData("jdbc:oracle:thin:@//127.0.0.1/ds_0");
+    public void assertGetPropertiesWithDefaultPort() {
+        OracleDataSourceMetaData actual = new OracleDataSourceMetaData("jdbc:oracle:oci:@127.0.0.1/ds_0");
         assertThat(actual.getHostName(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(1521));
         assertThat(actual.getSchemaName(), is("ds_0"));
     }
     
-    @Test
-    public void assertGetPropertiesWithMinus() {
-        OracleDataSourceMetaData actual = new OracleDataSourceMetaData("jdbc:oracle:thin:@//host-0/ds-0");
-        assertThat(actual.getHostName(), is("host-0"));
-        assertThat(actual.getPort(), is(1521));
-        assertThat(actual.getSchemaName(), is("ds-0"));
-    }
-    
-    @Test(expected = ShardingException.class)
-    public void assertGetALLPropertiesFailure() {
+    @Test(expected = UnrecognizedDatabaseURLException.class)
+    public void assertGetPropertiesFailure() {
         new OracleDataSourceMetaData("jdbc:oracle:xxxxxxxx");
-    }
-    
-    @Test
-    public void assertIsInSameDatabaseInstance() {
-        OracleDataSourceMetaData target = new OracleDataSourceMetaData("jdbc:oracle:thin:@//127.0.0.1/ds_0");
-        OracleDataSourceMetaData actual = new OracleDataSourceMetaData("jdbc:oracle:thin:@//127.0.0.1:1521/ds_0");
-        assertThat(actual.isInSameDatabaseInstance(target), is(true));
     }
 }

@@ -63,7 +63,7 @@ public final class ShowCreateTableMergedResultTest {
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
         shardingRule = new ShardingRule(shardingRuleConfig, Lists.newArrayList("ds"));
         Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(1, 1);
-        tableMetaDataMap.put("table", new TableMetaData(Collections.<ColumnMetaData>emptyList()));
+        tableMetaDataMap.put("table", new TableMetaData(Collections.<ColumnMetaData>emptyList(), Collections.<String>emptySet()));
         shardingTableMetaData = new ShardingTableMetaData(tableMetaDataMap);
         resultSet = mock(ResultSet.class);
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);

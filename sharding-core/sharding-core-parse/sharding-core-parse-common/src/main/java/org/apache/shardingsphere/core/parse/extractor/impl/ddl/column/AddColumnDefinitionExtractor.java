@@ -60,7 +60,7 @@ public class AddColumnDefinitionExtractor implements CollectionSQLSegmentExtract
         return result;
     }
     
-    protected void postExtractColumnDefinition(final ParserRuleContext addColumnNode, 
-                                               final AddColumnDefinitionSegment addColumnDefinitionSegment, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
+    protected void postExtractColumnDefinition(
+            final ParserRuleContext addColumnNode, final AddColumnDefinitionSegment addColumnDefinitionSegment, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
     }
 }

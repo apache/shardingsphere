@@ -121,6 +121,8 @@ public final class Bootstrap {
         for (String each : shardingOrchestrationFacade.getConfigService().getAllShardingSchemaNames()) {
             if (shardingOrchestrationFacade.getConfigService().isShardingRule(each)) {
                 result.put(each, shardingOrchestrationFacade.getConfigService().loadShardingRuleConfiguration(each));
+            } else if (shardingOrchestrationFacade.getConfigService().isEncryptRule(each)) {
+                result.put(each, shardingOrchestrationFacade.getConfigService().loadEncryptRuleConfiguration(each));
             } else {
                 result.put(each, shardingOrchestrationFacade.getConfigService().loadMasterSlaveRuleConfiguration(each));
             }

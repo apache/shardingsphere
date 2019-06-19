@@ -22,7 +22,7 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.core.parse.sql.context.condition.ParseCondition;
+import org.apache.shardingsphere.core.parse.sql.context.condition.Conditions;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.DistinctSelectItem;
@@ -53,7 +53,7 @@ import java.util.Set;
 @Getter
 @Setter
 @ToString(callSuper = true, exclude = "parentStatement")
-public final class SelectStatement extends DQLStatement {
+public final class SelectStatement extends DMLStatement {
     
     private final Set<SelectItem> items = new LinkedHashSet<>();
     
@@ -79,7 +79,7 @@ public final class SelectStatement extends DQLStatement {
     
     private SelectStatement subqueryStatement;
     
-    private Collection<ParseCondition> subqueryParseConditions = new LinkedList<>();
+    private Collection<Conditions> subqueryShardingConditions = new LinkedList<>();
     
     /**
      * Get alias.

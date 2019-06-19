@@ -20,9 +20,6 @@ package org.apache.shardingsphere.dbtest.engine;
 import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.core.constant.DatabaseType;
-import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetaData;
-import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetaDataFactory;
 import org.apache.shardingsphere.dbtest.cases.assertion.IntegrateTestCasesLoader;
 import org.apache.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import org.apache.shardingsphere.dbtest.env.EnvironmentPath;
@@ -32,6 +29,9 @@ import org.apache.shardingsphere.dbtest.env.schema.SchemaEnvironmentManager;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlMasterSlaveDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
+import org.apache.shardingsphere.spi.database.DataSourceMetaData;
+import org.apache.shardingsphere.spi.database.DatabaseType;
+import org.apache.shardingsphere.spi.database.MemorizedDataSourceMetaData;
 import org.junit.After;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -85,12 +85,12 @@ public abstract class BaseIT {
         }
     }
     
-    protected final String getExpectedDataFile(final String path, final String shardingRuleType, final String databaseType, final String expectedDataFile) {
+    protected final String getExpectedDataFile(final String path, final String shardingRuleType, final DatabaseType databaseType, final String expectedDataFile) {
         if (null == expectedDataFile) {
             return null;
         }
         String prefix = path.substring(0, path.lastIndexOf(File.separator));
-        String result = Joiner.on("/").join(prefix, "dataset", shardingRuleType, databaseType.toLowerCase(), expectedDataFile);
+        String result = Joiner.on("/").join(prefix, "dataset", shardingRuleType, databaseType.getName().toLowerCase(), expectedDataFile);
         if (new File(result).exists()) {
             return result;
         }
@@ -131,20 +131,25 @@ public abstract class BaseIT {
         return result;
     }
     
-    private boolean isExisted(final String dataSourceName, final Collection<String> existedDataSourceNames,
-                              final Map<String, DataSourceMetaData> dataSourceMetaDataMap) {
+    private boolean isExisted(final String dataSourceName, final Collection<String> existedDataSourceNames, final Map<String, DataSourceMetaData> dataSourceMetaDataMap) {
+        DataSourceMetaData sample = dataSourceMetaDataMap.get(dataSourceName);
         for (String each : existedDataSourceNames) {
-            if (dataSourceMetaDataMap.get(each).isInSameDatabaseInstance(dataSourceMetaDataMap.get(dataSourceName))) {
+            if (isInSameDatabaseInstance(sample, dataSourceMetaDataMap.get(each))) {
                 return true;
             }
         }
         return false;
     }
     
+    private boolean isInSameDatabaseInstance(final DataSourceMetaData sample, final DataSourceMetaData target) {
+        return sample instanceof MemorizedDataSourceMetaData
+                ? target.getSchemaName().equals(sample.getSchemaName()) : target.getHostName().equals(sample.getHostName()) && target.getPort() == sample.getPort();
+    }
+    
     private Map<String, DataSourceMetaData> getDataSourceMetaDataMap() throws SQLException {
         Map<String, DataSourceMetaData> result = new LinkedHashMap<>();
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            result.put(entry.getKey(), DataSourceMetaDataFactory.newInstance(DatabaseType.valueOf(databaseTypeEnvironment.getDatabaseType()), getDataSourceURL(entry.getValue())));
+            result.put(entry.getKey(), databaseTypeEnvironment.getDatabaseType().getDataSourceMetaData(getDataSourceURL(entry.getValue())));
         }
         return result;
     }

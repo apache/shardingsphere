@@ -21,7 +21,7 @@ import org.apache.shardingsphere.api.config.masterslave.LoadBalanceStrategyConfi
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
-import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.shardingjdbc.fixture.TestDataSource;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
@@ -78,7 +78,7 @@ public final class ShardingConnectionTest {
     @Before
     public void setUp() {
         shardingContext = mock(ShardingContext.class);
-        when(shardingContext.getDatabaseType()).thenReturn(DatabaseType.H2);
+        when(shardingContext.getDatabaseType()).thenReturn(DatabaseTypes.getActualDatabaseType("H2"));
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(new TableRuleConfiguration("test"));
         dataSourceMap = new HashMap<>(1, 1);

@@ -19,10 +19,10 @@ package org.apache.shardingsphere.core.parse.filler.sharding.dml.update;
 
 import lombok.Setter;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.parse.aware.ShardingRuleAware;
+import org.apache.shardingsphere.core.parse.aware.ShardingTableMetaDataAware;
 import org.apache.shardingsphere.core.parse.exception.SQLParsingException;
-import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.filler.api.ShardingRuleAwareFiller;
-import org.apache.shardingsphere.core.parse.filler.api.ShardingTableMetaDataAwareFiller;
+import org.apache.shardingsphere.core.parse.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
@@ -31,7 +31,6 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.Assignmen
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.SimpleExpressionSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
@@ -48,7 +47,7 @@ import java.util.List;
  * @author panjuan
  */
 @Setter
-public final class ShardingSetAssignmentsFiller implements SQLSegmentFiller<SetAssignmentsSegment>, ShardingRuleAwareFiller, ShardingTableMetaDataAwareFiller {
+public final class ShardingSetAssignmentsFiller implements SQLSegmentFiller<SetAssignmentsSegment>, ShardingRuleAware, ShardingTableMetaDataAware {
     
     private ShardingRule shardingRule;
     
@@ -76,14 +75,12 @@ public final class ShardingSetAssignmentsFiller implements SQLSegmentFiller<SetA
         List<ExpressionSegment> columnValues = new LinkedList<>();
         for (AssignmentSegment each : sqlSegment.getAssignments()) {
             if (each.getValue() instanceof SimpleExpressionSegment) {
-                fillShardingCondition(andCondition, columnNames.next(), insertStatement.getTables().getSingleTableName(), null, (SimpleExpressionSegment) each.getValue());
+                fillShardingCondition(andCondition, columnNames.next(), insertStatement.getTables().getSingleTableName(), (SimpleExpressionSegment) each.getValue());
             }
             columnValues.add(each.getValue());
         }
-        InsertValue insertValue = new InsertValue(columnValues);
-        insertStatement.getValues().add(insertValue);
-        insertStatement.getRouteCondition().getOrConditions().add(andCondition);
-        insertStatement.setParametersIndex(insertValue.getParametersCount());
+        insertStatement.getValues().add(new InsertValue(columnValues));
+        insertStatement.getShardingConditions().getOrConditions().add(andCondition);
     }
     
     private int getColumnCountExcludeAssistedQueryColumns(final InsertStatement insertStatement) {
@@ -96,9 +93,9 @@ public final class ShardingSetAssignmentsFiller implements SQLSegmentFiller<SetA
     }
     
     private void fillShardingCondition(final AndCondition andCondition,
-                                       final String columnName, final String tableName, final PredicateSegment predicateSegment, final SimpleExpressionSegment simpleExpressionSegment) {
+                                       final String columnName, final String tableName, final SimpleExpressionSegment simpleExpressionSegment) {
         if (shardingRule.isShardingColumn(columnName, tableName)) {
-            andCondition.getConditions().add(new Condition(new Column(columnName, tableName), predicateSegment, simpleExpressionSegment));
+            andCondition.getConditions().add(new Condition(new Column(columnName, tableName), null, simpleExpressionSegment));
         }
     }
     

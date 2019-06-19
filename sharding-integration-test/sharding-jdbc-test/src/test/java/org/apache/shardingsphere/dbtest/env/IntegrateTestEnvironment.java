@@ -19,8 +19,9 @@ package org.apache.shardingsphere.dbtest.env;
 
 import com.google.common.base.Splitter;
 import lombok.Getter;
-import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.dbtest.env.datasource.DatabaseEnvironment;
+import org.apache.shardingsphere.spi.database.DatabaseType;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -43,9 +44,9 @@ public final class IntegrateTestEnvironment {
     
     private final Collection<String> shardingRuleTypes;
     
-    private final Collection<String> databaseTypes;
+    private final Collection<DatabaseType> databaseTypes;
     
-    private final Map<String, DatabaseEnvironment> databaseEnvironments;
+    private final Map<DatabaseType, DatabaseEnvironment> databaseEnvironments;
     
     private IntegrateTestEnvironment() {
         Properties prop = new Properties();
@@ -57,12 +58,12 @@ public final class IntegrateTestEnvironment {
         runAdditionalTestCases = Boolean.valueOf(prop.getProperty("run.additional.cases"));
         shardingRuleTypes = Splitter.on(",").trimResults().splitToList(prop.getProperty("sharding.rule.type"));
         databaseTypes = new LinkedList<>();
-        for (String each : prop.getProperty("databases", DatabaseType.H2.name()).split(",")) {
-            databaseTypes.add(each.trim());
+        for (String each : prop.getProperty("databases", "H2").split(",")) {
+            databaseTypes.add(DatabaseTypes.getActualDatabaseType(each.trim()));
         }
         databaseEnvironments = new HashMap<>(databaseTypes.size(), 1);
-        for (String each : databaseTypes) {
-            switch (each) {
+        for (DatabaseType each : databaseTypes) {
+            switch (each.getName()) {
                 case "H2":
                     databaseEnvironments.put(each, new DatabaseEnvironment(each, "", 0, "sa", ""));
                     break;

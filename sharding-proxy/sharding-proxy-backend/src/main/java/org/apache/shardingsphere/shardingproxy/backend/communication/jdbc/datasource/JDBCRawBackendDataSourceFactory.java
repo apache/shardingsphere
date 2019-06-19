@@ -50,7 +50,7 @@ public final class JDBCRawBackendDataSourceFactory implements JDBCBackendDataSou
     @Override
     public DataSource build(final String dataSourceName, final YamlDataSourceParameter dataSourceParameter) {
         HikariConfig config = new HikariConfig();
-        String driverClassName = JDBCDriverURLRecognizerEngine.getDriverClassName(dataSourceParameter.getUrl());
+        String driverClassName = JDBCDriverURLRecognizerEngine.getJDBCDriverURLRecognizer(dataSourceParameter.getUrl()).getDriverClassName();
         validateDriverClassName(driverClassName);
         config.setDriverClassName(driverClassName);
         config.setJdbcUrl(dataSourceParameter.getUrl());

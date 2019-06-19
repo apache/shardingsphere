@@ -19,29 +19,14 @@ package org.apache.shardingsphere.core.parse.spi;
 
 import org.antlr.v4.runtime.Lexer;
 import org.apache.shardingsphere.core.parse.api.SQLParser;
-
-import java.util.Collection;
+import org.apache.shardingsphere.spi.DatabaseTypeAwareSPI;
 
 /**
  * SQL parser entry.
  *
  * @author zhangliang
  */
-public interface SQLParserEntry {
-    
-    /**
-     * Get database type.
-     * 
-     * @return database type
-     */
-    String getDatabaseType();
-    
-    /**
-     * Get database type alias.
-     *
-     * @return database type alias
-     */
-    Collection<String> getDatabaseTypeAliases();
+public interface SQLParserEntry extends DatabaseTypeAwareSPI {
     
     /**
      * Get SQL lexer class type.

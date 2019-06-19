@@ -19,15 +19,14 @@ package org.apache.shardingsphere.core.execute.sql.execute;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.ConnectionMode;
-import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.execute.ShardingGroupExecuteCallback;
 import org.apache.shardingsphere.core.execute.StatementExecuteUnit;
 import org.apache.shardingsphere.core.execute.hook.SPISQLExecutionHook;
 import org.apache.shardingsphere.core.execute.hook.SQLExecutionHook;
 import org.apache.shardingsphere.core.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
-import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetaData;
-import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetaDataFactory;
 import org.apache.shardingsphere.core.route.RouteUnit;
+import org.apache.shardingsphere.spi.database.DataSourceMetaData;
+import org.apache.shardingsphere.spi.database.DatabaseType;
 
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -62,7 +61,7 @@ public abstract class SQLExecuteCallback<T> implements ShardingGroupExecuteCallb
     
     private T execute0(final StatementExecuteUnit statementExecuteUnit, final boolean isTrunkThread, final Map<String, Object> shardingExecuteDataMap) throws SQLException {
         ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
-        DataSourceMetaData dataSourceMetaData = DataSourceMetaDataFactory.newInstance(databaseType, statementExecuteUnit.getStatement().getConnection().getMetaData().getURL());
+        DataSourceMetaData dataSourceMetaData = databaseType.getDataSourceMetaData(statementExecuteUnit.getStatement().getConnection().getMetaData().getURL());
         SQLExecutionHook sqlExecutionHook = new SPISQLExecutionHook();
         try {
             sqlExecutionHook.start(statementExecuteUnit.getRouteUnit(), dataSourceMetaData, isTrunkThread, shardingExecuteDataMap);

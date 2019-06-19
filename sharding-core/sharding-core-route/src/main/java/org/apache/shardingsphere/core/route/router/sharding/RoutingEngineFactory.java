@@ -19,14 +19,18 @@ package org.apache.shardingsphere.core.route.router.sharding;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.core.constant.SQLType;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.statement.ShowDatabasesStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.statement.UseStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.postgresql.statement.ResetParameterStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.postgresql.statement.SetStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.ShowDatabasesStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.UseStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.postgresql.ResetParameterStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.postgresql.SetStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dcl.DCLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
 import org.apache.shardingsphere.core.route.type.broadcast.DataSourceGroupBroadcastRoutingEngine;
 import org.apache.shardingsphere.core.route.type.broadcast.DatabaseBroadcastRoutingEngine;
@@ -61,25 +65,25 @@ public final class RoutingEngineFactory {
     public static RoutingEngine newInstance(final ShardingRule shardingRule,
                                             final ShardingDataSourceMetaData shardingDataSourceMetaData, final SQLStatement sqlStatement, final OptimizeResult optimizeResult) {
         Collection<String> tableNames = sqlStatement.getTables().getTableNames();
-        if (SQLType.TCL == sqlStatement.getType()) {
+        if (sqlStatement instanceof TCLStatement) {
             return new DatabaseBroadcastRoutingEngine(shardingRule);
         }
-        if (SQLType.DDL == sqlStatement.getType()) {
-            return new TableBroadcastRoutingEngine(shardingRule, sqlStatement);
+        if (sqlStatement instanceof DDLStatement) {
+            return new TableBroadcastRoutingEngine(shardingRule, sqlStatement, optimizeResult);
         }
-        if (SQLType.DAL == sqlStatement.getType()) {
+        if (sqlStatement instanceof DALStatement) {
             return getDALRoutingEngine(shardingRule, sqlStatement, tableNames);
         }
-        if (SQLType.DCL == sqlStatement.getType()) {
-            return getDCLRoutingEngine(shardingRule, sqlStatement, shardingDataSourceMetaData);
+        if (sqlStatement instanceof DCLStatement) {
+            return getDCLRoutingEngine(shardingRule, sqlStatement, optimizeResult, shardingDataSourceMetaData);
         }
         if (shardingRule.isAllInDefaultDataSource(tableNames)) {
             return new DefaultDatabaseRoutingEngine(shardingRule, tableNames);
         }
         if (shardingRule.isAllBroadcastTables(tableNames)) {
-            return SQLType.DQL == sqlStatement.getType() ? new UnicastRoutingEngine(shardingRule, tableNames) : new DatabaseBroadcastRoutingEngine(shardingRule);
+            return sqlStatement instanceof SelectStatement ? new UnicastRoutingEngine(shardingRule, tableNames) : new DatabaseBroadcastRoutingEngine(shardingRule);
         }
-        if (optimizeResult.getShardingConditions().isAlwaysFalse() || tableNames.isEmpty()) {
+        if (optimizeResult.getRouteConditions().isAlwaysFalse() || tableNames.isEmpty()) {
             return new UnicastRoutingEngine(shardingRule, tableNames);
         }
         Collection<String> shardingTableNames = shardingRule.getShardingLogicTableNames(tableNames);
@@ -103,8 +107,10 @@ public final class RoutingEngineFactory {
         return new DataSourceGroupBroadcastRoutingEngine(shardingRule);
     }
     
-    private static RoutingEngine getDCLRoutingEngine(final ShardingRule shardingRule, final SQLStatement sqlStatement, final ShardingDataSourceMetaData shardingDataSourceMetaData) {
-        return isGrantForSingleTable(sqlStatement) ? new TableBroadcastRoutingEngine(shardingRule, sqlStatement) : new InstanceBroadcastRoutingEngine(shardingRule, shardingDataSourceMetaData);
+    private static RoutingEngine getDCLRoutingEngine(final ShardingRule shardingRule, 
+                                                     final SQLStatement sqlStatement, final OptimizeResult optimizeResult, final ShardingDataSourceMetaData shardingDataSourceMetaData) {
+        return isGrantForSingleTable(sqlStatement) 
+                ? new TableBroadcastRoutingEngine(shardingRule, sqlStatement, optimizeResult) : new InstanceBroadcastRoutingEngine(shardingRule, shardingDataSourceMetaData);
     }
     
     private static boolean isGrantForSingleTable(final SQLStatement sqlStatement) {

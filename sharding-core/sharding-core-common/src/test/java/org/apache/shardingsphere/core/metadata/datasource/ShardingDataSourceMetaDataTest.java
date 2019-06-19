@@ -21,7 +21,7 @@ import com.google.common.collect.Lists;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
-import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,11 +48,11 @@ public class ShardingDataSourceMetaDataTest {
         masterSlaveShardingDataSourceURLs.put("slave_0", "jdbc:mysql://127.0.0.2:3306/slave_0");
         masterSlaveShardingDataSourceURLs.put("slave_1", "jdbc:mysql://127.0.0.2:3306/slave_1");
         masterSlaveShardingDataSourceURLs.put("slave_2", "jdbc:mysql://127.0.0.2:3307/slave_2");
-        masterSlaveShardingDataSourceMetaData = new ShardingDataSourceMetaData(masterSlaveShardingDataSourceURLs, getMasterSlaveShardingRule(), DatabaseType.MySQL);
+        masterSlaveShardingDataSourceMetaData = new ShardingDataSourceMetaData(masterSlaveShardingDataSourceURLs, getMasterSlaveShardingRule(), DatabaseTypes.getActualDatabaseType("MySQL"));
         Map<String, String> shardingDataSourceURLs = new LinkedHashMap<>();
         shardingDataSourceURLs.put("ds_0", "jdbc:mysql://127.0.0.1:3306/db_0");
         shardingDataSourceURLs.put("ds_1", "jdbc:mysql://127.0.0.1:3306/db_1");
-        shardingDataSourceMetaData = new ShardingDataSourceMetaData(shardingDataSourceURLs, getShardingRule(), DatabaseType.MySQL);
+        shardingDataSourceMetaData = new ShardingDataSourceMetaData(shardingDataSourceURLs, getShardingRule(), DatabaseTypes.getActualDatabaseType("MySQL"));
     }
     
     private ShardingRule getMasterSlaveShardingRule() {
@@ -74,12 +74,12 @@ public class ShardingDataSourceMetaDataTest {
     
     @Test
     public void assertGetAllInstanceDataSourceNamesForMasterSlaveShardingRule() {
-        assertEquals(masterSlaveShardingDataSourceMetaData.getAllInstanceDataSourceNames(), Lists.newArrayList("single", "ms_2"));
+        assertEquals(masterSlaveShardingDataSourceMetaData.getAllInstanceDataSourceNames(), Lists.newArrayList("ms_0", "ms_2"));
     }
     
     @Test
     public void assertGetAllInstanceDataSourceNamesForShardingRule() {
-        assertEquals(shardingDataSourceMetaData.getAllInstanceDataSourceNames(), Lists.newArrayList("ds_0"));
+        assertEquals(shardingDataSourceMetaData.getAllInstanceDataSourceNames(), Lists.newArrayList("ds_1"));
     }
     
     @Test

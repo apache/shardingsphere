@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.parse.sql.statement.dml;
 
+import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -34,6 +35,7 @@ import java.util.List;
  * @author panjuan
  */
 @Getter
+@Setter
 @ToString(callSuper = true)
 public final class InsertStatement extends DMLStatement {
     
@@ -41,18 +43,13 @@ public final class InsertStatement extends DMLStatement {
     
     private final List<InsertValue> values = new LinkedList<>();
     
-    @Setter
-    private boolean isNeededToAppendGeneratedKey;
-    
-    @Setter
-    private boolean isNeededToAppendAssistedColumns;
-    
     /**
-     * Is needed to append columns.
+     * Judge contains default values or not.
      * 
-     * @return append columns or not
+     * @return contains default values or not
      */
-    public boolean isNeededToAppendColumns() {
-        return isNeededToAppendGeneratedKey || isNeededToAppendAssistedColumns;
+    public boolean containsDefaultValues() {
+        Preconditions.checkState(!values.isEmpty());
+        return columnNames.size() != values.get(0).getAssignments().size();
     }
 }

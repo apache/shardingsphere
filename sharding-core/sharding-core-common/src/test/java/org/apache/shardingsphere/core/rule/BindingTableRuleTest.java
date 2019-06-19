@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.rule;
 
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
-import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
+import org.apache.shardingsphere.core.config.ShardingConfigurationException;
 import org.junit.Test;
 
 import java.util.Arrays;

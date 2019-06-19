@@ -22,7 +22,7 @@ import com.google.common.base.Splitter;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
+import org.apache.shardingsphere.core.config.ShardingConfigurationException;
 
 import java.util.List;
 

@@ -18,11 +18,14 @@
 package org.apache.shardingsphere.core.merge.dql.iterator;
 
 import com.google.common.collect.Lists;
-import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.MergedResult;
 import org.apache.shardingsphere.core.merge.dql.DQLMergeEngine;
 import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
+import org.apache.shardingsphere.core.optimize.condition.RouteCondition;
+import org.apache.shardingsphere.core.optimize.condition.RouteConditions;
+import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.junit.Before;
@@ -31,6 +34,7 @@ import org.junit.Test;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertFalse;
@@ -53,11 +57,12 @@ public final class IteratorStreamMergedResultTest {
         when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
         queryResults = Lists.<QueryResult>newArrayList(new TestQueryResult(resultSet), new TestQueryResult(mock(ResultSet.class)), new TestQueryResult(mock(ResultSet.class)));
         routeResult = new SQLRouteResult(new SelectStatement());
+        routeResult.setOptimizeResult(new OptimizeResult(new RouteConditions(Collections.<RouteCondition>emptyList())));
     }
     
     @Test
     public void assertNextForResultSetsAllEmpty() throws SQLException {
-        mergeEngine = new DQLMergeEngine(DatabaseType.MySQL, routeResult, queryResults);
+        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertFalse(actual.next());
     }
@@ -67,7 +72,7 @@ public final class IteratorStreamMergedResultTest {
         for (QueryResult each : queryResults) {
             when(each.next()).thenReturn(true, false);
         }
-        mergeEngine = new DQLMergeEngine(DatabaseType.MySQL, routeResult, queryResults);
+        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertTrue(actual.next());
         assertTrue(actual.next());
@@ -78,7 +83,7 @@ public final class IteratorStreamMergedResultTest {
     @Test
     public void assertNextForFirstResultSetsNotEmptyOnly() throws SQLException {
         when(queryResults.get(0).next()).thenReturn(true, false);
-        mergeEngine = new DQLMergeEngine(DatabaseType.MySQL, routeResult, queryResults);
+        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertTrue(actual.next());
         assertFalse(actual.next());
@@ -87,7 +92,7 @@ public final class IteratorStreamMergedResultTest {
     @Test
     public void assertNextForMiddleResultSetsNotEmpty() throws SQLException {
         when(queryResults.get(1).next()).thenReturn(true, false);
-        mergeEngine = new DQLMergeEngine(DatabaseType.MySQL, routeResult, queryResults);
+        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertTrue(actual.next());
         assertFalse(actual.next());
@@ -96,7 +101,7 @@ public final class IteratorStreamMergedResultTest {
     @Test
     public void assertNextForLastResultSetsNotEmptyOnly() throws SQLException {
         when(queryResults.get(2).next()).thenReturn(true, false);
-        mergeEngine = new DQLMergeEngine(DatabaseType.MySQL, routeResult, queryResults);
+        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertTrue(actual.next());
         assertFalse(actual.next());
@@ -110,7 +115,7 @@ public final class IteratorStreamMergedResultTest {
         when(queryResults.get(1).next()).thenReturn(true, false);
         when(queryResults.get(3).next()).thenReturn(true, false);
         when(queryResults.get(5).next()).thenReturn(true, false);
-        mergeEngine = new DQLMergeEngine(DatabaseType.MySQL, routeResult, queryResults);
+        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertTrue(actual.next());
         assertTrue(actual.next());

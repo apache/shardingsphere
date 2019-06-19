@@ -194,5 +194,4 @@ public final class LeafSegmentKeyGenerator implements ShardingKeyGenerator {
     private String getRegistryCenterType() {
         return properties.getProperty("registryCenterType", DEFAULT_REGISTRY_CENTER);
     }
-
 }

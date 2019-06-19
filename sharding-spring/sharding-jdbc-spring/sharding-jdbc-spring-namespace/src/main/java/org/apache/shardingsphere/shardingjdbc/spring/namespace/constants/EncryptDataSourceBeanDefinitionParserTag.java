@@ -33,4 +33,6 @@ public final class EncryptDataSourceBeanDefinitionParserTag {
     public static final String DATA_SOURCE_NAME_TAG = "data-source-name";
     
     public static final String ENCRYPTOR_RULE_CONFIG_TAG = "encryptor-rule";
+    
+    public static final String PROPS_TAG = "props";
 }

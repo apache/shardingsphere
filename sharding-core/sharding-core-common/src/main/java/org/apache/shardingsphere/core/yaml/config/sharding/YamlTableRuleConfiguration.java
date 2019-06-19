@@ -40,6 +40,4 @@ public class YamlTableRuleConfiguration implements YamlConfiguration {
     private YamlShardingStrategyConfiguration tableStrategy;
     
     private YamlKeyGeneratorConfiguration keyGenerator;
-    
-    private String logicIndex;
 }

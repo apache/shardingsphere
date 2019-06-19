@@ -121,7 +121,7 @@ public final class ShardingEncryptorStrategy {
      * Get assisted query columns.
      *
      * @param logicTableName logic table name
-     * @return assisted query column
+     * @return assisted query columns
      */
     public Collection<String> getAssistedQueryColumns(final String logicTableName) {
         Collection<String> result = new LinkedList<>();

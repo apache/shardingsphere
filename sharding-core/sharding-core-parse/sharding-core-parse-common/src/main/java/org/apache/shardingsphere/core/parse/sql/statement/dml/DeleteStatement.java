@@ -26,9 +26,9 @@ import lombok.ToString;
  *
  * @author zhangliang
  */
-@ToString(callSuper = true)
 @Getter
 @Setter
+@ToString(callSuper = true)
 public final class DeleteStatement extends DMLStatement {
     
     private int whereStartIndex;

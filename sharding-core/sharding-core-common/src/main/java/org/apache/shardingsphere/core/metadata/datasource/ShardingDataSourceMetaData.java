@@ -18,15 +18,17 @@
 package org.apache.shardingsphere.core.metadata.datasource;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.spi.database.DataSourceMetaData;
+import org.apache.shardingsphere.spi.database.DatabaseType;
+import org.apache.shardingsphere.spi.database.MemorizedDataSourceMetaData;
 
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Sharding data source meta data.
@@ -47,15 +49,15 @@ public final class ShardingDataSourceMetaData {
     }
     
     private Map<String, DataSourceMetaData> getDataSourceMetaDataMapForSharding(final Map<String, String> dataSourceURLs, final DatabaseType databaseType) {
-        Map<String, DataSourceMetaData> result = new LinkedHashMap<>(dataSourceURLs.size(), 1);
+        Map<String, DataSourceMetaData> result = new ConcurrentHashMap<>(dataSourceURLs.size(), 1);
         for (Entry<String, String> entry : dataSourceURLs.entrySet()) {
-            result.put(entry.getKey(), DataSourceMetaDataFactory.newInstance(databaseType, entry.getValue()));
+            result.put(entry.getKey(), databaseType.getDataSourceMetaData(entry.getValue()));
         }
         return result;
     }
     
     private Map<String, DataSourceMetaData> getDataSourceMetaDataMapForMasterSlave(final ShardingRule shardingRule, final Map<String, DataSourceMetaData> dataSourceMetaDataMap) {
-        Map<String, DataSourceMetaData> result = new LinkedHashMap<>(dataSourceMetaDataMap);
+        Map<String, DataSourceMetaData> result = new ConcurrentHashMap<>(dataSourceMetaDataMap);
         for (Entry<String, DataSourceMetaData> entry : dataSourceMetaDataMap.entrySet()) {
             Optional<MasterSlaveRule> masterSlaveRule = shardingRule.findMasterSlaveRule(entry.getKey());
             if (masterSlaveRule.isPresent() && masterSlaveRule.get().getMasterDataSourceName().equals(entry.getKey())) {
@@ -89,12 +91,18 @@ public final class ShardingDataSourceMetaData {
     }
     
     private boolean isExisted(final String dataSourceName, final Collection<String> existedDataSourceNames) {
+        DataSourceMetaData sample = dataSourceMetaDataMap.get(dataSourceName);
         for (String each : existedDataSourceNames) {
-            if (dataSourceMetaDataMap.get(each).isInSameDatabaseInstance(dataSourceMetaDataMap.get(dataSourceName))) {
+            if (isInSameDatabaseInstance(sample, dataSourceMetaDataMap.get(each))) {
                 return true;
             }
         }
         return false;
+    }
+    
+    private boolean isInSameDatabaseInstance(final DataSourceMetaData sample, final DataSourceMetaData target) {
+        return sample instanceof MemorizedDataSourceMetaData
+                ? target.getSchemaName().equals(sample.getSchemaName()) : target.getHostName().equals(sample.getHostName()) && target.getPort() == sample.getPort();
     }
     
     /**

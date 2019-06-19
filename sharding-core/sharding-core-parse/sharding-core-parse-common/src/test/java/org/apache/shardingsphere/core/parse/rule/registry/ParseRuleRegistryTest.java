@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.parse.rule.registry;
 
+import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.parse.sql.segment.ddl.column.ColumnDefinitionSegment;
 import org.junit.Test;
 
@@ -33,19 +34,19 @@ public final class ParseRuleRegistryTest {
     
     @Test
     public void assertShardingParseRuleRegistry() {
-        assertNotNull(shardingParseRuleRegistry.getSQLStatementRule("MySQL", "SelectContext"));
-        assertTrue(shardingParseRuleRegistry.findSQLSegmentFiller("MySQL", ColumnDefinitionSegment.class).isPresent());
+        assertNotNull(shardingParseRuleRegistry.getSQLStatementRule(DatabaseTypes.getActualDatabaseType("MySQL"), "SelectContext"));
+        assertTrue(shardingParseRuleRegistry.findSQLSegmentFiller(DatabaseTypes.getActualDatabaseType("MySQL"), ColumnDefinitionSegment.class).isPresent());
     }
     
     @Test
     public void assertEncryptParseRuleRegistry() {
-        assertNotNull(encryptParseRuleRegistry.getSQLStatementRule("MySQL", "SelectContext"));
-        assertTrue(encryptParseRuleRegistry.findSQLSegmentFiller("MySQL", ColumnDefinitionSegment.class).isPresent());
+        assertNotNull(encryptParseRuleRegistry.getSQLStatementRule(DatabaseTypes.getActualDatabaseType("MySQL"), "SelectContext"));
+        assertTrue(encryptParseRuleRegistry.findSQLSegmentFiller(DatabaseTypes.getActualDatabaseType("MySQL"), ColumnDefinitionSegment.class).isPresent());
     }
     
     @Test
     public void assertMasterSlaveParseRuleRegistry() {
-        assertNotNull(masterSlaveParseRuleRegistry.getSQLStatementRule("MySQL", "SelectContext"));
-        assertTrue(masterSlaveParseRuleRegistry.findSQLSegmentFiller("MySQL", ColumnDefinitionSegment.class).isPresent());
+        assertNotNull(masterSlaveParseRuleRegistry.getSQLStatementRule(DatabaseTypes.getActualDatabaseType("MySQL"), "SelectContext"));
+        assertTrue(masterSlaveParseRuleRegistry.findSQLSegmentFiller(DatabaseTypes.getActualDatabaseType("MySQL"), ColumnDefinitionSegment.class).isPresent());
     }
 }

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.optimize;
 
 import com.google.common.base.Optional;
+import org.apache.shardingsphere.core.optimize.keygen.GeneratedKey;
 import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.sql.context.table.Table;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
@@ -66,7 +67,7 @@ public final class GeneratedKeyTest {
         when(shardingRule.findGenerateKeyColumnName("tbl")).thenReturn(Optional.of("id1"));
         Optional<GeneratedKey> actual = GeneratedKey.getGenerateKey(shardingRule, Collections.<Object>singletonList(1), insertStatement);
         assertTrue(actual.isPresent());
-        assertThat(actual.get().getGeneratedKeys().size(), is(1));
+        assertThat(actual.get().getGeneratedValues().size(), is(1));
     }
     
     @Test
@@ -78,10 +79,10 @@ public final class GeneratedKeyTest {
         when(shardingRule.findGenerateKeyColumnName("tbl")).thenReturn(Optional.of("id"));
         Optional<GeneratedKey> actual = GeneratedKey.getGenerateKey(shardingRule, Collections.<Object>singletonList(1), insertStatement);
         assertTrue(actual.isPresent());
-        assertThat(actual.get().getGeneratedKeys().size(), is(3));
-        assertThat(actual.get().getGeneratedKeys().get(0), is((Comparable) 1));
-        assertThat(actual.get().getGeneratedKeys().get(1), is((Comparable) 100));
-        assertThat(actual.get().getGeneratedKeys().get(2), is((Comparable) "value"));
+        assertThat(actual.get().getGeneratedValues().size(), is(3));
+        assertThat(actual.get().getGeneratedValues().get(0), is((Comparable) 1));
+        assertThat(actual.get().getGeneratedValues().get(1), is((Comparable) 100));
+        assertThat(actual.get().getGeneratedValues().get(2), is((Comparable) "value"));
         assertTrue(GeneratedKey.getGenerateKey(shardingRule, Collections.<Object>singletonList(1), insertStatement).isPresent());
     }
 }

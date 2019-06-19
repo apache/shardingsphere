@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.shardingjdbc.common.env;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.core.database.DatabaseTypes;
+import org.apache.shardingsphere.spi.database.DatabaseType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,15 +28,15 @@ public final class DatabaseEnvironment {
     
     private static final int INIT_CAPACITY = 5;
     
-    private static final Map<DatabaseType, String> DRIVER_CLASS_NAME = new HashMap<>(INIT_CAPACITY);
+    private static final Map<DatabaseType, String> DRIVER_CLASS_NAME = new HashMap<>(INIT_CAPACITY, 1);
     
-    private static final Map<DatabaseType, String> URL = new HashMap<>(INIT_CAPACITY);
+    private static final Map<DatabaseType, String> URL = new HashMap<>(INIT_CAPACITY, 1);
     
-    private static final Map<DatabaseType, String> USERNAME = new HashMap<>(INIT_CAPACITY);
+    private static final Map<DatabaseType, String> USERNAME = new HashMap<>(INIT_CAPACITY, 1);
     
-    private static final Map<DatabaseType, String> PASSWORD = new HashMap<>(INIT_CAPACITY);
+    private static final Map<DatabaseType, String> PASSWORD = new HashMap<>(INIT_CAPACITY, 1);
     
-    private static final Map<DatabaseType, String> SCHEMA = new HashMap<>(INIT_CAPACITY);
+    private static final Map<DatabaseType, String> SCHEMA = new HashMap<>(INIT_CAPACITY, 1);
     
     @Getter
     private final DatabaseType databaseType;
@@ -54,43 +55,48 @@ public final class DatabaseEnvironment {
     }
     
     private void fillH2() {
-        DRIVER_CLASS_NAME.put(DatabaseType.H2, "org.h2.Driver");
-        URL.put(DatabaseType.H2, "jdbc:h2:mem:%s;DATABASE_TO_UPPER=false;MODE=MySQL");
-        USERNAME.put(DatabaseType.H2, "sa");
-        PASSWORD.put(DatabaseType.H2, "");
-        SCHEMA.put(DatabaseType.H2, null);
+        DatabaseType databaseType = DatabaseTypes.getActualDatabaseType("H2");
+        DRIVER_CLASS_NAME.put(databaseType, "org.h2.Driver");
+        URL.put(databaseType, "jdbc:h2:mem:%s;DATABASE_TO_UPPER=false;MODE=MySQL");
+        USERNAME.put(databaseType, "sa");
+        PASSWORD.put(databaseType, "");
+        SCHEMA.put(databaseType, null);
     }
     
     private void fillMySQL() {
-        DRIVER_CLASS_NAME.put(DatabaseType.MySQL, "com.mysql.jdbc.Driver");
-        URL.put(DatabaseType.MySQL, "jdbc:mysql://db.mysql:3306/%s?serverTimezone=UTC&useSSL=false");
-        USERNAME.put(DatabaseType.MySQL, "root");
-        PASSWORD.put(DatabaseType.MySQL, "");
-        SCHEMA.put(DatabaseType.MySQL, null);
+        DatabaseType databaseType = DatabaseTypes.getActualDatabaseType("MySQL");
+        DRIVER_CLASS_NAME.put(databaseType, "com.mysql.jdbc.Driver");
+        URL.put(databaseType, "jdbc:mysql://db.mysql:3306/%s?serverTimezone=UTC&useSSL=false");
+        USERNAME.put(databaseType, "root");
+        PASSWORD.put(databaseType, "");
+        SCHEMA.put(databaseType, null);
     }
     
     private void fillPostgreSQL() {
-        DRIVER_CLASS_NAME.put(DatabaseType.PostgreSQL, "org.postgresql.Driver");
-        URL.put(DatabaseType.PostgreSQL, "jdbc:postgresql://db.psql:5432/%s");
-        USERNAME.put(DatabaseType.PostgreSQL, "postgres");
-        PASSWORD.put(DatabaseType.PostgreSQL, "");
-        SCHEMA.put(DatabaseType.PostgreSQL, null);
+        DatabaseType databaseType = DatabaseTypes.getActualDatabaseType("PostgreSQL");
+        DRIVER_CLASS_NAME.put(databaseType, "org.postgresql.Driver");
+        URL.put(databaseType, "jdbc:postgresql://db.psql:5432/%s");
+        USERNAME.put(databaseType, "postgres");
+        PASSWORD.put(databaseType, "");
+        SCHEMA.put(databaseType, null);
     }
     
     private void fillSQLServer() {
-        DRIVER_CLASS_NAME.put(DatabaseType.SQLServer, "com.microsoft.sqlserver.jdbc.SQLServerDriver");
-        URL.put(DatabaseType.SQLServer, "jdbc:sqlserver://db.mssql:1433;DatabaseName=%s");
-        USERNAME.put(DatabaseType.SQLServer, "sa");
-        PASSWORD.put(DatabaseType.SQLServer, "Jdbc1234");
-        SCHEMA.put(DatabaseType.SQLServer, null);
+        DatabaseType databaseType = DatabaseTypes.getActualDatabaseType("SQLServer");
+        DRIVER_CLASS_NAME.put(databaseType, "com.microsoft.sqlserver.jdbc.SQLServerDriver");
+        URL.put(databaseType, "jdbc:sqlserver://db.mssql:1433;DatabaseName=%s");
+        USERNAME.put(databaseType, "sa");
+        PASSWORD.put(databaseType, "Jdbc1234");
+        SCHEMA.put(databaseType, null);
     }
     
     private void fillOracle() {
-        DRIVER_CLASS_NAME.put(DatabaseType.Oracle, "oracle.jdbc.driver.OracleDriver");
-        URL.put(DatabaseType.Oracle, "jdbc:oracle:thin:@db.oracle:1521:test");
-        USERNAME.put(DatabaseType.Oracle, "jdbc");
-        PASSWORD.put(DatabaseType.Oracle, "jdbc");
-        SCHEMA.put(DatabaseType.Oracle, "%s");
+        DatabaseType databaseType = DatabaseTypes.getActualDatabaseType("Oracle");
+        DRIVER_CLASS_NAME.put(databaseType, "oracle.jdbc.driver.OracleDriver");
+        URL.put(databaseType, "jdbc:oracle:thin:@db.oracle:1521/test");
+        USERNAME.put(databaseType, "jdbc");
+        PASSWORD.put(databaseType, "jdbc");
+        SCHEMA.put(databaseType, "%s");
     }
     
     /**

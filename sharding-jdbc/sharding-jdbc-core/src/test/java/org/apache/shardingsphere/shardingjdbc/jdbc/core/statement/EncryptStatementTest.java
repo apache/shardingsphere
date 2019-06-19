@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 
+import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.shardingjdbc.common.base.AbstractEncryptJDBCDatabaseAndTableTest;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
 import org.junit.Before;
@@ -51,6 +52,11 @@ public final class EncryptStatementTest extends AbstractEncryptJDBCDatabaseAndTa
     @Before
     public void setUp() {
         encryptConnection = getEncryptDataSource().getConnection();
+    }
+    
+    @Test
+    public void assertSqlShow() {
+        assertTrue(encryptConnection.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW));
     }
     
     @Test

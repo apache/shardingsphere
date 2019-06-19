@@ -18,6 +18,7 @@
 
 <xsd:schema xmlns="http://shardingsphere.apache.org/schema/shardingsphere/encrypt"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:beans="http://www.springframework.org/schema/beans"
             targetNamespace="http://shardingsphere.apache.org/schema/shardingsphere/encrypt"
             elementFormDefault="qualified">
     <xsd:import namespace="http://www.springframework.org/schema/beans" schemaLocation="http://www.springframework.org/schema/beans/spring-beans.xsd"/>
@@ -25,6 +26,7 @@
         <xsd:complexType>
             <xsd:sequence>
                 <xsd:element ref="encryptor-rule" maxOccurs="unbounded" />
+                <xsd:element ref="props" minOccurs="0" />
             </xsd:sequence>
             <xsd:attribute name="id" type="xsd:string" use="required" />
             <xsd:attribute name="data-source-name" type="xsd:string" use="required" />
@@ -37,6 +39,13 @@
             <xsd:attribute name="qualified-columns" type="xsd:string" use="required" />
             <xsd:attribute name="assisted-query-columns" type="xsd:string" />
             <xsd:attribute name="props-ref" type="xsd:string" />
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="props">
+        <xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="beans:propsType" />
+            </xsd:complexContent>
         </xsd:complexType>
     </xsd:element>
 </xsd:schema>

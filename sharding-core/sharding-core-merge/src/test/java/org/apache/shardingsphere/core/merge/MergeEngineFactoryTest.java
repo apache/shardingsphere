@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.merge;
 
 import com.google.common.collect.Lists;
-import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.dal.DALMergeEngine;
 import org.apache.shardingsphere.core.merge.dql.DQLMergeEngine;
@@ -60,18 +60,18 @@ public final class MergeEngineFactoryTest {
     @Test
     public void assertNewInstanceWithSelectStatement() throws SQLException {
         SQLRouteResult routeResult = new SQLRouteResult(new SelectStatement());
-        assertThat(MergeEngineFactory.newInstance(DatabaseType.MySQL, null, routeResult, null, queryResults), instanceOf(DQLMergeEngine.class));
+        assertThat(MergeEngineFactory.newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, routeResult, null, queryResults), instanceOf(DQLMergeEngine.class));
     }
     
     @Test
     public void assertNewInstanceWithDALStatement() throws SQLException {
         SQLRouteResult routeResult = new SQLRouteResult(new DALStatement());
-        assertThat(MergeEngineFactory.newInstance(DatabaseType.MySQL, null, routeResult, null, queryResults), instanceOf(DALMergeEngine.class));
+        assertThat(MergeEngineFactory.newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, routeResult, null, queryResults), instanceOf(DALMergeEngine.class));
     }
     
     @Test(expected = UnsupportedOperationException.class)
     public void assertNewInstanceWithOtherStatement() throws SQLException {
         SQLRouteResult routeResult = new SQLRouteResult(new InsertStatement());
-        MergeEngineFactory.newInstance(DatabaseType.MySQL, null, routeResult, null, queryResults);
+        MergeEngineFactory.newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, routeResult, null, queryResults);
     }
 }

@@ -17,7 +17,12 @@
 
 package org.apache.shardingsphere.dbtest.env.authority;
 
+import com.google.common.base.Function;
 import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
+import lombok.Setter;
+import org.apache.shardingsphere.core.database.DatabaseTypes;
+import org.apache.shardingsphere.spi.database.DatabaseType;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -35,10 +40,11 @@ import java.util.List;
  * @author panjuan
  */
 @XmlAccessorType(XmlAccessType.FIELD)
+@Setter
 public final class AuthoritySQLSet {
     
     @XmlAttribute(name = "db-types")
-    private String databaseTypes = "H2,MySQL,Oracle,SQLServer,PostgreSQL";
+    private String databaseTypes;
     
     @XmlElementWrapper(name = "user-create")
     @XmlElement(name = "sql")
@@ -49,26 +55,33 @@ public final class AuthoritySQLSet {
     private List<String> useDropSQLs = new LinkedList<>();
     
     /**
-     * Get all create user sqls.
+     * Get all create user SQLs.
      *
      * @param databaseType database type
-     * @return create user sqls
+     * @return create user SQLs
      */
-    public Collection<String> getCreateUserSQLs(final String databaseType) {
+    public Collection<String> getCreateUserSQLs(final DatabaseType databaseType) {
         return getDatabaseTypes().contains(databaseType) ? useCreateSQLs : Collections.<String>emptyList();
     }
     
     /**
-     * Get all drop user sqls.
+     * Get all drop user SQLs.
      *
      * @param databaseType database type
-     * @return create user sqls
+     * @return create user SQLs
      */
-    public Collection<String> getDropUserSQLs(final String databaseType) {
+    public Collection<String> getDropUserSQLs(final DatabaseType databaseType) {
         return getDatabaseTypes().contains(databaseType) ? useDropSQLs : Collections.<String>emptyList();
     }
     
-    private Collection<String> getDatabaseTypes() {
-        return Splitter.on(",").trimResults().splitToList(databaseTypes);
+    private Collection<DatabaseType> getDatabaseTypes() {
+        return null == databaseTypes ? DatabaseTypes.getDatabaseTypes() : Lists.transform(Splitter.on(",").trimResults().splitToList(databaseTypes),
+                new Function<String, DatabaseType>() {
+                    
+                    @Override
+                    public DatabaseType apply(final String input) {
+                        return DatabaseTypes.getActualDatabaseType(input);
+                    }
+                });
     }
 }

@@ -26,19 +26,19 @@
         <tables>
             <table name="t_encrypt" />
         </tables>
-        <encrypt-condition>
+        <encrypt-conditions>
             <and-condition>
                 <condition column-name="name" table-name="t_encrypt" operator="EQUAL">
                     <value index="0" literal="tom" type="varchar" />
                 </condition>
             </and-condition>
-        </encrypt-condition>
+        </encrypt-conditions>
     </parser-result>
     <parser-result sql-case-id="delete_with_two_encrypt_column" parameters="'tom', '1333333333'">
         <tables>
             <table name="t_encrypt" />
         </tables>
-        <encrypt-condition>
+        <encrypt-conditions>
             <and-condition>
                 <condition column-name="name" table-name="t_encrypt" operator="EQUAL">
                     <value index="0" literal="tom" type="varchar" />
@@ -47,7 +47,7 @@
                      <value index="1" literal="1333333333" type="varchar" />
                 </condition>
             </and-condition>
-        </encrypt-condition>
+        </encrypt-conditions>
     </parser-result>
     <parser-result sql-case-id="delete_with_one_encrypt_column_in_function" parameters="'tom'">
         <tables>
@@ -63,13 +63,13 @@
         <tables>
             <table name="t_encrypt" />
         </tables>
-        <encrypt-condition>
+        <encrypt-conditions>
             <and-condition>
                 <condition column-name="name" table-name="t_encrypt" operator="IN">
                     <value index="0" literal="tom" type="varchar" />
                     <value index="1" literal="jack" type="varchar" />
                 </condition>
             </and-condition>
-        </encrypt-condition>
+        </encrypt-conditions>
     </parser-result>
 </parser-result-sets>

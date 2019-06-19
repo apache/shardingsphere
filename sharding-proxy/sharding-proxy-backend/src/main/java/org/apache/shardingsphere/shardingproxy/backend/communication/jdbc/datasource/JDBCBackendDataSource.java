@@ -217,7 +217,8 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
         return dataSourceParameters.containsKey(dataSourceNameAndParameters.getKey()) && !dataSourceParameters.get(dataSourceNameAndParameters.getKey()).equals(dataSourceNameAndParameters.getValue());
     }
     
-    private synchronized Map<String, DataSource> getChangedDataSources(final List<String> deletedDataSources, final Map<String, YamlDataSourceParameter> addedDataSources, final Map<String, YamlDataSourceParameter> modifiedDataSources) {
+    private synchronized Map<String, DataSource> getChangedDataSources(final List<String> deletedDataSources, 
+                                                                       final Map<String, YamlDataSourceParameter> addedDataSources, final Map<String, YamlDataSourceParameter> modifiedDataSources) {
         Map<String, DataSource> result = new LinkedHashMap<>(dataSources);
         result.keySet().removeAll(deletedDataSources);
         result.keySet().removeAll(modifiedDataSources.keySet());

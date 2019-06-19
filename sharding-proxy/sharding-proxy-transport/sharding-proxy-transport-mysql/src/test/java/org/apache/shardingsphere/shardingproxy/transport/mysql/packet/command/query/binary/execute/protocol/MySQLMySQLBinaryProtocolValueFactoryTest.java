@@ -21,6 +21,8 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLCol
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 public final class MySQLMySQLBinaryProtocolValueFactoryTest {
@@ -150,8 +152,13 @@ public final class MySQLMySQLBinaryProtocolValueFactoryTest {
         assertThat(MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(MySQLColumnType.MYSQL_TYPE_TIME), instanceOf(MySQLTimeBinaryProtocolValue.class));
     }
     
+    @Test
+    public void assertGetBinaryProtocolValueWithMySQLTypeNull() {
+        assertThat(MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(MySQLColumnType.MYSQL_TYPE_NULL), is(nullValue()));
+    }
+    
     @Test(expected = IllegalArgumentException.class)
     public void assertGetBinaryProtocolValueWithUnsupportedType() {
-        MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(MySQLColumnType.MYSQL_TYPE_NULL);
+        MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(null);
     }
 }

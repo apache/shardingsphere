@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.spring.boot.type;
 
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
 import org.junit.Test;
@@ -42,6 +43,11 @@ public class SpringBootEncryptTest {
     
     @Resource
     private DataSource dataSource;
+    
+    @Test
+    public void assertSqlShow() {
+        assertTrue(((EncryptDataSource) dataSource).getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW));
+    }
     
     @Test
     public void assertWithEncryptDataSource() {

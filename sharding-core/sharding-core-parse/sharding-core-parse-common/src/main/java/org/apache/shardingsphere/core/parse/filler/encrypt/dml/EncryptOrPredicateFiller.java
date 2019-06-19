@@ -20,10 +20,10 @@ package org.apache.shardingsphere.core.parse.filler.encrypt.dml;
 import com.google.common.base.Optional;
 import lombok.Setter;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.parse.aware.EncryptRuleAware;
+import org.apache.shardingsphere.core.parse.aware.ShardingTableMetaDataAware;
 import org.apache.shardingsphere.core.parse.exception.SQLParsingException;
-import org.apache.shardingsphere.core.parse.filler.api.EncryptRuleAwareFiller;
-import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.filler.api.ShardingTableMetaDataAwareFiller;
+import org.apache.shardingsphere.core.parse.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.filler.common.dml.PredicateUtils;
 import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
@@ -35,6 +35,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.Pred
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateCompareRightValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateInRightValue;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
 import java.util.Collection;
@@ -47,7 +48,7 @@ import java.util.HashSet;
  * @author panjuan
  */
 @Setter
-public final class EncryptOrPredicateFiller implements SQLSegmentFiller<OrPredicateSegment>, EncryptRuleAwareFiller, ShardingTableMetaDataAwareFiller {
+public final class EncryptOrPredicateFiller implements SQLSegmentFiller<OrPredicateSegment>, EncryptRuleAware, ShardingTableMetaDataAware {
     
     private EncryptRule encryptRule;
     
@@ -55,18 +56,21 @@ public final class EncryptOrPredicateFiller implements SQLSegmentFiller<OrPredic
     
     @Override
     public void fill(final OrPredicateSegment sqlSegment, final SQLStatement sqlStatement) {
+        if (!(sqlStatement instanceof DMLStatement)) {
+            return;
+        }
         Collection<Integer> stopIndexes = new HashSet<>();
         for (AndPredicate each : sqlSegment.getAndPredicates()) {
             for (PredicateSegment predicate : each.getPredicates()) {
                 if (stopIndexes.add(predicate.getStopIndex())) {
-                    fill(predicate, sqlStatement);
+                    fill(predicate, (DMLStatement) sqlStatement);
                 }
             }
         }
     }
     
-    private void fill(final PredicateSegment predicateSegment, final SQLStatement sqlStatement) {
-        Optional<String> tableName = PredicateUtils.findTableName(predicateSegment, sqlStatement, shardingTableMetaData);
+    private void fill(final PredicateSegment predicateSegment, final DMLStatement dmlStatement) {
+        Optional<String> tableName = PredicateUtils.findTableName(predicateSegment, dmlStatement, shardingTableMetaData);
         if (!tableName.isPresent() || !isNeedEncrypt(predicateSegment, tableName.get())) {
             return;
         }
@@ -74,11 +78,11 @@ public final class EncryptOrPredicateFiller implements SQLSegmentFiller<OrPredic
         Optional<Condition> condition = createCondition(predicateSegment, column);
         if (condition.isPresent()) {
             AndCondition andCondition;
-            if (sqlStatement.getEncryptCondition().getOrConditions().isEmpty()) {
+            if (dmlStatement.getEncryptConditions().getOrConditions().isEmpty()) {
                 andCondition = new AndCondition();
-                sqlStatement.getEncryptCondition().getOrConditions().add(andCondition);
+                dmlStatement.getEncryptConditions().getOrConditions().add(andCondition);
             } else {
-                andCondition = sqlStatement.getEncryptCondition().getOrConditions().get(0);
+                andCondition = dmlStatement.getEncryptConditions().getOrConditions().get(0);
             }
             andCondition.getConditions().add(condition.get());
         }
