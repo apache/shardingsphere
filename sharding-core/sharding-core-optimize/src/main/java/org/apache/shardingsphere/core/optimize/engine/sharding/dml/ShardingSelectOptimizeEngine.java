@@ -49,7 +49,7 @@ import java.util.Map.Entry;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class QueryOptimizeEngine implements OptimizeEngine {
+public final class ShardingSelectOptimizeEngine implements OptimizeEngine {
     
     private final SelectStatement selectStatement;
     
