@@ -18,21 +18,21 @@
 package org.apache.shardingsphere.core.optimize.engine.sharding.dml;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.BoundType;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.constant.ShardingOperator;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.condition.RouteCondition;
-import org.apache.shardingsphere.core.optimize.condition.RouteConditions;
 import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
 import org.apache.shardingsphere.core.optimize.pagination.Pagination;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.parse.filler.common.dml.PredicateUtils;
-import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
-import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.OrPredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
@@ -46,7 +46,7 @@ import org.apache.shardingsphere.core.strategy.route.value.BetweenRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -70,19 +70,18 @@ public final class ShardingSelectOptimizeEngine implements OptimizeEngine {
     
     @Override
     public OptimizeResult optimize() {
-        List<RouteCondition> routeConditions = new ArrayList<>(selectStatement.getShardingConditions().getOrConditions().size());
-        List<AndCondition> conditions = createShardingConditions();
-        for (AndCondition each : conditions) {
-            routeConditions.add(optimize(each.getConditionsMap()));
+        List<RouteCondition> routeConditions = new LinkedList<>();
+        for (RouteCondition each : createRouteConditions()) {
+            routeConditions.add(optimize(each.getRouteValuesMap()));
         }
-        OptimizeResult result = new OptimizeResult(new RouteConditions(routeConditions));
+        OptimizeResult result = new OptimizeResult(routeConditions);
         setPagination(result);
         return result;
     }
     
-    private RouteCondition optimize(final Map<Column, List<Condition>> conditionsMap) {
+    private RouteCondition optimize(final Map<Column, List<RouteValue>> routeValuesMap) {
         RouteCondition result = new RouteCondition();
-        for (Entry<Column, List<Condition>> entry : conditionsMap.entrySet()) {
+        for (Entry<Column, List<RouteValue>> entry : routeValuesMap.entrySet()) {
             try {
                 RouteValue routeValue = optimize(entry.getKey(), entry.getValue());
                 if (routeValue instanceof AlwaysFalseRouteValue) {
@@ -96,20 +95,19 @@ public final class ShardingSelectOptimizeEngine implements OptimizeEngine {
         return result;
     }
     
-    private RouteValue optimize(final Column column, final List<Condition> conditions) {
-        List<Comparable<?>> listValue = null;
+    @SuppressWarnings("unchecked")
+    private RouteValue optimize(final Column column, final List<RouteValue> routeValues) {
+        Collection<Comparable<?>> listValue = null;
         Range<Comparable<?>> rangeValue = null;
-        for (Condition each : conditions) {
-            List<Comparable<?>> conditionValues = each.getConditionValues(parameters);
-            if (ShardingOperator.EQUAL == each.getOperator() || ShardingOperator.IN == each.getOperator()) {
-                listValue = optimize(conditionValues, listValue);
+        for (RouteValue each : routeValues) {
+            if (each instanceof ListRouteValue) {
+                listValue = optimize(((ListRouteValue) each).getValues(), listValue);
                 if (listValue.isEmpty()) {
                     return new AlwaysFalseRouteValue();
                 }
-            }
-            if (ShardingOperator.BETWEEN == each.getOperator()) {
+            } else if (each instanceof BetweenRouteValue) {
                 try {
-                    rangeValue = optimize(Range.range(conditionValues.get(0), BoundType.CLOSED, conditionValues.get(1), BoundType.CLOSED), rangeValue);
+                    rangeValue = optimize(((BetweenRouteValue) each).getValueRange(), rangeValue);
                 } catch (final IllegalArgumentException ex) {
                     return new AlwaysFalseRouteValue();
                 }
@@ -125,7 +123,7 @@ public final class ShardingSelectOptimizeEngine implements OptimizeEngine {
         return listValue.isEmpty() ? new AlwaysFalseRouteValue() : new ListRouteValue<>(column.getName(), column.getTableName(), listValue);
     }
     
-    private List<Comparable<?>> optimize(final List<Comparable<?>> value1, final List<Comparable<?>> value2) {
+    private Collection<Comparable<?>> optimize(final Collection<Comparable<?>> value1, final Collection<Comparable<?>> value2) {
         if (null == value2) {
             return value1;
         }
@@ -137,8 +135,8 @@ public final class ShardingSelectOptimizeEngine implements OptimizeEngine {
         return null == value2 ? value1 : value1.intersection(value2);
     }
     
-    private List<Comparable<?>> optimize(final List<Comparable<?>> listValue, final Range<Comparable<?>> rangeValue) {
-        List<Comparable<?>> result = new LinkedList<>();
+    private Collection<Comparable<?>> optimize(final Collection<Comparable<?>> listValue, final Range<Comparable<?>> rangeValue) {
+        Collection<Comparable<?>> result = new LinkedList<>();
         for (Comparable<?> each : listValue) {
             if (rangeValue.contains(each)) {
                 result.add(each);
@@ -147,64 +145,113 @@ public final class ShardingSelectOptimizeEngine implements OptimizeEngine {
         return result;
     }
     
-    private List<AndCondition> createShardingConditions() {
-        List<AndCondition> conditions = new LinkedList<>();
+    private List<RouteCondition> createRouteConditions() {
+        List<RouteCondition> result = new LinkedList<>();
         Optional<OrPredicateSegment> orPredicateSegment = selectStatement.findSQLSegment(OrPredicateSegment.class);
         if (orPredicateSegment.isPresent()) {
-            conditions.addAll(createShardingConditions(orPredicateSegment.get()));
+            result.addAll(createRouteConditions(orPredicateSegment.get()));
         }
         Optional<SubqueryPredicateSegment> subqueryPredicateSegment = selectStatement.findSQLSegment(SubqueryPredicateSegment.class);
         if (subqueryPredicateSegment.isPresent()) {
             for (OrPredicateSegment each : subqueryPredicateSegment.get().getOrPredicates()) {
-                List<AndCondition> subqueryConditions = createShardingConditions(each);
-                if (!conditions.containsAll(subqueryConditions)) {
-                    conditions.addAll(subqueryConditions);
+                List<RouteCondition> subqueryRouteConditions = createRouteConditions(each);
+                if (!result.containsAll(subqueryRouteConditions)) {
+                    result.addAll(subqueryRouteConditions);
                 }
             }
-        }
-        return conditions;
-    }
-    
-    private List<AndCondition> createShardingConditions(final OrPredicateSegment orPredicateSegment) {
-        List<AndCondition> result = new LinkedList<>();
-        for (AndPredicate each : orPredicateSegment.getAndPredicates()) {
-            AndCondition andCondition = new AndCondition();
-            for (PredicateSegment predicate : each.getPredicates()) {
-                Optional<String> tableName = PredicateUtils.findTableName(predicate, selectStatement, shardingTableMetaData);
-                if (!tableName.isPresent() || !shardingRule.isShardingColumn(predicate.getColumn().getName(), tableName.get())) {
-                    continue;
-                }
-                Optional<Condition> condition = createCondition(predicate, new Column(predicate.getColumn().getName(), tableName.get()));
-                if (condition.isPresent()) {
-                    andCondition.getConditions().add(condition.get());
-                }
-            }
-            if (andCondition.getConditions().isEmpty()) {
-                result.clear();
-                return result;
-            }
-            result.add(andCondition);
         }
         return result;
     }
     
-    private Optional<Condition> createCondition(final PredicateSegment predicateSegment, final Column column) {
+    private List<RouteCondition> createRouteConditions(final OrPredicateSegment orPredicateSegment) {
+        List<RouteCondition> result = new LinkedList<>();
+        for (AndPredicate each : orPredicateSegment.getAndPredicates()) {
+            RouteCondition routeCondition = new RouteCondition();
+            List<RouteValue> routeValues = createRouteValues(each);
+            if (routeValues.isEmpty()) {
+                result.clear();
+                return result;
+            }
+            routeCondition.getRouteValues().addAll(routeValues);
+            result.add(routeCondition);
+        }
+        return result;
+    }
+    
+    private List<RouteValue> createRouteValues(final AndPredicate andPredicate) {
+        List<RouteValue> result = new LinkedList<>();
+        for (PredicateSegment each : andPredicate.getPredicates()) {
+            Optional<String> tableName = PredicateUtils.findTableName(each, selectStatement, shardingTableMetaData);
+            if (tableName.isPresent() && shardingRule.isShardingColumn(each.getColumn().getName(), tableName.get())) {
+                Optional<RouteValue> routeValue = createRouteValue(each, tableName.get());
+                if (routeValue.isPresent()) {
+                    result.add(routeValue.get());
+                }
+            }
+        }
+        return result;
+    }
+    
+    private Optional<RouteValue> createRouteValue(final PredicateSegment predicateSegment, final String tableName) {
+        String columnName = predicateSegment.getColumn().getName();
         if (predicateSegment.getRightValue() instanceof PredicateCompareRightValue) {
-            PredicateCompareRightValue compareRightValue = (PredicateCompareRightValue) predicateSegment.getRightValue();
-            return isOperatorSupportedWithSharding(compareRightValue.getOperator())
-                    ? PredicateUtils.createCompareCondition(compareRightValue, column, predicateSegment) : Optional.<Condition>absent();
+            return getRouteValue((PredicateCompareRightValue) predicateSegment.getRightValue(), columnName, tableName);
         }
         if (predicateSegment.getRightValue() instanceof PredicateInRightValue) {
-            return PredicateUtils.createInCondition((PredicateInRightValue) predicateSegment.getRightValue(), column, predicateSegment);
+            return getRouteValue((PredicateInRightValue) predicateSegment.getRightValue(), columnName, tableName);
+        }
+        if (predicateSegment.getRightValue() instanceof PredicateInRightValue) {
+            return getRouteValue((PredicateInRightValue) predicateSegment.getRightValue(), columnName, tableName);
         }
         if (predicateSegment.getRightValue() instanceof PredicateBetweenRightValue) {
-            return PredicateUtils.createBetweenCondition((PredicateBetweenRightValue) predicateSegment.getRightValue(), column, predicateSegment);
+            return getRouteValue((PredicateBetweenRightValue) predicateSegment.getRightValue(), columnName, tableName);
         }
         return Optional.absent();
     }
     
+    private Optional<RouteValue> getRouteValue(final PredicateCompareRightValue predicateRightValue, final String columnName, final String tableName) {
+        if (!isOperatorSupportedWithSharding(predicateRightValue.getOperator())) {
+            return Optional.absent();
+        }
+        Optional<Comparable> shardingValue = getShardingValue(predicateRightValue.getExpression());
+        return shardingValue.isPresent() ? Optional.<RouteValue>of(new ListRouteValue<>(columnName, tableName, Lists.newArrayList(shardingValue.get()))) : Optional.<RouteValue>absent();
+    }
+    
+    private Optional<RouteValue> getRouteValue(final PredicateInRightValue predicateRightValue, final String columnName, final String tableName) {
+        List<Comparable> shardingValues = new LinkedList<>();
+        for (ExpressionSegment each : predicateRightValue.getSqlExpressions()) {
+            Optional<Comparable> shardingValue = getShardingValue(each);
+            if (shardingValue.isPresent()) {
+                shardingValues.add(shardingValue.get());
+            }
+        }
+        return shardingValues.isEmpty() ? Optional.<RouteValue>absent() : Optional.<RouteValue>of(new ListRouteValue<>(columnName, tableName, shardingValues));
+    }
+    
+    private Optional<RouteValue> getRouteValue(final PredicateBetweenRightValue predicateRightValue, final String columnName, final String tableName) {
+        Optional<Comparable> betweenShardingValue = getShardingValue(predicateRightValue.getBetweenExpression());
+        Optional<Comparable> andShardingValue = getShardingValue(predicateRightValue.getAndExpression());
+        return betweenShardingValue.isPresent() && andShardingValue.isPresent()
+                ? Optional.<RouteValue>of(new BetweenRouteValue<>(columnName, tableName, Range.closed(betweenShardingValue.get(), andShardingValue.get()))) : Optional.<RouteValue>absent();
+    }
+    
     private boolean isOperatorSupportedWithSharding(final String operator) {
         return "=".equals(operator);
+    }
+    
+    private Optional<Comparable> getShardingValue(final ExpressionSegment expression) {
+        Object result = null;
+        if (expression instanceof ParameterMarkerExpressionSegment) {
+            result = parameters.get(((ParameterMarkerExpressionSegment) expression).getParameterMarkerIndex());
+        }
+        if (expression instanceof LiteralExpressionSegment) {
+            result = ((LiteralExpressionSegment) expression).getLiterals();
+        }
+        if (null == result) {
+            return Optional.absent();
+        }
+        Preconditions.checkArgument(result instanceof Comparable, "Sharding value must implements Comparable.");
+        return Optional.of((Comparable) result);
     }
     
     private void setPagination(final OptimizeResult result) {

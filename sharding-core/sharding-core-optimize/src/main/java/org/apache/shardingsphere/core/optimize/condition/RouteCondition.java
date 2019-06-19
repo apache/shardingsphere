@@ -19,10 +19,13 @@ package org.apache.shardingsphere.core.optimize.condition;
 
 import lombok.Getter;
 import lombok.ToString;
+import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
 
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Route condition.
@@ -34,4 +37,21 @@ import java.util.List;
 public class RouteCondition {
     
     private final List<RouteValue> routeValues = new LinkedList<>();
+    
+    /**
+     * Get route values map.
+     *
+     * @return route values map
+     */
+    public Map<Column, List<RouteValue>> getRouteValuesMap() {
+        Map<Column, List<RouteValue>> result = new LinkedHashMap<>(routeValues.size(), 1);
+        for (RouteValue each : routeValues) {
+            Column column = new Column(each.getColumnName(), each.getTableName());
+            if (!result.containsKey(column)) {
+                result.put(column, new LinkedList<RouteValue>());
+            }
+            result.get(column).add(each);
+        }
+        return result;
+    }
 }
