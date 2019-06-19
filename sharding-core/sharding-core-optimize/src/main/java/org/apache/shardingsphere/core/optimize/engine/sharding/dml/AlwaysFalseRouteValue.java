@@ -20,11 +20,11 @@ package org.apache.shardingsphere.core.optimize.engine.sharding.dml;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
 
 /**
- * Always false sharding value.
+ * Always false route value.
  *
  * @author zhangliang
  */
-public final class AlwaysFalseShardingValue implements RouteValue {
+public final class AlwaysFalseRouteValue implements RouteValue {
     
     @Override
     public String getColumnName() {

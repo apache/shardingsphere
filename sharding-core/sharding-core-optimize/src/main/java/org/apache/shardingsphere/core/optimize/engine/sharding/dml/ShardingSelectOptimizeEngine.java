@@ -68,11 +68,11 @@ public final class ShardingSelectOptimizeEngine implements OptimizeEngine {
         RouteCondition result = new RouteCondition();
         for (Entry<Column, List<Condition>> entry : conditionsMap.entrySet()) {
             try {
-                RouteValue shardingValue = optimize(entry.getKey(), entry.getValue());
-                if (shardingValue instanceof AlwaysFalseShardingValue) {
+                RouteValue routeValue = optimize(entry.getKey(), entry.getValue());
+                if (routeValue instanceof AlwaysFalseRouteValue) {
                     return new AlwaysFalseRouteCondition();
                 }
-                result.getRouteValues().add(shardingValue);
+                result.getRouteValues().add(routeValue);
             } catch (final ClassCastException ex) {
                 throw new ShardingException("Found different types for sharding value `%s`.", entry.getKey());
             }
@@ -88,14 +88,14 @@ public final class ShardingSelectOptimizeEngine implements OptimizeEngine {
             if (ShardingOperator.EQUAL == each.getOperator() || ShardingOperator.IN == each.getOperator()) {
                 listValue = optimize(conditionValues, listValue);
                 if (listValue.isEmpty()) {
-                    return new AlwaysFalseShardingValue();
+                    return new AlwaysFalseRouteValue();
                 }
             }
             if (ShardingOperator.BETWEEN == each.getOperator()) {
                 try {
                     rangeValue = optimize(Range.range(conditionValues.get(0), BoundType.CLOSED, conditionValues.get(1), BoundType.CLOSED), rangeValue);
                 } catch (final IllegalArgumentException ex) {
-                    return new AlwaysFalseShardingValue();
+                    return new AlwaysFalseRouteValue();
                 }
             }
         }
@@ -106,7 +106,7 @@ public final class ShardingSelectOptimizeEngine implements OptimizeEngine {
             return new ListRouteValue<>(column.getName(), column.getTableName(), listValue);
         }
         listValue = optimize(listValue, rangeValue);
-        return listValue.isEmpty() ? new AlwaysFalseShardingValue() : new ListRouteValue<>(column.getName(), column.getTableName(), listValue);
+        return listValue.isEmpty() ? new AlwaysFalseRouteValue() : new ListRouteValue<>(column.getName(), column.getTableName(), listValue);
     }
     
     private List<Comparable<?>> optimize(final List<Comparable<?>> value1, final List<Comparable<?>> value2) {
