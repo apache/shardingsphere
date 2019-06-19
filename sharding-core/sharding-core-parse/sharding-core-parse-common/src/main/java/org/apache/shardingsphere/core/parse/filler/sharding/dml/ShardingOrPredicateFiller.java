@@ -17,25 +17,14 @@
 
 package org.apache.shardingsphere.core.parse.filler.sharding.dml;
 
-import com.google.common.base.Optional;
 import lombok.Setter;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.aware.ShardingRuleAware;
 import org.apache.shardingsphere.core.parse.aware.ShardingTableMetaDataAware;
 import org.apache.shardingsphere.core.parse.filler.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.filler.common.dml.PredicateUtils;
 import org.apache.shardingsphere.core.parse.filler.encrypt.dml.EncryptOrPredicateFiller;
 import org.apache.shardingsphere.core.parse.filler.sharding.dml.select.ShardingRowNumberPredicateFiller;
-import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
-import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
-import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
-import org.apache.shardingsphere.core.parse.sql.context.condition.Conditions;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.OrPredicateSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateBetweenRightValue;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateCompareRightValue;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateInRightValue;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
@@ -59,26 +48,12 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
     
     @Override
     public void fill(final OrPredicateSegment sqlSegment, final SQLStatement sqlStatement) {
-        if (!(sqlStatement instanceof DMLStatement)) {
-            return;
+        if (sqlStatement instanceof DMLStatement) {
+            createEncryptOrPredicateFiller().fill(sqlSegment, sqlStatement);
+            if (sqlStatement instanceof SelectStatement) {
+                shardingRowNumberPredicateFiller.fill(sqlSegment, sqlStatement);
+            }
         }
-        ((DMLStatement) sqlStatement).getShardingConditions().getOrConditions().addAll(buildShardingConditions(sqlSegment, sqlStatement).getOrConditions());
-        if (sqlStatement instanceof SelectStatement) {
-            shardingRowNumberPredicateFiller.fill(sqlSegment, sqlStatement);
-        }
-    }
-    
-    /**
-     * Build conditions.
-     *
-     * @param sqlSegment SQL segment
-     * @param sqlStatement SQL statement
-     * @return conditions
-     */
-    public Conditions buildShardingConditions(final OrPredicateSegment sqlSegment, final SQLStatement sqlStatement) {
-        Conditions result = createShardingCondition(sqlSegment, sqlStatement);
-        createEncryptOrPredicateFiller().fill(sqlSegment, sqlStatement);
-        return result;
     }
     
     private EncryptOrPredicateFiller createEncryptOrPredicateFiller() {
@@ -86,47 +61,5 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
         result.setEncryptRule(shardingRule.getEncryptRule());
         result.setShardingTableMetaData(shardingTableMetaData);
         return result;
-    }
-    
-    private Conditions createShardingCondition(final OrPredicateSegment sqlSegment, final SQLStatement sqlStatement) {
-        Conditions result = new Conditions();
-        for (AndPredicate each : sqlSegment.getAndPredicates()) {
-            AndCondition andCondition = new AndCondition();
-            for (PredicateSegment predicate : each.getPredicates()) {
-                Optional<String> tableName = PredicateUtils.findTableName(predicate, sqlStatement, shardingTableMetaData);
-                if (!tableName.isPresent() || !shardingRule.isShardingColumn(predicate.getColumn().getName(), tableName.get())) {
-                    continue;
-                }
-                Optional<Condition> condition = createCondition(predicate, new Column(predicate.getColumn().getName(), tableName.get()));
-                if (condition.isPresent()) {
-                    andCondition.getConditions().add(condition.get());
-                }
-            }
-            if (andCondition.getConditions().isEmpty()) {
-                result.getOrConditions().clear();
-                return result;
-            }
-            result.getOrConditions().add(andCondition);
-        }
-        return result;
-    }
-    
-    private Optional<Condition> createCondition(final PredicateSegment predicateSegment, final Column column) {
-        if (predicateSegment.getRightValue() instanceof PredicateCompareRightValue) {
-            PredicateCompareRightValue compareRightValue = (PredicateCompareRightValue) predicateSegment.getRightValue();
-            return isOperatorSupportedWithSharding(compareRightValue.getOperator()) 
-                    ? PredicateUtils.createCompareCondition(compareRightValue, column, predicateSegment) : Optional.<Condition>absent();
-        }
-        if (predicateSegment.getRightValue() instanceof PredicateInRightValue) {
-            return PredicateUtils.createInCondition((PredicateInRightValue) predicateSegment.getRightValue(), column, predicateSegment);
-        }
-        if (predicateSegment.getRightValue() instanceof PredicateBetweenRightValue) {
-            return PredicateUtils.createBetweenCondition((PredicateBetweenRightValue) predicateSegment.getRightValue(), column, predicateSegment);
-        }
-        return Optional.absent();
-    }
-    
-    private boolean isOperatorSupportedWithSharding(final String operator) {
-        return "=".equals(operator);
     }
 }

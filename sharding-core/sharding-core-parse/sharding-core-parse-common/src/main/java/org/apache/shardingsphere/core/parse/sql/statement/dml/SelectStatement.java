@@ -65,6 +65,8 @@ public final class SelectStatement extends DMLStatement {
     
     private boolean containStar;
     
+    private boolean containsSubquery;
+    
     private int firstSelectItemStartIndex;
     
     private int selectListStopIndex;

@@ -25,7 +25,6 @@ import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.aware.ShardingTableMetaDataAware;
 import org.apache.shardingsphere.core.parse.constant.DerivedColumn;
 import org.apache.shardingsphere.core.parse.optimizer.SQLStatementOptimizer;
-import org.apache.shardingsphere.core.parse.sql.context.condition.Conditions;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.DerivedCommonSelectItem;
@@ -57,7 +56,6 @@ public final class ShardingSelectOptimizer implements SQLStatementOptimizer, Sha
     public void optimize(final SQLStatement sqlStatement) {
         appendDerivedColumns((SelectStatement) sqlStatement, shardingTableMetaData);
         appendDerivedOrderBy((SelectStatement) sqlStatement);
-        addSubqueryCondition(sqlStatement);
     }
     
     private void appendDerivedColumns(final SelectStatement selectStatement, final ShardingTableMetaData shardingTableMetaData) {
@@ -197,15 +195,6 @@ public final class ShardingSelectOptimizer implements SQLStatementOptimizer, Sha
         if (!selectStatement.getGroupByItems().isEmpty() && selectStatement.getOrderByItems().isEmpty()) {
             selectStatement.getOrderByItems().addAll(selectStatement.getGroupByItems());
             selectStatement.setToAppendOrderByItems(true);
-        }
-    }
-    
-    private void addSubqueryCondition(final SQLStatement sqlStatement) {
-        SelectStatement selectStatement = (SelectStatement) sqlStatement;
-        for (Conditions each : selectStatement.getSubqueryShardingConditions()) {
-            if (!selectStatement.getShardingConditions().getOrConditions().containsAll(each.getOrConditions())) {
-                selectStatement.getShardingConditions().getOrConditions().addAll(each.getOrConditions());
-            }
         }
     }
 }

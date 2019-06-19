@@ -59,7 +59,7 @@ public final class OptimizeEngineFactory {
             return new ShardingInsertOptimizeEngine(shardingRule, (InsertStatement) sqlStatement, parameters);
         }
         if (sqlStatement instanceof SelectStatement) {
-            return new ShardingSelectOptimizeEngine((SelectStatement) sqlStatement, parameters);
+            return new ShardingSelectOptimizeEngine(shardingRule, shardingTableMetaData, (SelectStatement) sqlStatement, parameters);
         }
         if (sqlStatement instanceof DDLStatement) {
             return new DDLOptimizeEngine((DDLStatement) sqlStatement, shardingTableMetaData);
