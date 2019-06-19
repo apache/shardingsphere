@@ -15,25 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.spring.boot.masterslave;
+package org.apache.shardingsphere.shardingjdbc.spring.boot.sharding;
 
+import org.apache.shardingsphere.shardingjdbc.spring.boot.encrypt.EncryptRuleCondition;
+import org.apache.shardingsphere.shardingjdbc.spring.boot.masterslave.MasterSlaveRuleCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
- * Master-slave condition.
+ * Sharding rule condition.
  *
  * @author yangyi
  */
-public final class MasterSlaveRuleCondition extends SpringBootCondition {
-    
-    private static final String MASTER_SLAVE_NAME = "spring.shardingsphere.masterslave.name";
+public final class ShardingRuleCondition extends SpringBootCondition {
     
     @Override
     public ConditionOutcome getMatchOutcome(final ConditionContext conditionContext, final AnnotatedTypeMetadata annotatedTypeMetadata) {
-        return conditionContext.getEnvironment().containsProperty(MASTER_SLAVE_NAME)
-            ? ConditionOutcome.match() : ConditionOutcome.noMatch("Can't find ShardingSphere master-slave rule configuration in environment.");
+        boolean isMasterSlaveRule = new MasterSlaveRuleCondition().getMatchOutcome(conditionContext, annotatedTypeMetadata).isMatch();
+        boolean isEncryptRule = new EncryptRuleCondition().getMatchOutcome(conditionContext, annotatedTypeMetadata).isMatch();
+        return isMasterSlaveRule || isEncryptRule ? ConditionOutcome.noMatch("Have found master-slave or encrypt rule in environment") : ConditionOutcome.match();
     }
 }
