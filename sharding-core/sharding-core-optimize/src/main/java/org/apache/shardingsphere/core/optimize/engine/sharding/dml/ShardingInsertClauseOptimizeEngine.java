@@ -35,13 +35,13 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Insert optimize engine for sharding.
+ * Insert clause optimize engine for sharding.
  *
  * @author zhangliang
  * @author maxiaoguang
  * @author panjuan
  */
-public final class ShardingInsertOptimizeEngine implements OptimizeEngine {
+public final class ShardingInsertClauseOptimizeEngine implements OptimizeEngine {
     
     private final ShardingRule shardingRule;
     
@@ -51,7 +51,7 @@ public final class ShardingInsertOptimizeEngine implements OptimizeEngine {
     
     private final InsertClauseShardingConditionEngine shardingConditionEngine;
     
-    public ShardingInsertOptimizeEngine(final ShardingRule shardingRule, final InsertStatement insertStatement, final List<Object> parameters) {
+    public ShardingInsertClauseOptimizeEngine(final ShardingRule shardingRule, final InsertStatement insertStatement, final List<Object> parameters) {
         this.shardingRule = shardingRule;
         this.insertStatement = insertStatement;
         this.parameters = parameters;
