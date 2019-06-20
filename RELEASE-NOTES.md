@@ -14,6 +14,7 @@
 ### Enhancement
 
 1. Renew modified dataSources, not all the datasources to improve performance for configuration orchestration.
+1. Improve the compatibility of SQL parsing.
 
 ### Refactor
 
