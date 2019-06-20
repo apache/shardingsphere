@@ -25,6 +25,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.condition.RouteCondition;
 import org.apache.shardingsphere.core.parse.filler.common.dml.PredicateUtils;
+import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
+import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -36,11 +38,13 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.Pred
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateCompareRightValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateInRightValue;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.strategy.route.value.BetweenRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -171,5 +175,30 @@ public final class RouteConditionEngine {
         }
         Preconditions.checkArgument(result instanceof Comparable, "Sharding value must implements Comparable.");
         return Optional.of((Comparable) result);
+    }
+    
+    /**
+     * Create route conditions.
+     * 
+     * @param insertStatement insert statement
+     * @param parameters parameters SQL parameters
+     * @return route conditions
+     */
+    public List<RouteCondition> createRouteConditions(final InsertStatement insertStatement, final List<Object> parameters) {
+        List<RouteCondition> result = new ArrayList<>(insertStatement.getShardingConditions().getOrConditions().size());
+        for (AndCondition each : insertStatement.getShardingConditions().getOrConditions()) {
+            RouteCondition routeCondition = new RouteCondition();
+            routeCondition.getRouteValues().addAll(getRouteValues(each, parameters));
+            result.add(routeCondition);
+        }
+        return result;
+    }
+    
+    private Collection<ListRouteValue> getRouteValues(final AndCondition andCondition, final List<Object> parameters) {
+        Collection<ListRouteValue> result = new LinkedList<>();
+        for (Condition each : andCondition.getConditions()) {
+            result.add(new ListRouteValue<>(each.getColumn().getName(), each.getColumn().getTableName(), each.getConditionValues(parameters)));
+        }
+        return result;
     }
 }

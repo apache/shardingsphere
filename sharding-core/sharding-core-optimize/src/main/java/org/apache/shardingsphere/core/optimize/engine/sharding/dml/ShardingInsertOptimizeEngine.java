@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.optimize.engine.sharding.dml;
 
 import com.google.common.base.Optional;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.optimize.condition.RouteCondition;
 import org.apache.shardingsphere.core.optimize.condition.RouteConditions;
 import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
@@ -31,7 +30,6 @@ import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -43,7 +41,6 @@ import java.util.List;
  * @author maxiaoguang
  * @author panjuan
  */
-@RequiredArgsConstructor
 public final class ShardingInsertOptimizeEngine implements OptimizeEngine {
     
     private final ShardingRule shardingRule;
@@ -51,6 +48,15 @@ public final class ShardingInsertOptimizeEngine implements OptimizeEngine {
     private final InsertStatement insertStatement;
     
     private final List<Object> parameters;
+    
+    private final RouteConditionEngine routeConditionEngine;
+    
+    public ShardingInsertOptimizeEngine(final ShardingRule shardingRule, final InsertStatement insertStatement, final List<Object> parameters) {
+        this.shardingRule = shardingRule;
+        this.insertStatement = insertStatement;
+        this.parameters = parameters;
+        routeConditionEngine = new RouteConditionEngine(shardingRule, null);
+    }
     
     @Override
     public OptimizeResult optimize() {
@@ -77,7 +83,7 @@ public final class ShardingInsertOptimizeEngine implements OptimizeEngine {
             }
             parametersCount += insertValue.getParametersCount();
         }
-        List<RouteCondition> routeConditions = new ArrayList<>();
+        List<RouteCondition> routeConditions = routeConditionEngine.createRouteConditions(insertStatement, parameters);
         return generatedKey.isPresent()
                 ? createOptimizeResult(insertOptimizeResult, routeConditions, generatedKey.get()) : new OptimizeResult(new RouteConditions(routeConditions), insertOptimizeResult);
     }

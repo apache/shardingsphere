@@ -31,8 +31,6 @@ import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
 import org.apache.shardingsphere.core.parse.entry.ShardingSQLParseEntry;
 import org.apache.shardingsphere.core.parse.hook.ParsingHook;
 import org.apache.shardingsphere.core.parse.hook.SPIParsingHook;
-import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
-import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
@@ -45,8 +43,6 @@ import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -95,7 +91,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
         OptimizeResult optimizeResult = OptimizeEngineFactory.newInstance(shardingRule, sqlStatement, parameters, shardingMetaData.getTable()).optimize();
         RouteConditions routeConditions = null;
         if (sqlStatement instanceof InsertStatement) {
-            List<RouteCondition> routeConditionList = getRouteConditions((InsertStatement) sqlStatement, parameters);
+            List<RouteCondition> routeConditionList = optimizeResult.getRouteConditions().getRouteConditions();
             appendGeneratedKeyCondition(sqlStatement, optimizeResult, routeConditionList);
             routeConditions = new RouteConditions(routeConditionList);
             optimizeResult.setRouteConditions(routeConditions);
@@ -112,24 +108,6 @@ public final class ParsingSQLRouter implements ShardingRouter {
         SQLRouteResult result = new SQLRouteResult(sqlStatement);
         result.setRoutingResult(routingResult);
         setOptimizeResult(optimizeResult, result);
-        return result;
-    }
-    
-    private List<RouteCondition> getRouteConditions(final InsertStatement insertStatement, final List<Object> parameters) {
-        List<RouteCondition> result = new ArrayList<>(insertStatement.getShardingConditions().getOrConditions().size());
-        for (AndCondition each : insertStatement.getShardingConditions().getOrConditions()) {
-            RouteCondition routeCondition = new RouteCondition();
-            routeCondition.getRouteValues().addAll(getRouteValues(each, parameters));
-            result.add(routeCondition);
-        }
-        return result;
-    }
-    
-    private Collection<ListRouteValue> getRouteValues(final AndCondition andCondition, final List<Object> parameters) {
-        Collection<ListRouteValue> result = new LinkedList<>();
-        for (Condition each : andCondition.getConditions()) {
-            result.add(new ListRouteValue<>(each.getColumn().getName(), each.getColumn().getTableName(), each.getConditionValues(parameters)));
-        }
         return result;
     }
     
