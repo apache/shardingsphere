@@ -35,8 +35,8 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.Pred
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateInRightValue;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.core.strategy.route.value.BetweenRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
+import org.apache.shardingsphere.core.strategy.route.value.RangeRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
@@ -148,7 +148,7 @@ public final class ShardingSelectOptimizeEngineTest {
         assertFalse(routeConditions.isAlwaysFalse());
         RouteCondition routeCondition = routeConditions.getRouteConditions().get(0);
         RouteValue shardingValue = routeCondition.getRouteValues().get(0);
-        Range<Comparable<?>> values = ((BetweenRouteValue<Comparable<?>>) shardingValue).getValueRange();
+        Range<Comparable<?>> values = ((RangeRouteValue<Comparable<?>>) shardingValue).getValueRange();
         assertThat(values.lowerEndpoint(), CoreMatchers.<Comparable>is(1));
         assertThat(values.upperEndpoint(), CoreMatchers.<Comparable>is(2));
     }

@@ -27,8 +27,8 @@ import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.core.strategy.route.value.BetweenRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
+import org.apache.shardingsphere.core.strategy.route.value.RangeRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
 
 import java.util.Collection;
@@ -93,16 +93,16 @@ public final class ShardingSelectOptimizeEngine implements OptimizeEngine {
                 if (listValue.isEmpty()) {
                     return new AlwaysFalseRouteValue();
                 }
-            } else if (each instanceof BetweenRouteValue) {
+            } else if (each instanceof RangeRouteValue) {
                 try {
-                    rangeValue = optimize(((BetweenRouteValue) each).getValueRange(), rangeValue);
+                    rangeValue = optimize(((RangeRouteValue) each).getValueRange(), rangeValue);
                 } catch (final IllegalArgumentException ex) {
                     return new AlwaysFalseRouteValue();
                 }
             }
         }
         if (null == listValue) {
-            return new BetweenRouteValue<>(column.getName(), column.getTableName(), rangeValue);
+            return new RangeRouteValue<>(column.getName(), column.getTableName(), rangeValue);
         }
         if (null == rangeValue) {
             return new ListRouteValue<>(column.getName(), column.getTableName(), listValue);

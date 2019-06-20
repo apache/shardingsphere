@@ -40,8 +40,8 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.Pred
 import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.core.strategy.route.value.BetweenRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
+import org.apache.shardingsphere.core.strategy.route.value.RangeRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
 
 import java.util.ArrayList;
@@ -155,7 +155,7 @@ public final class RouteConditionEngine {
         Optional<Comparable> betweenShardingValue = getShardingValue(parameters, predicateRightValue.getBetweenExpression());
         Optional<Comparable> andShardingValue = getShardingValue(parameters, predicateRightValue.getAndExpression());
         return betweenShardingValue.isPresent() && andShardingValue.isPresent()
-                ? Optional.<RouteValue>of(new BetweenRouteValue<>(columnName, tableName, Range.closed(betweenShardingValue.get(), andShardingValue.get()))) : Optional.<RouteValue>absent();
+                ? Optional.<RouteValue>of(new RangeRouteValue<>(columnName, tableName, Range.closed(betweenShardingValue.get(), andShardingValue.get()))) : Optional.<RouteValue>absent();
     }
     
     private boolean isOperatorSupportedWithSharding(final String operator) {

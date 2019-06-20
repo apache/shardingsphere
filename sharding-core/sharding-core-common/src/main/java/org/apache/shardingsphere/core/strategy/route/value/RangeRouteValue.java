@@ -23,14 +23,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 /**
- * Route value for between.
+ * Route value for range.
  * 
  * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
 @ToString
-public final class BetweenRouteValue<T extends Comparable<?>> implements RouteValue {
+public final class RangeRouteValue<T extends Comparable<?>> implements RouteValue {
     
     private final String columnName;
     
