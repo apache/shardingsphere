@@ -24,10 +24,7 @@ import com.google.common.collect.Range;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.condition.RouteCondition;
-import org.apache.shardingsphere.core.optimize.keygen.GeneratedKey;
 import org.apache.shardingsphere.core.parse.filler.common.dml.PredicateUtils;
-import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
-import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -39,26 +36,22 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.Pred
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateCompareRightValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateInRightValue;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RangeRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Route condition engine.
+ * Route condition engine for where clause.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class RouteConditionEngine {
+public final class WhereClauseRouteConditionEngine {
     
     private final ShardingRule shardingRule;
     
@@ -178,40 +171,5 @@ public final class RouteConditionEngine {
         }
         Preconditions.checkArgument(result instanceof Comparable, "Sharding value must implements Comparable.");
         return Optional.of((Comparable) result);
-    }
-    
-    /**
-     * Create route conditions.
-     * 
-     * @param insertStatement insert statement
-     * @param parameters parameters SQL parameters
-     * @param generatedKey generated key
-     * @return route conditions
-     */
-    public List<RouteCondition> createRouteConditions(final InsertStatement insertStatement, final List<Object> parameters, final GeneratedKey generatedKey) {
-        List<RouteCondition> result = new ArrayList<>(insertStatement.getShardingConditions().getOrConditions().size());
-        String tableName = insertStatement.getTables().getSingleTableName();
-        Iterator<Comparable<?>> generatedValues = null == generatedKey ? Collections.<Comparable<?>>emptyList().iterator() : generatedKey.getGeneratedValues().iterator();
-        for (AndCondition each : insertStatement.getShardingConditions().getOrConditions()) {
-            RouteCondition routeCondition = new RouteCondition();
-            routeCondition.getRouteValues().addAll(getRouteValues(each, parameters));
-            if (isNeedAppendGeneratedKeyCondition(generatedKey, tableName)) {
-                routeCondition.getRouteValues().add(new ListRouteValue<>(generatedKey.getColumnName(), tableName, Collections.<Comparable<?>>singletonList(generatedValues.next())));
-            }
-            result.add(routeCondition);
-        }
-        return result;
-    }
-    
-    private boolean isNeedAppendGeneratedKeyCondition(final GeneratedKey generatedKey, final String tableName) {
-        return null != generatedKey && generatedKey.isGenerated() && shardingRule.isShardingColumn(generatedKey.getColumnName(), tableName);
-    }
-    
-    private Collection<ListRouteValue> getRouteValues(final AndCondition andCondition, final List<Object> parameters) {
-        Collection<ListRouteValue> result = new LinkedList<>();
-        for (Condition each : andCondition.getConditions()) {
-            result.add(new ListRouteValue<>(each.getColumn().getName(), each.getColumn().getTableName(), each.getConditionValues(parameters)));
-        }
-        return result;
     }
 }

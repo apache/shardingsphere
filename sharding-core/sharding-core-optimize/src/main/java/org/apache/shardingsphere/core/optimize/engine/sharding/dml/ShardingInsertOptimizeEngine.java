@@ -49,13 +49,13 @@ public final class ShardingInsertOptimizeEngine implements OptimizeEngine {
     
     private final List<Object> parameters;
     
-    private final RouteConditionEngine routeConditionEngine;
+    private final InsertClauseRouteConditionEngine routeConditionEngine;
     
     public ShardingInsertOptimizeEngine(final ShardingRule shardingRule, final InsertStatement insertStatement, final List<Object> parameters) {
         this.shardingRule = shardingRule;
         this.insertStatement = insertStatement;
         this.parameters = parameters;
-        routeConditionEngine = new RouteConditionEngine(shardingRule, null);
+        routeConditionEngine = new InsertClauseRouteConditionEngine(shardingRule);
     }
     
     @Override

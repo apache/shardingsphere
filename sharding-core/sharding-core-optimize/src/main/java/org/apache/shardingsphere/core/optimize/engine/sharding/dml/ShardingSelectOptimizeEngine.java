@@ -48,12 +48,12 @@ public final class ShardingSelectOptimizeEngine implements OptimizeEngine {
     
     private final List<Object> parameters;
     
-    private final RouteConditionEngine routeConditionEngine;
+    private final WhereClauseRouteConditionEngine routeConditionEngine;
     
     public ShardingSelectOptimizeEngine(final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData, final SelectStatement selectStatement, final List<Object> parameters) {
         this.selectStatement = selectStatement;
         this.parameters = parameters;
-        routeConditionEngine = new RouteConditionEngine(shardingRule, shardingTableMetaData);
+        routeConditionEngine = new WhereClauseRouteConditionEngine(shardingRule, shardingTableMetaData);
     }
     
     @Override
