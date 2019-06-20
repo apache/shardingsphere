@@ -2,24 +2,24 @@
 
 ### API调整
 
-1. 删除DatabaseType枚举类型，使用动态SPI读取数据源类型。
-1. 删除sharding logicIndex的API和配置项。
+1. 优化并删除sharding logicIndex的API和配置项。
 
 ### 新功能
 
-1. 解析引擎由第二代升级为第三代。
 1. 集成Seata分布式事务。
-1. ShardingProxy支持数据隐藏。
+1. ShardingProxy支持数据脱敏。
 1. 支持Leaf-segment生成器生成分布式ID。
 1. 支持Skywalking的性能管理插件。
 
 ### 功能提升
-1. 只更新修改的数据源而不是所有数据源，以此来提高配置治理性能。
-1. 重构重写引擎。
 
-### 缺陷修正
-1. 修复带索引名和引号的`Create/Alter/Drop index`语句重写错误的问题。
-1. 修复`INSERT`语句存在自增主键时抛出NullPointerException异常的问题。
+1. 只更新修改的数据源而不是所有数据源，以此来提高配置治理性能。
+
+### 重构
+
+1. 删除DatabaseType枚举类型，使用动态SPI读取数据源类型。
+1. 解析引擎由第二代升级为第三代。
+1. 重构重写引擎。
 
 ### 更新日志
 

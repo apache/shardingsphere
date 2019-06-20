@@ -2,24 +2,24 @@
 
 ### API Changes
 
-1. Remove DatabaseType enum, use dynamic SPI to load data source type.
-1. Delete API and configuration item of sharding logicIndex.
+1. Optimize and delete API and configuration item of sharding logicIndex.
 
 ### New Features
 
-1. The parse engine upgrade from the 2nd generation to 3rd.
 1. Integration of Seata for distributed transaction.
-1. User can do data masking by using ShardingProxy.
+1. User can do data encryption by using ShardingProxy.
 1. User can use Leaf-segment generator to get distributed ID.
 1. Support Skywalking plugin for application performance management.
 
 ### Enhancement
-1. Renew modified dataSources, not all the datasources to improve performance for configuration orchestration.
-1. The Refactoring of SQL rewriting module.
 
-### Bug fix
-1. Fix wrong SQL rewriting for  `Create/Alter/Drop index` with indexName quoted with quoteCharacters.
-1. Fix NullPointerException when append generated-key value for `INSERT` statement.
+1. Renew modified dataSources, not all the datasources to improve performance for configuration orchestration.
+
+### Refactor
+
+1. Remove DatabaseType enum, use dynamic SPI to load data source type.
+1. The parse engine upgrade from the 2nd generation to 3rd.
+1. The Refactoring of SQL rewriting module.
 
 ### Change Logs
 
