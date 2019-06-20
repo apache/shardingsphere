@@ -23,7 +23,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.optimize.condition.RouteCondition;
+import org.apache.shardingsphere.core.optimize.condition.ShardingCondition;
 import org.apache.shardingsphere.core.parse.filler.common.dml.PredicateUtils;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
@@ -46,53 +46,53 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Route condition engine for where clause.
+ * Sharding condition engine for where clause.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class WhereClauseRouteConditionEngine {
+public final class WhereClauseShardingConditionEngine {
     
     private final ShardingRule shardingRule;
     
     private final ShardingTableMetaData shardingTableMetaData;
     
     /**
-     * Create route conditions.
+     * Create sharding conditions.
      * 
      * @param dmlStatement DML statement
      * @param parameters SQL parameters
-     * @return route conditions
+     * @return sharding conditions
      */
-    public Collection<RouteCondition> createRouteConditions(final DMLStatement dmlStatement, final List<Object> parameters) {
-        Collection<RouteCondition> result = new LinkedList<>();
+    public Collection<ShardingCondition> createShardingConditions(final DMLStatement dmlStatement, final List<Object> parameters) {
+        Collection<ShardingCondition> result = new LinkedList<>();
         Optional<OrPredicateSegment> orPredicateSegment = dmlStatement.findSQLSegment(OrPredicateSegment.class);
         if (orPredicateSegment.isPresent()) {
-            result.addAll(createRouteConditions(dmlStatement, parameters, orPredicateSegment.get()));
+            result.addAll(createShardingConditions(dmlStatement, parameters, orPredicateSegment.get()));
         }
         Optional<SubqueryPredicateSegment> subqueryPredicateSegment = dmlStatement.findSQLSegment(SubqueryPredicateSegment.class);
         if (subqueryPredicateSegment.isPresent()) {
             for (OrPredicateSegment each : subqueryPredicateSegment.get().getOrPredicates()) {
-                List<RouteCondition> subqueryRouteConditions = createRouteConditions(dmlStatement, parameters, each);
-                if (!result.containsAll(subqueryRouteConditions)) {
-                    result.addAll(subqueryRouteConditions);
+                List<ShardingCondition> subqueryShardingConditions = createShardingConditions(dmlStatement, parameters, each);
+                if (!result.containsAll(subqueryShardingConditions)) {
+                    result.addAll(subqueryShardingConditions);
                 }
             }
         }
         return result;
     }
     
-    private List<RouteCondition> createRouteConditions(final DMLStatement dmlStatement, final List<Object> parameters, final OrPredicateSegment orPredicateSegment) {
-        List<RouteCondition> result = new LinkedList<>();
+    private List<ShardingCondition> createShardingConditions(final DMLStatement dmlStatement, final List<Object> parameters, final OrPredicateSegment orPredicateSegment) {
+        List<ShardingCondition> result = new LinkedList<>();
         for (AndPredicate each : orPredicateSegment.getAndPredicates()) {
-            RouteCondition routeCondition = new RouteCondition();
+            ShardingCondition shardingCondition = new ShardingCondition();
             List<RouteValue> routeValues = createRouteValues(dmlStatement, parameters, each);
             if (routeValues.isEmpty()) {
                 result.clear();
                 return result;
             }
-            routeCondition.getRouteValues().addAll(routeValues);
-            result.add(routeCondition);
+            shardingCondition.getRouteValues().addAll(routeValues);
+            result.add(shardingCondition);
         }
         return result;
     }

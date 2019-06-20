@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.core.optimize.engine.sharding.dml;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.optimize.condition.RouteCondition;
-import org.apache.shardingsphere.core.optimize.condition.RouteConditions;
+import org.apache.shardingsphere.core.optimize.condition.ShardingCondition;
+import org.apache.shardingsphere.core.optimize.condition.ShardingConditions;
 import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
 import org.apache.shardingsphere.core.optimize.keygen.GeneratedKey;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
@@ -49,13 +49,13 @@ public final class ShardingInsertOptimizeEngine implements OptimizeEngine {
     
     private final List<Object> parameters;
     
-    private final InsertClauseRouteConditionEngine routeConditionEngine;
+    private final InsertClauseShardingConditionEngine shardingConditionEngine;
     
     public ShardingInsertOptimizeEngine(final ShardingRule shardingRule, final InsertStatement insertStatement, final List<Object> parameters) {
         this.shardingRule = shardingRule;
         this.insertStatement = insertStatement;
         this.parameters = parameters;
-        routeConditionEngine = new InsertClauseRouteConditionEngine(shardingRule);
+        shardingConditionEngine = new InsertClauseShardingConditionEngine(shardingRule);
     }
     
     @Override
@@ -83,8 +83,8 @@ public final class ShardingInsertOptimizeEngine implements OptimizeEngine {
             }
             parametersCount += insertValue.getParametersCount();
         }
-        List<RouteCondition> routeConditions = routeConditionEngine.createRouteConditions(insertStatement, parameters, generatedKey.orNull());
-        OptimizeResult result = new OptimizeResult(new RouteConditions(routeConditions), insertOptimizeResult);
+        List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(insertStatement, parameters, generatedKey.orNull());
+        OptimizeResult result = new OptimizeResult(new ShardingConditions(shardingConditions), insertOptimizeResult);
         result.setGeneratedKey(generatedKey.orNull());
         return result;
     }

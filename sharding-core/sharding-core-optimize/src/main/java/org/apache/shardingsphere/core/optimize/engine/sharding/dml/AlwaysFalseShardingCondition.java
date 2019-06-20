@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.core.optimize.engine.sharding.dml;
 
-import org.apache.shardingsphere.core.optimize.condition.RouteCondition;
+import org.apache.shardingsphere.core.optimize.condition.ShardingCondition;
 
 /**
- * Always false route condition.
+ * Always false sharding condition.
  *
  * @author maxiaoguang
  */
-public final class AlwaysFalseRouteCondition extends RouteCondition {
+public final class AlwaysFalseShardingCondition extends ShardingCondition {
 }

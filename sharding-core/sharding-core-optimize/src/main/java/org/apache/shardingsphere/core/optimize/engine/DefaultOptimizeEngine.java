@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.core.optimize.engine;
 
-import org.apache.shardingsphere.core.optimize.condition.RouteCondition;
-import org.apache.shardingsphere.core.optimize.condition.RouteConditions;
+import org.apache.shardingsphere.core.optimize.condition.ShardingCondition;
+import org.apache.shardingsphere.core.optimize.condition.ShardingConditions;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 
 import java.util.Collections;
@@ -32,6 +32,6 @@ public final class DefaultOptimizeEngine implements OptimizeEngine {
     
     @Override
     public OptimizeResult optimize() {
-        return new OptimizeResult(new RouteConditions(Collections.<RouteCondition>emptyList()), null);
+        return new OptimizeResult(new ShardingConditions(Collections.<ShardingCondition>emptyList()), null);
     }
 }

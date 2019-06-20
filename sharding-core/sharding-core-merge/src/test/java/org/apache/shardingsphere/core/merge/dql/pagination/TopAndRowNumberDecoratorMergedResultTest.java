@@ -23,7 +23,7 @@ import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.MergedResult;
 import org.apache.shardingsphere.core.merge.dql.DQLMergeEngine;
 import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
-import org.apache.shardingsphere.core.optimize.condition.RouteCondition;
+import org.apache.shardingsphere.core.optimize.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.pagination.Pagination;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
@@ -67,7 +67,7 @@ public final class TopAndRowNumberDecoratorMergedResultTest {
             queryResults.add(new TestQueryResult(each));
         }
         routeResult = new SQLRouteResult(new SelectStatement());
-        routeResult.setOptimizeResult(new OptimizeResult(Collections.<RouteCondition>emptyList()));
+        routeResult.setOptimizeResult(new OptimizeResult(Collections.<ShardingCondition>emptyList()));
     }
     
     @Test

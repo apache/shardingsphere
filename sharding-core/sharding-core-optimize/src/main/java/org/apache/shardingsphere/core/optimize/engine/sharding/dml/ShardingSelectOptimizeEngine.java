@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.optimize.engine.sharding.dml;
 import com.google.common.collect.Range;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.optimize.condition.RouteCondition;
+import org.apache.shardingsphere.core.optimize.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
 import org.apache.shardingsphere.core.optimize.pagination.Pagination;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
@@ -48,32 +48,32 @@ public final class ShardingSelectOptimizeEngine implements OptimizeEngine {
     
     private final List<Object> parameters;
     
-    private final WhereClauseRouteConditionEngine routeConditionEngine;
+    private final WhereClauseShardingConditionEngine shardingConditionEngine;
     
     public ShardingSelectOptimizeEngine(final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData, final SelectStatement selectStatement, final List<Object> parameters) {
         this.selectStatement = selectStatement;
         this.parameters = parameters;
-        routeConditionEngine = new WhereClauseRouteConditionEngine(shardingRule, shardingTableMetaData);
+        shardingConditionEngine = new WhereClauseShardingConditionEngine(shardingRule, shardingTableMetaData);
     }
     
     @Override
     public OptimizeResult optimize() {
-        List<RouteCondition> routeConditions = new LinkedList<>();
-        for (RouteCondition each : routeConditionEngine.createRouteConditions(selectStatement, parameters)) {
-            routeConditions.add(optimize(each.getRouteValuesMap()));
+        List<ShardingCondition> shardingConditions = new LinkedList<>();
+        for (ShardingCondition each : shardingConditionEngine.createShardingConditions(selectStatement, parameters)) {
+            shardingConditions.add(optimize(each.getRouteValuesMap()));
         }
-        OptimizeResult result = new OptimizeResult(routeConditions);
+        OptimizeResult result = new OptimizeResult(shardingConditions);
         setPagination(result);
         return result;
     }
     
-    private RouteCondition optimize(final Map<Column, List<RouteValue>> routeValuesMap) {
-        RouteCondition result = new RouteCondition();
+    private ShardingCondition optimize(final Map<Column, List<RouteValue>> routeValuesMap) {
+        ShardingCondition result = new ShardingCondition();
         for (Entry<Column, List<RouteValue>> entry : routeValuesMap.entrySet()) {
             try {
                 RouteValue routeValue = optimize(entry.getKey(), entry.getValue());
                 if (routeValue instanceof AlwaysFalseRouteValue) {
-                    return new AlwaysFalseRouteCondition();
+                    return new AlwaysFalseShardingCondition();
                 }
                 result.getRouteValues().add(routeValue);
             } catch (final ClassCastException ex) {

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.optimize.engine.sharding.dml;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.optimize.condition.RouteCondition;
+import org.apache.shardingsphere.core.optimize.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.keygen.GeneratedKey;
 import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
@@ -34,34 +34,34 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Route condition engine for insert clause.
+ * Sharding condition engine for insert clause.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class InsertClauseRouteConditionEngine {
+public final class InsertClauseShardingConditionEngine {
     
     private final ShardingRule shardingRule;
     
     /**
-     * Create route conditions.
+     * Create sharding conditions.
      * 
      * @param insertStatement insert statement
      * @param parameters SQL parameters
      * @param generatedKey generated key
-     * @return route conditions
+     * @return sharding conditions
      */
-    public List<RouteCondition> createRouteConditions(final InsertStatement insertStatement, final List<Object> parameters, final GeneratedKey generatedKey) {
-        List<RouteCondition> result = new ArrayList<>(insertStatement.getShardingConditions().getOrConditions().size());
+    public List<ShardingCondition> createShardingConditions(final InsertStatement insertStatement, final List<Object> parameters, final GeneratedKey generatedKey) {
+        List<ShardingCondition> result = new ArrayList<>(insertStatement.getShardingConditions().getOrConditions().size());
         String tableName = insertStatement.getTables().getSingleTableName();
         Iterator<Comparable<?>> generatedValues = null == generatedKey ? Collections.<Comparable<?>>emptyList().iterator() : generatedKey.getGeneratedValues().iterator();
         for (AndCondition each : insertStatement.getShardingConditions().getOrConditions()) {
-            RouteCondition routeCondition = new RouteCondition();
-            routeCondition.getRouteValues().addAll(getRouteValues(each, parameters));
+            ShardingCondition shardingCondition = new ShardingCondition();
+            shardingCondition.getRouteValues().addAll(getRouteValues(each, parameters));
             if (isNeedAppendGeneratedKeyCondition(generatedKey, tableName)) {
-                routeCondition.getRouteValues().add(new ListRouteValue<>(generatedKey.getColumnName(), tableName, Collections.<Comparable<?>>singletonList(generatedValues.next())));
+                shardingCondition.getRouteValues().add(new ListRouteValue<>(generatedKey.getColumnName(), tableName, Collections.<Comparable<?>>singletonList(generatedValues.next())));
             }
-            result.add(routeCondition);
+            result.add(shardingCondition);
         }
         return result;
     }
