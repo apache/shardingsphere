@@ -93,6 +93,23 @@ props:
     sql.show: true
 ```
 
+### 数据脱敏
+```yaml
+dataSource:  !!org.apache.commons.dbcp2.BasicDataSource
+  driverClassName: com.mysql.jdbc.Driver
+  jdbcUrl: jdbc:mysql://127.0.0.1:3306/encrypt?serverTimezone=UTC&useSSL=false
+  username: root
+  password:
+  
+encryptRule:
+  encryptors:
+    order_encryptor:
+      type: aes
+      qualifiedColumns: t_order.user_id
+      props:
+        aes.key.value: 123456
+```
+
 ### 数据分片 + 读写分离
 
 ```yaml
@@ -242,7 +259,7 @@ props:
 ### 治理
 
 ```yaml
-#省略数据分片和读写分离配置
+#省略数据分片、读写分离和数据脱敏配置
 
 orchestration:
   name: orchestration_ds
@@ -386,16 +403,16 @@ props: #属性配置
 
 ### 数据脱敏
 ```yaml
-dataSources: #省略数据源配置
-shardingRule: #省略分片规则配
-  encryptRule:
-    encryptors:
-      encryptor_name: #加密器名字
-        type: #加解密器类型，可自定义或选择内置类型：MD5/AES
-        qualifiedColumns: #加解密字段，格式为：表名.列名，例如：tb.col1。多个列，请用逗号分隔
-        assistedQueryColumns: #辅助查询字段，针对ShardingQueryAssistedEncryptor类型的加解密器进行辅助查询
-        props: #属性配置, 注意：使用AES加密器，需要配置AES加密器的KEY属性：aes.key.value
-          aes.key.value:
+dataSource: #省略数据源配置
+
+encryptRule:
+  encryptors:
+    encryptor_name: #加密器名字
+      type: #加解密器类型，可自定义或选择内置类型：MD5/AES
+      qualifiedColumns: #加解密字段，格式为：表名.列名，例如：tb.col1。多个列，请用逗号分隔
+      assistedQueryColumns: #辅助查询字段，针对ShardingQueryAssistedEncryptor类型的加解密器进行辅助查询
+      props: #属性配置, 注意：使用AES加密器，需要配置AES加密器的KEY属性：aes.key.value
+        aes.key.value:
 ```
 
 ### 治理
@@ -404,6 +421,7 @@ shardingRule: #省略分片规则配
 dataSources: #省略数据源配置
 shardingRule: #省略分片规则配置
 masterSlaveRule: #省略读写分离规则配置
+encryptRule: #省略数据脱敏规则配置
 
 orchestration:
   name: #治理实例名称

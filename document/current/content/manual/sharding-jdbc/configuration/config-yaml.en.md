@@ -93,6 +93,23 @@ props:
   sql.show: true
 ```
 
+### Data Masking
+```yaml
+dataSource:  !!org.apache.commons.dbcp2.BasicDataSource
+  driverClassName: com.mysql.jdbc.Driver
+  jdbcUrl: jdbc:mysql://127.0.0.1:3306/encrypt?serverTimezone=UTC&useSSL=false
+  username: root
+  password:
+  
+encryptRule:
+  encryptors:
+    order_encryptor:
+      type: aes
+      qualifiedColumns: t_order.user_id
+      props:
+        aes.key.value: 123456
+```
+
 ### Data Sharding + Read-Write Split
 
 ```yaml
@@ -242,7 +259,7 @@ props:
 ### Orchestration
 
 ```yaml
-#Omit data sharding and read-write split configurations
+#Omit data sharding, read-write split and encrypt configurations
 
 orchestration:
   name: orchestration_ds
@@ -344,16 +361,16 @@ props: #Property configuration
 
 ### Data Masking
 ```yaml
-dataSources: #Ignore data sources configuration
-shardingRule:
-  encryptRule:
-    encryptors:
-      encryptor_name: #Encryptor name
-        type: #Type of encryptor，use user-defined ones or built-in ones, e.g. MD5/AES
-        qualifiedColumns: #Column names to be encrypted, the format is `tableName`.`columnName`, e.g. tb.col1. When configuring multiple column names, separate them with commas
-        assistedQueryColumns: #AssistedColumns for query，when use ShardingQueryAssistedEncryptor, it can help query encrypted data
-        props: #Properties, Notice: when use AES encryptor, `aes.key.value` for AES encryptor need to be set
-          aes.key.value:
+dataSource: #Ignore data sources configuration
+
+encryptRule:
+  encryptors:
+    encryptor_name: #Encryptor name
+      type: #Type of encryptor，use user-defined ones or built-in ones, e.g. MD5/AES
+      qualifiedColumns: #Column names to be encrypted, the format is `tableName`.`columnName`, e.g. tb.col1. When configuring multiple column names, separate them with commas
+      assistedQueryColumns: #AssistedColumns for query，when use ShardingQueryAssistedEncryptor, it can help query encrypted data
+      props: #Properties, Notice: when use AES encryptor, `aes.key.value` for AES encryptor need to be set
+        aes.key.value:
 ```
 
 ### Orchestration
@@ -362,6 +379,7 @@ shardingRule:
 dataSources: #Omit data source configurations
 shardingRule: #Omit sharding rule configurations
 masterSlaveRule: #Omit read-write split rule configurations
+encryptRule: #Omit encrypt rule configurations
 
 orchestration:
   name: #Orchestration instance name

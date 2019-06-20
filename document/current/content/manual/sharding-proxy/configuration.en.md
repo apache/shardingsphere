@@ -345,16 +345,16 @@ masterSlaveRule: #Omit data source configurations; keep it consistent with Shard
 
 ### Data Masking
 ```yaml
-dataSources: #Ignore data sources configuration
-shardingRule:
-  encryptRule:
-    encryptors:
-      encryptor_name: #Encryptor name
-        type: #Type of encryptor，use user-defined ones or built-in ones, e.g. MD5/AES
-        qualifiedColumns: #Column names to be encrypted, the format is `tableName`.`columnName`, e.g. tb.col1. When configuring multiple column names, separate them with commas
-        assistedQueryColumns: #AssistedColumns for query，when use ShardingQueryAssistedEncryptor, it can help query encrypted data
-        props: #Properties, e.g. `aes.key.value` for AES encryptor
-          aes.key.value:
+dataSource: #Ignore data sources configuration
+
+encryptRule:
+  encryptors:
+    encryptor_name: #Encryptor name
+      type: #Type of encryptor，use user-defined ones or built-in ones, e.g. MD5/AES
+      qualifiedColumns: #Column names to be encrypted, the format is `tableName`.`columnName`, e.g. tb.col1. When configuring multiple column names, separate them with commas
+      assistedQueryColumns: #AssistedColumns for query，when use ShardingQueryAssistedEncryptor, it can help query encrypted data
+      props: #Properties, e.g. `aes.key.value` for AES encryptor
+        aes.key.value:
 ```
 
 ## Overall Configuration Explanation

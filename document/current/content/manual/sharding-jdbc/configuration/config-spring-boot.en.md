@@ -72,6 +72,22 @@ spring.shardingsphere.masterslave.slave-data-source-names=slave0,slave1
 
 spring.shardingsphere.props.sql.show=true
 ```
+### Data Masking
+
+```properties
+spring.shardingsphere.datasource.name=ds
+
+spring.shardingsphere.datasource.ds.type=org.apache.commons.dbcp2.BasicDataSource
+spring.shardingsphere.datasource.ds.driver-class-name=com.mysql.jdbc.Driver
+spring.shardingsphere.datasource.ds.url=jdbc:mysql://127.0.0.1:3306/encrypt?serverTimezone=UTC&useSSL=false
+spring.shardingsphere.datasource.ds.username=root
+spring.shardingsphere.datasource.ds.password=
+spring.shardingsphere.datasource.ds.max-total=100
+
+spring.shardingsphere.encrypt.encryptors.order_encrypt.type=aes
+spring.shardingsphere.encrypt.encryptors.order_encrypt.qualifiedColumns=t_order.user_id
+spring.shardingsphere.encrypt.encryptors.order_encrypt.props.aes.key.value=123456
+```
 
 ### Data Sharding + Read-Write Split
 
@@ -332,7 +348,7 @@ spring.shardingsphere.sharding.encryptRule.encryptors.<encryptor-name>.props.<pr
 ### Orchestration
 
 ```properties
-#Omit data source, data sharding and read-write split configurations
+#Omit data source, data sharding, read-write split and data masking configurations
 
 spring.shardingsphere.orchestration.name= #Orchestration instance name
 spring.shardingsphere.orchestration.overwrite= #Whether to overwrite local configurations with registry center configurations; if it can, each initialization should refer to local configurations
