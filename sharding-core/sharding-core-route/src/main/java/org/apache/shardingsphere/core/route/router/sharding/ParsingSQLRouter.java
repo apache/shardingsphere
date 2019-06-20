@@ -25,14 +25,12 @@ import org.apache.shardingsphere.core.metadata.ShardingMetaData;
 import org.apache.shardingsphere.core.optimize.OptimizeEngineFactory;
 import org.apache.shardingsphere.core.optimize.condition.RouteCondition;
 import org.apache.shardingsphere.core.optimize.condition.RouteConditions;
-import org.apache.shardingsphere.core.optimize.keygen.GeneratedKey;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
 import org.apache.shardingsphere.core.parse.entry.ShardingSQLParseEntry;
 import org.apache.shardingsphere.core.parse.hook.ParsingHook;
 import org.apache.shardingsphere.core.parse.hook.SPIParsingHook;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
@@ -43,8 +41,6 @@ import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -89,17 +85,10 @@ public final class ParsingSQLRouter implements ShardingRouter {
     @Override
     public SQLRouteResult route(final SQLStatement sqlStatement, final List<Object> parameters) {
         OptimizeResult optimizeResult = OptimizeEngineFactory.newInstance(shardingRule, sqlStatement, parameters, shardingMetaData.getTable()).optimize();
-        RouteConditions routeConditions = null;
-        if (sqlStatement instanceof InsertStatement) {
-            List<RouteCondition> routeConditionList = optimizeResult.getRouteConditions().getRouteConditions();
-            appendGeneratedKeyCondition(sqlStatement, optimizeResult, routeConditionList);
-            routeConditions = new RouteConditions(routeConditionList);
-            optimizeResult.setRouteConditions(routeConditions);
-        }
         boolean needMergeShardingValues = isNeedMergeShardingValues(sqlStatement);
         if (needMergeShardingValues) {
             checkSubqueryShardingValues(sqlStatement, optimizeResult.getRouteConditions());
-            mergeShardingValues(null == routeConditions ? optimizeResult.getRouteConditions() : routeConditions);
+            mergeShardingValues(optimizeResult.getRouteConditions());
         }
         RoutingResult routingResult = RoutingEngineFactory.newInstance(shardingRule, shardingMetaData.getDataSource(), sqlStatement, optimizeResult).route();
         if (needMergeShardingValues) {
@@ -109,21 +98,6 @@ public final class ParsingSQLRouter implements ShardingRouter {
         result.setRoutingResult(routingResult);
         setOptimizeResult(optimizeResult, result);
         return result;
-    }
-    
-    private void appendGeneratedKeyCondition(final SQLStatement sqlStatement, final OptimizeResult optimizeResult, final List<RouteCondition> routeConditions) {
-        if (!optimizeResult.getGeneratedKey().isPresent() || optimizeResult.getGeneratedKey().get().isGenerated()) {
-            return;
-        }
-        String tableName = sqlStatement.getTables().getSingleTableName();
-        GeneratedKey generatedKey = optimizeResult.getGeneratedKey().get();
-        String generatedKeyColumnName = generatedKey.getColumnName();
-        Iterator<Comparable<?>> generatedValues = generatedKey.getGeneratedValues().iterator();
-        for (RouteCondition each : routeConditions) {
-            if (shardingRule.isShardingColumn(generatedKeyColumnName, tableName)) {
-                each.getRouteValues().add(new ListRouteValue<>(generatedKeyColumnName, tableName, Collections.<Comparable<?>>singletonList(generatedValues.next())));
-            }
-        }
     }
     
     private void setOptimizeResult(final OptimizeResult optimizeResult, final SQLRouteResult sqlRouteResult) {

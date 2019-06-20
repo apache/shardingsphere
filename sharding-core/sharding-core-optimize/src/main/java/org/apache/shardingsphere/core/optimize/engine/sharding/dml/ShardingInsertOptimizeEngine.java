@@ -83,9 +83,10 @@ public final class ShardingInsertOptimizeEngine implements OptimizeEngine {
             }
             parametersCount += insertValue.getParametersCount();
         }
-        List<RouteCondition> routeConditions = routeConditionEngine.createRouteConditions(insertStatement, parameters);
-        return generatedKey.isPresent()
-                ? createOptimizeResult(insertOptimizeResult, routeConditions, generatedKey.get()) : new OptimizeResult(new RouteConditions(routeConditions), insertOptimizeResult);
+        List<RouteCondition> routeConditions = routeConditionEngine.createRouteConditions(insertStatement, parameters, generatedKey.orNull());
+        OptimizeResult result = new OptimizeResult(new RouteConditions(routeConditions), insertOptimizeResult);
+        result.setGeneratedKey(generatedKey.orNull());
+        return result;
     }
     
     private void appendGeneratedKeyColumn(final GeneratedKey generatedKey, final InsertOptimizeResult insertOptimizeResult) {
@@ -111,11 +112,5 @@ public final class ShardingInsertOptimizeEngine implements OptimizeEngine {
                 unit.addInsertValue((Comparable<?>) unit.getColumnValue(each), parameters);
             }
         }
-    }
-    
-    private OptimizeResult createOptimizeResult(final InsertOptimizeResult insertOptimizeResult, final List<RouteCondition> routeConditions, final GeneratedKey generatedKey) {
-        OptimizeResult result = new OptimizeResult(new RouteConditions(routeConditions), insertOptimizeResult);
-        result.setGeneratedKey(generatedKey);
-        return result;
     }
 }
