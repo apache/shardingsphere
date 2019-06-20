@@ -28,6 +28,7 @@ import org.apache.shardingsphere.core.optimize.pagination.Pagination;
 import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResult;
 
 import java.util.Collections;
+import java.util.List;
 
 /**
  * Optimize result.
@@ -49,8 +50,8 @@ public final class OptimizeResult {
     
     private String logicTableNameForDropIndex;
     
-    public OptimizeResult(final RouteConditions routeConditions) {
-        this(routeConditions, null);
+    public OptimizeResult(final List<RouteCondition> routeConditions) {
+        this(new RouteConditions(routeConditions), null);
     }
     
     public OptimizeResult(final InsertOptimizeResult insertOptimizeResult) {

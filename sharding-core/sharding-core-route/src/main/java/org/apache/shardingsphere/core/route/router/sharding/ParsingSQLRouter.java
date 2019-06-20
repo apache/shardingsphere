@@ -159,7 +159,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
     
     private boolean isNeedMergeShardingValues(final SQLStatement sqlStatement) {
         return sqlStatement instanceof SelectStatement 
-                && !((SelectStatement) sqlStatement).getSubqueryShardingConditions().isEmpty() && !shardingRule.getShardingLogicTableNames(sqlStatement.getTables().getTableNames()).isEmpty();
+                && ((SelectStatement) sqlStatement).isContainsSubquery() && !shardingRule.getShardingLogicTableNames(sqlStatement.getTables().getTableNames()).isEmpty();
     }
     
     private void checkSubqueryShardingValues(final SQLStatement sqlStatement, final RouteConditions routeConditions) {
