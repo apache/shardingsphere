@@ -25,7 +25,6 @@ import org.apache.shardingsphere.core.optimize.keygen.GeneratedKey;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResult;
 import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResultUnit;
-import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -61,7 +60,6 @@ public final class ShardingInsertClauseOptimizeEngine implements OptimizeEngine 
     @Override
     public OptimizeResult optimize() {
         InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(insertStatement.getColumnNames());
-        List<AndCondition> andConditions = insertStatement.getShardingConditions().getOrConditions();
         Optional<GeneratedKey> generatedKey = GeneratedKey.getGenerateKey(shardingRule, parameters, insertStatement);
         boolean isGeneratedValue = generatedKey.isPresent() && generatedKey.get().isGenerated();
         Iterator<Comparable<?>> generatedValues = isGeneratedValue ? generatedKey.get().getGeneratedValues().iterator() : null;
@@ -71,17 +69,16 @@ public final class ShardingInsertClauseOptimizeEngine implements OptimizeEngine 
         appendAssistedQueryColumns(insertOptimizeResult);
         int derivedColumnsCount = getDerivedColumnsCount(isGeneratedValue);
         int parametersCount = 0;
-        for (int i = 0; i < andConditions.size(); i++) {
-            InsertValue insertValue = insertStatement.getValues().get(i);
+        for (InsertValue each : insertStatement.getValues()) {
             InsertOptimizeResultUnit unit = insertOptimizeResult.addUnit(
-                    insertValue.getValues(derivedColumnsCount), insertValue.getParameters(parameters, parametersCount, derivedColumnsCount), insertValue.getParametersCount());
+                    each.getValues(derivedColumnsCount), each.getParameters(parameters, parametersCount, derivedColumnsCount), each.getParametersCount());
             if (isGeneratedValue) {
                 unit.addInsertValue(generatedValues.next(), parameters);
             }
             if (shardingRule.getEncryptRule().getEncryptorEngine().isHasShardingQueryAssistedEncryptor(insertStatement.getTables().getSingleTableName())) {
                 fillAssistedQueryUnit(insertOptimizeResult.getColumnNames(), unit);
             }
-            parametersCount += insertValue.getParametersCount();
+            parametersCount += each.getParametersCount();
         }
         List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(insertStatement, parameters, generatedKey.orNull());
         OptimizeResult result = new OptimizeResult(new ShardingConditions(shardingConditions), insertOptimizeResult);

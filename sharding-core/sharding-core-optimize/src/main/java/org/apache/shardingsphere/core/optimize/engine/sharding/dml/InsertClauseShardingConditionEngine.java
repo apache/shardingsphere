@@ -21,7 +21,11 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.optimize.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.keygen.GeneratedKey;
 import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
+import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
+import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.SimpleExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
@@ -52,10 +56,11 @@ public final class InsertClauseShardingConditionEngine {
      * @return sharding conditions
      */
     public List<ShardingCondition> createShardingConditions(final InsertStatement insertStatement, final List<Object> parameters, final GeneratedKey generatedKey) {
-        List<ShardingCondition> result = new ArrayList<>(insertStatement.getShardingConditions().getOrConditions().size());
+        List<AndCondition> andConditions = getAndConditions(insertStatement);
+        List<ShardingCondition> result = new ArrayList<>(andConditions.size());
         String tableName = insertStatement.getTables().getSingleTableName();
         Iterator<Comparable<?>> generatedValues = null == generatedKey ? Collections.<Comparable<?>>emptyList().iterator() : generatedKey.getGeneratedValues().iterator();
-        for (AndCondition each : insertStatement.getShardingConditions().getOrConditions()) {
+        for (AndCondition each : andConditions) {
             ShardingCondition shardingCondition = new ShardingCondition();
             shardingCondition.getRouteValues().addAll(getRouteValues(each, parameters));
             if (isNeedAppendGeneratedKeyCondition(generatedKey, tableName)) {
@@ -76,5 +81,31 @@ public final class InsertClauseShardingConditionEngine {
             result.add(new ListRouteValue<>(each.getColumn().getName(), each.getColumn().getTableName(), each.getConditionValues(parameters)));
         }
         return result;
+    }
+    
+    private List<AndCondition> getAndConditions(final InsertStatement insertStatement) {
+        List<AndCondition> result = new LinkedList<>();
+        for (InsertValue each : insertStatement.getValues()) {
+            result.add(getAndCondition(insertStatement, each));
+        }
+        return result;
+    }
+    
+    private AndCondition getAndCondition(final InsertStatement insertStatement, final InsertValue insertValue) {
+        AndCondition result = new AndCondition();
+        Iterator<String> columnNames = insertStatement.getColumnNames().iterator();
+        for (ExpressionSegment each : insertValue.getAssignments()) {
+            String columnName = columnNames.next();
+            if (each instanceof SimpleExpressionSegment) {
+                fillShardingCondition(result, insertStatement.getTables().getSingleTableName(), columnName, (SimpleExpressionSegment) each);
+            }
+        }
+        return result;
+    }
+    
+    private void fillShardingCondition(final AndCondition andCondition, final String tableName, final String columnName, final SimpleExpressionSegment expressionSegment) {
+        if (shardingRule.isShardingColumn(columnName, tableName)) {
+            andCondition.getConditions().add(new Condition(new Column(columnName, tableName), null, expressionSegment));
+        }
     }
 }
