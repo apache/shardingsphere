@@ -17,8 +17,11 @@
 
 package org.apache.shardingsphere.core.parse.filler.common;
 
+import org.apache.shardingsphere.core.parse.exception.SQLParsingException;
 import org.apache.shardingsphere.core.parse.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.sql.context.table.Table;
+import org.apache.shardingsphere.core.parse.sql.context.table.Tables;
+import org.apache.shardingsphere.core.parse.sql.segment.common.SchemaSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
@@ -34,5 +37,15 @@ public final class TableFiller implements SQLSegmentFiller<TableSegment> {
     @Override
     public void fill(final TableSegment sqlSegment, final SQLStatement sqlStatement) {
         sqlStatement.getTables().add(new Table(sqlSegment.getName(), sqlSegment.getAlias().orNull()));
+        if (sqlSegment.getOwner().isPresent()) {
+            if (containsMultipleSchemas(sqlStatement.getTables(), sqlSegment.getOwner().get())) {
+                throw new SQLParsingException("Cannot support multiple schemas in one SQL");
+            }
+            sqlStatement.getTables().setSchema(sqlSegment.getOwner().get().getName());
+        }
+    }
+    
+    private boolean containsMultipleSchemas(final Tables tables, final SchemaSegment schemaSegment) {
+        return schemaSegment.getName().equalsIgnoreCase(tables.getSchema().orNull());
     }
 }

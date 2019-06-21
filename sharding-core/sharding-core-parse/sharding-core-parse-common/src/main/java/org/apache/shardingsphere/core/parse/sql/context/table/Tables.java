@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.parse.sql.context.table;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import lombok.Setter;
 import lombok.ToString;
 
 import java.util.ArrayList;
@@ -32,10 +33,13 @@ import java.util.TreeSet;
  * 
  * @author zhangliang
  */
+@Setter
 @ToString(of = "tables")
 public final class Tables {
     
     private final List<Table> tables = new ArrayList<>();
+    
+    private String schema;
     
     /**
      * Add table.
@@ -118,5 +122,14 @@ public final class Tables {
             }
         }
         return Optional.absent();
+    }
+    
+    /**
+     * Get schema.
+     * 
+     * @return schema
+     */
+    public Optional<String> getSchema() {
+        return Optional.fromNullable(schema);
     }
 }
