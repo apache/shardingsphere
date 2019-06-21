@@ -31,7 +31,5 @@ import org.apache.shardingsphere.core.parse.sql.statement.AbstractSQLStatement;
 @ToString(callSuper = true)
 public abstract class DMLStatement extends AbstractSQLStatement {
     
-    private final Conditions shardingConditions = new Conditions();
-    
     private final Conditions encryptConditions = new Conditions();
 }

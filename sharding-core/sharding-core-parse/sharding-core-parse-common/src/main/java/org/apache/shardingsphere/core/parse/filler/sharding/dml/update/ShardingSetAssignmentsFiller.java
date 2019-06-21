@@ -23,7 +23,6 @@ import org.apache.shardingsphere.core.parse.aware.ShardingRuleAware;
 import org.apache.shardingsphere.core.parse.aware.ShardingTableMetaDataAware;
 import org.apache.shardingsphere.core.parse.exception.SQLParsingException;
 import org.apache.shardingsphere.core.parse.filler.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
 import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
@@ -67,13 +66,11 @@ public final class ShardingSetAssignmentsFiller implements SQLSegmentFiller<SetA
         if (sqlSegment.getAssignments().size() != columnCount) {
             throw new SQLParsingException("INSERT INTO column size mismatch value size.");
         }
-        AndCondition andCondition = new AndCondition();
         List<ExpressionSegment> columnValues = new LinkedList<>();
         for (AssignmentSegment each : sqlSegment.getAssignments()) {
             columnValues.add(each.getValue());
         }
         insertStatement.getValues().add(new InsertValue(columnValues));
-        insertStatement.getShardingConditions().getOrConditions().add(andCondition);
     }
     
     private int getColumnCountExcludeAssistedQueryColumns(final InsertStatement insertStatement) {

@@ -20,9 +20,6 @@ package org.apache.shardingsphere.core.optimize.engine.sharding;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.core.optimize.engine.sharding.dml.ShardingInsertClauseOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
-import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
-import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
-import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
 import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.sql.context.table.Table;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
@@ -109,12 +106,6 @@ public final class ShardingInsertOptimizeEngineTest {
     private void initializeInsertValuesWithPlaceholder() {
         insertValuesStatementWithPlaceholder = new InsertStatement();
         insertValuesStatementWithPlaceholder.getTables().add(new Table("t_order", null));
-        AndCondition andCondition1 = new AndCondition();
-        andCondition1.getConditions().add(new Condition(new Column("user_id", "t_order"), null, new ParameterMarkerExpressionSegment(0, 0, 0)));
-        insertValuesStatementWithPlaceholder.getShardingConditions().getOrConditions().add(andCondition1);
-        AndCondition andCondition2 = new AndCondition();
-        andCondition2.getConditions().add(new Condition(new Column("user_id", "t_order"), null, new ParameterMarkerExpressionSegment(0, 0, 2)));
-        insertValuesStatementWithPlaceholder.getShardingConditions().getOrConditions().add(andCondition2);
         insertValuesStatementWithPlaceholder.getColumnNames().add("user_id");
         insertValuesStatementWithPlaceholder.getColumnNames().add("status");
         InsertValue insertValue = new InsertValue(Arrays.<ExpressionSegment>asList(new ParameterMarkerExpressionSegment(1, 2, 0), new ParameterMarkerExpressionSegment(3, 4, 1)));
@@ -125,12 +116,6 @@ public final class ShardingInsertOptimizeEngineTest {
     private void initializeInsertValuesWithPlaceholderWithEncrypt() {
         insertValuesStatementWithPlaceholderWithEncrypt = new InsertStatement();
         insertValuesStatementWithPlaceholderWithEncrypt.getTables().add(new Table("t_encrypt", null));
-        AndCondition andCondition1 = new AndCondition();
-        andCondition1.getConditions().add(new Condition(new Column("user_id", "t_encrypt"), null, new ParameterMarkerExpressionSegment(0, 0, 0)));
-        insertValuesStatementWithPlaceholderWithEncrypt.getShardingConditions().getOrConditions().add(andCondition1);
-        AndCondition andCondition2 = new AndCondition();
-        andCondition2.getConditions().add(new Condition(new Column("user_id", "t_encrypt"), null, new ParameterMarkerExpressionSegment(0, 0, 2)));
-        insertValuesStatementWithPlaceholderWithEncrypt.getShardingConditions().getOrConditions().add(andCondition2);
         insertValuesStatementWithPlaceholderWithEncrypt.getColumnNames().add("user_id");
         insertValuesStatementWithPlaceholderWithEncrypt.getColumnNames().add("status");
         InsertValue insertValue = new InsertValue(Arrays.<ExpressionSegment>asList(new ParameterMarkerExpressionSegment(1, 2, 0), new ParameterMarkerExpressionSegment(3, 4, 1)));
@@ -141,17 +126,11 @@ public final class ShardingInsertOptimizeEngineTest {
     private void initializeInsertValuesWithoutPlaceholder() {
         insertValuesStatementWithoutPlaceholder = new InsertStatement();
         insertValuesStatementWithoutPlaceholder.getTables().add(new Table("t_order", null));
-        AndCondition andCondition = new AndCondition();
-        andCondition.getConditions().add(new Condition(new Column("user_id", "t_order"), null, new LiteralExpressionSegment(0, 0, 12)));
-        insertValuesStatementWithoutPlaceholder.getShardingConditions().getOrConditions().add(andCondition);
     }
     
     private void initializeInsertValuesWithoutPlaceholderWithQueryEncrypt() {
         insertValuesStatementWithoutPlaceholderWithQueryEncrypt = new InsertStatement();
         insertValuesStatementWithoutPlaceholderWithQueryEncrypt.getTables().add(new Table("t_encrypt_query", null));
-        AndCondition andCondition = new AndCondition();
-        andCondition.getConditions().add(new Condition(new Column("user_id", "t_encrypt_query"), null, new LiteralExpressionSegment(0, 0, 12)));
-        insertValuesStatementWithoutPlaceholderWithQueryEncrypt.getShardingConditions().getOrConditions().add(andCondition);
     }
     
     private void initializeInsertSetWithPlaceholder() {
@@ -159,9 +138,6 @@ public final class ShardingInsertOptimizeEngineTest {
         insertSetStatementWithPlaceholder.getTables().add(new Table("t_order", null));
         insertSetStatementWithPlaceholder.getColumnNames().add("user_id");
         insertSetStatementWithPlaceholder.getColumnNames().add("status");
-        AndCondition andCondition = new AndCondition();
-        andCondition.getConditions().add(new Condition(new Column("user_id", "t_order"), null, new LiteralExpressionSegment(0, 0, 12)));
-        insertSetStatementWithPlaceholder.getShardingConditions().getOrConditions().add(andCondition);
     }
     
     private void initializeInsertSetWithPlaceholderWithQueryEncrypt() {
@@ -169,9 +145,6 @@ public final class ShardingInsertOptimizeEngineTest {
         insertSetStatementWithPlaceholderWithQueryEncrypt.getTables().add(new Table("t_encrypt_query", null));
         insertSetStatementWithPlaceholderWithQueryEncrypt.getColumnNames().add("user_id");
         insertSetStatementWithPlaceholderWithQueryEncrypt.getColumnNames().add("status");
-        AndCondition andCondition = new AndCondition();
-        andCondition.getConditions().add(new Condition(new Column("user_id", "t_encrypt_query"), null, new LiteralExpressionSegment(0, 0, 12)));
-        insertSetStatementWithPlaceholderWithQueryEncrypt.getShardingConditions().getOrConditions().add(andCondition);
     }
     
     private void initializeInsertSetWithoutPlaceholder() {
@@ -179,9 +152,6 @@ public final class ShardingInsertOptimizeEngineTest {
         insertSetStatementWithoutPlaceholder.getTables().add(new Table("t_order", null));
         insertSetStatementWithoutPlaceholder.getColumnNames().add("user_id");
         insertSetStatementWithoutPlaceholder.getColumnNames().add("status");
-        AndCondition andCondition = new AndCondition();
-        andCondition.getConditions().add(new Condition(new Column("user_id", "t_order"), null, new LiteralExpressionSegment(0, 0, 12)));
-        insertSetStatementWithoutPlaceholder.getShardingConditions().getOrConditions().add(andCondition);
     }
     
     private void initializeInsertSetWithoutPlaceholderWithEncrypt() {
@@ -189,9 +159,6 @@ public final class ShardingInsertOptimizeEngineTest {
         insertSetStatementWithoutPlaceholderWithEncrypt.getTables().add(new Table("t_encrypt", null));
         insertSetStatementWithoutPlaceholderWithEncrypt.getColumnNames().add("user_id");
         insertSetStatementWithoutPlaceholderWithEncrypt.getColumnNames().add("status");
-        AndCondition andCondition = new AndCondition();
-        andCondition.getConditions().add(new Condition(new Column("user_id", "t_encrypt"), null, new LiteralExpressionSegment(0, 0, 12)));
-        insertSetStatementWithoutPlaceholderWithEncrypt.getShardingConditions().getOrConditions().add(andCondition);
     }
     
     @Test
