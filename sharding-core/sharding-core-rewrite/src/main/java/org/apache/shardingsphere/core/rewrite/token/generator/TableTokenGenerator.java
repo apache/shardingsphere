@@ -31,7 +31,6 @@ import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.rewrite.token.pojo.TableToken;
 import org.apache.shardingsphere.core.rule.BaseRule;
-import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
@@ -100,23 +99,17 @@ public final class TableTokenGenerator implements CollectionSQLTokenGenerator<Ba
     }
     
     private boolean isToGenerateTableToken(final SQLStatement sqlStatement, final BaseRule baseRule, final TableSegment tableSegment) {
-        if (baseRule instanceof EncryptRule) {
-            return false;
+        if (baseRule instanceof ShardingRule) {
+            Optional<Table> table = sqlStatement.getTables().find(tableSegment.getName());
+            return table.isPresent() && !table.get().getAlias().isPresent() && ((ShardingRule) baseRule).findTableRule(table.get().getName()).isPresent(); 
         }
-        if (baseRule instanceof MasterSlaveRule) {
-            return true;
-        }
-        Optional<Table> table = sqlStatement.getTables().find(tableSegment.getName());
-        return table.isPresent() && !table.get().getAlias().isPresent() && ((ShardingRule) baseRule).findTableRule(table.get().getName()).isPresent();
+        return baseRule instanceof MasterSlaveRule;
     }
     
     private boolean isToGenerateTableToken(final SQLStatement sqlStatement, final BaseRule baseRule, final TableAvailable segment) {
-        if (baseRule instanceof EncryptRule) {
-            return false;
+        if (baseRule instanceof ShardingRule) {
+            return ((ShardingRule) baseRule).findTableRule(segment.getTableName()).isPresent() || !(sqlStatement instanceof SelectStatement);
         }
-        if (baseRule instanceof MasterSlaveRule) {
-            return true;
-        }
-        return ((ShardingRule) baseRule).findTableRule(segment.getTableName()).isPresent() || !(sqlStatement instanceof SelectStatement);
+        return baseRule instanceof MasterSlaveRule;
     }
 }
