@@ -34,7 +34,6 @@ import org.apache.shardingsphere.core.rewrite.placeholder.LimitRowCountPlacehold
 import org.apache.shardingsphere.core.rewrite.placeholder.OrderByPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.SelectItemPrefixPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.SelectItemsPlaceholder;
-import org.apache.shardingsphere.core.rewrite.placeholder.TablePlaceholder;
 import org.apache.shardingsphere.core.rewrite.token.pojo.AggregationDistinctToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.IndexToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertGeneratedKeyToken;
@@ -45,7 +44,6 @@ import org.apache.shardingsphere.core.rewrite.token.pojo.RowCountToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SQLToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SelectItemPrefixToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SelectItemsToken;
-import org.apache.shardingsphere.core.rewrite.token.pojo.TableToken;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
@@ -85,8 +83,6 @@ public final class ShardingSQLRewriter implements SQLRewriter {
     public void rewrite(final SQLBuilder sqlBuilder, final ParameterBuilder parameterBuilder, final SQLToken sqlToken) {
         if (sqlToken instanceof SelectItemPrefixToken) {
             appendSelectItemPrefixPlaceholder(sqlBuilder);
-        } else if (sqlToken instanceof TableToken) {
-            appendTablePlaceholder(sqlBuilder, (TableToken) sqlToken);
         } else if (sqlToken instanceof IndexToken) {
             appendIndexPlaceholder(sqlBuilder, (IndexToken) sqlToken);
         } else if (sqlToken instanceof SelectItemsToken) {
@@ -110,10 +106,6 @@ public final class ShardingSQLRewriter implements SQLRewriter {
         if (isRewrite()) {
             sqlBuilder.appendPlaceholder(new SelectItemPrefixPlaceholder());
         }
-    }
-    
-    private void appendTablePlaceholder(final SQLBuilder sqlBuilder, final TableToken tableToken) {
-        sqlBuilder.appendPlaceholder(new TablePlaceholder(tableToken.getTableName().toLowerCase(), tableToken.getQuoteCharacter()));
     }
     
     private void appendIndexPlaceholder(final SQLBuilder sqlBuilder, final IndexToken indexToken) {

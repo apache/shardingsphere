@@ -22,9 +22,11 @@ import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertColumnsPlaceholder;
+import org.apache.shardingsphere.core.rewrite.placeholder.TablePlaceholder;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertColumnsToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SQLToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.Substitutable;
+import org.apache.shardingsphere.core.rewrite.token.pojo.TableToken;
 
 import java.util.List;
 
@@ -56,6 +58,8 @@ public final class BaseSQLRewriter implements SQLRewriter {
     public void rewrite(final SQLBuilder sqlBuilder, final ParameterBuilder parameterBuilder, final SQLToken sqlToken) {
         if (sqlToken instanceof InsertColumnsToken) {
             appendInsertColumnsPlaceholder(sqlBuilder, (InsertColumnsToken) sqlToken);
+        } else if (sqlToken instanceof TableToken) {
+            appendTablePlaceholder(sqlBuilder, (TableToken) sqlToken);
         }
         appendLiteral(sqlBuilder, sqlToken);
     }
@@ -63,6 +67,10 @@ public final class BaseSQLRewriter implements SQLRewriter {
     private void appendInsertColumnsPlaceholder(final SQLBuilder sqlBuilder, final InsertColumnsToken insertColumnsToken) {
         InsertColumnsPlaceholder columnsPlaceholder = new InsertColumnsPlaceholder(insertColumnsToken.getColumns(), insertColumnsToken.isToAppendParenthesis());
         sqlBuilder.appendPlaceholder(columnsPlaceholder);
+    }
+    
+    private void appendTablePlaceholder(final SQLBuilder sqlBuilder, final TableToken tableToken) {
+        sqlBuilder.appendPlaceholder(new TablePlaceholder(tableToken.getTableName().toLowerCase(), tableToken.getQuoteCharacter()));
     }
     
     private void appendLiteral(final SQLBuilder sqlBuilder, final SQLToken sqlToken) {

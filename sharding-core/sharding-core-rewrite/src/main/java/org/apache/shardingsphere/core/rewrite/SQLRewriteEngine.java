@@ -34,6 +34,7 @@ import org.apache.shardingsphere.core.route.type.TableUnit;
 import org.apache.shardingsphere.core.rule.BaseRule;
 import org.apache.shardingsphere.core.rule.BindingTableRule;
 import org.apache.shardingsphere.core.rule.EncryptRule;
+import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Collection;
@@ -66,7 +67,7 @@ public final class SQLRewriteEngine {
     public SQLRewriteEngine(final ShardingRule shardingRule, final SQLStatement sqlStatement, final List<Object> parameters, final boolean isSingleRoute) {
         baseRule = shardingRule;
         this.sqlStatement = sqlStatement;
-        sqlTokens = createSQLTokens(shardingRule, sqlStatement, parameters, isSingleRoute);
+        sqlTokens = createSQLTokens(baseRule, sqlStatement, parameters, isSingleRoute);
         sqlBuilder = new SQLBuilder();
         parameterBuilder = new ParameterBuilder(parameters);
         baseSQLRewriter = new BaseSQLRewriter(sqlStatement, sqlTokens);
@@ -75,16 +76,16 @@ public final class SQLRewriteEngine {
     public SQLRewriteEngine(final EncryptRule encryptRule, final SQLStatement sqlStatement, final List<Object> parameters) {
         baseRule = encryptRule;
         this.sqlStatement = sqlStatement;
-        sqlTokens = createSQLTokens(encryptRule, sqlStatement, parameters, true);
+        sqlTokens = createSQLTokens(baseRule, sqlStatement, parameters, true);
         sqlBuilder = new SQLBuilder();
         parameterBuilder = new ParameterBuilder(parameters);
         baseSQLRewriter = new BaseSQLRewriter(sqlStatement, sqlTokens);
     }
     
-    public SQLRewriteEngine(final SQLStatement sqlStatement) {
-        baseRule = null;
+    public SQLRewriteEngine(final MasterSlaveRule masterSlaveRule, final SQLStatement sqlStatement) {
+        baseRule = masterSlaveRule;
         this.sqlStatement = sqlStatement;
-        sqlTokens = createSQLTokens(null, sqlStatement, Collections.emptyList(), true);
+        sqlTokens = createSQLTokens(baseRule, sqlStatement, Collections.emptyList(), true);
         sqlBuilder = new SQLBuilder();
         parameterBuilder = new ParameterBuilder(Collections.emptyList());
         baseSQLRewriter = new BaseSQLRewriter(sqlStatement, sqlTokens);
