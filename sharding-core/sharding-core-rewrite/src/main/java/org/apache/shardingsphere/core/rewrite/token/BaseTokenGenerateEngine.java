@@ -21,6 +21,7 @@ import org.apache.shardingsphere.core.rewrite.token.generator.InsertColumnsToken
 import org.apache.shardingsphere.core.rewrite.token.generator.InsertValuesTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.RemoveTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.SQLTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.token.generator.TableTokenGenerator;
 import org.apache.shardingsphere.core.rule.BaseRule;
 
 import java.util.Collection;
@@ -39,6 +40,7 @@ public final class BaseTokenGenerateEngine extends SQLTokenGenerateEngine<BaseRu
         SQL_TOKEN_GENERATORS.add(new InsertColumnsTokenGenerator());
         SQL_TOKEN_GENERATORS.add(new InsertValuesTokenGenerator());
         SQL_TOKEN_GENERATORS.add(new RemoveTokenGenerator());
+        SQL_TOKEN_GENERATORS.add(new TableTokenGenerator());
     }
     
     @Override
