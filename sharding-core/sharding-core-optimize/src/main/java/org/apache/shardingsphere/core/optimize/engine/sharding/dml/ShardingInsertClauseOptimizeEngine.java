@@ -18,9 +18,8 @@
 package org.apache.shardingsphere.core.optimize.engine.sharding.dml;
 
 import com.google.common.base.Optional;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.optimize.condition.RouteCondition;
-import org.apache.shardingsphere.core.optimize.condition.RouteConditions;
+import org.apache.shardingsphere.core.optimize.condition.ShardingCondition;
+import org.apache.shardingsphere.core.optimize.condition.ShardingConditions;
 import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
 import org.apache.shardingsphere.core.optimize.keygen.GeneratedKey;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
@@ -31,26 +30,33 @@ import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
 /**
- * Insert optimize engine for sharding.
+ * Insert clause optimize engine for sharding.
  *
  * @author zhangliang
  * @author maxiaoguang
  * @author panjuan
  */
-@RequiredArgsConstructor
-public final class ShardingInsertOptimizeEngine implements OptimizeEngine {
+public final class ShardingInsertClauseOptimizeEngine implements OptimizeEngine {
     
     private final ShardingRule shardingRule;
     
     private final InsertStatement insertStatement;
     
     private final List<Object> parameters;
+    
+    private final InsertClauseShardingConditionEngine shardingConditionEngine;
+    
+    public ShardingInsertClauseOptimizeEngine(final ShardingRule shardingRule, final InsertStatement insertStatement, final List<Object> parameters) {
+        this.shardingRule = shardingRule;
+        this.insertStatement = insertStatement;
+        this.parameters = parameters;
+        shardingConditionEngine = new InsertClauseShardingConditionEngine(shardingRule);
+    }
     
     @Override
     public OptimizeResult optimize() {
@@ -77,9 +83,10 @@ public final class ShardingInsertOptimizeEngine implements OptimizeEngine {
             }
             parametersCount += insertValue.getParametersCount();
         }
-        List<RouteCondition> routeConditions = new ArrayList<>();
-        return generatedKey.isPresent()
-                ? createOptimizeResult(insertOptimizeResult, routeConditions, generatedKey.get()) : new OptimizeResult(new RouteConditions(routeConditions), insertOptimizeResult);
+        List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(insertStatement, parameters, generatedKey.orNull());
+        OptimizeResult result = new OptimizeResult(new ShardingConditions(shardingConditions), insertOptimizeResult);
+        result.setGeneratedKey(generatedKey.orNull());
+        return result;
     }
     
     private void appendGeneratedKeyColumn(final GeneratedKey generatedKey, final InsertOptimizeResult insertOptimizeResult) {
@@ -105,11 +112,5 @@ public final class ShardingInsertOptimizeEngine implements OptimizeEngine {
                 unit.addInsertValue((Comparable<?>) unit.getColumnValue(each), parameters);
             }
         }
-    }
-    
-    private OptimizeResult createOptimizeResult(final InsertOptimizeResult insertOptimizeResult, final List<RouteCondition> routeConditions, final GeneratedKey generatedKey) {
-        OptimizeResult result = new OptimizeResult(new RouteConditions(routeConditions), insertOptimizeResult);
-        result.setGeneratedKey(generatedKey);
-        return result;
     }
 }

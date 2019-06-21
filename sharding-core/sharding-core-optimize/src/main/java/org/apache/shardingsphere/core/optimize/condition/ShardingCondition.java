@@ -28,13 +28,14 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Route condition.
+ * Sharding condition.
  * 
  * @author maxiaoguang
+ * @author zhangliang
  */
 @Getter
 @ToString
-public class RouteCondition {
+public class ShardingCondition {
     
     private final List<RouteValue> routeValues = new LinkedList<>();
     

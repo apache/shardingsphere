@@ -20,15 +20,17 @@ package org.apache.shardingsphere.core.strategy.route.value;
 import com.google.common.collect.Range;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 /**
- * Route value for between.
+ * Route value for range.
  * 
  * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-public final class BetweenRouteValue<T extends Comparable<?>> implements RouteValue {
+@ToString
+public final class RangeRouteValue<T extends Comparable<?>> implements RouteValue {
     
     private final String columnName;
     

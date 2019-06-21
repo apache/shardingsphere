@@ -1,3 +1,32 @@
+## 4.0.0.RC2
+
+### API调整
+
+1. 优化并删除sharding logicIndex的API和配置项。
+
+### 新功能
+
+1. 集成Seata分布式事务。
+1. ShardingProxy支持数据脱敏。
+1. 支持Leaf-segment生成器生成分布式ID。
+1. 支持Skywalking的性能管理插件。
+
+### 功能提升
+
+1. 只更新修改的数据源而不是所有数据源，以此来提高配置治理性能。
+1. 提升SQL解析的兼容性。
+
+### 重构
+
+1. 删除DatabaseType枚举类型，使用动态SPI读取数据源类型。
+1. 解析引擎由第二代升级为第三代。
+1. 重构重写引擎。
+
+### 更新日志
+
+1. [MILESTONE](https://github.com/apache/incubator-shardingsphere/milestone/7)
+
+
 ## 4.0.0.RC1
 
 将3.1.0.M1, 3.1.0, 3.1.0.1 和 4.0.0.M1版本全部合并至此版本发布。首个Apache Release。

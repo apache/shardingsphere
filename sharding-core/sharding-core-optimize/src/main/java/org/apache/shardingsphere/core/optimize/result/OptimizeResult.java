@@ -21,8 +21,8 @@ import com.google.common.base.Optional;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.core.optimize.condition.RouteCondition;
-import org.apache.shardingsphere.core.optimize.condition.RouteConditions;
+import org.apache.shardingsphere.core.optimize.condition.ShardingCondition;
+import org.apache.shardingsphere.core.optimize.condition.ShardingConditions;
 import org.apache.shardingsphere.core.optimize.keygen.GeneratedKey;
 import org.apache.shardingsphere.core.optimize.pagination.Pagination;
 import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResult;
@@ -39,7 +39,7 @@ import java.util.List;
 @Setter
 public final class OptimizeResult {
     
-    private RouteConditions routeConditions;
+    private ShardingConditions shardingConditions;
     
     @Getter(AccessLevel.NONE)
     private final InsertOptimizeResult insertOptimizeResult;
@@ -50,16 +50,16 @@ public final class OptimizeResult {
     
     private String logicTableNameForDropIndex;
     
-    public OptimizeResult(final List<RouteCondition> routeConditions) {
-        this(new RouteConditions(routeConditions), null);
+    public OptimizeResult(final List<ShardingCondition> shardingConditions) {
+        this(new ShardingConditions(shardingConditions), null);
     }
     
     public OptimizeResult(final InsertOptimizeResult insertOptimizeResult) {
-        this(new RouteConditions(Collections.<RouteCondition>emptyList()), insertOptimizeResult);
+        this(new ShardingConditions(Collections.<ShardingCondition>emptyList()), insertOptimizeResult);
     }
     
-    public OptimizeResult(final RouteConditions routeConditions, final InsertOptimizeResult insertOptimizeResult) {
-        this.routeConditions = routeConditions;
+    public OptimizeResult(final ShardingConditions shardingConditions, final InsertOptimizeResult insertOptimizeResult) {
+        this.shardingConditions = shardingConditions;
         this.insertOptimizeResult = insertOptimizeResult;
     }
     

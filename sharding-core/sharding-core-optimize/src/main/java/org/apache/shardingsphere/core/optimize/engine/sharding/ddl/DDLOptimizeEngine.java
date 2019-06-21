@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.optimize.engine.sharding.ddl;
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.optimize.condition.RouteCondition;
+import org.apache.shardingsphere.core.optimize.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.DDLStatement;
@@ -42,7 +42,7 @@ public final class DDLOptimizeEngine implements OptimizeEngine {
     
     @Override
     public OptimizeResult optimize() {
-        OptimizeResult result = new OptimizeResult(Collections.<RouteCondition>emptyList());
+        OptimizeResult result = new OptimizeResult(Collections.<ShardingCondition>emptyList());
         if (isDropIndexWithoutTable()) {
             setLogicTableName(result);
         }

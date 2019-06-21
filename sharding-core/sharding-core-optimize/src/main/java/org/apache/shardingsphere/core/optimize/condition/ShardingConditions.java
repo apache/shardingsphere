@@ -19,21 +19,21 @@ package org.apache.shardingsphere.core.optimize.condition;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.optimize.engine.sharding.dml.AlwaysFalseRouteCondition;
+import org.apache.shardingsphere.core.optimize.engine.sharding.dml.AlwaysFalseShardingCondition;
 
 import java.util.List;
 
 /**
- * Route conditions.
+ * Sharding conditions.
  *
  * @author zhangliang
  * @author maxiaoguang
  */
 @RequiredArgsConstructor
 @Getter
-public final class RouteConditions {
+public final class ShardingConditions {
     
-    private final List<RouteCondition> routeConditions;
+    private final List<ShardingCondition> shardingConditions;
     
     /**
      * Judge sharding conditions is always false or not.
@@ -41,11 +41,11 @@ public final class RouteConditions {
      * @return sharding conditions is always false or not
      */
     public boolean isAlwaysFalse() {
-        if (routeConditions.isEmpty()) {
+        if (shardingConditions.isEmpty()) {
             return false;
         }
-        for (RouteCondition each : routeConditions) {
-            if (!(each instanceof AlwaysFalseRouteCondition)) {
+        for (ShardingCondition each : shardingConditions) {
+            if (!(each instanceof AlwaysFalseShardingCondition)) {
                 return false;
             }
         }
