@@ -23,7 +23,6 @@ import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
-import java.util.Map;
 
 /**
  * Encrypt condition.
@@ -35,9 +34,8 @@ public final class EncryptRuleCondition extends SpringBootCondition {
     private static final String ENCRYPT_PREFIX = "spring.shardingsphere.encrypt.encryptors";
     
     @Override
-    @SuppressWarnings("unchecked")
     public ConditionOutcome getMatchOutcome(final ConditionContext conditionContext, final AnnotatedTypeMetadata annotatedTypeMetadata) {
-        Map<String, Object> encryptors = PropertyUtil.handle(conditionContext.getEnvironment(), ENCRYPT_PREFIX.trim(), Map.class);
-        return encryptors.isEmpty() ? ConditionOutcome.noMatch("Can't find ShardingSphere encrypt rule configuration in environment.") : ConditionOutcome.match();
+        boolean isEncrypt = PropertyUtil.containPropertyPrefix(conditionContext.getEnvironment(), ENCRYPT_PREFIX);
+        return isEncrypt ? ConditionOutcome.match() : ConditionOutcome.noMatch("Can't find ShardingSphere encrypt rule configuration in environment.");
     }
 }
