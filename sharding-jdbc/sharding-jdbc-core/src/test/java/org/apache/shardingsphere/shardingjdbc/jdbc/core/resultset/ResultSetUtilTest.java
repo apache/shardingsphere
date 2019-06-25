@@ -86,4 +86,12 @@ public final class ResultSetUtilTest {
     public void assertConvertDateValueError() {
         ResultSetUtil.convertValue(new Date(), int.class);
     }
+    
+    @Test
+    public void assertConvertByteArrayValue() {
+        assertThat(ResultSetUtil.convertValue(new byte[] {}, boolean.class), is((Object) false));
+        assertThat(ResultSetUtil.convertValue(new byte[] {0}, boolean.class), is((Object) false));
+        assertThat(ResultSetUtil.convertValue(new byte[] {1}, boolean.class), is((Object) true));
+        assertThat(ResultSetUtil.convertValue(new byte[] {1, 0}, boolean.class), is((Object) true));
+    }
 }
