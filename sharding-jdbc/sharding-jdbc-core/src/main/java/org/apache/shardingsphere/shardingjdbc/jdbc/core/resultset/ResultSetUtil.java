@@ -54,6 +54,9 @@ public final class ResultSetUtil {
         if (value instanceof Date) {
             return convertDateValue(value, convertType);
         }
+        if (value.getClass().isArray() && value instanceof byte[]) {
+        	return convertByteArrayValue(value, convertType);
+        }
         if (String.class.equals(convertType)) {
             return value.toString();
         } else {
@@ -119,6 +122,25 @@ public final class ResultSetUtil {
                 return new Timestamp(date.getTime());
             default:
                 throw new ShardingException("Unsupported Date type:%s", convertType);
+        }
+    }
+    
+    private static Object convertByteArrayValue(final Object value, final Class<?> convertType) {
+        byte[] bs = (byte[]) value;
+        switch (convertType.getName()) {
+            case "boolean":
+                if (bs.length == 0) {
+                    return false;
+                }
+                byte boolVal = bs[0];
+                if (boolVal == (byte) 1) {
+                    return true;
+                } else if (boolVal == (byte) 0) {
+                    return false;
+                }
+                return boolVal > 0;
+            default:
+                return value;
         }
     }
 }
