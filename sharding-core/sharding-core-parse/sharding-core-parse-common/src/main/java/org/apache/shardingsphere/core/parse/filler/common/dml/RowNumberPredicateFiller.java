@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.filler.sharding.dml.select;
+package org.apache.shardingsphere.core.parse.filler.common.dml;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.parse.filler.SQLSegmentFiller;
@@ -38,16 +38,16 @@ import java.util.LinkedList;
 import java.util.TreeSet;
 
 /**
- * Row number predicate filler for sharding.
+ * Row number predicate filler.
  *
  * @author zhangliang
  */
-public final class ShardingRowNumberPredicateFiller implements SQLSegmentFiller<OrPredicateSegment> {
+public final class RowNumberPredicateFiller implements SQLSegmentFiller<OrPredicateSegment> {
     
     // TODO recognize database type, only oracle and sqlserver can use row number
     private final Collection<String> rowNumberIdentifiers;
     
-    public ShardingRowNumberPredicateFiller() {
+    public RowNumberPredicateFiller() {
         rowNumberIdentifiers = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         rowNumberIdentifiers.add("rownum");
         rowNumberIdentifiers.add("ROW_NUMBER");

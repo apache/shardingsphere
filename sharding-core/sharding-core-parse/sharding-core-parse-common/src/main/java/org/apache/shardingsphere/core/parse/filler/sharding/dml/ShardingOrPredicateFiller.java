@@ -22,8 +22,8 @@ import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.aware.ShardingRuleAware;
 import org.apache.shardingsphere.core.parse.aware.ShardingTableMetaDataAware;
 import org.apache.shardingsphere.core.parse.filler.SQLSegmentFiller;
+import org.apache.shardingsphere.core.parse.filler.common.dml.RowNumberPredicateFiller;
 import org.apache.shardingsphere.core.parse.filler.encrypt.dml.EncryptOrPredicateFiller;
-import org.apache.shardingsphere.core.parse.filler.sharding.dml.select.ShardingRowNumberPredicateFiller;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.OrPredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
@@ -40,7 +40,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 @Setter
 public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredicateSegment>, ShardingRuleAware, ShardingTableMetaDataAware {
     
-    private final ShardingRowNumberPredicateFiller shardingRowNumberPredicateFiller = new ShardingRowNumberPredicateFiller();
+    private final RowNumberPredicateFiller shardingRowNumberPredicateFiller = new RowNumberPredicateFiller();
     
     private ShardingRule shardingRule;
     
