@@ -19,7 +19,6 @@
 <filler-rule-definition>
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.sql.segment.dml.InsertValuesSegment" filler-class="org.apache.shardingsphere.core.parse.filler.sharding.dml.insert.ShardingInsertValuesFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment" filler-class="org.apache.shardingsphere.core.parse.filler.sharding.dml.update.ShardingSetAssignmentsFiller" />
-    <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.sql.segment.dml.column.OnDuplicateKeyColumnsSegment" filler-class="org.apache.shardingsphere.core.parse.filler.sharding.dml.insert.ShardingOnDuplicateKeyColumnsFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.OrPredicateSegment" filler-class="org.apache.shardingsphere.core.parse.filler.sharding.dml.ShardingOrPredicateFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.SubqueryPredicateSegment" filler-class="org.apache.shardingsphere.core.parse.filler.sharding.dml.select.ShardingSubqueryPredicateFiller" />
 </filler-rule-definition>
