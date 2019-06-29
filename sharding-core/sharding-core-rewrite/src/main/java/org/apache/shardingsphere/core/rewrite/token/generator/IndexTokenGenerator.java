@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
+import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.ddl.index.IndexSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.rewrite.token.pojo.IndexToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
@@ -36,9 +36,9 @@ import java.util.List;
 public final class IndexTokenGenerator implements CollectionSQLTokenGenerator<ShardingRule> {
     
     @Override
-    public Collection<IndexToken> generateSQLTokens(final SQLStatement sqlStatement, final List<Object> parameters, final ShardingRule shardingRule) {
+    public Collection<IndexToken> generateSQLTokens(final OptimizedStatement optimizedStatement, final List<Object> parameters, final ShardingRule shardingRule) {
         Collection<IndexToken> result = new LinkedList<>();
-        for (SQLSegment each : sqlStatement.getSQLSegments()) {
+        for (SQLSegment each : optimizedStatement.getSQLStatement().getSQLSegments()) {
             if (each instanceof IndexSegment) {
                 result.add(createIndexToken((IndexSegment) each));
             }

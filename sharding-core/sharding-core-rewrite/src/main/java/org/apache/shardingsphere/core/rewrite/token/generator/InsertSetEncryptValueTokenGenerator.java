@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Optional;
+import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertSetEncryptValueToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
@@ -40,12 +40,12 @@ import java.util.List;
 public final class InsertSetEncryptValueTokenGenerator implements CollectionSQLTokenGenerator<EncryptRule> {
     
     @Override
-    public Collection<InsertSetEncryptValueToken> generateSQLTokens(final SQLStatement sqlStatement, final List<Object> parameters, final EncryptRule encryptRule) {
-        Optional<SetAssignmentsSegment> setAssignmentsSegment = sqlStatement.findSQLSegment(SetAssignmentsSegment.class);
-        if (!(sqlStatement instanceof InsertStatement && setAssignmentsSegment.isPresent())) {
+    public Collection<InsertSetEncryptValueToken> generateSQLTokens(final OptimizedStatement optimizedStatement, final List<Object> parameters, final EncryptRule encryptRule) {
+        Optional<SetAssignmentsSegment> setAssignmentsSegment = optimizedStatement.getSQLStatement().findSQLSegment(SetAssignmentsSegment.class);
+        if (!(optimizedStatement.getSQLStatement() instanceof InsertStatement && setAssignmentsSegment.isPresent())) {
             return Collections.emptyList();
         }
-        return createInsertSetEncryptValueTokens((InsertStatement) sqlStatement, encryptRule, setAssignmentsSegment.get());
+        return createInsertSetEncryptValueTokens((InsertStatement) optimizedStatement.getSQLStatement(), encryptRule, setAssignmentsSegment.get());
     }
     
     private Collection<InsertSetEncryptValueToken> createInsertSetEncryptValueTokens(final InsertStatement insertStatement, final EncryptRule encryptRule, final SetAssignmentsSegment segment) {

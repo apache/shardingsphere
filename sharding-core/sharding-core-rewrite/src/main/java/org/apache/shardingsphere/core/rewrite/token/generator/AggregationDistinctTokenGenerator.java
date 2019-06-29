@@ -20,11 +20,11 @@ package org.apache.shardingsphere.core.rewrite.token.generator;
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.collect.Collections2;
+import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.constant.DerivedColumn;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.SelectItemsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.AggregationDistinctSelectItemSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.rewrite.token.pojo.AggregationDistinctToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
@@ -41,9 +41,9 @@ import java.util.List;
 public final class AggregationDistinctTokenGenerator implements CollectionSQLTokenGenerator<ShardingRule> {
     
     @Override
-    public Collection<AggregationDistinctToken> generateSQLTokens(final SQLStatement sqlStatement, final List<Object> parameters, final ShardingRule shardingRule) {
+    public Collection<AggregationDistinctToken> generateSQLTokens(final OptimizedStatement optimizedStatement, final List<Object> parameters, final ShardingRule shardingRule) {
         Collection<AggregationDistinctToken> result = new LinkedList<>();
-        for (SQLSegment each : sqlStatement.getSQLSegments()) {
+        for (SQLSegment each : optimizedStatement.getSQLStatement().getSQLSegments()) {
             Collection<AggregationDistinctSelectItemSegment> distinctSelectItemSegments = getAggregationDistinctSelectItemSegment(each);
             if (!distinctSelectItemSegments.isEmpty()) {
                 result.addAll(Collections2.transform(distinctSelectItemSegments, new Function<AggregationDistinctSelectItemSegment, AggregationDistinctToken>() {

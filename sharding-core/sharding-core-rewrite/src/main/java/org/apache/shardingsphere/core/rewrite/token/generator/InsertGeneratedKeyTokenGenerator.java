@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Optional;
+import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertGeneratedKeyToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -34,12 +34,12 @@ import java.util.List;
 public final class InsertGeneratedKeyTokenGenerator implements OptionalSQLTokenGenerator<ShardingRule> {
     
     @Override
-    public Optional<InsertGeneratedKeyToken> generateSQLToken(final SQLStatement sqlStatement, final List<Object> parameters, final ShardingRule shardingRule) {
-        Optional<InsertColumnsSegment> insertColumnsSegment = sqlStatement.findSQLSegment(InsertColumnsSegment.class);
-        if (!(sqlStatement instanceof InsertStatement && insertColumnsSegment.isPresent())) {
+    public Optional<InsertGeneratedKeyToken> generateSQLToken(final OptimizedStatement optimizedStatement, final List<Object> parameters, final ShardingRule shardingRule) {
+        Optional<InsertColumnsSegment> insertColumnsSegment = optimizedStatement.getSQLStatement().findSQLSegment(InsertColumnsSegment.class);
+        if (!(optimizedStatement.getSQLStatement() instanceof InsertStatement && insertColumnsSegment.isPresent())) {
             return Optional.absent();
         }
-        return createInsertGeneratedKeyToken((InsertStatement) sqlStatement, insertColumnsSegment.get(), shardingRule);
+        return createInsertGeneratedKeyToken((InsertStatement) optimizedStatement.getSQLStatement(), insertColumnsSegment.get(), shardingRule);
     }
     
     private Optional<InsertGeneratedKeyToken> createInsertGeneratedKeyToken(final InsertStatement insertStatement, final InsertColumnsSegment segment, final ShardingRule shardingRule) {

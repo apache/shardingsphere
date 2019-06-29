@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Optional;
+import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.context.table.Table;
 import org.apache.shardingsphere.core.parse.sql.segment.OwnerAvailable;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
@@ -47,18 +48,18 @@ import java.util.List;
 public final class TableTokenGenerator implements CollectionSQLTokenGenerator<BaseRule> {
     
     @Override
-    public Collection<TableToken> generateSQLTokens(final SQLStatement sqlStatement, final List<Object> parameters, final BaseRule baseRule) {
+    public Collection<TableToken> generateSQLTokens(final OptimizedStatement optimizedStatement, final List<Object> parameters, final BaseRule baseRule) {
         Collection<TableToken> result = new LinkedList<>();
-        for (SQLSegment each : sqlStatement.getSQLSegments()) {
+        for (SQLSegment each : optimizedStatement.getSQLStatement().getSQLSegments()) {
             if (each instanceof SelectItemsSegment) {
-                result.addAll(createTableTokens(sqlStatement, baseRule, (SelectItemsSegment) each));
+                result.addAll(createTableTokens(optimizedStatement.getSQLStatement(), baseRule, (SelectItemsSegment) each));
             } else if (each instanceof ColumnSegment) {
-                Optional<TableToken> tableToken = createTableToken(sqlStatement, baseRule, (ColumnSegment) each);
+                Optional<TableToken> tableToken = createTableToken(optimizedStatement.getSQLStatement(), baseRule, (ColumnSegment) each);
                 if (tableToken.isPresent()) {
                     result.add(tableToken.get());
                 }
             } else if (each instanceof TableAvailable) {
-                Optional<TableToken> tableToken = createTableToken(sqlStatement, baseRule, (TableAvailable) each);
+                Optional<TableToken> tableToken = createTableToken(optimizedStatement.getSQLStatement(), baseRule, (TableAvailable) each);
                 if (tableToken.isPresent()) {
                     result.add(tableToken.get());
                 }

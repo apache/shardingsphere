@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
+import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
@@ -41,17 +42,17 @@ import java.util.List;
 public final class EncryptColumnTokenGenerator implements CollectionSQLTokenGenerator<EncryptRule> {
     
     @Override
-    public Collection<EncryptColumnToken> generateSQLTokens(final SQLStatement sqlStatement, final List<Object> parameters, final EncryptRule encryptRule) {
-        if (!(sqlStatement instanceof DMLStatement)) {
+    public Collection<EncryptColumnToken> generateSQLTokens(final OptimizedStatement optimizedStatement, final List<Object> parameters, final EncryptRule encryptRule) {
+        if (!(optimizedStatement.getSQLStatement() instanceof DMLStatement)) {
             return Collections.emptyList();
         }
         Collection<EncryptColumnToken> result = new LinkedList<>();
-        for (SQLSegment each : sqlStatement.getSQLSegments()) {
+        for (SQLSegment each : optimizedStatement.getSQLStatement().getSQLSegments()) {
             if (each instanceof SetAssignmentsSegment) {
-                result.addAll(createFromUpdateSetAssignment(sqlStatement, encryptRule, (SetAssignmentsSegment) each));
+                result.addAll(createFromUpdateSetAssignment(optimizedStatement.getSQLStatement(), encryptRule, (SetAssignmentsSegment) each));
             }
         }
-        result.addAll(createFromWhereCondition((DMLStatement) sqlStatement));
+        result.addAll(createFromWhereCondition((DMLStatement) optimizedStatement.getSQLStatement()));
         return result;
     }
     

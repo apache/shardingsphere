@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Optional;
+import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertSetAddAssistedColumnsToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
@@ -38,12 +38,12 @@ import java.util.List;
 public final class InsertSetAddAssistedColumnsTokenGenerator implements OptionalSQLTokenGenerator<EncryptRule> {
     
     @Override
-    public Optional<InsertSetAddAssistedColumnsToken> generateSQLToken(final SQLStatement sqlStatement, final List<Object> parameters, final EncryptRule encryptRule) {
-        Optional<SetAssignmentsSegment> setAssignmentsSegment = sqlStatement.findSQLSegment(SetAssignmentsSegment.class);
-        if (!(sqlStatement instanceof InsertStatement && setAssignmentsSegment.isPresent())) {
+    public Optional<InsertSetAddAssistedColumnsToken> generateSQLToken(final OptimizedStatement optimizedStatement, final List<Object> parameters, final EncryptRule encryptRule) {
+        Optional<SetAssignmentsSegment> setAssignmentsSegment = optimizedStatement.getSQLStatement().findSQLSegment(SetAssignmentsSegment.class);
+        if (!(optimizedStatement.getSQLStatement() instanceof InsertStatement && setAssignmentsSegment.isPresent())) {
             return Optional.absent();
         }
-        return createInsertSetAddItemsToken((InsertStatement) sqlStatement, encryptRule, setAssignmentsSegment.get());
+        return createInsertSetAddItemsToken((InsertStatement) optimizedStatement.getSQLStatement(), encryptRule, setAssignmentsSegment.get());
     }
     
     private Optional<InsertSetAddAssistedColumnsToken> createInsertSetAddItemsToken(final InsertStatement insertStatement, final EncryptRule encryptRule, final SetAssignmentsSegment segment) {

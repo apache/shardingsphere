@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Optional;
+import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.InsertValuesSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertValuesToken;
 import org.apache.shardingsphere.core.rule.BaseRule;
@@ -35,9 +35,9 @@ import java.util.List;
 public final class InsertValuesTokenGenerator implements OptionalSQLTokenGenerator<BaseRule> {
     
     @Override
-    public Optional<InsertValuesToken> generateSQLToken(final SQLStatement sqlStatement, final List<Object> parameters, final BaseRule baseRule) {
-        Collection<InsertValuesSegment> insertValuesSegments = sqlStatement.findSQLSegments(InsertValuesSegment.class);
-        if (!(sqlStatement instanceof InsertStatement) || insertValuesSegments.isEmpty()) {
+    public Optional<InsertValuesToken> generateSQLToken(final OptimizedStatement optimizedStatement, final List<Object> parameters, final BaseRule baseRule) {
+        Collection<InsertValuesSegment> insertValuesSegments = optimizedStatement.getSQLStatement().findSQLSegments(InsertValuesSegment.class);
+        if (!(optimizedStatement.getSQLStatement() instanceof InsertStatement) || insertValuesSegments.isEmpty()) {
             return Optional.absent();
         }
         return createInsertValuesToken(insertValuesSegments);

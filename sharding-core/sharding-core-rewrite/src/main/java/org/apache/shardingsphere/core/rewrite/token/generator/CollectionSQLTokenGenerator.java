@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SQLToken;
 import org.apache.shardingsphere.core.rule.BaseRule;
 
@@ -36,10 +36,10 @@ public interface CollectionSQLTokenGenerator<T extends BaseRule> extends SQLToke
     /**
      * Generate SQL tokens.
      * 
-     * @param sqlStatement SQL statement
+     * @param optimizedStatement optimized statement
      * @param parameters SQL parameters
      * @param rule rule
      * @return SQL tokens
      */
-    Collection<? extends SQLToken> generateSQLTokens(SQLStatement sqlStatement, List<Object> parameters, T rule);
+    Collection<? extends SQLToken> generateSQLTokens(OptimizedStatement optimizedStatement, List<Object> parameters, T rule);
 }

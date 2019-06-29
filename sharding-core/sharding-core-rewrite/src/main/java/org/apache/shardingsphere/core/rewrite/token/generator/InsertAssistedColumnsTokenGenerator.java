@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Optional;
+import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertAssistedColumnsToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
@@ -36,12 +36,12 @@ import java.util.List;
 public final class InsertAssistedColumnsTokenGenerator implements OptionalSQLTokenGenerator<EncryptRule> {
     
     @Override
-    public Optional<InsertAssistedColumnsToken> generateSQLToken(final SQLStatement sqlStatement, final List<Object> parameters, final EncryptRule encryptRule) {
-        Optional<InsertColumnsSegment> insertColumnsSegment = sqlStatement.findSQLSegment(InsertColumnsSegment.class);
-        if (!(sqlStatement instanceof InsertStatement && insertColumnsSegment.isPresent())) {
+    public Optional<InsertAssistedColumnsToken> generateSQLToken(final OptimizedStatement optimizedStatement, final List<Object> parameters, final EncryptRule encryptRule) {
+        Optional<InsertColumnsSegment> insertColumnsSegment = optimizedStatement.getSQLStatement().findSQLSegment(InsertColumnsSegment.class);
+        if (!(optimizedStatement.getSQLStatement() instanceof InsertStatement && insertColumnsSegment.isPresent())) {
             return Optional.absent();
         }
-        return createInsertAssistedColumnsToken((InsertStatement) sqlStatement, insertColumnsSegment.get(), encryptRule);
+        return createInsertAssistedColumnsToken((InsertStatement) optimizedStatement.getSQLStatement(), insertColumnsSegment.get(), encryptRule);
     }
     
     private Optional<InsertAssistedColumnsToken> createInsertAssistedColumnsToken(final InsertStatement insertStatement, final InsertColumnsSegment segment, final EncryptRule encryptRule) {
