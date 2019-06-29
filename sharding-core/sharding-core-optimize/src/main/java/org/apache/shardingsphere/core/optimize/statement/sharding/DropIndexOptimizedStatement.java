@@ -17,9 +17,8 @@
 
 package org.apache.shardingsphere.core.optimize.statement.sharding;
 
-import com.google.common.base.Optional;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
@@ -33,20 +32,11 @@ public final class DropIndexOptimizedStatement implements OptimizedStatement {
     
     private final SQLStatement sqlStatement;
     
-    @Setter
-    private String tableName;
+    @Getter
+    private final String tableName;
     
     @Override
     public SQLStatement getSQLStatement() {
         return sqlStatement;
-    }
-    
-    /**
-     * Get logic table name.
-     *
-     * @return logic table name
-     */
-    public Optional<String> getTableName() {
-        return Optional.fromNullable(tableName);
     }
 }

@@ -59,10 +59,8 @@ public final class TableBroadcastRoutingEngine implements RoutingEngine {
     }
     
     private Collection<String> getLogicTableNames() {
-        if (optimizedStatement instanceof DropIndexOptimizedStatement && ((DropIndexOptimizedStatement) optimizedStatement).getTableName().isPresent()) {
-            return Collections.singletonList(((DropIndexOptimizedStatement) optimizedStatement).getTableName().get());
-        }
-        return sqlStatement.getTables().getTableNames();
+        return optimizedStatement instanceof DropIndexOptimizedStatement
+                ? Collections.singletonList(((DropIndexOptimizedStatement) optimizedStatement).getTableName()) : sqlStatement.getTables().getTableNames();
     }
     
     private Collection<RoutingUnit> getAllRoutingUnits(final String logicTableName) {

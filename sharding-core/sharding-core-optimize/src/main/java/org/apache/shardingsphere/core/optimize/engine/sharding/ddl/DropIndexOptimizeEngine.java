@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.optimize.engine.sharding.ddl;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
@@ -38,17 +39,15 @@ public final class DropIndexOptimizeEngine implements OptimizeEngine {
     
     @Override
     public DropIndexOptimizedStatement optimize() {
-        DropIndexOptimizedStatement result = new DropIndexOptimizedStatement(dropIndexStatement);
-        if (dropIndexStatement.getTables().isEmpty()) {
-            setLogicTableName(result);
-        }
-        return result;
+        return new DropIndexOptimizedStatement(dropIndexStatement, getTableName());
     }
     
-    private void setLogicTableName(final DropIndexOptimizedStatement optimizedStatement) {
-        Optional<String> logicTableName = shardingTableMetaData.getLogicTableName(dropIndexStatement.getIndexName());
-        if (logicTableName.isPresent()) {
-            optimizedStatement.setTableName(logicTableName.get());
+    private String getTableName() {
+        if (!dropIndexStatement.getTables().isEmpty()) {
+            return dropIndexStatement.getTables().getSingleTableName();
         }
+        Optional<String> logicTableName = shardingTableMetaData.getLogicTableName(dropIndexStatement.getIndexName());
+        Preconditions.checkState(logicTableName.isPresent(), "Cannot find table for index name `%s` from sharding rule.", dropIndexStatement.getIndexName());
+        return logicTableName.get();
     }
 }
