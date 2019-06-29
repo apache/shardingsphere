@@ -21,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
 import org.apache.shardingsphere.core.optimize.statement.sharding.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.statement.sharding.insert.InsertClauseOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.sharding.insert.InsertOptimizeResult;
 import org.apache.shardingsphere.core.optimize.statement.sharding.insert.InsertOptimizeResultUnit;
 import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
@@ -29,6 +28,7 @@ import org.apache.shardingsphere.core.rule.EncryptRule;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 /**
@@ -47,25 +47,24 @@ public final class EncryptInsertOptimizeEngine implements OptimizeEngine {
     
     @Override
     public InsertClauseOptimizedStatement optimize() {
-        InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(insertStatement.getColumnNames());
-        appendAssistedQueryColumns(insertOptimizeResult);
+        InsertClauseOptimizedStatement result = new InsertClauseOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), getColumnNames());
         int derivedColumnsCount = getDerivedColumnsCount();
         int parametersCount = 0;
         for (InsertValue each : insertStatement.getValues()) {
-            InsertOptimizeResultUnit unit = insertOptimizeResult.addUnit(
+            InsertOptimizeResultUnit unit = result.addUnit(
                     each.getValues(derivedColumnsCount), each.getParameters(parameters, parametersCount, derivedColumnsCount), each.getParametersCount());
             if (encryptRule.getEncryptorEngine().isHasShardingQueryAssistedEncryptor(insertStatement.getTables().getSingleTableName())) {
-                fillAssistedQueryUnit(insertOptimizeResult.getColumnNames(), unit);
+                fillAssistedQueryUnit(result.getColumnNames(), unit);
             }
             parametersCount += each.getParametersCount();
         }
-        return new InsertClauseOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), insertOptimizeResult);
+        return result;
     }
     
-    private void appendAssistedQueryColumns(final InsertOptimizeResult insertOptimizeResult) {
-        for (String each : encryptRule.getEncryptorEngine().getAssistedQueryColumns(insertStatement.getTables().getSingleTableName())) {
-            insertOptimizeResult.getColumnNames().add(each);
-        }
+    private Collection<String> getColumnNames() {
+        Collection<String> result = new LinkedHashSet<>(insertStatement.getColumnNames());
+        result.addAll(encryptRule.getEncryptorEngine().getAssistedQueryColumns(insertStatement.getTables().getSingleTableName()));
+        return result;
     }
     
     private int getDerivedColumnsCount() {

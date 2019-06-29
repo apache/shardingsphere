@@ -21,7 +21,6 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.insert.InsertClauseOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.sharding.insert.InsertOptimizeResult;
 import org.apache.shardingsphere.core.optimize.statement.sharding.insert.InsertOptimizeResultUnit;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Conditions;
@@ -73,23 +72,21 @@ public final class EncryptSQLRewriter implements SQLRewriter {
     
     private final DMLStatement dmlStatement;
     
-    private final InsertOptimizeResult insertOptimizeResult;
+    private final OptimizedStatement optimizedStatement;
     
     public EncryptSQLRewriter(final ShardingEncryptorEngine encryptorEngine, final OptimizedStatement optimizedStatement) {
         this.encryptorEngine = encryptorEngine;
         this.dmlStatement = (DMLStatement) optimizedStatement.getSQLStatement();
-        this.insertOptimizeResult = getInsertOptimizeResult(optimizedStatement);
+        this.optimizedStatement = optimizedStatement;
+        encryptInsertOptimizedStatement(optimizedStatement);
     }
     
-    private InsertOptimizeResult getInsertOptimizeResult(final OptimizedStatement optimizedStatement) {
-        if (null == optimizedStatement || !(optimizedStatement instanceof InsertClauseOptimizedStatement)) {
-            return null;
+    private void encryptInsertOptimizedStatement(final OptimizedStatement optimizedStatement) {
+        if (optimizedStatement instanceof InsertClauseOptimizedStatement) {
+            for (InsertOptimizeResultUnit each : ((InsertClauseOptimizedStatement) optimizedStatement).getUnits()) {
+                encryptInsertOptimizeResultUnit(each, ((InsertClauseOptimizedStatement) optimizedStatement).getColumnNames());
+            }
         }
-        InsertOptimizeResult result = ((InsertClauseOptimizedStatement) optimizedStatement).getInsertOptimizeResult();
-        for (InsertOptimizeResultUnit each : result.getUnits()) {
-            encryptInsertOptimizeResultUnit(each, result.getColumnNames());
-        }
-        return result;
     }
     
     private void encryptInsertOptimizeResultUnit(final InsertOptimizeResultUnit unit, final Collection<String> columnNames) {
@@ -112,13 +109,13 @@ public final class EncryptSQLRewriter implements SQLRewriter {
     
     @Override
     public void rewrite(final SQLBuilder sqlBuilder, final ParameterBuilder parameterBuilder, final SQLToken sqlToken) {
-        parameterBuilder.setInsertParameterUnits(insertOptimizeResult);
+        parameterBuilder.setInsertParameterUnits(optimizedStatement);
         if (sqlToken instanceof InsertValuesToken) {
-            appendInsertValuesPlaceholder(sqlBuilder, insertOptimizeResult);
+            appendInsertValuesPlaceholder(sqlBuilder, (InsertClauseOptimizedStatement) optimizedStatement);
         } else if (sqlToken instanceof InsertSetEncryptValueToken) {
-            appendInsertSetEncryptValuePlaceholder(sqlBuilder, (InsertSetEncryptValueToken) sqlToken, insertOptimizeResult);
+            appendInsertSetEncryptValuePlaceholder(sqlBuilder, (InsertSetEncryptValueToken) sqlToken, (InsertClauseOptimizedStatement) optimizedStatement);
         } else if (sqlToken instanceof InsertSetAddAssistedColumnsToken) {
-            appendInsertSetAddItemsPlaceholder(sqlBuilder, (InsertSetAddAssistedColumnsToken) sqlToken, insertOptimizeResult);
+            appendInsertSetAddItemsPlaceholder(sqlBuilder, (InsertSetAddAssistedColumnsToken) sqlToken, (InsertClauseOptimizedStatement) optimizedStatement);
         } else if (sqlToken instanceof InsertAssistedColumnsToken) {
             appendInsertAssistedColumnsPlaceholder(sqlBuilder, (InsertAssistedColumnsToken) sqlToken);
         } else if (sqlToken instanceof EncryptColumnToken) {
@@ -126,7 +123,7 @@ public final class EncryptSQLRewriter implements SQLRewriter {
         }
     }
     
-    private void appendInsertValuesPlaceholder(final SQLBuilder sqlBuilder, final InsertOptimizeResult insertOptimizeResult) {
+    private void appendInsertValuesPlaceholder(final SQLBuilder sqlBuilder, final InsertClauseOptimizedStatement insertOptimizeResult) {
         List<InsertValuePlaceholder> insertValues = new LinkedList<>();
         for (InsertOptimizeResultUnit each : insertOptimizeResult.getUnits()) {
             insertValues.add(new InsertValuePlaceholder(new ArrayList<>(each.getColumnNames()), Arrays.asList(each.getValues()), each.getDataNodes()));
@@ -134,15 +131,16 @@ public final class EncryptSQLRewriter implements SQLRewriter {
         sqlBuilder.appendPlaceholder(new InsertValuesPlaceholder(insertValues));
     }
     
-    private void appendInsertSetEncryptValuePlaceholder(final SQLBuilder sqlBuilder, final InsertSetEncryptValueToken insertSetEncryptValueToken, final InsertOptimizeResult insertOptimizeResult) {
-        sqlBuilder.appendPlaceholder(new InsertSetEncryptValuePlaceholder(insertOptimizeResult.getUnits().get(0).getColumnSQLExpression(insertSetEncryptValueToken.getColumnName())));
+    private void appendInsertSetEncryptValuePlaceholder(final SQLBuilder sqlBuilder, 
+                                                        final InsertSetEncryptValueToken insertSetEncryptValueToken, final InsertClauseOptimizedStatement optimizedStatement) {
+        sqlBuilder.appendPlaceholder(new InsertSetEncryptValuePlaceholder(optimizedStatement.getUnits().get(0).getColumnSQLExpression(insertSetEncryptValueToken.getColumnName())));
     }
     
     private void appendInsertSetAddItemsPlaceholder(
-            final SQLBuilder sqlBuilder, final InsertSetAddAssistedColumnsToken insertSetAddAssistedColumnsToken, final InsertOptimizeResult insertOptimizeResult) {
+            final SQLBuilder sqlBuilder, final InsertSetAddAssistedColumnsToken insertSetAddAssistedColumnsToken, final InsertClauseOptimizedStatement optimizedStatement) {
         List<ExpressionSegment> columnValues = new LinkedList<>();
         for (String each : insertSetAddAssistedColumnsToken.getColumnNames()) {
-            columnValues.add(insertOptimizeResult.getUnits().get(0).getColumnSQLExpression(each));
+            columnValues.add(optimizedStatement.getUnits().get(0).getColumnSQLExpression(each));
         }
         sqlBuilder.appendPlaceholder(new InsertSetAddItemsPlaceholder(new LinkedList<>(insertSetAddAssistedColumnsToken.getColumnNames()), columnValues));
     }

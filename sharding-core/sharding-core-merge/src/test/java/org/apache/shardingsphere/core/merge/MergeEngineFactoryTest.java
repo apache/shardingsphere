@@ -25,7 +25,6 @@ import org.apache.shardingsphere.core.merge.dql.DQLMergeEngine;
 import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
 import org.apache.shardingsphere.core.optimize.statement.sharding.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.statement.sharding.insert.InsertClauseOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.sharding.insert.InsertOptimizeResult;
 import org.apache.shardingsphere.core.optimize.statement.sharding.where.WhereClauseOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.transparent.TransparentOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
@@ -77,8 +76,7 @@ public final class MergeEngineFactoryTest {
     
     @Test(expected = UnsupportedOperationException.class)
     public void assertNewInstanceWithOtherStatement() throws SQLException {
-        SQLRouteResult routeResult = new SQLRouteResult(
-                new InsertClauseOptimizedStatement(new InsertStatement(), Collections.<ShardingCondition>emptyList(), new InsertOptimizeResult(Collections.<String>emptyList())));
+        SQLRouteResult routeResult = new SQLRouteResult(new InsertClauseOptimizedStatement(new InsertStatement(), Collections.<ShardingCondition>emptyList(), Collections.<String>emptyList()));
         MergeEngineFactory.newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, routeResult, null, queryResults);
     }
 }

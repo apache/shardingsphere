@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.core.rewrite.builder;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.optimize.statement.sharding.insert.InsertOptimizeResult;
+import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.sharding.insert.InsertClauseOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.insert.InsertOptimizeResultUnit;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.rule.DataNode;
@@ -56,20 +57,20 @@ public final class ParameterBuilder {
     /**
      * Set insert parameter units.
      * 
-     * @param insertOptimizeResult insert optimize result
+     * @param optimizedStatement optimized statement
      */
-    public void setInsertParameterUnits(final InsertOptimizeResult insertOptimizeResult) {
-        if (insertParameterUnits.isEmpty() && null != insertOptimizeResult) {
-            insertParameterUnits.addAll(createInsertParameterUnits(insertOptimizeResult));
+    public void setInsertParameterUnits(final OptimizedStatement optimizedStatement) {
+        if (insertParameterUnits.isEmpty() && optimizedStatement instanceof InsertClauseOptimizedStatement) {
+            insertParameterUnits.addAll(createInsertParameterUnits((InsertClauseOptimizedStatement) optimizedStatement));
         }
     }
     
-    private List<InsertParameterUnit> createInsertParameterUnits(final InsertOptimizeResult insertOptimizeResult) {
+    private List<InsertParameterUnit> createInsertParameterUnits(final InsertClauseOptimizedStatement optimizedStatement) {
         List<InsertParameterUnit> result = new LinkedList<>();
-        if (null == insertOptimizeResult) {
+        if (null == optimizedStatement) {
             return result;
         }
-        for (InsertOptimizeResultUnit each : insertOptimizeResult.getUnits()) {
+        for (InsertOptimizeResultUnit each : optimizedStatement.getUnits()) {
             result.add(new InsertParameterUnit(Arrays.asList(each.getParameters()), each.getDataNodes()));
         }
         return result;
