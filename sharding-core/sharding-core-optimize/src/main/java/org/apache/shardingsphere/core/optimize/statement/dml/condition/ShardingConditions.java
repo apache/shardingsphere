@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.optimize.statement.dml.condition;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.optimize.engine.sharding.dml.AlwaysFalseShardingCondition;
 
 import java.util.List;
 

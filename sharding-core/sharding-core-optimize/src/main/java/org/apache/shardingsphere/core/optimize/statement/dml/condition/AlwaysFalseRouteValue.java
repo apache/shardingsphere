@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.engine.sharding.dml;
+package org.apache.shardingsphere.core.optimize.statement.dml.condition;
 
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
 

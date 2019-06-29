@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.engine.sharding.dml;
+package org.apache.shardingsphere.core.optimize.statement.dml.condition;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.optimize.statement.dml.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.statement.dml.insert.GeneratedKey;
 import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Column;

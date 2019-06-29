@@ -15,9 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.engine.sharding.dml;
-
-import org.apache.shardingsphere.core.optimize.statement.dml.condition.ShardingCondition;
+package org.apache.shardingsphere.core.optimize.statement.dml.condition;
 
 /**
  * Always false sharding condition.
