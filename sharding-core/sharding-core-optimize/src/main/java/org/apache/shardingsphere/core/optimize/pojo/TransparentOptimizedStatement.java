@@ -15,24 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.engine;
+package org.apache.shardingsphere.core.optimize.pojo;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.optimize.pojo.TransparentOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
 /**
- * Default optimize engine.
+ * Optimized statement for transparent.
  *
- * @author panjuan
+ * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class DefaultOptimizeEngine implements OptimizeEngine {
+public final class TransparentOptimizedStatement implements OptimizedStatement {
     
     private final SQLStatement sqlStatement;
     
     @Override
-    public TransparentOptimizedStatement optimize() {
-        return new TransparentOptimizedStatement(sqlStatement);
+    public SQLStatement getSQLStatement() {
+        return sqlStatement;
     }
 }

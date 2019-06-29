@@ -21,8 +21,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.SimpleQueryShardingEngine;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.optimize.OptimizeEngineFactory;
-import org.apache.shardingsphere.core.optimize.pojo.BroadcastOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.pojo.OptimizedStatement;
+import org.apache.shardingsphere.core.optimize.pojo.TransparentOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
@@ -85,8 +85,7 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
         SQLRewriteEngine sqlRewriteEngine = new SQLRewriteEngine(((MasterSlaveSchema) logicSchema).getMasterSlaveRule(), sqlStatement);
         sqlRewriteEngine.init(Collections.<ParameterRewriter>emptyList(), Collections.<SQLRewriter>emptyList());
         String rewriteSQL = sqlRewriteEngine.generateSQL().getSql();
-        // TODO add Transparent optimized statement to replace of BroadcastOptimizedStatement
-        SQLRouteResult result = new SQLRouteResult(new BroadcastOptimizedStatement(sqlStatement));
+        SQLRouteResult result = new SQLRouteResult(new TransparentOptimizedStatement(sqlStatement));
         for (String each : new MasterSlaveRouter(((MasterSlaveSchema) logicSchema).getMasterSlaveRule(), ((MasterSlaveSchema) logicSchema).getParseEngine(),
                 SHARDING_PROXY_CONTEXT.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW)).route(rewriteSQL, false)) {
             result.getRouteUnits().add(new RouteUnit(each, new SQLUnit(rewriteSQL, Collections.emptyList())));
@@ -110,8 +109,7 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
     }
     
     private SQLRouteResult doTransparentRoute(final String sql) {
-        // TODO add Transparent optimized statement to replace of BroadcastOptimizedStatement
-        SQLRouteResult result = new SQLRouteResult(new BroadcastOptimizedStatement(((MasterSlaveSchema) logicSchema).getParseEngine().parse(sql, false)));
+        SQLRouteResult result = new SQLRouteResult(new TransparentOptimizedStatement(((MasterSlaveSchema) logicSchema).getParseEngine().parse(sql, false)));
         result.getRouteUnits().add(new RouteUnit(logicSchema.getDataSources().keySet().iterator().next(), new SQLUnit(sql, Collections.emptyList())));
         return result;
     }
