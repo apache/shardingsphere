@@ -23,11 +23,11 @@ import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.dal.DALMergeEngine;
 import org.apache.shardingsphere.core.merge.dql.DQLMergeEngine;
 import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
-import org.apache.shardingsphere.core.optimize.statement.broadcast.BroadcastOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.statement.sharding.insert.InsertClauseOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.insert.InsertOptimizeResult;
 import org.apache.shardingsphere.core.optimize.statement.sharding.where.WhereClauseOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.transparent.TransparentOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
@@ -71,7 +71,7 @@ public final class MergeEngineFactoryTest {
     
     @Test
     public void assertNewInstanceWithDALStatement() throws SQLException {
-        SQLRouteResult routeResult = new SQLRouteResult(new BroadcastOptimizedStatement(new DALStatement()));
+        SQLRouteResult routeResult = new SQLRouteResult(new TransparentOptimizedStatement(new DALStatement()));
         assertThat(MergeEngineFactory.newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, routeResult, null, queryResults), instanceOf(DALMergeEngine.class));
     }
     

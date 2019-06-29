@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.statement.broadcast;
+package org.apache.shardingsphere.core.optimize.statement.sharding;
 
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
@@ -24,17 +24,17 @@ import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
 /**
- * Optimized statement for broadcast.
+ * Optimized statement for drop index.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class BroadcastOptimizedStatement implements OptimizedStatement {
+public final class DropIndexOptimizedStatement implements OptimizedStatement {
     
     private final SQLStatement sqlStatement;
     
     @Setter
-    private String logicTableNameForDropIndex;
+    private String tableName;
     
     @Override
     public SQLStatement getSQLStatement() {
@@ -42,11 +42,11 @@ public final class BroadcastOptimizedStatement implements OptimizedStatement {
     }
     
     /**
-     * Get logic table name for drop index.
+     * Get logic table name.
      *
-     * @return logic table name for drop index
+     * @return logic table name
      */
-    public Optional<String> getLogicTableNameForDropIndex() {
-        return Optional.fromNullable(logicTableNameForDropIndex);
+    public Optional<String> getTableName() {
+        return Optional.fromNullable(tableName);
     }
 }

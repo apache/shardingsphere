@@ -22,12 +22,12 @@ import com.google.common.base.Preconditions;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.AggregationType;
 import org.apache.shardingsphere.core.constant.OrderDirection;
-import org.apache.shardingsphere.core.optimize.statement.broadcast.BroadcastOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.statement.sharding.insert.InsertClauseOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.insert.InsertOptimizeResult;
 import org.apache.shardingsphere.core.optimize.statement.sharding.where.WhereClauseOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.where.pagination.Pagination;
+import org.apache.shardingsphere.core.optimize.statement.transparent.TransparentOptimizedStatement;
 import org.apache.shardingsphere.core.parse.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
@@ -584,7 +584,7 @@ public final class ShardingSQLRewriterTest {
     @Test
     public void assertTableTokenWithoutBackQuoteForShow() {
         showTablesStatement.getSQLSegments().add(new TableSegment(18, 24, "table_x"));
-        routeResult = new SQLRouteResult(new BroadcastOptimizedStatement(showTablesStatement));
+        routeResult = new SQLRouteResult(new TransparentOptimizedStatement(showTablesStatement));
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
         routeResult.setRoutingResult(routingResult);
@@ -597,7 +597,7 @@ public final class ShardingSQLRewriterTest {
     public void assertTableTokenWithoutBackQuoteFromSchemaForShow() {
         showTablesStatement.getSQLSegments().add(new FromSchemaSegment(25, 43));
         showTablesStatement.getSQLSegments().add(new TableSegment(18, 24, "table_x"));
-        routeResult = new SQLRouteResult(new BroadcastOptimizedStatement(showTablesStatement));
+        routeResult = new SQLRouteResult(new TransparentOptimizedStatement(showTablesStatement));
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
         routeResult.setRoutingResult(routingResult);
@@ -611,7 +611,7 @@ public final class ShardingSQLRewriterTest {
     @Test
     public void assertTableTokenWithBackQuoteForShow() {
         showTablesStatement.getSQLSegments().add(new TableSegment(18, 26, "`table_x`"));
-        routeResult = new SQLRouteResult(new BroadcastOptimizedStatement(showTablesStatement));
+        routeResult = new SQLRouteResult(new TransparentOptimizedStatement(showTablesStatement));
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
         routeResult.setRoutingResult(routingResult);
@@ -623,7 +623,7 @@ public final class ShardingSQLRewriterTest {
     @Test
     public void assertTableTokenWithBackQuoteFromSchemaForShow() {
         showTablesStatement.getSQLSegments().add(new TableSegment(18, 26, "`table_x`"));
-        routeResult = new SQLRouteResult(new BroadcastOptimizedStatement(showTablesStatement));
+        routeResult = new SQLRouteResult(new TransparentOptimizedStatement(showTablesStatement));
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
         routeResult.setRoutingResult(routingResult);
@@ -635,7 +635,7 @@ public final class ShardingSQLRewriterTest {
     @Test
     public void assertTableTokenWithSchemaForShow() {
         showTablesStatement.getSQLSegments().add(new TableSegment(18, 36, "table_x"));
-        routeResult = new SQLRouteResult(new BroadcastOptimizedStatement(showTablesStatement));
+        routeResult = new SQLRouteResult(new TransparentOptimizedStatement(showTablesStatement));
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
         routeResult.setRoutingResult(routingResult);
@@ -647,7 +647,7 @@ public final class ShardingSQLRewriterTest {
     @Test
     public void assertTableTokenWithSchemaFromSchemaForShow() {
         showTablesStatement.getSQLSegments().add(new TableSegment(18, 36, "table_x"));
-        routeResult = new SQLRouteResult(new BroadcastOptimizedStatement(showTablesStatement));
+        routeResult = new SQLRouteResult(new TransparentOptimizedStatement(showTablesStatement));
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
         routeResult.setRoutingResult(routingResult);
@@ -659,7 +659,7 @@ public final class ShardingSQLRewriterTest {
     @Test
     public void assertTableTokenWithBackQuoteWithSchemaForShow() {
         showTablesStatement.getSQLSegments().add(new TableSegment(18, 38, "`table_x`"));
-        routeResult = new SQLRouteResult(new BroadcastOptimizedStatement(showTablesStatement));
+        routeResult = new SQLRouteResult(new TransparentOptimizedStatement(showTablesStatement));
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
         routeResult.setRoutingResult(routingResult);
@@ -671,7 +671,7 @@ public final class ShardingSQLRewriterTest {
     @Test
     public void assertTableTokenWithBackQuoteWithSchemaFromSchemaForShow() {
         showTablesStatement.getSQLSegments().add(new TableSegment(18, 38, "`table_x`"));
-        routeResult = new SQLRouteResult(new BroadcastOptimizedStatement(showTablesStatement));
+        routeResult = new SQLRouteResult(new TransparentOptimizedStatement(showTablesStatement));
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
         routeResult.setRoutingResult(routingResult);
@@ -683,7 +683,7 @@ public final class ShardingSQLRewriterTest {
     @Test
     public void assertTableTokenWithSchemaWithBackQuoteForShow() {
         showTablesStatement.getSQLSegments().add(new TableSegment(18, 40, "`table_x`"));
-        routeResult = new SQLRouteResult(new BroadcastOptimizedStatement(showTablesStatement));
+        routeResult = new SQLRouteResult(new TransparentOptimizedStatement(showTablesStatement));
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
         routeResult.setRoutingResult(routingResult);
@@ -695,7 +695,7 @@ public final class ShardingSQLRewriterTest {
     @Test
     public void assertTableTokenWithSchemaWithBackQuoteFromSchemaForShow() {
         showTablesStatement.getSQLSegments().add(new TableSegment(18, 40, "`table_x`"));
-        routeResult = new SQLRouteResult(new BroadcastOptimizedStatement(showTablesStatement));
+        routeResult = new SQLRouteResult(new TransparentOptimizedStatement(showTablesStatement));
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
         routeResult.setRoutingResult(routingResult);

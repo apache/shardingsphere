@@ -23,11 +23,11 @@ import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
 import org.apache.shardingsphere.core.optimize.engine.TransparentOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.engine.encrypt.EncryptInsertOptimizeEngine;
-import org.apache.shardingsphere.core.optimize.engine.sharding.ddl.DDLOptimizeEngine;
+import org.apache.shardingsphere.core.optimize.engine.sharding.ddl.DropIndexOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.engine.sharding.dml.ShardingInsertClauseOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.engine.sharding.dml.ShardingWhereClauseOptimizeEngine;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rule.EncryptRule;
@@ -61,10 +61,9 @@ public final class OptimizeEngineFactory {
         if (sqlStatement instanceof DMLStatement) {
             return new ShardingWhereClauseOptimizeEngine(shardingRule, shardingTableMetaData, (DMLStatement) sqlStatement, parameters);
         }
-        if (sqlStatement instanceof DDLStatement) {
-            return new DDLOptimizeEngine((DDLStatement) sqlStatement, shardingTableMetaData);
+        if (sqlStatement instanceof DropIndexStatement) {
+            return new DropIndexOptimizeEngine((DropIndexStatement) sqlStatement, shardingTableMetaData);
         }
-        // TODO do with DAL
         return new TransparentOptimizeEngine(sqlStatement);
     }
     
@@ -72,9 +71,9 @@ public final class OptimizeEngineFactory {
      * Create encrypt optimize engine instance.
      * 
      * @param encryptRule encrypt rule
-     * @param sqlStatement sql statement
+     * @param sqlStatement SQL statement
      * @param parameters parameters
-     * @return encrypt optimize engine instance
+     * @return optimize engine instance
      */
     public static OptimizeEngine newInstance(final EncryptRule encryptRule, final SQLStatement sqlStatement, final List<Object> parameters) {
         if (sqlStatement instanceof InsertStatement) {

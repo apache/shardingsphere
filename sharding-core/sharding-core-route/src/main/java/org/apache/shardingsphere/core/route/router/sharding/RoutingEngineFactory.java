@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.route.router.sharding;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
-import org.apache.shardingsphere.core.optimize.statement.broadcast.BroadcastOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.ShardingOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
@@ -71,13 +70,13 @@ public final class RoutingEngineFactory {
             return new DatabaseBroadcastRoutingEngine(shardingRule);
         }
         if (sqlStatement instanceof DDLStatement) {
-            return new TableBroadcastRoutingEngine(shardingRule, sqlStatement, (BroadcastOptimizedStatement) optimizedStatement);
+            return new TableBroadcastRoutingEngine(shardingRule, sqlStatement, optimizedStatement);
         }
         if (sqlStatement instanceof DALStatement) {
             return getDALRoutingEngine(shardingRule, sqlStatement, tableNames);
         }
         if (sqlStatement instanceof DCLStatement) {
-            return getDCLRoutingEngine(shardingRule, sqlStatement, (BroadcastOptimizedStatement) optimizedStatement, shardingDataSourceMetaData);
+            return getDCLRoutingEngine(shardingRule, sqlStatement, optimizedStatement, shardingDataSourceMetaData);
         }
         if (shardingRule.isAllInDefaultDataSource(tableNames)) {
             return new DefaultDatabaseRoutingEngine(shardingRule, tableNames);
@@ -109,10 +108,10 @@ public final class RoutingEngineFactory {
         return new DataSourceGroupBroadcastRoutingEngine(shardingRule);
     }
     
-    private static RoutingEngine getDCLRoutingEngine(final ShardingRule shardingRule, final SQLStatement sqlStatement, 
-                                                     final BroadcastOptimizedStatement broadcastOptimizedStatement, final ShardingDataSourceMetaData shardingDataSourceMetaData) {
+    private static RoutingEngine getDCLRoutingEngine(final ShardingRule shardingRule, final SQLStatement sqlStatement,
+                                                     final OptimizedStatement optimizedStatement, final ShardingDataSourceMetaData shardingDataSourceMetaData) {
         return isGrantForSingleTable(sqlStatement) 
-                ? new TableBroadcastRoutingEngine(shardingRule, sqlStatement, broadcastOptimizedStatement) : new InstanceBroadcastRoutingEngine(shardingRule, shardingDataSourceMetaData);
+                ? new TableBroadcastRoutingEngine(shardingRule, sqlStatement, optimizedStatement) : new InstanceBroadcastRoutingEngine(shardingRule, shardingDataSourceMetaData);
     }
     
     private static boolean isGrantForSingleTable(final SQLStatement sqlStatement) {

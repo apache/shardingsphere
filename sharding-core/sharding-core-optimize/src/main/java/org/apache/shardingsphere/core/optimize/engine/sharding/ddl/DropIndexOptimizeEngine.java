@@ -21,39 +21,34 @@ import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
-import org.apache.shardingsphere.core.optimize.statement.broadcast.BroadcastOptimizedStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.core.optimize.statement.sharding.DropIndexOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.DropIndexStatement;
 
 /**
- * DDL OptimizeEngine.
+ * Optimize engine for drop index.
  *
  * @author panjuan
  */
 @RequiredArgsConstructor
-public final class DDLOptimizeEngine implements OptimizeEngine {
+public final class DropIndexOptimizeEngine implements OptimizeEngine {
     
-    private final DDLStatement ddlStatement;
+    private final DropIndexStatement dropIndexStatement;
     
     private final ShardingTableMetaData shardingTableMetaData;
     
     @Override
-    public BroadcastOptimizedStatement optimize() {
-        BroadcastOptimizedStatement result = new BroadcastOptimizedStatement(ddlStatement);
-        if (isDropIndexWithoutTable()) {
+    public DropIndexOptimizedStatement optimize() {
+        DropIndexOptimizedStatement result = new DropIndexOptimizedStatement(dropIndexStatement);
+        if (dropIndexStatement.getTables().isEmpty()) {
             setLogicTableName(result);
         }
         return result;
     }
     
-    private boolean isDropIndexWithoutTable() {
-        return ddlStatement instanceof DropIndexStatement && ddlStatement.getTables().isEmpty();
-    }
-    
-    private void setLogicTableName(final BroadcastOptimizedStatement optimizedStatement) {
-        Optional<String> logicTableName = shardingTableMetaData.getLogicTableName(ddlStatement.getIndexName());
+    private void setLogicTableName(final DropIndexOptimizedStatement optimizedStatement) {
+        Optional<String> logicTableName = shardingTableMetaData.getLogicTableName(dropIndexStatement.getIndexName());
         if (logicTableName.isPresent()) {
-            optimizedStatement.setLogicTableNameForDropIndex(logicTableName.get());
+            optimizedStatement.setTableName(logicTableName.get());
         }
     }
 }
