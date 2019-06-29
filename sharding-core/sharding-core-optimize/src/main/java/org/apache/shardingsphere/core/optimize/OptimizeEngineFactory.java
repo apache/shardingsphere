@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
 import org.apache.shardingsphere.core.optimize.engine.encrypt.EncryptInsertOptimizeEngine;
-import org.apache.shardingsphere.core.optimize.engine.sharding.ddl.DropIndexOptimizeEngine;
+import org.apache.shardingsphere.core.optimize.engine.sharding.ddl.ShardingDropIndexOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.engine.sharding.dml.ShardingInsertOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.engine.sharding.dml.ShardingSelectOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.engine.sharding.dml.ShardingWhereOptimizeEngine;
@@ -67,7 +67,7 @@ public final class OptimizeEngineFactory {
             return new ShardingWhereOptimizeEngine(shardingRule, shardingTableMetaData, (DMLStatement) sqlStatement, parameters);
         }
         if (sqlStatement instanceof DropIndexStatement) {
-            return new DropIndexOptimizeEngine((DropIndexStatement) sqlStatement, shardingTableMetaData);
+            return new ShardingDropIndexOptimizeEngine((DropIndexStatement) sqlStatement, shardingTableMetaData);
         }
         return new TransparentOptimizeEngine(sqlStatement);
     }

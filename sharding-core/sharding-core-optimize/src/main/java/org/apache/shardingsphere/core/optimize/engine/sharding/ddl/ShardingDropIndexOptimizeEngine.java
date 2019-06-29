@@ -26,12 +26,12 @@ import org.apache.shardingsphere.core.optimize.statement.ddl.DropIndexOptimizedS
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.DropIndexStatement;
 
 /**
- * Optimize engine for drop index.
+ * Drop index optimize engine for sharding.
  *
  * @author panjuan
  */
 @RequiredArgsConstructor
-public final class DropIndexOptimizeEngine implements OptimizeEngine {
+public final class ShardingDropIndexOptimizeEngine implements OptimizeEngine {
     
     private final DropIndexStatement dropIndexStatement;
     
