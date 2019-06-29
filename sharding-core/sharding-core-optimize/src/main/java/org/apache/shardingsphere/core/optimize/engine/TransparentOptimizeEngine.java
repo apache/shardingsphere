@@ -22,12 +22,13 @@ import org.apache.shardingsphere.core.optimize.statement.transparent.Transparent
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
 /**
- * Default optimize engine.
+ * Optimize engine for transparent.
  *
  * @author panjuan
+ * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class DefaultOptimizeEngine implements OptimizeEngine {
+public final class TransparentOptimizeEngine implements OptimizeEngine {
     
     private final SQLStatement sqlStatement;
     
