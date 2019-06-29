@@ -536,8 +536,7 @@ public final class ShardingSQLRewriterTest {
         selectStatement.setLogicSQL("SELECT table_x.id, x.name FROM table_x x, table_y y WHERE table_x.id=? AND x.name=?");
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, routeResult.getOptimizedStatement().getSQLStatement(), parameters, routeResult.getRoutingResult().isSingleRouting());
         rewriteEngine.init(Collections.<ParameterRewriter>singletonList(new ShardingParameterRewriter(routeResult)), Arrays.asList(new ShardingSQLRewriter(routeResult, null), 
-                        new EncryptSQLRewriter(
-                                shardingRule.getEncryptRule().getEncryptorEngine(), (DMLStatement) routeResult.getOptimizedStatement().getSQLStatement(), routeResult.getOptimizedStatement())));
+                        new EncryptSQLRewriter(shardingRule.getEncryptRule().getEncryptorEngine(), routeResult.getOptimizedStatement())));
         RoutingUnit routingUnit = new RoutingUnit("db0");
         routingUnit.getTableUnits().add(new TableUnit("table_x", "table_x"));
         assertThat(rewriteEngine.generateSQL(routingUnit).getSql(), is("SELECT table_x.id, x.name FROM table_x x, table_y y WHERE table_x.id=? AND x.name=?"));
@@ -907,8 +906,7 @@ public final class ShardingSQLRewriterTest {
         Collection<SQLRewriter> sqlRewriters = new LinkedList<>();
         sqlRewriters.add(new ShardingSQLRewriter(routeResult, routeResult.getOptimizedStatement()));
         if (routeResult.getOptimizedStatement().getSQLStatement() instanceof DMLStatement) {
-            sqlRewriters.add(new EncryptSQLRewriter(
-                    shardingRule.getEncryptRule().getEncryptorEngine(), (DMLStatement) routeResult.getOptimizedStatement().getSQLStatement(), routeResult.getOptimizedStatement()));
+            sqlRewriters.add(new EncryptSQLRewriter(shardingRule.getEncryptRule().getEncryptorEngine(), routeResult.getOptimizedStatement()));
         }
         result.init(Collections.<ParameterRewriter>singletonList(new ShardingParameterRewriter(routeResult)), sqlRewriters);
         return result;

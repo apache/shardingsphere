@@ -75,9 +75,9 @@ public final class EncryptSQLRewriter implements SQLRewriter {
     
     private final InsertOptimizeResult insertOptimizeResult;
     
-    public EncryptSQLRewriter(final ShardingEncryptorEngine encryptorEngine, final DMLStatement dmlStatement, final OptimizedStatement optimizedStatement) {
+    public EncryptSQLRewriter(final ShardingEncryptorEngine encryptorEngine, final OptimizedStatement optimizedStatement) {
         this.encryptorEngine = encryptorEngine;
-        this.dmlStatement = dmlStatement;
+        this.dmlStatement = (DMLStatement) optimizedStatement.getSQLStatement();
         this.insertOptimizeResult = getInsertOptimizeResult(optimizedStatement);
     }
     

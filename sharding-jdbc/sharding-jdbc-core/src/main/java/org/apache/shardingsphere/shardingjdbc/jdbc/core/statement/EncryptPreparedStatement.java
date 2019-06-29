@@ -157,7 +157,7 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
         OptimizedStatement optimizedStatement = OptimizeEngineFactory.newInstance(connection.getEncryptRule(), sqlStatement, getParameters()).optimize();
         Collection<SQLRewriter> sqlRewriters = new LinkedList<>();
         if (sqlStatement instanceof DMLStatement) {
-            sqlRewriters.add(new EncryptSQLRewriter(connection.getEncryptRule().getEncryptorEngine(), (DMLStatement) sqlStatement, optimizedStatement));
+            sqlRewriters.add(new EncryptSQLRewriter(connection.getEncryptRule().getEncryptorEngine(), optimizedStatement));
         }
         encryptSQLRewriteEngine.init(Collections.<ParameterRewriter>emptyList(), sqlRewriters);
         SQLUnit result = encryptSQLRewriteEngine.generateSQL();

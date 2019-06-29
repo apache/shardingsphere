@@ -100,7 +100,7 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
         OptimizedStatement optimizedStatement = OptimizeEngineFactory.newInstance(encryptSchema.getEncryptRule(), sqlStatement, new LinkedList<>()).optimize();
         Collection<SQLRewriter> sqlRewriters = new LinkedList<>();
         if (sqlStatement instanceof DMLStatement) {
-            sqlRewriters.add(new EncryptSQLRewriter(encryptSchema.getEncryptRule().getEncryptorEngine(), (DMLStatement) sqlStatement, optimizedStatement));
+            sqlRewriters.add(new EncryptSQLRewriter(encryptSchema.getEncryptRule().getEncryptorEngine(), optimizedStatement));
         }
         sqlRewriteEngine.init(Collections.<ParameterRewriter>emptyList(), sqlRewriters);
         SQLRouteResult result = new SQLRouteResult(optimizedStatement);
