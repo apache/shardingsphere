@@ -108,7 +108,7 @@ public abstract class BaseShardingEngine {
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, sqlRouteResult.getSqlStatement(), parameters, sqlRouteResult.getRoutingResult().isSingleRouting());
         ShardingParameterRewriter shardingParameterRewriter = new ShardingParameterRewriter(sqlRouteResult);
         Collection<SQLRewriter> sqlRewriters = new LinkedList<>();
-        sqlRewriters.add(new ShardingSQLRewriter(shardingRule, sqlRouteResult, sqlRouteResult.getOptimizedStatement()));
+        sqlRewriters.add(new ShardingSQLRewriter(sqlRouteResult, sqlRouteResult.getOptimizedStatement()));
         if (sqlRouteResult.getSqlStatement() instanceof DMLStatement) {
             sqlRewriters.add(new EncryptSQLRewriter(shardingRule.getEncryptRule().getEncryptorEngine(), (DMLStatement) sqlRouteResult.getSqlStatement(), sqlRouteResult.getOptimizedStatement()));
         }

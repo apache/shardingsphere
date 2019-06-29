@@ -45,7 +45,6 @@ import org.apache.shardingsphere.core.rewrite.token.pojo.SQLToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SelectItemPrefixToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SelectItemsToken;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
-import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
  * SQL rewriter for sharding.
@@ -56,14 +55,11 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
  */
 public final class ShardingSQLRewriter implements SQLRewriter {
     
-    private final ShardingRule shardingRule;
-    
     private final SQLRouteResult sqlRouteResult;
     
     private final InsertOptimizeResult insertOptimizeResult;
     
-    public ShardingSQLRewriter(final ShardingRule shardingRule, final SQLRouteResult sqlRouteResult, final OptimizedStatement optimizedStatement) {
-        this.shardingRule = shardingRule;
+    public ShardingSQLRewriter(final SQLRouteResult sqlRouteResult, final OptimizedStatement optimizedStatement) {
         this.sqlRouteResult = sqlRouteResult;
         this.insertOptimizeResult = getInsertOptimizeResult(optimizedStatement);
     }

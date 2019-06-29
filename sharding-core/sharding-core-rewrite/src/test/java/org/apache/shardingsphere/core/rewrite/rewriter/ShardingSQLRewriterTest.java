@@ -557,8 +557,7 @@ public final class ShardingSQLRewriterTest {
         routeResult.setOptimizedStatement(new WhereClauseOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList()));
         selectStatement.setLogicSQL("SELECT table_x.id, x.name FROM table_x x, table_y y WHERE table_x.id=? AND x.name=?");
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, routeResult.getSqlStatement(), parameters, routeResult.getRoutingResult().isSingleRouting());
-        rewriteEngine.init(Collections.<ParameterRewriter>singletonList(new ShardingParameterRewriter(routeResult)), 
-                Arrays.asList(new ShardingSQLRewriter(shardingRule, routeResult, null), 
+        rewriteEngine.init(Collections.<ParameterRewriter>singletonList(new ShardingParameterRewriter(routeResult)), Arrays.asList(new ShardingSQLRewriter(routeResult, null), 
                         new EncryptSQLRewriter(shardingRule.getEncryptRule().getEncryptorEngine(), (DMLStatement) routeResult.getSqlStatement(), routeResult.getOptimizedStatement())));
         RoutingUnit routingUnit = new RoutingUnit("db0");
         routingUnit.getTableUnits().add(new TableUnit("table_x", "table_x"));
@@ -951,7 +950,7 @@ public final class ShardingSQLRewriterTest {
     private SQLRewriteEngine createSQLRewriteEngine(final List<Object> parameters) {
         SQLRewriteEngine result = new SQLRewriteEngine(shardingRule, routeResult.getSqlStatement(), parameters, routeResult.getRoutingResult().isSingleRouting());
         Collection<SQLRewriter> sqlRewriters = new LinkedList<>();
-        sqlRewriters.add(new ShardingSQLRewriter(shardingRule, routeResult, routeResult.getOptimizedStatement()));
+        sqlRewriters.add(new ShardingSQLRewriter(routeResult, routeResult.getOptimizedStatement()));
         if (routeResult.getSqlStatement() instanceof DMLStatement) {
             sqlRewriters.add(new EncryptSQLRewriter(shardingRule.getEncryptRule().getEncryptorEngine(), (DMLStatement) routeResult.getSqlStatement(), routeResult.getOptimizedStatement()));
         }
