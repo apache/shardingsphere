@@ -24,8 +24,8 @@ import org.apache.shardingsphere.core.merge.MergedResult;
 import org.apache.shardingsphere.core.merge.dql.DQLMergeEngine;
 import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
 import org.apache.shardingsphere.core.optimize.statement.dml.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimize.statement.dml.where.WhereClauseOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.dml.where.pagination.Pagination;
+import org.apache.shardingsphere.core.optimize.statement.dml.select.SelectOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.dml.select.pagination.Pagination;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
@@ -65,14 +65,14 @@ public final class LimitDecoratorMergedResultTest {
         for (ResultSet each : resultSets) {
             queryResults.add(new TestQueryResult(each));
         }
-        WhereClauseOptimizedStatement optimizedStatement = new WhereClauseOptimizedStatement(new SelectStatement(), Collections.<ShardingCondition>emptyList());
+        SelectOptimizedStatement optimizedStatement = new SelectOptimizedStatement(new SelectStatement(), Collections.<ShardingCondition>emptyList());
         optimizedStatement.setPagination(new Pagination(null, null, Collections.emptyList()));
         routeResult = new SQLRouteResult(optimizedStatement);
     }
     
     @Test
     public void assertNextForSkipAll() throws SQLException {
-        ((WhereClauseOptimizedStatement) routeResult.getOptimizedStatement()).setPagination(new Pagination(new NumberLiteralLimitValueSegment(0, 0, Integer.MAX_VALUE), null, Collections.emptyList()));
+        ((SelectOptimizedStatement) routeResult.getOptimizedStatement()).setPagination(new Pagination(new NumberLiteralLimitValueSegment(0, 0, Integer.MAX_VALUE), null, Collections.emptyList()));
         mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertFalse(actual.next());
@@ -80,7 +80,7 @@ public final class LimitDecoratorMergedResultTest {
     
     @Test
     public void assertNextWithoutRowCount() throws SQLException {
-        ((WhereClauseOptimizedStatement) routeResult.getOptimizedStatement()).setPagination(new Pagination(new NumberLiteralLimitValueSegment(0, 0, 2), null, Collections.emptyList()));
+        ((SelectOptimizedStatement) routeResult.getOptimizedStatement()).setPagination(new Pagination(new NumberLiteralLimitValueSegment(0, 0, 2), null, Collections.emptyList()));
         mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
         for (int i = 0; i < 6; i++) {
@@ -91,7 +91,7 @@ public final class LimitDecoratorMergedResultTest {
     
     @Test
     public void assertNextWithRowCount() throws SQLException {
-        ((WhereClauseOptimizedStatement) routeResult.getOptimizedStatement()).setPagination(
+        ((SelectOptimizedStatement) routeResult.getOptimizedStatement()).setPagination(
                 new Pagination(new NumberLiteralLimitValueSegment(0, 0, 2), new NumberLiteralLimitValueSegment(0, 0, 2), Collections.emptyList()));
         mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();

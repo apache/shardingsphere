@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.optimize.engine.sharding;
 
 import com.google.common.collect.Range;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.optimize.engine.sharding.dml.ShardingWhereClauseOptimizeEngine;
+import org.apache.shardingsphere.core.optimize.engine.sharding.dml.ShardingSelectOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.statement.dml.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.statement.dml.condition.ShardingConditions;
 import org.apache.shardingsphere.core.parse.sql.context.table.Table;
@@ -82,7 +82,7 @@ public final class ShardingSelectOptimizeEngineTest {
         andPredicate.getPredicates().add(new PredicateSegment(0, 0, createColumnSegment(), new PredicateCompareRightValue("=", new LiteralExpressionSegment(0, 0, 3))));
         orPredicateSegment.getAndPredicates().add(andPredicate);
         selectStatement.getSQLSegments().add(orPredicateSegment);
-        ShardingConditions shardingConditions = new ShardingWhereClauseOptimizeEngine(shardingRule, shardingTableMetaData, selectStatement, Collections.emptyList()).optimize().getShardingConditions();
+        ShardingConditions shardingConditions = new ShardingSelectOptimizeEngine(shardingRule, shardingTableMetaData, selectStatement, Collections.emptyList()).optimize().getShardingConditions();
         assertTrue(shardingConditions.isAlwaysFalse());
     }
     
@@ -96,7 +96,7 @@ public final class ShardingSelectOptimizeEngineTest {
                 new PredicateInRightValue(Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(0, 0, 3), new LiteralExpressionSegment(0, 0, 4)))));
         orPredicateSegment.getAndPredicates().add(andPredicate);
         selectStatement.getSQLSegments().add(orPredicateSegment);
-        ShardingConditions shardingConditions = new ShardingWhereClauseOptimizeEngine(shardingRule, shardingTableMetaData, selectStatement, Collections.emptyList()).optimize().getShardingConditions();
+        ShardingConditions shardingConditions = new ShardingSelectOptimizeEngine(shardingRule, shardingTableMetaData, selectStatement, Collections.emptyList()).optimize().getShardingConditions();
         assertTrue(shardingConditions.isAlwaysFalse());
     }
     
@@ -110,7 +110,7 @@ public final class ShardingSelectOptimizeEngineTest {
                 new PredicateBetweenRightValue(new LiteralExpressionSegment(0, 0, 3), new LiteralExpressionSegment(0, 0, 4))));
         orPredicateSegment.getAndPredicates().add(andPredicate);
         selectStatement.getSQLSegments().add(orPredicateSegment);
-        ShardingConditions shardingConditions = new ShardingWhereClauseOptimizeEngine(shardingRule, shardingTableMetaData, selectStatement, Collections.emptyList()).optimize().getShardingConditions();
+        ShardingConditions shardingConditions = new ShardingSelectOptimizeEngine(shardingRule, shardingTableMetaData, selectStatement, Collections.emptyList()).optimize().getShardingConditions();
         assertTrue(shardingConditions.isAlwaysFalse());
     }
     
@@ -124,7 +124,7 @@ public final class ShardingSelectOptimizeEngineTest {
         andPredicate.getPredicates().add(new PredicateSegment(0, 0, createColumnSegment(), new PredicateCompareRightValue("=", new LiteralExpressionSegment(0, 0, 1))));
         orPredicateSegment.getAndPredicates().add(andPredicate);
         selectStatement.getSQLSegments().add(orPredicateSegment);
-        ShardingConditions shardingConditions = new ShardingWhereClauseOptimizeEngine(shardingRule, shardingTableMetaData, selectStatement, Collections.emptyList()).optimize().getShardingConditions();
+        ShardingConditions shardingConditions = new ShardingSelectOptimizeEngine(shardingRule, shardingTableMetaData, selectStatement, Collections.emptyList()).optimize().getShardingConditions();
         assertFalse(shardingConditions.isAlwaysFalse());
         ShardingCondition shardingCondition = shardingConditions.getShardingConditions().get(0);
         RouteValue shardingValue = shardingCondition.getRouteValues().get(0);
@@ -144,7 +144,7 @@ public final class ShardingSelectOptimizeEngineTest {
                 new PredicateBetweenRightValue(new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 3))));
         orPredicateSegment.getAndPredicates().add(andPredicate);
         selectStatement.getSQLSegments().add(orPredicateSegment);
-        ShardingConditions shardingConditions = new ShardingWhereClauseOptimizeEngine(shardingRule, shardingTableMetaData, selectStatement, Collections.emptyList()).optimize().getShardingConditions();
+        ShardingConditions shardingConditions = new ShardingSelectOptimizeEngine(shardingRule, shardingTableMetaData, selectStatement, Collections.emptyList()).optimize().getShardingConditions();
         assertFalse(shardingConditions.isAlwaysFalse());
         ShardingCondition shardingCondition = shardingConditions.getShardingConditions().get(0);
         RouteValue shardingValue = shardingCondition.getRouteValues().get(0);
@@ -164,7 +164,7 @@ public final class ShardingSelectOptimizeEngineTest {
                 new PredicateBetweenRightValue(new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 2))));
         orPredicateSegment.getAndPredicates().add(andPredicate);
         selectStatement.getSQLSegments().add(orPredicateSegment);
-        ShardingConditions shardingConditions = new ShardingWhereClauseOptimizeEngine(shardingRule, shardingTableMetaData, selectStatement, Collections.emptyList()).optimize().getShardingConditions();
+        ShardingConditions shardingConditions = new ShardingSelectOptimizeEngine(shardingRule, shardingTableMetaData, selectStatement, Collections.emptyList()).optimize().getShardingConditions();
         assertFalse(shardingConditions.isAlwaysFalse());
         ShardingCondition shardingCondition = shardingConditions.getShardingConditions().get(0);
         RouteValue shardingValue = shardingCondition.getRouteValues().get(0);

@@ -25,7 +25,7 @@ import org.apache.shardingsphere.core.merge.MergedResult;
 import org.apache.shardingsphere.core.merge.dql.DQLMergeEngine;
 import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
 import org.apache.shardingsphere.core.optimize.statement.dml.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimize.statement.dml.where.WhereClauseOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.dml.select.SelectOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
@@ -62,7 +62,7 @@ public final class OrderByStreamMergedResultTest {
                 new TestQueryResult(resultSet), new TestQueryResult(mock(ResultSet.class)), new TestQueryResult(mock(ResultSet.class)));
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.getOrderByItems().add(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC));
-        routeResult = new SQLRouteResult(new WhereClauseOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList()));
+        routeResult = new SQLRouteResult(new SelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList()));
     }
     
     @Test

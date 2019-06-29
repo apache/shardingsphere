@@ -32,12 +32,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Optimized statement for insert clause.
+ * Optimized statement for insert.
  *
  * @author zhangliang
  */
 @Getter
-public final class InsertClauseOptimizedStatement extends DMLOptimizedStatement {
+public final class InsertOptimizedStatement extends DMLOptimizedStatement {
     
     private final Collection<String> columnNames = new LinkedHashSet<>();
     
@@ -46,7 +46,7 @@ public final class InsertClauseOptimizedStatement extends DMLOptimizedStatement 
     @Setter
     private GeneratedKey generatedKey;
     
-    public InsertClauseOptimizedStatement(final SQLStatement sqlStatement, final List<ShardingCondition> shardingConditions, final Collection<String> columnNames) {
+    public InsertOptimizedStatement(final SQLStatement sqlStatement, final List<ShardingCondition> shardingConditions, final Collection<String> columnNames) {
         super(sqlStatement, new ShardingConditions(shardingConditions));
         this.columnNames.addAll(columnNames);
     }

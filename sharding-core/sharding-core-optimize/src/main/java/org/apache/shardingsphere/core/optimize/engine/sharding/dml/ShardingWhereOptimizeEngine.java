@@ -22,8 +22,8 @@ import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
 import org.apache.shardingsphere.core.optimize.statement.dml.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimize.statement.dml.where.WhereClauseOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.dml.where.pagination.Pagination;
+import org.apache.shardingsphere.core.optimize.statement.dml.select.SelectOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.dml.select.pagination.Pagination;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
@@ -43,7 +43,7 @@ import java.util.Map.Entry;
  *
  * @author zhangliang
  */
-public final class ShardingWhereClauseOptimizeEngine implements OptimizeEngine {
+public class ShardingWhereOptimizeEngine implements OptimizeEngine {
     
     private final DMLStatement dmlStatement;
     
@@ -51,19 +51,19 @@ public final class ShardingWhereClauseOptimizeEngine implements OptimizeEngine {
     
     private final WhereClauseShardingConditionEngine shardingConditionEngine;
     
-    public ShardingWhereClauseOptimizeEngine(final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData, final DMLStatement dmlStatement, final List<Object> parameters) {
+    public ShardingWhereOptimizeEngine(final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData, final DMLStatement dmlStatement, final List<Object> parameters) {
         this.dmlStatement = dmlStatement;
         this.parameters = parameters;
         shardingConditionEngine = new WhereClauseShardingConditionEngine(shardingRule, shardingTableMetaData);
     }
     
     @Override
-    public WhereClauseOptimizedStatement optimize() {
+    public SelectOptimizedStatement optimize() {
         List<ShardingCondition> shardingConditions = new LinkedList<>();
         for (ShardingCondition each : shardingConditionEngine.createShardingConditions(dmlStatement, parameters)) {
             shardingConditions.add(optimize(each.getRouteValuesMap()));
         }
-        WhereClauseOptimizedStatement result = new WhereClauseOptimizedStatement(dmlStatement, shardingConditions);
+        SelectOptimizedStatement result = new SelectOptimizedStatement(dmlStatement, shardingConditions);
         setPagination(result);
         return result;
     }
@@ -134,7 +134,7 @@ public final class ShardingWhereClauseOptimizeEngine implements OptimizeEngine {
         return result;
     }
     
-    private void setPagination(final WhereClauseOptimizedStatement optimizedStatement) {
+    private void setPagination(final SelectOptimizedStatement optimizedStatement) {
         if (dmlStatement instanceof SelectStatement) {
             SelectStatement selectStatement = (SelectStatement) dmlStatement;
             if (null != selectStatement.getOffset() || null != selectStatement.getRowCount()) {

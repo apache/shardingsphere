@@ -23,8 +23,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.optimize.statement.dml.DMLOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.dml.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimize.statement.dml.insert.InsertClauseOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.dml.insert.InsertOptimizeResultUnit;
+import org.apache.shardingsphere.core.optimize.statement.dml.insert.InsertOptimizedStatement;
 import org.apache.shardingsphere.core.parse.exception.SQLParsingException;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.DeleteStatement;
@@ -229,7 +229,7 @@ public final class StandardRoutingEngine implements RoutingEngine {
     
     private void reviseInsertOptimizeResult(final ShardingCondition shardingCondition, final Collection<DataNode> dataNodes) {
         if (dmlOptimizedStatement.getSQLStatement() instanceof InsertStatement) {
-            for (InsertOptimizeResultUnit each : ((InsertClauseOptimizedStatement) dmlOptimizedStatement).getUnits()) {
+            for (InsertOptimizeResultUnit each : ((InsertOptimizedStatement) dmlOptimizedStatement).getUnits()) {
                 if (isQualifiedInsertOptimizeResultUnit(each, shardingCondition)) {
                     each.getDataNodes().addAll(dataNodes);
                 }

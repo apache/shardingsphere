@@ -27,7 +27,7 @@ import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.dml.DMLOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.dml.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.statement.dml.condition.ShardingConditions;
-import org.apache.shardingsphere.core.optimize.statement.dml.insert.InsertClauseOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.dml.insert.InsertOptimizedStatement;
 import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
 import org.apache.shardingsphere.core.parse.entry.ShardingSQLParseEntry;
 import org.apache.shardingsphere.core.parse.hook.ParsingHook;
@@ -96,15 +96,15 @@ public final class ParsingSQLRouter implements ShardingRouter {
         if (needMergeShardingValues) {
             Preconditions.checkState(1 == routingResult.getRoutingUnits().size(), "Must have one sharding with subquery.");
         }
-        if (optimizedStatement instanceof InsertClauseOptimizedStatement) {
-            setGeneratedValues((InsertClauseOptimizedStatement) optimizedStatement);
+        if (optimizedStatement instanceof InsertOptimizedStatement) {
+            setGeneratedValues((InsertOptimizedStatement) optimizedStatement);
         }
         SQLRouteResult result = new SQLRouteResult(optimizedStatement);
         result.setRoutingResult(routingResult);
         return result;
     }
     
-    private void setGeneratedValues(final InsertClauseOptimizedStatement optimizedStatement) {
+    private void setGeneratedValues(final InsertOptimizedStatement optimizedStatement) {
         if (optimizedStatement.getGeneratedKey().isPresent()) {
             generatedValues.addAll(optimizedStatement.getGeneratedKey().get().getGeneratedValues());
             optimizedStatement.getGeneratedKey().get().getGeneratedValues().clear();

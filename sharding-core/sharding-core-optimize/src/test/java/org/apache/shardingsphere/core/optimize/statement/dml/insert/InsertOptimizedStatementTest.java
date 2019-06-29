@@ -30,9 +30,9 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class InsertClauseOptimizedStatementTest {
+public final class InsertOptimizedStatementTest {
     
-    private InsertClauseOptimizedStatement insertClauseOptimizedStatement = new InsertClauseOptimizedStatement(
+    private InsertOptimizedStatement insertClauseOptimizedStatement = new InsertOptimizedStatement(
             new InsertStatement(), Collections.<ShardingCondition>emptyList(), Lists.newArrayList("id", "value", "status"));
     
     @Test

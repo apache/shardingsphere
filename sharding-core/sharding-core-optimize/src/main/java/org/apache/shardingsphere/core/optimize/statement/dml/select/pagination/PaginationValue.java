@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.statement.dml.where.pagination;
+package org.apache.shardingsphere.core.optimize.statement.dml.select.pagination;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

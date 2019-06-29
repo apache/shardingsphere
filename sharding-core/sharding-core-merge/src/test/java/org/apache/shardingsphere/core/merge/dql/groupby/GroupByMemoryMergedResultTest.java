@@ -27,7 +27,7 @@ import org.apache.shardingsphere.core.merge.MergedResult;
 import org.apache.shardingsphere.core.merge.dql.DQLMergeEngine;
 import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
 import org.apache.shardingsphere.core.optimize.statement.dml.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimize.statement.dml.where.WhereClauseOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.dml.select.SelectOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationSelectItem;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
@@ -82,7 +82,7 @@ public final class GroupByMemoryMergedResultTest {
         selectStatement.getItems().add(aggregationSelectItem2);
         selectStatement.getGroupByItems().add(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, OrderDirection.ASC));
         selectStatement.getOrderByItems().add(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.DESC, OrderDirection.ASC));
-        routeResult = new SQLRouteResult(new WhereClauseOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList()));
+        routeResult = new SQLRouteResult(new SelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList()));
     }
     
     private ResultSet mockResultSet() throws SQLException {

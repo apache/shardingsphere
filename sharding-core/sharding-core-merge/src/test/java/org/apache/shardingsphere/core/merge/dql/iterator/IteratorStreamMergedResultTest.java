@@ -24,7 +24,7 @@ import org.apache.shardingsphere.core.merge.MergedResult;
 import org.apache.shardingsphere.core.merge.dql.DQLMergeEngine;
 import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
 import org.apache.shardingsphere.core.optimize.statement.dml.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimize.statement.dml.where.WhereClauseOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.dml.select.SelectOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.junit.Before;
@@ -56,7 +56,7 @@ public final class IteratorStreamMergedResultTest {
         when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
         queryResults = Lists.<QueryResult>newArrayList(new TestQueryResult(resultSet), new TestQueryResult(mock(ResultSet.class)), new TestQueryResult(mock(ResultSet.class)));
         SelectStatement selectStatement = new SelectStatement();
-        routeResult = new SQLRouteResult(new WhereClauseOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList()));
+        routeResult = new SQLRouteResult(new SelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList()));
     }
     
     @Test

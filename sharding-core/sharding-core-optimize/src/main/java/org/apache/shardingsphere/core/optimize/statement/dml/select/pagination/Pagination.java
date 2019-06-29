@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.statement.dml.where.pagination;
+package org.apache.shardingsphere.core.optimize.statement.dml.select.pagination;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.NumberLiteralPaginationValueSegment;
