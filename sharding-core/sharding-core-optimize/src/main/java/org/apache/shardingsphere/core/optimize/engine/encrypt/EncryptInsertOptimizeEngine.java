@@ -19,9 +19,9 @@ package org.apache.shardingsphere.core.optimize.engine.encrypt;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
-import org.apache.shardingsphere.core.optimize.statement.sharding.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimize.statement.sharding.insert.InsertClauseOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.sharding.insert.InsertOptimizeResultUnit;
+import org.apache.shardingsphere.core.optimize.statement.dml.condition.ShardingCondition;
+import org.apache.shardingsphere.core.optimize.statement.dml.insert.InsertClauseOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.dml.insert.InsertOptimizeResultUnit;
 import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rule.EncryptRule;

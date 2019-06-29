@@ -15,29 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.statement.sharding;
+package org.apache.shardingsphere.core.optimize.statement.ddl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.sharding.condition.ShardingConditions;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
 /**
- * Optimized statement for sharding.
+ * Optimized statement for drop index.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public abstract class ShardingOptimizedStatement implements OptimizedStatement {
+public final class DropIndexOptimizedStatement implements OptimizedStatement {
     
     private final SQLStatement sqlStatement;
     
     @Getter
-    private final ShardingConditions shardingConditions;
+    private final String tableName;
     
     @Override
-    public final SQLStatement getSQLStatement() {
+    public SQLStatement getSQLStatement() {
         return sqlStatement;
     }
 }

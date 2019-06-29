@@ -19,10 +19,10 @@ package org.apache.shardingsphere.core.optimize.engine.sharding.dml;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
-import org.apache.shardingsphere.core.optimize.statement.sharding.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimize.statement.sharding.insert.GeneratedKey;
-import org.apache.shardingsphere.core.optimize.statement.sharding.insert.InsertClauseOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.sharding.insert.InsertOptimizeResultUnit;
+import org.apache.shardingsphere.core.optimize.statement.dml.condition.ShardingCondition;
+import org.apache.shardingsphere.core.optimize.statement.dml.insert.GeneratedKey;
+import org.apache.shardingsphere.core.optimize.statement.dml.insert.InsertClauseOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.dml.insert.InsertOptimizeResultUnit;
 import org.apache.shardingsphere.core.parse.exception.SQLParsingException;
 import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;

@@ -19,8 +19,8 @@ package org.apache.shardingsphere.core.rewrite.rewriter.parameter;
 
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.optimize.statement.sharding.where.WhereClauseOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.sharding.where.pagination.Pagination;
+import org.apache.shardingsphere.core.optimize.statement.dml.where.WhereClauseOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.dml.where.pagination.Pagination;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.route.SQLRouteResult;

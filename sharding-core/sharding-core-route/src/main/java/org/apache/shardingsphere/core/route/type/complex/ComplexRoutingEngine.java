@@ -22,7 +22,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.core.optimize.statement.sharding.ShardingOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.dml.DMLOptimizedStatement;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 import org.apache.shardingsphere.core.route.type.standard.StandardRoutingEngine;
@@ -47,7 +47,7 @@ public final class ComplexRoutingEngine implements RoutingEngine {
     
     private final Collection<String> logicTables;
     
-    private final ShardingOptimizedStatement shardingOptimizedStatement;
+    private final DMLOptimizedStatement dmlOptimizedStatement;
     
     @Override
     public RoutingResult route() {
@@ -57,7 +57,7 @@ public final class ComplexRoutingEngine implements RoutingEngine {
             Optional<TableRule> tableRule = shardingRule.findTableRule(each);
             if (tableRule.isPresent()) {
                 if (!bindingTableNames.contains(each)) {
-                    result.add(new StandardRoutingEngine(shardingRule, tableRule.get().getLogicTable(), shardingOptimizedStatement).route());
+                    result.add(new StandardRoutingEngine(shardingRule, tableRule.get().getLogicTable(), dmlOptimizedStatement).route());
                 }
                 Optional<BindingTableRule> bindingTableRule = shardingRule.findBindingTableRule(each);
                 if (bindingTableRule.isPresent()) {

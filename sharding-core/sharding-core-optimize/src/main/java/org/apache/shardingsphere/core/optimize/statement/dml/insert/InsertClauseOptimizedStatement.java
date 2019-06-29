@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.statement.sharding.insert;
+package org.apache.shardingsphere.core.optimize.statement.dml.insert;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.core.optimize.statement.sharding.ShardingOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.sharding.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimize.statement.sharding.condition.ShardingConditions;
+import org.apache.shardingsphere.core.optimize.statement.dml.DMLOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.dml.condition.ShardingCondition;
+import org.apache.shardingsphere.core.optimize.statement.dml.condition.ShardingConditions;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
@@ -37,7 +37,7 @@ import java.util.List;
  * @author zhangliang
  */
 @Getter
-public final class InsertClauseOptimizedStatement extends ShardingOptimizedStatement {
+public final class InsertClauseOptimizedStatement extends DMLOptimizedStatement {
     
     private final Collection<String> columnNames = new LinkedHashSet<>();
     

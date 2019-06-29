@@ -15,40 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.statement.sharding.condition;
+package org.apache.shardingsphere.core.optimize.statement.dml;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.optimize.engine.sharding.dml.AlwaysFalseShardingCondition;
-
-import java.util.List;
+import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.dml.condition.ShardingConditions;
+import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
 /**
- * Sharding conditions.
+ * Optimized statement for DML.
  *
  * @author zhangliang
- * @author maxiaoguang
  */
 @RequiredArgsConstructor
-@Getter
-public final class ShardingConditions {
+public abstract class DMLOptimizedStatement implements OptimizedStatement {
     
-    private final List<ShardingCondition> shardingConditions;
+    private final SQLStatement sqlStatement;
     
-    /**
-     * Judge sharding conditions is always false or not.
-     *
-     * @return sharding conditions is always false or not
-     */
-    public boolean isAlwaysFalse() {
-        if (shardingConditions.isEmpty()) {
-            return false;
-        }
-        for (ShardingCondition each : shardingConditions) {
-            if (!(each instanceof AlwaysFalseShardingCondition)) {
-                return false;
-            }
-        }
-        return true;
+    @Getter
+    private final ShardingConditions shardingConditions;
+    
+    @Override
+    public final SQLStatement getSQLStatement() {
+        return sqlStatement;
     }
 }
