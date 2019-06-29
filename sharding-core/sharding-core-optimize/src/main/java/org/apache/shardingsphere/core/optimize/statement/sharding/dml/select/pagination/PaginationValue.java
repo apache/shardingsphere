@@ -15,28 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.statement.ddl;
+package org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.pagination;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationValueSegment;
 
 /**
- * Optimized statement for drop index.
+ * Pagination value.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class DropIndexOptimizedStatement implements OptimizedStatement {
+@Getter
+public final class PaginationValue {
     
-    private final SQLStatement sqlStatement;
+    private final PaginationValueSegment segment;
     
-    @Getter
-    private final String tableName;
-    
-    @Override
-    public SQLStatement getSQLStatement() {
-        return sqlStatement;
-    }
+    private final int value;
 }

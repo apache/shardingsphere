@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.rewrite.rewriter.sql;
 
 import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.dml.insert.InsertOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.ShardingInsertOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.TextOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
@@ -82,7 +82,7 @@ public final class ShardingSQLRewriter implements SQLRewriter {
         } else if (sqlToken instanceof InsertGeneratedKeyToken) {
             appendInsertGeneratedKeyPlaceholder(sqlBuilder, (InsertGeneratedKeyToken) sqlToken);
         } else if (sqlToken instanceof InsertSetAddGeneratedKeyToken) {
-            appendInsertSetAddGeneratedKeyPlaceholder(sqlBuilder, (InsertSetAddGeneratedKeyToken) sqlToken, (InsertOptimizedStatement) optimizedStatement);
+            appendInsertSetAddGeneratedKeyPlaceholder(sqlBuilder, (InsertSetAddGeneratedKeyToken) sqlToken, (ShardingInsertOptimizedStatement) optimizedStatement);
         }
     }
     
@@ -138,7 +138,7 @@ public final class ShardingSQLRewriter implements SQLRewriter {
     }
     
     private void appendInsertSetAddGeneratedKeyPlaceholder(
-            final SQLBuilder sqlBuilder, final InsertSetAddGeneratedKeyToken insertSetAddGeneratedKeyToken, final InsertOptimizedStatement optimizedStatement) {
+            final SQLBuilder sqlBuilder, final InsertSetAddGeneratedKeyToken insertSetAddGeneratedKeyToken, final ShardingInsertOptimizedStatement optimizedStatement) {
         String columnName = insertSetAddGeneratedKeyToken.getColumnName();
         sqlBuilder.appendPlaceholder(new InsertSetAddGeneratedKeyPlaceholder(columnName, optimizedStatement.getUnits().get(0).getColumnSQLExpression(columnName)));
     }

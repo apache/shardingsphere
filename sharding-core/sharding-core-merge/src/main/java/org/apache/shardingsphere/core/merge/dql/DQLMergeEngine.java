@@ -33,8 +33,8 @@ import org.apache.shardingsphere.core.merge.dql.orderby.OrderByStreamMergedResul
 import org.apache.shardingsphere.core.merge.dql.pagination.LimitDecoratorMergedResult;
 import org.apache.shardingsphere.core.merge.dql.pagination.RowNumberDecoratorMergedResult;
 import org.apache.shardingsphere.core.merge.dql.pagination.TopAndRowNumberDecoratorMergedResult;
-import org.apache.shardingsphere.core.optimize.statement.dml.select.SelectOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.dml.select.pagination.Pagination;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ShardingSelectOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.pagination.Pagination;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
@@ -137,7 +137,7 @@ public final class DQLMergeEngine implements MergeEngine {
     }
     
     private MergedResult decorate(final MergedResult mergedResult) throws SQLException {
-        Pagination pagination = ((SelectOptimizedStatement) routeResult.getOptimizedStatement()).getPagination();
+        Pagination pagination = ((ShardingSelectOptimizedStatement) routeResult.getOptimizedStatement()).getPagination();
         if (null == pagination || 1 == queryResults.size()) {
             return mergedResult;
         }

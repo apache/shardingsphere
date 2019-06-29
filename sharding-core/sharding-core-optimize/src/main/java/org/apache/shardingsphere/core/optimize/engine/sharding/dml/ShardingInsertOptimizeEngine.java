@@ -19,11 +19,11 @@ package org.apache.shardingsphere.core.optimize.engine.sharding.dml;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
-import org.apache.shardingsphere.core.optimize.statement.dml.condition.InsertClauseShardingConditionEngine;
-import org.apache.shardingsphere.core.optimize.statement.dml.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimize.statement.dml.insert.GeneratedKey;
-import org.apache.shardingsphere.core.optimize.statement.dml.insert.InsertOptimizeResultUnit;
-import org.apache.shardingsphere.core.optimize.statement.dml.insert.InsertOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.InsertClauseShardingConditionEngine;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.GeneratedKey;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.InsertOptimizeResultUnit;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.ShardingInsertOptimizedStatement;
 import org.apache.shardingsphere.core.parse.exception.SQLParsingException;
 import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
@@ -61,7 +61,7 @@ public final class ShardingInsertOptimizeEngine implements OptimizeEngine {
     }
     
     @Override
-    public InsertOptimizedStatement optimize() {
+    public ShardingInsertOptimizedStatement optimize() {
         Optional<OnDuplicateKeyColumnsSegment> onDuplicateKeyColumnsSegment = insertStatement.findSQLSegment(OnDuplicateKeyColumnsSegment.class);
         if (onDuplicateKeyColumnsSegment.isPresent() && isUpdateShardingKey(onDuplicateKeyColumnsSegment.get(), insertStatement.getTables().getSingleTableName())) {
             throw new SQLParsingException("INSERT INTO .... ON DUPLICATE KEY UPDATE can not support update for sharding column.");
@@ -71,7 +71,7 @@ public final class ShardingInsertOptimizeEngine implements OptimizeEngine {
         Iterator<Comparable<?>> generatedValues = isGeneratedValue ? generatedKey.get().getGeneratedValues().iterator() : null;
         Collection<String> columnNames = getColumnNames(generatedKey.orNull());
         List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(insertStatement, parameters, generatedKey.orNull());
-        InsertOptimizedStatement result = new InsertOptimizedStatement(insertStatement, shardingConditions, columnNames);
+        ShardingInsertOptimizedStatement result = new ShardingInsertOptimizedStatement(insertStatement, shardingConditions, columnNames);
         result.setGeneratedKey(generatedKey.orNull());
         int derivedColumnsCount = getDerivedColumnsCount(isGeneratedValue);
         int parametersCount = 0;

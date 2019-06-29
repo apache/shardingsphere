@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.statement.dml.insert;
+package org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.core.optimize.statement.dml.DMLOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.dml.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimize.statement.dml.condition.ShardingConditions;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.ShardingDMLOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingConditions;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
@@ -32,12 +32,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Optimized statement for insert.
+ * Insert optimized statement for sharding.
  *
  * @author zhangliang
  */
 @Getter
-public final class InsertOptimizedStatement extends DMLOptimizedStatement {
+public final class ShardingInsertOptimizedStatement extends ShardingDMLOptimizedStatement {
     
     private final Collection<String> columnNames = new LinkedHashSet<>();
     
@@ -46,7 +46,7 @@ public final class InsertOptimizedStatement extends DMLOptimizedStatement {
     @Setter
     private GeneratedKey generatedKey;
     
-    public InsertOptimizedStatement(final SQLStatement sqlStatement, final List<ShardingCondition> shardingConditions, final Collection<String> columnNames) {
+    public ShardingInsertOptimizedStatement(final SQLStatement sqlStatement, final List<ShardingCondition> shardingConditions, final Collection<String> columnNames) {
         super(sqlStatement, new ShardingConditions(shardingConditions));
         this.columnNames.addAll(columnNames);
     }

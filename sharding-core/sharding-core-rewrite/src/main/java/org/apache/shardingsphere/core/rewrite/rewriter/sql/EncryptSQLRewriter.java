@@ -20,8 +20,8 @@ package org.apache.shardingsphere.core.rewrite.rewriter.sql;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.dml.insert.InsertOptimizeResultUnit;
-import org.apache.shardingsphere.core.optimize.statement.dml.insert.InsertOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.InsertOptimizeResultUnit;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.ShardingInsertOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Conditions;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
@@ -82,9 +82,9 @@ public final class EncryptSQLRewriter implements SQLRewriter {
     }
     
     private void encryptInsertOptimizedStatement(final OptimizedStatement optimizedStatement) {
-        if (optimizedStatement instanceof InsertOptimizedStatement) {
-            for (InsertOptimizeResultUnit each : ((InsertOptimizedStatement) optimizedStatement).getUnits()) {
-                encryptInsertOptimizeResultUnit(each, ((InsertOptimizedStatement) optimizedStatement).getColumnNames());
+        if (optimizedStatement instanceof ShardingInsertOptimizedStatement) {
+            for (InsertOptimizeResultUnit each : ((ShardingInsertOptimizedStatement) optimizedStatement).getUnits()) {
+                encryptInsertOptimizeResultUnit(each, ((ShardingInsertOptimizedStatement) optimizedStatement).getColumnNames());
             }
         }
     }
@@ -111,11 +111,11 @@ public final class EncryptSQLRewriter implements SQLRewriter {
     public void rewrite(final SQLBuilder sqlBuilder, final ParameterBuilder parameterBuilder, final SQLToken sqlToken) {
         parameterBuilder.setInsertParameterUnits(optimizedStatement);
         if (sqlToken instanceof InsertValuesToken) {
-            appendInsertValuesPlaceholder(sqlBuilder, (InsertOptimizedStatement) optimizedStatement);
+            appendInsertValuesPlaceholder(sqlBuilder, (ShardingInsertOptimizedStatement) optimizedStatement);
         } else if (sqlToken instanceof InsertSetEncryptValueToken) {
-            appendInsertSetEncryptValuePlaceholder(sqlBuilder, (InsertSetEncryptValueToken) sqlToken, (InsertOptimizedStatement) optimizedStatement);
+            appendInsertSetEncryptValuePlaceholder(sqlBuilder, (InsertSetEncryptValueToken) sqlToken, (ShardingInsertOptimizedStatement) optimizedStatement);
         } else if (sqlToken instanceof InsertSetAddAssistedColumnsToken) {
-            appendInsertSetAddItemsPlaceholder(sqlBuilder, (InsertSetAddAssistedColumnsToken) sqlToken, (InsertOptimizedStatement) optimizedStatement);
+            appendInsertSetAddItemsPlaceholder(sqlBuilder, (InsertSetAddAssistedColumnsToken) sqlToken, (ShardingInsertOptimizedStatement) optimizedStatement);
         } else if (sqlToken instanceof InsertAssistedColumnsToken) {
             appendInsertAssistedColumnsPlaceholder(sqlBuilder, (InsertAssistedColumnsToken) sqlToken);
         } else if (sqlToken instanceof EncryptColumnToken) {
@@ -123,7 +123,7 @@ public final class EncryptSQLRewriter implements SQLRewriter {
         }
     }
     
-    private void appendInsertValuesPlaceholder(final SQLBuilder sqlBuilder, final InsertOptimizedStatement insertOptimizeResult) {
+    private void appendInsertValuesPlaceholder(final SQLBuilder sqlBuilder, final ShardingInsertOptimizedStatement insertOptimizeResult) {
         List<InsertValuePlaceholder> insertValues = new LinkedList<>();
         for (InsertOptimizeResultUnit each : insertOptimizeResult.getUnits()) {
             insertValues.add(new InsertValuePlaceholder(new ArrayList<>(each.getColumnNames()), Arrays.asList(each.getValues()), each.getDataNodes()));
@@ -132,12 +132,12 @@ public final class EncryptSQLRewriter implements SQLRewriter {
     }
     
     private void appendInsertSetEncryptValuePlaceholder(final SQLBuilder sqlBuilder, 
-                                                        final InsertSetEncryptValueToken insertSetEncryptValueToken, final InsertOptimizedStatement optimizedStatement) {
+                                                        final InsertSetEncryptValueToken insertSetEncryptValueToken, final ShardingInsertOptimizedStatement optimizedStatement) {
         sqlBuilder.appendPlaceholder(new InsertSetEncryptValuePlaceholder(optimizedStatement.getUnits().get(0).getColumnSQLExpression(insertSetEncryptValueToken.getColumnName())));
     }
     
     private void appendInsertSetAddItemsPlaceholder(
-            final SQLBuilder sqlBuilder, final InsertSetAddAssistedColumnsToken insertSetAddAssistedColumnsToken, final InsertOptimizedStatement optimizedStatement) {
+            final SQLBuilder sqlBuilder, final InsertSetAddAssistedColumnsToken insertSetAddAssistedColumnsToken, final ShardingInsertOptimizedStatement optimizedStatement) {
         List<ExpressionSegment> columnValues = new LinkedList<>();
         for (String each : insertSetAddAssistedColumnsToken.getColumnNames()) {
             columnValues.add(optimizedStatement.getUnits().get(0).getColumnSQLExpression(each));

@@ -15,29 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.statement.dml;
+package org.apache.shardingsphere.core.optimize.statement.sharding.dml.select;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.dml.condition.ShardingConditions;
+import lombok.Setter;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.ShardingDMLOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingConditions;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.pagination.Pagination;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
+import java.util.List;
+
 /**
- * Optimized statement for DML.
+ * Select optimized statement for sharding.
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
-public class DMLOptimizedStatement implements OptimizedStatement {
+@Getter
+@Setter
+public final class ShardingSelectOptimizedStatement extends ShardingDMLOptimizedStatement {
     
-    private final SQLStatement sqlStatement;
+    private Pagination pagination;
     
-    @Getter
-    private final ShardingConditions shardingConditions;
-    
-    @Override
-    public final SQLStatement getSQLStatement() {
-        return sqlStatement;
+    public ShardingSelectOptimizedStatement(final SQLStatement sqlStatement, final List<ShardingCondition> shardingConditions) {
+        super(sqlStatement, new ShardingConditions(shardingConditions));
     }
 }

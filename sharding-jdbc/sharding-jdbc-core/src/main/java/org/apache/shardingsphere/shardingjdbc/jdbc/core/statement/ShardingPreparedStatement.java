@@ -27,8 +27,8 @@ import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.execute.sql.execute.result.StreamQueryResult;
 import org.apache.shardingsphere.core.merge.MergeEngine;
 import org.apache.shardingsphere.core.merge.MergeEngineFactory;
-import org.apache.shardingsphere.core.optimize.statement.dml.insert.GeneratedKey;
-import org.apache.shardingsphere.core.optimize.statement.dml.insert.InsertOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.GeneratedKey;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.ShardingInsertOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
@@ -178,7 +178,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     public ResultSet getGeneratedKeys() throws SQLException {
         Optional<GeneratedKey> generatedKey = getGeneratedKey();
         if (preparedStatementExecutor.isReturnGeneratedKeys() && generatedKey.isPresent()) {
-            InsertOptimizedStatement optimizedStatement = (InsertOptimizedStatement) routeResult.getOptimizedStatement();
+            ShardingInsertOptimizedStatement optimizedStatement = (ShardingInsertOptimizedStatement) routeResult.getOptimizedStatement();
             Preconditions.checkState(optimizedStatement.getGeneratedKey().isPresent());
             return new GeneratedKeysResultSet(optimizedStatement.getGeneratedKey().get().getGeneratedValues().iterator(), generatedKey.get().getColumnName(), this);
         }
@@ -190,7 +190,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     
     private Optional<GeneratedKey> getGeneratedKey() {
         return null != routeResult && routeResult.getOptimizedStatement().getSQLStatement() instanceof InsertStatement
-                ? ((InsertOptimizedStatement) routeResult.getOptimizedStatement()).getGeneratedKey() : Optional.<GeneratedKey>absent();
+                ? ((ShardingInsertOptimizedStatement) routeResult.getOptimizedStatement()).getGeneratedKey() : Optional.<GeneratedKey>absent();
     }
     
     private void initPreparedStatementExecutor() throws SQLException {

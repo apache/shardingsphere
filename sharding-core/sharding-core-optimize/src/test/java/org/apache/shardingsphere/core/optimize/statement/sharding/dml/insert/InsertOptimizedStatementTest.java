@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.statement.dml.insert;
+package org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert;
 
 import com.google.common.collect.Lists;
-import org.apache.shardingsphere.core.optimize.statement.dml.condition.ShardingCondition;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -32,7 +32,7 @@ import static org.junit.Assert.assertThat;
 
 public final class InsertOptimizedStatementTest {
     
-    private InsertOptimizedStatement insertClauseOptimizedStatement = new InsertOptimizedStatement(
+    private ShardingInsertOptimizedStatement insertClauseOptimizedStatement = new ShardingInsertOptimizedStatement(
             new InsertStatement(), Collections.<ShardingCondition>emptyList(), Lists.newArrayList("id", "value", "status"));
     
     @Test

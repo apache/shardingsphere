@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.core.optimize.engine.sharding.dml;
 
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.optimize.statement.dml.select.SelectOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.dml.select.pagination.Pagination;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ShardingSelectOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.pagination.Pagination;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -44,13 +44,13 @@ public final class ShardingSelectOptimizeEngine extends ShardingWhereOptimizeEng
     }
     
     @Override
-    public SelectOptimizedStatement optimize() {
-        SelectOptimizedStatement result = super.optimize();
+    public ShardingSelectOptimizedStatement optimize() {
+        ShardingSelectOptimizedStatement result = super.optimize();
         setPagination(result);
         return result;
     }
     
-    private void setPagination(final SelectOptimizedStatement optimizedStatement) {
+    private void setPagination(final ShardingSelectOptimizedStatement optimizedStatement) {
         if (dmlStatement instanceof SelectStatement) {
             SelectStatement selectStatement = (SelectStatement) dmlStatement;
             if (null != selectStatement.getOffset() || null != selectStatement.getRowCount()) {

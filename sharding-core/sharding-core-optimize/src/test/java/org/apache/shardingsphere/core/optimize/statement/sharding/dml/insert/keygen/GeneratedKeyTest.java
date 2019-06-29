@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.statement.dml.insert.keygen;
+package org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.keygen;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.optimize.statement.dml.insert.GeneratedKey;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.GeneratedKey;
 import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.sql.context.table.Table;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;

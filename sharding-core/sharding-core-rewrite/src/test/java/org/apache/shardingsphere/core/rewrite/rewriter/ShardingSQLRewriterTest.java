@@ -22,10 +22,10 @@ import com.google.common.base.Preconditions;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.AggregationType;
 import org.apache.shardingsphere.core.constant.OrderDirection;
-import org.apache.shardingsphere.core.optimize.statement.dml.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimize.statement.dml.insert.InsertOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.dml.select.SelectOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.dml.select.pagination.Pagination;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.ShardingInsertOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ShardingSelectOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.pagination.Pagination;
 import org.apache.shardingsphere.core.optimize.statement.transparent.TransparentOptimizedStatement;
 import org.apache.shardingsphere.core.parse.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
@@ -133,7 +133,7 @@ public final class ShardingSQLRewriterTest {
     @Test
     public void assertRewriteWithoutChange() {
         selectStatement.setLogicSQL("SELECT table_y.id FROM table_y WHERE table_y.id=?");
-        routeResult = new SQLRouteResult(new SelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList()));
+        routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList()));
         routeResult.setRoutingResult(new RoutingResult());
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(Collections.<Object>singletonList(1));
         assertThat(getSQLBuilder(rewriteEngine).toSQL(null, tableTokens), is("SELECT table_y.id FROM table_y WHERE table_y.id=?"));
@@ -147,7 +147,7 @@ public final class ShardingSQLRewriterTest {
         selectStatement.getSQLSegments().add(new TableSegment(7, 13, "table_x"));
         selectStatement.getSQLSegments().add(new TableSegment(31, 37, "table_x"));
         selectStatement.getSQLSegments().add(new TableSegment(47, 53, "table_x"));
-        routeResult = new SQLRouteResult(new SelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList()));
+        routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList()));
         routeResult.setRoutingResult(new RoutingResult());
         selectStatement.setLogicSQL("SELECT table_x.id, x.name FROM table_x x WHERE table_x.id=? AND x.name=?");
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(parameters);
@@ -162,7 +162,7 @@ public final class ShardingSQLRewriterTest {
         selectStatement.getItems().add(selectItem1);
         selectStatement.getItems().add(selectItem2);
         selectStatement.setSelectListStopIndex(11);
-        routeResult = new SQLRouteResult(new SelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList()));
+        routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList()));
         routeResult.setRoutingResult(new RoutingResult());
         selectStatement.setLogicSQL("SELECT x.age FROM table_x x GROUP BY x.id ORDER BY x.name");
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(Collections.emptyList());
@@ -180,7 +180,7 @@ public final class ShardingSQLRewriterTest {
         avgSelectItem.getDerivedAggregationSelectItems().add(sumSelectItem);
         selectStatement.getItems().add(avgSelectItem);
         selectStatement.setSelectListStopIndex(16);
-        routeResult = new SQLRouteResult(new SelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList()));
+        routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList()));
         routeResult.setRoutingResult(new RoutingResult());
         selectStatement.setLogicSQL("SELECT AVG(x.age) FROM table_x x");
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(Collections.emptyList());
@@ -196,7 +196,7 @@ public final class ShardingSQLRewriterTest {
         insertStatement.getSQLSegments().add(new InsertColumnsSegment(30, 30, Collections.singleton(mock(ColumnSegment.class))));
         insertStatement.getSQLSegments().add(new InsertValuesSegment(39, 44, Collections.<ExpressionSegment>emptyList()));
         insertStatement.getSQLSegments().add(new TableSegment(12, 18, "table_x"));
-        InsertOptimizedStatement optimizedStatement = new InsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), Arrays.asList("name", "age", "id"));
+        ShardingInsertOptimizedStatement optimizedStatement = new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), Arrays.asList("name", "age", "id"));
         Object[] parameters = {"x", 1, 1};
         ExpressionSegment[] expressionSegments = {new ParameterMarkerExpressionSegment(0, 0, 0), new ParameterMarkerExpressionSegment(0, 0, 1), new ParameterMarkerExpressionSegment(0, 0, 2)};
         optimizedStatement.addUnit(expressionSegments, parameters, 3);
@@ -217,7 +217,7 @@ public final class ShardingSQLRewriterTest {
         insertStatement.getSQLSegments().add(new InsertValuesSegment(29, 31, Collections.<ExpressionSegment>emptyList()));
         insertStatement.getTables().add(new Table("table_x", null));
         insertStatement.getSQLSegments().add(new TableSegment(12, 20, "`table_x`"));
-        InsertOptimizedStatement optimizedStatement = new InsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), Arrays.asList("name", "id"));
+        ShardingInsertOptimizedStatement optimizedStatement = new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), Arrays.asList("name", "id"));
         Object[] parameters = {"Bill", 1};
         ExpressionSegment[] expressionSegments = {new ParameterMarkerExpressionSegment(0, 0, 0), new ParameterMarkerExpressionSegment(0, 0, 1)};
         optimizedStatement.addUnit(expressionSegments, parameters, 2);
@@ -238,7 +238,7 @@ public final class ShardingSQLRewriterTest {
         insertStatement.getSQLSegments().add(new InsertValuesSegment(29, 32, Collections.<ExpressionSegment>emptyList()));
         insertStatement.getTables().add(new Table("table_x", null));
         insertStatement.getSQLSegments().add(new TableSegment(12, 20, "`table_x`"));
-        InsertOptimizedStatement optimizedStatement = new InsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), Arrays.asList("name", "id"));
+        ShardingInsertOptimizedStatement optimizedStatement = new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), Arrays.asList("name", "id"));
         ExpressionSegment[] expressionSegments = {new LiteralExpressionSegment(0, 0, 10), new LiteralExpressionSegment(0, 0, 1)};
         optimizedStatement.addUnit(expressionSegments, new Object[0], 0);
         optimizedStatement.getUnits().get(0).getDataNodes().add(new DataNode("db0.table_1"));
@@ -258,7 +258,7 @@ public final class ShardingSQLRewriterTest {
         insertStatement.getSQLSegments().add(new InsertValuesSegment(29, 32, Collections.<ExpressionSegment>emptyList()));
         insertStatement.getTables().add(new Table("table_x", null));
         insertStatement.getSQLSegments().add(new TableSegment(12, 20, "`table_x`"));
-        InsertOptimizedStatement optimizedStatement = new InsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), Arrays.asList("name", "id"));
+        ShardingInsertOptimizedStatement optimizedStatement = new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), Arrays.asList("name", "id"));
         ExpressionSegment[] expressionSegments = {new LiteralExpressionSegment(0, 0, 10), new LiteralExpressionSegment(0, 0, 1)};
         optimizedStatement.addUnit(expressionSegments, new Object[0], 0);
         optimizedStatement.getUnits().get(0).getDataNodes().add(new DataNode("db0.table_1"));
@@ -277,7 +277,7 @@ public final class ShardingSQLRewriterTest {
         insertStatement.getColumnNames().add("id");
         insertStatement.getTables().add(new Table("table_x", null));
         insertStatement.getSQLSegments().add(new TableSegment(12, 20, "`table_x`"));
-        InsertOptimizedStatement optimizedStatement = new InsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), Arrays.asList("name", "id"));
+        ShardingInsertOptimizedStatement optimizedStatement = new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), Arrays.asList("name", "id"));
         ExpressionSegment[] expressionSegments = {new LiteralExpressionSegment(0, 0, 10), new LiteralExpressionSegment(0, 0, 1)};
         optimizedStatement.addUnit(expressionSegments, new Object[0], 0);
         optimizedStatement.getUnits().get(0).getDataNodes().add(new DataNode("db0.table_1"));
@@ -301,7 +301,7 @@ public final class ShardingSQLRewriterTest {
         insertStatement.getSQLSegments().add(new TableSegment(12, 20, "`table_x`"));
         insertStatement.getSQLSegments().add(new InsertColumnsSegment(21, 21, Collections.<ColumnSegment>emptyList()));
         insertStatement.getSQLSegments().add(new InsertValuesSegment(29, 35, Collections.<ExpressionSegment>emptyList()));
-        InsertOptimizedStatement optimizedStatement = new InsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), Arrays.asList("name", "id"));
+        ShardingInsertOptimizedStatement optimizedStatement = new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), Arrays.asList("name", "id"));
         ExpressionSegment[] expressionSegments = {new LiteralExpressionSegment(0, 0, 10), new LiteralExpressionSegment(0, 0, 1)};
         optimizedStatement.addUnit(expressionSegments, new Object[0], 0);
         optimizedStatement.getUnits().get(0).getDataNodes().add(new DataNode("db0.table_1"));
@@ -321,7 +321,7 @@ public final class ShardingSQLRewriterTest {
         insertStatement.getSQLSegments().add(new InsertValuesSegment(29, 34, Collections.<ExpressionSegment>emptyList()));
         insertStatement.getTables().add(new Table("table_x", null));
         insertStatement.getSQLSegments().add(new TableSegment(12, 20, "`table_x`"));
-        InsertOptimizedStatement optimizedStatement = new InsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), Arrays.asList("name", "id"));
+        ShardingInsertOptimizedStatement optimizedStatement = new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), Arrays.asList("name", "id"));
         ExpressionSegment[] expressionSegments = {new ParameterMarkerExpressionSegment(0, 0, 0), new ParameterMarkerExpressionSegment(0, 0, 1)};
         Object[] parameters = {"x", 1};
         optimizedStatement.addUnit(expressionSegments, parameters, 2);
@@ -342,7 +342,7 @@ public final class ShardingSQLRewriterTest {
         selectStatement.setOffset(offsetSegment);
         selectStatement.setRowCount(rowCountSegment);
         selectStatement.getSQLSegments().add(new TableSegment(17, 23, "table_x"));
-        SelectOptimizedStatement optimizedStatement = new SelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList());
+        ShardingSelectOptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList());
         optimizedStatement.setPagination(new Pagination(offsetSegment, rowCountSegment, Collections.emptyList()));
         routeResult = new SQLRouteResult(optimizedStatement);
         routeResult.setRoutingResult(new RoutingResult());
@@ -358,7 +358,7 @@ public final class ShardingSQLRewriterTest {
         selectStatement.setOffset(offsetSegment);
         selectStatement.setRowCount(rowCountSegment);
         selectStatement.getSQLSegments().add(new TableSegment(68, 74, "table_x"));
-        SelectOptimizedStatement optimizedStatement = new SelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList());
+        ShardingSelectOptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList());
         optimizedStatement.setPagination(new Pagination(offsetSegment, rowCountSegment, Collections.emptyList()));
         routeResult = new SQLRouteResult(optimizedStatement);
         routeResult.setRoutingResult(new RoutingResult());
@@ -375,7 +375,7 @@ public final class ShardingSQLRewriterTest {
         selectStatement.setOffset(offsetSegment);
         selectStatement.setRowCount(rowCountSegment);
         selectStatement.getSQLSegments().add(new TableSegment(85, 91, "table_x"));
-        SelectOptimizedStatement optimizedStatement = new SelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList());
+        ShardingSelectOptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList());
         optimizedStatement.setPagination(new Pagination(offsetSegment, rowCountSegment, Collections.emptyList()));
         routeResult = new SQLRouteResult(optimizedStatement);
         routeResult.setRoutingResult(new RoutingResult());
@@ -396,7 +396,7 @@ public final class ShardingSQLRewriterTest {
         selectStatement.getOrderByItems().add(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.ASC, OrderDirection.ASC));
         selectStatement.getGroupByItems().add(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.DESC, OrderDirection.ASC));
         selectStatement.getSQLSegments().add(new TableSegment(17, 23, "table_x"));
-        SelectOptimizedStatement optimizedStatement = new SelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList());
+        ShardingSelectOptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList());
         optimizedStatement.setPagination(new Pagination(offsetSegment, rowCountSegment, Collections.emptyList()));
         routeResult = new SQLRouteResult(optimizedStatement);
         routeResult.setRoutingResult(new RoutingResult());
@@ -416,7 +416,7 @@ public final class ShardingSQLRewriterTest {
         columnSegment.setOwner(new TableSegment(0, 0, "x"));
         selectStatement.getOrderByItems().add(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.ASC, OrderDirection.ASC));
         selectStatement.getGroupByItems().add(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.DESC, OrderDirection.ASC));
-        SelectOptimizedStatement optimizedStatement = new SelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList());
+        ShardingSelectOptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList());
         optimizedStatement.setPagination(new Pagination(offsetSegment, rowCountSegment, Collections.emptyList()));
         routeResult = new SQLRouteResult(optimizedStatement);
         routeResult.setRoutingResult(new RoutingResult());
@@ -437,7 +437,7 @@ public final class ShardingSQLRewriterTest {
         columnSegment.setOwner(new TableSegment(0, 0, "x"));
         selectStatement.getOrderByItems().add(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.ASC, OrderDirection.ASC));
         selectStatement.getGroupByItems().add(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.DESC, OrderDirection.ASC));
-        SelectOptimizedStatement optimizedStatement = new SelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList());
+        ShardingSelectOptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList());
         optimizedStatement.setPagination(new Pagination(offsetSegment, rowCountSegment, Collections.emptyList()));
         routeResult = new SQLRouteResult(optimizedStatement);
         routeResult.setRoutingResult(new RoutingResult());
@@ -454,7 +454,7 @@ public final class ShardingSQLRewriterTest {
         selectStatement.setOffset(offsetSegment);
         selectStatement.setRowCount(rowCountSegment);
         selectStatement.getSQLSegments().add(new TableSegment(17, 23, "table_x"));
-        SelectOptimizedStatement optimizedStatement = new SelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList());
+        ShardingSelectOptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList());
         optimizedStatement.setPagination(new Pagination(offsetSegment, rowCountSegment, Collections.emptyList()));
         routeResult = new SQLRouteResult(optimizedStatement);
         RoutingResult routingResult = new RoutingResult();
@@ -472,7 +472,7 @@ public final class ShardingSQLRewriterTest {
         selectStatement.setOffset(offsetSegment);
         selectStatement.setRowCount(rowCountSegment);
         selectStatement.getSQLSegments().add(new TableSegment(68, 74, "table_x"));
-        SelectOptimizedStatement optimizedStatement = new SelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList());
+        ShardingSelectOptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList());
         optimizedStatement.setPagination(new Pagination(offsetSegment, rowCountSegment, Collections.emptyList()));
         routeResult = new SQLRouteResult(optimizedStatement);
         RoutingResult routingResult = new RoutingResult();
@@ -491,7 +491,7 @@ public final class ShardingSQLRewriterTest {
         selectStatement.setOffset(offsetSegment);
         selectStatement.setRowCount(rowCountSegment);
         selectStatement.getSQLSegments().add(new TableSegment(85, 91, "table_x"));
-        SelectOptimizedStatement optimizedStatement = new SelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList());
+        ShardingSelectOptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList());
         optimizedStatement.setPagination(new Pagination(offsetSegment, rowCountSegment, Collections.emptyList()));
         routeResult = new SQLRouteResult(optimizedStatement);
         RoutingResult routingResult = new RoutingResult();
@@ -516,7 +516,7 @@ public final class ShardingSQLRewriterTest {
         selectStatement.getGroupByItems().add(new ColumnOrderByItemSegment(0, 0, columnSegment2, OrderDirection.DESC, OrderDirection.ASC));
         selectStatement.getOrderByItems().add(new ColumnOrderByItemSegment(0, 0, columnSegment2, OrderDirection.DESC, OrderDirection.ASC));
         selectStatement.getSQLSegments().add(new TableSegment(25, 31, "table_x"));
-        routeResult = new SQLRouteResult(new SelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList()));
+        routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList()));
         routeResult.setRoutingResult(new RoutingResult());
         selectStatement.setLogicSQL("SELECT x.id, x.name FROM table_x x GROUP BY x.id, x.name DESC");
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(Collections.emptyList());
@@ -530,7 +530,7 @@ public final class ShardingSQLRewriterTest {
         parameters.add("x");
         selectStatement.getTables().add(new Table("table_x", "x"));
         selectStatement.getTables().add(new Table("table_y", "y"));
-        routeResult = new SQLRouteResult(new SelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList()));
+        routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList()));
         routeResult.setRoutingResult(new RoutingResult());
         selectStatement.setLogicSQL("SELECT table_x.id, x.name FROM table_x x, table_y y WHERE table_x.id=? AND x.name=?");
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, routeResult.getOptimizedStatement(), parameters, routeResult.getRoutingResult().isSingleRouting());
@@ -546,7 +546,7 @@ public final class ShardingSQLRewriterTest {
         selectStatement.getTables().add(new Table("table_x", null));
         selectStatement.getSQLSegments().add(new IndexSegment(13, 22, "index_name", QuoteCharacter.NONE));
         selectStatement.getSQLSegments().add(new TableSegment(27, 33, "table_x"));
-        routeResult = new SQLRouteResult(new SelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList()));
+        routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList()));
         routeResult.setRoutingResult(new RoutingResult());
         selectStatement.setLogicSQL("CREATE INDEX index_name ON table_x ('column')");
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(Collections.emptyList());
@@ -572,7 +572,7 @@ public final class ShardingSQLRewriterTest {
         selectStatement.getTables().add(new Table("table_x", null));
         selectStatement.getSQLSegments().add(new IndexSegment(13, 23, "logic_index", QuoteCharacter.NONE));
         selectStatement.getSQLSegments().add(new TableSegment(28, 34, "table_x"));
-        routeResult = new SQLRouteResult(new SelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList()));
+        routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList()));
         routeResult.setRoutingResult(new RoutingResult());
         selectStatement.setLogicSQL("CREATE INDEX logic_index ON table_x ('column')");
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(Collections.emptyList());
@@ -708,7 +708,7 @@ public final class ShardingSQLRewriterTest {
         TableSegment tableSegment = new TableSegment(14, 32, "table_x");
         tableSegment.setOwner(new SchemaSegment(14, 24, "sharding_db"));
         selectStatement.getSQLSegments().add(tableSegment);
-        routeResult = new SQLRouteResult(new SelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList()));
+        routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList()));
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
         routeResult.setRoutingResult(routingResult);
@@ -720,7 +720,7 @@ public final class ShardingSQLRewriterTest {
     @Test
     public void assertTableTokenWithSchemaForInsert() {
         insertStatement.getSQLSegments().add(new TableSegment(12, 30, "table_x"));
-        routeResult = new SQLRouteResult(new InsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), Arrays.asList("order_id", "user_id", "status")));
+        routeResult = new SQLRouteResult(new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), Arrays.asList("order_id", "user_id", "status")));
         routeResult.setRoutingResult(new RoutingResult());
         insertStatement.setLogicSQL("INSERT INTO sharding_db.table_x (order_id, user_id, status) values (1, 1, 'OK')");
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(Collections.emptyList());
@@ -731,7 +731,7 @@ public final class ShardingSQLRewriterTest {
     @Test
     public void assertTableTokenWithSchemaForUpdate() {
         updateStatement.getSQLSegments().add(new TableSegment(7, 27, "table_x"));
-        routeResult = new SQLRouteResult(new SelectOptimizedStatement(updateStatement, Collections.<ShardingCondition>emptyList()));
+        routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(updateStatement, Collections.<ShardingCondition>emptyList()));
         routeResult.setRoutingResult(new RoutingResult());
         updateStatement.setLogicSQL("UPDATE `sharding_db`.table_x SET user_id=1 WHERE order_id=1");
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(Collections.emptyList());
@@ -741,7 +741,7 @@ public final class ShardingSQLRewriterTest {
     @Test
     public void assertTableTokenWithSchemaForDelete() {
         deleteStatement.getSQLSegments().add(new TableSegment(12, 34, "`table_x`"));
-        routeResult = new SQLRouteResult(new SelectOptimizedStatement(deleteStatement, Collections.<ShardingCondition>emptyList()));
+        routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(deleteStatement, Collections.<ShardingCondition>emptyList()));
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
         routeResult.setRoutingResult(routingResult);
@@ -760,7 +760,7 @@ public final class ShardingSQLRewriterTest {
         selectStatement.getEncryptConditions().getOrConditions().add(new AndCondition());
         selectStatement.getEncryptConditions().getOrConditions().get(0).getConditions().add(
                 new Condition(column, new PredicateSegment(29, 32, null, null), new ParameterMarkerExpressionSegment(0, 0, 0)));
-        routeResult = new SQLRouteResult(new SelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList()));
+        routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList()));
         routeResult.setRoutingResult(new RoutingResult());
         selectStatement.setLogicSQL("SELECT id FROM table_z WHERE id=? AND name=?");
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(parameters);
@@ -777,7 +777,7 @@ public final class ShardingSQLRewriterTest {
         expressionSegments.add(new LiteralExpressionSegment(0, 0, 5));
         Column column = new Column("id", "table_z");
         selectStatement.getEncryptConditions().getOrConditions().get(0).getConditions().add(new Condition(column, new PredicateSegment(29, 39, null, null), expressionSegments));
-        routeResult = new SQLRouteResult(new SelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList()));
+        routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList()));
         routeResult.setRoutingResult(new RoutingResult());
         selectStatement.setLogicSQL("SELECT id FROM table_z WHERE id in (3,5)");
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(Collections.emptyList());
@@ -798,7 +798,7 @@ public final class ShardingSQLRewriterTest {
         Column column = new Column("id", "table_z");
         selectStatement.getEncryptConditions().getOrConditions().get(0).getConditions().add(new Condition(column, new PredicateSegment(29, 40, null, null), expressionSegments));
         selectStatement.getEncryptConditions().getOrConditions().get(0).getConditions().add(new Condition(column, new PredicateSegment(45, 50, null, null), new LiteralExpressionSegment(0, 0, 3)));
-        routeResult = new SQLRouteResult(new SelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList()));
+        routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList()));
         routeResult.setRoutingResult(new RoutingResult());
         selectStatement.setLogicSQL("SELECT id FROM table_z WHERE id in (?, ?) or id = 3");
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(parameters);
@@ -817,7 +817,7 @@ public final class ShardingSQLRewriterTest {
         selectStatement.getEncryptConditions().getOrConditions().add(new AndCondition());
         selectStatement.getEncryptConditions().getOrConditions().get(0).getConditions().add(
                 new Condition(column, new PredicateSegment(29, 32, null, null), new ParameterMarkerExpressionSegment(0, 0, 0)));
-        routeResult = new SQLRouteResult(new SelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList()));
+        routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList()));
         routeResult.setRoutingResult(new RoutingResult());
         selectStatement.setLogicSQL("SELECT id FROM table_k WHERE id=? AND name=?");
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(parameters);
@@ -834,7 +834,7 @@ public final class ShardingSQLRewriterTest {
         expressionSegments.add(new LiteralExpressionSegment(0, 0, 5));
         Column column = new Column("id", "table_k");
         selectStatement.getEncryptConditions().getOrConditions().get(0).getConditions().add(new Condition(column, new PredicateSegment(29, 39, null, null), expressionSegments));
-        routeResult = new SQLRouteResult(new SelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList()));
+        routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList()));
         routeResult.setRoutingResult(new RoutingResult());
         selectStatement.setLogicSQL("SELECT id FROM table_k WHERE id in (3,5)");
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(Collections.emptyList());
@@ -852,7 +852,7 @@ public final class ShardingSQLRewriterTest {
         updateStatement.getAssignments().put(column, new LiteralExpressionSegment(0, 0, 1));
         updateStatement.getEncryptConditions().getOrConditions().add(new AndCondition());
         updateStatement.getEncryptConditions().getOrConditions().get(0).getConditions().add(new Condition(column, new PredicateSegment(32, 37, null, null), new LiteralExpressionSegment(0, 0, 2)));
-        routeResult = new SQLRouteResult(new SelectOptimizedStatement(updateStatement, Collections.<ShardingCondition>emptyList()));
+        routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(updateStatement, Collections.<ShardingCondition>emptyList()));
         routeResult.setRoutingResult(new RoutingResult());
         updateStatement.setLogicSQL("UPDATE table_z SET id = 1 WHERE id = 2");
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(Collections.emptyList());
@@ -867,7 +867,7 @@ public final class ShardingSQLRewriterTest {
         insertStatement.getSQLSegments().add(new SetAssignmentsSegment(22, 34, Collections.singleton(new AssignmentSegment(22, 34, columnSegment, expressionSegment))));
         insertStatement.getSQLSegments().add(new TableSegment(12, 20, "`table_w`"));
         insertStatement.getTables().add(new Table("table_w", null));
-        InsertOptimizedStatement optimizedStatement = new InsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), Arrays.asList("name", "id", "query_name"));
+        ShardingInsertOptimizedStatement optimizedStatement = new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), Arrays.asList("name", "id", "query_name"));
         ExpressionSegment[] expressionSegments = {new LiteralExpressionSegment(0, 0, 10), new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 10)};
         optimizedStatement.addUnit(expressionSegments, new Object[0], 0);
         optimizedStatement.getUnits().get(0).getDataNodes().add(new DataNode("db0.table_1"));
@@ -892,7 +892,7 @@ public final class ShardingSQLRewriterTest {
         selectItemsSegment.getSelectItems().add(selectItemSegment1);
         selectItemsSegment.getSelectItems().add(selectItemSegment2);
         selectStatement.getSQLSegments().add(selectItemsSegment);
-        routeResult = new SQLRouteResult(new SelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList()));
+        routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList()));
         routeResult.setRoutingResult(new RoutingResult());
         selectStatement.setLogicSQL("SELECT COUNT(DISTINCT id), SUM(DISTINCT id) FROM table_z WHERE id in (3,5)");
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(Collections.emptyList());

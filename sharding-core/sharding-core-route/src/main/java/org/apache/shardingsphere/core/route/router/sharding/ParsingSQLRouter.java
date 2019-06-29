@@ -24,10 +24,10 @@ import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
 import org.apache.shardingsphere.core.optimize.OptimizeEngineFactory;
 import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.dml.DMLOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.dml.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimize.statement.dml.condition.ShardingConditions;
-import org.apache.shardingsphere.core.optimize.statement.dml.insert.InsertOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.ShardingDMLOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingConditions;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.ShardingInsertOptimizedStatement;
 import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
 import org.apache.shardingsphere.core.parse.entry.ShardingSQLParseEntry;
 import org.apache.shardingsphere.core.parse.hook.ParsingHook;
@@ -88,23 +88,23 @@ public final class ParsingSQLRouter implements ShardingRouter {
     public SQLRouteResult route(final SQLStatement sqlStatement, final List<Object> parameters) {
         OptimizedStatement optimizedStatement = OptimizeEngineFactory.newInstance(shardingRule, sqlStatement, parameters, shardingMetaData.getTable()).optimize();
         boolean needMergeShardingValues = isNeedMergeShardingValues(sqlStatement);
-        if (optimizedStatement instanceof DMLOptimizedStatement && needMergeShardingValues) {
-            checkSubqueryShardingValues(sqlStatement, ((DMLOptimizedStatement) optimizedStatement).getShardingConditions());
-            mergeShardingConditions(((DMLOptimizedStatement) optimizedStatement).getShardingConditions());
+        if (optimizedStatement instanceof ShardingDMLOptimizedStatement && needMergeShardingValues) {
+            checkSubqueryShardingValues(sqlStatement, ((ShardingDMLOptimizedStatement) optimizedStatement).getShardingConditions());
+            mergeShardingConditions(((ShardingDMLOptimizedStatement) optimizedStatement).getShardingConditions());
         }
         RoutingResult routingResult = RoutingEngineFactory.newInstance(shardingRule, shardingMetaData.getDataSource(), optimizedStatement).route();
         if (needMergeShardingValues) {
             Preconditions.checkState(1 == routingResult.getRoutingUnits().size(), "Must have one sharding with subquery.");
         }
-        if (optimizedStatement instanceof InsertOptimizedStatement) {
-            setGeneratedValues((InsertOptimizedStatement) optimizedStatement);
+        if (optimizedStatement instanceof ShardingInsertOptimizedStatement) {
+            setGeneratedValues((ShardingInsertOptimizedStatement) optimizedStatement);
         }
         SQLRouteResult result = new SQLRouteResult(optimizedStatement);
         result.setRoutingResult(routingResult);
         return result;
     }
     
-    private void setGeneratedValues(final InsertOptimizedStatement optimizedStatement) {
+    private void setGeneratedValues(final ShardingInsertOptimizedStatement optimizedStatement) {
         if (optimizedStatement.getGeneratedKey().isPresent()) {
             generatedValues.addAll(optimizedStatement.getGeneratedKey().get().getGeneratedValues());
             optimizedStatement.getGeneratedKey().get().getGeneratedValues().clear();

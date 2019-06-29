@@ -23,9 +23,9 @@ import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.dal.DALMergeEngine;
 import org.apache.shardingsphere.core.merge.dql.DQLMergeEngine;
 import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
-import org.apache.shardingsphere.core.optimize.statement.dml.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimize.statement.dml.insert.InsertOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.dml.select.SelectOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.ShardingInsertOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ShardingSelectOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.transparent.TransparentOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
@@ -64,7 +64,7 @@ public final class MergeEngineFactoryTest {
     
     @Test
     public void assertNewInstanceWithSelectStatement() throws SQLException {
-        SQLRouteResult routeResult = new SQLRouteResult(new SelectOptimizedStatement(new SelectStatement(), Collections.<ShardingCondition>emptyList()));
+        SQLRouteResult routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(new SelectStatement(), Collections.<ShardingCondition>emptyList()));
         assertThat(MergeEngineFactory.newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, routeResult, null, queryResults), instanceOf(DQLMergeEngine.class));
     }
     
@@ -76,7 +76,7 @@ public final class MergeEngineFactoryTest {
     
     @Test(expected = UnsupportedOperationException.class)
     public void assertNewInstanceWithOtherStatement() throws SQLException {
-        SQLRouteResult routeResult = new SQLRouteResult(new InsertOptimizedStatement(new InsertStatement(), Collections.<ShardingCondition>emptyList(), Collections.<String>emptyList()));
+        SQLRouteResult routeResult = new SQLRouteResult(new ShardingInsertOptimizedStatement(new InsertStatement(), Collections.<ShardingCondition>emptyList(), Collections.<String>emptyList()));
         MergeEngineFactory.newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, routeResult, null, queryResults);
     }
 }

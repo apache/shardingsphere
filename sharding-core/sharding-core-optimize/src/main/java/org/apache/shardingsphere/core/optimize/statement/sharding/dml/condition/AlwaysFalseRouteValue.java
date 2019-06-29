@@ -15,12 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.statement.dml.condition;
+package org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition;
+
+import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
 
 /**
- * Always false sharding condition.
+ * Always false route value.
  *
- * @author maxiaoguang
+ * @author zhangliang
  */
-public final class AlwaysFalseShardingCondition extends ShardingCondition {
+public final class AlwaysFalseRouteValue implements RouteValue {
+    
+    @Override
+    public String getColumnName() {
+        return "";
+    }
+    
+    @Override
+    public String getTableName() {
+        return "";
+    }
 }

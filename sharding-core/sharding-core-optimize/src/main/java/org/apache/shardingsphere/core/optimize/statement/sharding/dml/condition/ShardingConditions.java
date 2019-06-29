@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.statement.dml.condition;
+package org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
