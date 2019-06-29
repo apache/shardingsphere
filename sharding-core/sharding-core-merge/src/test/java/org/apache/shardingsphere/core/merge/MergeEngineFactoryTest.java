@@ -23,6 +23,11 @@ import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.dal.DALMergeEngine;
 import org.apache.shardingsphere.core.merge.dql.DQLMergeEngine;
 import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
+import org.apache.shardingsphere.core.optimize.condition.ShardingCondition;
+import org.apache.shardingsphere.core.optimize.pojo.BroadcastOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.pojo.InsertClauseOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.pojo.WhereClauseOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.pojo.insert.InsertOptimizeResult;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
@@ -34,6 +39,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -59,19 +65,20 @@ public final class MergeEngineFactoryTest {
     
     @Test
     public void assertNewInstanceWithSelectStatement() throws SQLException {
-        SQLRouteResult routeResult = new SQLRouteResult(new SelectStatement());
+        SQLRouteResult routeResult = new SQLRouteResult(new WhereClauseOptimizedStatement(new SelectStatement(), Collections.<ShardingCondition>emptyList()));
         assertThat(MergeEngineFactory.newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, routeResult, null, queryResults), instanceOf(DQLMergeEngine.class));
     }
     
     @Test
     public void assertNewInstanceWithDALStatement() throws SQLException {
-        SQLRouteResult routeResult = new SQLRouteResult(new DALStatement());
+        SQLRouteResult routeResult = new SQLRouteResult(new BroadcastOptimizedStatement(new DALStatement()));
         assertThat(MergeEngineFactory.newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, routeResult, null, queryResults), instanceOf(DALMergeEngine.class));
     }
     
     @Test(expected = UnsupportedOperationException.class)
     public void assertNewInstanceWithOtherStatement() throws SQLException {
-        SQLRouteResult routeResult = new SQLRouteResult(new InsertStatement());
+        SQLRouteResult routeResult = new SQLRouteResult(
+                new InsertClauseOptimizedStatement(new InsertStatement(), Collections.<ShardingCondition>emptyList(), new InsertOptimizeResult(Collections.<String>emptyList())));
         MergeEngineFactory.newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, routeResult, null, queryResults);
     }
 }

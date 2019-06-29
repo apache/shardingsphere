@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.route.router.sharding;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.optimize.pojo.BroadcastOptimizedStatement;
 import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.parse.rule.registry.MasterSlaveParseRuleRegistry;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
@@ -52,7 +53,7 @@ public final class DatabaseHintSQLRouter implements ShardingRouter {
     @Override
     // TODO insert SQL need parse gen key
     public SQLRouteResult route(final SQLStatement sqlStatement, final List<Object> parameters) {
-        SQLRouteResult result = new SQLRouteResult(sqlStatement);
+        SQLRouteResult result = new SQLRouteResult(new BroadcastOptimizedStatement(sqlStatement));
         RoutingResult routingResult = new DatabaseHintRoutingEngine(
                 shardingRule.getShardingDataSourceNames().getDataSourceNames(), (HintShardingStrategy) shardingRule.getDefaultDatabaseShardingStrategy()).route();
         result.setRoutingResult(routingResult);

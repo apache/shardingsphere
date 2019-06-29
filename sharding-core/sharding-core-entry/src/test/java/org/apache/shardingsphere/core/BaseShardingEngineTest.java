@@ -51,12 +51,10 @@ public abstract class BaseShardingEngineTest {
     }
     
     protected final SQLRouteResult createSQLRouteResult() {
-        DALStatement dalStatement = new DALStatement();
-        SQLRouteResult result = new SQLRouteResult(dalStatement);
+        SQLRouteResult result = new SQLRouteResult(new BroadcastOptimizedStatement(new DALStatement()));
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
         result.setRoutingResult(routingResult);
-        result.setOptimizedStatement(new BroadcastOptimizedStatement(dalStatement));
         return result;
     }
     

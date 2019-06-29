@@ -54,12 +54,12 @@ public final class MergeEngineFactory {
      */
     public static MergeEngine newInstance(final DatabaseType databaseType, final ShardingRule shardingRule,
                                           final SQLRouteResult routeResult, final ShardingTableMetaData shardingTableMetaData, final List<QueryResult> queryResults) throws SQLException {
-        if (routeResult.getSqlStatement() instanceof SelectStatement) {
+        if (routeResult.getOptimizedStatement().getSQLStatement() instanceof SelectStatement) {
             return new DQLMergeEngine(databaseType, routeResult, queryResults);
         } 
-        if (routeResult.getSqlStatement() instanceof DALStatement) {
-            return new DALMergeEngine(shardingRule, queryResults, (DALStatement) routeResult.getSqlStatement(), shardingTableMetaData);
+        if (routeResult.getOptimizedStatement().getSQLStatement() instanceof DALStatement) {
+            return new DALMergeEngine(shardingRule, queryResults, (DALStatement) routeResult.getOptimizedStatement().getSQLStatement(), shardingTableMetaData);
         }
-        throw new UnsupportedOperationException(String.format("Cannot support type '%s'", routeResult.getSqlStatement().getClass().getName()));
+        throw new UnsupportedOperationException(String.format("Cannot support type '%s'", routeResult.getOptimizedStatement().getSQLStatement().getClass().getName()));
     }
 }

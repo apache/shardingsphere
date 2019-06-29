@@ -21,7 +21,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.core.optimize.pojo.OptimizedStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 
 import java.util.Collection;
@@ -39,11 +38,9 @@ import java.util.LinkedHashSet;
 @Setter
 public final class SQLRouteResult {
     
-    private final SQLStatement sqlStatement;
-    
-    private RoutingResult routingResult;
-    
-    private OptimizedStatement optimizedStatement;
+    private final OptimizedStatement optimizedStatement;
     
     private final Collection<RouteUnit> routeUnits = new LinkedHashSet<>();
+    
+    private RoutingResult routingResult;
 }

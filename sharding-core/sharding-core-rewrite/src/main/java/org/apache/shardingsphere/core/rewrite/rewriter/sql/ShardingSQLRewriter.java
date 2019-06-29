@@ -121,7 +121,7 @@ public final class ShardingSQLRewriter implements SQLRewriter {
     }
     
     private void appendOrderByPlaceholder(final SQLBuilder sqlBuilder) {
-        SelectStatement selectStatement = (SelectStatement) sqlRouteResult.getSqlStatement();
+        SelectStatement selectStatement = (SelectStatement) sqlRouteResult.getOptimizedStatement().getSQLStatement();
         OrderByPlaceholder orderByPlaceholder = new OrderByPlaceholder();
         if (isRewrite()) {
             for (OrderByItemSegment each : selectStatement.getOrderByItems()) {
@@ -135,7 +135,7 @@ public final class ShardingSQLRewriter implements SQLRewriter {
     
     private void appendAggregationDistinctPlaceholder(final SQLBuilder sqlBuilder, final AggregationDistinctToken distinctToken) {
         if (!isRewrite()) {
-            sqlBuilder.appendLiterals(sqlRouteResult.getSqlStatement().getLogicSQL().substring(distinctToken.getStartIndex(), distinctToken.getStopIndex() + 1));
+            sqlBuilder.appendLiterals(sqlRouteResult.getOptimizedStatement().getSQLStatement().getLogicSQL().substring(distinctToken.getStartIndex(), distinctToken.getStopIndex() + 1));
         } else {
             sqlBuilder.appendPlaceholder(new AggregationDistinctPlaceholder(distinctToken.getColumnName().toLowerCase(), distinctToken.getDerivedAlias()));
         }

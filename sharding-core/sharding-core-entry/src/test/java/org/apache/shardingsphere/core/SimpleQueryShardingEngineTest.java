@@ -66,7 +66,7 @@ public final class SimpleQueryShardingEngineTest extends BaseShardingEngineTest 
     
     protected void assertShard() {
         SQLRouteResult sqlRouteResult = createSQLRouteResult();
-        sqlRouteResult.getSqlStatement().setLogicSQL("SELECT 1");
+        sqlRouteResult.getOptimizedStatement().getSQLStatement().setLogicSQL("SELECT 1");
         when(routingEngine.route(getSql())).thenReturn(sqlRouteResult);
         assertSQLRouteResult(shardingEngine.shard(getSql(), getParameters()));
     }

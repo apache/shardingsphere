@@ -65,11 +65,9 @@ public final class LimitDecoratorMergedResultTest {
         for (ResultSet each : resultSets) {
             queryResults.add(new TestQueryResult(each));
         }
-        SelectStatement selectStatement = new SelectStatement();
-        routeResult = new SQLRouteResult(selectStatement);
-        WhereClauseOptimizedStatement optimizedStatement = new WhereClauseOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList());
+        WhereClauseOptimizedStatement optimizedStatement = new WhereClauseOptimizedStatement(new SelectStatement(), Collections.<ShardingCondition>emptyList());
         optimizedStatement.setPagination(new Pagination(null, null, Collections.emptyList()));
-        routeResult.setOptimizedStatement(optimizedStatement);
+        routeResult = new SQLRouteResult(optimizedStatement);
     }
     
     @Test

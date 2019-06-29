@@ -96,19 +96,20 @@ public final class ParsingSQLRouter implements ShardingRouter {
         if (needMergeShardingValues) {
             Preconditions.checkState(1 == routingResult.getRoutingUnits().size(), "Must have one sharding with subquery.");
         }
-        SQLRouteResult result = new SQLRouteResult(sqlStatement);
+        if (optimizedStatement instanceof InsertClauseOptimizedStatement) {
+            setGeneratedValues((InsertClauseOptimizedStatement) optimizedStatement);
+        }
+        SQLRouteResult result = new SQLRouteResult(optimizedStatement);
         result.setRoutingResult(routingResult);
-        setOptimizedStatement(optimizedStatement, result);
         return result;
     }
     
-    private void setOptimizedStatement(final OptimizedStatement optimizedStatement, final SQLRouteResult sqlRouteResult) {
-        if (optimizedStatement instanceof InsertClauseOptimizedStatement && ((InsertClauseOptimizedStatement) optimizedStatement).getGeneratedKey().isPresent()) {
-            generatedValues.addAll(((InsertClauseOptimizedStatement) optimizedStatement).getGeneratedKey().get().getGeneratedValues());
-            ((InsertClauseOptimizedStatement) optimizedStatement).getGeneratedKey().get().getGeneratedValues().clear();
-            ((InsertClauseOptimizedStatement) optimizedStatement).getGeneratedKey().get().getGeneratedValues().addAll(generatedValues);
+    private void setGeneratedValues(final InsertClauseOptimizedStatement optimizedStatement) {
+        if (optimizedStatement.getGeneratedKey().isPresent()) {
+            generatedValues.addAll(optimizedStatement.getGeneratedKey().get().getGeneratedValues());
+            optimizedStatement.getGeneratedKey().get().getGeneratedValues().clear();
+            optimizedStatement.getGeneratedKey().get().getGeneratedValues().addAll(generatedValues);
         }
-        sqlRouteResult.setOptimizedStatement(optimizedStatement);
     }
     
     private boolean isNeedMergeShardingValues(final SQLStatement sqlStatement) {

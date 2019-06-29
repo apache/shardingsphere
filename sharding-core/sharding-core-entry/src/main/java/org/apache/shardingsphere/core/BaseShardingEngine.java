@@ -73,7 +73,7 @@ public abstract class BaseShardingEngine {
         result.getRouteUnits().addAll(HintManager.isDatabaseShardingOnly() ? convert(sql, clonedParameters, result) : rewriteAndConvert(clonedParameters, result));
         if (shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW)) {
             boolean showSimple = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SIMPLE);
-            SQLLogger.logSQL(sql, showSimple, result.getSqlStatement(), result.getRouteUnits());
+            SQLLogger.logSQL(sql, showSimple, result.getOptimizedStatement().getSQLStatement(), result.getRouteUnits());
         }
         return result;
     }
@@ -105,12 +105,13 @@ public abstract class BaseShardingEngine {
     }
     
     private Collection<RouteUnit> rewriteAndConvert(final List<Object> parameters, final SQLRouteResult sqlRouteResult) {
-        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, sqlRouteResult.getSqlStatement(), parameters, sqlRouteResult.getRoutingResult().isSingleRouting());
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, sqlRouteResult.getOptimizedStatement().getSQLStatement(), parameters, sqlRouteResult.getRoutingResult().isSingleRouting());
         ShardingParameterRewriter shardingParameterRewriter = new ShardingParameterRewriter(sqlRouteResult);
         Collection<SQLRewriter> sqlRewriters = new LinkedList<>();
         sqlRewriters.add(new ShardingSQLRewriter(sqlRouteResult, sqlRouteResult.getOptimizedStatement()));
-        if (sqlRouteResult.getSqlStatement() instanceof DMLStatement) {
-            sqlRewriters.add(new EncryptSQLRewriter(shardingRule.getEncryptRule().getEncryptorEngine(), (DMLStatement) sqlRouteResult.getSqlStatement(), sqlRouteResult.getOptimizedStatement()));
+        if (sqlRouteResult.getOptimizedStatement().getSQLStatement() instanceof DMLStatement) {
+            sqlRewriters.add(new EncryptSQLRewriter(
+                    shardingRule.getEncryptRule().getEncryptorEngine(), (DMLStatement) sqlRouteResult.getOptimizedStatement().getSQLStatement(), sqlRouteResult.getOptimizedStatement()));
         }
         rewriteEngine.init(Collections.<ParameterRewriter>singletonList(shardingParameterRewriter), sqlRewriters);
         Collection<RouteUnit> result = new LinkedHashSet<>();

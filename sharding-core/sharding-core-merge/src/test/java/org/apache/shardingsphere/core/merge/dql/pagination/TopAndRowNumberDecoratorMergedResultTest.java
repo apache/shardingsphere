@@ -66,9 +66,7 @@ public final class TopAndRowNumberDecoratorMergedResultTest {
         for (ResultSet each : resultSets) {
             queryResults.add(new TestQueryResult(each));
         }
-        SelectStatement selectStatement = new SelectStatement();
-        routeResult = new SQLRouteResult(selectStatement);
-        routeResult.setOptimizedStatement(new WhereClauseOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList()));
+        routeResult = new SQLRouteResult(new WhereClauseOptimizedStatement(new SelectStatement(), Collections.<ShardingCondition>emptyList()));
     }
     
     @Test

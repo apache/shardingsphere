@@ -84,13 +84,13 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         if (routeResult.getRouteUnits().isEmpty()) {
             return new UpdateResponse();
         }
-        SQLStatement sqlStatement = routeResult.getSqlStatement();
+        SQLStatement sqlStatement = routeResult.getOptimizedStatement().getSQLStatement();
         if (isExecuteDDLInXATransaction(sqlStatement)) {
             return new ErrorResponse(new TableModifyInTransactionException(sqlStatement.getTables().isSingleTable() ? sqlStatement.getTables().getSingleTableName() : "unknown_table"));
         }
         response = executeEngine.execute(routeResult);
         if (logicSchema instanceof ShardingSchema) {
-            logicSchema.refreshTableMetaData(routeResult.getSqlStatement());
+            logicSchema.refreshTableMetaData(routeResult.getOptimizedStatement().getSQLStatement());
         }
         return merge(routeResult);
     }
@@ -102,7 +102,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     
     private BackendResponse merge(final SQLRouteResult routeResult) throws SQLException {
         if (response instanceof UpdateResponse) {
-            if (!isAllBroadcastTables(routeResult.getSqlStatement())) {
+            if (!isAllBroadcastTables(routeResult.getOptimizedStatement().getSQLStatement())) {
                 ((UpdateResponse) response).mergeUpdateCount();
             }
             return response;
