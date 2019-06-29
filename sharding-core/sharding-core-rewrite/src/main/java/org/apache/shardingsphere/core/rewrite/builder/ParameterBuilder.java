@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.core.rewrite.builder;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResult;
-import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResultUnit;
+import org.apache.shardingsphere.core.optimize.pojo.insert.InsertOptimizeResult;
+import org.apache.shardingsphere.core.optimize.pojo.insert.InsertOptimizeResultUnit;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.rule.DataNode;
 

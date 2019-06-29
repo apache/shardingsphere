@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.optimize.engine;
 
-import org.apache.shardingsphere.core.optimize.result.OptimizedStatement;
+import org.apache.shardingsphere.core.optimize.pojo.OptimizedStatement;
 
 /**
  * Optimize engine.

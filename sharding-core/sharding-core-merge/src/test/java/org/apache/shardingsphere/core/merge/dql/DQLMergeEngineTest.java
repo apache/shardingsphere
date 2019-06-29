@@ -34,7 +34,7 @@ import org.apache.shardingsphere.core.merge.dql.pagination.TopAndRowNumberDecora
 import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
 import org.apache.shardingsphere.core.optimize.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.pagination.Pagination;
-import org.apache.shardingsphere.core.optimize.result.WhereClauseOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.pojo.WhereClauseOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationSelectItem;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.result.insert;
+package org.apache.shardingsphere.core.optimize.pojo.insert;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

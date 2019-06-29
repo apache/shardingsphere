@@ -15,37 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.result;
+package org.apache.shardingsphere.core.optimize.pojo;
 
-import com.google.common.base.Optional;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
 /**
- * Optimized statement for broadcast.
+ * Optimized statement.
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
-public final class BroadcastOptimizedStatement implements OptimizedStatement {
-    
-    private final SQLStatement sqlStatement;
-    
-    @Setter
-    private String logicTableNameForDropIndex;
-    
-    @Override
-    public SQLStatement getSQLStatement() {
-        return sqlStatement;
-    }
+public interface OptimizedStatement {
     
     /**
-     * Get logic table name for drop index.
-     *
-     * @return logic table name for drop index
+     * Get SQL statement.
+     * 
+     * @return SQL statement
      */
-    public Optional<String> getLogicTableNameForDropIndex() {
-        return Optional.fromNullable(logicTableNameForDropIndex);
-    }
+    SQLStatement getSQLStatement();
 }

@@ -15,29 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.result;
+package org.apache.shardingsphere.core.optimize.pojo;
 
-import lombok.Getter;
+import com.google.common.base.Optional;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.core.optimize.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimize.condition.ShardingConditions;
-import org.apache.shardingsphere.core.optimize.pagination.Pagination;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
-import java.util.List;
-
 /**
- * Optimized statement for where clause.
+ * Optimized statement for broadcast.
  *
  * @author zhangliang
  */
-@Getter
-@Setter
-public final class WhereClauseOptimizedStatement extends ShardingOptimizedStatement {
+@RequiredArgsConstructor
+public final class BroadcastOptimizedStatement implements OptimizedStatement {
     
-    private Pagination pagination;
+    private final SQLStatement sqlStatement;
     
-    public WhereClauseOptimizedStatement(final SQLStatement sqlStatement, final List<ShardingCondition> shardingConditions) {
-        super(sqlStatement, new ShardingConditions(shardingConditions));
+    @Setter
+    private String logicTableNameForDropIndex;
+    
+    @Override
+    public SQLStatement getSQLStatement() {
+        return sqlStatement;
+    }
+    
+    /**
+     * Get logic table name for drop index.
+     *
+     * @return logic table name for drop index
+     */
+    public Optional<String> getLogicTableNameForDropIndex() {
+        return Optional.fromNullable(logicTableNameForDropIndex);
     }
 }

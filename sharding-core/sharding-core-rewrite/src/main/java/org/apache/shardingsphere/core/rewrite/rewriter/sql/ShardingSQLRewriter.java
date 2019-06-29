@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.core.rewrite.rewriter.sql;
 
-import org.apache.shardingsphere.core.optimize.result.InsertClauseOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.result.OptimizedStatement;
-import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResult;
+import org.apache.shardingsphere.core.optimize.pojo.InsertClauseOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.pojo.OptimizedStatement;
+import org.apache.shardingsphere.core.optimize.pojo.insert.InsertOptimizeResult;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.TextOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;

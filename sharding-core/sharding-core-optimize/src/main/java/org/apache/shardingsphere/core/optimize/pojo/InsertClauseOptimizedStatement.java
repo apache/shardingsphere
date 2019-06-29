@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.result;
+package org.apache.shardingsphere.core.optimize.pojo;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
@@ -23,7 +23,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.core.optimize.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.condition.ShardingConditions;
 import org.apache.shardingsphere.core.optimize.keygen.GeneratedKey;
-import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResult;
+import org.apache.shardingsphere.core.optimize.pojo.insert.InsertOptimizeResult;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
 import java.util.List;

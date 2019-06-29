@@ -19,10 +19,10 @@ package org.apache.shardingsphere.core.rewrite.rewriter.sql;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.core.optimize.result.InsertClauseOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.result.OptimizedStatement;
-import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResult;
-import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResultUnit;
+import org.apache.shardingsphere.core.optimize.pojo.InsertClauseOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.pojo.OptimizedStatement;
+import org.apache.shardingsphere.core.optimize.pojo.insert.InsertOptimizeResult;
+import org.apache.shardingsphere.core.optimize.pojo.insert.InsertOptimizeResultUnit;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Conditions;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
