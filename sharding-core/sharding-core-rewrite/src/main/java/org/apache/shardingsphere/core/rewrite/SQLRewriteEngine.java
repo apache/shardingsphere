@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.rewrite;
 
 import com.google.common.base.Optional;
+import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
@@ -54,7 +55,7 @@ public final class SQLRewriteEngine {
     
     private final BaseRule baseRule;
     
-    private final SQLStatement sqlStatement;
+    private final OptimizedStatement optimizedStatement;
     
     private final List<SQLToken> sqlTokens;
     
@@ -64,27 +65,30 @@ public final class SQLRewriteEngine {
     
     private final BaseSQLRewriter baseSQLRewriter;
     
-    public SQLRewriteEngine(final ShardingRule shardingRule, final SQLStatement sqlStatement, final List<Object> parameters, final boolean isSingleRoute) {
+    public SQLRewriteEngine(final ShardingRule shardingRule, final OptimizedStatement optimizedStatement, final List<Object> parameters, final boolean isSingleRoute) {
         baseRule = shardingRule;
-        this.sqlStatement = sqlStatement;
+        this.optimizedStatement = optimizedStatement;
+        SQLStatement sqlStatement = optimizedStatement.getSQLStatement();
         sqlTokens = createSQLTokens(baseRule, sqlStatement, parameters, isSingleRoute);
         sqlBuilder = new SQLBuilder();
         parameterBuilder = new ParameterBuilder(parameters);
         baseSQLRewriter = new BaseSQLRewriter(sqlStatement, sqlTokens);
     }
     
-    public SQLRewriteEngine(final EncryptRule encryptRule, final SQLStatement sqlStatement, final List<Object> parameters) {
+    public SQLRewriteEngine(final EncryptRule encryptRule, final OptimizedStatement optimizedStatement, final List<Object> parameters) {
         baseRule = encryptRule;
-        this.sqlStatement = sqlStatement;
+        this.optimizedStatement = optimizedStatement;
+        SQLStatement sqlStatement = optimizedStatement.getSQLStatement();
         sqlTokens = createSQLTokens(baseRule, sqlStatement, parameters, true);
         sqlBuilder = new SQLBuilder();
         parameterBuilder = new ParameterBuilder(parameters);
         baseSQLRewriter = new BaseSQLRewriter(sqlStatement, sqlTokens);
     }
     
-    public SQLRewriteEngine(final MasterSlaveRule masterSlaveRule, final SQLStatement sqlStatement) {
+    public SQLRewriteEngine(final MasterSlaveRule masterSlaveRule, final OptimizedStatement optimizedStatement) {
         baseRule = masterSlaveRule;
-        this.sqlStatement = sqlStatement;
+        this.optimizedStatement = optimizedStatement;
+        SQLStatement sqlStatement = optimizedStatement.getSQLStatement();
         sqlTokens = createSQLTokens(baseRule, sqlStatement, Collections.emptyList(), true);
         sqlBuilder = new SQLBuilder();
         parameterBuilder = new ParameterBuilder(Collections.emptyList());
@@ -162,7 +166,7 @@ public final class SQLRewriteEngine {
     
     private Map<String, String> getBindingTableTokens(final String dataSourceName, final TableUnit tableUnit, final BindingTableRule bindingTableRule) {
         Map<String, String> result = new HashMap<>();
-        for (String each : sqlStatement.getTables().getTableNames()) {
+        for (String each : optimizedStatement.getSQLStatement().getTables().getTableNames()) {
             String tableName = each.toLowerCase();
             if (!tableName.equals(tableUnit.getLogicTableName().toLowerCase()) && bindingTableRule.hasLogicTable(tableName)) {
                 result.put(tableName, bindingTableRule.getBindingActualTable(dataSourceName, tableName, tableUnit.getActualTableName()));

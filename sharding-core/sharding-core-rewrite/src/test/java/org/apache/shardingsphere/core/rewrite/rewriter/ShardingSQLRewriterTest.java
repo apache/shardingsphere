@@ -534,7 +534,7 @@ public final class ShardingSQLRewriterTest {
         routeResult = new SQLRouteResult(new WhereClauseOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList()));
         routeResult.setRoutingResult(new RoutingResult());
         selectStatement.setLogicSQL("SELECT table_x.id, x.name FROM table_x x, table_y y WHERE table_x.id=? AND x.name=?");
-        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, routeResult.getOptimizedStatement().getSQLStatement(), parameters, routeResult.getRoutingResult().isSingleRouting());
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, routeResult.getOptimizedStatement(), parameters, routeResult.getRoutingResult().isSingleRouting());
         rewriteEngine.init(Collections.<ParameterRewriter>singletonList(new ShardingParameterRewriter(routeResult)), Arrays.asList(new ShardingSQLRewriter(routeResult, null), 
                         new EncryptSQLRewriter(shardingRule.getEncryptRule().getEncryptorEngine(), routeResult.getOptimizedStatement())));
         RoutingUnit routingUnit = new RoutingUnit("db0");
@@ -902,7 +902,7 @@ public final class ShardingSQLRewriterTest {
     }
     
     private SQLRewriteEngine createSQLRewriteEngine(final List<Object> parameters) {
-        SQLRewriteEngine result = new SQLRewriteEngine(shardingRule, routeResult.getOptimizedStatement().getSQLStatement(), parameters, routeResult.getRoutingResult().isSingleRouting());
+        SQLRewriteEngine result = new SQLRewriteEngine(shardingRule, routeResult.getOptimizedStatement(), parameters, routeResult.getRoutingResult().isSingleRouting());
         Collection<SQLRewriter> sqlRewriters = new LinkedList<>();
         sqlRewriters.add(new ShardingSQLRewriter(routeResult, routeResult.getOptimizedStatement()));
         if (routeResult.getOptimizedStatement().getSQLStatement() instanceof DMLStatement) {
