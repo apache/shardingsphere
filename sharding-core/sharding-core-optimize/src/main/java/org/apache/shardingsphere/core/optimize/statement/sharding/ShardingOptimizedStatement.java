@@ -15,23 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.pojo;
+package org.apache.shardingsphere.core.optimize.statement.sharding;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.optimize.condition.ShardingConditions;
+import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
 /**
- * Optimized statement for transparent.
+ * Optimized statement for sharding.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class TransparentOptimizedStatement implements OptimizedStatement {
+public abstract class ShardingOptimizedStatement implements OptimizedStatement {
     
     private final SQLStatement sqlStatement;
     
+    @Getter
+    private final ShardingConditions shardingConditions;
+    
     @Override
-    public SQLStatement getSQLStatement() {
+    public final SQLStatement getSQLStatement() {
         return sqlStatement;
     }
 }

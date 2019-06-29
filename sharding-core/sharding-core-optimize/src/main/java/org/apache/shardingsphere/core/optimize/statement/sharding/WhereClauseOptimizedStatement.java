@@ -15,43 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.pojo;
+package org.apache.shardingsphere.core.optimize.statement.sharding;
 
-import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.core.optimize.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.condition.ShardingConditions;
-import org.apache.shardingsphere.core.optimize.keygen.GeneratedKey;
-import org.apache.shardingsphere.core.optimize.pojo.insert.InsertOptimizeResult;
+import org.apache.shardingsphere.core.optimize.pagination.Pagination;
+import org.apache.shardingsphere.core.optimize.statement.sharding.ShardingOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
 import java.util.List;
 
 /**
- * Optimized statement for insert clause.
+ * Optimized statement for where clause.
  *
  * @author zhangliang
  */
-public final class InsertClauseOptimizedStatement extends ShardingOptimizedStatement {
+@Getter
+@Setter
+public final class WhereClauseOptimizedStatement extends ShardingOptimizedStatement {
     
-    @Getter
-    private final InsertOptimizeResult insertOptimizeResult;
+    private Pagination pagination;
     
-    @Setter
-    private GeneratedKey generatedKey;
-    
-    public InsertClauseOptimizedStatement(final SQLStatement sqlStatement, final List<ShardingCondition> shardingConditions, final InsertOptimizeResult insertOptimizeResult) {
+    public WhereClauseOptimizedStatement(final SQLStatement sqlStatement, final List<ShardingCondition> shardingConditions) {
         super(sqlStatement, new ShardingConditions(shardingConditions));
-        this.insertOptimizeResult = insertOptimizeResult;
-    }
-    
-    /**
-     * Get generated key.
-     *
-     * @return generated key
-     */
-    public Optional<GeneratedKey> getGeneratedKey() {
-        return Optional.fromNullable(generatedKey);
     }
 }
