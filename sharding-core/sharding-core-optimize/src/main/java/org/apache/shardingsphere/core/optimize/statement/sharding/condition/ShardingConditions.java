@@ -15,30 +15,40 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.statement.sharding;
+package org.apache.shardingsphere.core.optimize.statement.sharding.condition;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.core.optimize.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimize.condition.ShardingConditions;
-import org.apache.shardingsphere.core.optimize.pagination.Pagination;
-import org.apache.shardingsphere.core.optimize.statement.sharding.ShardingOptimizedStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.optimize.engine.sharding.dml.AlwaysFalseShardingCondition;
 
 import java.util.List;
 
 /**
- * Optimized statement for where clause.
+ * Sharding conditions.
  *
  * @author zhangliang
+ * @author maxiaoguang
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class WhereClauseOptimizedStatement extends ShardingOptimizedStatement {
+public final class ShardingConditions {
     
-    private Pagination pagination;
+    private final List<ShardingCondition> shardingConditions;
     
-    public WhereClauseOptimizedStatement(final SQLStatement sqlStatement, final List<ShardingCondition> shardingConditions) {
-        super(sqlStatement, new ShardingConditions(shardingConditions));
+    /**
+     * Judge sharding conditions is always false or not.
+     *
+     * @return sharding conditions is always false or not
+     */
+    public boolean isAlwaysFalse() {
+        if (shardingConditions.isEmpty()) {
+            return false;
+        }
+        for (ShardingCondition each : shardingConditions) {
+            if (!(each instanceof AlwaysFalseShardingCondition)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

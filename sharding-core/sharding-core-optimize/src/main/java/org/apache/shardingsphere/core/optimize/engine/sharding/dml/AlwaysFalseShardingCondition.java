@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.optimize.engine.sharding.dml;
 
-import org.apache.shardingsphere.core.optimize.condition.ShardingCondition;
+import org.apache.shardingsphere.core.optimize.statement.sharding.condition.ShardingCondition;
 
 /**
  * Always false sharding condition.

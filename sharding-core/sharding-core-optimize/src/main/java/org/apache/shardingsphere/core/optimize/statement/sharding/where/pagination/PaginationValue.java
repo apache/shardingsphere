@@ -15,40 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.condition;
+package org.apache.shardingsphere.core.optimize.statement.sharding.where.pagination;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.optimize.engine.sharding.dml.AlwaysFalseShardingCondition;
-
-import java.util.List;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationValueSegment;
 
 /**
- * Sharding conditions.
+ * Pagination value.
  *
  * @author zhangliang
- * @author maxiaoguang
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShardingConditions {
+public final class PaginationValue {
     
-    private final List<ShardingCondition> shardingConditions;
+    private final PaginationValueSegment segment;
     
-    /**
-     * Judge sharding conditions is always false or not.
-     *
-     * @return sharding conditions is always false or not
-     */
-    public boolean isAlwaysFalse() {
-        if (shardingConditions.isEmpty()) {
-            return false;
-        }
-        for (ShardingCondition each : shardingConditions) {
-            if (!(each instanceof AlwaysFalseShardingCondition)) {
-                return false;
-            }
-        }
-        return true;
-    }
+    private final int value;
 }

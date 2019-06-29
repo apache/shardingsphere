@@ -15,15 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.statement.sharding;
+package org.apache.shardingsphere.core.optimize.statement.sharding.insert;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.core.optimize.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimize.condition.ShardingConditions;
-import org.apache.shardingsphere.core.optimize.keygen.GeneratedKey;
-import org.apache.shardingsphere.core.optimize.statement.sharding.insert.InsertOptimizeResult;
+import org.apache.shardingsphere.core.optimize.statement.sharding.ShardingOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.sharding.condition.ShardingCondition;
+import org.apache.shardingsphere.core.optimize.statement.sharding.condition.ShardingConditions;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
 import java.util.List;
