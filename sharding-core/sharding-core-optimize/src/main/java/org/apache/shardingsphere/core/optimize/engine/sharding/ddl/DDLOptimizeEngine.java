@@ -20,13 +20,10 @@ package org.apache.shardingsphere.core.optimize.engine.sharding.ddl;
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.optimize.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
-import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
+import org.apache.shardingsphere.core.optimize.result.BroadcastOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.DropIndexStatement;
-
-import java.util.Collections;
 
 /**
  * DDL OptimizeEngine.
@@ -41,8 +38,8 @@ public final class DDLOptimizeEngine implements OptimizeEngine {
     private final ShardingTableMetaData shardingTableMetaData;
     
     @Override
-    public OptimizeResult optimize() {
-        OptimizeResult result = new OptimizeResult(Collections.<ShardingCondition>emptyList());
+    public BroadcastOptimizedStatement optimize() {
+        BroadcastOptimizedStatement result = new BroadcastOptimizedStatement(ddlStatement);
         if (isDropIndexWithoutTable()) {
             setLogicTableName(result);
         }
@@ -53,10 +50,10 @@ public final class DDLOptimizeEngine implements OptimizeEngine {
         return ddlStatement instanceof DropIndexStatement && ddlStatement.getTables().isEmpty();
     }
     
-    private void setLogicTableName(final OptimizeResult result) {
+    private void setLogicTableName(final BroadcastOptimizedStatement optimizedStatement) {
         Optional<String> logicTableName = shardingTableMetaData.getLogicTableName(ddlStatement.getIndexName());
         if (logicTableName.isPresent()) {
-            result.setLogicTableNameForDropIndex(logicTableName.get());
+            optimizedStatement.setLogicTableNameForDropIndex(logicTableName.get());
         }
     }
 }

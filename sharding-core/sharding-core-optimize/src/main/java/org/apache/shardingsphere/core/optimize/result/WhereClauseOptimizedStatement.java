@@ -15,35 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.route;
+package org.apache.shardingsphere.core.optimize.result;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.core.optimize.result.OptimizedStatement;
+import org.apache.shardingsphere.core.optimize.condition.ShardingCondition;
+import org.apache.shardingsphere.core.optimize.condition.ShardingConditions;
+import org.apache.shardingsphere.core.optimize.pagination.Pagination;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.route.type.RoutingResult;
 
-import java.util.Collection;
-import java.util.LinkedHashSet;
+import java.util.List;
 
 /**
- * SQL route result.
- * 
- * @author gaohongtao
+ * Optimized statement for where clause.
+ *
  * @author zhangliang
- * @author zhaojun
  */
-@RequiredArgsConstructor
 @Getter
 @Setter
-public final class SQLRouteResult {
+public final class WhereClauseOptimizedStatement extends ShardingOptimizedStatement {
     
-    private final SQLStatement sqlStatement;
+    private Pagination pagination;
     
-    private RoutingResult routingResult;
-    
-    private OptimizedStatement optimizedStatement;
-    
-    private final Collection<RouteUnit> routeUnits = new LinkedHashSet<>();
+    public WhereClauseOptimizedStatement(final SQLStatement sqlStatement, final List<ShardingCondition> shardingConditions) {
+        super(sqlStatement, new ShardingConditions(shardingConditions));
+    }
 }

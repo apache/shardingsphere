@@ -22,7 +22,8 @@ import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.optimize.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
+import org.apache.shardingsphere.core.optimize.result.InsertClauseOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.result.ShardingOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResultUnit;
 import org.apache.shardingsphere.core.parse.exception.SQLParsingException;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
@@ -67,7 +68,7 @@ public final class StandardRoutingEngine implements RoutingEngine {
     
     private final String logicTableName;
     
-    private final OptimizeResult optimizeResult;
+    private final ShardingOptimizedStatement optimizedStatement;
     
     @Override
     public RoutingResult route() {
@@ -110,13 +111,13 @@ public final class StandardRoutingEngine implements RoutingEngine {
     }
     
     private Collection<DataNode> routeByShardingConditions(final TableRule tableRule) {
-        return optimizeResult.getShardingConditions().getShardingConditions().isEmpty() ? route(tableRule, Collections.<RouteValue>emptyList(), Collections.<RouteValue>emptyList())
+        return optimizedStatement.getShardingConditions().getShardingConditions().isEmpty() ? route(tableRule, Collections.<RouteValue>emptyList(), Collections.<RouteValue>emptyList())
                 : routeByShardingConditionsWithCondition(tableRule);
     }
     
     private Collection<DataNode> routeByShardingConditionsWithCondition(final TableRule tableRule) {
         Collection<DataNode> result = new LinkedList<>();
-        for (ShardingCondition each : optimizeResult.getShardingConditions().getShardingConditions()) {
+        for (ShardingCondition each : optimizedStatement.getShardingConditions().getShardingConditions()) {
             Collection<DataNode> dataNodes = route(tableRule, getShardingValuesFromShardingConditions(shardingRule.getDatabaseShardingStrategy(tableRule).getShardingColumns(), each),
                     getShardingValuesFromShardingConditions(shardingRule.getTableShardingStrategy(tableRule).getShardingColumns(), each));
             reviseInsertOptimizeResult(each, dataNodes);
@@ -126,12 +127,12 @@ public final class StandardRoutingEngine implements RoutingEngine {
     }
     
     private Collection<DataNode> routeByMixedConditions(final TableRule tableRule) {
-        return optimizeResult.getShardingConditions().getShardingConditions().isEmpty() ? routeByMixedConditionsWithHint(tableRule) : routeByMixedConditionsWithCondition(tableRule);
+        return optimizedStatement.getShardingConditions().getShardingConditions().isEmpty() ? routeByMixedConditionsWithHint(tableRule) : routeByMixedConditionsWithCondition(tableRule);
     }
     
     private Collection<DataNode> routeByMixedConditionsWithCondition(final TableRule tableRule) {
         Collection<DataNode> result = new LinkedList<>();
-        for (ShardingCondition each : optimizeResult.getShardingConditions().getShardingConditions()) {
+        for (ShardingCondition each : optimizedStatement.getShardingConditions().getShardingConditions()) {
             Collection<DataNode> dataNodes = route(tableRule, getDatabaseShardingValues(tableRule, each), getTableShardingValues(tableRule, each));
             reviseInsertOptimizeResult(each, dataNodes);
             result.addAll(dataNodes);
@@ -230,7 +231,7 @@ public final class StandardRoutingEngine implements RoutingEngine {
     
     private void reviseInsertOptimizeResult(final ShardingCondition shardingCondition, final Collection<DataNode> dataNodes) {
         if (sqlStatement instanceof InsertStatement) {
-            for (InsertOptimizeResultUnit each : optimizeResult.getInsertOptimizeResult().get().getUnits()) {
+            for (InsertOptimizeResultUnit each : ((InsertClauseOptimizedStatement) optimizedStatement).getInsertOptimizeResult().getUnits()) {
                 if (isQualifiedInsertOptimizeResultUnit(each, shardingCondition)) {
                     each.getDataNodes().addAll(dataNodes);
                 }

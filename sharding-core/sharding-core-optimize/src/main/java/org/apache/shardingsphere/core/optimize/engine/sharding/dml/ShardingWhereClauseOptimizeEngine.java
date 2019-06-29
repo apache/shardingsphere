@@ -23,7 +23,7 @@ import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
 import org.apache.shardingsphere.core.optimize.pagination.Pagination;
-import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
+import org.apache.shardingsphere.core.optimize.result.WhereClauseOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
@@ -58,12 +58,12 @@ public final class ShardingWhereClauseOptimizeEngine implements OptimizeEngine {
     }
     
     @Override
-    public OptimizeResult optimize() {
+    public WhereClauseOptimizedStatement optimize() {
         List<ShardingCondition> shardingConditions = new LinkedList<>();
         for (ShardingCondition each : shardingConditionEngine.createShardingConditions(dmlStatement, parameters)) {
             shardingConditions.add(optimize(each.getRouteValuesMap()));
         }
-        OptimizeResult result = new OptimizeResult(shardingConditions);
+        WhereClauseOptimizedStatement result = new WhereClauseOptimizedStatement(dmlStatement, shardingConditions);
         setPagination(result);
         return result;
     }
@@ -134,11 +134,11 @@ public final class ShardingWhereClauseOptimizeEngine implements OptimizeEngine {
         return result;
     }
     
-    private void setPagination(final OptimizeResult optimizeResult) {
+    private void setPagination(final WhereClauseOptimizedStatement optimizedStatement) {
         if (dmlStatement instanceof SelectStatement) {
             SelectStatement selectStatement = (SelectStatement) dmlStatement;
             if (null != selectStatement.getOffset() || null != selectStatement.getRowCount()) {
-                optimizeResult.setPagination(new Pagination(selectStatement.getOffset(), selectStatement.getRowCount(), parameters));
+                optimizedStatement.setPagination(new Pagination(selectStatement.getOffset(), selectStatement.getRowCount(), parameters));
             }
         }
     }

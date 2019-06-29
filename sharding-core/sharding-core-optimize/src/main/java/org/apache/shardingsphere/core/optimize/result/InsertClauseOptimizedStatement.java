@@ -18,75 +18,40 @@
 package org.apache.shardingsphere.core.optimize.result;
 
 import com.google.common.base.Optional;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.core.optimize.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.condition.ShardingConditions;
 import org.apache.shardingsphere.core.optimize.keygen.GeneratedKey;
-import org.apache.shardingsphere.core.optimize.pagination.Pagination;
 import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResult;
+import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
- * Optimize result.
+ * Optimized statement for insert clause.
  *
- * @author panjuan
+ * @author zhangliang
  */
-@Getter
-@Setter
-public final class OptimizeResult {
+public final class InsertClauseOptimizedStatement extends ShardingOptimizedStatement {
     
-    private ShardingConditions shardingConditions;
-    
-    @Getter(AccessLevel.NONE)
+    @Getter
     private final InsertOptimizeResult insertOptimizeResult;
     
-    private Pagination pagination;
-    
+    @Setter
     private GeneratedKey generatedKey;
     
-    private String logicTableNameForDropIndex;
-    
-    public OptimizeResult(final List<ShardingCondition> shardingConditions) {
-        this(new ShardingConditions(shardingConditions), null);
-    }
-    
-    public OptimizeResult(final InsertOptimizeResult insertOptimizeResult) {
-        this(new ShardingConditions(Collections.<ShardingCondition>emptyList()), insertOptimizeResult);
-    }
-    
-    public OptimizeResult(final ShardingConditions shardingConditions, final InsertOptimizeResult insertOptimizeResult) {
-        this.shardingConditions = shardingConditions;
+    public InsertClauseOptimizedStatement(final SQLStatement sqlStatement, final List<ShardingCondition> shardingConditions, final InsertOptimizeResult insertOptimizeResult) {
+        super(sqlStatement, new ShardingConditions(shardingConditions));
         this.insertOptimizeResult = insertOptimizeResult;
     }
     
     /**
-     * Get insert optimize result.
-     * 
-     * @return insert optimize result
-     */
-    public Optional<InsertOptimizeResult> getInsertOptimizeResult() {
-        return Optional.fromNullable(insertOptimizeResult);
-    }
-    
-    /**
      * Get generated key.
-     * 
+     *
      * @return generated key
      */
     public Optional<GeneratedKey> getGeneratedKey() {
         return Optional.fromNullable(generatedKey);
-    }
-    
-    /**
-     * Get logic table name for drop index.
-     * 
-     * @return logic table name for drop index
-     */
-    public Optional<String> getLogicTableNameForDropIndex() {
-        return Optional.fromNullable(logicTableNameForDropIndex);
     }
 }

@@ -22,16 +22,14 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
-import org.apache.shardingsphere.core.optimize.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.core.optimize.result.BroadcastOptimizedStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.core.route.RouteUnit;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.junit.Test;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
@@ -53,11 +51,12 @@ public abstract class BaseShardingEngineTest {
     }
     
     protected final SQLRouteResult createSQLRouteResult() {
-        SQLRouteResult result = new SQLRouteResult(new SelectStatement());
+        DALStatement dalStatement = new DALStatement();
+        SQLRouteResult result = new SQLRouteResult(dalStatement);
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
         result.setRoutingResult(routingResult);
-        result.setOptimizeResult(new OptimizeResult(Collections.<ShardingCondition>emptyList()));
+        result.setOptimizedStatement(new BroadcastOptimizedStatement(dalStatement));
         return result;
     }
     

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.optimize.OptimizeEngineFactory;
-import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
+import org.apache.shardingsphere.core.optimize.result.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
@@ -87,10 +87,10 @@ public final class EncryptStatement extends AbstractUnsupportedOperationStatemen
     private String getRewriteSQL(final String sql) {
         SQLStatement sqlStatement = connection.getParseEngine().parse(sql, false);
         SQLRewriteEngine encryptSQLRewriteEngine = new SQLRewriteEngine(connection.getEncryptRule(), sqlStatement, Collections.emptyList());
-        OptimizeResult optimizeResult = OptimizeEngineFactory.newInstance(connection.getEncryptRule(), sqlStatement, Collections.emptyList()).optimize();
+        OptimizedStatement optimizedStatement = OptimizeEngineFactory.newInstance(connection.getEncryptRule(), sqlStatement, Collections.emptyList()).optimize();
         Collection<SQLRewriter> sqlRewriters = new LinkedList<>();
         if (sqlStatement instanceof DMLStatement) {
-            sqlRewriters.add(new EncryptSQLRewriter(connection.getEncryptRule().getEncryptorEngine(), (DMLStatement) sqlStatement, optimizeResult));
+            sqlRewriters.add(new EncryptSQLRewriter(connection.getEncryptRule().getEncryptorEngine(), (DMLStatement) sqlStatement, optimizedStatement));
         }
         encryptSQLRewriteEngine.init(Collections.<ParameterRewriter>emptyList(), sqlRewriters);
         String result = encryptSQLRewriteEngine.generateSQL().getSql();

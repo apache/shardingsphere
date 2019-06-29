@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.core.rewrite.rewriter.sql;
 
-import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
+import org.apache.shardingsphere.core.optimize.result.InsertClauseOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.result.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResult;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.TextOrderByItemSegment;
@@ -62,21 +62,17 @@ public final class ShardingSQLRewriter implements SQLRewriter {
     
     private final InsertOptimizeResult insertOptimizeResult;
     
-    public ShardingSQLRewriter(final ShardingRule shardingRule, final SQLRouteResult sqlRouteResult, final OptimizeResult optimizeResult) {
+    public ShardingSQLRewriter(final ShardingRule shardingRule, final SQLRouteResult sqlRouteResult, final OptimizedStatement optimizedStatement) {
         this.shardingRule = shardingRule;
         this.sqlRouteResult = sqlRouteResult;
-        this.insertOptimizeResult = getInsertOptimizeResult(optimizeResult);
+        this.insertOptimizeResult = getInsertOptimizeResult(optimizedStatement);
     }
     
-    private InsertOptimizeResult getInsertOptimizeResult(final OptimizeResult optimizeResult) {
-        if (null == optimizeResult) {
+    private InsertOptimizeResult getInsertOptimizeResult(final OptimizedStatement optimizedStatement) {
+        if (null == optimizedStatement || !(optimizedStatement instanceof InsertClauseOptimizedStatement)) {
             return null;
         }
-        Optional<InsertOptimizeResult> insertOptimizeResult = optimizeResult.getInsertOptimizeResult();
-        if (!insertOptimizeResult.isPresent()) {
-            return null;
-        }
-        return insertOptimizeResult.get();
+        return ((InsertClauseOptimizedStatement) optimizedStatement).getInsertOptimizeResult();
     }
     
     @Override

@@ -34,6 +34,7 @@ import org.apache.shardingsphere.core.merge.dql.pagination.LimitDecoratorMergedR
 import org.apache.shardingsphere.core.merge.dql.pagination.RowNumberDecoratorMergedResult;
 import org.apache.shardingsphere.core.merge.dql.pagination.TopAndRowNumberDecoratorMergedResult;
 import org.apache.shardingsphere.core.optimize.pagination.Pagination;
+import org.apache.shardingsphere.core.optimize.result.WhereClauseOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
@@ -136,19 +137,19 @@ public final class DQLMergeEngine implements MergeEngine {
     }
     
     private MergedResult decorate(final MergedResult mergedResult) throws SQLException {
-        Pagination pagination = routeResult.getOptimizeResult().getPagination();
+        Pagination pagination = ((WhereClauseOptimizedStatement) routeResult.getOptimizedStatement()).getPagination();
         if (null == pagination || 1 == queryResults.size()) {
             return mergedResult;
         }
         String trunkDatabaseName = DatabaseTypes.getTrunkDatabaseType(databaseType.getName()).getName();
         if ("MySQL".equals(trunkDatabaseName) || "PostgreSQL".equals(trunkDatabaseName)) {
-            return new LimitDecoratorMergedResult(mergedResult, routeResult.getOptimizeResult().getPagination());
+            return new LimitDecoratorMergedResult(mergedResult, pagination);
         }
         if ("Oracle".equals(trunkDatabaseName)) {
-            return new RowNumberDecoratorMergedResult(mergedResult, routeResult.getOptimizeResult().getPagination());
+            return new RowNumberDecoratorMergedResult(mergedResult, pagination);
         }
         if ("SQLServer".equals(trunkDatabaseName)) {
-            return new TopAndRowNumberDecoratorMergedResult(mergedResult, routeResult.getOptimizeResult().getPagination());
+            return new TopAndRowNumberDecoratorMergedResult(mergedResult, pagination);
         }
         return mergedResult;
     }

@@ -26,6 +26,7 @@ import org.apache.shardingsphere.core.execute.sql.execute.result.StreamQueryResu
 import org.apache.shardingsphere.core.merge.MergeEngine;
 import org.apache.shardingsphere.core.merge.MergeEngineFactory;
 import org.apache.shardingsphere.core.optimize.keygen.GeneratedKey;
+import org.apache.shardingsphere.core.optimize.result.InsertClauseOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
@@ -289,8 +290,9 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     public ResultSet getGeneratedKeys() throws SQLException {
         Optional<GeneratedKey> generatedKey = getGeneratedKey();
         if (returnGeneratedKeys && generatedKey.isPresent()) {
-            Preconditions.checkState(routeResult.getOptimizeResult().getGeneratedKey().isPresent());
-            return new GeneratedKeysResultSet(routeResult.getOptimizeResult().getGeneratedKey().get().getGeneratedValues().iterator(), generatedKey.get().getColumnName(), this);
+            InsertClauseOptimizedStatement optimizedStatement = (InsertClauseOptimizedStatement) routeResult.getOptimizedStatement();
+            Preconditions.checkState(optimizedStatement.getGeneratedKey().isPresent());
+            return new GeneratedKeysResultSet(optimizedStatement.getGeneratedKey().get().getGeneratedValues().iterator(), generatedKey.get().getColumnName(), this);
         }
         if (1 == getRoutedStatements().size()) {
             return getRoutedStatements().iterator().next().getGeneratedKeys();
@@ -300,7 +302,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     
     private Optional<GeneratedKey> getGeneratedKey() {
         if (null != routeResult && routeResult.getSqlStatement() instanceof InsertStatement) {
-            return routeResult.getOptimizeResult().getGeneratedKey();
+            return ((InsertClauseOptimizedStatement) routeResult.getOptimizedStatement()).getGeneratedKey();
         }
         return Optional.absent();
     }

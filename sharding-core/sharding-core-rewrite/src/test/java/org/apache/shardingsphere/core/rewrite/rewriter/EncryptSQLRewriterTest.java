@@ -24,7 +24,7 @@ import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.optimize.OptimizeEngineFactory;
-import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
+import org.apache.shardingsphere.core.optimize.result.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.entry.EncryptSQLParseEntry;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
@@ -184,9 +184,9 @@ public final class EncryptSQLRewriterTest {
         // TODO panjuan: should mock sqlStatement, do not call parse module on rewrite test case
         SQLStatement sqlStatement = encryptSQLParseEntry.parse(sql, false);
         SQLRewriteEngine sqlRewriteEngine = new SQLRewriteEngine(encryptRule, sqlStatement, parameters);
-        OptimizeResult optimizeResult = OptimizeEngineFactory.newInstance(encryptRule, sqlStatement, parameters).optimize();
+        OptimizedStatement optimizedStatement = OptimizeEngineFactory.newInstance(encryptRule, sqlStatement, parameters).optimize();
         sqlRewriteEngine.init(Collections.<ParameterRewriter>emptyList(), 
-                Collections.<SQLRewriter>singletonList(new EncryptSQLRewriter(encryptRule.getEncryptorEngine(), (DMLStatement) sqlStatement, optimizeResult)));
+                Collections.<SQLRewriter>singletonList(new EncryptSQLRewriter(encryptRule.getEncryptorEngine(), (DMLStatement) sqlStatement, optimizedStatement)));
         return sqlRewriteEngine.generateSQL();
     }
 }

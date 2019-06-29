@@ -19,10 +19,9 @@ package org.apache.shardingsphere.core.optimize.engine.sharding.dml;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.optimize.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimize.condition.ShardingConditions;
 import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
 import org.apache.shardingsphere.core.optimize.keygen.GeneratedKey;
-import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
+import org.apache.shardingsphere.core.optimize.result.InsertClauseOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResult;
 import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResultUnit;
 import org.apache.shardingsphere.core.parse.exception.SQLParsingException;
@@ -61,7 +60,7 @@ public final class ShardingInsertClauseOptimizeEngine implements OptimizeEngine 
     }
     
     @Override
-    public OptimizeResult optimize() {
+    public InsertClauseOptimizedStatement optimize() {
         Optional<OnDuplicateKeyColumnsSegment> onDuplicateKeyColumnsSegment = insertStatement.findSQLSegment(OnDuplicateKeyColumnsSegment.class);
         if (onDuplicateKeyColumnsSegment.isPresent() && isUpdateShardingKey(onDuplicateKeyColumnsSegment.get(), insertStatement.getTables().getSingleTableName())) {
             throw new SQLParsingException("INSERT INTO .... ON DUPLICATE KEY UPDATE can not support update for sharding column.");
@@ -88,7 +87,7 @@ public final class ShardingInsertClauseOptimizeEngine implements OptimizeEngine 
             parametersCount += each.getParametersCount();
         }
         List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(insertStatement, parameters, generatedKey.orNull());
-        OptimizeResult result = new OptimizeResult(new ShardingConditions(shardingConditions), insertOptimizeResult);
+        InsertClauseOptimizedStatement result = new InsertClauseOptimizedStatement(insertStatement, shardingConditions, insertOptimizeResult);
         result.setGeneratedKey(generatedKey.orNull());
         return result;
     }

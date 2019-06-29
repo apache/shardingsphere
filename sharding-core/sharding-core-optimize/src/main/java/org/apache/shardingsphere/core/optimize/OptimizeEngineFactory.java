@@ -65,7 +65,7 @@ public final class OptimizeEngineFactory {
             return new DDLOptimizeEngine((DDLStatement) sqlStatement, shardingTableMetaData);
         }
         // TODO do with DAL
-        return new DefaultOptimizeEngine();
+        return new DefaultOptimizeEngine(sqlStatement);
     }
     
     /**
@@ -80,6 +80,6 @@ public final class OptimizeEngineFactory {
         if (sqlStatement instanceof InsertStatement) {
             return new EncryptInsertOptimizeEngine(encryptRule, (InsertStatement) sqlStatement, parameters);
         }
-        return new DefaultOptimizeEngine();
+        return new DefaultOptimizeEngine(sqlStatement);
     }
 }

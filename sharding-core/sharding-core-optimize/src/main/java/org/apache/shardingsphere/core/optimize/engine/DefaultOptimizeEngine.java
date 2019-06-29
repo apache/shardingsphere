@@ -17,21 +17,22 @@
 
 package org.apache.shardingsphere.core.optimize.engine;
 
-import org.apache.shardingsphere.core.optimize.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimize.condition.ShardingConditions;
-import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
-
-import java.util.Collections;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.optimize.result.BroadcastOptimizedStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
 /**
  * Default optimize engine.
  *
  * @author panjuan
  */
+@RequiredArgsConstructor
 public final class DefaultOptimizeEngine implements OptimizeEngine {
     
+    private final SQLStatement sqlStatement;
+    
     @Override
-    public OptimizeResult optimize() {
-        return new OptimizeResult(new ShardingConditions(Collections.<ShardingCondition>emptyList()), null);
+    public BroadcastOptimizedStatement optimize() {
+        return new BroadcastOptimizedStatement(sqlStatement);
     }
 }

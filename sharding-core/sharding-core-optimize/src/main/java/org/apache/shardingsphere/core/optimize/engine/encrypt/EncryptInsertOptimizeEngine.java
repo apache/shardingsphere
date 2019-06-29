@@ -18,8 +18,9 @@
 package org.apache.shardingsphere.core.optimize.engine.encrypt;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.optimize.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
-import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
+import org.apache.shardingsphere.core.optimize.result.InsertClauseOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResult;
 import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResultUnit;
 import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
@@ -27,6 +28,7 @@ import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -44,7 +46,7 @@ public final class EncryptInsertOptimizeEngine implements OptimizeEngine {
     private final List<Object> parameters;
     
     @Override
-    public OptimizeResult optimize() {
+    public InsertClauseOptimizedStatement optimize() {
         InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(insertStatement.getColumnNames());
         appendAssistedQueryColumns(insertOptimizeResult);
         int derivedColumnsCount = getDerivedColumnsCount();
@@ -57,7 +59,7 @@ public final class EncryptInsertOptimizeEngine implements OptimizeEngine {
             }
             parametersCount += each.getParametersCount();
         }
-        return new OptimizeResult(insertOptimizeResult);
+        return new InsertClauseOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), insertOptimizeResult);
     }
     
     private void appendAssistedQueryColumns(final InsertOptimizeResult insertOptimizeResult) {

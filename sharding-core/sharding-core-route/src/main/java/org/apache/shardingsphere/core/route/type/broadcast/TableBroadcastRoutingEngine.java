@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.route.type.broadcast;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
+import org.apache.shardingsphere.core.optimize.result.BroadcastOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
@@ -46,7 +46,7 @@ public final class TableBroadcastRoutingEngine implements RoutingEngine {
     
     private final SQLStatement sqlStatement;
     
-    private final OptimizeResult optimizeResult;
+    private final BroadcastOptimizedStatement optimizedStatement;
     
     @Override
     public RoutingResult route() {
@@ -58,8 +58,8 @@ public final class TableBroadcastRoutingEngine implements RoutingEngine {
     }
     
     private Collection<String> getLogicTableNames() {
-        if (optimizeResult.getLogicTableNameForDropIndex().isPresent()) {
-            return Collections.singletonList(optimizeResult.getLogicTableNameForDropIndex().get());
+        if (optimizedStatement.getLogicTableNameForDropIndex().isPresent()) {
+            return Collections.singletonList(optimizedStatement.getLogicTableNameForDropIndex().get());
         }
         return sqlStatement.getTables().getTableNames();
     }

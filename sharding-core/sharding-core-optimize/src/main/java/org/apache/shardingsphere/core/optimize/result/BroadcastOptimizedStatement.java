@@ -15,35 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.route;
+package org.apache.shardingsphere.core.optimize.result;
 
-import lombok.Getter;
+import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.core.optimize.result.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.route.type.RoutingResult;
-
-import java.util.Collection;
-import java.util.LinkedHashSet;
 
 /**
- * SQL route result.
- * 
- * @author gaohongtao
+ * Optimized statement for broadcast.
+ *
  * @author zhangliang
- * @author zhaojun
  */
 @RequiredArgsConstructor
-@Getter
-@Setter
-public final class SQLRouteResult {
+public final class BroadcastOptimizedStatement implements OptimizedStatement {
     
     private final SQLStatement sqlStatement;
     
-    private RoutingResult routingResult;
+    @Setter
+    private String logicTableNameForDropIndex;
     
-    private OptimizedStatement optimizedStatement;
+    @Override
+    public SQLStatement getSQLStatement() {
+        return sqlStatement;
+    }
     
-    private final Collection<RouteUnit> routeUnits = new LinkedHashSet<>();
+    /**
+     * Get logic table name for drop index.
+     *
+     * @return logic table name for drop index
+     */
+    public Optional<String> getLogicTableNameForDropIndex() {
+        return Optional.fromNullable(logicTableNameForDropIndex);
+    }
 }

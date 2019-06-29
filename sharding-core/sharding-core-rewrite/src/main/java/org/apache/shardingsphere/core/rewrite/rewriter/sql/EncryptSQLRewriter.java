@@ -19,7 +19,8 @@ package org.apache.shardingsphere.core.rewrite.rewriter.sql;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
+import org.apache.shardingsphere.core.optimize.result.InsertClauseOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.result.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResult;
 import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResultUnit;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
@@ -74,24 +75,21 @@ public final class EncryptSQLRewriter implements SQLRewriter {
     
     private final InsertOptimizeResult insertOptimizeResult;
     
-    public EncryptSQLRewriter(final ShardingEncryptorEngine encryptorEngine, final DMLStatement dmlStatement, final OptimizeResult optimizeResult) {
+    public EncryptSQLRewriter(final ShardingEncryptorEngine encryptorEngine, final DMLStatement dmlStatement, final OptimizedStatement optimizedStatement) {
         this.encryptorEngine = encryptorEngine;
         this.dmlStatement = dmlStatement;
-        this.insertOptimizeResult = getInsertOptimizeResult(optimizeResult);
+        this.insertOptimizeResult = getInsertOptimizeResult(optimizedStatement);
     }
     
-    private InsertOptimizeResult getInsertOptimizeResult(final OptimizeResult optimizeResult) {
-        if (null == optimizeResult) {
+    private InsertOptimizeResult getInsertOptimizeResult(final OptimizedStatement optimizedStatement) {
+        if (null == optimizedStatement || !(optimizedStatement instanceof InsertClauseOptimizedStatement)) {
             return null;
         }
-        Optional<InsertOptimizeResult> insertOptimizeResult = optimizeResult.getInsertOptimizeResult();
-        if (!insertOptimizeResult.isPresent()) {
-            return null;
+        InsertOptimizeResult result = ((InsertClauseOptimizedStatement) optimizedStatement).getInsertOptimizeResult();
+        for (InsertOptimizeResultUnit each : result.getUnits()) {
+            encryptInsertOptimizeResultUnit(each, result.getColumnNames());
         }
-        for (InsertOptimizeResultUnit each : insertOptimizeResult.get().getUnits()) {
-            encryptInsertOptimizeResultUnit(each, insertOptimizeResult.get().getColumnNames());
-        }
-        return insertOptimizeResult.get();
+        return result;
     }
     
     private void encryptInsertOptimizeResultUnit(final InsertOptimizeResultUnit unit, final Collection<String> columnNames) {

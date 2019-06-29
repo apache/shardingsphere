@@ -21,8 +21,9 @@ import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.optimize.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
+import org.apache.shardingsphere.core.optimize.result.WhereClauseOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -59,7 +60,7 @@ public final class StandardRoutingEngineTest {
         shardingCondition.getRouteValues().add(shardingValue2);
         shardingConditions.add(shardingCondition);
         ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, Arrays.asList("ds_0", "ds_1"));
-        standardRoutingEngine = new StandardRoutingEngine(mock(SQLStatement.class), shardingRule, "t_order", new OptimizeResult(shardingConditions));
+        standardRoutingEngine = new StandardRoutingEngine(mock(SQLStatement.class), shardingRule, "t_order", new WhereClauseOptimizedStatement(new SelectStatement(), shardingConditions));
     }
     
     @Test

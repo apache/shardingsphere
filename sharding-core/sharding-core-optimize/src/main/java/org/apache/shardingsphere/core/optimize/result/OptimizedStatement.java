@@ -15,35 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.route;
+package org.apache.shardingsphere.core.optimize.result;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.core.optimize.result.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.route.type.RoutingResult;
-
-import java.util.Collection;
-import java.util.LinkedHashSet;
 
 /**
- * SQL route result.
- * 
- * @author gaohongtao
+ * Optimized statement.
+ *
  * @author zhangliang
- * @author zhaojun
  */
-@RequiredArgsConstructor
-@Getter
-@Setter
-public final class SQLRouteResult {
+public interface OptimizedStatement {
     
-    private final SQLStatement sqlStatement;
-    
-    private RoutingResult routingResult;
-    
-    private OptimizedStatement optimizedStatement;
-    
-    private final Collection<RouteUnit> routeUnits = new LinkedHashSet<>();
+    /**
+     * Get SQL statement.
+     * 
+     * @return SQL statement
+     */
+    SQLStatement getSQLStatement();
 }

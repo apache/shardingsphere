@@ -25,7 +25,7 @@ import org.apache.shardingsphere.core.merge.dql.DQLMergeEngine;
 import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
 import org.apache.shardingsphere.core.optimize.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.pagination.Pagination;
-import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
+import org.apache.shardingsphere.core.optimize.result.WhereClauseOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.rownum.NumberLiteralRowNumberValueSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
@@ -65,13 +65,15 @@ public final class RowNumberDecoratorMergedResultTest {
         for (ResultSet each : resultSets) {
             queryResults.add(new TestQueryResult(each));
         }
-        routeResult = new SQLRouteResult(new SelectStatement());
-        routeResult.setOptimizeResult(new OptimizeResult(Collections.<ShardingCondition>emptyList()));
+        SelectStatement selectStatement = new SelectStatement();
+        routeResult = new SQLRouteResult(selectStatement);
+        routeResult.setOptimizedStatement(new WhereClauseOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList()));
     }
     
     @Test
     public void assertNextForSkipAll() throws SQLException {
-        routeResult.getOptimizeResult().setPagination(new Pagination(new NumberLiteralRowNumberValueSegment(0, 0, Integer.MAX_VALUE, true), null, Collections.emptyList()));
+        ((WhereClauseOptimizedStatement) routeResult.getOptimizedStatement()).setPagination(
+                new Pagination(new NumberLiteralRowNumberValueSegment(0, 0, Integer.MAX_VALUE, true), null, Collections.emptyList()));
         mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("Oracle"), routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertFalse(actual.next());
@@ -79,7 +81,7 @@ public final class RowNumberDecoratorMergedResultTest {
     
     @Test
     public void assertNextWithoutOffsetWithoutRowCount() throws SQLException {
-        routeResult.getOptimizeResult().setPagination(new Pagination(null, null, Collections.emptyList()));
+        ((WhereClauseOptimizedStatement) routeResult.getOptimizedStatement()).setPagination(new Pagination(null, null, Collections.emptyList()));
         mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("Oracle"), routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
         for (int i = 0; i < 8; i++) {
@@ -90,7 +92,7 @@ public final class RowNumberDecoratorMergedResultTest {
     
     @Test
     public void assertNextForRowCountBoundOpenedFalse() throws SQLException {
-        routeResult.getOptimizeResult().setPagination(
+        ((WhereClauseOptimizedStatement) routeResult.getOptimizedStatement()).setPagination(
                 new Pagination(new NumberLiteralRowNumberValueSegment(0, 0, 2, true), new NumberLiteralRowNumberValueSegment(0, 0, 4, false), Collections.emptyList()));
         mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("Oracle"), routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
@@ -101,7 +103,7 @@ public final class RowNumberDecoratorMergedResultTest {
     
     @Test
     public void assertNextForRowCountBoundOpenedTrue() throws SQLException {
-        routeResult.getOptimizeResult().setPagination(
+        ((WhereClauseOptimizedStatement) routeResult.getOptimizedStatement()).setPagination(
                 new Pagination(new NumberLiteralRowNumberValueSegment(0, 0, 2, true), new NumberLiteralRowNumberValueSegment(0, 0, 4, true), Collections.emptyList()));
         mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("Oracle"), routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();

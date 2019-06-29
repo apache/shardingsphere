@@ -19,18 +19,15 @@ package org.apache.shardingsphere.core.route.type.broadcast;
 
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
-import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
-import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResult;
+import org.apache.shardingsphere.core.optimize.result.BroadcastOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.context.table.Table;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.DDLStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -50,22 +47,6 @@ public final class TableBroadcastRoutingEngineTest {
     }
     
     @Test
-    public void assertRoutingResultForDQLStatement() {
-        assertThat(createDQLStatementRoutingResult(), instanceOf(RoutingResult.class));
-    }
-    
-    @Test
-    public void assertIsSingleRoutingForDQLStatement() {
-        assertFalse(createDQLStatementRoutingResult().isSingleRouting());
-    }
-    
-    @Test
-    public void assertTableUnitsForDQLStatement() {
-        RoutingResult routingResult = createDQLStatementRoutingResult();
-        assertThat(routingResult.getRoutingUnits().size(), is(0));
-    }
-    
-    @Test
     public void assertRoutingResultForDDLStatement() {
         assertThat(createDDLStatementRoutingResult(), instanceOf(RoutingResult.class));
     }
@@ -81,15 +62,11 @@ public final class TableBroadcastRoutingEngineTest {
         assertThat(routingResult.getRoutingUnits().size(), is(6));
     }
     
-    private RoutingResult createDQLStatementRoutingResult() {
-        return new TableBroadcastRoutingEngine(shardingRule, new SelectStatement(), new OptimizeResult(new InsertOptimizeResult(Collections.<String>emptyList()))).route();
-    }
-    
     private RoutingResult createDDLStatementRoutingResult() {
         DDLStatement ddlStatement = new DDLStatement();
         ddlStatement.getTables().add(new Table("t_order", null));
         ddlStatement.setLogicSQL("CREATE INDEX t_order_index on t_order");
         ddlStatement.setIndexName("t_order_index");
-        return new TableBroadcastRoutingEngine(shardingRule, ddlStatement, new OptimizeResult(new InsertOptimizeResult(Collections.<String>emptyList()))).route();
+        return new TableBroadcastRoutingEngine(shardingRule, ddlStatement, new BroadcastOptimizedStatement(ddlStatement)).route();
     }
 }

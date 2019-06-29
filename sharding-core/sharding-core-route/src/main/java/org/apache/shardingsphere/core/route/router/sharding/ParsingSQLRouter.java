@@ -25,7 +25,9 @@ import org.apache.shardingsphere.core.metadata.ShardingMetaData;
 import org.apache.shardingsphere.core.optimize.OptimizeEngineFactory;
 import org.apache.shardingsphere.core.optimize.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.condition.ShardingConditions;
-import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
+import org.apache.shardingsphere.core.optimize.result.InsertClauseOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.result.OptimizedStatement;
+import org.apache.shardingsphere.core.optimize.result.ShardingOptimizedStatement;
 import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
 import org.apache.shardingsphere.core.parse.entry.ShardingSQLParseEntry;
 import org.apache.shardingsphere.core.parse.hook.ParsingHook;
@@ -84,29 +86,29 @@ public final class ParsingSQLRouter implements ShardingRouter {
     
     @Override
     public SQLRouteResult route(final SQLStatement sqlStatement, final List<Object> parameters) {
-        OptimizeResult optimizeResult = OptimizeEngineFactory.newInstance(shardingRule, sqlStatement, parameters, shardingMetaData.getTable()).optimize();
+        OptimizedStatement optimizedStatement = OptimizeEngineFactory.newInstance(shardingRule, sqlStatement, parameters, shardingMetaData.getTable()).optimize();
         boolean needMergeShardingValues = isNeedMergeShardingValues(sqlStatement);
-        if (needMergeShardingValues) {
-            checkSubqueryShardingValues(sqlStatement, optimizeResult.getShardingConditions());
-            mergeShardingConditions(optimizeResult.getShardingConditions());
+        if (optimizedStatement instanceof ShardingOptimizedStatement && needMergeShardingValues) {
+            checkSubqueryShardingValues(sqlStatement, ((ShardingOptimizedStatement) optimizedStatement).getShardingConditions());
+            mergeShardingConditions(((ShardingOptimizedStatement) optimizedStatement).getShardingConditions());
         }
-        RoutingResult routingResult = RoutingEngineFactory.newInstance(shardingRule, shardingMetaData.getDataSource(), sqlStatement, optimizeResult).route();
+        RoutingResult routingResult = RoutingEngineFactory.newInstance(shardingRule, shardingMetaData.getDataSource(), sqlStatement, optimizedStatement).route();
         if (needMergeShardingValues) {
             Preconditions.checkState(1 == routingResult.getRoutingUnits().size(), "Must have one sharding with subquery.");
         }
         SQLRouteResult result = new SQLRouteResult(sqlStatement);
         result.setRoutingResult(routingResult);
-        setOptimizeResult(optimizeResult, result);
+        setOptimizedStatement(optimizedStatement, result);
         return result;
     }
     
-    private void setOptimizeResult(final OptimizeResult optimizeResult, final SQLRouteResult sqlRouteResult) {
-        if (optimizeResult.getGeneratedKey().isPresent()) {
-            generatedValues.addAll(optimizeResult.getGeneratedKey().get().getGeneratedValues());
-            optimizeResult.getGeneratedKey().get().getGeneratedValues().clear();
-            optimizeResult.getGeneratedKey().get().getGeneratedValues().addAll(generatedValues);
+    private void setOptimizedStatement(final OptimizedStatement optimizedStatement, final SQLRouteResult sqlRouteResult) {
+        if (optimizedStatement instanceof InsertClauseOptimizedStatement && ((InsertClauseOptimizedStatement) optimizedStatement).getGeneratedKey().isPresent()) {
+            generatedValues.addAll(((InsertClauseOptimizedStatement) optimizedStatement).getGeneratedKey().get().getGeneratedValues());
+            ((InsertClauseOptimizedStatement) optimizedStatement).getGeneratedKey().get().getGeneratedValues().clear();
+            ((InsertClauseOptimizedStatement) optimizedStatement).getGeneratedKey().get().getGeneratedValues().addAll(generatedValues);
         }
-        sqlRouteResult.setOptimizeResult(optimizeResult);
+        sqlRouteResult.setOptimizedStatement(optimizedStatement);
     }
     
     private boolean isNeedMergeShardingValues(final SQLStatement sqlStatement) {
