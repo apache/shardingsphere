@@ -22,7 +22,6 @@ import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.optimize.statement.sharding.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.statement.sharding.where.WhereClauseOptimizedStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
@@ -40,7 +39,6 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
 
 public final class ComplexRoutingEngineTest {
     
@@ -71,7 +69,7 @@ public final class ComplexRoutingEngineTest {
         shardingCondition.getRouteValues().add(shardingValue2);
         shardingConditions.add(shardingCondition);
         ComplexRoutingEngine complexRoutingEngine = new ComplexRoutingEngine(
-                mock(SQLStatement.class), shardingRule, Arrays.asList("t_order", "t_order_item"), new WhereClauseOptimizedStatement(new SelectStatement(), shardingConditions));
+                shardingRule, Arrays.asList("t_order", "t_order_item"), new WhereClauseOptimizedStatement(new SelectStatement(), shardingConditions));
         RoutingResult routingResult = complexRoutingEngine.route();
         List<RoutingUnit> tableUnitList = new ArrayList<>(routingResult.getRoutingUnits());
         assertThat(routingResult, instanceOf(RoutingResult.class));
@@ -91,8 +89,8 @@ public final class ComplexRoutingEngineTest {
         shardingCondition.getRouteValues().add(shardingValue1);
         shardingCondition.getRouteValues().add(shardingValue2);
         shardingConditions.add(shardingCondition);
-        ComplexRoutingEngine complexRoutingEngine = 
-                new ComplexRoutingEngine(mock(SQLStatement.class), shardingRule, Arrays.asList("t_order", "t_config"), new WhereClauseOptimizedStatement(new SelectStatement(), shardingConditions));
+        ComplexRoutingEngine complexRoutingEngine = new ComplexRoutingEngine(
+                shardingRule, Arrays.asList("t_order", "t_config"), new WhereClauseOptimizedStatement(new SelectStatement(), shardingConditions));
         RoutingResult routingResult = complexRoutingEngine.route();
         List<RoutingUnit> tableUnitList = new ArrayList<>(routingResult.getRoutingUnits());
         assertThat(routingResult, instanceOf(RoutingResult.class));

@@ -92,7 +92,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
             checkSubqueryShardingValues(sqlStatement, ((ShardingOptimizedStatement) optimizedStatement).getShardingConditions());
             mergeShardingConditions(((ShardingOptimizedStatement) optimizedStatement).getShardingConditions());
         }
-        RoutingResult routingResult = RoutingEngineFactory.newInstance(shardingRule, shardingMetaData.getDataSource(), sqlStatement, optimizedStatement).route();
+        RoutingResult routingResult = RoutingEngineFactory.newInstance(shardingRule, shardingMetaData.getDataSource(), optimizedStatement).route();
         if (needMergeShardingValues) {
             Preconditions.checkState(1 == routingResult.getRoutingUnits().size(), "Must have one sharding with subquery.");
         }

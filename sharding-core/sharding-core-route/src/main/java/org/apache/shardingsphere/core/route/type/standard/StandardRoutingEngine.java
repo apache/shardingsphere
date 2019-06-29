@@ -62,8 +62,6 @@ import java.util.Set;
 @RequiredArgsConstructor
 public final class StandardRoutingEngine implements RoutingEngine {
     
-    private final SQLStatement sqlStatement;
-    
     private final ShardingRule shardingRule;
     
     private final String logicTableName;
@@ -72,8 +70,8 @@ public final class StandardRoutingEngine implements RoutingEngine {
     
     @Override
     public RoutingResult route() {
-        if (isDMLForModify(sqlStatement) && !sqlStatement.getTables().isSingleTable()) {
-            throw new SQLParsingException("Cannot support Multiple-Table for '%s'.", sqlStatement);
+        if (isDMLForModify(optimizedStatement.getSQLStatement()) && !optimizedStatement.getSQLStatement().getTables().isSingleTable()) {
+            throw new SQLParsingException("Cannot support Multiple-Table for '%s'.", optimizedStatement.getSQLStatement());
         }
         return generateRoutingResult(getDataNodes(shardingRule.getTableRule(logicTableName)));
     }
@@ -230,7 +228,7 @@ public final class StandardRoutingEngine implements RoutingEngine {
     }
     
     private void reviseInsertOptimizeResult(final ShardingCondition shardingCondition, final Collection<DataNode> dataNodes) {
-        if (sqlStatement instanceof InsertStatement) {
+        if (optimizedStatement.getSQLStatement() instanceof InsertStatement) {
             for (InsertOptimizeResultUnit each : ((InsertClauseOptimizedStatement) optimizedStatement).getInsertOptimizeResult().getUnits()) {
                 if (isQualifiedInsertOptimizeResultUnit(each, shardingCondition)) {
                     each.getDataNodes().addAll(dataNodes);
