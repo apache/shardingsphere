@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.engine;
+package org.apache.shardingsphere.core.optimize.engine.transparent;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
 import org.apache.shardingsphere.core.optimize.statement.transparent.TransparentOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
