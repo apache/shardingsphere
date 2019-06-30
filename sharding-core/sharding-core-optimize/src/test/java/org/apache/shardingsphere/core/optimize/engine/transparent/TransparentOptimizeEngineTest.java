@@ -17,24 +17,20 @@
 
 package org.apache.shardingsphere.core.optimize.engine.transparent;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
 import org.apache.shardingsphere.core.optimize.statement.transparent.TransparentOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.ddl.DDLStatement;
+import org.junit.Test;
 
-/**
- * Transparent optimize engine.
- *
- * @author panjuan
- * @author zhangliang
- */
-@RequiredArgsConstructor
-public final class TransparentOptimizeEngine implements OptimizeEngine {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class TransparentOptimizeEngineTest {
     
-    private final SQLStatement sqlStatement;
-    
-    @Override
-    public TransparentOptimizedStatement optimize() {
-        return new TransparentOptimizedStatement(sqlStatement);
+    @Test
+    public void assertOptimize() {
+        SQLStatement sqlStatement = new DDLStatement();
+        TransparentOptimizedStatement actual = new TransparentOptimizeEngine(sqlStatement).optimize();
+        assertThat(actual.getSQLStatement(), is(sqlStatement));
     }
 }
