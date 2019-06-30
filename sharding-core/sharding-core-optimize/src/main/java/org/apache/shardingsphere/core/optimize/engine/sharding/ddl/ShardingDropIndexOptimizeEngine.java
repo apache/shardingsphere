@@ -46,8 +46,8 @@ public final class ShardingDropIndexOptimizeEngine implements OptimizeEngine {
         if (!dropIndexStatement.getTables().isEmpty()) {
             return dropIndexStatement.getTables().getSingleTableName();
         }
-        Optional<String> logicTableName = shardingTableMetaData.getLogicTableName(dropIndexStatement.getIndexName());
-        Preconditions.checkState(logicTableName.isPresent(), "Cannot find table for index name `%s` from sharding rule.", dropIndexStatement.getIndexName());
-        return logicTableName.get();
+        Optional<String> tableName = shardingTableMetaData.getLogicTableName(dropIndexStatement.getIndexName());
+        Preconditions.checkState(tableName.isPresent(), "Cannot find table for index name `%s` from sharding rule.", dropIndexStatement.getIndexName());
+        return tableName.get();
     }
 }

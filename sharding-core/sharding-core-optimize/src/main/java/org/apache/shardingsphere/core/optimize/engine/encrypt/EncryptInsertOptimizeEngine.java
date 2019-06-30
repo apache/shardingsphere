@@ -51,8 +51,7 @@ public final class EncryptInsertOptimizeEngine implements OptimizeEngine {
         int derivedColumnsCount = getDerivedColumnsCount();
         int parametersCount = 0;
         for (InsertValue each : insertStatement.getValues()) {
-            InsertOptimizeResultUnit unit = result.addUnit(
-                    each.getValues(derivedColumnsCount), each.getParameters(parameters, parametersCount, derivedColumnsCount), each.getParametersCount());
+            InsertOptimizeResultUnit unit = result.addUnit(each.getValues(derivedColumnsCount), each.getParameters(parameters, parametersCount, derivedColumnsCount), each.getParametersCount());
             if (encryptRule.getEncryptorEngine().isHasShardingQueryAssistedEncryptor(insertStatement.getTables().getSingleTableName())) {
                 fillAssistedQueryUnit(result.getColumnNames(), unit);
             }
