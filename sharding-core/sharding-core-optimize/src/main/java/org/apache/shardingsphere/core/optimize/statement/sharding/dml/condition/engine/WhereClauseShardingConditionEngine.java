@@ -25,18 +25,13 @@ import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.AlwaysFalseRouteValue;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.AlwaysFalseShardingCondition;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.generator.ConditionValueBetweenOperatorGenerator;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.generator.ConditionValueCompareOperatorGenerator;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.generator.ConditionValueInOperatorGenerator;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.generator.ConditionValueGeneratorFactory;
 import org.apache.shardingsphere.core.parse.filler.common.dml.PredicateUtils;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.OrPredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.SubqueryPredicateSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateBetweenRightValue;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateCompareRightValue;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateInRightValue;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
@@ -107,7 +102,7 @@ public final class WhereClauseShardingConditionEngine {
             if (!tableName.isPresent() || !shardingRule.isShardingColumn(each.getColumn().getName(), tableName.get())) {
                 continue;
             }
-            Optional<RouteValue> routeValue = createRouteValue(parameters, each, tableName.get());
+            Optional<RouteValue> routeValue = ConditionValueGeneratorFactory.generate(parameters, each.getRightValue(), each.getColumn().getName(), tableName.get());
             if (!routeValue.isPresent()) {
                 continue;
             }
@@ -118,20 +113,6 @@ public final class WhereClauseShardingConditionEngine {
             result.get(column).add(routeValue.get());
         }
         return result;
-    }
-    
-    private Optional<RouteValue> createRouteValue(final List<Object> parameters, final PredicateSegment predicateSegment, final String tableName) {
-        String columnName = predicateSegment.getColumn().getName();
-        if (predicateSegment.getRightValue() instanceof PredicateCompareRightValue) {
-            return new ConditionValueCompareOperatorGenerator().generate(parameters, (PredicateCompareRightValue) predicateSegment.getRightValue(), columnName, tableName);
-        }
-        if (predicateSegment.getRightValue() instanceof PredicateInRightValue) {
-            return new ConditionValueInOperatorGenerator().generate(parameters, (PredicateInRightValue) predicateSegment.getRightValue(), columnName, tableName);
-        }
-        if (predicateSegment.getRightValue() instanceof PredicateBetweenRightValue) {
-            return new ConditionValueBetweenOperatorGenerator().generate(parameters, (PredicateBetweenRightValue) predicateSegment.getRightValue(), columnName, tableName);
-        }
-        return Optional.absent();
     }
     
     private ShardingCondition createShardingCondition(final Map<Column, List<RouteValue>> routeValueMap) {
