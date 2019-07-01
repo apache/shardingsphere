@@ -22,7 +22,6 @@ import lombok.Setter;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.ShardingDMLOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingConditions;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.pagination.Pagination;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
 import java.util.List;

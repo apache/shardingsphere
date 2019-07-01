@@ -15,22 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.pagination;
+package org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.generator;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationValueSegment;
+import com.google.common.base.Optional;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateRightValue;
+import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
+
+import java.util.List;
 
 /**
- * Pagination value.
+ * Condition value generator.
  *
  * @author zhangliang
+ * 
+ * @param <T> type of predicate right value
  */
-@RequiredArgsConstructor
-@Getter
-public final class PaginationValue {
+public interface ConditionValueGenerator<T extends PredicateRightValue> {
     
-    private final PaginationValueSegment segment;
-    
-    private final int value;
+    /**
+     * Generate route value.
+     * 
+     * @param parameters SQL parameters
+     * @param predicateRightValue predicate right value
+     * @param columnName column name
+     * @param tableName table name
+     * @return route value
+     */
+    Optional<RouteValue> generate(List<Object> parameters, T predicateRightValue, String columnName, String tableName);
 }
