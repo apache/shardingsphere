@@ -23,15 +23,17 @@ import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
 import org.apache.shardingsphere.core.optimize.engine.encrypt.EncryptInsertOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.engine.sharding.ddl.ShardingDropIndexOptimizeEngine;
+import org.apache.shardingsphere.core.optimize.engine.sharding.dml.ShardingDeleteOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.engine.sharding.dml.ShardingInsertOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.engine.sharding.dml.ShardingSelectOptimizeEngine;
-import org.apache.shardingsphere.core.optimize.engine.sharding.dml.ShardingWhereOptimizeEngine;
+import org.apache.shardingsphere.core.optimize.engine.sharding.dml.ShardingUpdateOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.engine.transparent.TransparentOptimizeEngine;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.DropIndexStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
@@ -63,8 +65,11 @@ public final class OptimizeEngineFactory {
         if (sqlStatement instanceof InsertStatement) {
             return new ShardingInsertOptimizeEngine(shardingRule, (InsertStatement) sqlStatement, parameters);
         }
-        if (sqlStatement instanceof DMLStatement) {
-            return new ShardingWhereOptimizeEngine(shardingRule, shardingTableMetaData, (DMLStatement) sqlStatement, parameters);
+        if (sqlStatement instanceof UpdateStatement) {
+            return new ShardingUpdateOptimizeEngine(shardingRule, shardingTableMetaData, (UpdateStatement) sqlStatement, parameters);
+        }
+        if (sqlStatement instanceof DeleteStatement) {
+            return new ShardingDeleteOptimizeEngine(shardingRule, shardingTableMetaData, (DeleteStatement) sqlStatement, parameters);
         }
         if (sqlStatement instanceof DropIndexStatement) {
             return new ShardingDropIndexOptimizeEngine((DropIndexStatement) sqlStatement, shardingTableMetaData);

@@ -21,33 +21,33 @@ import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.engine.WhereClauseShardingConditionEngine;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ShardingSelectOptimizedStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Where clause optimize engine for sharding.
+ * Delete optimize engine for sharding.
  *
  * @author zhangliang
  */
-public final class ShardingWhereOptimizeEngine implements OptimizeEngine {
+public final class ShardingDeleteOptimizeEngine implements OptimizeEngine {
     
-    private final DMLStatement dmlStatement;
+    private final DeleteStatement deleteStatement;
     
     private final List<Object> parameters;
     
     private final WhereClauseShardingConditionEngine shardingConditionEngine;
     
-    public ShardingWhereOptimizeEngine(final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData, final DMLStatement dmlStatement, final List<Object> parameters) {
-        this.dmlStatement = dmlStatement;
+    public ShardingDeleteOptimizeEngine(final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData, final DeleteStatement deleteStatement, final List<Object> parameters) {
+        this.deleteStatement = deleteStatement;
         this.parameters = parameters;
         shardingConditionEngine = new WhereClauseShardingConditionEngine(shardingRule, shardingTableMetaData);
     }
     
     @Override
     public ShardingSelectOptimizedStatement optimize() {
-        return new ShardingSelectOptimizedStatement(dmlStatement, new ArrayList<>(shardingConditionEngine.createShardingConditions(dmlStatement, parameters)));
+        return new ShardingSelectOptimizedStatement(deleteStatement, new ArrayList<>(shardingConditionEngine.createShardingConditions(deleteStatement, parameters)));
     }
 }
