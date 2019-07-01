@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.core.rewrite.builder;
 
+import com.google.common.base.Optional;
 import lombok.Getter;
 import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.InsertOptimizeResultUnit;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.ShardingInsertOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ShardingSelectOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.pagination.Pagination;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.rule.DataNode;
 
@@ -74,6 +79,38 @@ public final class ParameterBuilder {
             result.add(new InsertParameterUnit(Arrays.asList(each.getParameters()), each.getDataNodes()));
         }
         return result;
+    }
+    
+    /**
+     * Set replaced index and parameters.
+     * 
+     * @param sqlRouteResult sql route result
+     */
+    public void setReplacedIndexAndParameters(final SQLRouteResult sqlRouteResult) {
+        if (isNeedRewritePagination(sqlRouteResult)) {
+            Pagination pagination = ((ShardingSelectOptimizedStatement) sqlRouteResult.getOptimizedStatement()).getPagination();
+            Optional<Integer> offsetParameterIndex = pagination.getOffsetParameterIndex();
+            if (offsetParameterIndex.isPresent()) {
+                rewriteOffset(pagination, offsetParameterIndex.get());
+            }
+            Optional<Integer> rowCountParameterIndex = pagination.getRowCountParameterIndex();
+            if (rowCountParameterIndex.isPresent()) {
+                rewriteRowCount(pagination, rowCountParameterIndex.get(), sqlRouteResult);
+            }
+        }
+    }
+    
+    private boolean isNeedRewritePagination(final SQLRouteResult sqlRouteResult) {
+        return sqlRouteResult.getOptimizedStatement() instanceof ShardingSelectOptimizedStatement
+                && null != ((ShardingSelectOptimizedStatement) sqlRouteResult.getOptimizedStatement()).getPagination() && !sqlRouteResult.getRoutingResult().isSingleRouting();
+    }
+    
+    private void rewriteOffset(final Pagination pagination, final int offsetParameterIndex) {
+        replacedIndexAndParameters.put(offsetParameterIndex, pagination.getRevisedOffset());
+    }
+    
+    private void rewriteRowCount(final Pagination pagination, final int rowCountParameterIndex, final SQLRouteResult sqlRouteResult) {
+        replacedIndexAndParameters.put(rowCountParameterIndex, pagination.getRevisedRowCount((SelectStatement) sqlRouteResult.getOptimizedStatement().getSQLStatement()));
     }
     
     /**
