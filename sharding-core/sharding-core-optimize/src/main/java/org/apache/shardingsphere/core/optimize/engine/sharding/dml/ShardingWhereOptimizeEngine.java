@@ -21,10 +21,8 @@ import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.engine.WhereClauseShardingConditionEngine;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.Pagination;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ShardingSelectOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.ArrayList;
@@ -52,17 +50,6 @@ public class ShardingWhereOptimizeEngine implements OptimizeEngine {
     @Override
     public ShardingSelectOptimizedStatement optimize() {
         List<ShardingCondition> shardingConditions = new ArrayList<>(shardingConditionEngine.createShardingConditions(dmlStatement, parameters));
-        ShardingSelectOptimizedStatement result = new ShardingSelectOptimizedStatement(dmlStatement, shardingConditions);
-        setPagination(result);
-        return result;
-    }
-    
-    private void setPagination(final ShardingSelectOptimizedStatement optimizedStatement) {
-        if (dmlStatement instanceof SelectStatement) {
-            SelectStatement selectStatement = (SelectStatement) dmlStatement;
-            if (null != selectStatement.getOffset() || null != selectStatement.getRowCount()) {
-                optimizedStatement.setPagination(new Pagination(selectStatement.getOffset(), selectStatement.getRowCount(), parameters));
-            }
-        }
+        return new ShardingSelectOptimizedStatement(dmlStatement, shardingConditions);
     }
 }

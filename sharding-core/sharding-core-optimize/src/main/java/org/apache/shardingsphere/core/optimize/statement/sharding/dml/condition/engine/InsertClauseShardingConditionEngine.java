@@ -71,18 +71,6 @@ public final class InsertClauseShardingConditionEngine {
         return result;
     }
     
-    private boolean isNeedAppendGeneratedKeyCondition(final GeneratedKey generatedKey, final String tableName) {
-        return null != generatedKey && generatedKey.isGenerated() && shardingRule.isShardingColumn(generatedKey.getColumnName(), tableName);
-    }
-    
-    private Collection<ListRouteValue> getRouteValues(final AndCondition andCondition, final List<Object> parameters) {
-        Collection<ListRouteValue> result = new LinkedList<>();
-        for (Condition each : andCondition.getConditions()) {
-            result.add(new ListRouteValue<>(each.getColumn().getName(), each.getColumn().getTableName(), each.getConditionValues(parameters)));
-        }
-        return result;
-    }
-    
     private List<AndCondition> getAndConditions(final InsertStatement insertStatement) {
         List<AndCondition> result = new LinkedList<>();
         for (InsertValue each : insertStatement.getValues()) {
@@ -107,5 +95,17 @@ public final class InsertClauseShardingConditionEngine {
         if (shardingRule.isShardingColumn(columnName, tableName)) {
             andCondition.getConditions().add(new Condition(new Column(columnName, tableName), null, expressionSegment));
         }
+    }
+    
+    private boolean isNeedAppendGeneratedKeyCondition(final GeneratedKey generatedKey, final String tableName) {
+        return null != generatedKey && generatedKey.isGenerated() && shardingRule.isShardingColumn(generatedKey.getColumnName(), tableName);
+    }
+    
+    private Collection<ListRouteValue> getRouteValues(final AndCondition andCondition, final List<Object> parameters) {
+        Collection<ListRouteValue> result = new LinkedList<>();
+        for (Condition each : andCondition.getConditions()) {
+            result.add(new ListRouteValue<>(each.getColumn().getName(), each.getColumn().getTableName(), each.getConditionValues(parameters)));
+        }
+        return result;
     }
 }
