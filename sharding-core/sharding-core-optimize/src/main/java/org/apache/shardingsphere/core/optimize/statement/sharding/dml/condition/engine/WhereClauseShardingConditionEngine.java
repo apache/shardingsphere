@@ -74,7 +74,7 @@ public final class WhereClauseShardingConditionEngine {
         Optional<SubqueryPredicateSegment> subqueryPredicateSegment = dmlStatement.findSQLSegment(SubqueryPredicateSegment.class);
         if (subqueryPredicateSegment.isPresent()) {
             for (OrPredicateSegment each : subqueryPredicateSegment.get().getOrPredicates()) {
-                List<ShardingCondition> subqueryShardingConditions = createShardingConditions(dmlStatement, parameters, each);
+                Collection<ShardingCondition> subqueryShardingConditions = createShardingConditions(dmlStatement, parameters, each);
                 if (!result.containsAll(subqueryShardingConditions)) {
                     result.addAll(subqueryShardingConditions);
                 }
@@ -83,10 +83,10 @@ public final class WhereClauseShardingConditionEngine {
         return result;
     }
     
-    private List<ShardingCondition> createShardingConditions(final DMLStatement dmlStatement, final List<Object> parameters, final OrPredicateSegment orPredicateSegment) {
-        List<ShardingCondition> result = new LinkedList<>();
+    private Collection<ShardingCondition> createShardingConditions(final DMLStatement dmlStatement, final List<Object> parameters, final OrPredicateSegment orPredicateSegment) {
+        Collection<ShardingCondition> result = new LinkedList<>();
         for (AndPredicate each : orPredicateSegment.getAndPredicates()) {
-            Map<Column, List<RouteValue>> routeValueMap = createRouteValueMap(dmlStatement, parameters, each);
+            Map<Column, Collection<RouteValue>> routeValueMap = createRouteValueMap(dmlStatement, parameters, each);
             if (routeValueMap.isEmpty()) {
                 return Collections.emptyList();
             }
@@ -95,8 +95,8 @@ public final class WhereClauseShardingConditionEngine {
         return result;
     }
     
-    private Map<Column, List<RouteValue>> createRouteValueMap(final DMLStatement dmlStatement, final List<Object> parameters, final AndPredicate andPredicate) {
-        Map<Column, List<RouteValue>> result = new HashMap<>();
+    private Map<Column, Collection<RouteValue>> createRouteValueMap(final DMLStatement dmlStatement, final List<Object> parameters, final AndPredicate andPredicate) {
+        Map<Column, Collection<RouteValue>> result = new HashMap<>();
         for (PredicateSegment each : andPredicate.getPredicates()) {
             Optional<String> tableName = PredicateUtils.findTableName(each, dmlStatement, shardingTableMetaData);
             if (!tableName.isPresent() || !shardingRule.isShardingColumn(each.getColumn().getName(), tableName.get())) {
@@ -115,9 +115,9 @@ public final class WhereClauseShardingConditionEngine {
         return result;
     }
     
-    private ShardingCondition createShardingCondition(final Map<Column, List<RouteValue>> routeValueMap) {
+    private ShardingCondition createShardingCondition(final Map<Column, Collection<RouteValue>> routeValueMap) {
         ShardingCondition result = new ShardingCondition();
-        for (Entry<Column, List<RouteValue>> entry : routeValueMap.entrySet()) {
+        for (Entry<Column, Collection<RouteValue>> entry : routeValueMap.entrySet()) {
             try {
                 RouteValue routeValue = mergeRouteValues(entry.getKey(), entry.getValue());
                 if (routeValue instanceof AlwaysFalseRouteValue) {
@@ -132,7 +132,7 @@ public final class WhereClauseShardingConditionEngine {
     }
     
     @SuppressWarnings("unchecked")
-    private RouteValue mergeRouteValues(final Column column, final List<RouteValue> routeValues) {
+    private RouteValue mergeRouteValues(final Column column, final Collection<RouteValue> routeValues) {
         Collection<Comparable<?>> listValue = null;
         Range<Comparable<?>> rangeValue = null;
         for (RouteValue each : routeValues) {
