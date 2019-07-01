@@ -25,7 +25,6 @@ import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
-import org.apache.shardingsphere.core.rewrite.rewriter.parameter.ParameterRewriter;
 import org.apache.shardingsphere.core.rewrite.rewriter.sql.EncryptSQLRewriter;
 import org.apache.shardingsphere.core.rewrite.rewriter.sql.SQLRewriter;
 import org.apache.shardingsphere.core.route.SQLLogger;
@@ -40,7 +39,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 
 /**
@@ -159,7 +157,7 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
         if (sqlStatement instanceof DMLStatement) {
             sqlRewriters.add(new EncryptSQLRewriter(connection.getEncryptRule().getEncryptorEngine(), optimizedStatement));
         }
-        encryptSQLRewriteEngine.init(Collections.<ParameterRewriter>emptyList(), sqlRewriters);
+        encryptSQLRewriteEngine.init(sqlRewriters);
         SQLUnit result = encryptSQLRewriteEngine.generateSQL();
         boolean showSQL = connection.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW);
         if (showSQL) {
