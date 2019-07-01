@@ -20,6 +20,7 @@ package org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.generator.ConditionValue;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.generator.ConditionValueGenerator;
+import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateInRightValue;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
@@ -36,7 +37,7 @@ import java.util.List;
 public final class ConditionValueInOperatorGenerator implements ConditionValueGenerator<PredicateInRightValue> {
     
     @Override
-    public Optional<RouteValue> generate(final PredicateInRightValue predicateRightValue, final String columnName, final String tableName, final List<Object> parameters) {
+    public Optional<RouteValue> generate(final PredicateInRightValue predicateRightValue, final Column column, final List<Object> parameters) {
         List<Comparable> routeValues = new LinkedList<>();
         for (ExpressionSegment each : predicateRightValue.getSqlExpressions()) {
             Optional<Comparable> routeValue = new ConditionValue(each, parameters).getValue();
@@ -44,6 +45,6 @@ public final class ConditionValueInOperatorGenerator implements ConditionValueGe
                 routeValues.add(routeValue.get());
             }
         }
-        return routeValues.isEmpty() ? Optional.<RouteValue>absent() : Optional.<RouteValue>of(new ListRouteValue<>(columnName, tableName, routeValues));
+        return routeValues.isEmpty() ? Optional.<RouteValue>absent() : Optional.<RouteValue>of(new ListRouteValue<>(column.getName(), column.getTableName(), routeValues));
     }
 }

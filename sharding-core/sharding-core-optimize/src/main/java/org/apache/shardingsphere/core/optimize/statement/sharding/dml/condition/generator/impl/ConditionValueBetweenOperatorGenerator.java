@@ -21,6 +21,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Range;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.generator.ConditionValue;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.generator.ConditionValueGenerator;
+import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateBetweenRightValue;
 import org.apache.shardingsphere.core.strategy.route.value.RangeRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
@@ -35,10 +36,10 @@ import java.util.List;
 public final class ConditionValueBetweenOperatorGenerator implements ConditionValueGenerator<PredicateBetweenRightValue> {
     
     @Override
-    public Optional<RouteValue> generate(final PredicateBetweenRightValue predicateRightValue, final String columnName, final String tableName, final List<Object> parameters) {
+    public Optional<RouteValue> generate(final PredicateBetweenRightValue predicateRightValue, final Column column, final List<Object> parameters) {
         Optional<Comparable> betweenRouteValue = new ConditionValue(predicateRightValue.getBetweenExpression(), parameters).getValue();
         Optional<Comparable> andRouteValue = new ConditionValue(predicateRightValue.getAndExpression(), parameters).getValue();
         return betweenRouteValue.isPresent() && andRouteValue.isPresent()
-                ? Optional.<RouteValue>of(new RangeRouteValue<>(columnName, tableName, Range.closed(betweenRouteValue.get(), andRouteValue.get()))) : Optional.<RouteValue>absent();
+                ? Optional.<RouteValue>of(new RangeRouteValue<>(column.getName(), column.getTableName(), Range.closed(betweenRouteValue.get(), andRouteValue.get()))) : Optional.<RouteValue>absent();
     }
 }
