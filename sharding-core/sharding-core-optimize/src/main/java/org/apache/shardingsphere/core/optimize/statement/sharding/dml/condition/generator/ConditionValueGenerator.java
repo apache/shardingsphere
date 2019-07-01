@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.generator;
 
 import com.google.common.base.Optional;
+import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateRightValue;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
 
@@ -35,11 +36,10 @@ public interface ConditionValueGenerator<T extends PredicateRightValue> {
     /**
      * Generate route value.
      * 
-     * @param parameters SQL parameters
      * @param predicateRightValue predicate right value
-     * @param columnName column name
-     * @param tableName table name
+     * @param column column
+     * @param parameters SQL parameters
      * @return route value
      */
-    Optional<RouteValue> generate(List<Object> parameters, T predicateRightValue, String columnName, String tableName);
+    Optional<RouteValue> generate(T predicateRightValue, Column column, List<Object> parameters);
 }

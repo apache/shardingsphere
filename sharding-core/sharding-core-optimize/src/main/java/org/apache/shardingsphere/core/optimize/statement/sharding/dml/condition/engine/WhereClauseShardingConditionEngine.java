@@ -102,11 +102,11 @@ public final class WhereClauseShardingConditionEngine {
             if (!tableName.isPresent() || !shardingRule.isShardingColumn(each.getColumn().getName(), tableName.get())) {
                 continue;
             }
-            Optional<RouteValue> routeValue = ConditionValueGeneratorFactory.generate(parameters, each.getRightValue(), each.getColumn().getName(), tableName.get());
+            Column column = new Column(each.getColumn().getName(), tableName.get());
+            Optional<RouteValue> routeValue = ConditionValueGeneratorFactory.generate(each.getRightValue(), column, parameters);
             if (!routeValue.isPresent()) {
                 continue;
             }
-            Column column = new Column(routeValue.get().getColumnName(), routeValue.get().getTableName());
             if (!result.containsKey(column)) {
                 result.put(column, new LinkedList<RouteValue>());
             }

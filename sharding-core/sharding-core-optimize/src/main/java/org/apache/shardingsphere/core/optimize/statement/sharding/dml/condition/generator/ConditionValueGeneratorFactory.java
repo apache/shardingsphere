@@ -23,6 +23,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.generator.impl.ConditionValueBetweenOperatorGenerator;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.generator.impl.ConditionValueCompareOperatorGenerator;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.generator.impl.ConditionValueInOperatorGenerator;
+import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateBetweenRightValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateCompareRightValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateInRightValue;
@@ -42,21 +43,20 @@ public final class ConditionValueGeneratorFactory {
     /**
      * Generate condition value.
      *
-     * @param parameters SQL parameters
      * @param predicateRightValue predicate right value
-     * @param columnName column name
-     * @param tableName table name
+     * @param column column
+     * @param parameters SQL parameters
      * @return route value
      */
-    public static Optional<RouteValue> generate(final List<Object> parameters, final PredicateRightValue predicateRightValue, final String columnName, final String tableName) {
+    public static Optional<RouteValue> generate(final PredicateRightValue predicateRightValue, final Column column, final List<Object> parameters) {
         if (predicateRightValue instanceof PredicateCompareRightValue) {
-            return new ConditionValueCompareOperatorGenerator().generate(parameters, (PredicateCompareRightValue) predicateRightValue, columnName, tableName);
+            return new ConditionValueCompareOperatorGenerator().generate((PredicateCompareRightValue) predicateRightValue, column, parameters);
         }
         if (predicateRightValue instanceof PredicateInRightValue) {
-            return new ConditionValueInOperatorGenerator().generate(parameters, (PredicateInRightValue) predicateRightValue, columnName, tableName);
+            return new ConditionValueInOperatorGenerator().generate((PredicateInRightValue) predicateRightValue, column, parameters);
         }
         if (predicateRightValue instanceof PredicateBetweenRightValue) {
-            return new ConditionValueBetweenOperatorGenerator().generate(parameters, (PredicateBetweenRightValue) predicateRightValue, columnName, tableName);
+            return new ConditionValueBetweenOperatorGenerator().generate((PredicateBetweenRightValue) predicateRightValue, column, parameters);
         }
         return Optional.absent();
     }

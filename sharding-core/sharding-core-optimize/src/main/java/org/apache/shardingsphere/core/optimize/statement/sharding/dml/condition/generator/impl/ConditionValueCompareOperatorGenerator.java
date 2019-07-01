@@ -21,6 +21,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.generator.ConditionValue;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.generator.ConditionValueGenerator;
+import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateCompareRightValue;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
@@ -35,12 +36,12 @@ import java.util.List;
 public final class ConditionValueCompareOperatorGenerator implements ConditionValueGenerator<PredicateCompareRightValue> {
     
     @Override
-    public Optional<RouteValue> generate(final List<Object> parameters, final PredicateCompareRightValue predicateRightValue, final String columnName, final String tableName) {
+    public Optional<RouteValue> generate(final PredicateCompareRightValue predicateRightValue, final Column column, final List<Object> parameters) {
         if (!isOperatorSupportedWithSharding(predicateRightValue.getOperator())) {
             return Optional.absent();
         }
         Optional<Comparable> routeValue = new ConditionValue(predicateRightValue.getExpression(), parameters).getValue();
-        return routeValue.isPresent() ? Optional.<RouteValue>of(new ListRouteValue<>(columnName, tableName, Lists.newArrayList(routeValue.get()))) : Optional.<RouteValue>absent();
+        return routeValue.isPresent() ? Optional.<RouteValue>of(new ListRouteValue<>(column.getName(), column.getTableName(), Lists.newArrayList(routeValue.get()))) : Optional.<RouteValue>absent();
     }
     
     private boolean isOperatorSupportedWithSharding(final String operator) {
