@@ -24,8 +24,6 @@ import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesCons
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
-import org.apache.shardingsphere.core.rewrite.rewriter.parameter.ParameterRewriter;
-import org.apache.shardingsphere.core.rewrite.rewriter.parameter.ShardingParameterRewriter;
 import org.apache.shardingsphere.core.rewrite.rewriter.sql.EncryptSQLRewriter;
 import org.apache.shardingsphere.core.rewrite.rewriter.sql.SQLRewriter;
 import org.apache.shardingsphere.core.rewrite.rewriter.sql.ShardingSQLRewriter;
@@ -38,7 +36,6 @@ import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -106,13 +103,12 @@ public abstract class BaseShardingEngine {
     
     private Collection<RouteUnit> rewriteAndConvert(final List<Object> parameters, final SQLRouteResult sqlRouteResult) {
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, sqlRouteResult.getOptimizedStatement(), parameters, sqlRouteResult.getRoutingResult().isSingleRouting());
-        ShardingParameterRewriter shardingParameterRewriter = new ShardingParameterRewriter(sqlRouteResult);
         Collection<SQLRewriter> sqlRewriters = new LinkedList<>();
         sqlRewriters.add(new ShardingSQLRewriter(sqlRouteResult, sqlRouteResult.getOptimizedStatement()));
         if (sqlRouteResult.getOptimizedStatement().getSQLStatement() instanceof DMLStatement) {
             sqlRewriters.add(new EncryptSQLRewriter(shardingRule.getEncryptRule().getEncryptorEngine(), sqlRouteResult.getOptimizedStatement()));
         }
-        rewriteEngine.init(Collections.<ParameterRewriter>singletonList(shardingParameterRewriter), sqlRewriters);
+        rewriteEngine.init(sqlRouteResult, sqlRewriters);
         Collection<RouteUnit> result = new LinkedHashSet<>();
         for (RoutingUnit each : sqlRouteResult.getRoutingResult().getRoutingUnits()) {
             result.add(new RouteUnit(each.getDataSourceName(), rewriteEngine.generateSQL(each)));

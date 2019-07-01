@@ -62,8 +62,6 @@ import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
-import org.apache.shardingsphere.core.rewrite.rewriter.parameter.ParameterRewriter;
-import org.apache.shardingsphere.core.rewrite.rewriter.parameter.ShardingParameterRewriter;
 import org.apache.shardingsphere.core.rewrite.rewriter.sql.EncryptSQLRewriter;
 import org.apache.shardingsphere.core.rewrite.rewriter.sql.SQLRewriter;
 import org.apache.shardingsphere.core.rewrite.rewriter.sql.ShardingSQLRewriter;
@@ -534,7 +532,7 @@ public final class ShardingSQLRewriterTest {
         routeResult.setRoutingResult(new RoutingResult());
         selectStatement.setLogicSQL("SELECT table_x.id, x.name FROM table_x x, table_y y WHERE table_x.id=? AND x.name=?");
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, routeResult.getOptimizedStatement(), parameters, routeResult.getRoutingResult().isSingleRouting());
-        rewriteEngine.init(Collections.<ParameterRewriter>singletonList(new ShardingParameterRewriter(routeResult)), Arrays.asList(new ShardingSQLRewriter(routeResult, null), 
+        rewriteEngine.init(routeResult, Arrays.asList(new ShardingSQLRewriter(routeResult, null), 
                         new EncryptSQLRewriter(shardingRule.getEncryptRule().getEncryptorEngine(), routeResult.getOptimizedStatement())));
         RoutingUnit routingUnit = new RoutingUnit("db0");
         routingUnit.getTableUnits().add(new TableUnit("table_x", "table_x"));
@@ -906,7 +904,7 @@ public final class ShardingSQLRewriterTest {
         if (routeResult.getOptimizedStatement().getSQLStatement() instanceof DMLStatement) {
             sqlRewriters.add(new EncryptSQLRewriter(shardingRule.getEncryptRule().getEncryptorEngine(), routeResult.getOptimizedStatement()));
         }
-        result.init(Collections.<ParameterRewriter>singletonList(new ShardingParameterRewriter(routeResult)), sqlRewriters);
+        result.init(routeResult, sqlRewriters);
         return result;
     }
 }
