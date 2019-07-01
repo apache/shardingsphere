@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.optimize.engine.sharding.dml;
 
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.engine.WhereClauseShardingConditionEngine;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ShardingSelectOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
@@ -33,7 +32,7 @@ import java.util.List;
  *
  * @author zhangliang
  */
-public class ShardingWhereOptimizeEngine implements OptimizeEngine {
+public final class ShardingWhereOptimizeEngine implements OptimizeEngine {
     
     private final DMLStatement dmlStatement;
     
@@ -49,7 +48,6 @@ public class ShardingWhereOptimizeEngine implements OptimizeEngine {
     
     @Override
     public ShardingSelectOptimizedStatement optimize() {
-        List<ShardingCondition> shardingConditions = new ArrayList<>(shardingConditionEngine.createShardingConditions(dmlStatement, parameters));
-        return new ShardingSelectOptimizedStatement(dmlStatement, shardingConditions);
+        return new ShardingSelectOptimizedStatement(dmlStatement, new ArrayList<>(shardingConditionEngine.createShardingConditions(dmlStatement, parameters)));
     }
 }

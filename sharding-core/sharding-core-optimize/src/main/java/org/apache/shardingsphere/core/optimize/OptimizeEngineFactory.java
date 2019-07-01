@@ -58,7 +58,7 @@ public final class OptimizeEngineFactory {
      */
     public static OptimizeEngine newInstance(final ShardingRule shardingRule, final SQLStatement sqlStatement, final List<Object> parameters, final ShardingTableMetaData shardingTableMetaData) {
         if (sqlStatement instanceof SelectStatement) {
-            return new ShardingSelectOptimizeEngine(shardingRule, shardingTableMetaData, (DMLStatement) sqlStatement, parameters);
+            return new ShardingSelectOptimizeEngine(shardingRule, shardingTableMetaData, (SelectStatement) sqlStatement, parameters);
         }
         if (sqlStatement instanceof InsertStatement) {
             return new ShardingInsertOptimizeEngine(shardingRule, (InsertStatement) sqlStatement, parameters);

@@ -18,12 +18,14 @@
 package org.apache.shardingsphere.core.optimize.engine.sharding.dml;
 
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.engine.WhereClauseShardingConditionEngine;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.Pagination;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ShardingSelectOptimizedStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,31 +33,30 @@ import java.util.List;
  *
  * @author zhangliang
  */
-public final class ShardingSelectOptimizeEngine extends ShardingWhereOptimizeEngine {
+public final class ShardingSelectOptimizeEngine implements OptimizeEngine {
     
-    private final DMLStatement dmlStatement;
+    private final SelectStatement selectStatement;
     
     private final List<Object> parameters;
     
-    public ShardingSelectOptimizeEngine(final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData, final DMLStatement dmlStatement, final List<Object> parameters) {
-        super(shardingRule, shardingTableMetaData, dmlStatement, parameters);
-        this.dmlStatement = dmlStatement;
+    private final WhereClauseShardingConditionEngine shardingConditionEngine;
+    
+    public ShardingSelectOptimizeEngine(final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData, final SelectStatement selectStatement, final List<Object> parameters) {
+        this.selectStatement = selectStatement;
         this.parameters = parameters;
+        shardingConditionEngine = new WhereClauseShardingConditionEngine(shardingRule, shardingTableMetaData);
     }
     
     @Override
     public ShardingSelectOptimizedStatement optimize() {
-        ShardingSelectOptimizedStatement result = super.optimize();
+        ShardingSelectOptimizedStatement result = new ShardingSelectOptimizedStatement(selectStatement, new ArrayList<>(shardingConditionEngine.createShardingConditions(selectStatement, parameters)));
         setPagination(result);
         return result;
     }
     
     private void setPagination(final ShardingSelectOptimizedStatement optimizedStatement) {
-        if (dmlStatement instanceof SelectStatement) {
-            SelectStatement selectStatement = (SelectStatement) dmlStatement;
-            if (null != selectStatement.getOffset() || null != selectStatement.getRowCount()) {
-                optimizedStatement.setPagination(new Pagination(selectStatement.getOffset(), selectStatement.getRowCount(), parameters));
-            }
+        if (null != selectStatement.getOffset() || null != selectStatement.getRowCount()) {
+            optimizedStatement.setPagination(new Pagination(selectStatement.getOffset(), selectStatement.getRowCount(), parameters));
         }
     }
 }
