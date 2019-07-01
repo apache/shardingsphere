@@ -25,7 +25,6 @@ import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Insert statement.
@@ -41,7 +40,7 @@ public final class InsertStatement extends DMLStatement {
     
     private final Collection<String> columnNames = new LinkedList<>();
     
-    private final List<InsertValue> values = new LinkedList<>();
+    private final Collection<InsertValue> values = new LinkedList<>();
     
     /**
      * Judge contains default values or not.
@@ -50,6 +49,6 @@ public final class InsertStatement extends DMLStatement {
      */
     public boolean containsDefaultValues() {
         Preconditions.checkState(!values.isEmpty());
-        return columnNames.size() != values.get(0).getAssignments().size();
+        return columnNames.size() != values.iterator().next().getAssignments().size();
     }
 }
