@@ -21,13 +21,13 @@ import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
-import org.apache.shardingsphere.core.rewrite.rewriter.parameter.ParameterRewriter;
 import org.apache.shardingsphere.core.rewrite.rewriter.sql.BaseSQLRewriter;
 import org.apache.shardingsphere.core.rewrite.rewriter.sql.SQLRewriter;
 import org.apache.shardingsphere.core.rewrite.token.BaseTokenGenerateEngine;
 import org.apache.shardingsphere.core.rewrite.token.EncryptTokenGenerateEngine;
 import org.apache.shardingsphere.core.rewrite.token.ShardingTokenGenerateEngine;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SQLToken;
+import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.SQLUnit;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.route.type.TableUnit;
@@ -108,13 +108,20 @@ public final class SQLRewriteEngine {
     /**
      * Initialize SQL rewrite engine.
      * 
-     * @param parameterRewriters parameter rewriters
+     * @param sqlRouteResult sql route result
      * @param sqlRewriters SQL rewriters
      */
-    public void init(final Collection<ParameterRewriter> parameterRewriters, final Collection<SQLRewriter> sqlRewriters) {
-        for (ParameterRewriter each : parameterRewriters) {
-            each.rewrite(parameterBuilder);
-        }
+    public void init(final SQLRouteResult sqlRouteResult, final Collection<SQLRewriter> sqlRewriters) {
+        parameterBuilder.setReplacedIndexAndParameters(sqlRouteResult);
+        init(sqlRewriters);
+    }
+    
+    /**
+     * Initialize SQL rewrite engine.
+     *
+     * @param sqlRewriters SQL rewriters
+     */
+    public void init(final Collection<SQLRewriter> sqlRewriters) {
         if (sqlTokens.isEmpty()) {
             baseSQLRewriter.appendWholeSQL(sqlBuilder);
             return;
