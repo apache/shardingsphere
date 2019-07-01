@@ -35,7 +35,7 @@ import java.util.List;
 public final class ConditionValueCompareOperatorGenerator implements ConditionValueGenerator<PredicateCompareRightValue> {
     
     @Override
-    public Optional<RouteValue> generate(final List<Object> parameters, final PredicateCompareRightValue predicateRightValue, final String columnName, final String tableName) {
+    public Optional<RouteValue> generate(final PredicateCompareRightValue predicateRightValue, final String columnName, final String tableName, final List<Object> parameters) {
         if (!isOperatorSupportedWithSharding(predicateRightValue.getOperator())) {
             return Optional.absent();
         }

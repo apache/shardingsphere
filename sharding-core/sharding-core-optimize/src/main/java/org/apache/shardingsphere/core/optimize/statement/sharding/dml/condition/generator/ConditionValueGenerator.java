@@ -35,11 +35,11 @@ public interface ConditionValueGenerator<T extends PredicateRightValue> {
     /**
      * Generate route value.
      * 
-     * @param parameters SQL parameters
      * @param predicateRightValue predicate right value
      * @param columnName column name
      * @param tableName table name
+     * @param parameters SQL parameters
      * @return route value
      */
-    Optional<RouteValue> generate(List<Object> parameters, T predicateRightValue, String columnName, String tableName);
+    Optional<RouteValue> generate(T predicateRightValue, String columnName, String tableName, List<Object> parameters);
 }

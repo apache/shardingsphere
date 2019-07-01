@@ -42,21 +42,21 @@ public final class ConditionValueGeneratorFactory {
     /**
      * Generate condition value.
      *
-     * @param parameters SQL parameters
      * @param predicateRightValue predicate right value
      * @param columnName column name
      * @param tableName table name
+     * @param parameters SQL parameters
      * @return route value
      */
-    public static Optional<RouteValue> generate(final List<Object> parameters, final PredicateRightValue predicateRightValue, final String columnName, final String tableName) {
+    public static Optional<RouteValue> generate(final PredicateRightValue predicateRightValue, final String columnName, final String tableName, final List<Object> parameters) {
         if (predicateRightValue instanceof PredicateCompareRightValue) {
-            return new ConditionValueCompareOperatorGenerator().generate(parameters, (PredicateCompareRightValue) predicateRightValue, columnName, tableName);
+            return new ConditionValueCompareOperatorGenerator().generate((PredicateCompareRightValue) predicateRightValue, columnName, tableName, parameters);
         }
         if (predicateRightValue instanceof PredicateInRightValue) {
-            return new ConditionValueInOperatorGenerator().generate(parameters, (PredicateInRightValue) predicateRightValue, columnName, tableName);
+            return new ConditionValueInOperatorGenerator().generate((PredicateInRightValue) predicateRightValue, columnName, tableName, parameters);
         }
         if (predicateRightValue instanceof PredicateBetweenRightValue) {
-            return new ConditionValueBetweenOperatorGenerator().generate(parameters, (PredicateBetweenRightValue) predicateRightValue, columnName, tableName);
+            return new ConditionValueBetweenOperatorGenerator().generate((PredicateBetweenRightValue) predicateRightValue, columnName, tableName, parameters);
         }
         return Optional.absent();
     }

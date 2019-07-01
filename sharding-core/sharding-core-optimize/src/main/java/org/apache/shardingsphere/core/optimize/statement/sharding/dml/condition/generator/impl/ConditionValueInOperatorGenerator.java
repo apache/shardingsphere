@@ -36,7 +36,7 @@ import java.util.List;
 public final class ConditionValueInOperatorGenerator implements ConditionValueGenerator<PredicateInRightValue> {
     
     @Override
-    public Optional<RouteValue> generate(final List<Object> parameters, final PredicateInRightValue predicateRightValue, final String columnName, final String tableName) {
+    public Optional<RouteValue> generate(final PredicateInRightValue predicateRightValue, final String columnName, final String tableName, final List<Object> parameters) {
         List<Comparable> routeValues = new LinkedList<>();
         for (ExpressionSegment each : predicateRightValue.getSqlExpressions()) {
             Optional<Comparable> routeValue = new ConditionValue(each, parameters).getValue();

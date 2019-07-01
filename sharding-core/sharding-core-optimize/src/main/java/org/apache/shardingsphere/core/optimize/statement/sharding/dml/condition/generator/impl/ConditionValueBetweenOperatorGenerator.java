@@ -35,7 +35,7 @@ import java.util.List;
 public final class ConditionValueBetweenOperatorGenerator implements ConditionValueGenerator<PredicateBetweenRightValue> {
     
     @Override
-    public Optional<RouteValue> generate(final List<Object> parameters, final PredicateBetweenRightValue predicateRightValue, final String columnName, final String tableName) {
+    public Optional<RouteValue> generate(final PredicateBetweenRightValue predicateRightValue, final String columnName, final String tableName, final List<Object> parameters) {
         Optional<Comparable> betweenRouteValue = new ConditionValue(predicateRightValue.getBetweenExpression(), parameters).getValue();
         Optional<Comparable> andRouteValue = new ConditionValue(predicateRightValue.getAndExpression(), parameters).getValue();
         return betweenRouteValue.isPresent() && andRouteValue.isPresent()
