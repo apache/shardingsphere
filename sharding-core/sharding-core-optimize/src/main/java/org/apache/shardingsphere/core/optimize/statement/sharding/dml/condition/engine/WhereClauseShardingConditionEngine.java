@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.engine;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.exception.ShardingException;
@@ -27,11 +25,11 @@ import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.AlwaysFalseRouteValue;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.AlwaysFalseShardingCondition;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.generator.ConditionValueBetweenOperatorGenerator;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.generator.ConditionValueCompareOperatorGenerator;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.generator.ConditionValueInOperatorGenerator;
 import org.apache.shardingsphere.core.parse.filler.common.dml.PredicateUtils;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.OrPredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
@@ -125,63 +123,15 @@ public final class WhereClauseShardingConditionEngine {
     private Optional<RouteValue> createRouteValue(final List<Object> parameters, final PredicateSegment predicateSegment, final String tableName) {
         String columnName = predicateSegment.getColumn().getName();
         if (predicateSegment.getRightValue() instanceof PredicateCompareRightValue) {
-            return getRouteValue(parameters, (PredicateCompareRightValue) predicateSegment.getRightValue(), columnName, tableName);
+            return new ConditionValueCompareOperatorGenerator().generate(parameters, (PredicateCompareRightValue) predicateSegment.getRightValue(), columnName, tableName);
         }
         if (predicateSegment.getRightValue() instanceof PredicateInRightValue) {
-            return getRouteValue(parameters, (PredicateInRightValue) predicateSegment.getRightValue(), columnName, tableName);
-        }
-        if (predicateSegment.getRightValue() instanceof PredicateInRightValue) {
-            return getRouteValue(parameters, (PredicateInRightValue) predicateSegment.getRightValue(), columnName, tableName);
+            return new ConditionValueInOperatorGenerator().generate(parameters, (PredicateInRightValue) predicateSegment.getRightValue(), columnName, tableName);
         }
         if (predicateSegment.getRightValue() instanceof PredicateBetweenRightValue) {
-            return getRouteValue(parameters, (PredicateBetweenRightValue) predicateSegment.getRightValue(), columnName, tableName);
+            return new ConditionValueBetweenOperatorGenerator().generate(parameters, (PredicateBetweenRightValue) predicateSegment.getRightValue(), columnName, tableName);
         }
         return Optional.absent();
-    }
-    
-    private Optional<RouteValue> getRouteValue(final List<Object> parameters, final PredicateCompareRightValue predicateRightValue, final String columnName, final String tableName) {
-        if (!isOperatorSupportedWithSharding(predicateRightValue.getOperator())) {
-            return Optional.absent();
-        }
-        Optional<Comparable> routeValue = getRouteValue(parameters, predicateRightValue.getExpression());
-        return routeValue.isPresent() ? Optional.<RouteValue>of(new ListRouteValue<>(columnName, tableName, Lists.newArrayList(routeValue.get()))) : Optional.<RouteValue>absent();
-    }
-    
-    private Optional<RouteValue> getRouteValue(final List<Object> parameters, final PredicateInRightValue predicateRightValue, final String columnName, final String tableName) {
-        List<Comparable> routeValues = new LinkedList<>();
-        for (ExpressionSegment each : predicateRightValue.getSqlExpressions()) {
-            Optional<Comparable> routeValue = getRouteValue(parameters, each);
-            if (routeValue.isPresent()) {
-                routeValues.add(routeValue.get());
-            }
-        }
-        return routeValues.isEmpty() ? Optional.<RouteValue>absent() : Optional.<RouteValue>of(new ListRouteValue<>(columnName, tableName, routeValues));
-    }
-    
-    private Optional<RouteValue> getRouteValue(final List<Object> parameters, final PredicateBetweenRightValue predicateRightValue, final String columnName, final String tableName) {
-        Optional<Comparable> betweenRouteValue = getRouteValue(parameters, predicateRightValue.getBetweenExpression());
-        Optional<Comparable> andRouteValue = getRouteValue(parameters, predicateRightValue.getAndExpression());
-        return betweenRouteValue.isPresent() && andRouteValue.isPresent()
-                ? Optional.<RouteValue>of(new RangeRouteValue<>(columnName, tableName, Range.closed(betweenRouteValue.get(), andRouteValue.get()))) : Optional.<RouteValue>absent();
-    }
-    
-    private boolean isOperatorSupportedWithSharding(final String operator) {
-        return "=".equals(operator);
-    }
-    
-    private Optional<Comparable> getRouteValue(final List<Object> parameters, final ExpressionSegment expression) {
-        Object result = null;
-        if (expression instanceof ParameterMarkerExpressionSegment) {
-            result = parameters.get(((ParameterMarkerExpressionSegment) expression).getParameterMarkerIndex());
-        }
-        if (expression instanceof LiteralExpressionSegment) {
-            result = ((LiteralExpressionSegment) expression).getLiterals();
-        }
-        if (null == result) {
-            return Optional.absent();
-        }
-        Preconditions.checkArgument(result instanceof Comparable, "Sharding value must implements Comparable.");
-        return Optional.of((Comparable) result);
     }
     
     private ShardingCondition createShardingCondition(final Map<Column, List<RouteValue>> routeValueMap) {
