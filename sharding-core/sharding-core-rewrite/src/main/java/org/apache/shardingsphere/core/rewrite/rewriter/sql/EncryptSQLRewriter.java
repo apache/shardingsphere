@@ -83,7 +83,7 @@ public final class EncryptSQLRewriter implements SQLRewriter {
         if (sqlToken instanceof InsertValuesToken) {
             appendInsertValuesPlaceholder(sqlBuilder, (ShardingInsertOptimizedStatement) optimizedStatement);
         } else if (sqlToken instanceof InsertSetEncryptValueToken) {
-            appendInsertSetEncryptValuePlaceholder(sqlBuilder, (InsertSetEncryptValueToken) sqlToken, (ShardingInsertOptimizedStatement) optimizedStatement);
+            appendInsertSetEncryptValuePlaceholder(sqlBuilder, (InsertSetEncryptValueToken) sqlToken);
         } else if (sqlToken instanceof InsertSetAddAssistedColumnsToken) {
             appendInsertSetAddItemsPlaceholder(sqlBuilder, (InsertSetAddAssistedColumnsToken) sqlToken, (ShardingInsertOptimizedStatement) optimizedStatement);
         } else if (sqlToken instanceof InsertAssistedColumnsToken) {
@@ -101,9 +101,8 @@ public final class EncryptSQLRewriter implements SQLRewriter {
         sqlBuilder.appendPlaceholder(new InsertValuesPlaceholder(insertValues));
     }
     
-    private void appendInsertSetEncryptValuePlaceholder(final SQLBuilder sqlBuilder, 
-                                                        final InsertSetEncryptValueToken insertSetEncryptValueToken, final ShardingInsertOptimizedStatement optimizedStatement) {
-        sqlBuilder.appendPlaceholder(new InsertSetEncryptValuePlaceholder(optimizedStatement.getUnits().get(0).getColumnSQLExpression(insertSetEncryptValueToken.getColumnName())));
+    private void appendInsertSetEncryptValuePlaceholder(final SQLBuilder sqlBuilder, final InsertSetEncryptValueToken insertSetEncryptValueToken) {
+        sqlBuilder.appendPlaceholder(new InsertSetEncryptValuePlaceholder(insertSetEncryptValueToken.getEncryptColumnValue()));
     }
     
     private void appendInsertSetAddItemsPlaceholder(

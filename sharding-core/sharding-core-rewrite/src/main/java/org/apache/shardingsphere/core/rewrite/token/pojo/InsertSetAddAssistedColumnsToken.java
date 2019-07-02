@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.rewrite.token.pojo;
 
 import lombok.Getter;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 
 import java.util.Collection;
 
@@ -31,8 +32,11 @@ public final class InsertSetAddAssistedColumnsToken extends SQLToken implements 
     
     private final Collection<String> columnNames;
     
-    public InsertSetAddAssistedColumnsToken(final int startIndex, final Collection<String> columnNames) {
+    private final Collection<ExpressionSegment> columnValues;
+    
+    public InsertSetAddAssistedColumnsToken(final int startIndex, final Collection<String> columnNames, final Collection<ExpressionSegment> columnValues) {
         super(startIndex);
         this.columnNames = columnNames;
+        this.columnValues = columnValues;
     }
 }
