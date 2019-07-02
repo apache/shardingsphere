@@ -17,8 +17,12 @@
 
 package org.apache.shardingsphere.core.rewrite.builder;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.core.rewrite.placeholder.Alterable;
 import org.apache.shardingsphere.core.rewrite.placeholder.ShardingPlaceholder;
+import org.apache.shardingsphere.core.rewrite.token.pojo.SQLToken;
+import org.apache.shardingsphere.core.rewrite.token.pojo.Substitutable;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 
 import java.util.Collections;
@@ -36,11 +40,20 @@ import java.util.Map;
  */
 public final class SQLBuilder {
     
+    @Setter
+    private String logicSQL;
+    
+    @Getter
+    private final List<SQLToken> sqlTokens;
+    
+    private int currentSQLTokenIndex;
+    
     private final List<Object> segments;
     
     private StringBuilder currentSegment;
     
     public SQLBuilder() {
+        sqlTokens = new LinkedList<>();
         segments = new LinkedList<>();
         currentSegment = new StringBuilder();
         segments.add(currentSegment);
@@ -64,6 +77,21 @@ public final class SQLBuilder {
         segments.add(shardingPlaceholder);
         currentSegment = new StringBuilder();
         segments.add(currentSegment);
+    }
+    
+    /**
+     * Append literals.
+     *
+     * @param sqlToken sql token
+     */
+    public void appendLiteral(final SQLToken sqlToken) {
+        int stopIndex = sqlTokens.size() - 1 == currentSQLTokenIndex ? logicSQL.length() : sqlTokens.get(currentSQLTokenIndex + 1).getStartIndex();
+        appendLiterals(logicSQL.substring(getStartIndex(sqlToken) > logicSQL.length() ? logicSQL.length() : getStartIndex(sqlToken), stopIndex));
+        currentSQLTokenIndex++;
+    }
+    
+    private int getStartIndex(final SQLToken sqlToken) {
+        return sqlToken instanceof Substitutable ? ((Substitutable) sqlToken).getStopIndex() + 1 : sqlToken.getStartIndex();
     }
     
     /**
