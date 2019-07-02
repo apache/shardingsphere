@@ -19,10 +19,13 @@ package org.apache.shardingsphere.core.rewrite;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
 import org.apache.shardingsphere.core.rewrite.rewriter.sql.BaseSQLRewriter;
+import org.apache.shardingsphere.core.rewrite.rewriter.sql.EncryptSQLRewriter;
 import org.apache.shardingsphere.core.rewrite.rewriter.sql.SQLRewriter;
+import org.apache.shardingsphere.core.rewrite.rewriter.sql.ShardingSQLRewriter;
 import org.apache.shardingsphere.core.rewrite.token.BaseTokenGenerateEngine;
 import org.apache.shardingsphere.core.rewrite.token.EncryptTokenGenerateEngine;
 import org.apache.shardingsphere.core.rewrite.token.ShardingTokenGenerateEngine;
@@ -64,13 +67,16 @@ public final class SQLRewriteEngine {
     
     private final BaseSQLRewriter baseSQLRewriter;
     
-    public SQLRewriteEngine(final ShardingRule shardingRule, final OptimizedStatement optimizedStatement, final List<Object> parameters, final boolean isSingleRoute) {
+    private final Collection<SQLRewriter> sqlRewriters;
+    
+    public SQLRewriteEngine(final ShardingRule shardingRule, final SQLRouteResult sqlRouteResult, final List<Object> parameters, final boolean isSingleRoute) {
         baseRule = shardingRule;
-        this.optimizedStatement = optimizedStatement;
+        this.optimizedStatement = sqlRouteResult.getOptimizedStatement();
         sqlTokens = createSQLTokens(baseRule, optimizedStatement, parameters, isSingleRoute);
         sqlBuilder = new SQLBuilder();
         parameterBuilder = new ParameterBuilder(parameters);
         baseSQLRewriter = new BaseSQLRewriter(optimizedStatement.getSQLStatement(), sqlTokens);
+        sqlRewriters = createSQLRewriters(shardingRule, sqlRouteResult);
     }
     
     public SQLRewriteEngine(final EncryptRule encryptRule, final OptimizedStatement optimizedStatement, final List<Object> parameters) {
@@ -105,13 +111,21 @@ public final class SQLRewriteEngine {
         return result;
     }
     
+    private Collection<SQLRewriter> createSQLRewriters(final ShardingRule shardingRule, final SQLRouteResult sqlRouteResult) {
+        Collection<SQLRewriter> result = new LinkedList<>();
+        result.add(new ShardingSQLRewriter(sqlRouteResult, sqlRouteResult.getOptimizedStatement()));
+        if (sqlRouteResult.getOptimizedStatement().getSQLStatement() instanceof DMLStatement) {
+            result.add(new EncryptSQLRewriter(shardingRule.getEncryptRule().getEncryptorEngine(), sqlRouteResult.getOptimizedStatement()));
+        }
+        return result;
+    }
+    
     /**
      * Initialize SQL rewrite engine.
      * 
      * @param sqlRouteResult sql route result
-     * @param sqlRewriters SQL rewriters
      */
-    public void init(final SQLRouteResult sqlRouteResult, final Collection<SQLRewriter> sqlRewriters) {
+    public void init(final SQLRouteResult sqlRouteResult) {
         parameterBuilder.setReplacedIndexAndParameters(sqlRouteResult);
         init(sqlRewriters);
     }
