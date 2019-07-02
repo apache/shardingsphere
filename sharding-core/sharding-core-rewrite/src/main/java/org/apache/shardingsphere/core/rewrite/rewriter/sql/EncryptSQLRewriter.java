@@ -48,8 +48,6 @@ import org.apache.shardingsphere.core.rewrite.token.pojo.InsertValuesToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SQLToken;
 import org.apache.shardingsphere.core.rule.ColumnNode;
 import org.apache.shardingsphere.core.strategy.encrypt.ShardingEncryptorEngine;
-import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
-import org.apache.shardingsphere.spi.encrypt.ShardingQueryAssistedEncryptor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -78,38 +76,10 @@ public final class EncryptSQLRewriter implements SQLRewriter {
         this.encryptorEngine = encryptorEngine;
         this.dmlStatement = (DMLStatement) optimizedStatement.getSQLStatement();
         this.optimizedStatement = optimizedStatement;
-        encryptInsertOptimizedStatement(optimizedStatement);
-    }
-    
-    private void encryptInsertOptimizedStatement(final OptimizedStatement optimizedStatement) {
-        if (optimizedStatement instanceof ShardingInsertOptimizedStatement) {
-            for (InsertOptimizeResultUnit each : ((ShardingInsertOptimizedStatement) optimizedStatement).getUnits()) {
-                encryptInsertOptimizeResultUnit(each, ((ShardingInsertOptimizedStatement) optimizedStatement).getColumnNames());
-            }
-        }
-    }
-    
-    private void encryptInsertOptimizeResultUnit(final InsertOptimizeResultUnit unit, final Collection<String> columnNames) {
-        for (String each : columnNames) {
-            Optional<ShardingEncryptor> shardingEncryptor = encryptorEngine.getShardingEncryptor(dmlStatement.getTables().getSingleTableName(), each);
-            if (shardingEncryptor.isPresent()) {
-                encryptInsertOptimizeResult(unit, each, shardingEncryptor.get());
-            }
-        }
-    }
-    
-    private void encryptInsertOptimizeResult(final InsertOptimizeResultUnit unit, final String columnName, final ShardingEncryptor shardingEncryptor) {
-        if (shardingEncryptor instanceof ShardingQueryAssistedEncryptor) {
-            Optional<String> assistedColumnName = encryptorEngine.getAssistedQueryColumn(dmlStatement.getTables().getSingleTableName(), columnName);
-            Preconditions.checkArgument(assistedColumnName.isPresent(), "Can not find assisted query Column Name");
-            unit.setColumnValue(assistedColumnName.get(), ((ShardingQueryAssistedEncryptor) shardingEncryptor).queryAssistedEncrypt(unit.getColumnValue(columnName).toString()));
-        }
-        unit.setColumnValue(columnName, shardingEncryptor.encrypt(unit.getColumnValue(columnName)));
     }
     
     @Override
     public void rewrite(final SQLBuilder sqlBuilder, final ParameterBuilder parameterBuilder, final SQLToken sqlToken) {
-        parameterBuilder.setInsertParameterUnits(optimizedStatement);
         if (sqlToken instanceof InsertValuesToken) {
             appendInsertValuesPlaceholder(sqlBuilder, (ShardingInsertOptimizedStatement) optimizedStatement);
         } else if (sqlToken instanceof InsertSetEncryptValueToken) {
