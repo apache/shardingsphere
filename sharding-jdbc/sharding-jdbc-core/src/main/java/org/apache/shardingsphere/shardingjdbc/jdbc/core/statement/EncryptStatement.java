@@ -22,10 +22,7 @@ import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesCons
 import org.apache.shardingsphere.core.optimize.OptimizeEngineFactory;
 import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
-import org.apache.shardingsphere.core.rewrite.rewriter.sql.EncryptSQLRewriter;
-import org.apache.shardingsphere.core.rewrite.rewriter.sql.SQLRewriter;
 import org.apache.shardingsphere.core.route.SQLLogger;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.EncryptResultSet;
@@ -36,9 +33,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 
 /**
  * Encrypt statement.
@@ -87,11 +82,7 @@ public final class EncryptStatement extends AbstractUnsupportedOperationStatemen
         SQLStatement sqlStatement = connection.getParseEngine().parse(sql, false);
         OptimizedStatement optimizedStatement = OptimizeEngineFactory.newInstance(connection.getEncryptRule(), sqlStatement, Collections.emptyList()).optimize();
         SQLRewriteEngine encryptSQLRewriteEngine = new SQLRewriteEngine(connection.getEncryptRule(), optimizedStatement, Collections.emptyList());
-        Collection<SQLRewriter> sqlRewriters = new LinkedList<>();
-        if (sqlStatement instanceof DMLStatement) {
-            sqlRewriters.add(new EncryptSQLRewriter(connection.getEncryptRule().getEncryptorEngine(), optimizedStatement));
-        }
-        encryptSQLRewriteEngine.init(sqlRewriters);
+        encryptSQLRewriteEngine.init();
         String result = encryptSQLRewriteEngine.generateSQL().getSql();
         boolean showSQL = connection.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW);
         if (showSQL) {
