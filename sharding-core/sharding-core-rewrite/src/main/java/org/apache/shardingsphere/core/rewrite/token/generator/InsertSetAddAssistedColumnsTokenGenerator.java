@@ -45,19 +45,17 @@ public final class InsertSetAddAssistedColumnsTokenGenerator implements Optional
         if (!(optimizedStatement.getSQLStatement() instanceof InsertStatement && setAssignmentsSegment.isPresent())) {
             return Optional.absent();
         }
-        return createInsertSetAddItemsToken(
-                (InsertStatement) optimizedStatement.getSQLStatement(), encryptRule, (ShardingInsertOptimizedStatement) optimizedStatement, setAssignmentsSegment.get());
+        return createInsertSetAddItemsToken(optimizedStatement, encryptRule, setAssignmentsSegment.get());
     }
     
-    private Optional<InsertSetAddAssistedColumnsToken> createInsertSetAddItemsToken(
-            final InsertStatement insertStatement, final EncryptRule encryptRule, final ShardingInsertOptimizedStatement optimizedStatement, final SetAssignmentsSegment segment) {
-        Collection<String> columnNames = getQueryAssistedColumnNames(insertStatement, encryptRule);
+    private Optional<InsertSetAddAssistedColumnsToken> createInsertSetAddItemsToken(final OptimizedStatement optimizedStatement, final EncryptRule encryptRule, final SetAssignmentsSegment segment) {
+        Collection<String> columnNames = getQueryAssistedColumnNames((InsertStatement) optimizedStatement.getSQLStatement(), encryptRule);
         if (columnNames.isEmpty()) {
             return Optional.absent();
         }
         List<AssignmentSegment> assignments = new ArrayList<>(segment.getAssignments());
         return Optional.of(new InsertSetAddAssistedColumnsToken(
-                assignments.get(assignments.size() - 1).getStopIndex() + 1, columnNames, getQueryAssistedColumnValues(columnNames, optimizedStatement)));
+                assignments.get(assignments.size() - 1).getStopIndex() + 1, columnNames, getQueryAssistedColumnValues(columnNames, (ShardingInsertOptimizedStatement) optimizedStatement)));
     }
     
     private Collection<String> getQueryAssistedColumnNames(final InsertStatement insertStatement, final EncryptRule encryptRule) {
