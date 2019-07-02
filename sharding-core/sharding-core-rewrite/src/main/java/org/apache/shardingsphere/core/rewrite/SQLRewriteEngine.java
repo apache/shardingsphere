@@ -100,7 +100,7 @@ public final class SQLRewriteEngine {
     public SQLRewriteEngine(final MasterSlaveRule masterSlaveRule, final OptimizedStatement optimizedStatement) {
         baseRule = masterSlaveRule;
         this.optimizedStatement = optimizedStatement;
-        sqlTokens = createSQLTokens(optimizedStatement, Collections.emptyList(), true);
+        sqlTokens = createSQLTokens(Collections.emptyList(), true);
         sqlBuilder = new SQLBuilder();
         parameterBuilder = createParameterBuilder(Collections.emptyList());
         baseSQLRewriter = new BaseSQLRewriter(optimizedStatement.getSQLStatement(), sqlTokens);
@@ -141,10 +141,10 @@ public final class SQLRewriteEngine {
         if (!shardingEncryptor.isPresent()) {
             return;
         }
-        if (shardingEncryptor instanceof ShardingQueryAssistedEncryptor) {
+        if (shardingEncryptor.get() instanceof ShardingQueryAssistedEncryptor) {
             Optional<String> assistedColumnName = encryptorEngine.getAssistedQueryColumn(optimizedStatement.getSQLStatement().getTables().getSingleTableName(), columnName);
             Preconditions.checkArgument(assistedColumnName.isPresent(), "Can not find assisted query Column Name");
-            unit.setColumnValue(assistedColumnName.get(), ((ShardingQueryAssistedEncryptor) shardingEncryptor).queryAssistedEncrypt(unit.getColumnValue(columnName).toString()));
+            unit.setColumnValue(assistedColumnName.get(), ((ShardingQueryAssistedEncryptor) shardingEncryptor.get()).queryAssistedEncrypt(unit.getColumnValue(columnName).toString()));
         }
         unit.setColumnValue(columnName, shardingEncryptor.get().encrypt(unit.getColumnValue(columnName)));
     }
@@ -171,7 +171,7 @@ public final class SQLRewriteEngine {
     
     private Collection<SQLRewriter> createSQLRewriters(final SQLRouteResult sqlRouteResult) {
         Collection<SQLRewriter> result = new LinkedList<>();
-        result.add(new ShardingSQLRewriter(sqlRouteResult, optimizedStatement);
+        result.add(new ShardingSQLRewriter(sqlRouteResult, optimizedStatement));
         if (optimizedStatement.getSQLStatement() instanceof DMLStatement) {
             result.add(new EncryptSQLRewriter(((ShardingRule) baseRule).getEncryptRule().getEncryptorEngine(), optimizedStatement));
         }
