@@ -19,6 +19,8 @@ package org.apache.shardingsphere.core.rewrite.token.pojo;
 
 import lombok.Getter;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.complex.ComplexExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 
 /**
  * Insert set encrypt value token.
@@ -36,5 +38,14 @@ public final class InsertSetEncryptValueToken extends SQLToken implements Substi
         super(startIndex);
         this.stopIndex = stopIndex;
         this.encryptColumnValue = encryptColumnValue;
+    }
+    
+    @Override
+    public String toString() {
+        if (encryptColumnValue instanceof LiteralExpressionSegment) {
+            Object literals = ((LiteralExpressionSegment) encryptColumnValue).getLiterals();
+            return literals instanceof String ? String.format("'%s'", literals) : literals.toString();
+        }
+        return ((ComplexExpressionSegment) encryptColumnValue).getText();
     }
 }
