@@ -18,17 +18,13 @@
 package org.apache.shardingsphere.core.rewrite.rewriter.sql;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertColumnsPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.TablePlaceholder;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertColumnsToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SQLToken;
-import org.apache.shardingsphere.core.rewrite.token.pojo.Substitutable;
 import org.apache.shardingsphere.core.rewrite.token.pojo.TableToken;
-
-import java.util.List;
 
 
 /**
@@ -39,21 +35,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class BaseSQLRewriter implements SQLRewriter {
     
-    private final SQLStatement sqlStatement;
-    
-    private final List<SQLToken> sqlTokens;
-    
-    private int currentSQLTokenIndex;
-    
-    /**
-     * Append whole SQL.
-     *
-     * @param sqlBuilder SQL builder
-     */
-    public void appendWholeSQL(final SQLBuilder sqlBuilder) {
-        sqlBuilder.appendLiterals(sqlStatement.getLogicSQL());
-    }
-    
     @Override
     public void rewrite(final SQLBuilder sqlBuilder, final ParameterBuilder parameterBuilder, final SQLToken sqlToken) {
         if (sqlToken instanceof InsertColumnsToken) {
@@ -61,7 +42,6 @@ public final class BaseSQLRewriter implements SQLRewriter {
         } else if (sqlToken instanceof TableToken) {
             appendTablePlaceholder(sqlBuilder, (TableToken) sqlToken);
         }
-        appendLiteral(sqlBuilder, sqlToken);
     }
     
     private void appendInsertColumnsPlaceholder(final SQLBuilder sqlBuilder, final InsertColumnsToken insertColumnsToken) {
@@ -71,25 +51,5 @@ public final class BaseSQLRewriter implements SQLRewriter {
     
     private void appendTablePlaceholder(final SQLBuilder sqlBuilder, final TableToken tableToken) {
         sqlBuilder.appendPlaceholder(new TablePlaceholder(tableToken.getTableName().toLowerCase(), tableToken.getQuoteCharacter()));
-    }
-    
-    private void appendLiteral(final SQLBuilder sqlBuilder, final SQLToken sqlToken) {
-        String logicSQL = sqlStatement.getLogicSQL();
-        int stopIndex = sqlTokens.size() - 1 == currentSQLTokenIndex ? logicSQL.length() : sqlTokens.get(currentSQLTokenIndex + 1).getStartIndex();
-        sqlBuilder.appendLiterals(logicSQL.substring(getStartIndex(sqlToken) > logicSQL.length() ? logicSQL.length() : getStartIndex(sqlToken), stopIndex));
-        currentSQLTokenIndex++;
-    }
-    
-    private int getStartIndex(final SQLToken sqlToken) {
-        return sqlToken instanceof Substitutable ? ((Substitutable) sqlToken).getStopIndex() + 1 : sqlToken.getStartIndex();
-    }
-    
-    /**
-     * Append initial literal.
-     *
-     * @param sqlBuilder SQL builder
-     */
-    public void appendInitialLiteral(final SQLBuilder sqlBuilder) {
-        sqlBuilder.appendLiterals(sqlStatement.getLogicSQL().substring(0, sqlTokens.get(0).getStartIndex()));
     }
 }
