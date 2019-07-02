@@ -46,13 +46,15 @@ public final class InsertSetEncryptValueTokenGenerator implements CollectionSQLT
         if (!(optimizedStatement.getSQLStatement() instanceof InsertStatement && setAssignmentsSegment.isPresent())) {
             return Collections.emptyList();
         }
-        return createInsertSetEncryptValueTokens((InsertStatement) optimizedStatement.getSQLStatement(), encryptRule, (ShardingInsertOptimizedStatement) optimizedStatement, setAssignmentsSegment.get());
+        return createInsertSetEncryptValueTokens(
+                (InsertStatement) optimizedStatement.getSQLStatement(), encryptRule, (ShardingInsertOptimizedStatement) optimizedStatement, setAssignmentsSegment.get());
     }
     
-    private Collection<InsertSetEncryptValueToken> createInsertSetEncryptValueTokens(final InsertStatement insertStatement, final EncryptRule encryptRule, final ShardingInsertOptimizedStatement optimizedStatement, final SetAssignmentsSegment segment) {
+    private Collection<InsertSetEncryptValueToken> createInsertSetEncryptValueTokens(
+            final InsertStatement insertStatement, final EncryptRule encryptRule, final ShardingInsertOptimizedStatement optimizedStatement, final SetAssignmentsSegment segment) {
         Collection<InsertSetEncryptValueToken> result = new LinkedList<>();
         for (AssignmentSegment each : segment.getAssignments()) {
-            Optional<InsertSetEncryptValueToken> insertSetEncryptValueToken = getInsertSetEncryptValueToken(insertStatement, encryptRule, optimizedStatement, each);
+            Optional<InsertSetEncryptValueToken> insertSetEncryptValueToken = createInsertSetEncryptValueToken(insertStatement, encryptRule, optimizedStatement, each);
             if (insertSetEncryptValueToken.isPresent()) {
                 result.add(insertSetEncryptValueToken.get());
             }
@@ -60,10 +62,12 @@ public final class InsertSetEncryptValueTokenGenerator implements CollectionSQLT
         return result;
     }
     
-    private Optional<InsertSetEncryptValueToken> getInsertSetEncryptValueToken(final InsertStatement insertStatement, final EncryptRule encryptRule, final ShardingInsertOptimizedStatement optimizedStatement, final AssignmentSegment segment) {
+    private Optional<InsertSetEncryptValueToken> createInsertSetEncryptValueToken(
+            final InsertStatement insertStatement, final EncryptRule encryptRule, final ShardingInsertOptimizedStatement optimizedStatement, final AssignmentSegment segment) {
         Optional<ShardingEncryptor> shardingEncryptor = encryptRule.getEncryptorEngine().getShardingEncryptor(insertStatement.getTables().getSingleTableName(), segment.getColumn().getName());
         if (shardingEncryptor.isPresent() && !(segment.getValue() instanceof ParameterMarkerExpressionSegment)) {
-            return Optional.of(new InsertSetEncryptValueToken(segment.getValue().getStartIndex(), segment.getValue().getStopIndex(), optimizedStatement.getUnits().get(0).getColumnSQLExpression(segment.getColumn().getName())));
+            return Optional.of(new InsertSetEncryptValueToken(
+                    segment.getValue().getStartIndex(), segment.getValue().getStopIndex(), optimizedStatement.getUnits().get(0).getColumnSQLExpression(segment.getColumn().getName())));
         }
         return Optional.absent();
     }
