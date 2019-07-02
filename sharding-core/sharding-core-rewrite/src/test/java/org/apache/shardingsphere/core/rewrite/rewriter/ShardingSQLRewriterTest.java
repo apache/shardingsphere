@@ -531,9 +531,8 @@ public final class ShardingSQLRewriterTest {
         routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList()));
         routeResult.setRoutingResult(new RoutingResult());
         selectStatement.setLogicSQL("SELECT table_x.id, x.name FROM table_x x, table_y y WHERE table_x.id=? AND x.name=?");
-        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, routeResult.getOptimizedStatement(), parameters, routeResult.getRoutingResult().isSingleRouting());
-        rewriteEngine.init(routeResult, Arrays.asList(new ShardingSQLRewriter(routeResult, null), 
-                        new EncryptSQLRewriter(shardingRule.getEncryptRule().getEncryptorEngine(), routeResult.getOptimizedStatement())));
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, routeResult, parameters, routeResult.getRoutingResult().isSingleRouting());
+        rewriteEngine.init(routeResult);
         RoutingUnit routingUnit = new RoutingUnit("db0");
         routingUnit.getTableUnits().add(new TableUnit("table_x", "table_x"));
         assertThat(rewriteEngine.generateSQL(routingUnit).getSql(), is("SELECT table_x.id, x.name FROM table_x x, table_y y WHERE table_x.id=? AND x.name=?"));
@@ -865,7 +864,8 @@ public final class ShardingSQLRewriterTest {
         insertStatement.getSQLSegments().add(new SetAssignmentsSegment(22, 34, Collections.singleton(new AssignmentSegment(22, 34, columnSegment, expressionSegment))));
         insertStatement.getSQLSegments().add(new TableSegment(12, 20, "`table_w`"));
         insertStatement.getTables().add(new Table("table_w", null));
-        ShardingInsertOptimizedStatement optimizedStatement = new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), Arrays.asList("name", "id", "query_name"));
+        ShardingInsertOptimizedStatement optimizedStatement = 
+                new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), Arrays.asList("name", "id", "query_name"));
         ExpressionSegment[] expressionSegments = {new LiteralExpressionSegment(0, 0, 10), new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 10)};
         optimizedStatement.addUnit(expressionSegments, new Object[0], 0);
         optimizedStatement.getUnits().get(0).getDataNodes().add(new DataNode("db0.table_1"));
@@ -898,13 +898,13 @@ public final class ShardingSQLRewriterTest {
     }
     
     private SQLRewriteEngine createSQLRewriteEngine(final List<Object> parameters) {
-        SQLRewriteEngine result = new SQLRewriteEngine(shardingRule, routeResult.getOptimizedStatement(), parameters, routeResult.getRoutingResult().isSingleRouting());
+        SQLRewriteEngine result = new SQLRewriteEngine(shardingRule, routeResult, parameters, routeResult.getRoutingResult().isSingleRouting());
         Collection<SQLRewriter> sqlRewriters = new LinkedList<>();
         sqlRewriters.add(new ShardingSQLRewriter(routeResult, routeResult.getOptimizedStatement()));
         if (routeResult.getOptimizedStatement().getSQLStatement() instanceof DMLStatement) {
             sqlRewriters.add(new EncryptSQLRewriter(shardingRule.getEncryptRule().getEncryptorEngine(), routeResult.getOptimizedStatement()));
         }
-        result.init(routeResult, sqlRewriters);
+        result.init(routeResult);
         return result;
     }
 }
