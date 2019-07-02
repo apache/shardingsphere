@@ -42,6 +42,7 @@ import org.apache.shardingsphere.core.rewrite.placeholder.WhereEncryptColumnPlac
 import org.apache.shardingsphere.core.rewrite.token.pojo.EncryptColumnToken;
 import org.apache.shardingsphere.core.rule.ColumnNode;
 import org.apache.shardingsphere.core.rule.EncryptRule;
+import org.apache.shardingsphere.core.strategy.encrypt.ShardingEncryptorEngine;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -98,38 +99,38 @@ public final class EncryptColumnTokenGenerator implements CollectionSQLTokenGene
         return result;
     }
     
-    private void appendEncryptColumnPlaceholder(final DMLStatement dmlStatement, final EncryptColumnToken encryptColumnToken, final ParameterBuilder parameterBuilder) {
-        Optional<Condition> encryptCondition = getEncryptCondition(dmlStatement.getEncryptConditions(), encryptColumnToken);
-        Preconditions.checkArgument(!encryptColumnToken.isInWhere() || encryptCondition.isPresent(), "Can not find encrypt condition");
-        ShardingPlaceholder result = encryptColumnToken.isInWhere() ? getEncryptColumnPlaceholderFromConditions(encryptColumnToken, encryptCondition.get(), parameterBuilder)
-                : getEncryptColumnPlaceholderFromUpdateItem(encryptColumnToken, parameterBuilder);
+    private void createEncryptColumnToken(final ShardingEncryptorEngine encryptorEngine, final DMLStatement dmlStatement, final Column column, final boolean isInWhere, final int startIndex, final int stopIndex, final ParameterBuilder parameterBuilder) {
+        Optional<Condition> encryptCondition = getEncryptCondition(dmlStatement.getEncryptConditions(), column, startIndex, stopIndex);
+        Preconditions.checkArgument(isInWhere || encryptCondition.isPresent(), "Can not find encrypt condition");
+        ShardingPlaceholder result = isInWhere ? getEncryptColumnPlaceholderFromConditions(encryptorEngine, column, encryptCondition.get(), parameterBuilder)
+                : getEncryptColumnPlaceholderFromUpdateItem(encryptorEngine, dmlStatement, column, parameterBuilder);
         sqlBuilder.appendPlaceholder(result);
     }
     
-    private Optional<Condition> getEncryptCondition(final Conditions encryptConditions, final EncryptColumnToken encryptColumnToken) {
-        for (Condition each : encryptConditions.findConditions(encryptColumnToken.getColumn())) {
-            if (isSameIndexes(each.getPredicateSegment(), encryptColumnToken)) {
+    private Optional<Condition> getEncryptCondition(final Conditions encryptConditions, final Column column, final int startIndex, final int stopIndex) {
+        for (Condition each : encryptConditions.findConditions(column)) {
+            if (isSameIndexes(each.getPredicateSegment(), startIndex, stopIndex)) {
                 return Optional.of(each);
             }
         }
         return Optional.absent();
     }
     
-    private boolean isSameIndexes(final PredicateSegment predicateSegment, final EncryptColumnToken encryptColumnToken) {
-        return predicateSegment.getStartIndex() == encryptColumnToken.getStartIndex() && predicateSegment.getStopIndex() == encryptColumnToken.getStopIndex();
+    private boolean isSameIndexes(final PredicateSegment predicateSegment, final int startIndex, final int stopIndex) {
+        return predicateSegment.getStartIndex() == startIndex && predicateSegment.getStopIndex() == stopIndex;
     }
     
     private WhereEncryptColumnPlaceholder getEncryptColumnPlaceholderFromConditions(
-            final EncryptColumnToken encryptColumnToken, final Condition encryptCondition, final ParameterBuilder parameterBuilder) {
-        ColumnNode columnNode = new ColumnNode(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName());
-        List<Comparable<?>> encryptColumnValues = encryptValues(columnNode, encryptCondition.getConditionValues(parameterBuilder.getOriginalParameters()));
+            final ShardingEncryptorEngine encryptorEngine, final Column column, final Condition encryptCondition, final ParameterBuilder parameterBuilder) {
+        ColumnNode columnNode = new ColumnNode(column.getTableName(), column.getName());
+        List<Comparable<?>> encryptColumnValues = encryptValues(encryptorEngine, columnNode, encryptCondition.getConditionValues(parameterBuilder.getOriginalParameters()));
         encryptParameters(encryptCondition.getPositionIndexMap(), encryptColumnValues, parameterBuilder);
         Optional<String> assistedColumnName = encryptorEngine.getAssistedQueryColumn(columnNode.getTableName(), columnNode.getColumnName());
         return new WhereEncryptColumnPlaceholder(assistedColumnName.isPresent() ? assistedColumnName.get() : columnNode.getColumnName(),
                 getPositionValues(encryptCondition.getPositionValueMap().keySet(), encryptColumnValues), encryptCondition.getPositionIndexMap().keySet(), encryptCondition.getOperator());
     }
     
-    private List<Comparable<?>> encryptValues(final ColumnNode columnNode, final List<Comparable<?>> columnValues) {
+    private List<Comparable<?>> encryptValues(final ShardingEncryptorEngine encryptorEngine, final ColumnNode columnNode, final List<Comparable<?>> columnValues) {
         return encryptorEngine.getAssistedQueryColumn(columnNode.getTableName(), columnNode.getColumnName()).isPresent()
                 ? encryptorEngine.getEncryptAssistedColumnValues(columnNode, columnValues) : encryptorEngine.getEncryptColumnValues(columnNode, columnValues);
     }
@@ -150,50 +151,50 @@ public final class EncryptColumnTokenGenerator implements CollectionSQLTokenGene
         return result;
     }
     
-    private ShardingPlaceholder getEncryptColumnPlaceholderFromUpdateItem(final EncryptColumnToken encryptColumnToken, final ParameterBuilder parameterBuilder) {
-        ColumnNode columnNode = new ColumnNode(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName());
-        Comparable<?> originalColumnValue = ((UpdateStatement) dmlStatement).getColumnValue(encryptColumnToken.getColumn(), parameterBuilder.getOriginalParameters());
+    private ShardingPlaceholder getEncryptColumnPlaceholderFromUpdateItem(final ShardingEncryptorEngine encryptorEngine, final DMLStatement dmlStatement, final Column column, final ParameterBuilder parameterBuilder) {
+        ColumnNode columnNode = new ColumnNode(column.getTableName(), column.getName());
+        Comparable<?> originalColumnValue = ((UpdateStatement) dmlStatement).getColumnValue(column, parameterBuilder.getOriginalParameters());
         List<Comparable<?>> encryptColumnValues = encryptorEngine.getEncryptColumnValues(columnNode, Collections.<Comparable<?>>singletonList(originalColumnValue));
-        encryptParameters(getPositionIndexesFromUpdateItem(encryptColumnToken), encryptColumnValues, parameterBuilder);
+        encryptParameters(getPositionIndexesFromUpdateItem(dmlStatement, column), encryptColumnValues, parameterBuilder);
         Optional<String> assistedColumnName = encryptorEngine.getAssistedQueryColumn(columnNode.getTableName(), columnNode.getColumnName());
         if (!assistedColumnName.isPresent()) {
-            return getUpdateEncryptItemPlaceholder(encryptColumnToken, encryptColumnValues);
+            return getUpdateEncryptItemPlaceholder(dmlStatement, column, encryptColumnValues);
         }
         List<Comparable<?>> encryptAssistedColumnValues = encryptorEngine.getEncryptAssistedColumnValues(columnNode, Collections.<Comparable<?>>singletonList(originalColumnValue));
-        parameterBuilder.getAddedIndexAndParameters().putAll(getIndexAndParameters(encryptColumnToken, encryptAssistedColumnValues));
-        return getUpdateEncryptAssistedItemPlaceholder(encryptColumnToken, encryptColumnValues, encryptAssistedColumnValues);
+        parameterBuilder.getAddedIndexAndParameters().putAll(getIndexAndParameters(dmlStatement, column, encryptAssistedColumnValues));
+        return getUpdateEncryptAssistedItemPlaceholder(encryptorEngine, dmlStatement, column, encryptColumnValues, encryptAssistedColumnValues);
     }
     
-    private Map<Integer, Integer> getPositionIndexesFromUpdateItem(final EncryptColumnToken encryptColumnToken) {
-        ExpressionSegment result = ((UpdateStatement) dmlStatement).getAssignments().get(encryptColumnToken.getColumn());
+    private Map<Integer, Integer> getPositionIndexesFromUpdateItem(final DMLStatement dmlStatement, final Column column) {
+        ExpressionSegment result = ((UpdateStatement) dmlStatement).getAssignments().get(column);
         return result instanceof ParameterMarkerExpressionSegment
                 ? Collections.singletonMap(0, ((ParameterMarkerExpressionSegment) result).getParameterMarkerIndex()) : new LinkedHashMap<Integer, Integer>();
     }
     
-    private Map<Integer, Object> getIndexAndParameters(final EncryptColumnToken encryptColumnToken, final List<Comparable<?>> encryptAssistedColumnValues) {
+    private Map<Integer, Object> getIndexAndParameters(final DMLStatement dmlStatement, final Column column, final List<Comparable<?>> encryptAssistedColumnValues) {
         if (encryptAssistedColumnValues.isEmpty()) {
             return Collections.emptyMap();
         }
-        if (!isUsingParameter(encryptColumnToken)) {
+        if (!isUsingParameter(dmlStatement, column)) {
             return Collections.emptyMap();
         }
-        return Collections.singletonMap(getPositionIndexesFromUpdateItem(encryptColumnToken).values().iterator().next() + 1, (Object) encryptAssistedColumnValues.get(0));
+        return Collections.singletonMap(getPositionIndexesFromUpdateItem(dmlStatement, column).values().iterator().next() + 1, (Object) encryptAssistedColumnValues.get(0));
     }
     
-    private UpdateEncryptItemPlaceholder getUpdateEncryptItemPlaceholder(final EncryptColumnToken encryptColumnToken, final List<Comparable<?>> encryptColumnValues) {
-        if (isUsingParameter(encryptColumnToken)) {
-            return new UpdateEncryptItemPlaceholder(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName());
+    private UpdateEncryptItemPlaceholder getUpdateEncryptItemPlaceholder(final DMLStatement dmlStatement, final Column column, final List<Comparable<?>> encryptColumnValues) {
+        if (isUsingParameter(dmlStatement, column)) {
+            return new UpdateEncryptItemPlaceholder(column.getTableName(), column.getName());
         }
-        return new UpdateEncryptItemPlaceholder(encryptColumnToken.getColumn().getName(), encryptColumnValues.get(0));
+        return new UpdateEncryptItemPlaceholder(column.getName(), encryptColumnValues.get(0));
     }
     
-    private UpdateEncryptAssistedItemPlaceholder getUpdateEncryptAssistedItemPlaceholder(final EncryptColumnToken encryptColumnToken,
+    private UpdateEncryptAssistedItemPlaceholder getUpdateEncryptAssistedItemPlaceholder(final ShardingEncryptorEngine encryptorEngine, final DMLStatement dmlStatement, final Column column,
                                                                                          final List<Comparable<?>> encryptColumnValues, final List<Comparable<?>> encryptAssistedColumnValues) {
-        String assistedColumnName = encryptorEngine.getAssistedQueryColumn(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName()).get();
-        if (isUsingParameter(encryptColumnToken)) {
-            return new UpdateEncryptAssistedItemPlaceholder(encryptColumnToken.getColumn().getName(), assistedColumnName);
+        String assistedColumnName = encryptorEngine.getAssistedQueryColumn(column.getTableName(), column.getName()).get();
+        if (isUsingParameter(dmlStatement, column)) {
+            return new UpdateEncryptAssistedItemPlaceholder(column.getName(), assistedColumnName);
         }
-        return new UpdateEncryptAssistedItemPlaceholder(encryptColumnToken.getColumn().getName(), encryptColumnValues.get(0), assistedColumnName, encryptAssistedColumnValues.get(0));
+        return new UpdateEncryptAssistedItemPlaceholder(column.getName(), encryptColumnValues.get(0), assistedColumnName, encryptAssistedColumnValues.get(0));
     }
     
     private boolean isUsingParameter(final DMLStatement dmlStatement, final Column column) {
