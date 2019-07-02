@@ -46,11 +46,9 @@ import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Standard routing engine.
@@ -191,7 +189,7 @@ public final class StandardRoutingEngine implements RoutingEngine {
         for (String each : routedDataSources) {
             result.addAll(routeTables(tableRule, each, tableShardingValues));
         }
-        return removeNonExistNodes(result, tableRule);
+        return result;
     }
     
     private Collection<String> routeDataSources(final TableRule tableRule, final List<RouteValue> databaseShardingValues) {
@@ -212,17 +210,6 @@ public final class StandardRoutingEngine implements RoutingEngine {
         Collection<DataNode> result = new LinkedList<>();
         for (String each : routedTables) {
             result.add(new DataNode(routedDataSource, each));
-        }
-        return result;
-    }
-    
-    private Collection<DataNode> removeNonExistNodes(final Collection<DataNode> routedDataNodes, final TableRule tableRule) {
-        Collection<DataNode> result = new LinkedList<>();
-        Set<DataNode> actualDataNodeSet = new HashSet<>(tableRule.getActualDataNodes());
-        for (DataNode each : routedDataNodes) {
-            if (actualDataNodeSet.contains(each)) {
-                result.add(each);
-            }
         }
         return result;
     }
