@@ -86,6 +86,7 @@ public final class SQLRewriteEngine {
         sqlBuilder = new SQLBuilder();
         parameterBuilder = new ParameterBuilder(parameters);
         baseSQLRewriter = new BaseSQLRewriter(optimizedStatement.getSQLStatement(), sqlTokens);
+        sqlRewriters = Collections.<SQLRewriter>singletonList(new EncryptSQLRewriter(encryptRule.getEncryptorEngine(), optimizedStatement));
     }
     
     public SQLRewriteEngine(final MasterSlaveRule masterSlaveRule, final OptimizedStatement optimizedStatement) {
@@ -95,6 +96,7 @@ public final class SQLRewriteEngine {
         sqlBuilder = new SQLBuilder();
         parameterBuilder = new ParameterBuilder(Collections.emptyList());
         baseSQLRewriter = new BaseSQLRewriter(optimizedStatement.getSQLStatement(), sqlTokens);
+        sqlRewriters = Collections.emptyList();
     }
     
     private List<SQLToken> createSQLTokens(final BaseRule baseRule, final OptimizedStatement optimizedStatement, final List<Object> parameters, final boolean isSingleRoute) {
@@ -127,15 +129,14 @@ public final class SQLRewriteEngine {
      */
     public void init(final SQLRouteResult sqlRouteResult) {
         parameterBuilder.setReplacedIndexAndParameters(sqlRouteResult);
-        init(sqlRewriters);
+        init();
     }
     
     /**
      * Initialize SQL rewrite engine.
      *
-     * @param sqlRewriters SQL rewriters
      */
-    public void init(final Collection<SQLRewriter> sqlRewriters) {
+    public void init() {
         if (sqlTokens.isEmpty()) {
             baseSQLRewriter.appendWholeSQL(sqlBuilder);
             return;
