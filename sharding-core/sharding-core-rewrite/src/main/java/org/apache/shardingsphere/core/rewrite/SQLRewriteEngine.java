@@ -81,7 +81,7 @@ public final class SQLRewriteEngine {
         encryptInsertOptimizedStatement();
         sqlTokens = createSQLTokens(baseRule, optimizedStatement, parameters, isSingleRoute);
         sqlBuilder = new SQLBuilder();
-        parameterBuilder = new ParameterBuilder(parameters);
+        parameterBuilder = creeateParameterBuilder(parameters);
         baseSQLRewriter = new BaseSQLRewriter(optimizedStatement.getSQLStatement(), sqlTokens);
         sqlRewriters = createSQLRewriters(shardingRule, sqlRouteResult);
     }
@@ -92,7 +92,7 @@ public final class SQLRewriteEngine {
         encryptInsertOptimizedStatement();
         sqlTokens = createSQLTokens(baseRule, optimizedStatement, parameters, true);
         sqlBuilder = new SQLBuilder();
-        parameterBuilder = new ParameterBuilder(parameters);
+        parameterBuilder = creeateParameterBuilder(parameters);
         baseSQLRewriter = new BaseSQLRewriter(optimizedStatement.getSQLStatement(), sqlTokens);
         sqlRewriters = createSQLRewriters(encryptRule, optimizedStatement);
     }
@@ -102,7 +102,7 @@ public final class SQLRewriteEngine {
         this.optimizedStatement = optimizedStatement;
         sqlTokens = createSQLTokens(baseRule, optimizedStatement, Collections.emptyList(), true);
         sqlBuilder = new SQLBuilder();
-        parameterBuilder = new ParameterBuilder(Collections.emptyList());
+        parameterBuilder = creeateParameterBuilder(Collections.emptyList());
         baseSQLRewriter = new BaseSQLRewriter(optimizedStatement.getSQLStatement(), sqlTokens);
         sqlRewriters = Collections.emptyList();
     }
@@ -160,6 +160,12 @@ public final class SQLRewriteEngine {
             result.addAll(new EncryptTokenGenerateEngine().generateSQLTokens(optimizedStatement, parameters, (EncryptRule) baseRule, isSingleRoute));
         }
         Collections.sort(result);
+        return result;
+    }
+    
+    private ParameterBuilder creeateParameterBuilder(final List<Object> parameters) {
+        ParameterBuilder result = new ParameterBuilder(parameters);
+        result.setInsertParameterUnits(optimizedStatement);
         return result;
     }
     
