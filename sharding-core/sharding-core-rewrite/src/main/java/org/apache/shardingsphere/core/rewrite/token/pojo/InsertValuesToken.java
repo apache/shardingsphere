@@ -23,7 +23,6 @@ import org.apache.shardingsphere.core.rewrite.placeholder.InsertValuePlaceholder
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.rule.DataNode;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -38,11 +37,12 @@ public final class InsertValuesToken extends SQLToken implements Substitutable, 
     
     private final int stopIndex;
     
-    private final List<InsertValuePlaceholder> insertValues = new LinkedList<>();
+    private final List<InsertValuePlaceholder> insertValues;
     
-    public InsertValuesToken(final int startIndex, final int stopIndex) {
+    public InsertValuesToken(final int startIndex, final int stopIndex, final List<InsertValuePlaceholder> insertValues) {
         super(startIndex);
         this.stopIndex = stopIndex;
+        this.insertValues = insertValues;
     }
     
     @Override
