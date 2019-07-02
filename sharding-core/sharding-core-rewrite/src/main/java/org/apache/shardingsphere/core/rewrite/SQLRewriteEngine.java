@@ -79,28 +79,28 @@ public final class SQLRewriteEngine {
         baseRule = shardingRule;
         this.optimizedStatement = sqlRouteResult.getOptimizedStatement();
         encryptInsertOptimizedStatement();
-        sqlTokens = createSQLTokens(baseRule, optimizedStatement, parameters, isSingleRoute);
+        sqlTokens = createSQLTokens(parameters, isSingleRoute);
         sqlBuilder = new SQLBuilder();
         parameterBuilder = createParameterBuilder(parameters);
         baseSQLRewriter = new BaseSQLRewriter(optimizedStatement.getSQLStatement(), sqlTokens);
-        sqlRewriters = createSQLRewriters(shardingRule, sqlRouteResult);
+        sqlRewriters = createSQLRewriters(sqlRouteResult);
     }
     
     public SQLRewriteEngine(final EncryptRule encryptRule, final OptimizedStatement optimizedStatement, final List<Object> parameters) {
         baseRule = encryptRule;
         this.optimizedStatement = optimizedStatement;
         encryptInsertOptimizedStatement();
-        sqlTokens = createSQLTokens(baseRule, optimizedStatement, parameters, true);
+        sqlTokens = createSQLTokens(parameters, true);
         sqlBuilder = new SQLBuilder();
         parameterBuilder = createParameterBuilder(parameters);
         baseSQLRewriter = new BaseSQLRewriter(optimizedStatement.getSQLStatement(), sqlTokens);
-        sqlRewriters = createSQLRewriters(encryptRule);
+        sqlRewriters = createSQLRewriters();
     }
     
     public SQLRewriteEngine(final MasterSlaveRule masterSlaveRule, final OptimizedStatement optimizedStatement) {
         baseRule = masterSlaveRule;
         this.optimizedStatement = optimizedStatement;
-        sqlTokens = createSQLTokens(baseRule, optimizedStatement, Collections.emptyList(), true);
+        sqlTokens = createSQLTokens(optimizedStatement, Collections.emptyList(), true);
         sqlBuilder = new SQLBuilder();
         parameterBuilder = createParameterBuilder(Collections.emptyList());
         baseSQLRewriter = new BaseSQLRewriter(optimizedStatement.getSQLStatement(), sqlTokens);
@@ -149,7 +149,7 @@ public final class SQLRewriteEngine {
         unit.setColumnValue(columnName, shardingEncryptor.get().encrypt(unit.getColumnValue(columnName)));
     }
     
-    private List<SQLToken> createSQLTokens(final BaseRule baseRule, final OptimizedStatement optimizedStatement, final List<Object> parameters, final boolean isSingleRoute) {
+    private List<SQLToken> createSQLTokens(final List<Object> parameters, final boolean isSingleRoute) {
         List<SQLToken> result = new LinkedList<>();
         result.addAll(new BaseTokenGenerateEngine().generateSQLTokens(optimizedStatement, parameters, baseRule, isSingleRoute));
         if (baseRule instanceof ShardingRule) {
@@ -169,18 +169,18 @@ public final class SQLRewriteEngine {
         return result;
     }
     
-    private Collection<SQLRewriter> createSQLRewriters(final ShardingRule shardingRule, final SQLRouteResult sqlRouteResult) {
+    private Collection<SQLRewriter> createSQLRewriters(final SQLRouteResult sqlRouteResult) {
         Collection<SQLRewriter> result = new LinkedList<>();
         result.add(new ShardingSQLRewriter(sqlRouteResult, optimizedStatement);
         if (optimizedStatement.getSQLStatement() instanceof DMLStatement) {
-            result.add(new EncryptSQLRewriter(shardingRule.getEncryptRule().getEncryptorEngine(), optimizedStatement));
+            result.add(new EncryptSQLRewriter(((ShardingRule) baseRule).getEncryptRule().getEncryptorEngine(), optimizedStatement));
         }
         return result;
     }
     
-    private Collection<SQLRewriter> createSQLRewriters(final EncryptRule encryptRule) {
+    private Collection<SQLRewriter> createSQLRewriters() {
         if (optimizedStatement.getSQLStatement() instanceof DMLStatement) {
-            return Collections.<SQLRewriter>singletonList(new EncryptSQLRewriter(encryptRule.getEncryptorEngine(), optimizedStatement));
+            return Collections.<SQLRewriter>singletonList(new EncryptSQLRewriter(((EncryptRule) baseRule).getEncryptorEngine(), optimizedStatement));
         }
         return Collections.emptyList();
     }
