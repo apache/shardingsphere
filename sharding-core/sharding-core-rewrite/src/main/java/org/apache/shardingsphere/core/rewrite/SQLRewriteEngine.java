@@ -86,7 +86,7 @@ public final class SQLRewriteEngine {
         sqlBuilder = new SQLBuilder();
         parameterBuilder = new ParameterBuilder(parameters);
         baseSQLRewriter = new BaseSQLRewriter(optimizedStatement.getSQLStatement(), sqlTokens);
-        sqlRewriters = Collections.<SQLRewriter>singletonList(new EncryptSQLRewriter(encryptRule.getEncryptorEngine(), optimizedStatement));
+        sqlRewriters = createSQLRewriters(encryptRule, optimizedStatement);
     }
     
     public SQLRewriteEngine(final MasterSlaveRule masterSlaveRule, final OptimizedStatement optimizedStatement) {
@@ -120,6 +120,13 @@ public final class SQLRewriteEngine {
             result.add(new EncryptSQLRewriter(shardingRule.getEncryptRule().getEncryptorEngine(), sqlRouteResult.getOptimizedStatement()));
         }
         return result;
+    }
+    
+    private Collection<SQLRewriter> createSQLRewriters(final EncryptRule encryptRule, final OptimizedStatement optimizedStatement) {
+        if (optimizedStatement.getSQLStatement() instanceof DMLStatement) {
+            return Collections.<SQLRewriter>singletonList(new EncryptSQLRewriter(encryptRule.getEncryptorEngine(), optimizedStatement));
+        }
+        return Collections.emptyList();
     }
     
     /**
