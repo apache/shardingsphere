@@ -49,7 +49,7 @@ public final class InsertSetAddAssistedColumnsTokenGenerator implements Optional
     }
     
     private Optional<InsertSetAddAssistedColumnsToken> createInsertSetAddItemsToken(final OptimizedStatement optimizedStatement, final EncryptRule encryptRule, final SetAssignmentsSegment segment) {
-        Collection<String> columnNames = getQueryAssistedColumnNames((InsertStatement) optimizedStatement.getSQLStatement(), encryptRule);
+        List<String> columnNames = getQueryAssistedColumnNames((InsertStatement) optimizedStatement.getSQLStatement(), encryptRule);
         if (columnNames.isEmpty()) {
             return Optional.absent();
         }
@@ -58,8 +58,8 @@ public final class InsertSetAddAssistedColumnsTokenGenerator implements Optional
                 assignments.get(assignments.size() - 1).getStopIndex() + 1, columnNames, getQueryAssistedColumnValues(columnNames, (ShardingInsertOptimizedStatement) optimizedStatement)));
     }
     
-    private Collection<String> getQueryAssistedColumnNames(final InsertStatement insertStatement, final EncryptRule encryptRule) {
-        Collection<String> result = new LinkedList<>();
+    private List<String> getQueryAssistedColumnNames(final InsertStatement insertStatement, final EncryptRule encryptRule) {
+        List<String> result = new LinkedList<>();
         for (String each : insertStatement.getColumnNames()) {
             Optional<String> assistedColumnName = encryptRule.getEncryptorEngine().getAssistedQueryColumn(insertStatement.getTables().getSingleTableName(), each);
             if (assistedColumnName.isPresent()) {
@@ -69,8 +69,8 @@ public final class InsertSetAddAssistedColumnsTokenGenerator implements Optional
         return result;
     }
     
-    private Collection<ExpressionSegment> getQueryAssistedColumnValues(final Collection<String> columnNames, final ShardingInsertOptimizedStatement optimizedStatement) {
-        Collection<ExpressionSegment> result = new LinkedList<>();
+    private List<ExpressionSegment> getQueryAssistedColumnValues(final Collection<String> columnNames, final ShardingInsertOptimizedStatement optimizedStatement) {
+        List<ExpressionSegment> result = new LinkedList<>();
         for (String each : columnNames) {
             result.add(optimizedStatement.getUnits().get(0).getColumnSQLExpression(each));
         }
