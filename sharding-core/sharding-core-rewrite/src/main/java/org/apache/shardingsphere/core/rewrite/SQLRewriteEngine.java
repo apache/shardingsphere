@@ -81,7 +81,7 @@ public final class SQLRewriteEngine {
         encryptInsertOptimizedStatement();
         sqlTokens = createSQLTokens(baseRule, optimizedStatement, parameters, isSingleRoute);
         sqlBuilder = new SQLBuilder();
-        parameterBuilder = creeateParameterBuilder(parameters);
+        parameterBuilder = createParameterBuilder(parameters);
         baseSQLRewriter = new BaseSQLRewriter(optimizedStatement.getSQLStatement(), sqlTokens);
         sqlRewriters = createSQLRewriters(shardingRule, sqlRouteResult);
     }
@@ -92,9 +92,9 @@ public final class SQLRewriteEngine {
         encryptInsertOptimizedStatement();
         sqlTokens = createSQLTokens(baseRule, optimizedStatement, parameters, true);
         sqlBuilder = new SQLBuilder();
-        parameterBuilder = creeateParameterBuilder(parameters);
+        parameterBuilder = createParameterBuilder(parameters);
         baseSQLRewriter = new BaseSQLRewriter(optimizedStatement.getSQLStatement(), sqlTokens);
-        sqlRewriters = createSQLRewriters(encryptRule, optimizedStatement);
+        sqlRewriters = createSQLRewriters(encryptRule);
     }
     
     public SQLRewriteEngine(final MasterSlaveRule masterSlaveRule, final OptimizedStatement optimizedStatement) {
@@ -102,7 +102,7 @@ public final class SQLRewriteEngine {
         this.optimizedStatement = optimizedStatement;
         sqlTokens = createSQLTokens(baseRule, optimizedStatement, Collections.emptyList(), true);
         sqlBuilder = new SQLBuilder();
-        parameterBuilder = creeateParameterBuilder(Collections.emptyList());
+        parameterBuilder = createParameterBuilder(Collections.emptyList());
         baseSQLRewriter = new BaseSQLRewriter(optimizedStatement.getSQLStatement(), sqlTokens);
         sqlRewriters = Collections.emptyList();
     }
@@ -163,7 +163,7 @@ public final class SQLRewriteEngine {
         return result;
     }
     
-    private ParameterBuilder creeateParameterBuilder(final List<Object> parameters) {
+    private ParameterBuilder createParameterBuilder(final List<Object> parameters) {
         ParameterBuilder result = new ParameterBuilder(parameters);
         result.setInsertParameterUnits(optimizedStatement);
         return result;
@@ -171,14 +171,14 @@ public final class SQLRewriteEngine {
     
     private Collection<SQLRewriter> createSQLRewriters(final ShardingRule shardingRule, final SQLRouteResult sqlRouteResult) {
         Collection<SQLRewriter> result = new LinkedList<>();
-        result.add(new ShardingSQLRewriter(sqlRouteResult, sqlRouteResult.getOptimizedStatement()));
-        if (sqlRouteResult.getOptimizedStatement().getSQLStatement() instanceof DMLStatement) {
-            result.add(new EncryptSQLRewriter(shardingRule.getEncryptRule().getEncryptorEngine(), sqlRouteResult.getOptimizedStatement()));
+        result.add(new ShardingSQLRewriter(sqlRouteResult, optimizedStatement);
+        if (optimizedStatement.getSQLStatement() instanceof DMLStatement) {
+            result.add(new EncryptSQLRewriter(shardingRule.getEncryptRule().getEncryptorEngine(), optimizedStatement));
         }
         return result;
     }
     
-    private Collection<SQLRewriter> createSQLRewriters(final EncryptRule encryptRule, final OptimizedStatement optimizedStatement) {
+    private Collection<SQLRewriter> createSQLRewriters(final EncryptRule encryptRule) {
         if (optimizedStatement.getSQLStatement() instanceof DMLStatement) {
             return Collections.<SQLRewriter>singletonList(new EncryptSQLRewriter(encryptRule.getEncryptorEngine(), optimizedStatement));
         }
