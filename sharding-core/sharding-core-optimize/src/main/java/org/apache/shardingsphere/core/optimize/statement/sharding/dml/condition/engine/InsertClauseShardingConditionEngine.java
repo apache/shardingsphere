@@ -52,11 +52,13 @@ public final class InsertClauseShardingConditionEngine {
      * 
      * @param insertStatement insert statement
      * @param parameters SQL parameters
+     * @param columnNames column names
      * @param generatedKey generated key
      * @return sharding conditions
      */
-    public List<ShardingCondition> createShardingConditions(final InsertStatement insertStatement, final List<Object> parameters, final GeneratedKey generatedKey) {
-        List<AndCondition> andConditions = getAndConditions(insertStatement);
+    public List<ShardingCondition> createShardingConditions(
+            final InsertStatement insertStatement, final List<Object> parameters, final Collection<String> columnNames, final GeneratedKey generatedKey) {
+        List<AndCondition> andConditions = getAndConditions(insertStatement, columnNames);
         List<ShardingCondition> result = new ArrayList<>(andConditions.size());
         String tableName = insertStatement.getTables().getSingleTableName();
         Iterator<Comparable<?>> generatedValues = null == generatedKey ? Collections.<Comparable<?>>emptyList().iterator() : generatedKey.getGeneratedValues().iterator();
@@ -71,17 +73,16 @@ public final class InsertClauseShardingConditionEngine {
         return result;
     }
     
-    private List<AndCondition> getAndConditions(final InsertStatement insertStatement) {
+    private List<AndCondition> getAndConditions(final InsertStatement insertStatement, final Collection<String> columnNames) {
         List<AndCondition> result = new LinkedList<>();
         for (InsertValue each : insertStatement.getValues()) {
-            result.add(getAndCondition(insertStatement, each));
+            result.add(getAndCondition(insertStatement, columnNames.iterator(), each));
         }
         return result;
     }
     
-    private AndCondition getAndCondition(final InsertStatement insertStatement, final InsertValue insertValue) {
+    private AndCondition getAndCondition(final InsertStatement insertStatement, final Iterator<String> columnNames, final InsertValue insertValue) {
         AndCondition result = new AndCondition();
-        Iterator<String> columnNames = insertStatement.getColumnNames().iterator();
         for (ExpressionSegment each : insertValue.getAssignments()) {
             String columnName = columnNames.next();
             if (each instanceof SimpleExpressionSegment) {
