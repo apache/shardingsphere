@@ -56,9 +56,7 @@ public final class InsertValuesTokenGenerator implements OptionalSQLTokenGenerat
             startIndex = startIndex > each.getStartIndex() ? each.getStartIndex() : startIndex;
             stopIndex = stopIndex < each.getStopIndex() ? each.getStopIndex() : stopIndex;
         }
-        InsertValuesToken result = new InsertValuesToken(startIndex, stopIndex);
-        result.getInsertValues().addAll(getInsertValues((ShardingInsertOptimizedStatement) optimizedStatement));
-        return Optional.of(result);
+        return Optional.of(new InsertValuesToken(startIndex, stopIndex, getInsertValues((ShardingInsertOptimizedStatement) optimizedStatement)));
     }
     
     private List<InsertValuePlaceholder> getInsertValues(final ShardingInsertOptimizedStatement insertOptimizeResult) {
