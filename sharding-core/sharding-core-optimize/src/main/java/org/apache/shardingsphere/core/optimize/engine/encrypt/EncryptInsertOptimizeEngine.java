@@ -19,15 +19,13 @@ package org.apache.shardingsphere.core.optimize.engine.encrypt;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
+import org.apache.shardingsphere.core.optimize.statement.encrypt.EncryptInsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.InsertOptimizeResultUnit;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.ShardingInsertOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 
@@ -46,8 +44,8 @@ public final class EncryptInsertOptimizeEngine implements OptimizeEngine {
     private final List<Object> parameters;
     
     @Override
-    public ShardingInsertOptimizedStatement optimize() {
-        ShardingInsertOptimizedStatement result = new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), getColumnNames(), null);
+    public EncryptInsertOptimizedStatement optimize() {
+        EncryptInsertOptimizedStatement result = new EncryptInsertOptimizedStatement(insertStatement, getColumnNames());
         int derivedColumnsCount = getDerivedColumnsCount();
         int parametersCount = 0;
         for (InsertValue each : insertStatement.getValues()) {

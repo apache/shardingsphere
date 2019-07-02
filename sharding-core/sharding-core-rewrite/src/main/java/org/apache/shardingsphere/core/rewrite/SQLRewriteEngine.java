@@ -19,9 +19,9 @@ package org.apache.shardingsphere.core.rewrite;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.core.optimize.statement.InsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.InsertOptimizeResultUnit;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.ShardingInsertOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
@@ -119,13 +119,12 @@ public final class SQLRewriteEngine {
     }
     
     private boolean isNeededToEncrypt(final ShardingEncryptorEngine shardingEncryptorEngine) {
-        return optimizedStatement instanceof ShardingInsertOptimizedStatement && !shardingEncryptorEngine.getEncryptTableNames().isEmpty();
+        return optimizedStatement instanceof InsertOptimizedStatement && !shardingEncryptorEngine.getEncryptTableNames().isEmpty();
     }
     
-    
     private void encryptInsertOptimizeResultUnit(final ShardingEncryptorEngine encryptorEngine) {
-        for (InsertOptimizeResultUnit unit : ((ShardingInsertOptimizedStatement) optimizedStatement).getUnits()) {
-            for (String each : ((ShardingInsertOptimizedStatement) optimizedStatement).getColumnNames()) {
+        for (InsertOptimizeResultUnit unit : ((InsertOptimizedStatement) optimizedStatement).getUnits()) {
+            for (String each : ((InsertOptimizedStatement) optimizedStatement).getColumnNames()) {
                 encryptInsertOptimizeResult(unit, each, encryptorEngine);
             }
         }

@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Optional;
+import org.apache.shardingsphere.core.optimize.statement.InsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.ShardingInsertOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
@@ -55,7 +55,7 @@ public final class InsertSetAddAssistedColumnsTokenGenerator implements Optional
         }
         List<AssignmentSegment> assignments = new ArrayList<>(segment.getAssignments());
         return Optional.of(new InsertSetAddAssistedColumnsToken(
-                assignments.get(assignments.size() - 1).getStopIndex() + 1, columnNames, getQueryAssistedColumnValues(columnNames, (ShardingInsertOptimizedStatement) optimizedStatement)));
+                assignments.get(assignments.size() - 1).getStopIndex() + 1, columnNames, getQueryAssistedColumnValues(columnNames, (InsertOptimizedStatement) optimizedStatement)));
     }
     
     private Collection<String> getQueryAssistedColumnNames(final InsertStatement insertStatement, final EncryptRule encryptRule) {
@@ -69,7 +69,7 @@ public final class InsertSetAddAssistedColumnsTokenGenerator implements Optional
         return result;
     }
     
-    private Collection<ExpressionSegment> getQueryAssistedColumnValues(final Collection<String> columnNames, final ShardingInsertOptimizedStatement optimizedStatement) {
+    private Collection<ExpressionSegment> getQueryAssistedColumnValues(final Collection<String> columnNames, final InsertOptimizedStatement optimizedStatement) {
         Collection<ExpressionSegment> result = new LinkedList<>();
         for (String each : columnNames) {
             result.add(optimizedStatement.getUnits().get(0).getColumnSQLExpression(each));
