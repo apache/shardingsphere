@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.ShardingInsertOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -45,13 +46,13 @@ public final class InsertSetEncryptValueTokenGenerator implements CollectionSQLT
         if (!(optimizedStatement.getSQLStatement() instanceof InsertStatement && setAssignmentsSegment.isPresent())) {
             return Collections.emptyList();
         }
-        return createInsertSetEncryptValueTokens((InsertStatement) optimizedStatement.getSQLStatement(), encryptRule, setAssignmentsSegment.get());
+        return createInsertSetEncryptValueTokens((InsertStatement) optimizedStatement.getSQLStatement(), encryptRule, (ShardingInsertOptimizedStatement) optimizedStatement, setAssignmentsSegment.get());
     }
     
-    private Collection<InsertSetEncryptValueToken> createInsertSetEncryptValueTokens(final InsertStatement insertStatement, final EncryptRule encryptRule, final SetAssignmentsSegment segment) {
+    private Collection<InsertSetEncryptValueToken> createInsertSetEncryptValueTokens(final InsertStatement insertStatement, final EncryptRule encryptRule, final ShardingInsertOptimizedStatement optimizedStatement, final SetAssignmentsSegment segment) {
         Collection<InsertSetEncryptValueToken> result = new LinkedList<>();
         for (AssignmentSegment each : segment.getAssignments()) {
-            Optional<InsertSetEncryptValueToken> insertSetEncryptValueToken = getInsertSetEncryptValueToken(insertStatement, encryptRule, each);
+            Optional<InsertSetEncryptValueToken> insertSetEncryptValueToken = getInsertSetEncryptValueToken(insertStatement, encryptRule, optimizedStatement, each);
             if (insertSetEncryptValueToken.isPresent()) {
                 result.add(insertSetEncryptValueToken.get());
             }
@@ -59,10 +60,10 @@ public final class InsertSetEncryptValueTokenGenerator implements CollectionSQLT
         return result;
     }
     
-    private Optional<InsertSetEncryptValueToken> getInsertSetEncryptValueToken(final InsertStatement insertStatement, final EncryptRule encryptRule, final AssignmentSegment segment) {
+    private Optional<InsertSetEncryptValueToken> getInsertSetEncryptValueToken(final InsertStatement insertStatement, final EncryptRule encryptRule, final ShardingInsertOptimizedStatement optimizedStatement, final AssignmentSegment segment) {
         Optional<ShardingEncryptor> shardingEncryptor = encryptRule.getEncryptorEngine().getShardingEncryptor(insertStatement.getTables().getSingleTableName(), segment.getColumn().getName());
         if (shardingEncryptor.isPresent() && !(segment.getValue() instanceof ParameterMarkerExpressionSegment)) {
-            return Optional.of(new InsertSetEncryptValueToken(segment.getValue().getStartIndex(), segment.getValue().getStopIndex(), segment.getColumn().getName()));
+            return Optional.of(new InsertSetEncryptValueToken(segment.getValue().getStartIndex(), segment.getValue().getStopIndex(), optimizedStatement.getUnits().get(0).getColumnSQLExpression(segment.getColumn().getName())));
         }
         return Optional.absent();
     }
