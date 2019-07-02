@@ -47,7 +47,7 @@ public final class EncryptInsertOptimizeEngine implements OptimizeEngine {
     
     @Override
     public ShardingInsertOptimizedStatement optimize() {
-        ShardingInsertOptimizedStatement result = new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), getColumnNames());
+        ShardingInsertOptimizedStatement result = new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), getColumnNames(), null);
         int derivedColumnsCount = getDerivedColumnsCount();
         int parametersCount = 0;
         for (InsertValue each : insertStatement.getValues()) {

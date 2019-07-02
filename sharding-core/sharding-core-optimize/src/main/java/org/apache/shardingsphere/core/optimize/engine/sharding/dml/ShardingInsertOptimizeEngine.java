@@ -71,8 +71,7 @@ public final class ShardingInsertOptimizeEngine implements OptimizeEngine {
         Iterator<Comparable<?>> generatedValues = isGeneratedValue ? generatedKey.get().getGeneratedValues().iterator() : null;
         Collection<String> columnNames = getColumnNames(generatedKey.orNull());
         List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(insertStatement, parameters, columnNames, generatedKey.orNull());
-        ShardingInsertOptimizedStatement result = new ShardingInsertOptimizedStatement(insertStatement, shardingConditions, columnNames);
-        result.setGeneratedKey(generatedKey.orNull());
+        ShardingInsertOptimizedStatement result = new ShardingInsertOptimizedStatement(insertStatement, shardingConditions, columnNames, generatedKey.orNull());
         int derivedColumnsCount = getDerivedColumnsCount(isGeneratedValue);
         int parametersCount = 0;
         for (InsertValue each : insertStatement.getValues()) {

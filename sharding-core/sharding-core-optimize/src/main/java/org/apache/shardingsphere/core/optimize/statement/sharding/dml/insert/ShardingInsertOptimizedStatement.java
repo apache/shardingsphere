@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.ShardingDMLOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingConditions;
@@ -43,12 +42,12 @@ public final class ShardingInsertOptimizedStatement extends ShardingDMLOptimized
     
     private final List<InsertOptimizeResultUnit> units = new LinkedList<>();
     
-    @Setter
-    private GeneratedKey generatedKey;
+    private final GeneratedKey generatedKey;
     
-    public ShardingInsertOptimizedStatement(final SQLStatement sqlStatement, final List<ShardingCondition> shardingConditions, final Collection<String> columnNames) {
+    public ShardingInsertOptimizedStatement(final SQLStatement sqlStatement, final List<ShardingCondition> shardingConditions, final Collection<String> columnNames, final GeneratedKey generatedKey) {
         super(sqlStatement, new ShardingConditions(shardingConditions));
         this.columnNames.addAll(columnNames);
+        this.generatedKey = generatedKey;
     }
     
     /**
