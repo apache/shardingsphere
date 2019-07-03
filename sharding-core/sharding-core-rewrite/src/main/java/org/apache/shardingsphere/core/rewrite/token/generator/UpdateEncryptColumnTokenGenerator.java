@@ -123,29 +123,22 @@ public final class UpdateEncryptColumnTokenGenerator implements CollectionSQLTok
     }
     
     private Map<Integer, Object> getIndexAndParameters(final List<Comparable<?>> encryptAssistedColumnValues) {
-        if (encryptAssistedColumnValues.isEmpty()) {
-            return Collections.emptyMap();
-        }
-        if (!isUsingParameter()) {
+        if (encryptAssistedColumnValues.isEmpty() || !isUsingParameter()) {
             return Collections.emptyMap();
         }
         return Collections.singletonMap(getPositionIndexesFromUpdateItem().values().iterator().next() + 1, (Object) encryptAssistedColumnValues.get(0));
     }
     
     private UpdateEncryptItemToken createUpdateEncryptItemToken(final List<Comparable<?>> encryptColumnValues) {
-        if (isUsingParameter()) {
-            return new UpdateEncryptItemToken(startIndex, stopIndex, column.getName());
-        }
-        return new UpdateEncryptItemToken(startIndex, stopIndex, column.getName(), encryptColumnValues.get(0));
+        return isUsingParameter() 
+                ? new UpdateEncryptItemToken(startIndex, stopIndex, column.getName()) : new UpdateEncryptItemToken(startIndex, stopIndex, column.getName(), encryptColumnValues.get(0));
     }
     
-    private UpdateEncryptAssistedItemToken createUpdateEncryptAssistedItemToken(final ShardingEncryptorEngine encryptorEngine,
-                                                                                final List<Comparable<?>> encryptColumnValues, final List<Comparable<?>> encryptAssistedColumnValues) {
+    private UpdateEncryptAssistedItemToken createUpdateEncryptAssistedItemToken(
+            final ShardingEncryptorEngine encryptorEngine, final List<Comparable<?>> encryptColumnValues, final List<Comparable<?>> encryptAssistedColumnValues) {
         String assistedColumnName = encryptorEngine.getAssistedQueryColumn(column.getTableName(), column.getName()).get();
-        if (isUsingParameter()) {
-            return new UpdateEncryptAssistedItemToken(startIndex, stopIndex, column.getName(), assistedColumnName);
-        }
-        return new UpdateEncryptAssistedItemToken(startIndex, stopIndex, column.getName(), encryptColumnValues.get(0), assistedColumnName, encryptAssistedColumnValues.get(0));
+        return isUsingParameter() ? new UpdateEncryptAssistedItemToken(startIndex, stopIndex, column.getName(), assistedColumnName) 
+                : new UpdateEncryptAssistedItemToken(startIndex, stopIndex, column.getName(), encryptColumnValues.get(0), assistedColumnName, encryptAssistedColumnValues.get(0));
     }
     
     private boolean isUsingParameter() {
