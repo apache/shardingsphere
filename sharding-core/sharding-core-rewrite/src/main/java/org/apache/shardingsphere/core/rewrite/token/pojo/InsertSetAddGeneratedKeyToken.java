@@ -43,10 +43,10 @@ public final class InsertSetAddGeneratedKeyToken extends SQLToken implements Att
     
     @Override
     public String toString() {
-        return String.format(", %s = %s", columnName, getColumnValue());
+        return String.format(", %s = %s", columnName, getColumnValueLiteral());
     }
     
-    private String getColumnValue() {
+    private String getColumnValueLiteral() {
         if (columnValue instanceof ParameterMarkerExpressionSegment) {
             return "?";
         } else if (columnValue instanceof LiteralExpressionSegment) {
