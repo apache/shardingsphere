@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.placeholder;
+package org.apache.shardingsphere.core.rewrite.token;
 
 import org.apache.shardingsphere.core.constant.ShardingOperator;
 import org.apache.shardingsphere.core.rewrite.token.pojo.WhereEncryptColumnToken;
