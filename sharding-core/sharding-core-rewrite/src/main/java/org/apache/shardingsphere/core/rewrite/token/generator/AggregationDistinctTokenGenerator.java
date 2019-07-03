@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Function;
-import com.google.common.base.Optional;
 import com.google.common.collect.Collections2;
 import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.constant.DerivedColumn;
@@ -38,7 +37,7 @@ import java.util.LinkedList;
  *
  * @author panjuan
  */
-public final class AggregationDistinctTokenGenerator implements CollectionSQLTokenGenerator<ShardingRule> {
+public final class AggregationDistinctTokenGenerator implements CollectionSQLTokenGenerator<ShardingRule>, IgnoreForSingleRoute {
     
     @Override
     public Collection<AggregationDistinctToken> generateSQLTokens(final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final ShardingRule shardingRule) {
@@ -66,10 +65,7 @@ public final class AggregationDistinctTokenGenerator implements CollectionSQLTok
     }
     
     private AggregationDistinctToken createAggregationDistinctToken(final AggregationDistinctSelectItemSegment segment) {
-        Optional<String> derivedAlias = Optional.absent();
-        if (DerivedColumn.isDerivedColumnName(segment.getAlias().get())) {
-            derivedAlias = Optional.of(segment.getAlias().get());
-        }
+        String derivedAlias = DerivedColumn.isDerivedColumnName(segment.getAlias().get()) ? segment.getAlias().get() : null;
         return new AggregationDistinctToken(segment.getStartIndex(), segment.getStopIndex(), segment.getDistinctExpression(), derivedAlias);
     }
 }
