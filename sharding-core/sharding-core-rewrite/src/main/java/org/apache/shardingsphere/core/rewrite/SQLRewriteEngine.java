@@ -199,17 +199,6 @@ public final class SQLRewriteEngine {
     public void init() {
         sqlBuilder.setLogicSQL(optimizedStatement.getSQLStatement().getLogicSQL());
         sqlBuilder.getSqlTokens().addAll(sqlTokens);
-        if (sqlTokens.isEmpty()) {
-            sqlBuilder.appendLiterals(optimizedStatement.getSQLStatement().getLogicSQL());
-            return;
-        }
-        sqlBuilder.appendLiterals(optimizedStatement.getSQLStatement().getLogicSQL().substring(0, sqlTokens.get(0).getStartIndex()));
-        for (SQLToken each : sqlTokens) {
-            for (SQLRewriter sqlRewriter : sqlRewriters) {
-                sqlRewriter.rewrite(sqlBuilder, parameterBuilder, each);
-            }
-            sqlBuilder.appendLiteral(each);
-        }
     }
     
     /**
