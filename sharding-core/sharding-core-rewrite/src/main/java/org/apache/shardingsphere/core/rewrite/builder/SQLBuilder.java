@@ -42,8 +42,6 @@ public final class SQLBuilder {
     
     private final List<SQLToken> sqlTokens;
     
-    private int currentSQLTokenIndex;
-    
     private int getStartIndex(final SQLToken sqlToken) {
         return sqlToken instanceof Substitutable ? ((Substitutable) sqlToken).getStopIndex() + 1 : sqlToken.getStartIndex();
     }
@@ -86,8 +84,8 @@ public final class SQLBuilder {
     }
     
     private String getConjunction(final SQLToken sqlToken) {
+        int currentSQLTokenIndex = sqlTokens.indexOf(sqlToken);
         int stopIndex = sqlTokens.size() - 1 == currentSQLTokenIndex ? logicSQL.length() : sqlTokens.get(currentSQLTokenIndex + 1).getStartIndex();
-        currentSQLTokenIndex++;
         return logicSQL.substring(getStartIndex(sqlToken) > logicSQL.length() ? logicSQL.length() : getStartIndex(sqlToken), stopIndex);
     }
 }
