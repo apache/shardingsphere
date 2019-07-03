@@ -27,7 +27,6 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.Paramete
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -56,24 +55,24 @@ public final class GeneratedKey {
      * @param shardingRule sharding rule
      * @param parameters SQL parameters
      * @param insertStatement insert statement
+     * @param insertColumns insert columns
      * @return generate key
      */
-    public static Optional<GeneratedKey> getGenerateKey(final ShardingRule shardingRule, final List<Object> parameters, final InsertStatement insertStatement) {
+    public static Optional<GeneratedKey> getGenerateKey(final ShardingRule shardingRule, 
+                                                        final List<Object> parameters, final InsertStatement insertStatement, final ShardingInsertColumns insertColumns) {
         Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTables().getSingleTableName());
         if (!generateKeyColumnName.isPresent()) {
             return Optional.absent();
         }
-        return containsGenerateKeyColumn(insertStatement, generateKeyColumnName.get()) 
-                ? findGeneratedKey(parameters, insertStatement, generateKeyColumnName.get()) : Optional.of(createGeneratedKey(shardingRule, insertStatement, generateKeyColumnName.get()));
+        return insertColumns.getRegularColumnNames().contains(generateKeyColumnName.get()) 
+                ? findGeneratedKey(parameters, insertStatement, insertColumns, generateKeyColumnName.get())
+                : Optional.of(createGeneratedKey(shardingRule, insertStatement, generateKeyColumnName.get()));
     }
     
-    private static boolean containsGenerateKeyColumn(final InsertStatement insertStatement, final String generateKeyColumnName) {
-        return insertStatement.getColumnNames().contains(generateKeyColumnName) && !insertStatement.containsDefaultValues();
-    }
-    
-    private static Optional<GeneratedKey> findGeneratedKey(final List<Object> parameters, final InsertStatement insertStatement, final String generateKeyColumnName) {
+    private static Optional<GeneratedKey> findGeneratedKey(
+            final List<Object> parameters, final InsertStatement insertStatement, final ShardingInsertColumns insertColumns, final String generateKeyColumnName) {
         GeneratedKey result = null;
-        for (ExpressionSegment each : findGenerateKeyExpressionSegments(insertStatement, generateKeyColumnName)) {
+        for (ExpressionSegment each : findGenerateKeyExpressionSegments(insertStatement, insertColumns, generateKeyColumnName)) {
             if (null == result) {
                 result = new GeneratedKey(generateKeyColumnName, false);
             }
@@ -86,22 +85,15 @@ public final class GeneratedKey {
         return Optional.fromNullable(result);
     }
     
-    private static Collection<ExpressionSegment> findGenerateKeyExpressionSegments(final InsertStatement insertStatement, final String generateKeyColumnName) {
+    private static Collection<ExpressionSegment> findGenerateKeyExpressionSegments(
+            final InsertStatement insertStatement, final ShardingInsertColumns insertColumns, final String generateKeyColumnName) {
         Collection<ExpressionSegment> result = new LinkedList<>();
-        Collection<String> columnNames = getColumnNames(insertStatement, generateKeyColumnName);
+        Collection<String> columnNames = insertColumns.getRegularColumnNames();
         for (InsertValue each : insertStatement.getValues()) {
             Optional<ExpressionSegment> generateKeyExpression = findGenerateKeyExpressionSegment(generateKeyColumnName, columnNames.iterator(), each);
             if (generateKeyExpression.isPresent()) {
                 result.add(generateKeyExpression.get());
             }
-        }
-        return result;
-    }
-    
-    private static Collection<String> getColumnNames(final InsertStatement insertStatement, final String generateKeyColumnName) {
-        Collection<String> result = new ArrayList<>(insertStatement.getColumnNames());
-        if (insertStatement.containsDefaultValues()) {
-            result.remove(generateKeyColumnName);
         }
         return result;
     }

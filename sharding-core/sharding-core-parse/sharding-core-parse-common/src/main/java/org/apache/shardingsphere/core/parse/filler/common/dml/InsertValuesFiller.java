@@ -15,29 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.statement.dml;
+package org.apache.shardingsphere.core.parse.filler.common.dml;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import org.apache.shardingsphere.core.parse.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
-
-import java.util.Collection;
-import java.util.LinkedList;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.InsertValuesSegment;
+import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 
 /**
- * Insert statement.
+ * Insert values filler.
  *
  * @author zhangliang
- * @author maxiaoguang
  * @author panjuan
  */
-@Getter
-@Setter
-@ToString(callSuper = true)
-public final class InsertStatement extends DMLStatement {
+public final class InsertValuesFiller implements SQLSegmentFiller<InsertValuesSegment> {
     
-    private final Collection<String> columnNames = new LinkedList<>();
-    
-    private final Collection<InsertValue> values = new LinkedList<>();
+    @Override
+    public void fill(final InsertValuesSegment sqlSegment, final SQLStatement sqlStatement) {
+        ((InsertStatement) sqlStatement).getValues().add(new InsertValue(sqlSegment.getValues()));
+    }
 }
