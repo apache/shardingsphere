@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.core.rewrite.token.pojo;
 
+import com.google.common.base.Joiner;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.ToString;
 
 import java.util.Collection;
 
@@ -29,17 +29,27 @@ import java.util.Collection;
  * @author panjuan
  */
 @Getter
-@ToString
 @EqualsAndHashCode(callSuper = true)
 public final class InsertColumnsToken extends SQLToken implements Attachable {
     
     private final Collection<String> columns;
     
-    private boolean isToAppendParenthesis;
+    private boolean isToAppendCloseParenthesis;
     
-    public InsertColumnsToken(final int startIndex, final Collection<String> columns, final boolean isToAppendParenthesis) {
+    public InsertColumnsToken(final int startIndex, final Collection<String> columns, final boolean isToAppendCloseParenthesis) {
         super(startIndex);
         this.columns = columns;
-        this.isToAppendParenthesis = isToAppendParenthesis;
+        this.isToAppendCloseParenthesis = isToAppendCloseParenthesis;
+    }
+    
+    @Override
+    public String toString() {
+        if (columns.isEmpty()) {
+            return "";
+        }
+        if (isToAppendCloseParenthesis) {
+            return String.format("(%s)", Joiner.on(", ").join(columns));
+        }
+        return String.format("(%s", Joiner.on(", ").join(columns));
     }
 }
