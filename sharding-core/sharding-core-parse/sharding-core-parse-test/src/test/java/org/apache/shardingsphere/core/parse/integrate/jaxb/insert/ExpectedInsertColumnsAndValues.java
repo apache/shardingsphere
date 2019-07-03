@@ -34,7 +34,7 @@ import java.util.List;
 public final class ExpectedInsertColumnsAndValues {
     
     @XmlAttribute(name = "column-names")
-    private String columnNames;
+    private String columnNames = "";
     
     @XmlElementWrapper(name = "insert-values")
     @XmlElement(name = "insert-value")

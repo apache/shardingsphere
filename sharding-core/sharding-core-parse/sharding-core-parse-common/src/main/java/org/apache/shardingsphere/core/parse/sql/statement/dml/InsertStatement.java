@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.parse.sql.statement.dml;
 
-import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -41,14 +40,4 @@ public final class InsertStatement extends DMLStatement {
     private final Collection<String> columnNames = new LinkedList<>();
     
     private final Collection<InsertValue> values = new LinkedList<>();
-    
-    /**
-     * Judge contains default values or not.
-     * 
-     * @return contains default values or not
-     */
-    public boolean containsDefaultValues() {
-        Preconditions.checkState(!values.isEmpty());
-        return columnNames.size() != values.iterator().next().getAssignments().size();
-    }
 }

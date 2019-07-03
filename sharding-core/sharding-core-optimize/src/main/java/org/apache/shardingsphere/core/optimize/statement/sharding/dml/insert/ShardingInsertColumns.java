@@ -33,6 +33,8 @@ import java.util.LinkedHashSet;
  */
 public final class ShardingInsertColumns implements InsertColumns {
     
+    private final InsertStatement insertStatement;
+    
     private final String generateKeyColumnName;
     
     private final Collection<String> assistedQueryColumnNames;
@@ -41,39 +43,48 @@ public final class ShardingInsertColumns implements InsertColumns {
     private final Collection<String> regularColumnNames;
     
     public ShardingInsertColumns(final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData, final InsertStatement insertStatement) {
+        this.insertStatement = insertStatement;
         String tableName = insertStatement.getTables().getSingleTableName();
         generateKeyColumnName = shardingRule.findGenerateKeyColumnName(tableName).orNull();
         assistedQueryColumnNames = shardingRule.getEncryptRule().getEncryptorEngine().getAssistedQueryColumns(tableName);
-        regularColumnNames = insertStatement.getColumnNames().isEmpty() ? getRegularColumnNamesFromMetaData(shardingTableMetaData, tableName) : getRegularColumnNamesFromSQLStatement(insertStatement);
+        regularColumnNames = insertStatement.getColumnNames().isEmpty() ? getRegularColumnNamesFromMetaData(shardingTableMetaData) : getRegularColumnNamesFromSQLStatement();
     }
     
-    private Collection<String> getRegularColumnNamesFromMetaData(final ShardingTableMetaData shardingTableMetaData, final String tableName) {
-        Collection<String> allColumnNames = shardingTableMetaData.getAllColumnNames(tableName);
+    private Collection<String> getRegularColumnNamesFromMetaData(final ShardingTableMetaData shardingTableMetaData) {
+        Collection<String> allColumnNames = shardingTableMetaData.getAllColumnNames(insertStatement.getTables().getSingleTableName());
         Collection<String> result = new LinkedHashSet<>(allColumnNames.size() - assistedQueryColumnNames.size());
         for (String each : allColumnNames) {
             if (!assistedQueryColumnNames.contains(each)) {
                 result.add(each);
             }
         }
-        if (null != generateKeyColumnName) {
+        if (isGenerateKeyFromMetaData(allColumnNames)) {
             result.remove(generateKeyColumnName);
         }
         return result;
     }
     
-    private Collection<String> getRegularColumnNamesFromSQLStatement(final InsertStatement insertStatement) {
+    private boolean isGenerateKeyFromMetaData(final Collection<String> allColumnNames) {
+        return null != generateKeyColumnName && allColumnNames.size() - assistedQueryColumnNames.size() != insertStatement.getValues().iterator().next().getAssignments().size();
+    }
+    
+    private Collection<String> getRegularColumnNamesFromSQLStatement() {
         Collection<String> result = new LinkedHashSet<>(insertStatement.getColumnNames());
-        if (null != generateKeyColumnName) {
+        if (isGenerateKeyFromSQLStatement()) {
             result.remove(generateKeyColumnName);
         }
         return result;
+    }
+    
+    private boolean isGenerateKeyFromSQLStatement() {
+        return null != generateKeyColumnName && insertStatement.getColumnNames().size() != insertStatement.getValues().iterator().next().getAssignments().size();
     }
     
     @Override
     public Collection<String> getAllColumnNames() {
         Collection<String> result = new LinkedHashSet<>(regularColumnNames.size() + assistedQueryColumnNames.size() + 1);
         result.addAll(regularColumnNames);
-        if (null != generateKeyColumnName) {
+        if (null != generateKeyColumnName && !regularColumnNames.contains(generateKeyColumnName)) {
             result.add(generateKeyColumnName);
         }
         result.addAll(assistedQueryColumnNames);

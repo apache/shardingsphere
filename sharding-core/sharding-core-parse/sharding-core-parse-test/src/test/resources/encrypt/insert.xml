@@ -34,7 +34,7 @@
         <tables>
             <table name="t_encrypt" />
         </tables>
-        <insert-columns-and-values column-names="id,name,mobile,status">
+        <insert-columns-and-values>
             <insert-values>
                 <insert-value>
                     <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="0" type-for-literal="LiteralExpressionSegment" text-for-literal="1"/>
@@ -49,7 +49,7 @@
         <tables>
             <table name="t_encrypt" />
         </tables>
-        <insert-columns-and-values column-names="id,name,mobile,status">
+        <insert-columns-and-values>
             <insert-values>
                 <insert-value>
                     <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="0" type-for-literal="LiteralExpressionSegment" text-for-literal="1"/>
