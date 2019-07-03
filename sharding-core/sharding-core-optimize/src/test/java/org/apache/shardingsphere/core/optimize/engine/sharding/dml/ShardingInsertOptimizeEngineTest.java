@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.optimize.engine.sharding.dml;
 
 import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.ShardingInsertOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.sql.context.table.Table;
@@ -43,6 +44,7 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 public final class ShardingInsertOptimizeEngineTest {
     
@@ -160,7 +162,8 @@ public final class ShardingInsertOptimizeEngineTest {
     
     @Test
     public void assertOptimizeInsertValuesWithPlaceholderWithGeneratedKey() {
-        ShardingInsertOptimizedStatement actual = new ShardingInsertOptimizeEngine(shardingRule, insertValuesStatementWithPlaceholder, insertValuesParameters).optimize();
+        ShardingInsertOptimizedStatement actual = new ShardingInsertOptimizeEngine(
+                shardingRule, mock(ShardingTableMetaData.class), insertValuesStatementWithPlaceholder, insertValuesParameters).optimize();
         assertThat(actual.getUnits().get(0).getParameters().length, is(3));
         assertThat(actual.getUnits().get(1).getParameters().length, is(3));
         assertThat(actual.getUnits().get(0).getParameters()[0], CoreMatchers.<Object>is(10));
@@ -173,7 +176,8 @@ public final class ShardingInsertOptimizeEngineTest {
     
     @Test
     public void assertOptimizeInsertValuesWithPlaceholderWithGeneratedKeyWithEncrypt() {
-        ShardingInsertOptimizedStatement actual = new ShardingInsertOptimizeEngine(shardingRule, insertValuesStatementWithPlaceholderWithEncrypt, insertValuesParameters).optimize();
+        ShardingInsertOptimizedStatement actual = new ShardingInsertOptimizeEngine(
+                shardingRule, mock(ShardingTableMetaData.class), insertValuesStatementWithPlaceholderWithEncrypt, insertValuesParameters).optimize();
         assertThat(actual.getUnits().get(1).getParameters().length, is(3));
         assertThat(actual.getUnits().get(0).getParameters()[0], CoreMatchers.<Object>is(10));
         assertThat(actual.getUnits().get(0).getParameters()[1], CoreMatchers.<Object>is("init"));
@@ -185,7 +189,8 @@ public final class ShardingInsertOptimizeEngineTest {
     
     @Test
     public void assertOptimizeInsertValuesWithPlaceholderWithoutGeneratedKey() {
-        ShardingInsertOptimizedStatement actual = new ShardingInsertOptimizeEngine(shardingRule, insertValuesStatementWithPlaceholder, insertValuesParameters).optimize();
+        ShardingInsertOptimizedStatement actual = new ShardingInsertOptimizeEngine(
+                shardingRule, mock(ShardingTableMetaData.class), insertValuesStatementWithPlaceholder, insertValuesParameters).optimize();
         assertThat(actual.getUnits().get(0).getParameters().length, is(3));
         assertThat(actual.getUnits().get(1).getParameters().length, is(3));
         assertThat(actual.getUnits().get(0).getParameters()[0], CoreMatchers.<Object>is(10));
@@ -200,7 +205,8 @@ public final class ShardingInsertOptimizeEngineTest {
         insertValuesStatementWithoutPlaceholderWithQueryEncrypt.getColumnNames().add("status");
         insertValuesStatementWithoutPlaceholderWithQueryEncrypt.getValues().add(
                 new InsertValue(Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(1, 2, 12), new LiteralExpressionSegment(3, 4, "a"))));
-        ShardingInsertOptimizedStatement actual = new ShardingInsertOptimizeEngine(shardingRule, insertValuesStatementWithoutPlaceholderWithQueryEncrypt, Collections.emptyList()).optimize();
+        ShardingInsertOptimizedStatement actual = new ShardingInsertOptimizeEngine(
+                shardingRule, mock(ShardingTableMetaData.class), insertValuesStatementWithoutPlaceholderWithQueryEncrypt, Collections.emptyList()).optimize();
         assertThat(actual.getUnits().get(0).getParameters().length, is(0));
     }
     
@@ -209,7 +215,8 @@ public final class ShardingInsertOptimizeEngineTest {
         insertValuesStatementWithoutPlaceholder.getColumnNames().add("user_id");
         insertValuesStatementWithoutPlaceholder.getColumnNames().add("status");
         insertValuesStatementWithoutPlaceholder.getValues().add(new InsertValue(Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(1, 2, 12), new LiteralExpressionSegment(3, 4, "a"))));
-        ShardingInsertOptimizedStatement actual = new ShardingInsertOptimizeEngine(shardingRule, insertValuesStatementWithoutPlaceholder, Collections.emptyList()).optimize();
+        ShardingInsertOptimizedStatement actual = new ShardingInsertOptimizeEngine(
+                shardingRule, mock(ShardingTableMetaData.class), insertValuesStatementWithoutPlaceholder, Collections.emptyList()).optimize();
         assertThat(actual.getUnits().get(0).getParameters().length, is(0));
     }
     
@@ -217,7 +224,8 @@ public final class ShardingInsertOptimizeEngineTest {
     public void assertOptimizeInsertSetWithPlaceholderWithGeneratedKey() {
         insertSetStatementWithPlaceholder.getValues().add(
                 new InsertValue(Arrays.<ExpressionSegment>asList(new ParameterMarkerExpressionSegment(1, 2, 0), new ParameterMarkerExpressionSegment(3, 4, 1))));
-        ShardingInsertOptimizedStatement actual = new ShardingInsertOptimizeEngine(shardingRule, insertSetStatementWithPlaceholder, insertSetParameters).optimize();
+        ShardingInsertOptimizedStatement actual = new ShardingInsertOptimizeEngine(
+                shardingRule, mock(ShardingTableMetaData.class), insertSetStatementWithPlaceholder, insertSetParameters).optimize();
         assertThat(actual.getUnits().get(0).getParameters().length, is(3));
         assertThat(actual.getUnits().get(0).getParameters()[0], CoreMatchers.<Object>is(12));
         assertThat(actual.getUnits().get(0).getParameters()[1], CoreMatchers.<Object>is("a"));
@@ -228,7 +236,8 @@ public final class ShardingInsertOptimizeEngineTest {
     public void assertOptimizeInsertSetWithPlaceholderWithGeneratedKeyWithQueryEncrypt() {
         InsertValue insertValue = new InsertValue(Arrays.<ExpressionSegment>asList(new ParameterMarkerExpressionSegment(1, 2, 0), new ParameterMarkerExpressionSegment(3, 4, 1)));
         insertSetStatementWithPlaceholderWithQueryEncrypt.getValues().add(insertValue);
-        ShardingInsertOptimizedStatement actual = new ShardingInsertOptimizeEngine(shardingRule, insertSetStatementWithPlaceholderWithQueryEncrypt, insertSetParameters).optimize();
+        ShardingInsertOptimizedStatement actual = new ShardingInsertOptimizeEngine(
+                shardingRule, mock(ShardingTableMetaData.class), insertSetStatementWithPlaceholderWithQueryEncrypt, insertSetParameters).optimize();
         assertThat(actual.getUnits().get(0).getParameters().length, is(4));
         assertThat(actual.getUnits().get(0).getParameters()[0], CoreMatchers.<Object>is(12));
         assertThat(actual.getUnits().get(0).getParameters()[1], CoreMatchers.<Object>is("a"));
@@ -239,7 +248,8 @@ public final class ShardingInsertOptimizeEngineTest {
     @Test
     public void assertOptimizeInsertSetWithoutPlaceholderWithGeneratedKey() {
         insertSetStatementWithoutPlaceholder.getValues().add(new InsertValue(Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(1, 2, 12), new LiteralExpressionSegment(3, 4, "a"))));
-        ShardingInsertOptimizedStatement actual = new ShardingInsertOptimizeEngine(shardingRule, insertSetStatementWithoutPlaceholder, Collections.emptyList()).optimize();
+        ShardingInsertOptimizedStatement actual = new ShardingInsertOptimizeEngine(
+                shardingRule, mock(ShardingTableMetaData.class), insertSetStatementWithoutPlaceholder, Collections.emptyList()).optimize();
         assertThat(actual.getUnits().get(0).getParameters().length, is(0));
     }
     
@@ -247,7 +257,8 @@ public final class ShardingInsertOptimizeEngineTest {
     public void assertOptimizeInsertSetWithoutPlaceholderWithGeneratedKeyWithEncrypt() {
         insertSetStatementWithoutPlaceholderWithEncrypt.getValues().add(
                 new InsertValue(Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(1, 2, 12), new LiteralExpressionSegment(3, 4, "a"))));
-        ShardingInsertOptimizedStatement actual = new ShardingInsertOptimizeEngine(shardingRule, insertSetStatementWithoutPlaceholderWithEncrypt, Collections.emptyList()).optimize();
+        ShardingInsertOptimizedStatement actual = new ShardingInsertOptimizeEngine(
+                shardingRule, mock(ShardingTableMetaData.class), insertSetStatementWithoutPlaceholderWithEncrypt, Collections.emptyList()).optimize();
         assertThat(actual.getUnits().get(0).getParameters().length, is(0));
     }
 }

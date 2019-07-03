@@ -42,6 +42,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 public final class EncryptSQLRewriterTest {
     
@@ -179,7 +180,7 @@ public final class EncryptSQLRewriterTest {
     private SQLUnit getSQLUnit(final String sql, final List<Object> parameters) {
         // TODO panjuan: should mock sqlStatement, do not call parse module on rewrite test case
         SQLStatement sqlStatement = encryptSQLParseEntry.parse(sql, false);
-        OptimizedStatement optimizedStatement = OptimizeEngineFactory.newInstance(encryptRule, sqlStatement, parameters).optimize();
+        OptimizedStatement optimizedStatement = OptimizeEngineFactory.newInstance(encryptRule, mock(ShardingTableMetaData.class), sqlStatement, parameters).optimize();
         SQLRewriteEngine sqlRewriteEngine = new SQLRewriteEngine(encryptRule, optimizedStatement, parameters);
         sqlRewriteEngine.init();
         return sqlRewriteEngine.generateSQL();

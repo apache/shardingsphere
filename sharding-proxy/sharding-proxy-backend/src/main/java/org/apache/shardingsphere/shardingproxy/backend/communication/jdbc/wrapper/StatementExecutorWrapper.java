@@ -92,7 +92,7 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
     private SQLRouteResult doEncryptRoute(final String sql) {
         EncryptSchema encryptSchema = (EncryptSchema) logicSchema;
         SQLStatement sqlStatement = encryptSchema.getParseEngine().parse(sql, false);
-        OptimizedStatement optimizedStatement = OptimizeEngineFactory.newInstance(encryptSchema.getEncryptRule(), sqlStatement, new LinkedList<>()).optimize();
+        OptimizedStatement optimizedStatement = OptimizeEngineFactory.newInstance(encryptSchema.getEncryptRule(), logicSchema.getMetaData().getTable(), sqlStatement, new LinkedList<>()).optimize();
         SQLRewriteEngine sqlRewriteEngine = new SQLRewriteEngine(encryptSchema.getEncryptRule(), optimizedStatement, Collections.emptyList());
         sqlRewriteEngine.init();
         SQLRouteResult result = new SQLRouteResult(optimizedStatement);

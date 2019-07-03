@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.optimize.engine.encrypt;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
 import org.apache.shardingsphere.core.optimize.statement.encrypt.EncryptInsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.InsertOptimizeResultUnit;
@@ -38,6 +39,8 @@ import java.util.List;
 public final class EncryptInsertOptimizeEngine implements OptimizeEngine {
     
     private final EncryptRule encryptRule;
+    
+    private final ShardingTableMetaData shardingTableMetaData;
     
     private final InsertStatement insertStatement;
     

@@ -86,7 +86,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
     
     @Override
     public SQLRouteResult route(final SQLStatement sqlStatement, final List<Object> parameters) {
-        OptimizedStatement optimizedStatement = OptimizeEngineFactory.newInstance(shardingRule, sqlStatement, parameters, shardingMetaData.getTable()).optimize();
+        OptimizedStatement optimizedStatement = OptimizeEngineFactory.newInstance(shardingRule, shardingMetaData.getTable(), sqlStatement, parameters).optimize();
         boolean needMergeShardingValues = isNeedMergeShardingValues(sqlStatement);
         if (optimizedStatement instanceof ShardingDMLOptimizedStatement && needMergeShardingValues) {
             checkSubqueryShardingValues(sqlStatement, ((ShardingDMLOptimizedStatement) optimizedStatement).getShardingConditions());

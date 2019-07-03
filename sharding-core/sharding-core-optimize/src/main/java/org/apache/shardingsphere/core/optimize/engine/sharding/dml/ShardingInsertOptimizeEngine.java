@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.optimize.engine.sharding.dml;
 
 import com.google.common.base.Optional;
+import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.engine.InsertClauseShardingConditionEngine;
@@ -47,14 +48,17 @@ public final class ShardingInsertOptimizeEngine implements OptimizeEngine {
     
     private final ShardingRule shardingRule;
     
+    private final ShardingTableMetaData shardingTableMetaData;
+    
     private final InsertStatement insertStatement;
     
     private final List<Object> parameters;
     
     private final InsertClauseShardingConditionEngine shardingConditionEngine;
     
-    public ShardingInsertOptimizeEngine(final ShardingRule shardingRule, final InsertStatement insertStatement, final List<Object> parameters) {
+    public ShardingInsertOptimizeEngine(final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData, final InsertStatement insertStatement, final List<Object> parameters) {
         this.shardingRule = shardingRule;
+        this.shardingTableMetaData = shardingTableMetaData;
         this.insertStatement = insertStatement;
         this.parameters = parameters;
         shardingConditionEngine = new InsertClauseShardingConditionEngine(shardingRule);
