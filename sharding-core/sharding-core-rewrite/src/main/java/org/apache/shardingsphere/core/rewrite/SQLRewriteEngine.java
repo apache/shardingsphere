@@ -146,13 +146,13 @@ public final class SQLRewriteEngine {
     
     private List<SQLToken> createSQLTokens(final List<Object> parameters, final boolean isSingleRoute) {
         List<SQLToken> result = new LinkedList<>();
-        result.addAll(new BaseTokenGenerateEngine().generateSQLTokens(optimizedStatement, parameters, baseRule, isSingleRoute));
+        result.addAll(new BaseTokenGenerateEngine().generateSQLTokens(optimizedStatement, parameterBuilder, baseRule, isSingleRoute));
         if (baseRule instanceof ShardingRule) {
             ShardingRule shardingRule = (ShardingRule) baseRule;
-            result.addAll(new ShardingTokenGenerateEngine().generateSQLTokens(optimizedStatement, parameters, shardingRule, isSingleRoute));
-            result.addAll(new EncryptTokenGenerateEngine().generateSQLTokens(optimizedStatement, parameters, shardingRule.getEncryptRule(), isSingleRoute));
+            result.addAll(new ShardingTokenGenerateEngine().generateSQLTokens(optimizedStatement, parameterBuilder, shardingRule, isSingleRoute));
+            result.addAll(new EncryptTokenGenerateEngine().generateSQLTokens(optimizedStatement, parameterBuilder, shardingRule.getEncryptRule(), isSingleRoute));
         } else if (baseRule instanceof EncryptRule) {
-            result.addAll(new EncryptTokenGenerateEngine().generateSQLTokens(optimizedStatement, parameters, (EncryptRule) baseRule, isSingleRoute));
+            result.addAll(new EncryptTokenGenerateEngine().generateSQLTokens(optimizedStatement, parameterBuilder, (EncryptRule) baseRule, isSingleRoute));
         }
         Collections.sort(result);
         return result;
