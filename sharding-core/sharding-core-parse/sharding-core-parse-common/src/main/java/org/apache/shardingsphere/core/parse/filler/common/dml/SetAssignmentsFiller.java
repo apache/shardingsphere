@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.filler.encrypt.dml.update;
+package org.apache.shardingsphere.core.parse.filler.common.dml;
 
-import lombok.Setter;
 import org.apache.shardingsphere.core.parse.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
 import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
@@ -32,12 +31,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Set assignments filler for encrypt.
+ * Set assignments filler.
  *
  * @author zhangliang
+ * @author panjuan
  */
-@Setter
-public final class EncryptSetAssignmentsFiller implements SQLSegmentFiller<SetAssignmentsSegment> {
+public final class SetAssignmentsFiller implements SQLSegmentFiller<SetAssignmentsSegment> {
     
     @Override
     public void fill(final SetAssignmentsSegment sqlSegment, final SQLStatement sqlStatement) {
@@ -66,12 +65,11 @@ public final class EncryptSetAssignmentsFiller implements SQLSegmentFiller<SetAs
     private void fillUpdate(final SetAssignmentsSegment sqlSegment, final UpdateStatement updateStatement) {
         String tableName = updateStatement.getTables().getSingleTableName();
         for (AssignmentSegment each : sqlSegment.getAssignments()) {
-            fillEncryptCondition(each, tableName, updateStatement);
+            fillUpdateAssignments(each, tableName, updateStatement);
         }
     }
     
-    private void fillEncryptCondition(final AssignmentSegment assignment, final String tableName, final UpdateStatement updateStatement) {
-        Column column = new Column(assignment.getColumn().getName(), tableName);
-        updateStatement.getAssignments().put(column, assignment.getValue());
+    private void fillUpdateAssignments(final AssignmentSegment assignment, final String tableName, final UpdateStatement updateStatement) {
+        updateStatement.getAssignments().put(new Column(assignment.getColumn().getName(), tableName), assignment.getValue());
     }
 }

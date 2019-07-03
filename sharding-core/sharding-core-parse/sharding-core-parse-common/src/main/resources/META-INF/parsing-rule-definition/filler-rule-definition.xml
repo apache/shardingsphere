@@ -35,4 +35,5 @@
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.LimitSegment" filler-class="org.apache.shardingsphere.core.parse.filler.common.dml.LimitFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment" filler-class="org.apache.shardingsphere.core.parse.filler.common.dml.InsertColumnsFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.sql.segment.dml.InsertValuesSegment" filler-class="org.apache.shardingsphere.core.parse.filler.common.dml.InsertValuesFiller" />
+    <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment" filler-class="org.apache.shardingsphere.core.parse.filler.common.dml.SetAssignmentsFiller" />
 </filler-rule-definition>
