@@ -26,8 +26,6 @@ import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
-import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -39,15 +37,15 @@ import java.util.List;
 @Getter
 public final class ShardingInsertOptimizedStatement extends ShardingDMLOptimizedStatement implements InsertOptimizedStatement {
     
-    private final Collection<String> columnNames = new LinkedHashSet<>();
-    
-    private final List<InsertOptimizeResultUnit> units = new LinkedList<>();
+    private final ShardingInsertColumns insertColumns;
     
     private final GeneratedKey generatedKey;
     
-    public ShardingInsertOptimizedStatement(final SQLStatement sqlStatement, final List<ShardingCondition> shardingConditions, final Collection<String> columnNames, final GeneratedKey generatedKey) {
+    private final List<InsertOptimizeResultUnit> units = new LinkedList<>();
+    
+    public ShardingInsertOptimizedStatement(final SQLStatement sqlStatement, final List<ShardingCondition> shardingConditions, final ShardingInsertColumns insertColumns, final GeneratedKey generatedKey) {
         super(sqlStatement, new ShardingConditions(shardingConditions));
-        this.columnNames.addAll(columnNames);
+        this.insertColumns = insertColumns;
         this.generatedKey = generatedKey;
     }
     
@@ -60,7 +58,7 @@ public final class ShardingInsertOptimizedStatement extends ShardingDMLOptimized
      * @return insert optimize result unit
      */
     public InsertOptimizeResultUnit addUnit(final ExpressionSegment[] insertValues, final Object[] parameters, final int startIndexOfAppendedParameters) {
-        InsertOptimizeResultUnit result = new InsertOptimizeResultUnit(columnNames, insertValues, parameters, startIndexOfAppendedParameters);
+        InsertOptimizeResultUnit result = new InsertOptimizeResultUnit(insertColumns.getAllColumnNames(), insertValues, parameters, startIndexOfAppendedParameters);
         units.add(result);
         return result;
     }

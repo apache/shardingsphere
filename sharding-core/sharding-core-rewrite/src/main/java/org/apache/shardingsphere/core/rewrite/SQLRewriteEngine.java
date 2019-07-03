@@ -124,7 +124,7 @@ public final class SQLRewriteEngine {
     
     private void encryptInsertOptimizeResultUnit(final ShardingEncryptorEngine encryptorEngine) {
         for (InsertOptimizeResultUnit unit : ((InsertOptimizedStatement) optimizedStatement).getUnits()) {
-            for (String each : ((InsertOptimizedStatement) optimizedStatement).getColumnNames()) {
+            for (String each : ((InsertOptimizedStatement) optimizedStatement).getInsertColumns().getRegularColumnNames()) {
                 encryptInsertOptimizeResult(unit, each, encryptorEngine);
             }
         }

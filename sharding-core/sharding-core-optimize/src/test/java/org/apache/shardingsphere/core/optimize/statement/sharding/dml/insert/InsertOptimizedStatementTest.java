@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert;
 
-import com.google.common.collect.Lists;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
@@ -25,22 +24,26 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.Paramete
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public final class InsertOptimizedStatementTest {
     
-    private ShardingInsertOptimizedStatement insertClauseOptimizedStatement = new ShardingInsertOptimizedStatement(
-            new InsertStatement(), Collections.<ShardingCondition>emptyList(), Lists.newArrayList("id", "value", "status"), null);
-    
     @Test
     public void assertAddUnitWithSet() {
+        ShardingInsertColumns insertColumns = mock(ShardingInsertColumns.class);
+        when(insertColumns.getRegularColumnNames()).thenReturn(Arrays.asList("id", "value", "status"));
+        when(insertColumns.getAllColumnNames()).thenReturn(Arrays.asList("id", "value", "status"));
+        ShardingInsertOptimizedStatement insertClauseOptimizedStatement = new ShardingInsertOptimizedStatement(new InsertStatement(), Collections.<ShardingCondition>emptyList(), insertColumns, null);
         ExpressionSegment[] expressions = {new LiteralExpressionSegment(0, 0, 1), new ParameterMarkerExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, "test")};
         Object[] parameters = {"parameter"};
         insertClauseOptimizedStatement.addUnit(expressions, parameters, 1);
-        assertThat(insertClauseOptimizedStatement.getColumnNames().size(), is(3));
+        assertThat(insertClauseOptimizedStatement.getInsertColumns().getAllColumnNames().size(), is(3));
         assertThat(insertClauseOptimizedStatement.getUnits().get(0).getValues(), is(expressions));
         assertThat(insertClauseOptimizedStatement.getUnits().get(0).getParameters()[0], is((Object) "parameter"));
         assertThat(insertClauseOptimizedStatement.getUnits().get(0).getDataNodes().size(), is(0));

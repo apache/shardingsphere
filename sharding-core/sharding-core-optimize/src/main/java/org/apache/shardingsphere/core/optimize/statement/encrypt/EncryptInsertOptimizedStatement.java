@@ -23,8 +23,6 @@ import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.Ins
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
-import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -38,14 +36,14 @@ public final class EncryptInsertOptimizedStatement implements InsertOptimizedSta
     private final SQLStatement sqlStatement;
     
     @Getter
-    private final Collection<String> columnNames = new LinkedHashSet<>();
+    private final EncryptInsertColumns insertColumns;
     
     @Getter
     private final List<InsertOptimizeResultUnit> units = new LinkedList<>();
     
-    public EncryptInsertOptimizedStatement(final SQLStatement sqlStatement, final Collection<String> columnNames) {
+    public EncryptInsertOptimizedStatement(final SQLStatement sqlStatement, final EncryptInsertColumns insertColumns) {
         this.sqlStatement = sqlStatement;
-        this.columnNames.addAll(columnNames);
+        this.insertColumns = insertColumns;
     }
     
     /**
@@ -57,7 +55,7 @@ public final class EncryptInsertOptimizedStatement implements InsertOptimizedSta
      * @return insert optimize result unit
      */
     public InsertOptimizeResultUnit addUnit(final ExpressionSegment[] insertValues, final Object[] parameters, final int startIndexOfAppendedParameters) {
-        InsertOptimizeResultUnit result = new InsertOptimizeResultUnit(columnNames, insertValues, parameters, startIndexOfAppendedParameters);
+        InsertOptimizeResultUnit result = new InsertOptimizeResultUnit(insertColumns.getAllColumnNames(), insertValues, parameters, startIndexOfAppendedParameters);
         units.add(result);
         return result;
     }
