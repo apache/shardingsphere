@@ -24,7 +24,7 @@ import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.Ins
 import org.apache.shardingsphere.core.parse.sql.segment.dml.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
-import org.apache.shardingsphere.core.rewrite.placeholder.InsertValuePlaceholder;
+import org.apache.shardingsphere.core.rewrite.token.pojo.InsertValueToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertValuesToken;
 import org.apache.shardingsphere.core.rule.BaseRule;
 
@@ -60,11 +60,11 @@ public final class InsertValuesTokenGenerator implements OptionalSQLTokenGenerat
         return Optional.of(new InsertValuesToken(startIndex, stopIndex, getInsertValues((InsertOptimizedStatement) optimizedStatement)));
     }
     
-    private List<InsertValuePlaceholder> getInsertValues(final InsertOptimizedStatement insertOptimizeResult) {
-        List<InsertValuePlaceholder> insertValues = new LinkedList<>();
+    private List<InsertValueToken> getInsertValues(final InsertOptimizedStatement insertOptimizeResult) {
+        List<InsertValueToken> insertValueTokens = new LinkedList<>();
         for (InsertOptimizeResultUnit each : insertOptimizeResult.getUnits()) {
-            insertValues.add(new InsertValuePlaceholder(new ArrayList<>(each.getColumnNames()), Arrays.asList(each.getValues()), each.getDataNodes()));
+            insertValueTokens.add(new InsertValueToken(new ArrayList<>(each.getColumnNames()), Arrays.asList(each.getValues()), each.getDataNodes()));
         }
-        return insertValues;
+        return insertValueTokens;
     }
 }

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.rewrite.token.pojo;
 
 import lombok.Getter;
 import org.apache.shardingsphere.core.rewrite.placeholder.Alterable;
-import org.apache.shardingsphere.core.rewrite.placeholder.InsertValuePlaceholder;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.rule.DataNode;
 
@@ -37,12 +36,12 @@ public final class InsertValuesToken extends SQLToken implements Substitutable, 
     
     private final int stopIndex;
     
-    private final List<InsertValuePlaceholder> insertValues;
+    private final List<InsertValueToken> insertValueTokens;
     
-    public InsertValuesToken(final int startIndex, final int stopIndex, final List<InsertValuePlaceholder> insertValues) {
+    public InsertValuesToken(final int startIndex, final int stopIndex, final List<InsertValueToken> insertValueTokens) {
         super(startIndex);
         this.stopIndex = stopIndex;
-        this.insertValues = insertValues;
+        this.insertValueTokens = insertValueTokens;
     }
     
     @Override
@@ -54,14 +53,14 @@ public final class InsertValuesToken extends SQLToken implements Substitutable, 
     }
     
     private void appendUnits(final RoutingUnit routingUnit, final StringBuilder result) {
-        for (InsertValuePlaceholder each : insertValues) {
+        for (InsertValueToken each : insertValueTokens) {
             if (isToAppendInsertOptimizeResult(routingUnit, each)) {
                 result.append(each).append(", ");
             }
         }
     }
     
-    private boolean isToAppendInsertOptimizeResult(final RoutingUnit routingUnit, final InsertValuePlaceholder unit) {
+    private boolean isToAppendInsertOptimizeResult(final RoutingUnit routingUnit, final InsertValueToken unit) {
         if (unit.getDataNodes().isEmpty() || null == routingUnit) {
             return true;
         }
