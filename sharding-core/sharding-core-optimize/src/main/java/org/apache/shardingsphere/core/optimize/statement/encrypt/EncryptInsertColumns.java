@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.optimize.statement.encrypt;
 
 import lombok.Getter;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.optimize.statement.InsertColumns;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
@@ -30,7 +31,7 @@ import java.util.LinkedHashSet;
  *
  * @author zhangliang
  */
-public final class EncryptInsertColumns {
+public final class EncryptInsertColumns implements InsertColumns {
     
     private final Collection<String> assistedQueryColumnNames;
     
@@ -54,15 +55,7 @@ public final class EncryptInsertColumns {
         return result;
     }
     
-    /**
-     * Get all column names.
-     * 
-     * <p>
-     *     Include regular column names and derived column names with same sequence with insert values.
-     * </p>
-     * 
-     * @return all column names
-     */
+    @Override
     public Collection<String> getAllColumnNames() {
         Collection<String> result = new LinkedHashSet<>(regularColumnNames.size() + assistedQueryColumnNames.size());
         result.addAll(regularColumnNames);
