@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.core.rewrite.rewriter.sql;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.InsertOptimizeResultUnit;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.ShardingInsertOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertAssistedColumnsPlaceholder;
@@ -40,7 +40,6 @@ import org.apache.shardingsphere.core.rewrite.token.pojo.SQLToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.UpdateEncryptAssistedItemToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.UpdateEncryptItemToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.WhereEncryptColumnToken;
-import org.apache.shardingsphere.core.strategy.encrypt.ShardingEncryptorEngine;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -52,19 +51,10 @@ import java.util.List;
  * 
  * @author panjuan
  */
+@RequiredArgsConstructor
 public final class EncryptSQLRewriter implements SQLRewriter {
     
-    private final ShardingEncryptorEngine encryptorEngine;
-    
-    private final DMLStatement dmlStatement;
-    
     private final OptimizedStatement optimizedStatement;
-    
-    public EncryptSQLRewriter(final ShardingEncryptorEngine encryptorEngine, final OptimizedStatement optimizedStatement) {
-        this.encryptorEngine = encryptorEngine;
-        this.dmlStatement = (DMLStatement) optimizedStatement.getSQLStatement();
-        this.optimizedStatement = optimizedStatement;
-    }
     
     @Override
     public void rewrite(final SQLBuilder sqlBuilder, final ParameterBuilder parameterBuilder, final SQLToken sqlToken) {
