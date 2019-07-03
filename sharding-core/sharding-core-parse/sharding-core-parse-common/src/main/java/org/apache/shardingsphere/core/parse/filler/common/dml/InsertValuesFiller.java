@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.filler.sharding.dml.insert;
+package org.apache.shardingsphere.core.parse.filler.common.dml;
 
-import lombok.Setter;
 import org.apache.shardingsphere.core.parse.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.InsertValuesSegment;
@@ -25,13 +24,12 @@ import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 
 /**
- * Insert values filler for sharding.
+ * Insert values filler.
  *
  * @author zhangliang
  * @author panjuan
  */
-@Setter
-public final class ShardingInsertValuesFiller implements SQLSegmentFiller<InsertValuesSegment> {
+public final class InsertValuesFiller implements SQLSegmentFiller<InsertValuesSegment> {
     
     @Override
     public void fill(final InsertValuesSegment sqlSegment, final SQLStatement sqlStatement) {
