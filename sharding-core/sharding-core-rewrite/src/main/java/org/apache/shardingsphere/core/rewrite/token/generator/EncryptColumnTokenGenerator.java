@@ -197,7 +197,7 @@ public final class EncryptColumnTokenGenerator implements CollectionSQLTokenGene
     
     private UpdateEncryptItemToken getUpdateEncryptItemToken(final List<Comparable<?>> encryptColumnValues) {
         if (isUsingParameter()) {
-            return new UpdateEncryptItemToken(startIndex, stopIndex, column.getTableName(), column.getName());
+            return new UpdateEncryptItemToken(startIndex, stopIndex, column.getName());
         }
         return new UpdateEncryptItemToken(startIndex, stopIndex, column.getName(), encryptColumnValues.get(0));
     }

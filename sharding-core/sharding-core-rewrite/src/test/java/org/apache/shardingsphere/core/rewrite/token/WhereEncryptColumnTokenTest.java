@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.placeholder;
+package org.apache.shardingsphere.core.rewrite.token;
 
 import org.apache.shardingsphere.core.constant.ShardingOperator;
+import org.apache.shardingsphere.core.rewrite.token.pojo.WhereEncryptColumnToken;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -28,9 +29,9 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class WhereEncryptColumnPlaceholderTest {
+public class WhereEncryptColumnTokenTest {
     
-    private WhereEncryptColumnPlaceholder whereEncryptColumnPlaceholder;
+    private WhereEncryptColumnToken whereEncryptColumnToken;
     
     @Before
     public void setUp() {
@@ -40,18 +41,18 @@ public class WhereEncryptColumnPlaceholderTest {
     public void assertToStringWithoutPlaceholderWithEqual() {
         Map<Integer, Comparable<?>> indexValues = new LinkedHashMap<>();
         indexValues.put(0, "a");
-        whereEncryptColumnPlaceholder = new WhereEncryptColumnPlaceholder("column_x", indexValues, Collections.<Integer>emptyList(), ShardingOperator.EQUAL);
-        assertThat(whereEncryptColumnPlaceholder.toString(), is("column_x = 'a'"));
-        assertThat(whereEncryptColumnPlaceholder.getColumnName(), is("column_x"));
-        assertThat(whereEncryptColumnPlaceholder.getOperator(), is(ShardingOperator.EQUAL));
-        assertThat(whereEncryptColumnPlaceholder.getIndexValues(), is(indexValues));
-        assertThat(whereEncryptColumnPlaceholder.getParameterMarkerIndexes().size(), is(0));
+        whereEncryptColumnToken = new WhereEncryptColumnToken(0, 0, "column_x", indexValues, Collections.<Integer>emptyList(), ShardingOperator.EQUAL);
+        assertThat(whereEncryptColumnToken.toString(), is("column_x = 'a'"));
+        assertThat(whereEncryptColumnToken.getColumnName(), is("column_x"));
+        assertThat(whereEncryptColumnToken.getOperator(), is(ShardingOperator.EQUAL));
+        assertThat(whereEncryptColumnToken.getIndexValues(), is(indexValues));
+        assertThat(whereEncryptColumnToken.getParameterMarkerIndexes().size(), is(0));
     }
     
     @Test
     public void assertToStringWithPlaceholderWithEqual() {
-        whereEncryptColumnPlaceholder = new WhereEncryptColumnPlaceholder("column_x", Collections.<Integer, Comparable<?>>emptyMap(), Collections.singletonList(0), ShardingOperator.EQUAL);
-        assertThat(whereEncryptColumnPlaceholder.toString(), is("column_x = ?"));
+        whereEncryptColumnToken = new WhereEncryptColumnToken(0, 0, "column_x", Collections.<Integer, Comparable<?>>emptyMap(), Collections.singletonList(0), ShardingOperator.EQUAL);
+        assertThat(whereEncryptColumnToken.toString(), is("column_x = ?"));
     }
     
     @Test
@@ -59,13 +60,13 @@ public class WhereEncryptColumnPlaceholderTest {
         Map<Integer, Comparable<?>> indexValues = new LinkedHashMap<>();
         indexValues.put(0, "a");
         indexValues.put(1, "b");
-        whereEncryptColumnPlaceholder = new WhereEncryptColumnPlaceholder("column_x", indexValues, Collections.<Integer>emptyList(), ShardingOperator.IN);
-        assertThat(whereEncryptColumnPlaceholder.toString(), is("column_x IN ('a', 'b')"));
+        whereEncryptColumnToken = new WhereEncryptColumnToken(0, 0, "column_x", indexValues, Collections.<Integer>emptyList(), ShardingOperator.IN);
+        assertThat(whereEncryptColumnToken.toString(), is("column_x IN ('a', 'b')"));
     }
     
     @Test
     public void assertToStringWithPlaceholderWithIn() {
-        whereEncryptColumnPlaceholder = new WhereEncryptColumnPlaceholder("column_x", Collections.<Integer, Comparable<?>>emptyMap(), Collections.singletonList(0), ShardingOperator.IN);
-        assertThat(whereEncryptColumnPlaceholder.toString(), is("column_x IN (?)"));
+        whereEncryptColumnToken = new WhereEncryptColumnToken(0, 0, "column_x", Collections.<Integer, Comparable<?>>emptyMap(), Collections.singletonList(0), ShardingOperator.IN);
+        assertThat(whereEncryptColumnToken.toString(), is("column_x IN (?)"));
     }
 }

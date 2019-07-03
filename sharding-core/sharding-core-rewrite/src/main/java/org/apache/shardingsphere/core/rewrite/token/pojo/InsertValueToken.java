@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.placeholder;
+package org.apache.shardingsphere.core.rewrite.token.pojo;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.complex.ComplexExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
@@ -32,8 +31,7 @@ import java.util.List;
  *
  * @author panjuan
  */
-@RequiredArgsConstructor
-public final class InsertValuePlaceholder implements ShardingPlaceholder {
+public final class InsertValueToken extends SQLToken {
     
     private final List<String> columnNames;
     
@@ -41,6 +39,13 @@ public final class InsertValuePlaceholder implements ShardingPlaceholder {
     
     @Getter
     private final List<DataNode> dataNodes;
+    
+    public InsertValueToken(final List<String> columnNames, final List<ExpressionSegment> columnValues, final List<DataNode> dataNodes) {
+        super(0);
+        this.columnNames = columnNames;
+        this.columnValues = columnValues;
+        this.dataNodes = dataNodes;
+    }
     
     @Override
     public String toString() {

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.rewrite.token.pojo;
 
 import lombok.Getter;
-import lombok.ToString;
 
 /**
  * Remove token.
@@ -27,7 +26,6 @@ import lombok.ToString;
  * @author panjuan
  */
 @Getter
-@ToString
 public final class RemoveToken extends SQLToken implements Substitutable {
     
     private final int stopIndex;
@@ -35,5 +33,10 @@ public final class RemoveToken extends SQLToken implements Substitutable {
     public RemoveToken(final int startIndex, final int stopIndex) {
         super(startIndex);
         this.stopIndex = stopIndex;
+    }
+    
+    @Override
+    public String toString() {
+        return "";
     }
 }

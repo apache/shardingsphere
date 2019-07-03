@@ -15,32 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.placeholder;
+package org.apache.shardingsphere.core.rewrite.token.pojo;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.route.type.RoutingUnit;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Map;
 
 /**
- * Select items placeholder for rewrite.
+ * Alter available.
  *
  * @author panjuan
  */
-@RequiredArgsConstructor
-@Getter
-public final class SelectItemsPlaceholder implements ShardingPlaceholder {
+public interface Alterable {
     
-    private final List<String> items = new LinkedList<>();
-    
-    @Override
-    public String toString() {
-        StringBuilder result = new StringBuilder();
-        for (String item : items) {
-            result.append(", ");
-            result.append(item);
-        }
-        return result.toString();
-    }
+    /**
+     * To string.
+     * 
+     * @param routingUnit routing unit
+     * @param logicAndActualTables logic and actual tables
+     * @return literal
+     */
+    String toString(RoutingUnit routingUnit, Map<String, String> logicAndActualTables);
 }

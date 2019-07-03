@@ -182,7 +182,6 @@ public final class EncryptSQLRewriterTest {
         SQLStatement sqlStatement = encryptSQLParseEntry.parse(sql, false);
         OptimizedStatement optimizedStatement = OptimizeEngineFactory.newInstance(encryptRule, mock(ShardingTableMetaData.class), sqlStatement, parameters).optimize();
         SQLRewriteEngine sqlRewriteEngine = new SQLRewriteEngine(encryptRule, optimizedStatement, parameters);
-        sqlRewriteEngine.init();
         return sqlRewriteEngine.generateSQL();
     }
 }

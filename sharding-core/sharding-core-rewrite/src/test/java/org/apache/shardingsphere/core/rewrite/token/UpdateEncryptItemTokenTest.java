@@ -15,35 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.placeholder;
+package org.apache.shardingsphere.core.rewrite.token;
 
-import com.google.common.base.Joiner;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.rewrite.token.pojo.UpdateEncryptItemToken;
+import org.junit.Test;
 
-import java.util.Collection;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
-/**
- * Insert assisted columns placeholder for rewrite.
- *
- * @author panjuan
- */
-@RequiredArgsConstructor
-@Getter
-public final class InsertAssistedColumnsPlaceholder implements ShardingPlaceholder {
+public class UpdateEncryptItemTokenTest {
     
-    private final Collection<String> columns;
+    private UpdateEncryptItemToken updateEncryptItemToken;
     
-    private final boolean isToAppendCloseParenthesis;
+    @Test
+    public void assertToStringWithPlaceholderWithoutAssistedColumn() {
+        updateEncryptItemToken = new UpdateEncryptItemToken(0, 0, "column_x");
+        assertThat(updateEncryptItemToken.toString(), is("column_x = ?"));
+    }
     
-    @Override
-    public String toString() {
-        if (columns.isEmpty()) {
-            return "";
-        }
-        if (isToAppendCloseParenthesis) {
-            return String.format(", %s)", Joiner.on(", ").join(columns));
-        }
-        return String.format(", %s", Joiner.on(", ").join(columns));
+    @Test
+    public void assertToStringWithoutPlaceholderWithoutAssistedColumn() {
+        updateEncryptItemToken = new UpdateEncryptItemToken(0, 0, "column_x", 1);
+        assertThat(updateEncryptItemToken.toString(), is("column_x = 1"));
     }
 }
