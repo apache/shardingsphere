@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.core.rewrite.token.pojo;
 
+import lombok.Getter;
 import org.apache.shardingsphere.core.constant.OrderDirection;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -27,16 +29,15 @@ import java.util.List;
  * @author zhangliang
  * @author panjuan
  */
+@Getter
 public final class OrderByToken extends SQLToken implements Attachable {
     
-    private final List<String> columnLabels;
+    private final List<String> columnLabels = new LinkedList<>();
     
-    private final List<OrderDirection> orderDirections;
+    private final List<OrderDirection> orderDirections = new LinkedList<>();
     
-    public OrderByToken(final int startIndex, final List<String> columnLabels, final List<OrderDirection> orderDirections) {
+    public OrderByToken(final int startIndex) {
         super(startIndex);
-        this.columnLabels = columnLabels;
-        this.orderDirections = orderDirections;
     }
     
     @Override
