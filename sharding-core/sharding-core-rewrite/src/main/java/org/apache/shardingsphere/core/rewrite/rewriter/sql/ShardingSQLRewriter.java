@@ -19,9 +19,6 @@ package org.apache.shardingsphere.core.rewrite.rewriter.sql;
 
 import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.ShardingInsertOptimizedStatement;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.OrderByItemSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.TextOrderByItemSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
 import org.apache.shardingsphere.core.rewrite.placeholder.AggregationDistinctPlaceholder;
@@ -76,7 +73,7 @@ public final class ShardingSQLRewriter implements SQLRewriter {
         } else if (sqlToken instanceof RowCountToken) {
             appendRowCountPlaceholder(sqlBuilder, (RowCountToken) sqlToken);
         } else if (sqlToken instanceof OrderByToken) {
-            appendOrderByPlaceholder(sqlBuilder);
+            appendOrderByPlaceholder(sqlBuilder, (OrderByToken) sqlToken);
         } else if (sqlToken instanceof AggregationDistinctToken) {
             appendAggregationDistinctPlaceholder(sqlBuilder, (AggregationDistinctToken) sqlToken);
         } else if (sqlToken instanceof InsertGeneratedKeyToken) {
@@ -108,17 +105,11 @@ public final class ShardingSQLRewriter implements SQLRewriter {
         sqlBuilder.appendPlaceholder(new LimitRowCountPlaceholder(rowCountToken.getRevisedRowCount()));
     }
     
-    private void appendOrderByPlaceholder(final SQLBuilder sqlBuilder) {
-        SelectStatement selectStatement = (SelectStatement) sqlRouteResult.getOptimizedStatement().getSQLStatement();
+    private void appendOrderByPlaceholder(final SQLBuilder sqlBuilder, final OrderByToken orderByToken) {
         OrderByPlaceholder orderByPlaceholder = new OrderByPlaceholder();
-        if (isRewrite()) {
-            for (OrderByItemSegment each : selectStatement.getOrderByItems()) {
-                String columnLabel = each instanceof TextOrderByItemSegment ? ((TextOrderByItemSegment) each).getText() : String.valueOf(each.getIndex());
-                orderByPlaceholder.getColumnLabels().add(columnLabel);
-                orderByPlaceholder.getOrderDirections().add(each.getOrderDirection());
-            }
-            sqlBuilder.appendPlaceholder(orderByPlaceholder);
-        }
+        orderByPlaceholder.getColumnLabels().addAll(orderByToken.getColumnLabels());
+        orderByPlaceholder.getOrderDirections().addAll(orderByToken.getOrderDirections());
+        sqlBuilder.appendPlaceholder(orderByPlaceholder);
     }
     
     private void appendAggregationDistinctPlaceholder(final SQLBuilder sqlBuilder, final AggregationDistinctToken distinctToken) {
