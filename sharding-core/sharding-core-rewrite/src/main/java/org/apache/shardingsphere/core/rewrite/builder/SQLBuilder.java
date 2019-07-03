@@ -103,16 +103,20 @@ public final class SQLBuilder {
         if (sqlTokens.isEmpty()) {
             return logicSQL;
         }
+        return createLogicSQL(routingUnit, logicAndActualTables);
+    }
+    
+    private String createLogicSQL(final RoutingUnit routingUnit, final Map<String, String> logicAndActualTables) {
         StringBuilder result = new StringBuilder();
         result.append(logicSQL.substring(0, sqlTokens.get(0).getStartIndex()));
         for (SQLToken each : sqlTokens) {
-            result.append(getTokenLiterals(each, routingUnit, logicAndActualTables));
+            result.append(getSQLTokenLiterals(each, routingUnit, logicAndActualTables));
             result.append(getConjunction(each));
         }
         return result.toString();
     }
     
-    private String getTokenLiterals(final SQLToken sqlToken, final RoutingUnit routingUnit, final Map<String, String> logicAndActualTables) {
+    private String getSQLTokenLiterals(final SQLToken sqlToken, final RoutingUnit routingUnit, final Map<String, String> logicAndActualTables) {
         return sqlToken instanceof Alterable ? ((Alterable) sqlToken).toString(routingUnit, logicAndActualTables) : sqlToken.toString();
     }
     
