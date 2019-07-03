@@ -59,10 +59,7 @@ public final class InsertColumnsTokenGenerator implements OptionalSQLTokenGenera
         if (rule instanceof ShardingRule) {
             return isNeededToAppendColumns(optimizedStatement, (ShardingRule) rule);
         }
-        if (rule instanceof EncryptRule) {
-            return isNeededToAppendColumns(optimizedStatement.getSQLStatement().getTables().getSingleTableName(), (EncryptRule) rule);
-        }
-        return false;
+        return rule instanceof EncryptRule && isNeededToAppendColumns(optimizedStatement.getSQLStatement().getTables().getSingleTableName(), (EncryptRule) rule);
     }
     
     private boolean isNeededToAppendColumns(final InsertOptimizedStatement optimizedStatement, final ShardingRule shardingRule) {
