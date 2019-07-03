@@ -22,13 +22,8 @@ import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.core.optimize.statement.InsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.InsertOptimizeResultUnit;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
-import org.apache.shardingsphere.core.rewrite.rewriter.sql.BaseSQLRewriter;
-import org.apache.shardingsphere.core.rewrite.rewriter.sql.EncryptSQLRewriter;
-import org.apache.shardingsphere.core.rewrite.rewriter.sql.SQLRewriter;
-import org.apache.shardingsphere.core.rewrite.rewriter.sql.ShardingSQLRewriter;
 import org.apache.shardingsphere.core.rewrite.token.BaseTokenGenerateEngine;
 import org.apache.shardingsphere.core.rewrite.token.EncryptTokenGenerateEngine;
 import org.apache.shardingsphere.core.rewrite.token.ShardingTokenGenerateEngine;
@@ -46,7 +41,6 @@ import org.apache.shardingsphere.core.strategy.encrypt.ShardingEncryptorEngine;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 import org.apache.shardingsphere.spi.encrypt.ShardingQueryAssistedEncryptor;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -71,8 +65,6 @@ public final class SQLRewriteEngine {
     
     private final ParameterBuilder parameterBuilder;
     
-    private final Collection<SQLRewriter> sqlRewriters;
-    
     public SQLRewriteEngine(final ShardingRule shardingRule, final SQLRouteResult sqlRouteResult, final List<Object> parameters, final boolean isSingleRoute) {
         baseRule = shardingRule;
         this.optimizedStatement = sqlRouteResult.getOptimizedStatement();
@@ -80,7 +72,6 @@ public final class SQLRewriteEngine {
         parameterBuilder = createParameterBuilder(parameters);
         sqlTokens = createSQLTokens(parameters, isSingleRoute);
         sqlBuilder = new SQLBuilder();
-        sqlRewriters = createSQLRewritersForSharding();
     }
     
     public SQLRewriteEngine(final EncryptRule encryptRule, final OptimizedStatement optimizedStatement, final List<Object> parameters) {
@@ -90,7 +81,6 @@ public final class SQLRewriteEngine {
         parameterBuilder = createParameterBuilder(parameters);
         sqlTokens = createSQLTokens(parameters, true);
         sqlBuilder = new SQLBuilder();
-        sqlRewriters = createSQLRewritersForEncrypt();
     }
     
     public SQLRewriteEngine(final MasterSlaveRule masterSlaveRule, final OptimizedStatement optimizedStatement) {
@@ -99,7 +89,6 @@ public final class SQLRewriteEngine {
         parameterBuilder = createParameterBuilder(Collections.emptyList());
         sqlTokens = createSQLTokens(Collections.emptyList(), true);
         sqlBuilder = new SQLBuilder();
-        sqlRewriters = Collections.<SQLRewriter>singletonList(new BaseSQLRewriter());
     }
     
     private void encryptInsertOptimizedStatement() {
@@ -160,25 +149,6 @@ public final class SQLRewriteEngine {
     private ParameterBuilder createParameterBuilder(final List<Object> parameters) {
         ParameterBuilder result = new ParameterBuilder(parameters);
         result.setInsertParameterUnits(optimizedStatement);
-        return result;
-    }
-    
-    private Collection<SQLRewriter> createSQLRewritersForSharding() {
-        Collection<SQLRewriter> result = new LinkedList<>();
-        result.add(new BaseSQLRewriter());
-        result.add(new ShardingSQLRewriter());
-        if (optimizedStatement.getSQLStatement() instanceof DMLStatement) {
-            result.add(new EncryptSQLRewriter());
-        }
-        return result;
-    }
-    
-    private Collection<SQLRewriter> createSQLRewritersForEncrypt() {
-        Collection<SQLRewriter> result = new LinkedList<>();
-        result.add(new BaseSQLRewriter());
-        if (optimizedStatement.getSQLStatement() instanceof DMLStatement) {
-            result.add(new EncryptSQLRewriter());
-        }
         return result;
     }
     
