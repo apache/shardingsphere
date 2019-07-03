@@ -87,9 +87,7 @@ public final class ShardingSQLRewriter implements SQLRewriter {
     }
     
     private void appendSelectItemPrefixPlaceholder(final SQLBuilder sqlBuilder) {
-        if (isRewrite()) {
-            sqlBuilder.appendPlaceholder(new SelectItemPrefixPlaceholder());
-        }
+        sqlBuilder.appendPlaceholder(new SelectItemPrefixPlaceholder());
     }
     
     private void appendIndexPlaceholder(final SQLBuilder sqlBuilder, final IndexToken indexToken) {
