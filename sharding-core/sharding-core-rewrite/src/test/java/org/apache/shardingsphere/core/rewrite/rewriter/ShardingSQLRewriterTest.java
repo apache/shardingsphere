@@ -54,7 +54,6 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.Num
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.rownum.NumberLiteralRowNumberValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
@@ -62,9 +61,6 @@ import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
-import org.apache.shardingsphere.core.rewrite.rewriter.sql.EncryptSQLRewriter;
-import org.apache.shardingsphere.core.rewrite.rewriter.sql.SQLRewriter;
-import org.apache.shardingsphere.core.rewrite.rewriter.sql.ShardingSQLRewriter;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
@@ -83,7 +79,6 @@ import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -899,11 +894,6 @@ public final class ShardingSQLRewriterTest {
     
     private SQLRewriteEngine createSQLRewriteEngine(final List<Object> parameters) {
         SQLRewriteEngine result = new SQLRewriteEngine(shardingRule, routeResult, parameters, routeResult.getRoutingResult().isSingleRouting());
-        Collection<SQLRewriter> sqlRewriters = new LinkedList<>();
-        sqlRewriters.add(new ShardingSQLRewriter(routeResult, routeResult.getOptimizedStatement()));
-        if (routeResult.getOptimizedStatement().getSQLStatement() instanceof DMLStatement) {
-            sqlRewriters.add(new EncryptSQLRewriter(shardingRule.getEncryptRule().getEncryptorEngine(), routeResult.getOptimizedStatement()));
-        }
         result.init(routeResult);
         return result;
     }
