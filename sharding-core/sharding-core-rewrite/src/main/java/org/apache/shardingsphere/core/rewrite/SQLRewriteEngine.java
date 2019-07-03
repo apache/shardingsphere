@@ -77,9 +77,9 @@ public final class SQLRewriteEngine {
         baseRule = shardingRule;
         this.optimizedStatement = sqlRouteResult.getOptimizedStatement();
         encryptInsertOptimizedStatement();
+        parameterBuilder = createParameterBuilder(parameters);
         sqlTokens = createSQLTokens(parameters, isSingleRoute);
         sqlBuilder = new SQLBuilder();
-        parameterBuilder = createParameterBuilder(parameters);
         sqlRewriters = createSQLRewriters(sqlRouteResult);
     }
     
@@ -87,18 +87,18 @@ public final class SQLRewriteEngine {
         baseRule = encryptRule;
         this.optimizedStatement = optimizedStatement;
         encryptInsertOptimizedStatement();
+        parameterBuilder = createParameterBuilder(parameters);
         sqlTokens = createSQLTokens(parameters, true);
         sqlBuilder = new SQLBuilder();
-        parameterBuilder = createParameterBuilder(parameters);
         sqlRewriters = createSQLRewriters();
     }
     
     public SQLRewriteEngine(final MasterSlaveRule masterSlaveRule, final OptimizedStatement optimizedStatement) {
         baseRule = masterSlaveRule;
         this.optimizedStatement = optimizedStatement;
+        parameterBuilder = createParameterBuilder(Collections.emptyList());
         sqlTokens = createSQLTokens(Collections.emptyList(), true);
         sqlBuilder = new SQLBuilder();
-        parameterBuilder = createParameterBuilder(Collections.emptyList());
         sqlRewriters = Collections.<SQLRewriter>singletonList(new BaseSQLRewriter());
     }
     
