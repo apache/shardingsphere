@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.rewrite.rewriter.sql;
 
-
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.optimize.statement.InsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
