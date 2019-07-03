@@ -24,6 +24,7 @@ import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.engine.InsertClauseShardingConditionEngine;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.GeneratedKey;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.InsertOptimizeResultUnit;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.ShardingInsertColumns;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.ShardingInsertOptimizedStatement;
 import org.apache.shardingsphere.core.parse.exception.SQLParsingException;
 import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
@@ -34,7 +35,6 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
 
 /**
@@ -73,9 +73,9 @@ public final class ShardingInsertOptimizeEngine implements OptimizeEngine {
         Optional<GeneratedKey> generatedKey = GeneratedKey.getGenerateKey(shardingRule, parameters, insertStatement);
         boolean isGeneratedValue = generatedKey.isPresent() && generatedKey.get().isGenerated();
         Iterator<Comparable<?>> generatedValues = isGeneratedValue ? generatedKey.get().getGeneratedValues().iterator() : null;
-        Collection<String> columnNames = getColumnNames(generatedKey.orNull());
-        List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(insertStatement, parameters, columnNames, generatedKey.orNull());
-        ShardingInsertOptimizedStatement result = new ShardingInsertOptimizedStatement(insertStatement, shardingConditions, columnNames, generatedKey.orNull());
+        ShardingInsertColumns insertColumns = new ShardingInsertColumns(shardingRule, shardingTableMetaData, insertStatement);
+        List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(insertStatement, parameters, insertColumns.getAllColumnNames(), generatedKey.orNull());
+        ShardingInsertOptimizedStatement result = new ShardingInsertOptimizedStatement(insertStatement, shardingConditions, insertColumns, generatedKey.orNull());
         int derivedColumnsCount = getDerivedColumnsCount(isGeneratedValue);
         int parametersCount = 0;
         for (InsertValue each : insertStatement.getValues()) {
@@ -84,7 +84,7 @@ public final class ShardingInsertOptimizeEngine implements OptimizeEngine {
                 unit.addInsertValue(generatedValues.next(), parameters);
             }
             if (shardingRule.getEncryptRule().getEncryptorEngine().isHasShardingQueryAssistedEncryptor(insertStatement.getTables().getSingleTableName())) {
-                fillAssistedQueryUnit(columnNames, unit);
+                fillAssistedQueryUnit(insertColumns.getRegularColumnNames(), unit);
             }
             parametersCount += each.getParametersCount();
         }
@@ -98,15 +98,6 @@ public final class ShardingInsertOptimizeEngine implements OptimizeEngine {
             }
         }
         return false;
-    }
-    
-    private Collection<String> getColumnNames(final GeneratedKey generatedKey) {
-        Collection<String> result = new LinkedHashSet<>(insertStatement.getColumnNames());
-        if (null != generatedKey && generatedKey.isGenerated()) {
-            result.add(generatedKey.getColumnName());
-        }
-        result.addAll(shardingRule.getEncryptRule().getEncryptorEngine().getAssistedQueryColumns(insertStatement.getTables().getSingleTableName()));
-        return result;
     }
     
     private int getDerivedColumnsCount(final boolean isGeneratedValue) {

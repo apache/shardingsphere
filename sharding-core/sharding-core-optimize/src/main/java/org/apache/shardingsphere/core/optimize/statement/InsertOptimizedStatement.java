@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.optimize.statement;
 
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.InsertOptimizeResultUnit;
 
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -30,11 +29,11 @@ import java.util.List;
 public interface InsertOptimizedStatement extends OptimizedStatement {
     
     /**
-     * Get column names.
+     * Get insert columns.
      * 
-     * @return column names
+     * @return insert columns
      */
-    Collection<String> getColumnNames();
+    InsertColumns getInsertColumns();
     
     /**
      * Get insert optimize result units.
