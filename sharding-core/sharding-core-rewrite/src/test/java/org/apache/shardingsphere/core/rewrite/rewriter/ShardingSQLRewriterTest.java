@@ -550,7 +550,6 @@ public final class ShardingSQLRewriterTest {
         routeResult.setRoutingResult(new RoutingResult());
         selectStatement.setLogicSQL("SELECT table_x.id, x.name FROM table_x x, table_y y WHERE table_x.id=? AND x.name=?");
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, routeResult, parameters, routeResult.getRoutingResult().isSingleRouting());
-        rewriteEngine.init(routeResult);
         RoutingUnit routingUnit = new RoutingUnit("db0");
         routingUnit.getTableUnits().add(new TableUnit("table_x", "table_x"));
         assertThat(rewriteEngine.generateSQL(routingUnit).getSql(), is("SELECT table_x.id, x.name FROM table_x x, table_y y WHERE table_x.id=? AND x.name=?"));
@@ -927,9 +926,6 @@ public final class ShardingSQLRewriterTest {
     }
     
     private SQLRewriteEngine createSQLRewriteEngine(final List<Object> parameters) {
-        SQLRewriteEngine result = new SQLRewriteEngine(shardingRule, routeResult, parameters, routeResult.getRoutingResult().isSingleRouting());
-        
-        result.init(routeResult);
-        return result;
+        return new SQLRewriteEngine(shardingRule, routeResult, parameters, routeResult.getRoutingResult().isSingleRouting());
     }
 }
