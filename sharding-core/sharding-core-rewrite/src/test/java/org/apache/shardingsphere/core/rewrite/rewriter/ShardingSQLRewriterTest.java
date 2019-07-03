@@ -748,6 +748,7 @@ public final class ShardingSQLRewriterTest {
         parameters.add(1);
         parameters.add("x");
         Column column = new Column("id", "table_z");
+        selectStatement.getTables().add(new Table("table_z", null));
         selectStatement.getSQLSegments().add(new TableSegment(15, 21, "table_z"));
         selectStatement.getEncryptConditions().getOrConditions().add(new AndCondition());
         selectStatement.getEncryptConditions().getOrConditions().get(0).getConditions().add(
@@ -762,6 +763,7 @@ public final class ShardingSQLRewriterTest {
     
     @Test
     public void assertSelectInWithShardingEncryptor() {
+        selectStatement.getTables().add(new Table("table_z", null));
         selectStatement.getSQLSegments().add(new TableSegment(15, 21, "table_z"));
         selectStatement.getEncryptConditions().getOrConditions().add(new AndCondition());
         List<ExpressionSegment> expressionSegments = new LinkedList<>();
@@ -781,6 +783,7 @@ public final class ShardingSQLRewriterTest {
         List<Object> parameters = new ArrayList<>(2);
         parameters.add(1);
         parameters.add(2);
+        selectStatement.getTables().add(new Table("table_z", null));
         selectStatement.getSQLSegments().add(new TableSegment(15, 21, "table_z"));
         selectStatement.getEncryptConditions().getOrConditions().add(new AndCondition());
         selectStatement.getEncryptConditions().getOrConditions().add(new AndCondition());
@@ -804,6 +807,7 @@ public final class ShardingSQLRewriterTest {
         List<Object> parameters = new ArrayList<>(2);
         parameters.add(1);
         parameters.add("k");
+        selectStatement.getTables().add(new Table("table_k", null));
         Column column = new Column("id", "table_k");
         selectStatement.getSQLSegments().add(new TableSegment(15, 21, "table_k"));
         selectStatement.getEncryptConditions().getOrConditions().add(new AndCondition());
@@ -819,6 +823,7 @@ public final class ShardingSQLRewriterTest {
     
     @Test
     public void assertSelectInWithQueryAssistedShardingEncryptor() {
+        selectStatement.getTables().add(new Table("table_k", null));
         selectStatement.getSQLSegments().add(new TableSegment(15, 21, "table_k"));
         selectStatement.getEncryptConditions().getOrConditions().add(new AndCondition());
         List<ExpressionSegment> expressionSegments = new LinkedList<>();
@@ -894,6 +899,7 @@ public final class ShardingSQLRewriterTest {
     
     private SQLRewriteEngine createSQLRewriteEngine(final List<Object> parameters) {
         SQLRewriteEngine result = new SQLRewriteEngine(shardingRule, routeResult, parameters, routeResult.getRoutingResult().isSingleRouting());
+        
         result.init(routeResult);
         return result;
     }
