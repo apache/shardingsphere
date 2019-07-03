@@ -17,24 +17,25 @@
 
 package org.apache.shardingsphere.core.rewrite.placeholder;
 
+import org.apache.shardingsphere.core.rewrite.token.pojo.UpdateEncryptItemToken;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class UpdateEncryptItemPlaceholderTest {
+public class UpdateEncryptItemTokenTest {
     
-    private UpdateEncryptItemPlaceholder updateEncryptItemPlaceholder;
+    private UpdateEncryptItemToken updateEncryptItemToken;
     
     @Test
     public void assertToStringWithPlaceholderWithoutAssistedColumn() {
-        updateEncryptItemPlaceholder = new UpdateEncryptItemPlaceholder("column_x");
-        assertThat(updateEncryptItemPlaceholder.toString(), is("column_x = ?"));
+        updateEncryptItemToken = new UpdateEncryptItemToken(0, 0, "column_x");
+        assertThat(updateEncryptItemToken.toString(), is("column_x = ?"));
     }
     
     @Test
     public void assertToStringWithoutPlaceholderWithoutAssistedColumn() {
-        updateEncryptItemPlaceholder = new UpdateEncryptItemPlaceholder("column_x", 1);
-        assertThat(updateEncryptItemPlaceholder.toString(), is("column_x = 1"));
+        updateEncryptItemToken = new UpdateEncryptItemToken(0, 0, "column_x", 1);
+        assertThat(updateEncryptItemToken.toString(), is("column_x = 1"));
     }
 }
