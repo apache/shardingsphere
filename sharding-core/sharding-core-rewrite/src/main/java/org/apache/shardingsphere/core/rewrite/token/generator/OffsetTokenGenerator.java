@@ -23,6 +23,7 @@ import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.Pag
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.NumberLiteralPaginationValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationValueSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.pojo.OffsetToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
@@ -36,15 +37,14 @@ import java.util.List;
 public final class OffsetTokenGenerator implements OptionalSQLTokenGenerator<ShardingRule>, IgnoreForSingleRoute {
     
     @Override
-    public Optional<OffsetToken> generateSQLToken(final OptimizedStatement optimizedStatement, final List<Object> parameters, final ShardingRule shardingRule) {
+    public Optional<OffsetToken> generateSQLToken(final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final ShardingRule shardingRule) {
         if (!(optimizedStatement.getSQLStatement() instanceof SelectStatement)) {
             return Optional.absent();
         }
         Optional<PaginationValueSegment> offset = getLiteralOffsetSegment((SelectStatement) optimizedStatement.getSQLStatement());
         return offset.isPresent()
-                ? Optional.of(
-                        new OffsetToken(offset.get().getStartIndex(), offset.get().getStopIndex(), getRevisedOffset((SelectStatement) optimizedStatement.getSQLStatement(), parameters, offset.get())))
-                : Optional.<OffsetToken>absent();
+                ? Optional.of(new OffsetToken(offset.get().getStartIndex(), offset.get().getStopIndex(), 
+                getRevisedOffset((SelectStatement) optimizedStatement.getSQLStatement(), parameterBuilder.getOriginalParameters(), offset.get()))) : Optional.<OffsetToken>absent();
     }
     
     private Optional<PaginationValueSegment> getLiteralOffsetSegment(final SelectStatement selectStatement) {
