@@ -31,7 +31,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
  *
  * @author panjuan
  */
-public final class SelectItemPrefixTokenGenerator implements OptionalSQLTokenGenerator<ShardingRule> {
+public final class SelectItemPrefixTokenGenerator implements OptionalSQLTokenGenerator<ShardingRule>, IgnoreForSingleRoute {
     
     @Override
     public Optional<SelectItemPrefixToken> generateSQLToken(final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final ShardingRule shardingRule) {
