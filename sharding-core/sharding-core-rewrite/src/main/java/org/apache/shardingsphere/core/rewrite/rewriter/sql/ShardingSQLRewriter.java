@@ -17,11 +17,6 @@
 
 package org.apache.shardingsphere.core.rewrite.rewriter.sql;
 
-import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.ShardingInsertOptimizedStatement;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.OrderByItemSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.TextOrderByItemSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
 import org.apache.shardingsphere.core.rewrite.placeholder.AggregationDistinctPlaceholder;
@@ -43,7 +38,6 @@ import org.apache.shardingsphere.core.rewrite.token.pojo.RowCountToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SQLToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SelectItemPrefixToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SelectItemsToken;
-import org.apache.shardingsphere.core.route.SQLRouteResult;
 
 /**
  * SQL rewriter for sharding.
@@ -53,15 +47,6 @@ import org.apache.shardingsphere.core.route.SQLRouteResult;
  * @author panjuan
  */
 public final class ShardingSQLRewriter implements SQLRewriter {
-    
-    private final SQLRouteResult sqlRouteResult;
-    
-    private final OptimizedStatement optimizedStatement;
-    
-    public ShardingSQLRewriter(final SQLRouteResult sqlRouteResult, final OptimizedStatement optimizedStatement) {
-        this.sqlRouteResult = sqlRouteResult;
-        this.optimizedStatement = optimizedStatement;
-    }
     
     @Override
     public void rewrite(final SQLBuilder sqlBuilder, final ParameterBuilder parameterBuilder, final SQLToken sqlToken) {
@@ -76,20 +61,18 @@ public final class ShardingSQLRewriter implements SQLRewriter {
         } else if (sqlToken instanceof RowCountToken) {
             appendRowCountPlaceholder(sqlBuilder, (RowCountToken) sqlToken);
         } else if (sqlToken instanceof OrderByToken) {
-            appendOrderByPlaceholder(sqlBuilder);
+            appendOrderByPlaceholder(sqlBuilder, (OrderByToken) sqlToken);
         } else if (sqlToken instanceof AggregationDistinctToken) {
             appendAggregationDistinctPlaceholder(sqlBuilder, (AggregationDistinctToken) sqlToken);
         } else if (sqlToken instanceof InsertGeneratedKeyToken) {
             appendInsertGeneratedKeyPlaceholder(sqlBuilder, (InsertGeneratedKeyToken) sqlToken);
         } else if (sqlToken instanceof InsertSetAddGeneratedKeyToken) {
-            appendInsertSetAddGeneratedKeyPlaceholder(sqlBuilder, (InsertSetAddGeneratedKeyToken) sqlToken, (ShardingInsertOptimizedStatement) optimizedStatement);
+            appendInsertSetAddGeneratedKeyPlaceholder(sqlBuilder, (InsertSetAddGeneratedKeyToken) sqlToken);
         }
     }
     
     private void appendSelectItemPrefixPlaceholder(final SQLBuilder sqlBuilder) {
-        if (isRewrite()) {
-            sqlBuilder.appendPlaceholder(new SelectItemPrefixPlaceholder());
-        }
+        sqlBuilder.appendPlaceholder(new SelectItemPrefixPlaceholder());
     }
     
     private void appendIndexPlaceholder(final SQLBuilder sqlBuilder, final IndexToken indexToken) {
@@ -97,11 +80,9 @@ public final class ShardingSQLRewriter implements SQLRewriter {
     }
     
     private void appendSelectItemsPlaceholder(final SQLBuilder sqlBuilder, final SelectItemsToken selectItemsToken) {
-        if (isRewrite()) {
-            SelectItemsPlaceholder selectItemsPlaceholder = new SelectItemsPlaceholder();
-            selectItemsPlaceholder.getItems().addAll(selectItemsToken.getItems());
-            sqlBuilder.appendPlaceholder(selectItemsPlaceholder);
-        }
+        SelectItemsPlaceholder selectItemsPlaceholder = new SelectItemsPlaceholder();
+        selectItemsPlaceholder.getItems().addAll(selectItemsToken.getItems());
+        sqlBuilder.appendPlaceholder(selectItemsPlaceholder);
     }
     
     private void appendOffsetPlaceholder(final SQLBuilder sqlBuilder, final OffsetToken offsetToken) {
@@ -112,38 +93,22 @@ public final class ShardingSQLRewriter implements SQLRewriter {
         sqlBuilder.appendPlaceholder(new LimitRowCountPlaceholder(rowCountToken.getRevisedRowCount()));
     }
     
-    private void appendOrderByPlaceholder(final SQLBuilder sqlBuilder) {
-        SelectStatement selectStatement = (SelectStatement) sqlRouteResult.getOptimizedStatement().getSQLStatement();
+    private void appendOrderByPlaceholder(final SQLBuilder sqlBuilder, final OrderByToken orderByToken) {
         OrderByPlaceholder orderByPlaceholder = new OrderByPlaceholder();
-        if (isRewrite()) {
-            for (OrderByItemSegment each : selectStatement.getOrderByItems()) {
-                String columnLabel = each instanceof TextOrderByItemSegment ? ((TextOrderByItemSegment) each).getText() : String.valueOf(each.getIndex());
-                orderByPlaceholder.getColumnLabels().add(columnLabel);
-                orderByPlaceholder.getOrderDirections().add(each.getOrderDirection());
-            }
-            sqlBuilder.appendPlaceholder(orderByPlaceholder);
-        }
+        orderByPlaceholder.getColumnLabels().addAll(orderByToken.getColumnLabels());
+        orderByPlaceholder.getOrderDirections().addAll(orderByToken.getOrderDirections());
+        sqlBuilder.appendPlaceholder(orderByPlaceholder);
     }
     
     private void appendAggregationDistinctPlaceholder(final SQLBuilder sqlBuilder, final AggregationDistinctToken distinctToken) {
-        if (!isRewrite()) {
-            sqlBuilder.appendLiterals(sqlRouteResult.getOptimizedStatement().getSQLStatement().getLogicSQL().substring(distinctToken.getStartIndex(), distinctToken.getStopIndex() + 1));
-        } else {
-            sqlBuilder.appendPlaceholder(new AggregationDistinctPlaceholder(distinctToken.getColumnName().toLowerCase(), distinctToken.getDerivedAlias()));
-        }
+        sqlBuilder.appendPlaceholder(new AggregationDistinctPlaceholder(distinctToken.getColumnName().toLowerCase(), distinctToken.getDerivedAlias()));
     }
     
     private void appendInsertGeneratedKeyPlaceholder(final SQLBuilder sqlBuilder, final InsertGeneratedKeyToken insertGeneratedKeyToken) {
-        sqlBuilder.appendPlaceholder(new InsertGeneratedKeyPlaceholder(insertGeneratedKeyToken.getColumn(), insertGeneratedKeyToken.isToAddCloseParenthesis()));
+        sqlBuilder.appendPlaceholder(new InsertGeneratedKeyPlaceholder(insertGeneratedKeyToken.getColumn(), insertGeneratedKeyToken.isToAppendCloseParenthesis()));
     }
     
-    private void appendInsertSetAddGeneratedKeyPlaceholder(
-            final SQLBuilder sqlBuilder, final InsertSetAddGeneratedKeyToken insertSetAddGeneratedKeyToken, final ShardingInsertOptimizedStatement optimizedStatement) {
-        String columnName = insertSetAddGeneratedKeyToken.getColumnName();
-        sqlBuilder.appendPlaceholder(new InsertSetAddGeneratedKeyPlaceholder(columnName, optimizedStatement.getUnits().get(0).getColumnSQLExpression(columnName)));
-    }
-    
-    private boolean isRewrite() {
-        return !sqlRouteResult.getRoutingResult().isSingleRouting();
+    private void appendInsertSetAddGeneratedKeyPlaceholder(final SQLBuilder sqlBuilder, final InsertSetAddGeneratedKeyToken insertSetAddGeneratedKeyToken) {
+        sqlBuilder.appendPlaceholder(new InsertSetAddGeneratedKeyPlaceholder(insertSetAddGeneratedKeyToken.getColumnName(), insertSetAddGeneratedKeyToken.getColumnValue()));
     }
 }

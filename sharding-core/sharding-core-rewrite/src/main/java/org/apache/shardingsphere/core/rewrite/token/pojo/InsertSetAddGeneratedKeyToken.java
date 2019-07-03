@@ -18,6 +18,10 @@
 package org.apache.shardingsphere.core.rewrite.token.pojo;
 
 import lombok.Getter;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.complex.ComplexExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 
 /**
  * Insert set add generated key token.
@@ -29,8 +33,26 @@ public final class InsertSetAddGeneratedKeyToken extends SQLToken implements Att
     
     private final String columnName;
     
-    public InsertSetAddGeneratedKeyToken(final int startIndex, final String columnName) {
+    private final ExpressionSegment columnValue;
+    
+    public InsertSetAddGeneratedKeyToken(final int startIndex, final String columnName, final ExpressionSegment columnValue) {
         super(startIndex);
         this.columnName = columnName;
+        this.columnValue = columnValue;
+    }
+    
+    @Override
+    public String toString() {
+        return String.format(", %s = %s", columnName, getLiteralOfColumnValue());
+    }
+    
+    private String getLiteralOfColumnValue() {
+        if (columnValue instanceof ParameterMarkerExpressionSegment) {
+            return "?";
+        } else if (columnValue instanceof LiteralExpressionSegment) {
+            Object literals = ((LiteralExpressionSegment) columnValue).getLiterals();
+            return literals instanceof String ? String.format("'%s'", literals) : literals.toString();
+        }
+        return ((ComplexExpressionSegment) columnValue).getText();
     }
 }

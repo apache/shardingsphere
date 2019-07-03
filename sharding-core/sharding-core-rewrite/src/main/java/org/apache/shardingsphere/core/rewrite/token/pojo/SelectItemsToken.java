@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.rewrite.token.pojo;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.ToString;
 
 import java.util.Collection;
 
@@ -30,7 +29,6 @@ import java.util.Collection;
  * @author panjuan
  */
 @Getter
-@ToString
 @EqualsAndHashCode(callSuper = true)
 public final class SelectItemsToken extends SQLToken implements Attachable {
     
@@ -39,5 +37,15 @@ public final class SelectItemsToken extends SQLToken implements Attachable {
     public SelectItemsToken(final int startIndex, final Collection<String> items) {
         super(startIndex);
         this.items = items;
+    }
+    
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+        for (String item : items) {
+            result.append(", ");
+            result.append(item);
+        }
+        return result.toString();
     }
 }

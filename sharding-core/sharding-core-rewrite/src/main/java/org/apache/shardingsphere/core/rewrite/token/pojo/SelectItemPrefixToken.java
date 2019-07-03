@@ -34,4 +34,9 @@ public final class SelectItemPrefixToken extends SQLToken implements Attachable 
     public SelectItemPrefixToken(final int startIndex) {
         super(startIndex);
     }
+    
+    @Override
+    public String toString() {
+        return "DISTINCT ";
+    }
 }

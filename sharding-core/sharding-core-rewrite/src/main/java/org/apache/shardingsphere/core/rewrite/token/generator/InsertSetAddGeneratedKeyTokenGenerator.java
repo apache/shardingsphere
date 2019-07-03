@@ -49,15 +49,19 @@ public final class InsertSetAddGeneratedKeyTokenGenerator implements OptionalSQL
             final InsertOptimizedStatement optimizedStatement, final ShardingRule shardingRule, final SetAssignmentsSegment segment) {
         Optional<String> generatedKeyColumn = getGeneratedKeyColumn(optimizedStatement, shardingRule);
         if (generatedKeyColumn.isPresent()) {
-            List<AssignmentSegment> assignments = new ArrayList<>(segment.getAssignments());
-            return Optional.of(new InsertSetAddGeneratedKeyToken(assignments.get(assignments.size() - 1).getStopIndex() + 1, generatedKeyColumn.get()));
+            return Optional.of(createInsertSetAddGeneratedKeyToken(optimizedStatement, generatedKeyColumn.get(), new ArrayList<>(segment.getAssignments())));
         }
         return Optional.absent();
     }
     
+    private InsertSetAddGeneratedKeyToken createInsertSetAddGeneratedKeyToken(
+            final InsertOptimizedStatement optimizedStatement, final String generatedKeyColumn, final List<AssignmentSegment> assignments) {
+        return new InsertSetAddGeneratedKeyToken(
+                assignments.get(assignments.size() - 1).getStopIndex() + 1, generatedKeyColumn, optimizedStatement.getUnits().get(0).getColumnSQLExpression(generatedKeyColumn));
+    }
+    
     private Optional<String> getGeneratedKeyColumn(final InsertOptimizedStatement optimizedStatement, final ShardingRule shardingRule) {
-        String tableName = optimizedStatement.getSQLStatement().getTables().getSingleTableName();
-        Optional<String> generateKeyColumn = shardingRule.findGenerateKeyColumnName(tableName);
+        Optional<String> generateKeyColumn = shardingRule.findGenerateKeyColumnName(optimizedStatement.getSQLStatement().getTables().getSingleTableName());
         return generateKeyColumn.isPresent() && !optimizedStatement.getInsertColumns().getRegularColumnNames().contains(generateKeyColumn.get()) ? generateKeyColumn : Optional.<String>absent();
     }
 }

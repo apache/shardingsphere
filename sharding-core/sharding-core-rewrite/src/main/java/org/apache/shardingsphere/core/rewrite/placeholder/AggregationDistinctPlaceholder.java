@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.rewrite.placeholder;
 
-import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -32,10 +31,10 @@ public final class AggregationDistinctPlaceholder implements ShardingPlaceholder
     
     private final String columnName;
     
-    private final Optional<String> alias;
+    private final String alias;
     
     @Override
     public String toString() {
-        return alias.isPresent() ? columnName + " AS " + alias.get() : columnName;
+        return null != alias ? columnName + " AS " + alias : columnName;
     }
 }

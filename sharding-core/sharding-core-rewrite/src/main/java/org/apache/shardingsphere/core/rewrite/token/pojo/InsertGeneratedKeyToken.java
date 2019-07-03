@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.rewrite.token.pojo;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.ToString;
 
 /**
  * Insert generated key columns token.
@@ -27,17 +26,27 @@ import lombok.ToString;
  * @author panjuan
  */
 @Getter
-@ToString
 @EqualsAndHashCode(callSuper = true)
 public final class InsertGeneratedKeyToken extends SQLToken implements Attachable {
     
     private final String column;
     
-    private final boolean isToAddCloseParenthesis;
+    private final boolean isToAppendCloseParenthesis;
     
-    public InsertGeneratedKeyToken(final int startIndex, final String column, final boolean isToAddCloseParenthesis) {
+    public InsertGeneratedKeyToken(final int startIndex, final String column, final boolean isToAppendCloseParenthesis) {
         super(startIndex);
         this.column = column;
-        this.isToAddCloseParenthesis = isToAddCloseParenthesis;
+        this.isToAppendCloseParenthesis = isToAppendCloseParenthesis;
+    }
+    
+    @Override
+    public String toString() {
+        if (null == column) {
+            return "";
+        }
+        if (isToAppendCloseParenthesis) {
+            return String.format(", %s)", column);
+        }
+        return String.format(", %s", column);
     }
 }

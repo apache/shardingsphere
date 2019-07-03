@@ -18,8 +18,11 @@
 package org.apache.shardingsphere.core.rewrite.token.pojo;
 
 import lombok.Getter;
-import lombok.ToString;
 import org.apache.shardingsphere.core.parse.constant.QuoteCharacter;
+import org.apache.shardingsphere.core.rewrite.placeholder.Alterable;
+import org.apache.shardingsphere.core.route.type.RoutingUnit;
+
+import java.util.Map;
 
 /**
  * Index token.
@@ -28,8 +31,7 @@ import org.apache.shardingsphere.core.parse.constant.QuoteCharacter;
  * @author panjuan
  */
 @Getter
-@ToString
-public final class IndexToken extends SQLToken implements Substitutable {
+public final class IndexToken extends SQLToken implements Substitutable, Alterable {
     
     private final int stopIndex;
     
@@ -42,5 +44,16 @@ public final class IndexToken extends SQLToken implements Substitutable {
         this.stopIndex = stopIndex;
         this.indexName = indexName;
         this.quoteCharacter = quoteCharacter;
+    }
+    
+    @Override
+    public String toString(final RoutingUnit routingUnit, final Map<String, String> logicAndActualTables) {
+        StringBuilder result = new StringBuilder();
+        result.append(quoteCharacter.getStartDelimiter()).append(indexName);
+        if (!logicAndActualTables.isEmpty()) {
+            result.append("_").append(logicAndActualTables.values().iterator().next());
+        }
+        result.append(quoteCharacter.getEndDelimiter());
+        return result.toString();
     }
 }
