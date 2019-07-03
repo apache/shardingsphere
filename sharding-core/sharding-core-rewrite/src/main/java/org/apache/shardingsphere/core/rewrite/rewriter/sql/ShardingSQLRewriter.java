@@ -95,11 +95,9 @@ public final class ShardingSQLRewriter implements SQLRewriter {
     }
     
     private void appendSelectItemsPlaceholder(final SQLBuilder sqlBuilder, final SelectItemsToken selectItemsToken) {
-        if (isRewrite()) {
-            SelectItemsPlaceholder selectItemsPlaceholder = new SelectItemsPlaceholder();
-            selectItemsPlaceholder.getItems().addAll(selectItemsToken.getItems());
-            sqlBuilder.appendPlaceholder(selectItemsPlaceholder);
-        }
+        SelectItemsPlaceholder selectItemsPlaceholder = new SelectItemsPlaceholder();
+        selectItemsPlaceholder.getItems().addAll(selectItemsToken.getItems());
+        sqlBuilder.appendPlaceholder(selectItemsPlaceholder);
     }
     
     private void appendOffsetPlaceholder(final SQLBuilder sqlBuilder, final OffsetToken offsetToken) {
