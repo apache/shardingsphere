@@ -17,11 +17,6 @@
 
 package org.apache.shardingsphere.core.parse.filler.sharding.dml.update;
 
-import lombok.Setter;
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parse.aware.ShardingRuleAware;
-import org.apache.shardingsphere.core.parse.aware.ShardingTableMetaDataAware;
-import org.apache.shardingsphere.core.parse.exception.SQLParsingException;
 import org.apache.shardingsphere.core.parse.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
 import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
@@ -31,7 +26,6 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegme
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -42,12 +36,7 @@ import java.util.List;
  * @author zhangliang
  * @author panjuan
  */
-@Setter
-public final class ShardingSetAssignmentsFiller implements SQLSegmentFiller<SetAssignmentsSegment>, ShardingRuleAware, ShardingTableMetaDataAware {
-    
-    private ShardingRule shardingRule;
-    
-    private ShardingTableMetaData shardingTableMetaData;
+public final class ShardingSetAssignmentsFiller implements SQLSegmentFiller<SetAssignmentsSegment> {
     
     @Override
     public void fill(final SetAssignmentsSegment sqlSegment, final SQLStatement sqlStatement) {
@@ -62,35 +51,25 @@ public final class ShardingSetAssignmentsFiller implements SQLSegmentFiller<SetA
         for (AssignmentSegment each : sqlSegment.getAssignments()) {
             insertStatement.getColumnNames().add(each.getColumn().getName());
         }
-        int columnCount = getColumnCountExcludeAssistedQueryColumns(insertStatement);
-        if (sqlSegment.getAssignments().size() != columnCount) {
-            throw new SQLParsingException("INSERT INTO column size mismatch value size.");
-        }
+        insertStatement.getValues().add(getInsertValue(sqlSegment));
+    }
+    
+    private InsertValue getInsertValue(final SetAssignmentsSegment sqlSegment) {
         List<ExpressionSegment> columnValues = new LinkedList<>();
         for (AssignmentSegment each : sqlSegment.getAssignments()) {
             columnValues.add(each.getValue());
         }
-        insertStatement.getValues().add(new InsertValue(columnValues));
-    }
-    
-    private int getColumnCountExcludeAssistedQueryColumns(final InsertStatement insertStatement) {
-        String tableName = insertStatement.getTables().getSingleTableName();
-        if (shardingTableMetaData.containsTable(tableName) && shardingTableMetaData.get(tableName).getColumns().size() == insertStatement.getColumnNames().size()) {
-            return insertStatement.getColumnNames().size();
-        }
-        Integer assistedQueryColumnCount = shardingRule.getEncryptRule().getEncryptorEngine().getAssistedQueryColumnCount(insertStatement.getTables().getSingleTableName());
-        return insertStatement.getColumnNames().size() - assistedQueryColumnCount;
+        return new InsertValue(columnValues);
     }
     
     private void fillUpdate(final SetAssignmentsSegment sqlSegment, final UpdateStatement updateStatement) {
         String tableName = updateStatement.getTables().getSingleTableName();
         for (AssignmentSegment each : sqlSegment.getAssignments()) {
-            fillEncryptCondition(each, tableName, updateStatement);
+            fillUpdateAssignments(each, tableName, updateStatement);
         }
     }
     
-    private void fillEncryptCondition(final AssignmentSegment assignment, final String tableName, final UpdateStatement updateStatement) {
-        Column column = new Column(assignment.getColumn().getName(), tableName);
-        updateStatement.getAssignments().put(column, assignment.getValue());
+    private void fillUpdateAssignments(final AssignmentSegment assignment, final String tableName, final UpdateStatement updateStatement) {
+        updateStatement.getAssignments().put(new Column(assignment.getColumn().getName(), tableName), assignment.getValue());
     }
 }
