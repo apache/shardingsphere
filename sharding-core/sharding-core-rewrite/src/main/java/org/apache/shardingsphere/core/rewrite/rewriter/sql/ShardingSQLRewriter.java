@@ -117,16 +117,12 @@ public final class ShardingSQLRewriter implements SQLRewriter {
     }
     
     private void appendInsertGeneratedKeyPlaceholder(final SQLBuilder sqlBuilder, final InsertGeneratedKeyToken insertGeneratedKeyToken) {
-        sqlBuilder.appendPlaceholder(new InsertGeneratedKeyPlaceholder(insertGeneratedKeyToken.getColumn(), insertGeneratedKeyToken.isToAddCloseParenthesis()));
+        sqlBuilder.appendPlaceholder(new InsertGeneratedKeyPlaceholder(insertGeneratedKeyToken.getColumn(), insertGeneratedKeyToken.isToAppendCloseParenthesis()));
     }
     
     private void appendInsertSetAddGeneratedKeyPlaceholder(
             final SQLBuilder sqlBuilder, final InsertSetAddGeneratedKeyToken insertSetAddGeneratedKeyToken, final ShardingInsertOptimizedStatement optimizedStatement) {
         String columnName = insertSetAddGeneratedKeyToken.getColumnName();
         sqlBuilder.appendPlaceholder(new InsertSetAddGeneratedKeyPlaceholder(columnName, optimizedStatement.getUnits().get(0).getColumnSQLExpression(columnName)));
-    }
-    
-    private boolean isRewrite() {
-        return !sqlRouteResult.getRoutingResult().isSingleRouting();
     }
 }
