@@ -17,16 +17,13 @@
 
 package org.apache.shardingsphere.core.rewrite.builder;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.rewrite.placeholder.Alterable;
-import org.apache.shardingsphere.core.rewrite.placeholder.ShardingPlaceholder;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SQLToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.Substitutable;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -38,46 +35,14 @@ import java.util.Map;
  * @author maxiaoguang
  * @author panjuan
  */
+@RequiredArgsConstructor
 public final class SQLBuilder {
     
-    @Setter
-    private String logicSQL;
+    private final String logicSQL;
     
-    @Getter
     private final List<SQLToken> sqlTokens;
     
     private int currentSQLTokenIndex;
-    
-    private final List<Object> segments;
-    
-    private StringBuilder currentSegment;
-    
-    public SQLBuilder() {
-        sqlTokens = new LinkedList<>();
-        segments = new LinkedList<>();
-        currentSegment = new StringBuilder();
-        segments.add(currentSegment);
-    }
-    
-    /**
-     * Append literals.
-     *
-     * @param literals literals for SQL
-     */
-    public void appendLiterals(final String literals) {
-        currentSegment.append(literals);
-    }
-    
-    /**
-     * Append sharding placeholder.
-     *
-     * @param shardingPlaceholder sharding placeholder
-     */
-    public void appendPlaceholder(final ShardingPlaceholder shardingPlaceholder) {
-        segments.add(shardingPlaceholder);
-        currentSegment = new StringBuilder();
-        segments.add(currentSegment);
-    }
     
     private int getStartIndex(final SQLToken sqlToken) {
         return sqlToken instanceof Substitutable ? ((Substitutable) sqlToken).getStopIndex() + 1 : sqlToken.getStartIndex();
