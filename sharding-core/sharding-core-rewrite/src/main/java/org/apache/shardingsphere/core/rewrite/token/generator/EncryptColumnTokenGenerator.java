@@ -105,6 +105,7 @@ public final class EncryptColumnTokenGenerator implements CollectionSQLTokenGene
             return result;
         }
         for (Condition each : dmlStatement.getEncryptConditions().getOrConditions().get(0).getConditions()) {
+            this.column = new Column(each.getColumn().getName(), dmlStatement.getTables().getSingleTableName());
             this.startIndex = each.getPredicateSegment().getStartIndex();
             this.stopIndex = each.getPredicateSegment().getStopIndex();
             this.isInWhere = true;
@@ -115,7 +116,7 @@ public final class EncryptColumnTokenGenerator implements CollectionSQLTokenGene
     
     private EncryptColumnToken createEncryptColumnToken(final ShardingEncryptorEngine encryptorEngine, final ParameterBuilder parameterBuilder) {
         Optional<Condition> encryptCondition = getEncryptCondition(dmlStatement.getEncryptConditions());
-        Preconditions.checkArgument(isInWhere || encryptCondition.isPresent(), "Can not find encrypt condition");
+        Preconditions.checkArgument(!isInWhere || encryptCondition.isPresent(), "Can not find encrypt condition");
         return isInWhere ? getEncryptColumnTokenFromConditions(encryptorEngine, encryptCondition.get(), parameterBuilder)
                 : getEncryptColumnPlaceholderFromUpdateItem(encryptorEngine, parameterBuilder);
     }
