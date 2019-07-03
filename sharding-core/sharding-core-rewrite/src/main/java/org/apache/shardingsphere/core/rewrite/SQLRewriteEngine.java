@@ -77,9 +77,9 @@ public final class SQLRewriteEngine {
         baseRule = shardingRule;
         this.optimizedStatement = sqlRouteResult.getOptimizedStatement();
         encryptInsertOptimizedStatement();
+        parameterBuilder = createParameterBuilder(parameters);
         sqlTokens = createSQLTokens(parameters, isSingleRoute);
         sqlBuilder = new SQLBuilder();
-        parameterBuilder = createParameterBuilder(parameters);
         sqlRewriters = createSQLRewriters(sqlRouteResult);
     }
     
@@ -87,18 +87,18 @@ public final class SQLRewriteEngine {
         baseRule = encryptRule;
         this.optimizedStatement = optimizedStatement;
         encryptInsertOptimizedStatement();
+        parameterBuilder = createParameterBuilder(parameters);
         sqlTokens = createSQLTokens(parameters, true);
         sqlBuilder = new SQLBuilder();
-        parameterBuilder = createParameterBuilder(parameters);
         sqlRewriters = createSQLRewriters();
     }
     
     public SQLRewriteEngine(final MasterSlaveRule masterSlaveRule, final OptimizedStatement optimizedStatement) {
         baseRule = masterSlaveRule;
         this.optimizedStatement = optimizedStatement;
+        parameterBuilder = createParameterBuilder(Collections.emptyList());
         sqlTokens = createSQLTokens(Collections.emptyList(), true);
         sqlBuilder = new SQLBuilder();
-        parameterBuilder = createParameterBuilder(Collections.emptyList());
         sqlRewriters = Collections.<SQLRewriter>singletonList(new BaseSQLRewriter());
     }
     
@@ -145,13 +145,13 @@ public final class SQLRewriteEngine {
     
     private List<SQLToken> createSQLTokens(final List<Object> parameters, final boolean isSingleRoute) {
         List<SQLToken> result = new LinkedList<>();
-        result.addAll(new BaseTokenGenerateEngine().generateSQLTokens(optimizedStatement, parameters, baseRule, isSingleRoute));
+        result.addAll(new BaseTokenGenerateEngine().generateSQLTokens(optimizedStatement, parameterBuilder, baseRule, isSingleRoute));
         if (baseRule instanceof ShardingRule) {
             ShardingRule shardingRule = (ShardingRule) baseRule;
-            result.addAll(new ShardingTokenGenerateEngine().generateSQLTokens(optimizedStatement, parameters, shardingRule, isSingleRoute));
-            result.addAll(new EncryptTokenGenerateEngine().generateSQLTokens(optimizedStatement, parameters, shardingRule.getEncryptRule(), isSingleRoute));
+            result.addAll(new ShardingTokenGenerateEngine().generateSQLTokens(optimizedStatement, parameterBuilder, shardingRule, isSingleRoute));
+            result.addAll(new EncryptTokenGenerateEngine().generateSQLTokens(optimizedStatement, parameterBuilder, shardingRule.getEncryptRule(), isSingleRoute));
         } else if (baseRule instanceof EncryptRule) {
-            result.addAll(new EncryptTokenGenerateEngine().generateSQLTokens(optimizedStatement, parameters, (EncryptRule) baseRule, isSingleRoute));
+            result.addAll(new EncryptTokenGenerateEngine().generateSQLTokens(optimizedStatement, parameterBuilder, (EncryptRule) baseRule, isSingleRoute));
         }
         Collections.sort(result);
         return result;
@@ -168,7 +168,7 @@ public final class SQLRewriteEngine {
         result.add(new BaseSQLRewriter());
         result.add(new ShardingSQLRewriter(sqlRouteResult, optimizedStatement));
         if (optimizedStatement.getSQLStatement() instanceof DMLStatement) {
-            result.add(new EncryptSQLRewriter(((ShardingRule) baseRule).getEncryptRule().getEncryptorEngine(), optimizedStatement));
+            result.add(new EncryptSQLRewriter(optimizedStatement));
         }
         return result;
     }
@@ -177,7 +177,7 @@ public final class SQLRewriteEngine {
         Collection<SQLRewriter> result = new LinkedList<>();
         result.add(new BaseSQLRewriter());
         if (optimizedStatement.getSQLStatement() instanceof DMLStatement) {
-            result.add(new EncryptSQLRewriter(((EncryptRule) baseRule).getEncryptorEngine(), optimizedStatement));
+            result.add(new EncryptSQLRewriter(optimizedStatement));
         }
         return result;
     }

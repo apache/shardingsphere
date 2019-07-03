@@ -22,10 +22,9 @@ import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.SelectItemsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.AggregationDistinctSelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SelectItemPrefixToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-
-import java.util.List;
 
 /**
  * Select item prefix token generator.
@@ -35,7 +34,7 @@ import java.util.List;
 public final class SelectItemPrefixTokenGenerator implements OptionalSQLTokenGenerator<ShardingRule> {
     
     @Override
-    public Optional<SelectItemPrefixToken> generateSQLToken(final OptimizedStatement optimizedStatement, final List<Object> parameters, final ShardingRule shardingRule) {
+    public Optional<SelectItemPrefixToken> generateSQLToken(final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final ShardingRule shardingRule) {
         if (!(optimizedStatement.getSQLStatement() instanceof SelectStatement)) {
             return Optional.absent();
         }

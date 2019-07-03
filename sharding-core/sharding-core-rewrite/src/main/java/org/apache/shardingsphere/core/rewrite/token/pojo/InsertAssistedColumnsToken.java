@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.core.rewrite.token.pojo;
 
+import com.google.common.base.Joiner;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.ToString;
 
 import java.util.Collection;
 
@@ -29,7 +29,6 @@ import java.util.Collection;
  * @author panjuan
  */
 @Getter
-@ToString
 @EqualsAndHashCode(callSuper = true)
 public final class InsertAssistedColumnsToken extends SQLToken implements Attachable {
     
@@ -41,5 +40,16 @@ public final class InsertAssistedColumnsToken extends SQLToken implements Attach
         super(startIndex);
         this.columns = columns;
         this.isToAddCloseParenthesis = isToAddCloseParenthesis;
+    }
+    
+    @Override
+    public String toString() {
+        if (columns.isEmpty()) {
+            return "";
+        }
+        if (isToAddCloseParenthesis) {
+            return String.format(", %s)", Joiner.on(", ").join(columns));
+        }
+        return String.format(", %s", Joiner.on(", ").join(columns));
     }
 }

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.rewrite.token.pojo;
 
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
 
 /**
  * Encrypt column token.
@@ -28,18 +27,12 @@ import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
  */
 @Getter
 @ToString
-public final class EncryptColumnToken extends SQLToken implements Substitutable {
-    
-    private final Column column;
-    
-    private final boolean isInWhere;
+public abstract class EncryptColumnToken extends SQLToken implements Substitutable {
     
     private final int stopIndex;
     
-    public EncryptColumnToken(final int startIndex, final int stopIndex, final Column column, final boolean isInWhere) {
+    public EncryptColumnToken(final int startIndex, final int stopIndex) {
         super(startIndex);
-        this.column = column;
-        this.isInWhere = isInWhere;
         this.stopIndex = stopIndex;
     }
 }

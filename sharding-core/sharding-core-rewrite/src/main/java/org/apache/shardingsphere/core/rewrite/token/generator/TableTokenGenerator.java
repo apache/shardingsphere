@@ -30,6 +30,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemSegme
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.ShorthandSelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.pojo.TableToken;
 import org.apache.shardingsphere.core.rule.BaseRule;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
@@ -37,7 +38,6 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Table token generator.
@@ -48,7 +48,7 @@ import java.util.List;
 public final class TableTokenGenerator implements CollectionSQLTokenGenerator<BaseRule> {
     
     @Override
-    public Collection<TableToken> generateSQLTokens(final OptimizedStatement optimizedStatement, final List<Object> parameters, final BaseRule baseRule) {
+    public Collection<TableToken> generateSQLTokens(final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final BaseRule baseRule) {
         Collection<TableToken> result = new LinkedList<>();
         for (SQLSegment each : optimizedStatement.getSQLStatement().getSQLSegments()) {
             if (each instanceof SelectItemsSegment) {

@@ -27,12 +27,12 @@ import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationSe
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.DerivedCommonSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SelectItemsToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Select items token generator.
@@ -42,7 +42,7 @@ import java.util.List;
 public final class SelectItemsTokenGenerator implements OptionalSQLTokenGenerator<ShardingRule> {
     
     @Override
-    public Optional<SelectItemsToken> generateSQLToken(final OptimizedStatement optimizedStatement, final List<Object> parameters, final ShardingRule shardingRule) {
+    public Optional<SelectItemsToken> generateSQLToken(final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final ShardingRule shardingRule) {
         if (!(optimizedStatement.getSQLStatement() instanceof SelectStatement)) {
             return Optional.absent();
         }

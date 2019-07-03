@@ -22,6 +22,7 @@ import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
+import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertSetAddGeneratedKeyToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
@@ -36,7 +37,7 @@ import java.util.List;
 public final class InsertSetAddGeneratedKeyTokenGenerator implements OptionalSQLTokenGenerator<ShardingRule> {
     
     @Override
-    public Optional<InsertSetAddGeneratedKeyToken> generateSQLToken(final OptimizedStatement optimizedStatement, final List<Object> parameters, final ShardingRule shardingRule) {
+    public Optional<InsertSetAddGeneratedKeyToken> generateSQLToken(final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final ShardingRule shardingRule) {
         Optional<SetAssignmentsSegment> setAssignmentsSegment = optimizedStatement.getSQLStatement().findSQLSegment(SetAssignmentsSegment.class);
         if (!(optimizedStatement.getSQLStatement() instanceof InsertStatement && setAssignmentsSegment.isPresent())) {
             return Optional.absent();
