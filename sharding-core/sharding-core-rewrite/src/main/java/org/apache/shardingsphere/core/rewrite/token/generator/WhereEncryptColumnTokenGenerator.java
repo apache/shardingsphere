@@ -61,10 +61,10 @@ public final class WhereEncryptColumnTokenGenerator implements CollectionSQLToke
             return Collections.emptyList();
         }
         this.dmlStatement = (DMLStatement) optimizedStatement.getSQLStatement();
-        return createWhereEncryptColumnToken(encryptRule, parameterBuilder);
+        return createWhereEncryptColumnTokens(encryptRule, parameterBuilder);
     }
     
-    private Collection<EncryptColumnToken> createWhereEncryptColumnToken(final EncryptRule encryptRule, final ParameterBuilder parameterBuilder) {
+    private Collection<EncryptColumnToken> createWhereEncryptColumnTokens(final EncryptRule encryptRule, final ParameterBuilder parameterBuilder) {
         Collection<EncryptColumnToken> result = new LinkedList<>();
         if (dmlStatement.getEncryptConditions().getOrConditions().isEmpty()) {
             return result;
