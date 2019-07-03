@@ -169,7 +169,7 @@ public final class SQLRewriteEngine {
         result.add(new BaseSQLRewriter());
         result.add(new ShardingSQLRewriter(sqlRouteResult, optimizedStatement));
         if (optimizedStatement.getSQLStatement() instanceof DMLStatement) {
-            result.add(new EncryptSQLRewriter(((ShardingRule) baseRule).getEncryptRule().getEncryptorEngine(), optimizedStatement));
+            result.add(new EncryptSQLRewriter(optimizedStatement));
         }
         return result;
     }
@@ -178,7 +178,7 @@ public final class SQLRewriteEngine {
         Collection<SQLRewriter> result = new LinkedList<>();
         result.add(new BaseSQLRewriter());
         if (optimizedStatement.getSQLStatement() instanceof DMLStatement) {
-            result.add(new EncryptSQLRewriter(((EncryptRule) baseRule).getEncryptorEngine(), optimizedStatement));
+            result.add(new EncryptSQLRewriter(optimizedStatement));
         }
         return result;
     }
