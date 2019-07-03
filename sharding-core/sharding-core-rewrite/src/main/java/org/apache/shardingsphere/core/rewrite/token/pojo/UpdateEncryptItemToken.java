@@ -40,6 +40,10 @@ public final class UpdateEncryptItemToken extends EncryptColumnToken {
         this.parameterMarkerIndex = parameterMarkerIndex;
     }
     
+    public UpdateEncryptItemToken(final int startIndex, final int stopIndex, final String columnName) {
+        this(startIndex, stopIndex, columnName, null, 0);
+    }
+    
     public UpdateEncryptItemToken(final int startIndex, final int stopIndex, final String columnName, final Comparable<?> columnValue) {
         this(startIndex, stopIndex, columnName, columnValue, -1);
     }
