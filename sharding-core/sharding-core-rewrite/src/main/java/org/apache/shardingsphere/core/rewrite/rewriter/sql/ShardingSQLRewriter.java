@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.core.rewrite.rewriter.sql;
 
-import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.ShardingInsertOptimizedStatement;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
 import org.apache.shardingsphere.core.rewrite.placeholder.AggregationDistinctPlaceholder;
@@ -40,7 +38,6 @@ import org.apache.shardingsphere.core.rewrite.token.pojo.RowCountToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SQLToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SelectItemPrefixToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SelectItemsToken;
-import org.apache.shardingsphere.core.route.SQLRouteResult;
 
 /**
  * SQL rewriter for sharding.
@@ -50,15 +47,6 @@ import org.apache.shardingsphere.core.route.SQLRouteResult;
  * @author panjuan
  */
 public final class ShardingSQLRewriter implements SQLRewriter {
-    
-    private final SQLRouteResult sqlRouteResult;
-    
-    private final OptimizedStatement optimizedStatement;
-    
-    public ShardingSQLRewriter(final SQLRouteResult sqlRouteResult, final OptimizedStatement optimizedStatement) {
-        this.sqlRouteResult = sqlRouteResult;
-        this.optimizedStatement = optimizedStatement;
-    }
     
     @Override
     public void rewrite(final SQLBuilder sqlBuilder, final ParameterBuilder parameterBuilder, final SQLToken sqlToken) {
@@ -79,7 +67,7 @@ public final class ShardingSQLRewriter implements SQLRewriter {
         } else if (sqlToken instanceof InsertGeneratedKeyToken) {
             appendInsertGeneratedKeyPlaceholder(sqlBuilder, (InsertGeneratedKeyToken) sqlToken);
         } else if (sqlToken instanceof InsertSetAddGeneratedKeyToken) {
-            appendInsertSetAddGeneratedKeyPlaceholder(sqlBuilder, (InsertSetAddGeneratedKeyToken) sqlToken, (ShardingInsertOptimizedStatement) optimizedStatement);
+            appendInsertSetAddGeneratedKeyPlaceholder(sqlBuilder, (InsertSetAddGeneratedKeyToken) sqlToken);
         }
     }
     
@@ -120,9 +108,7 @@ public final class ShardingSQLRewriter implements SQLRewriter {
         sqlBuilder.appendPlaceholder(new InsertGeneratedKeyPlaceholder(insertGeneratedKeyToken.getColumn(), insertGeneratedKeyToken.isToAppendCloseParenthesis()));
     }
     
-    private void appendInsertSetAddGeneratedKeyPlaceholder(
-            final SQLBuilder sqlBuilder, final InsertSetAddGeneratedKeyToken insertSetAddGeneratedKeyToken, final ShardingInsertOptimizedStatement optimizedStatement) {
-        String columnName = insertSetAddGeneratedKeyToken.getColumnName();
-        sqlBuilder.appendPlaceholder(new InsertSetAddGeneratedKeyPlaceholder(columnName, optimizedStatement.getUnits().get(0).getColumnSQLExpression(columnName)));
+    private void appendInsertSetAddGeneratedKeyPlaceholder(final SQLBuilder sqlBuilder, final InsertSetAddGeneratedKeyToken insertSetAddGeneratedKeyToken) {
+        sqlBuilder.appendPlaceholder(new InsertSetAddGeneratedKeyPlaceholder(insertSetAddGeneratedKeyToken.getColumnName(), insertSetAddGeneratedKeyToken.getColumnValue()));
     }
 }
