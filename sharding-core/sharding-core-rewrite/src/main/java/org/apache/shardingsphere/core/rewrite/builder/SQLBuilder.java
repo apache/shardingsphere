@@ -79,17 +79,6 @@ public final class SQLBuilder {
         segments.add(currentSegment);
     }
     
-    /**
-     * Append literals.
-     *
-     * @param sqlToken sql token
-     */
-    public void appendLiteral(final SQLToken sqlToken) {
-        int stopIndex = sqlTokens.size() - 1 == currentSQLTokenIndex ? logicSQL.length() : sqlTokens.get(currentSQLTokenIndex + 1).getStartIndex();
-        appendLiterals(logicSQL.substring(getStartIndex(sqlToken) > logicSQL.length() ? logicSQL.length() : getStartIndex(sqlToken), stopIndex));
-        currentSQLTokenIndex++;
-    }
-    
     private int getStartIndex(final SQLToken sqlToken) {
         return sqlToken instanceof Substitutable ? ((Substitutable) sqlToken).getStopIndex() + 1 : sqlToken.getStartIndex();
     }
@@ -100,15 +89,7 @@ public final class SQLBuilder {
      * @return SQL
      */
     public String toSQL() {
-        StringBuilder result = new StringBuilder();
-        for (Object each : segments) {
-            if (each instanceof Alterable) {
-                result.append(((Alterable) each).toString(null, Collections.<String, String>emptyMap()));
-            } else {
-                result.append(each);
-            }
-        }
-        return result.toString();
+        return toSQL(null, Collections.<String, String>emptyMap());
     }
     
     /**
@@ -119,14 +100,25 @@ public final class SQLBuilder {
      * @return SQL
      */
     public String toSQL(final RoutingUnit routingUnit, final Map<String, String> logicAndActualTables) {
+        if (sqlTokens.isEmpty()) {
+            return logicSQL;
+        }
         StringBuilder result = new StringBuilder();
-        for (Object each : segments) {
-            if (each instanceof Alterable) {
-                result.append(((Alterable) each).toString(routingUnit, logicAndActualTables));
-            } else {
-                result.append(each);
-            }
+        result.append(logicSQL.substring(0, sqlTokens.get(0).getStartIndex()));
+        for (SQLToken each : sqlTokens) {
+            result.append(getTokenLiterals(each, routingUnit, logicAndActualTables));
+            result.append(getConjunction(each));
         }
         return result.toString();
+    }
+    
+    private String getTokenLiterals(final SQLToken sqlToken, final RoutingUnit routingUnit, final Map<String, String> logicAndActualTables) {
+        return sqlToken instanceof Alterable ? ((Alterable) sqlToken).toString(routingUnit, logicAndActualTables) : sqlToken.toString();
+    }
+    
+    private String getConjunction(final SQLToken sqlToken) {
+        int stopIndex = sqlTokens.size() - 1 == currentSQLTokenIndex ? logicSQL.length() : sqlTokens.get(currentSQLTokenIndex + 1).getStartIndex();
+        currentSQLTokenIndex++;
+        return logicSQL.substring(getStartIndex(sqlToken) > logicSQL.length() ? logicSQL.length() : getStartIndex(sqlToken), stopIndex);
     }
 }
