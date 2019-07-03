@@ -76,7 +76,7 @@ public final class MergeEngineFactoryTest {
     
     @Test(expected = UnsupportedOperationException.class)
     public void assertNewInstanceWithOtherStatement() throws SQLException {
-        SQLRouteResult routeResult = new SQLRouteResult(new ShardingInsertOptimizedStatement(new InsertStatement(), Collections.<ShardingCondition>emptyList(), Collections.<String>emptyList()));
+        SQLRouteResult routeResult = new SQLRouteResult(new ShardingInsertOptimizedStatement(new InsertStatement(), Collections.<ShardingCondition>emptyList(), Collections.<String>emptyList(), null));
         MergeEngineFactory.newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, routeResult, null, queryResults);
     }
 }

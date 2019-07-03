@@ -15,24 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.context.condition;
+package org.apache.shardingsphere.core.optimize.statement;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.InsertOptimizeResultUnit;
 
-import java.util.LinkedList;
+import java.util.Collection;
 import java.util.List;
 
 /**
- * And conditions.
+ * Insert optimized statement.
  *
- * @author maxiaoguang
+ * @author zhangliang
  */
-@Getter
-@EqualsAndHashCode
-@ToString
-public final class AndCondition {
+public interface InsertOptimizedStatement extends OptimizedStatement {
     
-    private final List<Condition> conditions = new LinkedList<>();
+    /**
+     * Get column names.
+     * 
+     * @return column names
+     */
+    Collection<String> getColumnNames();
+    
+    /**
+     * Get insert optimize result units.
+     * 
+     * @return insert optimize result units
+     */
+    List<InsertOptimizeResultUnit> getUnits();
 }

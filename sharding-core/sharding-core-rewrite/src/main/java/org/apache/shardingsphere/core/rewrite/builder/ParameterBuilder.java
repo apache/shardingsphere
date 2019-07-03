@@ -19,9 +19,9 @@ package org.apache.shardingsphere.core.rewrite.builder;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
+import org.apache.shardingsphere.core.optimize.statement.InsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.InsertOptimizeResultUnit;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.ShardingInsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.Pagination;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ShardingSelectOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
@@ -65,12 +65,12 @@ public final class ParameterBuilder {
      * @param optimizedStatement optimized statement
      */
     public void setInsertParameterUnits(final OptimizedStatement optimizedStatement) {
-        if (insertParameterUnits.isEmpty() && optimizedStatement instanceof ShardingInsertOptimizedStatement) {
-            insertParameterUnits.addAll(createInsertParameterUnits((ShardingInsertOptimizedStatement) optimizedStatement));
+        if (insertParameterUnits.isEmpty() && optimizedStatement instanceof InsertOptimizedStatement) {
+            insertParameterUnits.addAll(createInsertParameterUnits((InsertOptimizedStatement) optimizedStatement));
         }
     }
     
-    private List<InsertParameterUnit> createInsertParameterUnits(final ShardingInsertOptimizedStatement optimizedStatement) {
+    private List<InsertParameterUnit> createInsertParameterUnits(final InsertOptimizedStatement optimizedStatement) {
         List<InsertParameterUnit> result = new LinkedList<>();
         if (null == optimizedStatement) {
             return result;

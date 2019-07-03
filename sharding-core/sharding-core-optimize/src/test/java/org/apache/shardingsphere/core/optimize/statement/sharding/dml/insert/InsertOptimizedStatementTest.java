@@ -33,7 +33,7 @@ import static org.junit.Assert.assertThat;
 public final class InsertOptimizedStatementTest {
     
     private ShardingInsertOptimizedStatement insertClauseOptimizedStatement = new ShardingInsertOptimizedStatement(
-            new InsertStatement(), Collections.<ShardingCondition>emptyList(), Lists.newArrayList("id", "value", "status"));
+            new InsertStatement(), Collections.<ShardingCondition>emptyList(), Lists.newArrayList("id", "value", "status"), null);
     
     @Test
     public void assertAddUnitWithSet() {

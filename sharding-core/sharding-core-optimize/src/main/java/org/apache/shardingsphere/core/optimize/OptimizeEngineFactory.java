@@ -53,17 +53,17 @@ public final class OptimizeEngineFactory {
      * Create sharding optimize engine instance.
      * 
      * @param shardingRule sharding rule
+     * @param shardingTableMetaData sharding table metadata
      * @param sqlStatement SQL statement
      * @param parameters parameters
-     * @param shardingTableMetaData sharding table metadata
      * @return optimize engine instance
      */
-    public static OptimizeEngine newInstance(final ShardingRule shardingRule, final SQLStatement sqlStatement, final List<Object> parameters, final ShardingTableMetaData shardingTableMetaData) {
+    public static OptimizeEngine newInstance(final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData, final SQLStatement sqlStatement, final List<Object> parameters) {
         if (sqlStatement instanceof SelectStatement) {
             return new ShardingSelectOptimizeEngine(shardingRule, shardingTableMetaData, (SelectStatement) sqlStatement, parameters);
         }
         if (sqlStatement instanceof InsertStatement) {
-            return new ShardingInsertOptimizeEngine(shardingRule, (InsertStatement) sqlStatement, parameters);
+            return new ShardingInsertOptimizeEngine(shardingRule, shardingTableMetaData, (InsertStatement) sqlStatement, parameters);
         }
         if (sqlStatement instanceof UpdateStatement) {
             return new ShardingUpdateOptimizeEngine(shardingRule, shardingTableMetaData, (UpdateStatement) sqlStatement, parameters);
@@ -81,13 +81,14 @@ public final class OptimizeEngineFactory {
      * Create encrypt optimize engine instance.
      * 
      * @param encryptRule encrypt rule
+     * @param shardingTableMetaData sharding table metadata
      * @param sqlStatement SQL statement
      * @param parameters parameters
      * @return optimize engine instance
      */
-    public static OptimizeEngine newInstance(final EncryptRule encryptRule, final SQLStatement sqlStatement, final List<Object> parameters) {
+    public static OptimizeEngine newInstance(final EncryptRule encryptRule, final ShardingTableMetaData shardingTableMetaData, final SQLStatement sqlStatement, final List<Object> parameters) {
         if (sqlStatement instanceof InsertStatement) {
-            return new EncryptInsertOptimizeEngine(encryptRule, (InsertStatement) sqlStatement, parameters);
+            return new EncryptInsertOptimizeEngine(encryptRule, shardingTableMetaData, (InsertStatement) sqlStatement, parameters);
         }
         return new TransparentOptimizeEngine(sqlStatement);
     }

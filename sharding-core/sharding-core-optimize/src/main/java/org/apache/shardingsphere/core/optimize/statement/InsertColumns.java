@@ -15,24 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.context.condition;
+package org.apache.shardingsphere.core.optimize.statement;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
-
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Collection;
 
 /**
- * And conditions.
+ * Insert columns.
  *
- * @author maxiaoguang
+ * @author zhangliang
  */
-@Getter
-@EqualsAndHashCode
-@ToString
-public final class AndCondition {
+public interface InsertColumns {
     
-    private final List<Condition> conditions = new LinkedList<>();
+    /**
+     * Get regular column names.
+     * 
+     * @return regular column names
+     */
+    Collection<String> getRegularColumnNames();
+    
+    /**
+     * Get all column names.
+     *
+     * <p>
+     *     Include regular column names and derived column names with same sequence with insert values.
+     * </p>
+     *
+     * @return all column names
+     */
+    Collection<String> getAllColumnNames();
 }

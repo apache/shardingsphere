@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Optional;
+import org.apache.shardingsphere.core.optimize.statement.InsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.InsertOptimizeResultUnit;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.ShardingInsertOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
@@ -57,10 +57,10 @@ public final class InsertValuesTokenGenerator implements OptionalSQLTokenGenerat
             startIndex = startIndex > each.getStartIndex() ? each.getStartIndex() : startIndex;
             stopIndex = stopIndex < each.getStopIndex() ? each.getStopIndex() : stopIndex;
         }
-        return Optional.of(new InsertValuesToken(startIndex, stopIndex, getInsertValues((ShardingInsertOptimizedStatement) optimizedStatement)));
+        return Optional.of(new InsertValuesToken(startIndex, stopIndex, getInsertValues((InsertOptimizedStatement) optimizedStatement)));
     }
     
-    private List<InsertValuePlaceholder> getInsertValues(final ShardingInsertOptimizedStatement insertOptimizeResult) {
+    private List<InsertValuePlaceholder> getInsertValues(final InsertOptimizedStatement insertOptimizeResult) {
         List<InsertValuePlaceholder> insertValues = new LinkedList<>();
         for (InsertOptimizeResultUnit each : insertOptimizeResult.getUnits()) {
             insertValues.add(new InsertValuePlaceholder(new ArrayList<>(each.getColumnNames()), Arrays.asList(each.getValues()), each.getDataNodes()));

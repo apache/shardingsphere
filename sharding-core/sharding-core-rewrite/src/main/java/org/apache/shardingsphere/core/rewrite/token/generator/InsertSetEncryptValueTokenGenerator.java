@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Optional;
+import org.apache.shardingsphere.core.optimize.statement.InsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.ShardingInsertOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -65,7 +65,7 @@ public final class InsertSetEncryptValueTokenGenerator implements CollectionSQLT
                 encryptRule.getEncryptorEngine().getShardingEncryptor(optimizedStatement.getSQLStatement().getTables().getSingleTableName(), segment.getColumn().getName());
         if (shardingEncryptor.isPresent() && !(segment.getValue() instanceof ParameterMarkerExpressionSegment)) {
             return Optional.of(new InsertSetEncryptValueToken(segment.getValue().getStartIndex(), 
-                    segment.getValue().getStopIndex(), ((ShardingInsertOptimizedStatement) optimizedStatement).getUnits().get(0).getColumnSQLExpression(segment.getColumn().getName())));
+                    segment.getValue().getStopIndex(), ((InsertOptimizedStatement) optimizedStatement).getUnits().get(0).getColumnSQLExpression(segment.getColumn().getName())));
         }
         return Optional.absent();
     }

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.connection;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
+import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.entry.EncryptSQLParseEntry;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.EncryptPreparedStatement;
@@ -49,6 +50,8 @@ public final class EncryptConnection extends AbstractUnsupportedOperationConnect
     private final Connection connection;
     
     private final EncryptRule encryptRule;
+    
+    private final ShardingTableMetaData shardingTableMetaData;
     
     private final EncryptSQLParseEntry parseEngine;
     

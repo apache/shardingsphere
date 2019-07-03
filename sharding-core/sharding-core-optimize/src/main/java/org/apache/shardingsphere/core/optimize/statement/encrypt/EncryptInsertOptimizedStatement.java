@@ -15,14 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert;
+package org.apache.shardingsphere.core.optimize.statement.encrypt;
 
-import com.google.common.base.Optional;
 import lombok.Getter;
 import org.apache.shardingsphere.core.optimize.statement.InsertOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.ShardingDMLOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingConditions;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.InsertOptimizeResultUnit;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
@@ -32,23 +29,23 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Insert optimized statement for sharding.
+ * Insert optimized statement for encrypt.
  *
  * @author zhangliang
  */
-@Getter
-public final class ShardingInsertOptimizedStatement extends ShardingDMLOptimizedStatement implements InsertOptimizedStatement {
+public final class EncryptInsertOptimizedStatement implements InsertOptimizedStatement {
     
+    private final SQLStatement sqlStatement;
+    
+    @Getter
     private final Collection<String> columnNames = new LinkedHashSet<>();
     
+    @Getter
     private final List<InsertOptimizeResultUnit> units = new LinkedList<>();
     
-    private final GeneratedKey generatedKey;
-    
-    public ShardingInsertOptimizedStatement(final SQLStatement sqlStatement, final List<ShardingCondition> shardingConditions, final Collection<String> columnNames, final GeneratedKey generatedKey) {
-        super(sqlStatement, new ShardingConditions(shardingConditions));
+    public EncryptInsertOptimizedStatement(final SQLStatement sqlStatement, final Collection<String> columnNames) {
+        this.sqlStatement = sqlStatement;
         this.columnNames.addAll(columnNames);
-        this.generatedKey = generatedKey;
     }
     
     /**
@@ -65,12 +62,8 @@ public final class ShardingInsertOptimizedStatement extends ShardingDMLOptimized
         return result;
     }
     
-    /**
-     * Get generated key.
-     *
-     * @return generated key
-     */
-    public Optional<GeneratedKey> getGeneratedKey() {
-        return Optional.fromNullable(generatedKey);
+    @Override
+    public SQLStatement getSQLStatement() {
+        return sqlStatement;
     }
 }
