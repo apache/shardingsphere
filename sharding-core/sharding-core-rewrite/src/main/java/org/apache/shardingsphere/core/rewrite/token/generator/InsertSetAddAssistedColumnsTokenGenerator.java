@@ -24,6 +24,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.Assignmen
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
+import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertSetAddAssistedColumnsToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
@@ -40,7 +41,7 @@ import java.util.List;
 public final class InsertSetAddAssistedColumnsTokenGenerator implements OptionalSQLTokenGenerator<EncryptRule> {
     
     @Override
-    public Optional<InsertSetAddAssistedColumnsToken> generateSQLToken(final OptimizedStatement optimizedStatement, final List<Object> parameters, final EncryptRule encryptRule) {
+    public Optional<InsertSetAddAssistedColumnsToken> generateSQLToken(final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final EncryptRule encryptRule) {
         Optional<SetAssignmentsSegment> setAssignmentsSegment = optimizedStatement.getSQLStatement().findSQLSegment(SetAssignmentsSegment.class);
         if (!(optimizedStatement.getSQLStatement() instanceof InsertStatement && setAssignmentsSegment.isPresent())) {
             return Optional.absent();
