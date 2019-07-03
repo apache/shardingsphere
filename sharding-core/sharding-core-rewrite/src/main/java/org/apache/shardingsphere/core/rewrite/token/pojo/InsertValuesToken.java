@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.rewrite.token.pojo;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.rewrite.placeholder.Alterable;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.rule.DataNode;
 

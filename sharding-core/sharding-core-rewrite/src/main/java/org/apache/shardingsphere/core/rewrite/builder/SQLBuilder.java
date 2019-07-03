@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.rewrite.builder;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.rewrite.placeholder.Alterable;
+import org.apache.shardingsphere.core.rewrite.token.pojo.Alterable;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SQLToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.Substitutable;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;

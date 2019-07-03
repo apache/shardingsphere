@@ -21,6 +21,7 @@ import com.google.common.base.Joiner;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.constant.QuoteCharacter;
+import org.apache.shardingsphere.core.rewrite.token.pojo.Alterable;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 
 import java.util.Map;
