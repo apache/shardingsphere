@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.rewrite.token.pojo;
 
-import com.google.common.base.Optional;
 import lombok.Getter;
 
 /**
@@ -28,16 +27,21 @@ import lombok.Getter;
 @Getter
 public final class AggregationDistinctToken extends SQLToken implements Substitutable {
     
-    private String columnName;
+    private final String columnName;
     
-    private Optional<String> derivedAlias;
+    private final String derivedAlias;
     
     private final int stopIndex;
     
-    public AggregationDistinctToken(final int startIndex, final int stopIndex, final String columnName, final Optional<String> derivedAlias) {
+    public AggregationDistinctToken(final int startIndex, final int stopIndex, final String columnName, final String derivedAlias) {
         super(startIndex);
         this.columnName = columnName;
         this.derivedAlias = derivedAlias;
         this.stopIndex = stopIndex;
+    }
+    
+    @Override
+    public String toString() {
+        return null != derivedAlias ? columnName + " AS " + derivedAlias : columnName;
     }
 }
