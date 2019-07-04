@@ -15,34 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.filler.sharding.dml;
+package org.apache.shardingsphere.core.parse.filler.common.dml;
 
-import lombok.Setter;
 import org.apache.shardingsphere.core.parse.filler.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.filler.common.dml.RowNumberPredicateFiller;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.OrPredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 
 /**
- * Or predicate filler for sharding.
+ * Or predicate filler.
  *
  * @author duhongjun
  * @author zhangliang
  * @author panjuan
  */
-@Setter
-public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredicateSegment> {
+public final class OrPredicateFiller implements SQLSegmentFiller<OrPredicateSegment> {
     
-    private final RowNumberPredicateFiller shardingRowNumberPredicateFiller = new RowNumberPredicateFiller();
+    private final RowNumberPredicateFiller rowNumberPredicateFiller = new RowNumberPredicateFiller();
     
     @Override
     public void fill(final OrPredicateSegment sqlSegment, final SQLStatement sqlStatement) {
-        if (sqlStatement instanceof DMLStatement) {
-            if (sqlStatement instanceof SelectStatement) {
-                shardingRowNumberPredicateFiller.fill(sqlSegment, sqlStatement);
-            }
+        if (sqlStatement instanceof SelectStatement) {
+            rowNumberPredicateFiller.fill(sqlSegment, sqlStatement);
         }
     }
 }

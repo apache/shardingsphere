@@ -15,32 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.filler.sharding.dml.select;
+package org.apache.shardingsphere.core.parse.filler.common.dml;
 
-import lombok.Setter;
 import org.apache.shardingsphere.core.parse.filler.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.filler.common.dml.RowNumberPredicateFiller;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.OrPredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.SubqueryPredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 
 /**
- * Subquery predicate filler for sharding.
+ * Subquery predicate filler.
  *
  * @author duhongjun
  */
-@Setter
-public final class ShardingSubqueryPredicateFiller implements SQLSegmentFiller<SubqueryPredicateSegment> {
+public final class SubqueryPredicateFiller implements SQLSegmentFiller<SubqueryPredicateSegment> {
     
-    private final RowNumberPredicateFiller shardingRowNumberPredicateFiller = new RowNumberPredicateFiller();
+    private final RowNumberPredicateFiller rowNumberPredicateFiller = new RowNumberPredicateFiller();
     
     @Override
     public void fill(final SubqueryPredicateSegment sqlSegment, final SQLStatement sqlStatement) {
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
         for (OrPredicateSegment each : sqlSegment.getOrPredicates()) {
             selectStatement.setContainsSubquery(true);
-            shardingRowNumberPredicateFiller.fill(each, sqlStatement);
+            rowNumberPredicateFiller.fill(each, sqlStatement);
         }
     }
 }
