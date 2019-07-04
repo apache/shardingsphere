@@ -29,6 +29,13 @@ import java.util.List;
 public interface ParameterBuilder {
     
     /**
+     * Get original parameters.
+     * 
+     * @return original parameters
+     */
+    List<Object> getOriginalParameters();
+    
+    /**
      * Get parameters.
      *
      * @return parameters
