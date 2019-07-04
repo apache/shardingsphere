@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.rewrite.builder;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.optimize.statement.InsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.InsertOptimizeResultUnit;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
@@ -33,21 +32,16 @@ import java.util.List;
  *
  * @author panjuan
  */
-@RequiredArgsConstructor
 @Getter
 public final class InsertParameterBuilder implements ParameterBuilder {
     
     private final List<Object> originalParameters;
     
-    private final List<InsertParameterUnit> insertParameterUnits = new LinkedList<>();
+    private final List<InsertParameterUnit> insertParameterUnits;
     
-    /**
-     * Set insert parameter units.
-     * 
-     * @param optimizedStatement optimized statement
-     */
-    public void setInsertParameterUnits(final InsertOptimizedStatement optimizedStatement) {
-        insertParameterUnits.addAll(createInsertParameterUnits(optimizedStatement));
+    public InsertParameterBuilder(final List<Object> parameters, final InsertOptimizedStatement optimizedStatement) {
+        originalParameters = new LinkedList<>(parameters);
+        insertParameterUnits = createInsertParameterUnits(optimizedStatement);
     }
     
     private List<InsertParameterUnit> createInsertParameterUnits(final InsertOptimizedStatement optimizedStatement) {
