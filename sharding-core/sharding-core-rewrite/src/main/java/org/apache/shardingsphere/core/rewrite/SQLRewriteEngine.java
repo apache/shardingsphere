@@ -59,8 +59,6 @@ public final class SQLRewriteEngine {
     
     private final OptimizedStatement optimizedStatement;
     
-    private final List<SQLToken> sqlTokens;
-    
     private final SQLBuilder sqlBuilder;
     
     private final ParameterBuilder parameterBuilder;
@@ -69,24 +67,21 @@ public final class SQLRewriteEngine {
         baseRule = shardingRule;
         this.optimizedStatement = getEncryptedOptimizedStatement(shardingRule.getEncryptRule().getEncryptorEngine(), sqlRouteResult.getOptimizedStatement());
         parameterBuilder = createParameterBuilder(parameters, sqlRouteResult);
-        sqlTokens = createSQLTokens(isSingleRoute);
-        sqlBuilder = new SQLBuilder(optimizedStatement.getSQLStatement().getLogicSQL(), sqlTokens);
+        sqlBuilder = new SQLBuilder(optimizedStatement.getSQLStatement().getLogicSQL(), createSQLTokens(isSingleRoute));
     }
     
     public SQLRewriteEngine(final EncryptRule encryptRule, final OptimizedStatement optimizedStatement, final List<Object> parameters) {
         baseRule = encryptRule;
         this.optimizedStatement = getEncryptedOptimizedStatement(encryptRule.getEncryptorEngine(), optimizedStatement);
         parameterBuilder = createParameterBuilder(parameters);
-        sqlTokens = createSQLTokens(true);
-        sqlBuilder = new SQLBuilder(optimizedStatement.getSQLStatement().getLogicSQL(), sqlTokens);
+        sqlBuilder = new SQLBuilder(optimizedStatement.getSQLStatement().getLogicSQL(), createSQLTokens(true));
     }
     
     public SQLRewriteEngine(final MasterSlaveRule masterSlaveRule, final OptimizedStatement optimizedStatement) {
         baseRule = masterSlaveRule;
         this.optimizedStatement = optimizedStatement;
         parameterBuilder = createParameterBuilder(Collections.emptyList());
-        sqlTokens = createSQLTokens(true);
-        sqlBuilder = new SQLBuilder(optimizedStatement.getSQLStatement().getLogicSQL(), sqlTokens);
+        sqlBuilder = new SQLBuilder(optimizedStatement.getSQLStatement().getLogicSQL(), createSQLTokens(true));
     }
     
     private OptimizedStatement getEncryptedOptimizedStatement(final ShardingEncryptorEngine encryptorEngine, final OptimizedStatement optimizedStatement) {
