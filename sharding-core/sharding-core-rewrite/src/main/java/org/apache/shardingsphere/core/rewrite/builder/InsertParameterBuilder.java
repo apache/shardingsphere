@@ -35,7 +35,7 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 @Getter
-public final class InsertParameterBuilder {
+public final class InsertParameterBuilder implements ParameterBuilder {
     
     private final List<Object> originalParameters;
     
@@ -61,11 +61,7 @@ public final class InsertParameterBuilder {
         return result;
     }
     
-    /**
-     * Get parameters.
-     *
-     * @return parameters
-     */
+    @Override
     public List<Object> getParameters() {
         List<Object> result = new LinkedList<>();
         for (InsertParameterUnit each : insertParameterUnits) {
@@ -74,12 +70,7 @@ public final class InsertParameterBuilder {
         return result;
     }
     
-    /**
-     * Get parameters.
-     * 
-     * @param routingUnit routing unit
-     * @return parameters
-     */
+    @Override
     public List<Object> getParameters(final RoutingUnit routingUnit) {
         List<Object> result = new LinkedList<>();
         for (InsertParameterUnit each : insertParameterUnits) {
