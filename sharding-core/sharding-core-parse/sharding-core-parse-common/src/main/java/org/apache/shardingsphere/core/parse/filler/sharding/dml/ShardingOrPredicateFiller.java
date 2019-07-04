@@ -18,17 +18,12 @@
 package org.apache.shardingsphere.core.parse.filler.sharding.dml;
 
 import lombok.Setter;
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parse.aware.ShardingRuleAware;
-import org.apache.shardingsphere.core.parse.aware.ShardingTableMetaDataAware;
 import org.apache.shardingsphere.core.parse.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.filler.common.dml.RowNumberPredicateFiller;
-import org.apache.shardingsphere.core.parse.filler.encrypt.dml.EncryptOrPredicateFiller;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.OrPredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
  * Or predicate filler for sharding.
@@ -38,28 +33,16 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
  * @author panjuan
  */
 @Setter
-public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredicateSegment>, ShardingRuleAware, ShardingTableMetaDataAware {
+public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredicateSegment> {
     
     private final RowNumberPredicateFiller shardingRowNumberPredicateFiller = new RowNumberPredicateFiller();
-    
-    private ShardingRule shardingRule;
-    
-    private ShardingTableMetaData shardingTableMetaData;
     
     @Override
     public void fill(final OrPredicateSegment sqlSegment, final SQLStatement sqlStatement) {
         if (sqlStatement instanceof DMLStatement) {
-            createEncryptOrPredicateFiller().fill(sqlSegment, sqlStatement);
             if (sqlStatement instanceof SelectStatement) {
                 shardingRowNumberPredicateFiller.fill(sqlSegment, sqlStatement);
             }
         }
-    }
-    
-    private EncryptOrPredicateFiller createEncryptOrPredicateFiller() {
-        EncryptOrPredicateFiller result = new EncryptOrPredicateFiller();
-        result.setEncryptRule(shardingRule.getEncryptRule());
-        result.setShardingTableMetaData(shardingTableMetaData);
-        return result;
     }
 }

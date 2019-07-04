@@ -18,17 +18,12 @@
 package org.apache.shardingsphere.core.parse.filler.sharding.dml.select;
 
 import lombok.Setter;
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parse.aware.ShardingRuleAware;
-import org.apache.shardingsphere.core.parse.aware.ShardingTableMetaDataAware;
 import org.apache.shardingsphere.core.parse.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.filler.common.dml.RowNumberPredicateFiller;
-import org.apache.shardingsphere.core.parse.filler.encrypt.dml.EncryptOrPredicateFiller;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.OrPredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.SubqueryPredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
  * Subquery predicate filler for sharding.
@@ -36,29 +31,16 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
  * @author duhongjun
  */
 @Setter
-public final class ShardingSubqueryPredicateFiller implements SQLSegmentFiller<SubqueryPredicateSegment>, ShardingRuleAware, ShardingTableMetaDataAware {
+public final class ShardingSubqueryPredicateFiller implements SQLSegmentFiller<SubqueryPredicateSegment> {
     
     private final RowNumberPredicateFiller shardingRowNumberPredicateFiller = new RowNumberPredicateFiller();
-    
-    private ShardingRule shardingRule;
-    
-    private ShardingTableMetaData shardingTableMetaData;
     
     @Override
     public void fill(final SubqueryPredicateSegment sqlSegment, final SQLStatement sqlStatement) {
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
-        EncryptOrPredicateFiller encryptOrPredicateFiller = createEncryptOrPredicateFiller();
         for (OrPredicateSegment each : sqlSegment.getOrPredicates()) {
             selectStatement.setContainsSubquery(true);
-            encryptOrPredicateFiller.fill(each, sqlStatement);
             shardingRowNumberPredicateFiller.fill(each, sqlStatement);
         }
-    }
-    
-    private EncryptOrPredicateFiller createEncryptOrPredicateFiller() {
-        EncryptOrPredicateFiller result = new EncryptOrPredicateFiller();
-        result.setEncryptRule(shardingRule.getEncryptRule());
-        result.setShardingTableMetaData(shardingTableMetaData);
-        return result;
     }
 }
