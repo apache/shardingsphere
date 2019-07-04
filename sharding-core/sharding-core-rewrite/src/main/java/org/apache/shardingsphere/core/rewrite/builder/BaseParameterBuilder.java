@@ -42,7 +42,7 @@ import java.util.Map.Entry;
  * @author panjuan
  */
 @Getter
-public final class BaseParameterBuilder {
+public final class BaseParameterBuilder implements ParameterBuilder {
     
     private final List<Object> originalParameters;
     
@@ -113,22 +113,13 @@ public final class BaseParameterBuilder {
         replacedIndexAndParameters.put(rowCountParameterIndex, pagination.getRevisedRowCount((SelectStatement) sqlRouteResult.getOptimizedStatement().getSQLStatement()));
     }
     
-    /**
-     * Get parameters.
-     *
-     * @return parameters
-     */
+    @Override
     public List<Object> getParameters() {
         List<Object> result = getInsertParameters();
         return result.isEmpty() ? getRevisedParameters() : result;
     }
     
-    /**
-     * Get parameters.
-     * 
-     * @param routingUnit routing unit
-     * @return parameters
-     */
+    @Override
     public List<Object> getParameters(final RoutingUnit routingUnit) {
         List<Object> result = getInsertParameters(routingUnit);
         return result.isEmpty() ? getRevisedParameters() : result;
