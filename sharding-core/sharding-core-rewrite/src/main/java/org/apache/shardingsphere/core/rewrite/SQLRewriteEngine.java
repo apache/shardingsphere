@@ -22,7 +22,7 @@ import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.core.optimize.statement.InsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.InsertOptimizeResultUnit;
-import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.builder.BaseParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
 import org.apache.shardingsphere.core.rewrite.token.BaseTokenGenerateEngine;
 import org.apache.shardingsphere.core.rewrite.token.EncryptTokenGenerateEngine;
@@ -63,12 +63,12 @@ public final class SQLRewriteEngine {
     
     private final SQLBuilder sqlBuilder;
     
-    private final ParameterBuilder parameterBuilder;
+    private final BaseParameterBuilder baseParameterBuilder;
     
     public SQLRewriteEngine(final ShardingRule shardingRule, final SQLRouteResult sqlRouteResult, final List<Object> parameters, final boolean isSingleRoute) {
         baseRule = shardingRule;
         this.optimizedStatement = getEncryptedOptimizedStatement(shardingRule.getEncryptRule().getEncryptorEngine(), sqlRouteResult.getOptimizedStatement());
-        parameterBuilder = createParameterBuilder(parameters, sqlRouteResult);
+        baseParameterBuilder = createParameterBuilder(parameters, sqlRouteResult);
         sqlTokens = createSQLTokens(isSingleRoute);
         sqlBuilder = new SQLBuilder(optimizedStatement.getSQLStatement().getLogicSQL(), sqlTokens);
     }
@@ -76,7 +76,7 @@ public final class SQLRewriteEngine {
     public SQLRewriteEngine(final EncryptRule encryptRule, final OptimizedStatement optimizedStatement, final List<Object> parameters) {
         baseRule = encryptRule;
         this.optimizedStatement = getEncryptedOptimizedStatement(encryptRule.getEncryptorEngine(), optimizedStatement);
-        parameterBuilder = createParameterBuilder(parameters);
+        baseParameterBuilder = createParameterBuilder(parameters);
         sqlTokens = createSQLTokens(true);
         sqlBuilder = new SQLBuilder(optimizedStatement.getSQLStatement().getLogicSQL(), sqlTokens);
     }
@@ -84,7 +84,7 @@ public final class SQLRewriteEngine {
     public SQLRewriteEngine(final MasterSlaveRule masterSlaveRule, final OptimizedStatement optimizedStatement) {
         baseRule = masterSlaveRule;
         this.optimizedStatement = optimizedStatement;
-        parameterBuilder = createParameterBuilder(Collections.emptyList());
+        baseParameterBuilder = createParameterBuilder(Collections.emptyList());
         sqlTokens = createSQLTokens(true);
         sqlBuilder = new SQLBuilder(optimizedStatement.getSQLStatement().getLogicSQL(), sqlTokens);
     }
@@ -121,28 +121,28 @@ public final class SQLRewriteEngine {
         unit.setColumnValue(columnName, shardingEncryptor.get().encrypt(unit.getColumnValue(columnName)));
     }
     
-    private ParameterBuilder createParameterBuilder(final List<Object> parameters, final SQLRouteResult sqlRouteResult) {
-        ParameterBuilder result = new ParameterBuilder(parameters);
+    private BaseParameterBuilder createParameterBuilder(final List<Object> parameters, final SQLRouteResult sqlRouteResult) {
+        BaseParameterBuilder result = new BaseParameterBuilder(parameters);
         result.setInsertParameterUnits(optimizedStatement);
         result.setReplacedIndexAndParameters(sqlRouteResult);
         return result;
     }
     
-    private ParameterBuilder createParameterBuilder(final List<Object> parameters) {
-        ParameterBuilder result = new ParameterBuilder(parameters);
+    private BaseParameterBuilder createParameterBuilder(final List<Object> parameters) {
+        BaseParameterBuilder result = new BaseParameterBuilder(parameters);
         result.setInsertParameterUnits(optimizedStatement);
         return result;
     }
     
     private List<SQLToken> createSQLTokens(final boolean isSingleRoute) {
         List<SQLToken> result = new LinkedList<>();
-        result.addAll(new BaseTokenGenerateEngine().generateSQLTokens(optimizedStatement, parameterBuilder, baseRule, isSingleRoute));
+        result.addAll(new BaseTokenGenerateEngine().generateSQLTokens(optimizedStatement, baseParameterBuilder, baseRule, isSingleRoute));
         if (baseRule instanceof ShardingRule) {
             ShardingRule shardingRule = (ShardingRule) baseRule;
-            result.addAll(new ShardingTokenGenerateEngine().generateSQLTokens(optimizedStatement, parameterBuilder, shardingRule, isSingleRoute));
-            result.addAll(new EncryptTokenGenerateEngine().generateSQLTokens(optimizedStatement, parameterBuilder, shardingRule.getEncryptRule(), isSingleRoute));
+            result.addAll(new ShardingTokenGenerateEngine().generateSQLTokens(optimizedStatement, baseParameterBuilder, shardingRule, isSingleRoute));
+            result.addAll(new EncryptTokenGenerateEngine().generateSQLTokens(optimizedStatement, baseParameterBuilder, shardingRule.getEncryptRule(), isSingleRoute));
         } else if (baseRule instanceof EncryptRule) {
-            result.addAll(new EncryptTokenGenerateEngine().generateSQLTokens(optimizedStatement, parameterBuilder, (EncryptRule) baseRule, isSingleRoute));
+            result.addAll(new EncryptTokenGenerateEngine().generateSQLTokens(optimizedStatement, baseParameterBuilder, (EncryptRule) baseRule, isSingleRoute));
         }
         Collections.sort(result);
         return result;
@@ -154,7 +154,7 @@ public final class SQLRewriteEngine {
      * @return sql unit
      */
     public SQLUnit generateSQL() {
-        return new SQLUnit(sqlBuilder.toSQL(), parameterBuilder.getParameters());
+        return new SQLUnit(sqlBuilder.toSQL(), baseParameterBuilder.getParameters());
     }
     
     /**
@@ -164,7 +164,7 @@ public final class SQLRewriteEngine {
      * @return sql unit
      */
     public SQLUnit generateSQL(final RoutingUnit routingUnit) {
-        return new SQLUnit(sqlBuilder.toSQL(routingUnit, getTableTokens(routingUnit)), parameterBuilder.getParameters(routingUnit));
+        return new SQLUnit(sqlBuilder.toSQL(routingUnit, getTableTokens(routingUnit)), baseParameterBuilder.getParameters(routingUnit));
     }
    
     private Map<String, String> getTableTokens(final RoutingUnit routingUnit) {

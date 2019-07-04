@@ -21,7 +21,7 @@ import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.optimize.statement.InsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
-import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.builder.BaseParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertColumnsToken;
 import org.apache.shardingsphere.core.rule.BaseRule;
 import org.apache.shardingsphere.core.rule.EncryptRule;
@@ -38,7 +38,7 @@ import java.util.LinkedList;
 public final class InsertColumnsTokenGenerator implements OptionalSQLTokenGenerator<BaseRule> {
     
     @Override
-    public Optional<InsertColumnsToken> generateSQLToken(final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final BaseRule rule) {
+    public Optional<InsertColumnsToken> generateSQLToken(final OptimizedStatement optimizedStatement, final BaseParameterBuilder baseParameterBuilder, final BaseRule rule) {
         Optional<InsertColumnsSegment> insertColumnsSegment = optimizedStatement.getSQLStatement().findSQLSegment(InsertColumnsSegment.class);
         if (!(optimizedStatement instanceof InsertOptimizedStatement && insertColumnsSegment.isPresent())) {
             return Optional.absent();

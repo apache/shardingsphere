@@ -23,7 +23,7 @@ import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.Pag
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.NumberLiteralPaginationValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationValueSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.builder.BaseParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.pojo.RowCountToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
@@ -37,14 +37,14 @@ import java.util.List;
 public final class RowCountTokenGenerator implements OptionalSQLTokenGenerator<ShardingRule>, IgnoreForSingleRoute {
     
     @Override
-    public Optional<RowCountToken> generateSQLToken(final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final ShardingRule shardingRule) {
+    public Optional<RowCountToken> generateSQLToken(final OptimizedStatement optimizedStatement, final BaseParameterBuilder baseParameterBuilder, final ShardingRule shardingRule) {
         if (!(optimizedStatement.getSQLStatement() instanceof SelectStatement)) {
             return Optional.absent();
         }
         Optional<PaginationValueSegment> rowCount = getLiteralRowCountSegment((SelectStatement) optimizedStatement.getSQLStatement());
         return rowCount.isPresent()
                 ? Optional.of(new RowCountToken(rowCount.get().getStartIndex(), rowCount.get().getStopIndex(), 
-                getRevisedRowCount((SelectStatement) optimizedStatement.getSQLStatement(), parameterBuilder.getOriginalParameters(), rowCount.get()))) : Optional.<RowCountToken>absent();
+                getRevisedRowCount((SelectStatement) optimizedStatement.getSQLStatement(), baseParameterBuilder.getOriginalParameters(), rowCount.get()))) : Optional.<RowCountToken>absent();
     }
     
     private Optional<PaginationValueSegment> getLiteralRowCountSegment(final SelectStatement selectStatement) {

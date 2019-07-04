@@ -59,7 +59,7 @@ import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
-import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.builder.BaseParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
@@ -574,10 +574,10 @@ public final class ShardingSQLRewriterTest {
     }
     
     @SneakyThrows
-    private ParameterBuilder getParameterBuilder(final SQLRewriteEngine rewriteEngine) {
+    private BaseParameterBuilder getParameterBuilder(final SQLRewriteEngine rewriteEngine) {
         Field field = rewriteEngine.getClass().getDeclaredField("parameterBuilder");
         field.setAccessible(true);
-        return (ParameterBuilder) field.get(rewriteEngine);
+        return (BaseParameterBuilder) field.get(rewriteEngine);
     }
     
     @Test

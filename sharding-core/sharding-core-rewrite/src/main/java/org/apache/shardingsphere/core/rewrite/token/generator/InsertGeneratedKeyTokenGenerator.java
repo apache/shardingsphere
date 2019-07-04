@@ -21,7 +21,7 @@ import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.optimize.statement.InsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
-import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.builder.BaseParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertGeneratedKeyToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
@@ -33,7 +33,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 public final class InsertGeneratedKeyTokenGenerator implements OptionalSQLTokenGenerator<ShardingRule> {
     
     @Override
-    public Optional<InsertGeneratedKeyToken> generateSQLToken(final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final ShardingRule shardingRule) {
+    public Optional<InsertGeneratedKeyToken> generateSQLToken(final OptimizedStatement optimizedStatement, final BaseParameterBuilder baseParameterBuilder, final ShardingRule shardingRule) {
         Optional<InsertColumnsSegment> insertColumnsSegment = optimizedStatement.getSQLStatement().findSQLSegment(InsertColumnsSegment.class);
         if (!(optimizedStatement instanceof InsertOptimizedStatement && insertColumnsSegment.isPresent())) {
             return Optional.absent();
