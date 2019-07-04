@@ -19,22 +19,26 @@ package org.apache.shardingsphere.core.optimize.statement.sharding.dml;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.WhereOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingConditions;
+import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
 /**
- * DML optimized statement for sharding.
+ * Where optimized statement for sharding.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public class ShardingDMLOptimizedStatement implements OptimizedStatement {
+public class ShardingWhereOptimizedStatement implements WhereOptimizedStatement {
     
     private final SQLStatement sqlStatement;
     
     @Getter
     private final ShardingConditions shardingConditions;
+    
+    @Getter
+    private final AndCondition encryptConditions;
     
     @Override
     public final SQLStatement getSQLStatement() {

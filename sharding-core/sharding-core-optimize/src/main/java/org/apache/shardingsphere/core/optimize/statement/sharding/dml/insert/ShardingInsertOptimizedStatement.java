@@ -20,9 +20,10 @@ package org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert;
 import com.google.common.base.Optional;
 import lombok.Getter;
 import org.apache.shardingsphere.core.optimize.statement.InsertOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.ShardingDMLOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.ShardingWhereOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingConditions;
+import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
@@ -35,7 +36,7 @@ import java.util.List;
  * @author zhangliang
  */
 @Getter
-public final class ShardingInsertOptimizedStatement extends ShardingDMLOptimizedStatement implements InsertOptimizedStatement {
+public final class ShardingInsertOptimizedStatement extends ShardingWhereOptimizedStatement implements InsertOptimizedStatement {
     
     private final ShardingInsertColumns insertColumns;
     
@@ -43,8 +44,9 @@ public final class ShardingInsertOptimizedStatement extends ShardingDMLOptimized
     
     private final List<InsertOptimizeResultUnit> units = new LinkedList<>();
     
-    public ShardingInsertOptimizedStatement(final SQLStatement sqlStatement, final List<ShardingCondition> shardingConditions, final ShardingInsertColumns insertColumns, final GeneratedKey generatedKey) {
-        super(sqlStatement, new ShardingConditions(shardingConditions));
+    public ShardingInsertOptimizedStatement(
+            final SQLStatement sqlStatement, final List<ShardingCondition> shardingConditions, final ShardingInsertColumns insertColumns, final GeneratedKey generatedKey) {
+        super(sqlStatement, new ShardingConditions(shardingConditions), new AndCondition());
         this.insertColumns = insertColumns;
         this.generatedKey = generatedKey;
     }

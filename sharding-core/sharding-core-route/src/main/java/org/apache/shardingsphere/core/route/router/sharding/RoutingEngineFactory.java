@@ -22,7 +22,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.ShardingDMLOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.ShardingWhereOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.ShowDatabasesStatement;
@@ -84,11 +84,11 @@ public final class RoutingEngineFactory {
         if (shardingRule.isAllBroadcastTables(tableNames)) {
             return sqlStatement instanceof SelectStatement ? new UnicastRoutingEngine(shardingRule, tableNames) : new DatabaseBroadcastRoutingEngine(shardingRule);
         }
-        if (optimizedStatement instanceof ShardingDMLOptimizedStatement && ((ShardingDMLOptimizedStatement) optimizedStatement).getShardingConditions().isAlwaysFalse() || tableNames.isEmpty()) {
+        if (optimizedStatement instanceof ShardingWhereOptimizedStatement && ((ShardingWhereOptimizedStatement) optimizedStatement).getShardingConditions().isAlwaysFalse() || tableNames.isEmpty()) {
             return new UnicastRoutingEngine(shardingRule, tableNames);
         }
-        Preconditions.checkState(optimizedStatement instanceof ShardingDMLOptimizedStatement);
-        return getShardingRoutingEngine(shardingRule, (ShardingDMLOptimizedStatement) optimizedStatement, tableNames);
+        Preconditions.checkState(optimizedStatement instanceof ShardingWhereOptimizedStatement);
+        return getShardingRoutingEngine(shardingRule, (ShardingWhereOptimizedStatement) optimizedStatement, tableNames);
     }
     
     private static RoutingEngine getDALRoutingEngine(final ShardingRule shardingRule, final SQLStatement sqlStatement, final Collection<String> tableNames) {
@@ -113,7 +113,7 @@ public final class RoutingEngineFactory {
         return !sqlStatement.getTables().isEmpty() && !"*".equals(sqlStatement.getTables().getSingleTableName());
     }
     
-    private static RoutingEngine getShardingRoutingEngine(final ShardingRule shardingRule, final ShardingDMLOptimizedStatement optimizedStatement, final Collection<String> tableNames) {
+    private static RoutingEngine getShardingRoutingEngine(final ShardingRule shardingRule, final ShardingWhereOptimizedStatement optimizedStatement, final Collection<String> tableNames) {
         Collection<String> shardingTableNames = shardingRule.getShardingLogicTableNames(tableNames);
         if (1 == shardingTableNames.size() || shardingRule.isAllBindingTables(shardingTableNames)) {
             return new StandardRoutingEngine(shardingRule, shardingTableNames.iterator().next(), optimizedStatement);

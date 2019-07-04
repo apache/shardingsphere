@@ -24,7 +24,7 @@ import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
 import org.apache.shardingsphere.core.optimize.OptimizeEngineFactory;
 import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.ShardingDMLOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.ShardingWhereOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingConditions;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.ShardingInsertOptimizedStatement;
@@ -88,9 +88,9 @@ public final class ParsingSQLRouter implements ShardingRouter {
     public SQLRouteResult route(final SQLStatement sqlStatement, final List<Object> parameters) {
         OptimizedStatement optimizedStatement = OptimizeEngineFactory.newInstance(shardingRule, shardingMetaData.getTable(), sqlStatement, parameters).optimize();
         boolean needMergeShardingValues = isNeedMergeShardingValues(sqlStatement);
-        if (optimizedStatement instanceof ShardingDMLOptimizedStatement && needMergeShardingValues) {
-            checkSubqueryShardingValues(sqlStatement, ((ShardingDMLOptimizedStatement) optimizedStatement).getShardingConditions());
-            mergeShardingConditions(((ShardingDMLOptimizedStatement) optimizedStatement).getShardingConditions());
+        if (optimizedStatement instanceof ShardingWhereOptimizedStatement && needMergeShardingValues) {
+            checkSubqueryShardingValues(sqlStatement, ((ShardingWhereOptimizedStatement) optimizedStatement).getShardingConditions());
+            mergeShardingConditions(((ShardingWhereOptimizedStatement) optimizedStatement).getShardingConditions());
         }
         RoutingResult routingResult = RoutingEngineFactory.newInstance(shardingRule, shardingMetaData.getDataSource(), optimizedStatement).route();
         if (needMergeShardingValues) {

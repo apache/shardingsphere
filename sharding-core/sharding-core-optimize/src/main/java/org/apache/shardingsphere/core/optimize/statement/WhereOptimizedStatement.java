@@ -15,23 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.filler.encrypt.dml;
+package org.apache.shardingsphere.core.optimize.statement;
 
-import lombok.Setter;
-import org.apache.shardingsphere.core.parse.filler.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.OrPredicateSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
 
 /**
- * Or predicate filler for encrypt.
+ * Where optimized statement.
  *
- * @author duhongjun
- * @author panjuan
+ * @author zhangliang
  */
-@Setter
-public final class EncryptOrPredicateFiller implements SQLSegmentFiller<OrPredicateSegment> {
+public interface WhereOptimizedStatement extends OptimizedStatement {
     
-    @Override
-    public void fill(final OrPredicateSegment sqlSegment, final SQLStatement sqlStatement) {
-    }
+    /**
+     * Get encrypt conditions.
+     *
+     * @return encrypt conditions
+     */
+    AndCondition getEncryptConditions();
 }

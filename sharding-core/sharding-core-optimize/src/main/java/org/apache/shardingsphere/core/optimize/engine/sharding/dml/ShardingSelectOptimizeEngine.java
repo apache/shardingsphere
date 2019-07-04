@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.optimize.engine.sharding.dml;
 
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
+import org.apache.shardingsphere.core.optimize.statement.encrypt.condition.WhereClauseEncryptConditionEngine;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.engine.WhereClauseShardingConditionEngine;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.Pagination;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ShardingSelectOptimizedStatement;
@@ -41,15 +42,19 @@ public final class ShardingSelectOptimizeEngine implements OptimizeEngine {
     
     private final WhereClauseShardingConditionEngine shardingConditionEngine;
     
+    private final WhereClauseEncryptConditionEngine encryptConditionEngine;
+    
     public ShardingSelectOptimizeEngine(final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData, final SelectStatement selectStatement, final List<Object> parameters) {
         this.selectStatement = selectStatement;
         this.parameters = parameters;
         shardingConditionEngine = new WhereClauseShardingConditionEngine(shardingRule, shardingTableMetaData);
+        encryptConditionEngine = new WhereClauseEncryptConditionEngine(shardingRule.getEncryptRule(), shardingTableMetaData);
     }
     
     @Override
     public ShardingSelectOptimizedStatement optimize() {
-        ShardingSelectOptimizedStatement result = new ShardingSelectOptimizedStatement(selectStatement, new ArrayList<>(shardingConditionEngine.createShardingConditions(selectStatement, parameters)));
+        ShardingSelectOptimizedStatement result = new ShardingSelectOptimizedStatement(selectStatement, 
+                new ArrayList<>(shardingConditionEngine.createShardingConditions(selectStatement, parameters)), encryptConditionEngine.createEncryptConditions(selectStatement));
         setPagination(result);
         return result;
     }

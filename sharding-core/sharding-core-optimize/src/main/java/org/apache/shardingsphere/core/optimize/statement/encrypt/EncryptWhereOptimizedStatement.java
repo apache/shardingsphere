@@ -15,30 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.statement.sharding.dml.select;
+package org.apache.shardingsphere.core.optimize.statement.encrypt;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.ShardingWhereOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingConditions;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.optimize.statement.WhereOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
-import java.util.List;
-
 /**
- * Select optimized statement for sharding.
+ * Where optimized statement for encrypt.
  *
  * @author zhangliang
  */
-@Getter
-@Setter
-public final class ShardingSelectOptimizedStatement extends ShardingWhereOptimizedStatement {
+@RequiredArgsConstructor
+public final class EncryptWhereOptimizedStatement implements WhereOptimizedStatement {
     
-    private Pagination pagination;
+    private final SQLStatement sqlStatement;
     
-    public ShardingSelectOptimizedStatement(final SQLStatement sqlStatement, final List<ShardingCondition> shardingConditions, final AndCondition encryptConditions) {
-        super(sqlStatement, new ShardingConditions(shardingConditions), encryptConditions);
+    @Getter
+    private final AndCondition encryptConditions;
+    
+    @Override
+    public SQLStatement getSQLStatement() {
+        return sqlStatement;
     }
 }

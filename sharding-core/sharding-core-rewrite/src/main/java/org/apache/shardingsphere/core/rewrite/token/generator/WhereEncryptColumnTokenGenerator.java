@@ -20,6 +20,7 @@ package org.apache.shardingsphere.core.rewrite.token.generator;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.WhereOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
@@ -53,33 +54,30 @@ public final class WhereEncryptColumnTokenGenerator implements CollectionSQLToke
     
     private int stopIndex;
     
-    private DMLStatement dmlStatement;
-    
     @Override
     public Collection<EncryptColumnToken> generateSQLTokens(final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final EncryptRule encryptRule) {
         if (!(optimizedStatement.getSQLStatement() instanceof DMLStatement)) {
             return Collections.emptyList();
         }
-        this.dmlStatement = (DMLStatement) optimizedStatement.getSQLStatement();
-        return createWhereEncryptColumnTokens(encryptRule, parameterBuilder);
+        return createWhereEncryptColumnTokens(optimizedStatement, parameterBuilder, encryptRule);
     }
     
-    private Collection<EncryptColumnToken> createWhereEncryptColumnTokens(final EncryptRule encryptRule, final ParameterBuilder parameterBuilder) {
+    private Collection<EncryptColumnToken> createWhereEncryptColumnTokens(final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final EncryptRule encryptRule) {
         Collection<EncryptColumnToken> result = new LinkedList<>();
-        if (dmlStatement.getEncryptConditions().getConditions().isEmpty()) {
+        if (!(optimizedStatement instanceof WhereOptimizedStatement) || ((WhereOptimizedStatement) optimizedStatement).getEncryptConditions().getConditions().isEmpty()) {
             return result;
         }
-        for (Condition each : dmlStatement.getEncryptConditions().getConditions()) {
-            this.column = new Column(each.getColumn().getName(), dmlStatement.getTables().getSingleTableName());
+        for (Condition each : ((WhereOptimizedStatement) optimizedStatement).getEncryptConditions().getConditions()) {
+            this.column = new Column(each.getColumn().getName(), optimizedStatement.getSQLStatement().getTables().getSingleTableName());
             this.startIndex = each.getPredicateSegment().getStartIndex();
             this.stopIndex = each.getPredicateSegment().getStopIndex();
-            result.add(createEncryptColumnToken(encryptRule.getEncryptorEngine(), parameterBuilder));
+            result.add(createEncryptColumnToken(optimizedStatement, parameterBuilder, encryptRule.getEncryptorEngine()));
         }
         return result;
     }
     
-    private EncryptColumnToken createEncryptColumnToken(final ShardingEncryptorEngine encryptorEngine, final ParameterBuilder parameterBuilder) {
-        Optional<Condition> encryptCondition = getEncryptCondition(dmlStatement.getEncryptConditions());
+    private EncryptColumnToken createEncryptColumnToken(final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final ShardingEncryptorEngine encryptorEngine) {
+        Optional<Condition> encryptCondition = getEncryptCondition(((WhereOptimizedStatement) optimizedStatement).getEncryptConditions());
         Preconditions.checkArgument(encryptCondition.isPresent(), "Can not find encrypt condition");
         return getEncryptColumnTokenFromConditions(encryptorEngine, encryptCondition.get(), parameterBuilder);
     }
