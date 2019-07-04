@@ -24,7 +24,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.Assignmen
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.rewrite.builder.BaseParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertSetEncryptValueToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
@@ -41,7 +41,7 @@ import java.util.LinkedList;
 public final class InsertSetEncryptValueTokenGenerator implements CollectionSQLTokenGenerator<EncryptRule> {
     
     @Override
-    public Collection<InsertSetEncryptValueToken> generateSQLTokens(final OptimizedStatement optimizedStatement, final BaseParameterBuilder baseParameterBuilder, final EncryptRule encryptRule) {
+    public Collection<InsertSetEncryptValueToken> generateSQLTokens(final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final EncryptRule encryptRule) {
         Optional<SetAssignmentsSegment> setAssignmentsSegment = optimizedStatement.getSQLStatement().findSQLSegment(SetAssignmentsSegment.class);
         if (!(optimizedStatement.getSQLStatement() instanceof InsertStatement && setAssignmentsSegment.isPresent())) {
             return Collections.emptyList();

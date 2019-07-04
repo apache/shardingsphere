@@ -24,7 +24,7 @@ import org.apache.shardingsphere.core.parse.constant.DerivedColumn;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.SelectItemsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.AggregationDistinctSelectItemSegment;
-import org.apache.shardingsphere.core.rewrite.builder.BaseParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.pojo.AggregationDistinctToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
@@ -40,7 +40,7 @@ import java.util.LinkedList;
 public final class AggregationDistinctTokenGenerator implements CollectionSQLTokenGenerator<ShardingRule>, IgnoreForSingleRoute {
     
     @Override
-    public Collection<AggregationDistinctToken> generateSQLTokens(final OptimizedStatement optimizedStatement, final BaseParameterBuilder baseParameterBuilder, final ShardingRule shardingRule) {
+    public Collection<AggregationDistinctToken> generateSQLTokens(final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final ShardingRule shardingRule) {
         Collection<AggregationDistinctToken> result = new LinkedList<>();
         for (SQLSegment each : optimizedStatement.getSQLStatement().getSQLSegments()) {
             Collection<AggregationDistinctSelectItemSegment> distinctSelectItemSegments = getAggregationDistinctSelectItemSegment(each);

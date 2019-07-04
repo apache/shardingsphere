@@ -29,6 +29,7 @@ import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.core.rewrite.builder.BaseParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.pojo.EncryptColumnToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.UpdateEncryptAssistedItemToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.UpdateEncryptItemToken;
@@ -60,25 +61,25 @@ public final class UpdateEncryptColumnTokenGenerator implements CollectionSQLTok
     private DMLStatement dmlStatement;
     
     @Override
-    public Collection<EncryptColumnToken> generateSQLTokens(final OptimizedStatement optimizedStatement, final BaseParameterBuilder baseParameterBuilder, final EncryptRule encryptRule) {
+    public Collection<EncryptColumnToken> generateSQLTokens(final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final EncryptRule encryptRule) {
         if (!(optimizedStatement.getSQLStatement() instanceof DMLStatement)) {
             return Collections.emptyList();
         }
         this.dmlStatement = (DMLStatement) optimizedStatement.getSQLStatement();
-        return createUpdateEncryptColumnTokens(optimizedStatement, baseParameterBuilder, encryptRule);
+        return createUpdateEncryptColumnTokens(optimizedStatement, parameterBuilder, encryptRule);
     }
     
-    private Collection<EncryptColumnToken> createUpdateEncryptColumnTokens(final OptimizedStatement optimizedStatement, final BaseParameterBuilder baseParameterBuilder, final EncryptRule encryptRule) {
+    private Collection<EncryptColumnToken> createUpdateEncryptColumnTokens(final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final EncryptRule encryptRule) {
         Collection<EncryptColumnToken> result = new LinkedList<>();
         for (SQLSegment each : optimizedStatement.getSQLStatement().getSQLSegments()) {
             if (each instanceof SetAssignmentsSegment) {
-                result.addAll(createUpdateEncryptColumnTokens(encryptRule, baseParameterBuilder, (SetAssignmentsSegment) each));
+                result.addAll(createUpdateEncryptColumnTokens(encryptRule, parameterBuilder, (SetAssignmentsSegment) each));
             }
         }
         return result;
     }
     
-    private Collection<EncryptColumnToken> createUpdateEncryptColumnTokens(final EncryptRule encryptRule, final BaseParameterBuilder baseParameterBuilder, final SetAssignmentsSegment segment) {
+    private Collection<EncryptColumnToken> createUpdateEncryptColumnTokens(final EncryptRule encryptRule, final ParameterBuilder parameterBuilder, final SetAssignmentsSegment segment) {
         Collection<EncryptColumnToken> result = new LinkedList<>();
         if (dmlStatement instanceof InsertStatement) {
             return result;
@@ -88,7 +89,7 @@ public final class UpdateEncryptColumnTokenGenerator implements CollectionSQLTok
             if (encryptRule.getEncryptorEngine().getShardingEncryptor(column.getTableName(), column.getName()).isPresent()) {
                 this.startIndex = each.getColumn().getStartIndex();
                 this.stopIndex = each.getStopIndex();
-                result.add(createUpdateEncryptColumnToken(encryptRule.getEncryptorEngine(), baseParameterBuilder));
+                result.add(createUpdateEncryptColumnToken(encryptRule.getEncryptorEngine(), (BaseParameterBuilder) parameterBuilder));
             }
         }
         return result;
