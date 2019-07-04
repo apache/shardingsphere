@@ -65,7 +65,7 @@ public final class ParameterBuilder {
      * @param optimizedStatement optimized statement
      */
     public void setInsertParameterUnits(final OptimizedStatement optimizedStatement) {
-        if (insertParameterUnits.isEmpty() && optimizedStatement instanceof InsertOptimizedStatement) {
+        if (optimizedStatement instanceof InsertOptimizedStatement) {
             insertParameterUnits.addAll(createInsertParameterUnits((InsertOptimizedStatement) optimizedStatement));
         }
     }
