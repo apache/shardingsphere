@@ -37,7 +37,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Parameter builder.
+ * Base parameter builder.
  *
  * @author panjuan
  */
