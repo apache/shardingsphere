@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.rule.registry.filler;
+package org.apache.shardingsphere.core.parse.filler.impl.ddl.column;
 
-import org.apache.shardingsphere.core.parse.filler.impl.ddl.column.ColumnDefinitionFiller;
-import org.apache.shardingsphere.core.parse.rule.jaxb.entity.filler.FillerRuleDefinitionEntity;
-import org.apache.shardingsphere.core.parse.rule.jaxb.loader.filler.FillerRuleDefinitionEntityLoader;
+import org.apache.shardingsphere.core.parse.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.sql.segment.ddl.column.ColumnDefinitionSegment;
-import org.junit.Test;
+import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.ddl.CreateTableStatement;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
-
-public final class FillerRuleDefinitionTest {
+/**
+ * Column definition filler.
+ *
+ * @author duhongjun
+ */
+public final class ColumnDefinitionFiller implements SQLSegmentFiller<ColumnDefinitionSegment> {
     
-    @Test
-    public void assertGetFiller() {
-        FillerRuleDefinitionEntity fillerRuleDefinitionEntity = new FillerRuleDefinitionEntityLoader().load("META-INF/parsing-rule-definition/filler-rule-definition.xml");
-        assertThat(new FillerRuleDefinition(fillerRuleDefinitionEntity).getFiller(ColumnDefinitionSegment.class), instanceOf(ColumnDefinitionFiller.class));
+    @Override
+    public void fill(final ColumnDefinitionSegment sqlSegment, final SQLStatement sqlStatement) {
+        ((CreateTableStatement) sqlStatement).getColumnDefinitions().add(sqlSegment);
     }
 }
