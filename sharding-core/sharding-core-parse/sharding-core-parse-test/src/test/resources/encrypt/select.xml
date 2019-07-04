@@ -22,11 +22,9 @@
             <table name="t_encrypt" />
         </tables>
         <encrypt-conditions>
-            <and-condition>
-                <condition column-name="name" table-name="t_encrypt" operator="EQUAL">
-                    <value index="0" literal="tom" type="varchar" />
-                </condition>
-            </and-condition>
+            <condition column-name="name" table-name="t_encrypt" operator="EQUAL">
+                <value index="0" literal="tom" type="varchar" />
+            </condition>
         </encrypt-conditions>
     </parser-result>
     <parser-result sql-case-id="select_with_two_same_encrypt_column" parameters="'tom','jack'">
@@ -34,14 +32,12 @@
             <table name="t_encrypt" />
         </tables>
         <encrypt-conditions>
-            <and-condition>
-                <condition column-name="name" table-name="t_encrypt" operator="EQUAL">
-                    <value index="0" literal="tom" type="varchar" />
-                </condition>
-                <condition column-name="name" table-name="t_encrypt" operator="EQUAL">
-                    <value index="1" literal="jack" type="varchar" />
-                </condition>
-            </and-condition>
+            <condition column-name="name" table-name="t_encrypt" operator="EQUAL">
+                <value index="0" literal="tom" type="varchar" />
+            </condition>
+            <condition column-name="name" table-name="t_encrypt" operator="EQUAL">
+                <value index="1" literal="jack" type="varchar" />
+            </condition>
         </encrypt-conditions>
     </parser-result>
     <parser-result sql-case-id="select_with_two_different_encrypt_column" parameters="'tom','1333333333'">
@@ -49,14 +45,12 @@
             <table name="t_encrypt" />
         </tables>
         <encrypt-conditions>
-            <and-condition>
-                <condition column-name="name" table-name="t_encrypt" operator="EQUAL">
-                    <value index="0" literal="tom" type="varchar" />
-                </condition>
-                <condition column-name="mobile" table-name="t_encrypt" operator="EQUAL">
-                    <value index="1" literal="1333333333" type="varchar" />
-                </condition>
-            </and-condition>
+            <condition column-name="name" table-name="t_encrypt" operator="EQUAL">
+                <value index="0" literal="tom" type="varchar" />
+            </condition>
+            <condition column-name="mobile" table-name="t_encrypt" operator="EQUAL">
+                <value index="1" literal="1333333333" type="varchar" />
+            </condition>
         </encrypt-conditions>
     </parser-result>
     <parser-result sql-case-id="select_with_encrypt_column_in_function" parameters="'tom','jack'">
@@ -64,11 +58,9 @@
             <table name="t_encrypt" />
         </tables>
         <encrypt-conditions>
-            <and-condition>
-                <condition column-name="name" table-name="t_encrypt" operator="EQUAL">
-                    <value index="0" literal="tom" type="varchar" />
-                </condition>
-            </and-condition>
+            <condition column-name="name" table-name="t_encrypt" operator="EQUAL">
+                <value index="0" literal="tom" type="varchar" />
+            </condition>
         </encrypt-conditions>
     </parser-result>
     <parser-result sql-case-id="select_with_all_encrypt_column_in_function" parameters="'tom','jack'">

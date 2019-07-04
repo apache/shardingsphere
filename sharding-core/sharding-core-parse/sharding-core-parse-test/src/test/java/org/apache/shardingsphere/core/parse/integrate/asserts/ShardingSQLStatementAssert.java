@@ -92,7 +92,6 @@ public final class ShardingSQLStatementAssert {
     public void assertSQLStatement() {
         tableAssert.assertTables(actual.getTables(), expected.getTables());
         if (actual instanceof DMLStatement) {
-//            conditionAssert.assertConditions(((DMLStatement) actual).getShardingConditions(), expected.getShardingConditions());
             conditionAssert.assertConditions(((DMLStatement) actual).getEncryptConditions(), expected.getEncryptConditions());
         }
         indexAssert.assertParametersCount(actual.getParametersCount(), expected.getParameters().size());

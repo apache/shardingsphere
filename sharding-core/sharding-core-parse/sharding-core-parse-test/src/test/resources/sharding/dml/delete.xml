@@ -35,11 +35,9 @@
             </and-condition>
         </sharding-conditions>
         <encrypt-conditions>
-            <and-condition>
-                <condition column-name="status" table-name="t_order" operator="EQUAL">
-                    <value index="2" literal="init" type="varchar" />
-                </condition>
-            </and-condition>
+            <condition column-name="status" table-name="t_order" operator="EQUAL">
+                <value index="2" literal="init" type="varchar" />
+            </condition>
         </encrypt-conditions>
     </parser-result>
     
@@ -51,11 +49,9 @@
             <table-token start-index="12" table-name="t_order" length="7" />
         </tokens>
         <encrypt-conditions>
-            <and-condition>
-                <condition column-name="status" table-name="t_order" operator="EQUAL">
-                    <value index="0" literal="init" type="varchar" />
-                </condition>
-            </and-condition>
+            <condition column-name="status" table-name="t_order" operator="EQUAL">
+                <value index="0" literal="init" type="varchar" />
+            </condition>
         </encrypt-conditions>
     </parser-result>
     
@@ -67,11 +63,9 @@
             <table-token start-index="12" table-name="t_order" left-delimiter="`" right-delimiter="`" length="9" />
         </tokens>
         <encrypt-conditions>
-            <and-condition>
-                <condition column-name="status" table-name="t_order" operator="EQUAL">
-                    <value index="0" literal="init" type="varchar" />
-                </condition>
-            </and-condition>
+            <condition column-name="status" table-name="t_order" operator="EQUAL">
+                <value index="0" literal="init" type="varchar" />
+            </condition>
         </encrypt-conditions>
     </parser-result>
     
@@ -83,11 +77,9 @@
             <table-token start-index="33" table-name="t_order" length="7" />
         </tokens>
         <encrypt-conditions>
-            <and-condition>
-                <condition column-name="status" table-name="t_order" operator="EQUAL">
-                    <value index="0" literal="1" type="int" />
-                </condition>
-            </and-condition>
+            <condition column-name="status" table-name="t_order" operator="EQUAL">
+                <value index="0" literal="1" type="int" />
+            </condition>
         </encrypt-conditions>
     </parser-result>
     
@@ -99,11 +91,9 @@
             <table-token start-index="34" table-name="t_order" length="7" />
         </tokens>
         <encrypt-conditions>
-            <and-condition>
-                <condition column-name="status" table-name="t_order" operator="EQUAL">
-                    <value index="0" literal="1" type="int" />
-                </condition>
-            </and-condition>
+            <condition column-name="status" table-name="t_order" operator="EQUAL">
+                <value index="0" literal="1" type="int" />
+            </condition>
         </encrypt-conditions>
     </parser-result>
 </parser-result-sets>

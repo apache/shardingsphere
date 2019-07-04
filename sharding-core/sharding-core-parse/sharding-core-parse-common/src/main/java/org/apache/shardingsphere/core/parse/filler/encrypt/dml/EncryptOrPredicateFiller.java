@@ -25,7 +25,6 @@ import org.apache.shardingsphere.core.parse.aware.ShardingTableMetaDataAware;
 import org.apache.shardingsphere.core.parse.exception.SQLParsingException;
 import org.apache.shardingsphere.core.parse.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.filler.common.dml.PredicateUtils;
-import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.AndPredicate;
@@ -77,14 +76,7 @@ public final class EncryptOrPredicateFiller implements SQLSegmentFiller<OrPredic
         Column column = new Column(predicateSegment.getColumn().getName(), tableName.get());
         Optional<Condition> condition = createCondition(predicateSegment, column);
         if (condition.isPresent()) {
-            AndCondition andCondition;
-            if (dmlStatement.getEncryptConditions().getOrConditions().isEmpty()) {
-                andCondition = new AndCondition();
-                dmlStatement.getEncryptConditions().getOrConditions().add(andCondition);
-            } else {
-                andCondition = dmlStatement.getEncryptConditions().getOrConditions().get(0);
-            }
-            andCondition.getConditions().add(condition.get());
+            dmlStatement.getEncryptConditions().getConditions().add(condition.get());
         }
     }
     

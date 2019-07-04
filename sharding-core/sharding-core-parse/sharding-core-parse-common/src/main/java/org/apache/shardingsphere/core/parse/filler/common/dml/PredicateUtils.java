@@ -54,7 +54,7 @@ public final class PredicateUtils {
      * @param shardingTableMetaData sharding table meta data
      * @return table name
      */
-    // TODO hongjun: find table from parent select statement, should find table in subquery level only
+    // TODO find table from parent select statement, should find table in subquery level only
     public static Optional<String> findTableName(final PredicateSegment predicateSegment, final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
         if (!(sqlStatement instanceof SelectStatement)) {
             return Optional.of(sqlStatement.getTables().getSingleTableName());

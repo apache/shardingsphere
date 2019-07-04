@@ -37,14 +37,14 @@ public final class ConditionValueCompareOperatorGenerator implements ConditionVa
     
     @Override
     public Optional<RouteValue> generate(final PredicateCompareRightValue predicateRightValue, final Column column, final List<Object> parameters) {
-        if (!isOperatorSupportedWithSharding(predicateRightValue.getOperator())) {
+        if (!isSupportedOperator(predicateRightValue.getOperator())) {
             return Optional.absent();
         }
         Optional<Comparable> routeValue = new ConditionValue(predicateRightValue.getExpression(), parameters).getValue();
         return routeValue.isPresent() ? Optional.<RouteValue>of(new ListRouteValue<>(column.getName(), column.getTableName(), Lists.newArrayList(routeValue.get()))) : Optional.<RouteValue>absent();
     }
     
-    private boolean isOperatorSupportedWithSharding(final String operator) {
+    private boolean isSupportedOperator(final String operator) {
         return "=".equals(operator);
     }
 }

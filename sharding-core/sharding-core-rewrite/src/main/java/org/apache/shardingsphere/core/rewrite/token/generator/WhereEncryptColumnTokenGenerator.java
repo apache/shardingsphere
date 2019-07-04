@@ -20,9 +20,9 @@ package org.apache.shardingsphere.core.rewrite.token.generator;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
-import org.apache.shardingsphere.core.parse.sql.context.condition.Conditions;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
@@ -66,10 +66,10 @@ public final class WhereEncryptColumnTokenGenerator implements CollectionSQLToke
     
     private Collection<EncryptColumnToken> createWhereEncryptColumnTokens(final EncryptRule encryptRule, final ParameterBuilder parameterBuilder) {
         Collection<EncryptColumnToken> result = new LinkedList<>();
-        if (dmlStatement.getEncryptConditions().getOrConditions().isEmpty()) {
+        if (dmlStatement.getEncryptConditions().getConditions().isEmpty()) {
             return result;
         }
-        for (Condition each : dmlStatement.getEncryptConditions().getOrConditions().get(0).getConditions()) {
+        for (Condition each : dmlStatement.getEncryptConditions().getConditions()) {
             this.column = new Column(each.getColumn().getName(), dmlStatement.getTables().getSingleTableName());
             this.startIndex = each.getPredicateSegment().getStartIndex();
             this.stopIndex = each.getPredicateSegment().getStopIndex();
@@ -84,9 +84,9 @@ public final class WhereEncryptColumnTokenGenerator implements CollectionSQLToke
         return getEncryptColumnTokenFromConditions(encryptorEngine, encryptCondition.get(), parameterBuilder);
     }
     
-    private Optional<Condition> getEncryptCondition(final Conditions encryptConditions) {
-        for (Condition each : encryptConditions.findConditions(column)) {
-            if (isSameIndexes(each.getPredicateSegment())) {
+    private Optional<Condition> getEncryptCondition(final AndCondition encryptConditions) {
+        for (Condition each : encryptConditions.getConditions()) {
+            if (each.getColumn().equals(column) && isSameIndexes(each.getPredicateSegment())) {
                 return Optional.of(each);
             }
         }

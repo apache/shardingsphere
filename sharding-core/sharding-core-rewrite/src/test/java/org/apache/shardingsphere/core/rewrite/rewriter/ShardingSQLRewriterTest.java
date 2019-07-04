@@ -29,7 +29,6 @@ import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.Pag
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ShardingSelectOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.transparent.TransparentOptimizedStatement;
 import org.apache.shardingsphere.core.parse.constant.QuoteCharacter;
-import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationSelectItem;
@@ -775,9 +774,7 @@ public final class ShardingSQLRewriterTest {
         Column column = new Column("id", "table_z");
         selectStatement.getTables().add(new Table("table_z", null));
         selectStatement.getSQLSegments().add(new TableSegment(15, 21, "table_z"));
-        selectStatement.getEncryptConditions().getOrConditions().add(new AndCondition());
-        selectStatement.getEncryptConditions().getOrConditions().get(0).getConditions().add(
-                new Condition(column, new PredicateSegment(29, 32, null, null), new ParameterMarkerExpressionSegment(0, 0, 0)));
+        selectStatement.getEncryptConditions().getConditions().add(new Condition(column, new PredicateSegment(29, 32, null, null), new ParameterMarkerExpressionSegment(0, 0, 0)));
         routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList()));
         routeResult.setRoutingResult(new RoutingResult());
         selectStatement.setLogicSQL("SELECT id FROM table_z WHERE id=? AND name=?");
@@ -790,12 +787,11 @@ public final class ShardingSQLRewriterTest {
     public void assertSelectInWithShardingEncryptor() {
         selectStatement.getTables().add(new Table("table_z", null));
         selectStatement.getSQLSegments().add(new TableSegment(15, 21, "table_z"));
-        selectStatement.getEncryptConditions().getOrConditions().add(new AndCondition());
         List<ExpressionSegment> expressionSegments = new LinkedList<>();
         expressionSegments.add(new LiteralExpressionSegment(0, 0, 3));
         expressionSegments.add(new LiteralExpressionSegment(0, 0, 5));
         Column column = new Column("id", "table_z");
-        selectStatement.getEncryptConditions().getOrConditions().get(0).getConditions().add(new Condition(column, new PredicateSegment(29, 39, null, null), expressionSegments));
+        selectStatement.getEncryptConditions().getConditions().add(new Condition(column, new PredicateSegment(29, 39, null, null), expressionSegments));
         routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList()));
         routeResult.setRoutingResult(new RoutingResult());
         selectStatement.setLogicSQL("SELECT id FROM table_z WHERE id in (3,5)");
@@ -810,14 +806,12 @@ public final class ShardingSQLRewriterTest {
         parameters.add(2);
         selectStatement.getTables().add(new Table("table_z", null));
         selectStatement.getSQLSegments().add(new TableSegment(15, 21, "table_z"));
-        selectStatement.getEncryptConditions().getOrConditions().add(new AndCondition());
-        selectStatement.getEncryptConditions().getOrConditions().add(new AndCondition());
         List<ExpressionSegment> expressionSegments = new LinkedList<>();
         expressionSegments.add(new ParameterMarkerExpressionSegment(0, 0, 0));
         expressionSegments.add(new ParameterMarkerExpressionSegment(0, 0, 1));
         Column column = new Column("id", "table_z");
-        selectStatement.getEncryptConditions().getOrConditions().get(0).getConditions().add(new Condition(column, new PredicateSegment(29, 40, null, null), expressionSegments));
-        selectStatement.getEncryptConditions().getOrConditions().get(0).getConditions().add(new Condition(column, new PredicateSegment(45, 50, null, null), new LiteralExpressionSegment(0, 0, 3)));
+        selectStatement.getEncryptConditions().getConditions().add(new Condition(column, new PredicateSegment(29, 40, null, null), expressionSegments));
+        selectStatement.getEncryptConditions().getConditions().add(new Condition(column, new PredicateSegment(45, 50, null, null), new LiteralExpressionSegment(0, 0, 3)));
         routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList()));
         routeResult.setRoutingResult(new RoutingResult());
         selectStatement.setLogicSQL("SELECT id FROM table_z WHERE id in (?, ?) or id = 3");
@@ -835,9 +829,7 @@ public final class ShardingSQLRewriterTest {
         selectStatement.getTables().add(new Table("table_k", null));
         Column column = new Column("id", "table_k");
         selectStatement.getSQLSegments().add(new TableSegment(15, 21, "table_k"));
-        selectStatement.getEncryptConditions().getOrConditions().add(new AndCondition());
-        selectStatement.getEncryptConditions().getOrConditions().get(0).getConditions().add(
-                new Condition(column, new PredicateSegment(29, 32, null, null), new ParameterMarkerExpressionSegment(0, 0, 0)));
+        selectStatement.getEncryptConditions().getConditions().add(new Condition(column, new PredicateSegment(29, 32, null, null), new ParameterMarkerExpressionSegment(0, 0, 0)));
         routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList()));
         routeResult.setRoutingResult(new RoutingResult());
         selectStatement.setLogicSQL("SELECT id FROM table_k WHERE id=? AND name=?");
@@ -850,12 +842,11 @@ public final class ShardingSQLRewriterTest {
     public void assertSelectInWithQueryAssistedShardingEncryptor() {
         selectStatement.getTables().add(new Table("table_k", null));
         selectStatement.getSQLSegments().add(new TableSegment(15, 21, "table_k"));
-        selectStatement.getEncryptConditions().getOrConditions().add(new AndCondition());
         List<ExpressionSegment> expressionSegments = new LinkedList<>();
         expressionSegments.add(new LiteralExpressionSegment(0, 0, 3));
         expressionSegments.add(new LiteralExpressionSegment(0, 0, 5));
         Column column = new Column("id", "table_k");
-        selectStatement.getEncryptConditions().getOrConditions().get(0).getConditions().add(new Condition(column, new PredicateSegment(29, 39, null, null), expressionSegments));
+        selectStatement.getEncryptConditions().getConditions().add(new Condition(column, new PredicateSegment(29, 39, null, null), expressionSegments));
         routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList()));
         routeResult.setRoutingResult(new RoutingResult());
         selectStatement.setLogicSQL("SELECT id FROM table_k WHERE id in (3,5)");
@@ -872,8 +863,7 @@ public final class ShardingSQLRewriterTest {
         updateStatement.getSQLSegments().add(setAssignmentsSegment);
         Column column = new Column("id", "table_z");
         updateStatement.getAssignments().put(column, new LiteralExpressionSegment(0, 0, 1));
-        updateStatement.getEncryptConditions().getOrConditions().add(new AndCondition());
-        updateStatement.getEncryptConditions().getOrConditions().get(0).getConditions().add(new Condition(column, new PredicateSegment(32, 37, null, null), new LiteralExpressionSegment(0, 0, 2)));
+        updateStatement.getEncryptConditions().getConditions().add(new Condition(column, new PredicateSegment(32, 37, null, null), new LiteralExpressionSegment(0, 0, 2)));
         routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(updateStatement, Collections.<ShardingCondition>emptyList()));
         routeResult.setRoutingResult(new RoutingResult());
         updateStatement.setLogicSQL("UPDATE table_z SET id = 1 WHERE id = 2");
