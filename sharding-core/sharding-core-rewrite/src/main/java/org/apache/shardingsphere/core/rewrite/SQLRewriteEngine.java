@@ -33,9 +33,7 @@ import org.apache.shardingsphere.core.rewrite.token.pojo.SQLToken;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.SQLUnit;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
-import org.apache.shardingsphere.core.route.type.TableUnit;
 import org.apache.shardingsphere.core.rule.BaseRule;
-import org.apache.shardingsphere.core.rule.BindingTableRule;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -44,7 +42,6 @@ import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 import org.apache.shardingsphere.spi.encrypt.ShardingQueryAssistedEncryptor;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -164,33 +161,10 @@ public final class SQLRewriteEngine {
      * Generate SQL.
      * 
      * @param routingUnit routing unit
+     * @param logicAndActualTables logic and actual tables
      * @return sql unit
      */
-    public SQLUnit generateSQL(final RoutingUnit routingUnit) {
-        return new SQLUnit(sqlBuilder.toSQL(routingUnit, getTableTokens(routingUnit)), parameterBuilder.getParameters(routingUnit));
-    }
-   
-    private Map<String, String> getTableTokens(final RoutingUnit routingUnit) {
-        Map<String, String> result = new HashMap<>();
-        for (TableUnit each : routingUnit.getTableUnits()) {
-            String logicTableName = each.getLogicTableName().toLowerCase();
-            result.put(logicTableName, each.getActualTableName());
-            Optional<BindingTableRule> bindingTableRule = ((ShardingRule) baseRule).findBindingTableRule(logicTableName);
-            if (bindingTableRule.isPresent()) {
-                result.putAll(getBindingTableTokens(routingUnit.getMasterSlaveLogicDataSourceName(), each, bindingTableRule.get()));
-            }
-        }
-        return result;
-    }
-    
-    private Map<String, String> getBindingTableTokens(final String dataSourceName, final TableUnit tableUnit, final BindingTableRule bindingTableRule) {
-        Map<String, String> result = new HashMap<>();
-        for (String each : optimizedStatement.getSQLStatement().getTables().getTableNames()) {
-            String tableName = each.toLowerCase();
-            if (!tableName.equals(tableUnit.getLogicTableName().toLowerCase()) && bindingTableRule.hasLogicTable(tableName)) {
-                result.put(tableName, bindingTableRule.getBindingActualTable(dataSourceName, tableName, tableUnit.getActualTableName()));
-            }
-        }
-        return result;
+    public SQLUnit generateSQL(final RoutingUnit routingUnit, final Map<String, String> logicAndActualTables) {
+        return new SQLUnit(sqlBuilder.toSQL(routingUnit, logicAndActualTables), parameterBuilder.getParameters(routingUnit));
     }
 }
