@@ -1,9 +1,6 @@
 import axios from 'axios'
 import jsonp from 'jsonp'
-// import qs from 'qs'
-import {
-  Message
-} from 'element-ui'
+import { Message } from 'element-ui'
 import C from './conf'
 
 axios.defaults.headers.post['Content-Type'] = 'application/jsoncharset=UTF-8'
@@ -11,19 +8,10 @@ axios.defaults.withCredentials = true
 
 const configData = (type, params) => {
   if (type === 'post') {
-    // params = qs.stringify(params)
     return params
   } else if (type === 'put') {
-    // return qs.stringify({
-    //   ...params,
-    //   _method: 'put'
-    // })
     return params
   } else if (type === 'delete') {
-    // return qs.stringify({
-    //   ...params,
-    //   _method: 'delete'
-    // })
     return params
   }
   return null
@@ -35,105 +23,93 @@ function ajax(url, type, options) {
       method: type,
       url: C.HOST + url,
       timeout: 10000,
-      // responseType:'stream',
       headers: {
         'Access-Token': window.localStorage.getItem('Access-Token') || ''
       },
       params: type === 'get' ? options : null,
       data: configData(type, options)
-    }).then((result) => {
-      const data = result.data
-      const success = data.success
-      if (success) {
-        resolve(data)
-        return
-      }
-
-      if (!success) {
-        if (data.errorCode === 403) {
-          location.href = '#/login'
+    })
+      .then(result => {
+        const data = result.data
+        const success = data.success
+        if (success) {
+          resolve(data)
           return
         }
+
+        if (!success) {
+          if (data.errorCode === 403) {
+            location.href = '#/login'
+            return
+          }
+          Message({
+            message: data.errorMsg,
+            type: 'error',
+            duration: 2 * 1000
+          })
+          return
+        }
+      })
+      .catch(error => {
         Message({
-          message: data.errorMsg,
+          message: error,
           type: 'error',
           duration: 2 * 1000
         })
-        return
-      }
-      // switch (success) {
-      //   case true: {
-      //     resolve(data)
-      //     break
-      //   }
-      //   default: {
-      //     Message({
-      //       message: data.errorMsg,
-      //       type: 'error',
-      //       duration: 2 * 1000
-      //     })
-      //     // resolve({
-      //     //   error: true,
-      //     //   ...data
-      //     // })
-      //   }
-      // }
-    }).catch((error) => {
-      Message({
-        message: error,
-        type: 'error',
-        duration: 2 * 1000
       })
-      // resolve({
-      //   code: 500,
-      //   error
-      // })
-    })
   })
 }
 
 const config = {
   get(url, options, config) {
     return new Promise((resolve, reject) => {
-      ajax(url, 'get', options, config)
-        .then((data) => {
+      ajax(url, 'get', options, config).then(
+        data => {
           resolve(data)
-        }, (error) => {
+        },
+        error => {
           reject(error)
-        })
+        }
+      )
     })
   },
 
   post(url, options, config) {
     return new Promise((resolve, reject) => {
-      ajax(url, 'post', options, config)
-        .then((data) => {
+      ajax(url, 'post', options, config).then(
+        data => {
           resolve(data)
-        }, (error) => {
+        },
+        error => {
           reject(error)
-        })
+        }
+      )
     })
   },
 
   put(url, options) {
     return new Promise((resolve, reject) => {
-      ajax(url, 'put', options)
-        .then((data) => {
+      ajax(url, 'put', options).then(
+        data => {
           resolve(data)
-        }, (error) => {
+        },
+        error => {
           reject(error)
-        })
+        }
+      )
     })
   },
 
   delete(url, options) {
     return new Promise((resolve, reject) => {
-      ajax(url, 'delete', options)
-        .then((data) => {
+      ajax(url, 'delete', options).then(
+        data => {
           resolve(data)
-        }, (error) => {
+        },
+        error => {
           reject(error)
-        })
+        }
+      )
     })
   },
 
