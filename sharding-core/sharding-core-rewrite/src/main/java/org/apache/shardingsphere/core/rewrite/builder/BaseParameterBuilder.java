@@ -19,17 +19,12 @@ package org.apache.shardingsphere.core.rewrite.builder;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
-import org.apache.shardingsphere.core.optimize.statement.InsertOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.InsertOptimizeResultUnit;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.Pagination;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ShardingSelectOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
-import org.apache.shardingsphere.core.rule.DataNode;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -44,49 +39,22 @@ import java.util.Map.Entry;
 @Getter
 public final class BaseParameterBuilder implements ParameterBuilder {
     
-    private final List<Object> originalParameters;
+    private final List<Object> originalParameters = new LinkedList<>();
     
-    private final Map<Integer, Object> addedIndexAndParameters;
+    private final Map<Integer, Object> addedIndexAndParameters = new HashMap<>();
     
-    private final Map<Integer, Object> replacedIndexAndParameters;
-    
-    private final List<InsertParameterUnit> insertParameterUnits;
+    private final Map<Integer, Object> replacedIndexAndParameters = new HashMap<>();
     
     public BaseParameterBuilder(final List<Object> parameters) {
-        originalParameters = new LinkedList<>(parameters);
-        addedIndexAndParameters = new HashMap<>();
-        replacedIndexAndParameters = new HashMap<>();
-        insertParameterUnits = new LinkedList<>();
+        originalParameters.addAll(parameters);
     }
     
-    /**
-     * Set insert parameter units.
-     * 
-     * @param optimizedStatement optimized statement
-     */
-    public void setInsertParameterUnits(final OptimizedStatement optimizedStatement) {
-        if (optimizedStatement instanceof InsertOptimizedStatement) {
-            insertParameterUnits.addAll(createInsertParameterUnits((InsertOptimizedStatement) optimizedStatement));
-        }
+    public BaseParameterBuilder(final List<Object> parameters, final SQLRouteResult sqlRouteResult) {
+        this(parameters);
+        setReplacedIndexAndParameters(sqlRouteResult);
     }
     
-    private List<InsertParameterUnit> createInsertParameterUnits(final InsertOptimizedStatement optimizedStatement) {
-        List<InsertParameterUnit> result = new LinkedList<>();
-        if (null == optimizedStatement) {
-            return result;
-        }
-        for (InsertOptimizeResultUnit each : optimizedStatement.getUnits()) {
-            result.add(new InsertParameterUnit(Arrays.asList(each.getParameters()), each.getDataNodes()));
-        }
-        return result;
-    }
-    
-    /**
-     * Set replaced index and parameters.
-     * 
-     * @param sqlRouteResult sql route result
-     */
-    public void setReplacedIndexAndParameters(final SQLRouteResult sqlRouteResult) {
+    private void setReplacedIndexAndParameters(final SQLRouteResult sqlRouteResult) {
         if (isNeedRewritePagination(sqlRouteResult)) {
             Pagination pagination = ((ShardingSelectOptimizedStatement) sqlRouteResult.getOptimizedStatement()).getPagination();
             Optional<Integer> offsetParameterIndex = pagination.getOffsetParameterIndex();
@@ -115,44 +83,6 @@ public final class BaseParameterBuilder implements ParameterBuilder {
     
     @Override
     public List<Object> getParameters() {
-        List<Object> result = getInsertParameters();
-        return result.isEmpty() ? getRevisedParameters() : result;
-    }
-    
-    @Override
-    public List<Object> getParameters(final RoutingUnit routingUnit) {
-        List<Object> result = getInsertParameters(routingUnit);
-        return result.isEmpty() ? getRevisedParameters() : result;
-    }
-    
-    private List<Object> getInsertParameters() {
-        List<Object> result = new LinkedList<>();
-        for (InsertParameterUnit each : insertParameterUnits) {
-            result.addAll(each.getParameters());
-        }
-        return result;
-    }
-    
-    private List<Object> getInsertParameters(final RoutingUnit routingUnit) {
-        List<Object> result = new LinkedList<>();
-        for (InsertParameterUnit each : insertParameterUnits) {
-            if (isAppendInsertParameter(each, routingUnit)) {
-                result.addAll(each.getParameters());
-            }
-        }
-        return result;
-    }
-    
-    private boolean isAppendInsertParameter(final InsertParameterUnit unit, final RoutingUnit routingUnit) {
-        for (DataNode each : unit.getDataNodes()) {
-            if (routingUnit.getTableUnit(each.getDataSourceName(), each.getTableName()).isPresent()) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    private List<Object> getRevisedParameters() {
         List<Object> result = new LinkedList<>(originalParameters);
         for (Entry<Integer, Object> entry : addedIndexAndParameters.entrySet()) {
             result.add(entry.getKey(), entry.getValue());
@@ -161,5 +91,10 @@ public final class BaseParameterBuilder implements ParameterBuilder {
             result.set(entry.getKey(), entry.getValue());
         }
         return result;
+    }
+    
+    @Override
+    public List<Object> getParameters(final RoutingUnit routingUnit) {
+        return getParameters();
     }
 }
