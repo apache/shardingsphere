@@ -26,7 +26,6 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssign
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.core.rewrite.builder.BaseParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
@@ -62,10 +61,10 @@ public final class UpdateEncryptColumnTokenGenerator implements CollectionSQLTok
     
     @Override
     public Collection<EncryptColumnToken> generateSQLTokens(final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final EncryptRule encryptRule) {
-        if (!(optimizedStatement.getSQLStatement() instanceof DMLStatement)) {
+        if (!(optimizedStatement.getSQLStatement() instanceof UpdateStatement)) {
             return Collections.emptyList();
         }
-        this.dmlStatement = (DMLStatement) optimizedStatement.getSQLStatement();
+        this.dmlStatement = (UpdateStatement) optimizedStatement.getSQLStatement();
         return createUpdateEncryptColumnTokens(optimizedStatement, parameterBuilder, encryptRule);
     }
     
@@ -81,9 +80,6 @@ public final class UpdateEncryptColumnTokenGenerator implements CollectionSQLTok
     
     private Collection<EncryptColumnToken> createUpdateEncryptColumnTokens(final EncryptRule encryptRule, final ParameterBuilder parameterBuilder, final SetAssignmentsSegment segment) {
         Collection<EncryptColumnToken> result = new LinkedList<>();
-        if (dmlStatement instanceof InsertStatement) {
-            return result;
-        }
         for (AssignmentSegment each : segment.getAssignments()) {
             this.column = new Column(each.getColumn().getName(), dmlStatement.getTables().getSingleTableName());
             if (encryptRule.getEncryptorEngine().getShardingEncryptor(column.getTableName(), column.getName()).isPresent()) {
