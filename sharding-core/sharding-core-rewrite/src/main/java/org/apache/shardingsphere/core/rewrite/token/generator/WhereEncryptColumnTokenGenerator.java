@@ -56,10 +56,8 @@ public final class WhereEncryptColumnTokenGenerator implements CollectionSQLToke
     
     @Override
     public Collection<EncryptColumnToken> generateSQLTokens(final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final EncryptRule encryptRule) {
-        if (!(optimizedStatement.getSQLStatement() instanceof DMLStatement)) {
-            return Collections.emptyList();
-        }
-        return createWhereEncryptColumnTokens(optimizedStatement, parameterBuilder, encryptRule);
+        return optimizedStatement.getSQLStatement() instanceof DMLStatement
+                ? createWhereEncryptColumnTokens(optimizedStatement, parameterBuilder, encryptRule) : Collections.<EncryptColumnToken>emptyList();
     }
     
     private Collection<EncryptColumnToken> createWhereEncryptColumnTokens(final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final EncryptRule encryptRule) {
