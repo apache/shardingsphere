@@ -552,7 +552,10 @@ public final class ShardingSQLRewriterTest {
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, routeResult, parameters, routeResult.getRoutingResult().isSingleRouting());
         RoutingUnit routingUnit = new RoutingUnit("db0");
         routingUnit.getTableUnits().add(new TableUnit("table_x", "table_x"));
-        assertThat(rewriteEngine.generateSQL(routingUnit).getSql(), is("SELECT table_x.id, x.name FROM table_x x, table_y y WHERE table_x.id=? AND x.name=?"));
+        Map<String, String> logicTableAndActualTables = new LinkedHashMap<>();
+        logicTableAndActualTables.put("table_x", "table_x");
+        logicTableAndActualTables.put("table_y", "table_y");
+        assertThat(rewriteEngine.generateSQL(routingUnit, logicTableAndActualTables).getSql(), is("SELECT table_x.id, x.name FROM table_x x, table_y y WHERE table_x.id=? AND x.name=?"));
     }
     
     @Test
