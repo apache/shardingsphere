@@ -32,7 +32,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.AndPredica
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.OrPredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.SubqueryPredicateSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RangeRouteValue;
@@ -61,20 +61,20 @@ public final class WhereClauseShardingConditionEngine {
     /**
      * Create sharding conditions.
      * 
-     * @param dmlStatement DML statement
+     * @param sqlStatement SQL statement
      * @param parameters SQL parameters
      * @return sharding conditions
      */
-    public Collection<ShardingCondition> createShardingConditions(final DMLStatement dmlStatement, final List<Object> parameters) {
+    public Collection<ShardingCondition> createShardingConditions(final SQLStatement sqlStatement, final List<Object> parameters) {
         Collection<ShardingCondition> result = new LinkedList<>();
-        Optional<OrPredicateSegment> orPredicateSegment = dmlStatement.findSQLSegment(OrPredicateSegment.class);
+        Optional<OrPredicateSegment> orPredicateSegment = sqlStatement.findSQLSegment(OrPredicateSegment.class);
         if (orPredicateSegment.isPresent()) {
-            result.addAll(createShardingConditions(dmlStatement, parameters, orPredicateSegment.get()));
+            result.addAll(createShardingConditions(sqlStatement, parameters, orPredicateSegment.get()));
         }
-        Optional<SubqueryPredicateSegment> subqueryPredicateSegment = dmlStatement.findSQLSegment(SubqueryPredicateSegment.class);
+        Optional<SubqueryPredicateSegment> subqueryPredicateSegment = sqlStatement.findSQLSegment(SubqueryPredicateSegment.class);
         if (subqueryPredicateSegment.isPresent()) {
             for (OrPredicateSegment each : subqueryPredicateSegment.get().getOrPredicates()) {
-                Collection<ShardingCondition> subqueryShardingConditions = createShardingConditions(dmlStatement, parameters, each);
+                Collection<ShardingCondition> subqueryShardingConditions = createShardingConditions(sqlStatement, parameters, each);
                 if (!result.containsAll(subqueryShardingConditions)) {
                     result.addAll(subqueryShardingConditions);
                 }
@@ -83,10 +83,10 @@ public final class WhereClauseShardingConditionEngine {
         return result;
     }
     
-    private Collection<ShardingCondition> createShardingConditions(final DMLStatement dmlStatement, final List<Object> parameters, final OrPredicateSegment orPredicateSegment) {
+    private Collection<ShardingCondition> createShardingConditions(final SQLStatement sqlStatement, final List<Object> parameters, final OrPredicateSegment orPredicateSegment) {
         Collection<ShardingCondition> result = new LinkedList<>();
         for (AndPredicate each : orPredicateSegment.getAndPredicates()) {
-            Map<Column, Collection<RouteValue>> routeValueMap = createRouteValueMap(dmlStatement, parameters, each);
+            Map<Column, Collection<RouteValue>> routeValueMap = createRouteValueMap(sqlStatement, parameters, each);
             if (routeValueMap.isEmpty()) {
                 return Collections.emptyList();
             }
@@ -95,10 +95,10 @@ public final class WhereClauseShardingConditionEngine {
         return result;
     }
     
-    private Map<Column, Collection<RouteValue>> createRouteValueMap(final DMLStatement dmlStatement, final List<Object> parameters, final AndPredicate andPredicate) {
+    private Map<Column, Collection<RouteValue>> createRouteValueMap(final SQLStatement sqlStatement, final List<Object> parameters, final AndPredicate andPredicate) {
         Map<Column, Collection<RouteValue>> result = new HashMap<>();
         for (PredicateSegment each : andPredicate.getPredicates()) {
-            Optional<String> tableName = PredicateUtils.findTableName(each, dmlStatement, shardingTableMetaData);
+            Optional<String> tableName = PredicateUtils.findTableName(each, sqlStatement, shardingTableMetaData);
             if (!tableName.isPresent() || !shardingRule.isShardingColumn(each.getColumn().getName(), tableName.get())) {
                 continue;
             }
