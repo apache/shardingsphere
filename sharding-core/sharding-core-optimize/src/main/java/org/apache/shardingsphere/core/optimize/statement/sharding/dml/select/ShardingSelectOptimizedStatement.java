@@ -23,8 +23,11 @@ import org.apache.shardingsphere.core.optimize.statement.sharding.dml.ShardingWh
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingConditions;
 import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
+import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
+import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 /**
@@ -35,6 +38,8 @@ import java.util.List;
 @Getter
 @Setter
 public final class ShardingSelectOptimizedStatement extends ShardingWhereOptimizedStatement {
+    
+    private final Collection<SelectItem> items = new LinkedHashSet<>();
     
     private Pagination pagination;
     

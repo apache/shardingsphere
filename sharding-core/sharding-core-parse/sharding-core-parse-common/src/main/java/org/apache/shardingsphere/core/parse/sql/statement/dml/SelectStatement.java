@@ -84,28 +84,6 @@ public final class SelectStatement extends DMLStatement {
     private Collection<Conditions> subqueryShardingConditions = new LinkedList<>();
     
     /**
-     * Get alias.
-     * 
-     * @param name name or alias
-     * @return alias
-     */
-    public Optional<String> getAlias(final String name) {
-        if (containStar) {
-            return Optional.absent();
-        }
-        String rawName = SQLUtil.getExactlyValue(name);
-        for (SelectItem each : items) {
-            if (SQLUtil.getExactlyExpression(rawName).equalsIgnoreCase(SQLUtil.getExactlyExpression(SQLUtil.getExactlyValue(each.getExpression())))) {
-                return each.getAlias();
-            }
-            if (rawName.equalsIgnoreCase(each.getAlias().orNull())) {
-                return Optional.of(rawName);
-            }
-        }
-        return Optional.absent();
-    }
-    
-    /**
      * Get aggregation select items.
      *
      * @return aggregation select items
@@ -246,6 +224,22 @@ public final class SelectStatement extends DMLStatement {
                 each.setIndex(columnLabelIndexMap.get(columnLabel));
             }
         }
+    }
+    
+    private Optional<String> getAlias(final String name) {
+        if (containStar) {
+            return Optional.absent();
+        }
+        String rawName = SQLUtil.getExactlyValue(name);
+        for (SelectItem each : items) {
+            if (SQLUtil.getExactlyExpression(rawName).equalsIgnoreCase(SQLUtil.getExactlyExpression(SQLUtil.getExactlyValue(each.getExpression())))) {
+                return each.getAlias();
+            }
+            if (rawName.equalsIgnoreCase(each.getAlias().orNull())) {
+                return Optional.of(rawName);
+            }
+        }
+        return Optional.absent();
     }
     
     private String getOrderItemText(final TextOrderByItemSegment orderByItemSegment) {
