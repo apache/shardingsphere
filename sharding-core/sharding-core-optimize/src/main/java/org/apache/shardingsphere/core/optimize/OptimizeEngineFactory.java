@@ -31,7 +31,6 @@ import org.apache.shardingsphere.core.optimize.engine.sharding.dml.ShardingUpdat
 import org.apache.shardingsphere.core.optimize.engine.transparent.TransparentOptimizeEngine;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.DropIndexStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
@@ -92,7 +91,7 @@ public final class OptimizeEngineFactory {
         if (sqlStatement instanceof InsertStatement) {
             return new EncryptInsertOptimizeEngine(encryptRule, shardingTableMetaData, (InsertStatement) sqlStatement, parameters);
         }
-        if (sqlStatement instanceof DMLStatement) {
+        if (sqlStatement instanceof SelectStatement || sqlStatement instanceof UpdateStatement || sqlStatement instanceof DeleteStatement) {
             return new EncryptWhereOptimizeEngine(encryptRule, shardingTableMetaData, sqlStatement);
         }
         return new TransparentOptimizeEngine(sqlStatement);
