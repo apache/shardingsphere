@@ -76,6 +76,9 @@ public final class InsertParameterBuilder implements ParameterBuilder {
     }
     
     private boolean isAppendInsertParameter(final InsertParameterUnit unit, final RoutingUnit routingUnit) {
+        if (unit.getDataNodes().isEmpty()) {
+            return true;
+        }
         for (DataNode each : unit.getDataNodes()) {
             if (routingUnit.getTableUnit(each.getDataSourceName(), each.getTableName()).isPresent()) {
                 return true;
