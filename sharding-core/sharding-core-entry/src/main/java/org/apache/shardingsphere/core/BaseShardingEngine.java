@@ -106,7 +106,8 @@ public abstract class BaseShardingEngine {
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, sqlRouteResult, parameters, sqlRouteResult.getRoutingResult().isSingleRouting());
         Collection<RouteUnit> result = new LinkedHashSet<>();
         for (RoutingUnit each : sqlRouteResult.getRoutingResult().getRoutingUnits()) {
-            result.add(new RouteUnit(each.getDataSourceName(), rewriteEngine.generateSQL(each, getLogicAndActualTables(each, sqlRouteResult.getOptimizedStatement().getSQLStatement().getTables().getTableNames()))));
+            result.add(new RouteUnit(each.getDataSourceName(), 
+                    rewriteEngine.generateSQL(each, getLogicAndActualTables(each, sqlRouteResult.getOptimizedStatement().getSQLStatement().getTables().getTableNames()))));
         }
         return result;
     }
@@ -130,7 +131,8 @@ public abstract class BaseShardingEngine {
         return result;
     }
     
-    private Map<String, String> getLogicAndActualTablesFromBindingTable(final String dataSourceName, final TableUnit tableUnit, final Collection<String> parsedTableNames, final BindingTableRule bindingTableRule) {
+    private Map<String, String> getLogicAndActualTablesFromBindingTable(
+            final String dataSourceName, final TableUnit tableUnit, final Collection<String> parsedTableNames, final BindingTableRule bindingTableRule) {
         Map<String, String> result = new LinkedHashMap<>();
         for (String each : parsedTableNames) {
             String tableName = each.toLowerCase();
