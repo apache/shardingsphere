@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
 import org.apache.shardingsphere.core.optimize.engine.encrypt.EncryptInsertOptimizeEngine;
+import org.apache.shardingsphere.core.optimize.engine.encrypt.EncryptWhereOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.engine.sharding.ddl.ShardingDropIndexOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.engine.sharding.dml.ShardingDeleteOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.engine.sharding.dml.ShardingInsertOptimizeEngine;
@@ -30,6 +31,7 @@ import org.apache.shardingsphere.core.optimize.engine.sharding.dml.ShardingUpdat
 import org.apache.shardingsphere.core.optimize.engine.transparent.TransparentOptimizeEngine;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.DropIndexStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
@@ -89,6 +91,9 @@ public final class OptimizeEngineFactory {
     public static OptimizeEngine newInstance(final EncryptRule encryptRule, final ShardingTableMetaData shardingTableMetaData, final SQLStatement sqlStatement, final List<Object> parameters) {
         if (sqlStatement instanceof InsertStatement) {
             return new EncryptInsertOptimizeEngine(encryptRule, shardingTableMetaData, (InsertStatement) sqlStatement, parameters);
+        }
+        if (sqlStatement instanceof DMLStatement) {
+            return new EncryptWhereOptimizeEngine(encryptRule, shardingTableMetaData, sqlStatement);
         }
         return new TransparentOptimizeEngine(sqlStatement);
     }

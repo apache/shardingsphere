@@ -26,7 +26,7 @@ import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.AlwaysFalseShardingCondition;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.generator.ConditionValueGeneratorFactory;
-import org.apache.shardingsphere.core.parse.filler.common.dml.PredicateUtils;
+import org.apache.shardingsphere.core.parse.filler.impl.dml.PredicateUtils;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.OrPredicateSegment;

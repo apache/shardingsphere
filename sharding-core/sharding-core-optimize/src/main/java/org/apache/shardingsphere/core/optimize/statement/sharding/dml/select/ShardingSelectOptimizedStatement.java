@@ -19,9 +19,10 @@ package org.apache.shardingsphere.core.optimize.statement.sharding.dml.select;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.ShardingDMLOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.ShardingWhereOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingConditions;
+import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
 import java.util.List;
@@ -33,11 +34,11 @@ import java.util.List;
  */
 @Getter
 @Setter
-public final class ShardingSelectOptimizedStatement extends ShardingDMLOptimizedStatement {
+public final class ShardingSelectOptimizedStatement extends ShardingWhereOptimizedStatement {
     
     private Pagination pagination;
     
-    public ShardingSelectOptimizedStatement(final SQLStatement sqlStatement, final List<ShardingCondition> shardingConditions) {
-        super(sqlStatement, new ShardingConditions(shardingConditions));
+    public ShardingSelectOptimizedStatement(final SQLStatement sqlStatement, final List<ShardingCondition> shardingConditions, final AndCondition encryptConditions) {
+        super(sqlStatement, new ShardingConditions(shardingConditions), encryptConditions);
     }
 }

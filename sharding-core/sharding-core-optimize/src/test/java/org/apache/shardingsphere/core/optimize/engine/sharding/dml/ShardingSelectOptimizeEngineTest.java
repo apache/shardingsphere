@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.optimize.engine.sharding.dml;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Range;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
@@ -33,10 +34,13 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.Pred
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateCompareRightValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateInRightValue;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.strategy.encrypt.ShardingEncryptorEngine;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RangeRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
+import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
@@ -52,6 +56,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -68,6 +73,11 @@ public final class ShardingSelectOptimizeEngineTest {
     @Before
     public void setUp() {
         when(shardingRule.isShardingColumn("column", "tbl")).thenReturn(true);
+        EncryptRule encryptRule = mock(EncryptRule.class);
+        ShardingEncryptorEngine shardingEncryptorEngine = mock(ShardingEncryptorEngine.class);
+        when(shardingEncryptorEngine.getShardingEncryptor("tbl", "column")).thenReturn(Optional.<ShardingEncryptor>absent());
+        when(encryptRule.getEncryptorEngine()).thenReturn(shardingEncryptorEngine);
+        when(shardingRule.getEncryptRule()).thenReturn(encryptRule);
         selectStatement = new SelectStatement();
         selectStatement.getTables().add(new Table("tbl", null));
     }
