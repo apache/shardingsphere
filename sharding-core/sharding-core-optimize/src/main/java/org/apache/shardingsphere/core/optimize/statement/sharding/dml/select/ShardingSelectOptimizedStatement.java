@@ -25,6 +25,7 @@ import org.apache.shardingsphere.core.optimize.statement.sharding.dml.ShardingWh
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingConditions;
 import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
+import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.DistinctSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
@@ -92,6 +93,21 @@ public final class ShardingSelectOptimizedStatement extends ShardingWhereOptimiz
             }
         }
         return Optional.absent();
+    }
+    
+    /**
+     * Get aggregation distinct select items.
+     *
+     * @return aggregation distinct select items
+     */
+    public List<AggregationDistinctSelectItem> getAggregationDistinctSelectItems() {
+        List<AggregationDistinctSelectItem> result = new LinkedList<>();
+        for (SelectItem each : items) {
+            if (each instanceof AggregationDistinctSelectItem) {
+                result.add((AggregationDistinctSelectItem) each);
+            }
+        }
+        return result;
     }
     
     /**

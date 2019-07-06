@@ -22,7 +22,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Conditions;
-import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.StarSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.table.Table;
@@ -73,21 +72,6 @@ public final class SelectStatement extends DMLStatement {
     private SelectStatement subqueryStatement;
     
     private Collection<Conditions> subqueryShardingConditions = new LinkedList<>();
-    
-    /**
-     * Get aggregation distinct select items.
-     *
-     * @return aggregation distinct select items
-     */
-    public List<AggregationDistinctSelectItem> getAggregationDistinctSelectItems() {
-        List<AggregationDistinctSelectItem> result = new LinkedList<>();
-        for (SelectItem each : items) {
-            if (each instanceof AggregationDistinctSelectItem) {
-                result.add((AggregationDistinctSelectItem) each);
-            }
-        }
-        return result;
-    }
     
     /**
      * Judge has unqualified star select item.
