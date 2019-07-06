@@ -81,7 +81,7 @@ public final class DQLMergeEngine implements MergeEngine {
             result = getDividedQueryResults(new AggregationDistinctQueryResult(queryResults, optimizedStatement.getSelectStatement().getAggregationDistinctSelectItems()));
         }
         if (isNeedProcessDistinctSelectItem()) {
-            result = getDividedQueryResults(new DistinctQueryResult(queryResults, new ArrayList<>(optimizedStatement.getSelectStatement().getDistinctSelectItem().get().getDistinctColumnLabels())));
+            result = getDividedQueryResults(new DistinctQueryResult(queryResults, new ArrayList<>(optimizedStatement.getDistinctSelectItem().get().getDistinctColumnLabels())));
         }
         return result.isEmpty() ? queryResults : result;
     }
@@ -97,7 +97,7 @@ public final class DQLMergeEngine implements MergeEngine {
     }
     
     private boolean isNeedProcessDistinctSelectItem() {
-        return optimizedStatement.getSelectStatement().getDistinctSelectItem().isPresent() && optimizedStatement.getSelectStatement().getGroupByItems().isEmpty();
+        return optimizedStatement.getDistinctSelectItem().isPresent() && optimizedStatement.getSelectStatement().getGroupByItems().isEmpty();
     }
     
     private Map<String, Integer> getColumnLabelIndexMap(final QueryResult queryResult) throws SQLException {
