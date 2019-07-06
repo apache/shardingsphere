@@ -22,7 +22,9 @@ import com.google.common.base.Preconditions;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.AggregationType;
 import org.apache.shardingsphere.core.constant.OrderDirection;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.ShardingWhereOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingConditions;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.ShardingInsertColumns;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.ShardingInsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.Pagination;
@@ -551,12 +553,12 @@ public final class ShardingSQLRewriterTest {
         routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition()));
         routeResult.setRoutingResult(new RoutingResult());
         selectStatement.setLogicSQL("SELECT table_x.id, x.name FROM table_x x, table_y y WHERE table_x.id=? AND x.name=?");
-        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, routeResult, parameters, routeResult.getRoutingResult().isSingleRouting());
         RoutingUnit routingUnit = new RoutingUnit("db0");
         routingUnit.getTableUnits().add(new TableUnit("table_x", "table_x"));
         Map<String, String> logicTableAndActualTables = new LinkedHashMap<>();
         logicTableAndActualTables.put("table_x", "table_x");
         logicTableAndActualTables.put("table_y", "table_y");
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, routeResult, parameters, routeResult.getRoutingResult().isSingleRouting());
         assertThat(rewriteEngine.generateSQL(routingUnit, logicTableAndActualTables).getSql(), is("SELECT table_x.id, x.name FROM table_x x, table_y y WHERE table_x.id=? AND x.name=?"));
     }
     
@@ -753,7 +755,7 @@ public final class ShardingSQLRewriterTest {
     @Test
     public void assertTableTokenWithSchemaForUpdate() {
         updateStatement.getSQLSegments().add(new TableSegment(7, 27, "table_x"));
-        routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(updateStatement, Collections.<ShardingCondition>emptyList(), new AndCondition()));
+        routeResult = new SQLRouteResult(new ShardingWhereOptimizedStatement(updateStatement, new ShardingConditions(Collections.<ShardingCondition>emptyList()), new AndCondition()));
         routeResult.setRoutingResult(new RoutingResult());
         updateStatement.setLogicSQL("UPDATE `sharding_db`.table_x SET user_id=1 WHERE order_id=1");
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(Collections.emptyList());
@@ -763,7 +765,7 @@ public final class ShardingSQLRewriterTest {
     @Test
     public void assertTableTokenWithSchemaForDelete() {
         deleteStatement.getSQLSegments().add(new TableSegment(12, 34, "`table_x`"));
-        routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(deleteStatement, Collections.<ShardingCondition>emptyList(), new AndCondition()));
+        routeResult = new SQLRouteResult(new ShardingWhereOptimizedStatement(deleteStatement, new ShardingConditions(Collections.<ShardingCondition>emptyList()), new AndCondition()));
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
         routeResult.setRoutingResult(routingResult);
@@ -876,7 +878,7 @@ public final class ShardingSQLRewriterTest {
         updateStatement.getAssignments().put(column, new LiteralExpressionSegment(0, 0, 1));
         AndCondition encryptConditions = new AndCondition();
         encryptConditions.getConditions().add(new Condition(column, new PredicateSegment(32, 37, null, null), new LiteralExpressionSegment(0, 0, 2)));
-        routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(updateStatement, Collections.<ShardingCondition>emptyList(), encryptConditions));
+        routeResult = new SQLRouteResult(new ShardingWhereOptimizedStatement(updateStatement, new ShardingConditions(Collections.<ShardingCondition>emptyList()), encryptConditions));
         routeResult.setRoutingResult(new RoutingResult());
         updateStatement.setLogicSQL("UPDATE table_z SET id = 1 WHERE id = 2");
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(Collections.emptyList());
