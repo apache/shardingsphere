@@ -130,7 +130,7 @@ public final class DQLMergeEngine implements MergeEngine {
     }
     
     private MergedResult getGroupByMergedResult() throws SQLException {
-        if (optimizedStatement.getSelectStatement().isSameGroupByAndOrderByItems()) {
+        if (optimizedStatement.isSameGroupByAndOrderByItems()) {
             return new GroupByStreamMergedResult(columnLabelIndexMap, queryResults, optimizedStatement);
         } else {
             return new GroupByMemoryMergedResult(columnLabelIndexMap, queryResults, optimizedStatement);

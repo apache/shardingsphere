@@ -166,4 +166,13 @@ public final class ShardingSelectOptimizedStatement extends ShardingWhereOptimiz
         return orderByItemSegment instanceof ColumnOrderByItemSegment
                 ? ((ColumnOrderByItemSegment) orderByItemSegment).getColumn().getName() : ((ExpressionOrderByItemSegment) orderByItemSegment).getExpression();
     }
+    
+    /**
+     * Judge group by and order by sequence is same or not.
+     *
+     * @return group by and order by sequence is same or not
+     */
+    public boolean isSameGroupByAndOrderByItems() {
+        return !selectStatement.getGroupByItems().isEmpty() && selectStatement.getGroupByItems().equals(selectStatement.getOrderByItems());
+    }
 }

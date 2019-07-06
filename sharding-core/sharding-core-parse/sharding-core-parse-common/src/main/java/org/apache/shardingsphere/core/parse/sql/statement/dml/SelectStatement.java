@@ -124,13 +124,4 @@ public final class SelectStatement extends DMLStatement {
         }
         return Optional.absent();
     }
-    
-    /**
-     * Judge group by and order by sequence is same or not.
-     *
-     * @return group by and order by sequence is same or not
-     */
-    public boolean isSameGroupByAndOrderByItems() {
-        return !getGroupByItems().isEmpty() && getGroupByItems().equals(getOrderByItems());
-    }
 }
