@@ -21,6 +21,7 @@ import com.google.common.collect.Sets;
 import org.apache.shardingsphere.api.config.masterslave.LoadBalanceStrategyConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
+import org.apache.shardingsphere.core.exception.ShardingException;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
@@ -31,6 +32,7 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 public final class ShardingDataSourceNamesTest {
     
@@ -89,5 +91,16 @@ public final class ShardingDataSourceNamesTest {
                 new MasterSlaveRuleConfiguration("ms_ds", "master_ds", Collections.singletonList("slave_ds"), new LoadBalanceStrategyConfiguration("ROUND_ROBIN")));
         String actual = new ShardingDataSourceNames(shardingRuleConfig, Arrays.asList("master_ds", "slave_ds")).getRawMasterDataSourceName("default_ds");
         assertThat(actual, is("default_ds"));
+    }
+
+    @Test
+    public void assertGetDefaultDataSourceNameWithoutNullShardingRuleConfiguration() {
+        try {
+            new ShardingDataSourceNames(null, Arrays.asList("master_ds", "slave_ds")).getRawMasterDataSourceName("default_ds");
+            fail("here should throw a ShardingException when execute ShardingDataSourceNames's constructor with null ShardingRuleConfig");
+        } catch (ShardingException ignored){
+        } catch (Exception ex){
+            fail("here should throw a ShardingException when execute ShardingDataSourceNames's construction with null ShardingRuleConfig");
+        }
     }
 }

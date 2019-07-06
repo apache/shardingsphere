@@ -21,6 +21,7 @@ import com.google.common.collect.Lists;
 import lombok.Getter;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
+import org.apache.shardingsphere.core.exception.ShardingException;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -41,6 +42,9 @@ public final class ShardingDataSourceNames {
     private final Collection<String> dataSourceNames;
     
     public ShardingDataSourceNames(final ShardingRuleConfiguration shardingRuleConfig, final Collection<String> rawDataSourceNames) {
+        if(shardingRuleConfig == null){
+            throw new ShardingException("can not construct ShardingDataSourceNames cause shardingRuleConfig is null");
+        }
         this.shardingRuleConfig = shardingRuleConfig;
         dataSourceNames = getAllDataSourceNames(rawDataSourceNames);
     }
@@ -61,12 +65,7 @@ public final class ShardingDataSourceNames {
      * @return default data source name
      */
     public String getDefaultDataSourceName() {
-        if (1 == dataSourceNames.size()) {
-            return dataSourceNames.iterator().next();
-        } else if (shardingRuleConfig != null) {
-            return shardingRuleConfig.getDefaultDataSourceName();
-        }
-        return null;
+        return 1 == dataSourceNames.size() ? dataSourceNames.iterator().next() : shardingRuleConfig.getDefaultDataSourceName();
     }
     
     /**
