@@ -22,7 +22,6 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.NumberLit
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.ParameterMarkerPaginationValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.LimitValueSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 
 import java.util.List;
 
@@ -111,17 +110,18 @@ public final class Pagination {
     /**
      * Get revised row count.
      * 
-     * @param selectStatement select statement
+     * @param optimizedStatement optimized statement
      * @return revised row count
      */
-    public int getRevisedRowCount(final SelectStatement selectStatement) {
-        if (isMaxRowCount(selectStatement)) {
+    public int getRevisedRowCount(final ShardingSelectOptimizedStatement optimizedStatement) {
+        if (isMaxRowCount(optimizedStatement)) {
             return Integer.MAX_VALUE;
         }
         return rowCountSegment instanceof LimitValueSegment ? actualOffset + actualRowCount : actualRowCount;
     }
     
-    private boolean isMaxRowCount(final SelectStatement selectStatement) {
-        return (!selectStatement.getGroupByItems().isEmpty() || !selectStatement.getAggregationSelectItems().isEmpty()) && !selectStatement.isSameGroupByAndOrderByItems();
+    private boolean isMaxRowCount(final ShardingSelectOptimizedStatement optimizedStatement) {
+        return (!optimizedStatement.getSelectStatement().getGroupByItems().isEmpty()
+                || !optimizedStatement.getAggregationSelectItems().isEmpty()) && !optimizedStatement.getSelectStatement().isSameGroupByAndOrderByItems();
     }
 }

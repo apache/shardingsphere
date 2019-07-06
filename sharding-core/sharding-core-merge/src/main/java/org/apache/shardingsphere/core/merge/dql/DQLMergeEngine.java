@@ -118,7 +118,7 @@ public final class DQLMergeEngine implements MergeEngine {
     }
     
     private MergedResult build() throws SQLException {
-        if (!optimizedStatement.getSelectStatement().getGroupByItems().isEmpty() || !optimizedStatement.getSelectStatement().getAggregationSelectItems().isEmpty()) {
+        if (!optimizedStatement.getSelectStatement().getGroupByItems().isEmpty() || !optimizedStatement.getAggregationSelectItems().isEmpty()) {
             return getGroupByMergedResult();
         }
         if (!optimizedStatement.getSelectStatement().getOrderByItems().isEmpty()) {
@@ -129,9 +129,9 @@ public final class DQLMergeEngine implements MergeEngine {
     
     private MergedResult getGroupByMergedResult() throws SQLException {
         if (optimizedStatement.getSelectStatement().isSameGroupByAndOrderByItems()) {
-            return new GroupByStreamMergedResult(columnLabelIndexMap, queryResults, optimizedStatement.getSelectStatement());
+            return new GroupByStreamMergedResult(columnLabelIndexMap, queryResults, optimizedStatement);
         } else {
-            return new GroupByMemoryMergedResult(columnLabelIndexMap, queryResults, optimizedStatement.getSelectStatement());
+            return new GroupByMemoryMergedResult(columnLabelIndexMap, queryResults, optimizedStatement);
         }
     }
     

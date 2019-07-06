@@ -21,7 +21,6 @@ import com.google.common.base.Optional;
 import lombok.Getter;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.Pagination;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ShardingSelectOptimizedStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 
@@ -78,7 +77,7 @@ public final class BaseParameterBuilder implements ParameterBuilder {
     }
     
     private void rewriteRowCount(final Pagination pagination, final int rowCountParameterIndex, final SQLRouteResult sqlRouteResult) {
-        replacedIndexAndParameters.put(rowCountParameterIndex, pagination.getRevisedRowCount((SelectStatement) sqlRouteResult.getOptimizedStatement().getSQLStatement()));
+        replacedIndexAndParameters.put(rowCountParameterIndex, pagination.getRevisedRowCount((ShardingSelectOptimizedStatement) sqlRouteResult.getOptimizedStatement()));
     }
     
     @Override
