@@ -35,6 +35,7 @@ import org.apache.shardingsphere.core.merge.dql.pagination.RowNumberDecoratorMer
 import org.apache.shardingsphere.core.merge.dql.pagination.TopAndRowNumberDecoratorMergedResult;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.Pagination;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ShardingSelectOptimizedStatement;
+import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.spi.database.DatabaseType;
@@ -77,8 +78,9 @@ public final class DQLMergeEngine implements MergeEngine {
         if (1 == result.size()) {
             return result;
         }
-        if (!optimizedStatement.getSelectStatement().getAggregationDistinctSelectItems().isEmpty()) {
-            result = getDividedQueryResults(new AggregationDistinctQueryResult(queryResults, optimizedStatement.getSelectStatement().getAggregationDistinctSelectItems()));
+        List<AggregationDistinctSelectItem> aggregationDistinctSelectItems = optimizedStatement.getAggregationDistinctSelectItems();
+        if (!aggregationDistinctSelectItems.isEmpty()) {
+            result = getDividedQueryResults(new AggregationDistinctQueryResult(queryResults, aggregationDistinctSelectItems));
         }
         if (isNeedProcessDistinctSelectItem()) {
             result = getDividedQueryResults(new DistinctQueryResult(queryResults, new ArrayList<>(optimizedStatement.getDistinctSelectItem().get().getDistinctColumnLabels())));
