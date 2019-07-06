@@ -20,6 +20,7 @@ package org.apache.shardingsphere.core.route.router.sharding;
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.ShardingWhereOptimizedStatement;
@@ -64,6 +65,9 @@ public final class RoutingEngineFactory {
      * @return new instance of routing engine
      */
     public static RoutingEngine newInstance(final ShardingRule shardingRule, final ShardingDataSourceMetaData shardingDataSourceMetaData, final OptimizedStatement optimizedStatement) {
+        if (shardingRule == null) {
+            throw new ShardingException("can not instant RoutingEngine with a null ShardingRule");
+        }
         SQLStatement sqlStatement = optimizedStatement.getSQLStatement();
         Collection<String> tableNames = sqlStatement.getTables().getTableNames();
         if (sqlStatement instanceof TCLStatement) {

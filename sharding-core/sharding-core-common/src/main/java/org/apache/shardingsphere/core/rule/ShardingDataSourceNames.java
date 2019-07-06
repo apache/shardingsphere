@@ -54,14 +54,19 @@ public final class ShardingDataSourceNames {
         }
         return result;
     }
-    
+
     /**
      * Get default data source name.
      *
      * @return default data source name
      */
     public String getDefaultDataSourceName() {
-        return 1 == dataSourceNames.size() ? dataSourceNames.iterator().next() : shardingRuleConfig.getDefaultDataSourceName();
+        if (1 == dataSourceNames.size()) {
+            return dataSourceNames.iterator().next();
+        } else if (shardingRuleConfig != null) {
+            return shardingRuleConfig.getDefaultDataSourceName();
+        }
+        return null;
     }
     
     /**
