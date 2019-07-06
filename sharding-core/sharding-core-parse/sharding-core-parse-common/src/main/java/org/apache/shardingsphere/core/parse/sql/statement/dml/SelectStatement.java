@@ -23,7 +23,6 @@ import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Conditions;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationDistinctSelectItem;
-import org.apache.shardingsphere.core.parse.sql.context.selectitem.DistinctSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.StarSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.table.Table;
@@ -74,20 +73,6 @@ public final class SelectStatement extends DMLStatement {
     private SelectStatement subqueryStatement;
     
     private Collection<Conditions> subqueryShardingConditions = new LinkedList<>();
-    
-    /**
-     * Get distinct select item optional.
-     *
-     * @return distinct select items
-     */
-    public Optional<DistinctSelectItem> getDistinctSelectItem() {
-        for (SelectItem each : items) {
-            if (each instanceof DistinctSelectItem) {
-                return Optional.of((DistinctSelectItem) each);
-            }
-        }
-        return Optional.absent();
-    }
     
     /**
      * Get aggregation distinct select items.

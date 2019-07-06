@@ -26,6 +26,7 @@ import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingConditions;
 import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationSelectItem;
+import org.apache.shardingsphere.core.parse.sql.context.selectitem.DistinctSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ExpressionOrderByItemSegment;
@@ -77,6 +78,20 @@ public final class ShardingSelectOptimizedStatement extends ShardingWhereOptimiz
             }
         }
         return result;
+    }
+    
+    /**
+     * Get distinct select items.
+     *
+     * @return distinct select items
+     */
+    public Optional<DistinctSelectItem> getDistinctSelectItem() {
+        for (SelectItem each : items) {
+            if (each instanceof DistinctSelectItem) {
+                return Optional.of((DistinctSelectItem) each);
+            }
+        }
+        return Optional.absent();
     }
     
     /**
