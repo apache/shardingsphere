@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.parse.sql.statement.dml;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -29,19 +28,13 @@ import org.apache.shardingsphere.core.parse.sql.context.selectitem.DistinctSelec
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.StarSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.table.Table;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrderByItemSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ExpressionOrderByItemSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.OrderByItemSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.TextOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationValueSegment;
-import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -188,62 +181,5 @@ public final class SelectStatement extends DMLStatement {
      */
     public boolean isSameGroupByAndOrderByItems() {
         return !getGroupByItems().isEmpty() && getGroupByItems().equals(getOrderByItems());
-    }
-    
-    /**
-     * Set index for select items.
-     * 
-     * @param columnLabelIndexMap map for column label and index
-     */
-    public void setIndexForItems(final Map<String, Integer> columnLabelIndexMap) {
-        setIndexForAggregationItem(columnLabelIndexMap);
-        setIndexForOrderItem(columnLabelIndexMap, orderByItems);
-        setIndexForOrderItem(columnLabelIndexMap, groupByItems);
-    }
-    
-    private void setIndexForAggregationItem(final Map<String, Integer> columnLabelIndexMap) {
-        for (AggregationSelectItem each : getAggregationSelectItems()) {
-            Preconditions.checkState(columnLabelIndexMap.containsKey(each.getColumnLabel()), "Can't find index: %s, please add alias for aggregate selections", each);
-            each.setIndex(columnLabelIndexMap.get(each.getColumnLabel()));
-            for (AggregationSelectItem derived : each.getDerivedAggregationSelectItems()) {
-                Preconditions.checkState(columnLabelIndexMap.containsKey(derived.getColumnLabel()), "Can't find index: %s", derived);
-                derived.setIndex(columnLabelIndexMap.get(derived.getColumnLabel()));
-            }
-        }
-    }
-    
-    private void setIndexForOrderItem(final Map<String, Integer> columnLabelIndexMap, final List<OrderByItemSegment> orderItems) {
-        for (OrderByItemSegment each : orderItems) {
-            if (each instanceof IndexOrderByItemSegment) {
-                continue;
-            }
-            Optional<String> alias = getAlias(((TextOrderByItemSegment) each).getText());
-            String columnLabel = alias.isPresent() ? alias.get() : getOrderItemText((TextOrderByItemSegment) each);
-            Preconditions.checkState(columnLabelIndexMap.containsKey(columnLabel), "Can't find index: %s", each);
-            if (columnLabelIndexMap.containsKey(columnLabel)) {
-                each.setIndex(columnLabelIndexMap.get(columnLabel));
-            }
-        }
-    }
-    
-    private Optional<String> getAlias(final String name) {
-        if (containStar) {
-            return Optional.absent();
-        }
-        String rawName = SQLUtil.getExactlyValue(name);
-        for (SelectItem each : items) {
-            if (SQLUtil.getExactlyExpression(rawName).equalsIgnoreCase(SQLUtil.getExactlyExpression(SQLUtil.getExactlyValue(each.getExpression())))) {
-                return each.getAlias();
-            }
-            if (rawName.equalsIgnoreCase(each.getAlias().orNull())) {
-                return Optional.of(rawName);
-            }
-        }
-        return Optional.absent();
-    }
-    
-    private String getOrderItemText(final TextOrderByItemSegment orderByItemSegment) {
-        return orderByItemSegment instanceof ColumnOrderByItemSegment
-                ? ((ColumnOrderByItemSegment) orderByItemSegment).getColumn().getName() : ((ExpressionOrderByItemSegment) orderByItemSegment).getExpression();
     }
 }
