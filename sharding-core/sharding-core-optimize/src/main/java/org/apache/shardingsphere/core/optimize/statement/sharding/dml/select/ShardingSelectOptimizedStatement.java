@@ -37,7 +37,7 @@ import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 import java.util.Collection;
-import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -52,13 +52,31 @@ public final class ShardingSelectOptimizedStatement extends ShardingWhereOptimiz
     
     private final SelectStatement selectStatement;
     
-    private final Collection<SelectItem> items = new LinkedHashSet<>();
+    private final Collection<SelectItem> items;
     
     private Pagination pagination;
     
     public ShardingSelectOptimizedStatement(final SQLStatement sqlStatement, final List<ShardingCondition> shardingConditions, final AndCondition encryptConditions) {
         super(sqlStatement, new ShardingConditions(shardingConditions), encryptConditions);
         this.selectStatement = (SelectStatement) sqlStatement;
+        items = selectStatement.getItems();
+    }
+    
+    /**
+     * Get aggregation select items.
+     *
+     * @return aggregation select items
+     */
+    public List<AggregationSelectItem> getAggregationSelectItems() {
+        List<AggregationSelectItem> result = new LinkedList<>();
+        for (SelectItem each : items) {
+            if (each instanceof AggregationSelectItem) {
+                AggregationSelectItem aggregationSelectItem = (AggregationSelectItem) each;
+                result.add(aggregationSelectItem);
+                result.addAll(aggregationSelectItem.getDerivedAggregationSelectItems());
+            }
+        }
+        return result;
     }
     
     /**
@@ -73,7 +91,7 @@ public final class ShardingSelectOptimizedStatement extends ShardingWhereOptimiz
     }
     
     private void setIndexForAggregationItem(final Map<String, Integer> columnLabelIndexMap) {
-        for (AggregationSelectItem each : selectStatement.getAggregationSelectItems()) {
+        for (AggregationSelectItem each : getAggregationSelectItems()) {
             Preconditions.checkState(columnLabelIndexMap.containsKey(each.getColumnLabel()), "Can't find index: %s, please add alias for aggregate selections", each);
             each.setIndex(columnLabelIndexMap.get(each.getColumnLabel()));
             for (AggregationSelectItem derived : each.getDerivedAggregationSelectItems()) {

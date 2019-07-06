@@ -55,7 +55,6 @@ public final class ShardingSelectOptimizeEngine implements OptimizeEngine {
     public ShardingSelectOptimizedStatement optimize() {
         ShardingSelectOptimizedStatement result = new ShardingSelectOptimizedStatement(selectStatement, 
                 new ArrayList<>(shardingConditionEngine.createShardingConditions(selectStatement, parameters)), encryptConditionEngine.createEncryptConditions(selectStatement));
-        result.getItems().addAll(selectStatement.getItems());
         setPagination(result);
         return result;
     }

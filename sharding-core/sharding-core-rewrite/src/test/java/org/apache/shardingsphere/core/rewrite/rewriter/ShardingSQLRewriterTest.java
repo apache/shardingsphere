@@ -156,11 +156,10 @@ public final class ShardingSQLRewriterTest {
         selectStatement.getSQLSegments().add(new TableSegment(18, 24, "table_x"));
         DerivedCommonSelectItem selectItem1 = new DerivedCommonSelectItem("x.id", Optional.of("GROUP_BY_DERIVED_0"));
         DerivedCommonSelectItem selectItem2 = new DerivedCommonSelectItem("x.name", Optional.of("ORDER_BY_DERIVED_0"));
-        ShardingSelectOptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition());
-        optimizedStatement.getItems().add(selectItem1);
-        optimizedStatement.getItems().add(selectItem2);
+        selectStatement.getItems().add(selectItem1);
+        selectStatement.getItems().add(selectItem2);
         selectStatement.setSelectListStopIndex(11);
-        routeResult = new SQLRouteResult(optimizedStatement);
+        routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition()));
         routeResult.setRoutingResult(new RoutingResult());
         selectStatement.setLogicSQL("SELECT x.age FROM table_x x GROUP BY x.id ORDER BY x.name");
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(Collections.emptyList());
@@ -177,9 +176,8 @@ public final class ShardingSQLRewriterTest {
         avgSelectItem.getDerivedAggregationSelectItems().add(countSelectItem);
         avgSelectItem.getDerivedAggregationSelectItems().add(sumSelectItem);
         selectStatement.setSelectListStopIndex(16);
-        ShardingSelectOptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition());
-        optimizedStatement.getItems().add(avgSelectItem);
-        routeResult = new SQLRouteResult(optimizedStatement);
+        selectStatement.getItems().add(avgSelectItem);
+        routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition()));
         routeResult.setRoutingResult(new RoutingResult());
         selectStatement.setLogicSQL("SELECT AVG(x.age) FROM table_x x");
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(Collections.emptyList());
