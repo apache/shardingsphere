@@ -20,13 +20,10 @@ package org.apache.shardingsphere.core.parse.optimizer.select;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.Setter;
-import org.apache.shardingsphere.core.constant.AggregationType;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.aware.ShardingTableMetaDataAware;
 import org.apache.shardingsphere.core.parse.constant.DerivedColumn;
 import org.apache.shardingsphere.core.parse.optimizer.SQLStatementOptimizer;
-import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationDistinctSelectItem;
-import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.DerivedCommonSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.DistinctSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
@@ -59,55 +56,12 @@ public final class ShardingSelectOptimizer implements SQLStatementOptimizer, Sha
     }
     
     private void appendDerivedColumns(final SelectStatement selectStatement, final ShardingTableMetaData shardingTableMetaData) {
-        appendAvgDerivedColumns(selectStatement);
         if (!selectStatement.getOrderByItems().isEmpty()) {
             appendDerivedOrderColumns(selectStatement.getOrderByItems(), selectStatement, shardingTableMetaData);
         }
         if (!selectStatement.getGroupByItems().isEmpty()) {
             appendDerivedGroupColumns(selectStatement.getGroupByItems(), selectStatement, shardingTableMetaData);
         }
-    }
-    
-    private void appendAvgDerivedColumns(final SelectStatement selectStatement) {
-        int derivedColumnOffset = 0;
-        for (SelectItem each : selectStatement.getItems()) {
-            if (!isAverageSelectItem(each)) {
-                continue;
-            }
-            appendAvgDerivedColumns(derivedColumnOffset, each);
-            // TODO replace avg to constant, avoid calculate useless avg
-            derivedColumnOffset++;
-        }
-    }
-    
-    private boolean isAverageSelectItem(final SelectItem each) {
-        return each instanceof AggregationSelectItem && AggregationType.AVG == ((AggregationSelectItem) each).getType();
-    }
-    
-    private void appendAvgDerivedColumns(final int derivedColumnOffset, final SelectItem each) {
-        if (each instanceof AggregationDistinctSelectItem) {
-            appendDerivedAggregationDistinctSelectItems((AggregationDistinctSelectItem) each, derivedColumnOffset);
-        } else {
-            appendDerivedAggregationSelectItems((AggregationSelectItem) each, derivedColumnOffset);
-        }
-    }
-    
-    private void appendDerivedAggregationDistinctSelectItems(final AggregationDistinctSelectItem avgItem, final int derivedColumnOffset) {
-        String countAlias = DerivedColumn.AVG_COUNT_ALIAS.getDerivedColumnAlias(derivedColumnOffset);
-        AggregationDistinctSelectItem countItem = new AggregationDistinctSelectItem(AggregationType.COUNT, avgItem.getInnerExpression(), Optional.of(countAlias), avgItem.getDistinctColumnName());
-        String sumAlias = DerivedColumn.AVG_SUM_ALIAS.getDerivedColumnAlias(derivedColumnOffset);
-        AggregationDistinctSelectItem sumItem = new AggregationDistinctSelectItem(AggregationType.SUM, avgItem.getInnerExpression(), Optional.of(sumAlias), avgItem.getDistinctColumnName());
-        avgItem.getDerivedAggregationSelectItems().add(countItem);
-        avgItem.getDerivedAggregationSelectItems().add(sumItem);
-    }
-    
-    private void appendDerivedAggregationSelectItems(final AggregationSelectItem avgItem, final int derivedColumnOffset) {
-        String countAlias = DerivedColumn.AVG_COUNT_ALIAS.getDerivedColumnAlias(derivedColumnOffset);
-        AggregationSelectItem countItem = new AggregationSelectItem(AggregationType.COUNT, avgItem.getInnerExpression(), Optional.of(countAlias));
-        String sumAlias = DerivedColumn.AVG_SUM_ALIAS.getDerivedColumnAlias(derivedColumnOffset);
-        AggregationSelectItem sumItem = new AggregationSelectItem(AggregationType.SUM, avgItem.getInnerExpression(), Optional.of(sumAlias));
-        avgItem.getDerivedAggregationSelectItems().add(countItem);
-        avgItem.getDerivedAggregationSelectItems().add(sumItem);
     }
     
     private void appendDerivedOrderColumns(final List<OrderByItemSegment> orderItems, final SelectStatement selectStatement, final ShardingTableMetaData shardingTableMetaData) {

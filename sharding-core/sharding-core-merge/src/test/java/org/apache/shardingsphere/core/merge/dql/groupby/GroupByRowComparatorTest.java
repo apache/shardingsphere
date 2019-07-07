@@ -51,7 +51,8 @@ public final class GroupByRowComparatorTest {
                 new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC), new IndexOrderByItemSegment(0, 0, 2, OrderDirection.ASC, OrderDirection.ASC)));
         selectStatement.getGroupByItems().addAll(Arrays.asList(
                 new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC), new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC)));
-        ShardingSelectOptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition());
+        ShardingSelectOptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(
+                selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), selectStatement.getItems());
         GroupByRowComparator groupByRowComparator = new GroupByRowComparator(optimizedStatement);
         assertTrue(groupByRowComparator.compare(o1, o2) < 0);
     }
@@ -65,7 +66,8 @@ public final class GroupByRowComparatorTest {
                 new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC), new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC)));
         selectStatement.getGroupByItems().addAll(Arrays.asList(
                 new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC), new IndexOrderByItemSegment(0, 0, 2, OrderDirection.ASC, OrderDirection.ASC)));
-        ShardingSelectOptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition());
+        ShardingSelectOptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(
+                selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), selectStatement.getItems());
         GroupByRowComparator groupByRowComparator = new GroupByRowComparator(optimizedStatement);
         assertTrue(groupByRowComparator.compare(o1, o2) > 0);
     }
@@ -79,7 +81,8 @@ public final class GroupByRowComparatorTest {
                 new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC), new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC)));
         selectStatement.getGroupByItems().addAll(Arrays.asList(
                 new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC), new IndexOrderByItemSegment(0, 0, 2, OrderDirection.ASC, OrderDirection.ASC)));
-        ShardingSelectOptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition());
+        ShardingSelectOptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(
+                selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), selectStatement.getItems());
         GroupByRowComparator groupByRowComparator = new GroupByRowComparator(optimizedStatement);
         assertThat(groupByRowComparator.compare(o1, o2), is(0));
     }
@@ -91,7 +94,8 @@ public final class GroupByRowComparatorTest {
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.getGroupByItems().addAll(Arrays.asList(
                 new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC), new IndexOrderByItemSegment(0, 0, 2, OrderDirection.ASC, OrderDirection.ASC)));
-        ShardingSelectOptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition());
+        ShardingSelectOptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(
+                selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), selectStatement.getItems());
         GroupByRowComparator groupByRowComparator = new GroupByRowComparator(optimizedStatement);
         assertTrue(groupByRowComparator.compare(o1, o2) < 0);
     }
@@ -103,7 +107,8 @@ public final class GroupByRowComparatorTest {
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.getGroupByItems().addAll(Arrays.asList(
                 new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC), new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC)));
-        ShardingSelectOptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition());
+        ShardingSelectOptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(
+                selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), selectStatement.getItems());
         GroupByRowComparator groupByRowComparator = new GroupByRowComparator(optimizedStatement);
         assertTrue(groupByRowComparator.compare(o1, o2) > 0);
     }
@@ -115,7 +120,8 @@ public final class GroupByRowComparatorTest {
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.getGroupByItems().addAll(Arrays.asList(
                 new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC), new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC)));
-        ShardingSelectOptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition());
+        ShardingSelectOptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(
+                selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), selectStatement.getItems());
         GroupByRowComparator groupByRowComparator = new GroupByRowComparator(optimizedStatement);
         assertThat(groupByRowComparator.compare(o1, o2), is(0));
     }
