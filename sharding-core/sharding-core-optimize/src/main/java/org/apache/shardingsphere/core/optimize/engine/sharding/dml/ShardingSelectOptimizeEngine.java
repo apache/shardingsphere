@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.optimize.engine.sharding.dml;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.core.constant.AggregationType;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
@@ -28,12 +29,21 @@ import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.Sha
 import org.apache.shardingsphere.core.parse.constant.DerivedColumn;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationSelectItem;
+import org.apache.shardingsphere.core.parse.sql.context.selectitem.DerivedCommonSelectItem;
+import org.apache.shardingsphere.core.parse.sql.context.selectitem.DistinctSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
+import org.apache.shardingsphere.core.parse.sql.context.selectitem.StarSelectItem;
+import org.apache.shardingsphere.core.parse.sql.context.table.Table;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrderByItemSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.IndexOrderByItemSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.OrderByItemSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.TextOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -44,6 +54,8 @@ import java.util.List;
  */
 public final class ShardingSelectOptimizeEngine implements OptimizeEngine {
     
+    private final ShardingTableMetaData shardingTableMetaData;
+    
     private final SelectStatement selectStatement;
     
     private final List<Object> parameters;
@@ -53,6 +65,7 @@ public final class ShardingSelectOptimizeEngine implements OptimizeEngine {
     private final WhereClauseEncryptConditionEngine encryptConditionEngine;
     
     public ShardingSelectOptimizeEngine(final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData, final SelectStatement selectStatement, final List<Object> parameters) {
+        this.shardingTableMetaData = shardingTableMetaData;
         this.selectStatement = selectStatement;
         this.parameters = parameters;
         shardingConditionEngine = new WhereClauseShardingConditionEngine(shardingRule, shardingTableMetaData);
@@ -61,19 +74,21 @@ public final class ShardingSelectOptimizeEngine implements OptimizeEngine {
     
     @Override
     public ShardingSelectOptimizedStatement optimize() {
+        Collection<SelectItem> items = new LinkedHashSet<>(selectStatement.getItems());
+        items.addAll(getDerivedColumns());
         ShardingSelectOptimizedStatement result = new ShardingSelectOptimizedStatement(selectStatement, 
                 new ArrayList<>(shardingConditionEngine.createShardingConditions(selectStatement, parameters)), 
-                encryptConditionEngine.createEncryptConditions(selectStatement), appendAvgDerivedColumns(selectStatement.getItems()));
+                encryptConditionEngine.createEncryptConditions(selectStatement), appendAverageDerivedColumns(items));
         setPagination(result);
         return result;
     }
     
-    private Collection<SelectItem> appendAvgDerivedColumns(final Collection<SelectItem> items) {
+    private Collection<SelectItem> appendAverageDerivedColumns(final Collection<SelectItem> items) {
         Collection<SelectItem> result = new LinkedList<>(items);
         int derivedColumnOffset = 0;
         for (SelectItem each : items) {
-            if (isAverageSelectItem(each)) {
-                appendAvgDerivedColumns(derivedColumnOffset, each);
+            if (each instanceof AggregationSelectItem && AggregationType.AVG == ((AggregationSelectItem) each).getType()) {
+                appendAverageDerivedColumns(derivedColumnOffset, each);
                 // TODO replace avg to constant, avoid calculate useless avg
                 derivedColumnOffset++;
             }
@@ -81,11 +96,7 @@ public final class ShardingSelectOptimizeEngine implements OptimizeEngine {
         return result;
     }
     
-    private boolean isAverageSelectItem(final SelectItem each) {
-        return each instanceof AggregationSelectItem && AggregationType.AVG == ((AggregationSelectItem) each).getType();
-    }
-    
-    private void appendAvgDerivedColumns(final int derivedColumnOffset, final SelectItem selectItem) {
+    private void appendAverageDerivedColumns(final int derivedColumnOffset, final SelectItem selectItem) {
         if (selectItem instanceof AggregationDistinctSelectItem) {
             appendDerivedAggregationDistinctSelectItems((AggregationDistinctSelectItem) selectItem, derivedColumnOffset);
         } else {
@@ -113,6 +124,100 @@ public final class ShardingSelectOptimizeEngine implements OptimizeEngine {
         averageSelectItem.getDerivedAggregationSelectItems().clear();
         averageSelectItem.getDerivedAggregationSelectItems().add(countSelectItem);
         averageSelectItem.getDerivedAggregationSelectItems().add(sumSelectItem);
+    }
+    
+    private Collection<SelectItem> getDerivedColumns() {
+        Collection<SelectItem> result = new LinkedList<>();
+        if (!selectStatement.getOrderByItems().isEmpty()) {
+            result.addAll(appendDerivedOrderColumns(selectStatement.getOrderByItems()));
+        }
+        if (!selectStatement.getGroupByItems().isEmpty()) {
+            result.addAll(appendDerivedGroupColumns(selectStatement.getGroupByItems()));
+        }
+        return result;
+    }
+    
+    private Collection<SelectItem> appendDerivedOrderColumns(final List<OrderByItemSegment> orderItems) {
+        Collection<SelectItem> result = new LinkedList<>();
+        int derivedColumnOffset = 0;
+        for (OrderByItemSegment each : orderItems) {
+            if (!containsItem(each)) {
+                String alias = DerivedColumn.ORDER_BY_ALIAS.getDerivedColumnAlias(derivedColumnOffset++);
+                result.add(new DerivedCommonSelectItem(((TextOrderByItemSegment) each).getText(), Optional.of(alias)));
+            }
+        }
+        return result;
+    }
+    
+    private Collection<SelectItem> appendDerivedGroupColumns(final List<OrderByItemSegment> orderItems) {
+        Collection<SelectItem> result = new LinkedList<>();
+        int derivedColumnOffset = 0;
+        for (OrderByItemSegment each : orderItems) {
+            if (!containsItem(each)) {
+                String alias = DerivedColumn.GROUP_BY_ALIAS.getDerivedColumnAlias(derivedColumnOffset++);
+                result.add(new DerivedCommonSelectItem(((TextOrderByItemSegment) each).getText(), Optional.of(alias)));
+            }
+        }
+        return result;
+    }
+    
+    private boolean containsItem(final OrderByItemSegment orderByItemSegment) {
+        return orderByItemSegment instanceof IndexOrderByItemSegment || containsItemInStarSelectItems(orderByItemSegment) || containsItemInSelectItems(orderByItemSegment);
+    }
+    
+    private boolean containsItemInStarSelectItems(final OrderByItemSegment orderByItemSegment) {
+        return selectStatement.hasUnqualifiedStarSelectItem()
+                || containsItemWithOwnerInStarSelectItems(orderByItemSegment) || containsItemWithoutOwnerInStarSelectItems(orderByItemSegment);
+    }
+    
+    private boolean containsItemWithOwnerInStarSelectItems(final OrderByItemSegment orderItem) {
+        return orderItem instanceof ColumnOrderByItemSegment && ((ColumnOrderByItemSegment) orderItem).getColumn().getOwner().isPresent()
+                && selectStatement.findStarSelectItem(((ColumnOrderByItemSegment) orderItem).getColumn().getOwner().get().getName()).isPresent();
+    }
+    
+    private boolean containsItemWithoutOwnerInStarSelectItems(final OrderByItemSegment orderItem) {
+        if (!(orderItem instanceof ColumnOrderByItemSegment)) {
+            return false;
+        }
+        if (!((ColumnOrderByItemSegment) orderItem).getColumn().getOwner().isPresent()) {
+            for (StarSelectItem each : selectStatement.getQualifiedStarSelectItems()) {
+                if (isSameSelectItem(each, (ColumnOrderByItemSegment) orderItem)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    private boolean isSameSelectItem(final StarSelectItem starSelectItem, final ColumnOrderByItemSegment orderItem) {
+        Preconditions.checkState(starSelectItem.getOwner().isPresent());
+        Optional<Table> table = selectStatement.getTables().find(starSelectItem.getOwner().get());
+        return table.isPresent() && shardingTableMetaData.containsColumn(table.get().getName(), orderItem.getColumn().getName());
+    }
+    
+    private boolean containsItemInSelectItems(final OrderByItemSegment orderItem) {
+        for (SelectItem each : selectStatement.getItems()) {
+            if (orderItem instanceof IndexOrderByItemSegment) {
+                return true;
+            }
+            if (containsItemInDistinctItems(each, (TextOrderByItemSegment) orderItem)
+                    || isSameAlias(each, (TextOrderByItemSegment) orderItem) || isSameQualifiedName(each, (TextOrderByItemSegment) orderItem)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private boolean containsItemInDistinctItems(final SelectItem selectItem, final TextOrderByItemSegment orderItem) {
+        return selectItem instanceof DistinctSelectItem && ((DistinctSelectItem) selectItem).getDistinctColumnNames().contains(orderItem.getText());
+    }
+    
+    private boolean isSameAlias(final SelectItem selectItem, final TextOrderByItemSegment orderItem) {
+        return selectItem.getAlias().isPresent() && (orderItem.getText().equalsIgnoreCase(selectItem.getAlias().get()) || orderItem.getText().equalsIgnoreCase(selectItem.getExpression()));
+    }
+    
+    private boolean isSameQualifiedName(final SelectItem selectItem, final TextOrderByItemSegment orderItem) {
+        return !selectItem.getAlias().isPresent() && selectItem.getExpression().equalsIgnoreCase(orderItem.getText());
     }
     
     private void setPagination(final ShardingSelectOptimizedStatement optimizedStatement) {
