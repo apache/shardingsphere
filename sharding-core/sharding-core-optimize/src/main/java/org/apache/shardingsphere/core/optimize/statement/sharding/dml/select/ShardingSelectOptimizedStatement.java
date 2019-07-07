@@ -63,10 +63,11 @@ public final class ShardingSelectOptimizedStatement extends ShardingWhereOptimiz
     
     private Pagination pagination;
     
-    public ShardingSelectOptimizedStatement(final SQLStatement sqlStatement, final List<ShardingCondition> shardingConditions, final AndCondition encryptConditions) {
+    public ShardingSelectOptimizedStatement(final SQLStatement sqlStatement, 
+                                            final List<ShardingCondition> shardingConditions, final AndCondition encryptConditions, final Collection<SelectItem> items) {
         super(sqlStatement, new ShardingConditions(shardingConditions), encryptConditions);
         this.selectStatement = (SelectStatement) sqlStatement;
-        items = selectStatement.getItems();
+        this.items = items;
         orderByItems = getOrderByItems(((SelectStatement) sqlStatement).getOrderByItems());
         groupByItems = getOrderByItems(((SelectStatement) sqlStatement).getGroupByItems());
     }

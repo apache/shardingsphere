@@ -23,6 +23,7 @@ import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStra
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ShardingSelectOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
+import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
@@ -59,7 +60,8 @@ public final class StandardRoutingEngineTest {
         shardingCondition.getRouteValues().add(shardingValue2);
         shardingConditions.add(shardingCondition);
         ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, Arrays.asList("ds_0", "ds_1"));
-        standardRoutingEngine = new StandardRoutingEngine(shardingRule, "t_order", new ShardingSelectOptimizedStatement(new SelectStatement(), shardingConditions, new AndCondition()));
+        standardRoutingEngine = new StandardRoutingEngine(
+                shardingRule, "t_order", new ShardingSelectOptimizedStatement(new SelectStatement(), shardingConditions, new AndCondition(), Collections.<SelectItem>emptyList()));
     }
     
     @Test
