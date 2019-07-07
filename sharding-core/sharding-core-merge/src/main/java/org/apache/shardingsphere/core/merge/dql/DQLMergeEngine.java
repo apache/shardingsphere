@@ -99,7 +99,7 @@ public final class DQLMergeEngine implements MergeEngine {
     }
     
     private boolean isNeedProcessDistinctSelectItem() {
-        return optimizedStatement.getDistinctSelectItem().isPresent() && optimizedStatement.getSelectStatement().getGroupByItems().isEmpty();
+        return optimizedStatement.getDistinctSelectItem().isPresent() && optimizedStatement.getGroupByItems().isEmpty();
     }
     
     private Map<String, Integer> getColumnLabelIndexMap(final QueryResult queryResult) throws SQLException {
@@ -120,21 +120,18 @@ public final class DQLMergeEngine implements MergeEngine {
     }
     
     private MergedResult build() throws SQLException {
-        if (!optimizedStatement.getSelectStatement().getGroupByItems().isEmpty() || !optimizedStatement.getAggregationSelectItems().isEmpty()) {
+        if (!optimizedStatement.getGroupByItems().isEmpty() || !optimizedStatement.getAggregationSelectItems().isEmpty()) {
             return getGroupByMergedResult();
         }
-        if (!optimizedStatement.getSelectStatement().getOrderByItems().isEmpty()) {
-            return new OrderByStreamMergedResult(queryResults, optimizedStatement.getSelectStatement().getOrderByItems());
+        if (!optimizedStatement.getOrderByItems().isEmpty()) {
+            return new OrderByStreamMergedResult(queryResults, optimizedStatement.getOrderByItems());
         }
         return new IteratorStreamMergedResult(queryResults);
     }
     
     private MergedResult getGroupByMergedResult() throws SQLException {
-        if (optimizedStatement.isSameGroupByAndOrderByItems()) {
-            return new GroupByStreamMergedResult(columnLabelIndexMap, queryResults, optimizedStatement);
-        } else {
-            return new GroupByMemoryMergedResult(columnLabelIndexMap, queryResults, optimizedStatement);
-        }
+        return optimizedStatement.isSameGroupByAndOrderByItems()
+                ? new GroupByStreamMergedResult(columnLabelIndexMap, queryResults, optimizedStatement) : new GroupByMemoryMergedResult(columnLabelIndexMap, queryResults, optimizedStatement);
     }
     
     private MergedResult decorate(final MergedResult mergedResult) throws SQLException {

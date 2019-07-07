@@ -60,7 +60,7 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult {
         Map<GroupByValue, Map<AggregationSelectItem, AggregationUnit>> aggregationMap = new HashMap<>(1024);
         for (QueryResult each : queryResults) {
             while (each.next()) {
-                GroupByValue groupByValue = new GroupByValue(each, optimizedStatement.getSelectStatement().getGroupByItems());
+                GroupByValue groupByValue = new GroupByValue(each, optimizedStatement.getGroupByItems());
                 initForFirstGroupByValue(each, groupByValue, dataMap, aggregationMap);
                 aggregate(each, groupByValue, aggregationMap);
             }
@@ -120,7 +120,7 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult {
     
     private List<MemoryQueryResultRow> getMemoryResultSetRows(final Map<GroupByValue, MemoryQueryResultRow> dataMap) {
         List<MemoryQueryResultRow> result = new ArrayList<>(dataMap.values());
-        Collections.sort(result, new GroupByRowComparator(optimizedStatement.getSelectStatement()));
+        Collections.sort(result, new GroupByRowComparator(optimizedStatement));
         return result;
     }
     

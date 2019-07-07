@@ -15,26 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.segment.dml.order.item;
+package org.apache.shardingsphere.core.optimize.statement.sharding.dml.select;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.ToString;
-import org.apache.shardingsphere.core.constant.OrderDirection;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.OrderByItemSegment;
 
 /**
- * Order by item segment for index.
- * 
+ * Order by item.
+ *
  * @author zhangliang
- * @author panjuan
  */
+@RequiredArgsConstructor
 @Getter
-@ToString(callSuper = true)
-public final class IndexOrderByItemSegment extends OrderByItemSegment {
+@Setter
+@EqualsAndHashCode
+public final class OrderByItem {
     
-    private final int columnIndex;
+    private final OrderByItemSegment segment;
     
-    public IndexOrderByItemSegment(final int startIndex, final int stopIndex, final int columnIndex, final OrderDirection orderDirection, final OrderDirection nullOrderDirection) {
-        super(startIndex, stopIndex, orderDirection, nullOrderDirection);
-        this.columnIndex = columnIndex;
+    private int index;
+    
+    @Override
+    public boolean equals(final Object obj) {
+        if (null == obj || !(obj instanceof OrderByItem)) {
+            return false;
+        }
+        OrderByItem orderByItem = (OrderByItem) obj;
+        return segment.getOrderDirection() == orderByItem.getSegment().getOrderDirection() && index == orderByItem.getIndex();
     }
 }

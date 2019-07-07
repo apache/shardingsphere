@@ -21,7 +21,6 @@ import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.core.parse.sql.context.condition.Conditions;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.StarSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.table.Table;
@@ -57,8 +56,6 @@ public final class SelectStatement extends DMLStatement {
     
     private boolean containsSubquery;
     
-    private int firstSelectItemStartIndex;
-    
     private int selectListStopIndex;
     
     private int groupByLastIndex;
@@ -68,10 +65,6 @@ public final class SelectStatement extends DMLStatement {
     private PaginationValueSegment rowCount;
     
     private SelectStatement parentStatement;
-    
-    private SelectStatement subqueryStatement;
-    
-    private Collection<Conditions> subqueryShardingConditions = new LinkedList<>();
     
     /**
      * Judge has unqualified star select item.

@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.OrderByItemSegment;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.OrderByItem;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -39,7 +39,7 @@ public final class OrderByValue implements Comparable<OrderByValue> {
     @Getter
     private final QueryResult queryResult;
     
-    private final List<OrderByItemSegment> orderByItems;
+    private final List<OrderByItem> orderByItems;
     
     private List<Comparable<?>> orderValues;
     
@@ -57,7 +57,7 @@ public final class OrderByValue implements Comparable<OrderByValue> {
     
     private List<Comparable<?>> getOrderValues() throws SQLException {
         List<Comparable<?>> result = new ArrayList<>(orderByItems.size());
-        for (OrderByItemSegment each : orderByItems) {
+        for (OrderByItem each : orderByItems) {
             Object value = queryResult.getValue(each.getIndex(), Object.class);
             Preconditions.checkState(null == value || value instanceof Comparable, "Order by value must implements Comparable");
             result.add((Comparable<?>) value);
@@ -68,8 +68,8 @@ public final class OrderByValue implements Comparable<OrderByValue> {
     @Override
     public int compareTo(final OrderByValue o) {
         for (int i = 0; i < orderByItems.size(); i++) {
-            OrderByItemSegment thisOrderBy = orderByItems.get(i);
-            int result = CompareUtil.compareTo(orderValues.get(i), o.orderValues.get(i), thisOrderBy.getOrderDirection(), thisOrderBy.getNullOrderDirection());
+            OrderByItem thisOrderByItem = orderByItems.get(i);
+            int result = CompareUtil.compareTo(orderValues.get(i), o.orderValues.get(i), thisOrderByItem.getSegment().getOrderDirection(), thisOrderByItem.getSegment().getNullOrderDirection());
             if (0 != result) {
                 return result;
             }
