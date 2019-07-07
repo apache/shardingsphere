@@ -38,6 +38,7 @@ import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -56,12 +57,30 @@ public final class ShardingSelectOptimizedStatement extends ShardingWhereOptimiz
     
     private final Collection<SelectItem> items;
     
+    private final List<OrderByItem> orderByItems;
+    
+    private final List<OrderByItem> groupByItems;
+    
     private Pagination pagination;
     
     public ShardingSelectOptimizedStatement(final SQLStatement sqlStatement, final List<ShardingCondition> shardingConditions, final AndCondition encryptConditions) {
         super(sqlStatement, new ShardingConditions(shardingConditions), encryptConditions);
         this.selectStatement = (SelectStatement) sqlStatement;
         items = selectStatement.getItems();
+        orderByItems = getOrderByItems(((SelectStatement) sqlStatement).getOrderByItems());
+        groupByItems = getOrderByItems(((SelectStatement) sqlStatement).getGroupByItems());
+    }
+    
+    private List<OrderByItem> getOrderByItems(final List<OrderByItemSegment> orderByItemSegments) {
+        List<OrderByItem> result = new ArrayList<>(orderByItemSegments.size());
+        for (OrderByItemSegment each : orderByItemSegments) {
+            OrderByItem orderByItem = new OrderByItem(each);
+            result.add(orderByItem);
+            if (each instanceof IndexOrderByItemSegment) {
+                orderByItem.setIndex(((IndexOrderByItemSegment) each).getColumnIndex());
+            }
+        }
+        return result;
     }
     
     /**
@@ -117,8 +136,8 @@ public final class ShardingSelectOptimizedStatement extends ShardingWhereOptimiz
      */
     public void setIndexForItems(final Map<String, Integer> columnLabelIndexMap) {
         setIndexForAggregationItem(columnLabelIndexMap);
-        setIndexForOrderItem(columnLabelIndexMap, selectStatement.getOrderByItems());
-        setIndexForOrderItem(columnLabelIndexMap, selectStatement.getGroupByItems());
+        setIndexForOrderItem(columnLabelIndexMap, orderByItems);
+        setIndexForOrderItem(columnLabelIndexMap, groupByItems);
     }
     
     private void setIndexForAggregationItem(final Map<String, Integer> columnLabelIndexMap) {
@@ -132,18 +151,20 @@ public final class ShardingSelectOptimizedStatement extends ShardingWhereOptimiz
         }
     }
     
-    private void setIndexForOrderItem(final Map<String, Integer> columnLabelIndexMap, final List<OrderByItemSegment> orderItems) {
-        for (OrderByItemSegment each : orderItems) {
-            if (each instanceof IndexOrderByItemSegment) {
+    private void setIndexForOrderItem(final Map<String, Integer> columnLabelIndexMap, final List<OrderByItem> orderByItems) {
+        for (OrderByItem each : orderByItems) {
+            if (each.getSegment() instanceof IndexOrderByItemSegment) {
+                each.setIndex(((IndexOrderByItemSegment) each.getSegment()).getColumnIndex());
                 continue;
             }
-            Optional<String> alias = getAlias(((TextOrderByItemSegment) each).getText());
-            String columnLabel = alias.isPresent() ? alias.get() : getOrderItemText((TextOrderByItemSegment) each);
+            Optional<String> alias = getAlias(((TextOrderByItemSegment) each.getSegment()).getText());
+            String columnLabel = alias.isPresent() ? alias.get() : getOrderItemText((TextOrderByItemSegment) each.getSegment());
             Preconditions.checkState(columnLabelIndexMap.containsKey(columnLabel), "Can't find index: %s", each);
             if (columnLabelIndexMap.containsKey(columnLabel)) {
                 each.setIndex(columnLabelIndexMap.get(columnLabel));
             }
         }
+        
     }
     
     private Optional<String> getAlias(final String name) {
@@ -173,6 +194,6 @@ public final class ShardingSelectOptimizedStatement extends ShardingWhereOptimiz
      * @return group by and order by sequence is same or not
      */
     public boolean isSameGroupByAndOrderByItems() {
-        return !selectStatement.getGroupByItems().isEmpty() && selectStatement.getGroupByItems().equals(selectStatement.getOrderByItems());
+        return !groupByItems.isEmpty() && groupByItems.equals(orderByItems);
     }
 }

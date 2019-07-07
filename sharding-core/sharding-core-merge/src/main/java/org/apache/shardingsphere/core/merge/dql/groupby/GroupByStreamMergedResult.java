@@ -52,12 +52,12 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
     
     public GroupByStreamMergedResult(
             final Map<String, Integer> labelAndIndexMap, final List<QueryResult> queryResults, final ShardingSelectOptimizedStatement optimizedStatement) throws SQLException {
-        super(queryResults, optimizedStatement.getSelectStatement().getOrderByItems());
+        super(queryResults, optimizedStatement.getOrderByItems());
         this.labelAndIndexMap = labelAndIndexMap;
         this.optimizedStatement = optimizedStatement;
         currentRow = new ArrayList<>(labelAndIndexMap.size());
         currentGroupByValues = getOrderByValuesQueue().isEmpty()
-                ? Collections.emptyList() : new GroupByValue(getCurrentQueryResult(), optimizedStatement.getSelectStatement().getGroupByItems()).getGroupValues();
+                ? Collections.emptyList() : new GroupByValue(getCurrentQueryResult(), optimizedStatement.getGroupByItems()).getGroupValues();
     }
     
     @Override
@@ -70,7 +70,7 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
             super.next();
         }
         if (aggregateCurrentGroupByRowAndNext()) {
-            currentGroupByValues = new GroupByValue(getCurrentQueryResult(), optimizedStatement.getSelectStatement().getGroupByItems()).getGroupValues();
+            currentGroupByValues = new GroupByValue(getCurrentQueryResult(), optimizedStatement.getGroupByItems()).getGroupValues();
         }
         return true;
     }
@@ -84,7 +84,7 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
                 return AggregationUnitFactory.create(input.getType());
             }
         });
-        while (currentGroupByValues.equals(new GroupByValue(getCurrentQueryResult(), optimizedStatement.getSelectStatement().getGroupByItems()).getGroupValues())) {
+        while (currentGroupByValues.equals(new GroupByValue(getCurrentQueryResult(), optimizedStatement.getGroupByItems()).getGroupValues())) {
             aggregate(aggregationUnitMap);
             cacheCurrentRow();
             result = super.next();

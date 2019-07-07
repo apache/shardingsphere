@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.dql.common.StreamMergedResult;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.OrderByItemSegment;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.OrderByItem;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -35,7 +35,7 @@ import java.util.Queue;
  */
 public class OrderByStreamMergedResult extends StreamMergedResult {
     
-    private final List<OrderByItemSegment> orderByItems;
+    private final List<OrderByItem> orderByItems;
     
     @Getter(AccessLevel.PROTECTED)
     private final Queue<OrderByValue> orderByValuesQueue;
@@ -43,7 +43,7 @@ public class OrderByStreamMergedResult extends StreamMergedResult {
     @Getter(AccessLevel.PROTECTED)
     private boolean isFirstNext;
     
-    public OrderByStreamMergedResult(final List<QueryResult> queryResults, final List<OrderByItemSegment> orderByItems) throws SQLException {
+    public OrderByStreamMergedResult(final List<QueryResult> queryResults, final List<OrderByItem> orderByItems) throws SQLException {
         this.orderByItems = orderByItems;
         this.orderByValuesQueue = new PriorityQueue<>(queryResults.size());
         orderResultSetsToQueue(queryResults);

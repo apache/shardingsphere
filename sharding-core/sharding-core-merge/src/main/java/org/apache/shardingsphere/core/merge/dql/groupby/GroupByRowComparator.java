@@ -21,8 +21,8 @@ import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.merge.dql.common.MemoryQueryResultRow;
 import org.apache.shardingsphere.core.merge.dql.orderby.CompareUtil;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.OrderByItemSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.OrderByItem;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ShardingSelectOptimizedStatement;
 
 import java.util.Comparator;
 import java.util.List;
@@ -35,23 +35,23 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class GroupByRowComparator implements Comparator<MemoryQueryResultRow> {
     
-    private final SelectStatement selectStatement;
+    private final ShardingSelectOptimizedStatement optimizedStatement;
     
     @Override
     public int compare(final MemoryQueryResultRow o1, final MemoryQueryResultRow o2) {
-        if (!selectStatement.getOrderByItems().isEmpty()) {
-            return compare(o1, o2, selectStatement.getOrderByItems());
+        if (!optimizedStatement.getOrderByItems().isEmpty()) {
+            return compare(o1, o2, optimizedStatement.getOrderByItems());
         }
-        return compare(o1, o2, selectStatement.getGroupByItems());
+        return compare(o1, o2, optimizedStatement.getGroupByItems());
     }
     
-    private int compare(final MemoryQueryResultRow o1, final MemoryQueryResultRow o2, final List<OrderByItemSegment> orderItems) {
-        for (OrderByItemSegment each : orderItems) {
+    private int compare(final MemoryQueryResultRow o1, final MemoryQueryResultRow o2, final List<OrderByItem> orderByItems) {
+        for (OrderByItem each : orderByItems) {
             Object orderValue1 = o1.getCell(each.getIndex());
             Preconditions.checkState(null == orderValue1 || orderValue1 instanceof Comparable, "Order by value must implements Comparable");
             Object orderValue2 = o2.getCell(each.getIndex());
             Preconditions.checkState(null == orderValue2 || orderValue2 instanceof Comparable, "Order by value must implements Comparable");
-            int result = CompareUtil.compareTo((Comparable) orderValue1, (Comparable) orderValue2, each.getOrderDirection(), each.getNullOrderDirection());
+            int result = CompareUtil.compareTo((Comparable) orderValue1, (Comparable) orderValue2, each.getSegment().getOrderDirection(), each.getSegment().getNullOrderDirection());
             if (0 != result) {
                 return result;
             }
