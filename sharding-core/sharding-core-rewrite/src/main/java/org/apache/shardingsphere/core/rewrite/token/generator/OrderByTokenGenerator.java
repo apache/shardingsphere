@@ -39,7 +39,7 @@ public final class OrderByTokenGenerator implements OptionalSQLTokenGenerator<Sh
         if (!(optimizedStatement instanceof ShardingSelectOptimizedStatement)) {
             return Optional.absent();
         }
-        if (((SelectStatement) optimizedStatement.getSQLStatement()).isToAppendOrderByItems()) {
+        if (((ShardingSelectOptimizedStatement) optimizedStatement).isToAppendOrderByItems()) {
             return Optional.of(createOrderByToken((ShardingSelectOptimizedStatement) optimizedStatement));
         }
         return Optional.absent();

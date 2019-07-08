@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.parse.optimizer.select;
 
 import org.apache.shardingsphere.core.parse.optimizer.SQLStatementOptimizer;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 
 /**
  * Select optimizer for sharding.
@@ -31,13 +30,5 @@ public final class ShardingSelectOptimizer implements SQLStatementOptimizer {
     
     @Override
     public void optimize(final SQLStatement sqlStatement) {
-        appendDerivedOrderBy((SelectStatement) sqlStatement);
-    }
-    
-    private void appendDerivedOrderBy(final SelectStatement selectStatement) {
-        if (!selectStatement.getGroupByItems().isEmpty() && selectStatement.getOrderByItems().isEmpty()) {
-            selectStatement.getOrderByItems().addAll(selectStatement.getGroupByItems());
-            selectStatement.setToAppendOrderByItems(true);
-        }
     }
 }

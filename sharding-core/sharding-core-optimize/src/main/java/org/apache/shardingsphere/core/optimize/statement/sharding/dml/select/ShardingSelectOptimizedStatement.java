@@ -61,6 +61,8 @@ public final class ShardingSelectOptimizedStatement extends ShardingWhereOptimiz
     
     private final List<OrderByItem> groupByItems;
     
+    private boolean toAppendOrderByItems;
+    
     private Pagination pagination;
     
     public ShardingSelectOptimizedStatement(final SQLStatement sqlStatement, 
