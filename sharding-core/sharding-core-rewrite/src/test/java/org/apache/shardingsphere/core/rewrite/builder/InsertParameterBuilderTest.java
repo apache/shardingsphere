@@ -17,9 +17,38 @@
 
 package org.apache.shardingsphere.core.rewrite.builder;
 
+import org.apache.shardingsphere.core.optimize.statement.InsertOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.InsertOptimizeResultUnit;
+import org.apache.shardingsphere.core.rule.DataNode;
+import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.Collections;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 public final class InsertParameterBuilderTest {
+    
+    private InsertParameterBuilder insertParameterBuilder;
+    
+    @Before
+    public void setUp() {
+        insertParameterBuilder = new InsertParameterBuilder(Arrays.<Object>asList(1, 2), )
+    }
+    
+    private InsertOptimizedStatement createInsertOptimizedStatement() {
+        InsertOptimizeResultUnit unit1 = mock(InsertOptimizeResultUnit.class);
+        when(unit1.getParameters()).thenReturn(new Object[] {3, 4});
+        when(unit1.getDataNodes()).thenReturn(Collections.singletonList(new DataNode("db1.tb1")));
+        InsertOptimizeResultUnit unit2 = mock(InsertOptimizeResultUnit.class);
+        when(unit2.getParameters()).thenReturn(new Object[] {5, 6});
+        when(unit2.getDataNodes()).thenReturn(Collections.singletonList(new DataNode("db2.tb2")));
+        InsertOptimizedStatement result = mock(InsertOptimizedStatement.class);
+        when(result.getUnits()).thenReturn(Arrays.asList(unit1, unit2));
+        return result;
+    }
     
     @Test
     public void assertGetParameters() {
