@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.core.rule;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import lombok.Getter;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
-import org.apache.shardingsphere.core.exception.ShardingException;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -42,9 +42,7 @@ public final class ShardingDataSourceNames {
     private final Collection<String> dataSourceNames;
     
     public ShardingDataSourceNames(final ShardingRuleConfiguration shardingRuleConfig, final Collection<String> rawDataSourceNames) {
-        if(shardingRuleConfig == null){
-            throw new ShardingException("can not construct ShardingDataSourceNames cause shardingRuleConfig is null");
-        }
+        Preconditions.checkArgument(null != shardingRuleConfig, "can not construct ShardingDataSourceNames with null ShardingRuleConfig");
         this.shardingRuleConfig = shardingRuleConfig;
         dataSourceNames = getAllDataSourceNames(rawDataSourceNames);
     }
