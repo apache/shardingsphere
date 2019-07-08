@@ -26,7 +26,6 @@ import org.apache.shardingsphere.core.parse.integrate.asserts.EncryptSQLStatemen
 import org.apache.shardingsphere.core.parse.integrate.jaxb.EncryptParserResultSetRegistry;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.ParserResultSetRegistry;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.loader.SQLCasesLoader;
 import org.apache.shardingsphere.test.sql.loader.encrypt.EncryptSQLCasesRegistry;
@@ -45,8 +44,6 @@ public final class EncryptParameterizedParsingTest {
     
     private static ParserResultSetRegistry parserResultSetRegistry = EncryptParserResultSetRegistry.getInstance().getRegistry();
     
-    private static EncryptRule encryptRule = ParsingTestCaseFixtureBuilder.buildEncryptRule();
-    
     private static ShardingTableMetaData shardingTableMetaData = ParsingTestCaseFixtureBuilder.buildShardingTableMetaData();
     
     private final String sqlCaseId;
@@ -63,7 +60,7 @@ public final class EncryptParameterizedParsingTest {
     @Test
     public void assertSupportedSQL() {
         String sql = sqlCasesLoader.getSQL(sqlCaseId, sqlCaseType, parserResultSetRegistry.get(sqlCaseId).getParameters());
-        SQLStatement sqlStatement = new EncryptSQLParseEntry(DatabaseTypes.getActualDatabaseType(databaseType), encryptRule, shardingTableMetaData).parse(sql, false);
+        SQLStatement sqlStatement = new EncryptSQLParseEntry(DatabaseTypes.getActualDatabaseType(databaseType), shardingTableMetaData).parse(sql, false);
         new EncryptSQLStatementAssert(sqlStatement, sqlCaseId, sqlCaseType).assertSQLStatement();
     }
 }

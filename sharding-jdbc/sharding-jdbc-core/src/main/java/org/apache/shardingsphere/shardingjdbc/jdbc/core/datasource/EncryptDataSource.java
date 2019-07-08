@@ -79,7 +79,7 @@ public class EncryptDataSource extends AbstractUnsupportedOperationDataSource im
         encryptRule = new EncryptRule(encryptRuleConfiguration);
         shardingTableMetaData = createEncryptTableMetaData();
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
-        parseEngine = new EncryptSQLParseEntry(databaseType, encryptRule, shardingTableMetaData);
+        parseEngine = new EncryptSQLParseEntry(databaseType, shardingTableMetaData);
     }
     
     @SneakyThrows

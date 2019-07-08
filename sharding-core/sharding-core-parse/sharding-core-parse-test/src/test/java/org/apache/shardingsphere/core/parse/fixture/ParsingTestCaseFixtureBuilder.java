@@ -17,23 +17,12 @@
 
 package org.apache.shardingsphere.core.parse.fixture;
 
-import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
-import org.apache.shardingsphere.core.rule.EncryptRule;
-import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptRuleConfiguration;
-import org.apache.shardingsphere.core.yaml.config.sharding.YamlRootShardingConfiguration;
-import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.core.yaml.swapper.impl.EncryptRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.core.yaml.swapper.impl.ShardingRuleConfigurationYamlSwapper;
 
-import java.io.File;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -41,32 +30,6 @@ import java.util.Map;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ParsingTestCaseFixtureBuilder {
-    
-    /**
-     * Build sharding rule.
-     * 
-     * @return sharding rule
-     */
-    @SneakyThrows
-    public static ShardingRule buildShardingRule() {
-        URL url = ParsingTestCaseFixtureBuilder.class.getClassLoader().getResource("yaml/sharding-rule.yaml");
-        Preconditions.checkNotNull(url, "Cannot find parse rule yaml configuration.");
-        YamlRootShardingConfiguration yamlShardingConfig = YamlEngine.unmarshal(new File(url.getFile()), YamlRootShardingConfiguration.class);
-        return new ShardingRule(new ShardingRuleConfigurationYamlSwapper().swap(yamlShardingConfig.getShardingRule()), yamlShardingConfig.getDataSources().keySet());
-    }
-    
-    /**
-     * Build encrypt rule.
-     *
-     * @return encrypt rule
-     */
-    @SneakyThrows
-    public static EncryptRule buildEncryptRule() {
-        URL url = ParsingTestCaseFixtureBuilder.class.getClassLoader().getResource("yaml/encrypt-rule.yaml");
-        Preconditions.checkNotNull(url, "Cannot find parse rule yaml configuration.");
-        YamlEncryptRuleConfiguration encryptConfig = YamlEngine.unmarshal(new File(url.getFile()), YamlEncryptRuleConfiguration.class);
-        return new EncryptRule(new EncryptRuleConfigurationYamlSwapper().swap(encryptConfig));
-    }
     
     /**
      * Build sharding table meta data.
