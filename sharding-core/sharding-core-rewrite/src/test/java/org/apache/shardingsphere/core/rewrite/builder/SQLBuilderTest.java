@@ -17,20 +17,37 @@
 
 package org.apache.shardingsphere.core.rewrite.builder;
 
+import org.apache.shardingsphere.core.parse.constant.QuoteCharacter;
+import org.apache.shardingsphere.core.rewrite.token.pojo.SQLToken;
+import org.apache.shardingsphere.core.rewrite.token.pojo.TableToken;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Collections;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 public final class SQLBuilderTest {
+    
+    private SQLBuilder sqlBuilderWithoutTokens;
+    
+    private SQLBuilder sqlBuilderWithTokens;
     
     @Before
     public void setUp() {
+        sqlBuilderWithoutTokens = new SQLBuilder("SELECT * FROM t_config", Collections.<SQLToken>emptyList());
+        sqlBuilderWithTokens = new SQLBuilder(
+                "SELECT * FROM t_order WHERE order_id > 1", Collections.<SQLToken>singletonList(new TableToken(14, 20, "t_order", QuoteCharacter.NONE)));
     }
     
     @Test
-    public void assertToSQL() {
+    public void assertToSQLWithoutTokens() {
+        assertThat(sqlBuilderWithoutTokens.toSQL(), is("SELECT * FROM t_config"));
     }
     
     @Test
     public void assertToSQLWithSharding() {
+        assertThat(sqlBuilderWithTokens.toSQL(null, Collections.singletonMap("t_order", "t_order_0")), is("SELECT * FROM t_order_0 WHERE order_id > 1"));
     }
 }
