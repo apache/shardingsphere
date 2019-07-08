@@ -19,10 +19,9 @@ package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.OrderByItem;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ShardingSelectOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderByItem;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.TextOrderByItemSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.pojo.OrderByToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -46,7 +45,7 @@ public final class OrderByTokenGenerator implements OptionalSQLTokenGenerator<Sh
     }
     
     private OrderByToken createOrderByToken(final ShardingSelectOptimizedStatement optimizedStatement) {
-        OrderByToken result = new OrderByToken(((SelectStatement) optimizedStatement.getSQLStatement()).getGroupByLastIndex() + 1);
+        OrderByToken result = new OrderByToken(optimizedStatement.getGroupByLastIndex() + 1);
         for (OrderByItem each : optimizedStatement.getOrderByItems()) {
             String columnLabel = each.getSegment() instanceof TextOrderByItemSegment ? ((TextOrderByItemSegment) each.getSegment()).getText() : String.valueOf(each.getIndex());
             result.getColumnLabels().add(columnLabel);

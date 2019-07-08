@@ -21,8 +21,8 @@ import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.merge.dql.common.MemoryQueryResultRow;
 import org.apache.shardingsphere.core.merge.dql.orderby.CompareUtil;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.OrderByItem;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ShardingSelectOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderByItem;
 
 import java.util.Comparator;
 import java.util.List;
