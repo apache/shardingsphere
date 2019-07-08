@@ -39,8 +39,8 @@ public final class GroupByRowComparator implements Comparator<MemoryQueryResultR
     
     @Override
     public int compare(final MemoryQueryResultRow o1, final MemoryQueryResultRow o2) {
-        if (!optimizedStatement.getOrderByItems().isEmpty()) {
-            return compare(o1, o2, optimizedStatement.getOrderByItems());
+        if (!optimizedStatement.getOrderBy().getItems().isEmpty()) {
+            return compare(o1, o2, optimizedStatement.getOrderBy().getItems());
         }
         return compare(o1, o2, optimizedStatement.getGroupBy().getItems());
     }

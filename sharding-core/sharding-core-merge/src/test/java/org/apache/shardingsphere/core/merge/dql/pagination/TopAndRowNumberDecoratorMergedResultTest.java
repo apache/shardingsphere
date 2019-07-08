@@ -27,6 +27,7 @@ import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.Pagination;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ShardingSelectOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.groupby.GroupBy;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderBy;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderByItem;
 import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
@@ -72,7 +73,7 @@ public final class TopAndRowNumberDecoratorMergedResultTest {
         }
         routeResult = new SQLRouteResult(
                 new ShardingSelectOptimizedStatement(new SelectStatement(), Collections.<ShardingCondition>emptyList(), new AndCondition(), Collections.<SelectItem>emptyList(), 
-                        new GroupBy(Collections.<OrderByItem>emptyList(), 0)));
+                        new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false)));
     }
     
     @Test

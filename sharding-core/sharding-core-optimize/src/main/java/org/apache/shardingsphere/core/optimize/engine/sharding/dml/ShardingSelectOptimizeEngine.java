@@ -28,6 +28,7 @@ import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.Pag
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ShardingSelectOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.groupby.GroupBy;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.groupby.GroupByEngine;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderBy;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderByEngine;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderByItem;
 import org.apache.shardingsphere.core.parse.constant.DerivedColumn;
@@ -68,9 +69,9 @@ public final class ShardingSelectOptimizeEngine implements OptimizeEngine {
     
     private final WhereClauseEncryptConditionEngine encryptConditionEngine;
     
-    private final OrderByEngine orderByEngine;
-    
     private final GroupByEngine groupByEngine;
+    
+    private final OrderByEngine orderByEngine;
     
     public ShardingSelectOptimizeEngine(final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData, final SelectStatement selectStatement, final List<Object> parameters) {
         this.shardingTableMetaData = shardingTableMetaData;
@@ -78,26 +79,18 @@ public final class ShardingSelectOptimizeEngine implements OptimizeEngine {
         this.parameters = parameters;
         shardingConditionEngine = new WhereClauseShardingConditionEngine(shardingRule, shardingTableMetaData);
         encryptConditionEngine = new WhereClauseEncryptConditionEngine(shardingRule.getEncryptRule(), shardingTableMetaData);
-        orderByEngine = new OrderByEngine();
         groupByEngine = new GroupByEngine();
+        orderByEngine = new OrderByEngine();
     }
     
     @Override
     public ShardingSelectOptimizedStatement optimize() {
         Collection<SelectItem> items = new LinkedHashSet<>(selectStatement.getItems());
-        Collection<OrderByItem> orderByItems = orderByEngine.getOrderByItems(selectStatement);
         GroupBy groupBy = groupByEngine.createGroupBy(selectStatement);
-        boolean toAppendOrderByItems = false;
-        if (!groupBy.getItems().isEmpty() && orderByItems.isEmpty()) {
-            orderByItems.addAll(groupBy.getItems());
-            toAppendOrderByItems = true;
-        }
-        items.addAll(getDerivedColumns(orderByItems, groupBy.getItems()));
-        ShardingSelectOptimizedStatement result = new ShardingSelectOptimizedStatement(selectStatement, 
-                new ArrayList<>(shardingConditionEngine.createShardingConditions(selectStatement, parameters)), 
-                encryptConditionEngine.createEncryptConditions(selectStatement), appendAverageDerivedColumns(items), groupBy);
-        result.getOrderByItems().addAll(orderByItems);
-        result.setToAppendOrderByItems(toAppendOrderByItems);
+        OrderBy orderBy = orderByEngine.createOrderBy(selectStatement, groupBy);
+        items.addAll(getDerivedColumns(groupBy.getItems(), orderBy.getItems()));
+        ShardingSelectOptimizedStatement result = new ShardingSelectOptimizedStatement(selectStatement, new ArrayList<>(shardingConditionEngine.createShardingConditions(selectStatement, parameters)), 
+                encryptConditionEngine.createEncryptConditions(selectStatement), appendAverageDerivedColumns(items), groupBy, orderBy);
         setPagination(result);
         return result;
     }
@@ -145,13 +138,13 @@ public final class ShardingSelectOptimizeEngine implements OptimizeEngine {
         averageSelectItem.getDerivedAggregationSelectItems().add(sumSelectItem);
     }
     
-    private Collection<SelectItem> getDerivedColumns(final Collection<OrderByItem> orderByItems, final Collection<OrderByItem> groupByItems) {
+    private Collection<SelectItem> getDerivedColumns(final Collection<OrderByItem> groupByItems, final Collection<OrderByItem> orderByItems) {
         Collection<SelectItem> result = new LinkedList<>();
-        if (!orderByItems.isEmpty()) {
-            result.addAll(appendDerivedOrderColumns(orderByItems));
-        }
         if (!groupByItems.isEmpty()) {
             result.addAll(appendDerivedGroupColumns(groupByItems));
+        }
+        if (!orderByItems.isEmpty()) {
+            result.addAll(appendDerivedOrderColumns(orderByItems));
         }
         return result;
     }

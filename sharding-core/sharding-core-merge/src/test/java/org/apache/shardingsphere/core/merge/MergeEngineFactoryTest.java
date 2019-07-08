@@ -28,6 +28,7 @@ import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.Sha
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.ShardingInsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ShardingSelectOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.groupby.GroupBy;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderBy;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderByItem;
 import org.apache.shardingsphere.core.optimize.statement.transparent.TransparentOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
@@ -70,8 +71,8 @@ public final class MergeEngineFactoryTest {
     @Test
     public void assertNewInstanceWithSelectStatement() throws SQLException {
         SQLRouteResult routeResult = new SQLRouteResult(
-                new ShardingSelectOptimizedStatement(new SelectStatement(), Collections.<ShardingCondition>emptyList(), new AndCondition(), Collections.<SelectItem>emptyList(), 
-                        new GroupBy(Collections.<OrderByItem>emptyList(), 0)));
+                new ShardingSelectOptimizedStatement(new SelectStatement(), Collections.<ShardingCondition>emptyList(), new AndCondition(), 
+                        Collections.<SelectItem>emptyList(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false)));
         assertThat(MergeEngineFactory.newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, routeResult, null, queryResults), instanceOf(DQLMergeEngine.class));
     }
     

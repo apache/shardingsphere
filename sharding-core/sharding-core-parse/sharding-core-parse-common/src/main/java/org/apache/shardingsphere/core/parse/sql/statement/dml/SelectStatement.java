@@ -50,8 +50,6 @@ public final class SelectStatement extends DMLStatement {
     
     private int selectListStopIndex;
     
-    private int groupByLastIndex;
-    
     private PaginationValueSegment offset;
     
     private PaginationValueSegment rowCount;

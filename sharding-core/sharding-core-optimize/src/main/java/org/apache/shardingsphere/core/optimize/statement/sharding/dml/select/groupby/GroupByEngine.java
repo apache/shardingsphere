@@ -36,7 +36,7 @@ import java.util.LinkedList;
 public final class GroupByEngine {
     
     /**
-     * Get group by.
+     * Create group by.
      *
      * @param sqlStatement SQL statement
      * @return group by

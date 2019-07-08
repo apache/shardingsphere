@@ -36,6 +36,7 @@ import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.Pagination;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ShardingSelectOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.groupby.GroupBy;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderBy;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderByItem;
 import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationSelectItem;
@@ -86,7 +87,7 @@ public final class DQLMergeEngineTest {
         }
         selectStatement = new SelectStatement();
         routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), selectStatement.getItems(), 
-                new GroupBy(Collections.<OrderByItem>emptyList(), 0)));
+                new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false)));
     }
     
     @Test
@@ -132,8 +133,8 @@ public final class DQLMergeEngineTest {
     @Test
     public void assertBuildOrderByStreamMergedResult() throws SQLException {
         ShardingSelectOptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(
-                selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), selectStatement.getItems(), new GroupBy(Collections.<OrderByItem>emptyList(), 0));
-        optimizedStatement.getOrderByItems().add(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC)));
+                selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), selectStatement.getItems(), new GroupBy(Collections.<OrderByItem>emptyList(), 0),
+                new OrderBy(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), false));
         routeResult = new SQLRouteResult(optimizedStatement);
         mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), routeResult, queryResults);
         assertThat(mergeEngine.merge(), instanceOf(OrderByStreamMergedResult.class));
@@ -142,8 +143,8 @@ public final class DQLMergeEngineTest {
     @Test
     public void assertBuildOrderByStreamMergedResultWithMySQLLimit() throws SQLException {
         ShardingSelectOptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(
-                selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), selectStatement.getItems(), new GroupBy(Collections.<OrderByItem>emptyList(), 0));
-        optimizedStatement.getOrderByItems().add(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC)));
+                selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), selectStatement.getItems(), new GroupBy(Collections.<OrderByItem>emptyList(), 0),
+                new OrderBy(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), false));
         routeResult = new SQLRouteResult(optimizedStatement);
         ((ShardingSelectOptimizedStatement) routeResult.getOptimizedStatement()).setPagination(new Pagination(null, null, Collections.emptyList()));
         mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), routeResult, queryResults);
@@ -155,8 +156,8 @@ public final class DQLMergeEngineTest {
     @Test
     public void assertBuildOrderByStreamMergedResultWithOracleLimit() throws SQLException {
         ShardingSelectOptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(
-                selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), selectStatement.getItems(), new GroupBy(Collections.<OrderByItem>emptyList(), 0));
-        optimizedStatement.getOrderByItems().add(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC)));
+                selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), selectStatement.getItems(), new GroupBy(Collections.<OrderByItem>emptyList(), 0),
+                new OrderBy(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), false));
         routeResult = new SQLRouteResult(optimizedStatement);
         ((ShardingSelectOptimizedStatement) routeResult.getOptimizedStatement()).setPagination(new Pagination(null, null, Collections.emptyList()));
         mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("Oracle"), routeResult, queryResults);
@@ -168,8 +169,8 @@ public final class DQLMergeEngineTest {
     @Test
     public void assertBuildOrderByStreamMergedResultWithSQLServerLimit() throws SQLException {
         ShardingSelectOptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(
-                selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), selectStatement.getItems(), new GroupBy(Collections.<OrderByItem>emptyList(), 0));
-        optimizedStatement.getOrderByItems().add(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC)));
+                selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), selectStatement.getItems(), new GroupBy(Collections.<OrderByItem>emptyList(), 0),
+                new OrderBy(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), false));
         routeResult = new SQLRouteResult(optimizedStatement);
         ((ShardingSelectOptimizedStatement) routeResult.getOptimizedStatement()).setPagination(new Pagination(null, null, Collections.emptyList()));
         mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("SQLServer"), routeResult, queryResults);
@@ -182,8 +183,8 @@ public final class DQLMergeEngineTest {
     public void assertBuildGroupByStreamMergedResult() throws SQLException {
         ShardingSelectOptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(
                 selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), selectStatement.getItems(), 
-                new GroupBy(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), 0));
-        optimizedStatement.getOrderByItems().add(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC)));
+                new GroupBy(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), 0),
+                new OrderBy(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), false));
         routeResult = new SQLRouteResult(optimizedStatement);
         mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), routeResult, queryResults);
         assertThat(mergeEngine.merge(), instanceOf(GroupByStreamMergedResult.class));
@@ -193,8 +194,8 @@ public final class DQLMergeEngineTest {
     public void assertBuildGroupByStreamMergedResultWithMySQLLimit() throws SQLException {
         ShardingSelectOptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(
                 selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), selectStatement.getItems(),
-                new GroupBy(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), 0));
-        optimizedStatement.getOrderByItems().add(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC)));
+                new GroupBy(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), 0),
+                new OrderBy(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), false));
         routeResult = new SQLRouteResult(optimizedStatement);
         ((ShardingSelectOptimizedStatement) routeResult.getOptimizedStatement()).setPagination(new Pagination(null, null, Collections.emptyList()));
         mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), routeResult, queryResults);
@@ -207,8 +208,8 @@ public final class DQLMergeEngineTest {
     public void assertBuildGroupByStreamMergedResultWithOracleLimit() throws SQLException {
         ShardingSelectOptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(
                 selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), selectStatement.getItems(),
-                new GroupBy(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), 0));
-        optimizedStatement.getOrderByItems().add(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC)));
+                new GroupBy(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), 0),
+                new OrderBy(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), false));
         routeResult = new SQLRouteResult(optimizedStatement);
         ((ShardingSelectOptimizedStatement) routeResult.getOptimizedStatement()).setPagination(new Pagination(null, null, Collections.emptyList()));
         mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("Oracle"), routeResult, queryResults);
@@ -221,8 +222,8 @@ public final class DQLMergeEngineTest {
     public void assertBuildGroupByStreamMergedResultWithSQLServerLimit() throws SQLException {
         ShardingSelectOptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(
                 selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), selectStatement.getItems(),
-                new GroupBy(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), 0));
-        optimizedStatement.getOrderByItems().add(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC)));
+                new GroupBy(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), 0),
+                new OrderBy(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), false));
         routeResult = new SQLRouteResult(optimizedStatement);
         ((ShardingSelectOptimizedStatement) routeResult.getOptimizedStatement()).setPagination(new Pagination(null, null, Collections.emptyList()));
         mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("SQLServer"), routeResult, queryResults);
@@ -235,7 +236,8 @@ public final class DQLMergeEngineTest {
     public void assertBuildGroupByMemoryMergedResult() throws SQLException {
         ShardingSelectOptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(
                 selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), selectStatement.getItems(),
-                new GroupBy(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), 0));
+                new GroupBy(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), 0), 
+                new OrderBy(Collections.<OrderByItem>emptyList(), false));
         routeResult = new SQLRouteResult(optimizedStatement);
         mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), routeResult, queryResults);
         assertThat(mergeEngine.merge(), instanceOf(GroupByMemoryMergedResult.class));
@@ -245,7 +247,8 @@ public final class DQLMergeEngineTest {
     public void assertBuildGroupByMemoryMergedResultWithMySQLLimit() throws SQLException {
         ShardingSelectOptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(
                 selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), selectStatement.getItems(),
-                new GroupBy(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), 0));
+                new GroupBy(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), 0), 
+                new OrderBy(Collections.<OrderByItem>emptyList(), false));
         routeResult = new SQLRouteResult(optimizedStatement);
         ((ShardingSelectOptimizedStatement) routeResult.getOptimizedStatement()).setPagination(new Pagination(null, null, Collections.emptyList()));
         mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), routeResult, queryResults);
@@ -258,8 +261,8 @@ public final class DQLMergeEngineTest {
     public void assertBuildGroupByMemoryMergedResultWithOracleLimit() throws SQLException {
         ShardingSelectOptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(
                 selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), selectStatement.getItems(),
-                new GroupBy(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), 0));
-        optimizedStatement.getOrderByItems().add(new OrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC)));
+                new GroupBy(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), 0),
+                new OrderBy(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC))), false));
         routeResult = new SQLRouteResult(optimizedStatement);
         ((ShardingSelectOptimizedStatement) routeResult.getOptimizedStatement()).setPagination(new Pagination(null, null, Collections.emptyList()));
         mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("Oracle"), routeResult, queryResults);
@@ -274,7 +277,7 @@ public final class DQLMergeEngineTest {
                 selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), selectStatement.getItems(),
                 new GroupBy(Arrays.asList(
                         new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC)), 
-                        new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC))), 0));
+                        new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC))), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false));
         routeResult = new SQLRouteResult(optimizedStatement);
         ((ShardingSelectOptimizedStatement) routeResult.getOptimizedStatement()).setPagination(new Pagination(null, null, Collections.emptyList()));
         mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("SQLServer"), routeResult, queryResults);
@@ -287,7 +290,7 @@ public final class DQLMergeEngineTest {
     public void assertBuildGroupByMemoryMergedResultWithAggregationOnly() throws SQLException {
         selectStatement.getItems().add(new AggregationSelectItem(AggregationType.COUNT, "(*)", Optional.<String>absent()));
         routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), selectStatement.getItems(), 
-                new GroupBy(Collections.<OrderByItem>emptyList(), 0)));
+                new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false)));
         mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), routeResult, queryResults);
         assertThat(mergeEngine.merge(), instanceOf(GroupByMemoryMergedResult.class));
     }
@@ -296,7 +299,7 @@ public final class DQLMergeEngineTest {
     public void assertBuildGroupByMemoryMergedResultWithAggregationOnlyWithMySQLLimit() throws SQLException {
         selectStatement.getItems().add(new AggregationSelectItem(AggregationType.COUNT, "(*)", Optional.<String>absent()));
         routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), selectStatement.getItems(), 
-                new GroupBy(Collections.<OrderByItem>emptyList(), 0)));
+                new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false)));
         ((ShardingSelectOptimizedStatement) routeResult.getOptimizedStatement()).setPagination(new Pagination(null, null, Collections.emptyList()));
         mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
@@ -308,7 +311,7 @@ public final class DQLMergeEngineTest {
     public void assertBuildGroupByMemoryMergedResultWithAggregationOnlyWithOracleLimit() throws SQLException {
         selectStatement.getItems().add(new AggregationSelectItem(AggregationType.COUNT, "(*)", Optional.<String>absent()));
         routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), selectStatement.getItems(), 
-                new GroupBy(Collections.<OrderByItem>emptyList(), 0)));
+                new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false)));
         ((ShardingSelectOptimizedStatement) routeResult.getOptimizedStatement()).setPagination(new Pagination(null, null, Collections.emptyList()));
         mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("Oracle"), routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
@@ -320,7 +323,7 @@ public final class DQLMergeEngineTest {
     public void assertBuildGroupByMemoryMergedResultWithAggregationOnlyWithSQLServerLimit() throws SQLException {
         selectStatement.getItems().add(new AggregationSelectItem(AggregationType.COUNT, "(*)", Optional.<String>absent()));
         routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), selectStatement.getItems(),
-                new GroupBy(Collections.<OrderByItem>emptyList(), 0)));
+                new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false)));
         ((ShardingSelectOptimizedStatement) routeResult.getOptimizedStatement()).setPagination(new Pagination(null, null, Collections.emptyList()));
         mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("SQLServer"), routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();

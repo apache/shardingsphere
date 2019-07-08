@@ -123,8 +123,8 @@ public final class DQLMergeEngine implements MergeEngine {
         if (!optimizedStatement.getGroupBy().getItems().isEmpty() || !optimizedStatement.getAggregationSelectItems().isEmpty()) {
             return getGroupByMergedResult();
         }
-        if (!optimizedStatement.getOrderByItems().isEmpty()) {
-            return new OrderByStreamMergedResult(queryResults, optimizedStatement.getOrderByItems());
+        if (!optimizedStatement.getOrderBy().getItems().isEmpty()) {
+            return new OrderByStreamMergedResult(queryResults, optimizedStatement.getOrderBy().getItems());
         }
         return new IteratorStreamMergedResult(queryResults);
     }

@@ -52,7 +52,7 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
     
     public GroupByStreamMergedResult(
             final Map<String, Integer> labelAndIndexMap, final List<QueryResult> queryResults, final ShardingSelectOptimizedStatement optimizedStatement) throws SQLException {
-        super(queryResults, optimizedStatement.getOrderByItems());
+        super(queryResults, optimizedStatement.getOrderBy().getItems());
         this.labelAndIndexMap = labelAndIndexMap;
         this.optimizedStatement = optimizedStatement;
         currentRow = new ArrayList<>(labelAndIndexMap.size());
