@@ -15,45 +15,45 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby;
+package org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.groupby;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.order.OrderBySegment;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderByItem;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
- * Order by engine.
+ * Group by engine.
  *
  * @author zhangliang
  */
-public final class OrderByEngine {
+public final class GroupByEngine {
     
     /**
-     * Get order by items.
-     * 
+     * Get group by.
+     *
      * @param sqlStatement SQL statement
-     * @return order by items
+     * @return group by
      */
-    public Collection<OrderByItem> getOrderByItems(final SQLStatement sqlStatement) {
-        Optional<OrderBySegment> orderBySegment = sqlStatement.findSQLSegment(OrderBySegment.class);
-        if (!orderBySegment.isPresent()) {
-            return new LinkedList<>();
+    public GroupBy createGroupBy(final SQLStatement sqlStatement) {
+        Optional<GroupBySegment> groupBySegment = sqlStatement.findSQLSegment(GroupBySegment.class);
+        if (!groupBySegment.isPresent()) {
+            return new GroupBy(Collections.<OrderByItem>emptyList(), 0);
         }
-        List<OrderByItem> result = new LinkedList<>();
-        for (OrderByItemSegment each : orderBySegment.get().getOrderByItems()) {
+        Collection<OrderByItem> groupByItems = new LinkedList<>();
+        for (OrderByItemSegment each : groupBySegment.get().getGroupByItems()) {
             OrderByItem orderByItem = new OrderByItem(each);
             if (each instanceof IndexOrderByItemSegment) {
                 orderByItem.setIndex(((IndexOrderByItemSegment) each).getColumnIndex());
             }
-            result.add(orderByItem);
+            groupByItems.add(orderByItem);
         }
-        return result;
+        return new GroupBy(groupByItems, groupBySegment.get().getStopIndex());
     }
-    
 }

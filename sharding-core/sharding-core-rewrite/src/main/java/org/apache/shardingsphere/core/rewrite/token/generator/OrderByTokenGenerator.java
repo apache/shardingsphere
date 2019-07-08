@@ -45,7 +45,7 @@ public final class OrderByTokenGenerator implements OptionalSQLTokenGenerator<Sh
     }
     
     private OrderByToken createOrderByToken(final ShardingSelectOptimizedStatement optimizedStatement) {
-        OrderByToken result = new OrderByToken(optimizedStatement.getGroupByLastIndex() + 1);
+        OrderByToken result = new OrderByToken(optimizedStatement.getGroupBy().getLastIndex() + 1);
         for (OrderByItem each : optimizedStatement.getOrderByItems()) {
             String columnLabel = each.getSegment() instanceof TextOrderByItemSegment ? ((TextOrderByItemSegment) each.getSegment()).getText() : String.valueOf(each.getIndex());
             result.getColumnLabels().add(columnLabel);

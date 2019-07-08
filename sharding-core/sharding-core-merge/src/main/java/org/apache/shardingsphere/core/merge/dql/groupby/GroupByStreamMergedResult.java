@@ -57,7 +57,7 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
         this.optimizedStatement = optimizedStatement;
         currentRow = new ArrayList<>(labelAndIndexMap.size());
         currentGroupByValues = getOrderByValuesQueue().isEmpty()
-                ? Collections.emptyList() : new GroupByValue(getCurrentQueryResult(), optimizedStatement.getGroupByItems()).getGroupValues();
+                ? Collections.emptyList() : new GroupByValue(getCurrentQueryResult(), optimizedStatement.getGroupBy().getItems()).getGroupValues();
     }
     
     @Override
@@ -70,7 +70,7 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
             super.next();
         }
         if (aggregateCurrentGroupByRowAndNext()) {
-            currentGroupByValues = new GroupByValue(getCurrentQueryResult(), optimizedStatement.getGroupByItems()).getGroupValues();
+            currentGroupByValues = new GroupByValue(getCurrentQueryResult(), optimizedStatement.getGroupBy().getItems()).getGroupValues();
         }
         return true;
     }
@@ -84,7 +84,7 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
                 return AggregationUnitFactory.create(input.getType());
             }
         });
-        while (currentGroupByValues.equals(new GroupByValue(getCurrentQueryResult(), optimizedStatement.getGroupByItems()).getGroupValues())) {
+        while (currentGroupByValues.equals(new GroupByValue(getCurrentQueryResult(), optimizedStatement.getGroupBy().getItems()).getGroupValues())) {
             aggregate(aggregationUnitMap);
             cacheCurrentRow();
             result = super.next();

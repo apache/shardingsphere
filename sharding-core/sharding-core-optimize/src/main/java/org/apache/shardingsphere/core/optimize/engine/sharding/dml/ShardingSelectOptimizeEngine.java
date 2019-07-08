@@ -26,6 +26,8 @@ import org.apache.shardingsphere.core.optimize.statement.encrypt.condition.Where
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.engine.WhereClauseShardingConditionEngine;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.Pagination;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ShardingSelectOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.groupby.GroupBy;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.groupby.GroupByEngine;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderByEngine;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderByItem;
 import org.apache.shardingsphere.core.parse.constant.DerivedColumn;
@@ -68,6 +70,8 @@ public final class ShardingSelectOptimizeEngine implements OptimizeEngine {
     
     private final OrderByEngine orderByEngine;
     
+    private final GroupByEngine groupByEngine;
+    
     public ShardingSelectOptimizeEngine(final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData, final SelectStatement selectStatement, final List<Object> parameters) {
         this.shardingTableMetaData = shardingTableMetaData;
         this.selectStatement = selectStatement;
@@ -75,26 +79,25 @@ public final class ShardingSelectOptimizeEngine implements OptimizeEngine {
         shardingConditionEngine = new WhereClauseShardingConditionEngine(shardingRule, shardingTableMetaData);
         encryptConditionEngine = new WhereClauseEncryptConditionEngine(shardingRule.getEncryptRule(), shardingTableMetaData);
         orderByEngine = new OrderByEngine();
+        groupByEngine = new GroupByEngine();
     }
     
     @Override
     public ShardingSelectOptimizedStatement optimize() {
         Collection<SelectItem> items = new LinkedHashSet<>(selectStatement.getItems());
         Collection<OrderByItem> orderByItems = orderByEngine.getOrderByItems(selectStatement);
-        Collection<OrderByItem> groupByItems = orderByEngine.getGroupByItems(selectStatement);
+        GroupBy groupBy = groupByEngine.createGroupBy(selectStatement);
         boolean toAppendOrderByItems = false;
-        if (!groupByItems.isEmpty() && orderByItems.isEmpty()) {
-            orderByItems.addAll(groupByItems);
+        if (!groupBy.getItems().isEmpty() && orderByItems.isEmpty()) {
+            orderByItems.addAll(groupBy.getItems());
             toAppendOrderByItems = true;
         }
-        items.addAll(getDerivedColumns(orderByItems, groupByItems));
+        items.addAll(getDerivedColumns(orderByItems, groupBy.getItems()));
         ShardingSelectOptimizedStatement result = new ShardingSelectOptimizedStatement(selectStatement, 
                 new ArrayList<>(shardingConditionEngine.createShardingConditions(selectStatement, parameters)), 
-                encryptConditionEngine.createEncryptConditions(selectStatement), appendAverageDerivedColumns(items));
+                encryptConditionEngine.createEncryptConditions(selectStatement), appendAverageDerivedColumns(items), groupBy);
         result.getOrderByItems().addAll(orderByItems);
-        result.getGroupByItems().addAll(groupByItems);
         result.setToAppendOrderByItems(toAppendOrderByItems);
-        result.setGroupByLastIndex(orderByEngine.getGroupByLastIndex(selectStatement));
         setPagination(result);
         return result;
     }

@@ -24,8 +24,8 @@ import org.apache.shardingsphere.core.merge.dql.orderby.CompareUtil;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ShardingSelectOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderByItem;
 
+import java.util.Collection;
 import java.util.Comparator;
-import java.util.List;
 
 /**
  * Group by row comparator.
@@ -42,10 +42,10 @@ public final class GroupByRowComparator implements Comparator<MemoryQueryResultR
         if (!optimizedStatement.getOrderByItems().isEmpty()) {
             return compare(o1, o2, optimizedStatement.getOrderByItems());
         }
-        return compare(o1, o2, optimizedStatement.getGroupByItems());
+        return compare(o1, o2, optimizedStatement.getGroupBy().getItems());
     }
     
-    private int compare(final MemoryQueryResultRow o1, final MemoryQueryResultRow o2, final List<OrderByItem> orderByItems) {
+    private int compare(final MemoryQueryResultRow o1, final MemoryQueryResultRow o2, final Collection<OrderByItem> orderByItems) {
         for (OrderByItem each : orderByItems) {
             Object orderValue1 = o1.getCell(each.getIndex());
             Preconditions.checkState(null == orderValue1 || orderValue1 instanceof Comparable, "Order by value must implements Comparable");
