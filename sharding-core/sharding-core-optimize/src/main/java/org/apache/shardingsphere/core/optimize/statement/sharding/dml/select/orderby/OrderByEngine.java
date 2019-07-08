@@ -44,7 +44,7 @@ public final class OrderByEngine {
      */
     public Collection<OrderByItem> getOrderByItems(final SQLStatement sqlStatement) {
         Optional<OrderBySegment> orderBySegment = sqlStatement.findSQLSegment(OrderBySegment.class);
-        return orderBySegment.isPresent() ? createOrderByItems(orderBySegment.get().getOrderByItems()) : Collections.<OrderByItem>emptyList();
+        return orderBySegment.isPresent() ? createOrderByItems(orderBySegment.get().getOrderByItems()) : new LinkedList<OrderByItem>();
     }
     
     /**

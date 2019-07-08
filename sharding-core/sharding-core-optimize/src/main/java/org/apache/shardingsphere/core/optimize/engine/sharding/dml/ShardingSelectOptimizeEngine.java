@@ -82,14 +82,19 @@ public final class ShardingSelectOptimizeEngine implements OptimizeEngine {
         Collection<SelectItem> items = new LinkedHashSet<>(selectStatement.getItems());
         Collection<OrderByItem> orderByItems = orderByEngine.getOrderByItems(selectStatement);
         Collection<OrderByItem> groupByItems = orderByEngine.getGroupByItems(selectStatement);
+        boolean toAppendOrderByItems = false;
+        if (!groupByItems.isEmpty() && orderByItems.isEmpty()) {
+            orderByItems.addAll(groupByItems);
+            toAppendOrderByItems = true;
+        }
         items.addAll(getDerivedColumns(orderByItems, groupByItems));
         ShardingSelectOptimizedStatement result = new ShardingSelectOptimizedStatement(selectStatement, 
                 new ArrayList<>(shardingConditionEngine.createShardingConditions(selectStatement, parameters)), 
                 encryptConditionEngine.createEncryptConditions(selectStatement), appendAverageDerivedColumns(items));
         result.getOrderByItems().addAll(orderByItems);
         result.getGroupByItems().addAll(groupByItems);
+        result.setToAppendOrderByItems(toAppendOrderByItems);
         result.setGroupByLastIndex(orderByEngine.getGroupByLastIndex(selectStatement));
-        appendDerivedOrderBy(result);
         setPagination(result);
         return result;
     }
@@ -229,13 +234,6 @@ public final class ShardingSelectOptimizeEngine implements OptimizeEngine {
     
     private boolean isSameQualifiedName(final SelectItem selectItem, final TextOrderByItemSegment orderItem) {
         return !selectItem.getAlias().isPresent() && selectItem.getExpression().equalsIgnoreCase(orderItem.getText());
-    }
-    
-    private void appendDerivedOrderBy(final ShardingSelectOptimizedStatement optimizedStatement) {
-        if (!optimizedStatement.getGroupByItems().isEmpty() && optimizedStatement.getOrderByItems().isEmpty()) {
-            optimizedStatement.getOrderByItems().addAll(optimizedStatement.getGroupByItems());
-            optimizedStatement.setToAppendOrderByItems(true);
-        }
     }
     
     private void setPagination(final ShardingSelectOptimizedStatement optimizedStatement) {
