@@ -24,9 +24,9 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.IndexOrde
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -42,7 +42,7 @@ public final class OrderByEngine {
      * @param sqlStatement SQL statement
      * @return order by items
      */
-    public List<OrderByItem> getOrderByItems(final SQLStatement sqlStatement) {
+    public Collection<OrderByItem> getOrderByItems(final SQLStatement sqlStatement) {
         Optional<OrderBySegment> orderBySegment = sqlStatement.findSQLSegment(OrderBySegment.class);
         return orderBySegment.isPresent() ? createOrderByItems(orderBySegment.get().getOrderByItems()) : Collections.<OrderByItem>emptyList();
     }
@@ -53,20 +53,31 @@ public final class OrderByEngine {
      * @param sqlStatement SQL statement
      * @return group by items
      */
-    public List<OrderByItem> getGroupByItems(final SQLStatement sqlStatement) {
+    public Collection<OrderByItem> getGroupByItems(final SQLStatement sqlStatement) {
         Optional<GroupBySegment> groupBySegment = sqlStatement.findSQLSegment(GroupBySegment.class);
         return groupBySegment.isPresent() ? createOrderByItems(groupBySegment.get().getGroupByItems()) : Collections.<OrderByItem>emptyList();
     }
     
-    private List<OrderByItem> createOrderByItems(final Collection<OrderByItemSegment> orderByItemSegments) {
-        List<OrderByItem> result = new ArrayList<>(orderByItemSegments.size());
+    private Collection<OrderByItem> createOrderByItems(final Collection<OrderByItemSegment> orderByItemSegments) {
+        List<OrderByItem> result = new LinkedList<>();
         for (OrderByItemSegment each : orderByItemSegments) {
             OrderByItem orderByItem = new OrderByItem(each);
-            result.add(orderByItem);
             if (each instanceof IndexOrderByItemSegment) {
                 orderByItem.setIndex(((IndexOrderByItemSegment) each).getColumnIndex());
             }
+            result.add(orderByItem);
         }
         return result;
+    }
+    
+    /**
+     * Get last index of group by segment.
+     * 
+     * @param sqlStatement SQL statement
+     * @return last index of group by segment
+     */
+    public int getGroupByLastIndex(final SQLStatement sqlStatement) {
+        Optional<GroupBySegment> groupBySegment = sqlStatement.findSQLSegment(GroupBySegment.class);
+        return groupBySegment.isPresent() ? groupBySegment.get().getStopIndex() : 0;
     }
 }
