@@ -17,8 +17,18 @@
 
 package org.apache.shardingsphere.core.rewrite.builder;
 
+import com.google.common.base.Optional;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.Pagination;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ShardingSelectOptimizedStatement;
+import org.apache.shardingsphere.core.route.SQLRouteResult;
+import org.apache.shardingsphere.core.route.type.RoutingResult;
+import org.hamcrest.core.AnyOf;
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public final class BaseParameterBuilderTest {
     
@@ -26,6 +36,19 @@ public final class BaseParameterBuilderTest {
     
     @Before
     public void setUp() {
+        baseParameterBuilder = new BaseParameterBuilder()
+    }
+    
+    private SQLRouteResult createSQLRouteResult() {
+        Pagination pagination = mock(Pagination.class);
+        when(pagination.getOffsetParameterIndex()).thenReturn(Optional.of(0));
+        when(pagination.getRowCountParameterIndex()).thenReturn(Optional.of(1));
+        when(pagination.getRevisedRowCount(any(ShardingSelectOptimizedStatement.class))).thenReturn(6);
+        ShardingSelectOptimizedStatement optimizedStatement = mock(ShardingSelectOptimizedStatement.class);
+        when(optimizedStatement.getPagination()).thenReturn(pagination);
+        SQLRouteResult result = new SQLRouteResult(optimizedStatement);
+        result.setRoutingResult(new RoutingResult());
+        return result;
     }
     
     @Test
