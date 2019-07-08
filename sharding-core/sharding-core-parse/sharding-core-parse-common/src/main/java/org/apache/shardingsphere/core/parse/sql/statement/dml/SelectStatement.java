@@ -50,8 +50,6 @@ public final class SelectStatement extends DMLStatement {
     
     private final List<OrderByItemSegment> orderByItems = new LinkedList<>();
     
-    private boolean toAppendOrderByItems;
-    
     private boolean containStar;
     
     private boolean containsSubquery;

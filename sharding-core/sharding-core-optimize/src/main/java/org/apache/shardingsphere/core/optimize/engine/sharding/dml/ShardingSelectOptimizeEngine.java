@@ -79,6 +79,7 @@ public final class ShardingSelectOptimizeEngine implements OptimizeEngine {
         ShardingSelectOptimizedStatement result = new ShardingSelectOptimizedStatement(selectStatement, 
                 new ArrayList<>(shardingConditionEngine.createShardingConditions(selectStatement, parameters)), 
                 encryptConditionEngine.createEncryptConditions(selectStatement), appendAverageDerivedColumns(items));
+        appendDerivedOrderBy(result);
         setPagination(result);
         return result;
     }
@@ -218,6 +219,13 @@ public final class ShardingSelectOptimizeEngine implements OptimizeEngine {
     
     private boolean isSameQualifiedName(final SelectItem selectItem, final TextOrderByItemSegment orderItem) {
         return !selectItem.getAlias().isPresent() && selectItem.getExpression().equalsIgnoreCase(orderItem.getText());
+    }
+    
+    private void appendDerivedOrderBy(final ShardingSelectOptimizedStatement optimizedStatement) {
+        if (!optimizedStatement.getGroupByItems().isEmpty() && optimizedStatement.getOrderByItems().isEmpty()) {
+            optimizedStatement.getOrderByItems().addAll(optimizedStatement.getGroupByItems());
+            optimizedStatement.setToAppendOrderByItems(true);
+        }
     }
     
     private void setPagination(final ShardingSelectOptimizedStatement optimizedStatement) {

@@ -533,7 +533,6 @@ public final class ShardingSQLRewriterTest {
     @Test
     public void assertRewriteForDerivedOrderBy() {
         selectStatement.setGroupByLastIndex(60);
-        selectStatement.setToAppendOrderByItems(true);
         ColumnSegment columnSegment1 = new ColumnSegment(0, 0, "id");
         columnSegment1.setOwner(new TableSegment(0, 0, "x"));
         ColumnSegment columnSegment2 = new ColumnSegment(0, 0, "name");
@@ -543,7 +542,10 @@ public final class ShardingSQLRewriterTest {
         selectStatement.getGroupByItems().add(new ColumnOrderByItemSegment(0, 0, columnSegment2, OrderDirection.DESC, OrderDirection.ASC));
         selectStatement.getOrderByItems().add(new ColumnOrderByItemSegment(0, 0, columnSegment2, OrderDirection.DESC, OrderDirection.ASC));
         selectStatement.getSQLSegments().add(new TableSegment(25, 31, "table_x"));
-        routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), selectStatement.getItems()));
+        ShardingSelectOptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(
+                selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), selectStatement.getItems());
+        optimizedStatement.setToAppendOrderByItems(true);
+        routeResult = new SQLRouteResult(optimizedStatement);
         routeResult.setRoutingResult(new RoutingResult());
         selectStatement.setLogicSQL("SELECT x.id, x.name FROM table_x x GROUP BY x.id, x.name DESC");
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(Collections.emptyList());
