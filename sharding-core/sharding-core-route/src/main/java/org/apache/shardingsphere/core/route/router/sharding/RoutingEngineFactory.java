@@ -65,9 +65,6 @@ public final class RoutingEngineFactory {
      * @return new instance of routing engine
      */
     public static RoutingEngine newInstance(final ShardingRule shardingRule, final ShardingDataSourceMetaData shardingDataSourceMetaData, final OptimizedStatement optimizedStatement) {
-        if (shardingRule == null) {
-            throw new ShardingException("can not instant RoutingEngine with a null ShardingRule");
-        }
         SQLStatement sqlStatement = optimizedStatement.getSQLStatement();
         Collection<String> tableNames = sqlStatement.getTables().getTableNames();
         if (sqlStatement instanceof TCLStatement) {
