@@ -37,7 +37,7 @@ pipeline {
                 sh 'git submodule update --init'
             }
         }
-        stage('Build') {
+        stage('Build & Test') {
             tools {
                 maven 'maven-3.2.1'
                 jdk 'JDK 1.8 (latest)'
