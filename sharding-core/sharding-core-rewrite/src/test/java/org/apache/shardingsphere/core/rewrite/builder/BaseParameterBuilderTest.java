@@ -22,10 +22,17 @@ import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.Pag
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ShardingSelectOptimizedStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
-import org.hamcrest.core.AnyOf;
+import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -36,13 +43,14 @@ public final class BaseParameterBuilderTest {
     
     @Before
     public void setUp() {
-        baseParameterBuilder = new BaseParameterBuilder()
+        baseParameterBuilder = new BaseParameterBuilder(Arrays.<Object>asList(1, 2, 1, 5), createSQLRouteResult());
+        baseParameterBuilder.getAddedIndexAndParameters().putAll(Collections.singletonMap(4, 7));
     }
     
     private SQLRouteResult createSQLRouteResult() {
         Pagination pagination = mock(Pagination.class);
-        when(pagination.getOffsetParameterIndex()).thenReturn(Optional.of(0));
-        when(pagination.getRowCountParameterIndex()).thenReturn(Optional.of(1));
+        when(pagination.getOffsetParameterIndex()).thenReturn(Optional.of(2));
+        when(pagination.getRowCountParameterIndex()).thenReturn(Optional.of(3));
         when(pagination.getRevisedRowCount(any(ShardingSelectOptimizedStatement.class))).thenReturn(6);
         ShardingSelectOptimizedStatement optimizedStatement = mock(ShardingSelectOptimizedStatement.class);
         when(optimizedStatement.getPagination()).thenReturn(pagination);
@@ -53,21 +61,25 @@ public final class BaseParameterBuilderTest {
     
     @Test
     public void assertGetParameters() {
-    }
-    
-    @Test
-    public void assertGetParameters1() {
+        assertThat(baseParameterBuilder.getParameters(), is(Arrays.<Object>asList(1, 2, 0, 6, 7)));
+        assertThat(baseParameterBuilder.getParameters(mock(RoutingUnit.class)), is(Arrays.<Object>asList(1, 2, 0, 6, 7)));
     }
     
     @Test
     public void assertGetOriginalParameters() {
+        assertThat(baseParameterBuilder.getOriginalParameters(), is(Arrays.<Object>asList(1, 2, 1, 5)));
     }
     
     @Test
     public void assertGetAddedIndexAndParameters() {
+        assertThat(baseParameterBuilder.getAddedIndexAndParameters(), is(Collections.<Integer, Object>singletonMap(4, 7)));
     }
     
     @Test
     public void assertGetReplacedIndexAndParameters() {
+        Map<Integer, Object> expected = new LinkedHashMap<>();
+        expected.put(2, 0);
+        expected.put(3, 6);
+        assertThat(baseParameterBuilder.getReplacedIndexAndParameters(), is(expected));
     }
 }
