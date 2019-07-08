@@ -28,6 +28,7 @@ import org.apache.shardingsphere.core.merge.dql.DQLMergeEngine;
 import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ShardingSelectOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderByItem;
 import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationSelectItem;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.IndexOrderByItemSegment;
@@ -81,9 +82,11 @@ public final class GroupByMemoryMergedResultTest {
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.getItems().add(aggregationSelectItem1);
         selectStatement.getItems().add(aggregationSelectItem2);
-        selectStatement.getGroupByItems().add(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, OrderDirection.ASC));
-        selectStatement.getOrderByItems().add(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.DESC, OrderDirection.ASC));
-        routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), selectStatement.getItems()));
+        ShardingSelectOptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(
+                selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), selectStatement.getItems());
+        optimizedStatement.getGroupByItems().add(createOrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, OrderDirection.ASC)));
+        optimizedStatement.getOrderByItems().add(createOrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.DESC, OrderDirection.ASC)));
+        routeResult = new SQLRouteResult(optimizedStatement);
     }
     
     private ResultSet mockResultSet() throws SQLException {
@@ -96,6 +99,12 @@ public final class GroupByMemoryMergedResultTest {
         when(resultSetMetaData.getColumnLabel(3)).thenReturn("id");
         when(resultSetMetaData.getColumnLabel(4)).thenReturn("AVG_DERIVED_COUNT_0");
         when(resultSetMetaData.getColumnLabel(5)).thenReturn("AVG_DERIVED_SUM_0");
+        return result;
+    }
+    
+    private OrderByItem createOrderByItem(final IndexOrderByItemSegment indexOrderByItemSegment) {
+        OrderByItem result = new OrderByItem(indexOrderByItemSegment);
+        result.setIndex(indexOrderByItemSegment.getColumnIndex());
         return result;
     }
     

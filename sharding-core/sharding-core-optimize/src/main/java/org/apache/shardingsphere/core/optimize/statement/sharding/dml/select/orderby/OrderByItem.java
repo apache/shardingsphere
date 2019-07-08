@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.statement.sharding.dml.select;
+package org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
