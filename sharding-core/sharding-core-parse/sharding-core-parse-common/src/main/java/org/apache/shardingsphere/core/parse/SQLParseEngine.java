@@ -22,7 +22,6 @@ import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.extractor.SQLSegmentsExtractorEngine;
 import org.apache.shardingsphere.core.parse.filler.SQLStatementFillerEngine;
-import org.apache.shardingsphere.core.parse.optimizer.SQLStatementOptimizerEngine;
 import org.apache.shardingsphere.core.parse.parser.SQLAST;
 import org.apache.shardingsphere.core.parse.parser.SQLParserEngine;
 import org.apache.shardingsphere.core.parse.rule.registry.ParseRuleRegistry;
@@ -48,14 +47,11 @@ public final class SQLParseEngine {
     
     private final SQLStatementFillerEngine fillerEngine;
     
-    private final SQLStatementOptimizerEngine optimizerEngine;
-    
     public SQLParseEngine(final ParseRuleRegistry parseRuleRegistry, final DatabaseType databaseType, final String sql, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
         DatabaseType trunkDatabaseType = DatabaseTypes.getTrunkDatabaseType(databaseType.getName());
         parserEngine = new SQLParserEngine(parseRuleRegistry, trunkDatabaseType, sql);
         extractorEngine = new SQLSegmentsExtractorEngine();
         fillerEngine = new SQLStatementFillerEngine(parseRuleRegistry, trunkDatabaseType, sql, rule, shardingTableMetaData);
-        optimizerEngine = new SQLStatementOptimizerEngine(rule, shardingTableMetaData);
     }
     
     /**
@@ -67,8 +63,6 @@ public final class SQLParseEngine {
         SQLAST ast = parserEngine.parse();
         Map<ParserRuleContext, Integer> parameterMarkerIndexes = ast.getParameterMarkerIndexes();
         Collection<SQLSegment> sqlSegments = extractorEngine.extract(ast, parameterMarkerIndexes);
-        SQLStatement result = fillerEngine.fill(sqlSegments, parameterMarkerIndexes.size(), ast.getSqlStatementRule());
-        optimizerEngine.optimize(ast.getSqlStatementRule(), result);
-        return result;
+        return fillerEngine.fill(sqlSegments, parameterMarkerIndexes.size(), ast.getSqlStatementRule());
     }
 }
