@@ -19,6 +19,8 @@ package org.apache.shardingsphere.core.rewrite.builder;
 
 import org.apache.shardingsphere.core.optimize.statement.InsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.InsertOptimizeResultUnit;
+import org.apache.shardingsphere.core.route.type.RoutingUnit;
+import org.apache.shardingsphere.core.route.type.TableUnit;
 import org.apache.shardingsphere.core.rule.DataNode;
 import org.junit.Before;
 import org.junit.Test;
@@ -58,7 +60,10 @@ public final class InsertParameterBuilderTest {
     }
     
     @Test
-    public void assertGetParameters1() {
+    public void assertGetParametersWithRoutingUnit() {
+        RoutingUnit routingUnit = new RoutingUnit("db1");
+        routingUnit.getTableUnits().add(new TableUnit("tb1", "tb1"));
+        assertThat(insertParameterBuilder.getParameters(routingUnit), is(Arrays.<Object>asList(3, 4)));
     }
     
     @Test
