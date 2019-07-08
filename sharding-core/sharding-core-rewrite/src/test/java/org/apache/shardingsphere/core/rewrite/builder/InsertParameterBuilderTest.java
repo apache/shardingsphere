@@ -20,12 +20,14 @@ package org.apache.shardingsphere.core.rewrite.builder;
 import org.apache.shardingsphere.core.optimize.statement.InsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.InsertOptimizeResultUnit;
 import org.apache.shardingsphere.core.rule.DataNode;
+import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
 
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -35,7 +37,7 @@ public final class InsertParameterBuilderTest {
     
     @Before
     public void setUp() {
-        insertParameterBuilder = new InsertParameterBuilder(Arrays.<Object>asList(1, 2), )
+        insertParameterBuilder = new InsertParameterBuilder(Arrays.<Object>asList(1, 2), createInsertOptimizedStatement());
     }
     
     private InsertOptimizedStatement createInsertOptimizedStatement() {
@@ -60,6 +62,7 @@ public final class InsertParameterBuilderTest {
     
     @Test
     public void assertGetOriginalParameters() {
+        assertThat(insertParameterBuilder.getOriginalParameters(), CoreMatchers.is(Arrays.<Object>asList(1, 2)));
     }
     
     @Test
