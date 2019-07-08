@@ -34,7 +34,7 @@ pipeline {
             steps {
                 deleteDir()
                 checkout scm
-                sh 'git submodule update --init
+                sh 'git submodule update --init'
             }
         }
         stage('Build') {
