@@ -47,7 +47,7 @@ public final class SQLBuilderTest {
     }
     
     @Test
-    public void assertToSQLWithSharding() {
+    public void assertToSQLWithTokens() {
         assertThat(sqlBuilderWithTokens.toSQL(null, Collections.singletonMap("t_order", "t_order_0")), is("SELECT * FROM t_order_0 WHERE order_id > 1"));
     }
 }
