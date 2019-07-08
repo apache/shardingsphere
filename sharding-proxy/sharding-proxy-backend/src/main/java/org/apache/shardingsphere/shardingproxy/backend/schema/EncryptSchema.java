@@ -54,7 +54,7 @@ public final class EncryptSchema extends LogicSchema {
         encryptRule = new EncryptRule(encryptRuleConfiguration);
         shardingRule = new ShardingRule(new ShardingRuleConfiguration(), getDataSources().keySet());
         metaData = createShardingMetaData();
-        parseEngine = new EncryptSQLParseEntry(LogicSchemas.getInstance().getDatabaseType(), encryptRule, metaData.getTable());
+        parseEngine = new EncryptSQLParseEntry(LogicSchemas.getInstance().getDatabaseType(), metaData.getTable());
     }
     
     private ShardingMetaData createShardingMetaData() {
@@ -72,6 +72,6 @@ public final class EncryptSchema extends LogicSchema {
     @SneakyThrows
     public synchronized void renew(final EncryptRuleChangedEvent encryptRuleChangedEvent) {
         encryptRule = new EncryptRule(encryptRuleChangedEvent.getEncryptRuleConfiguration());
-        parseEngine = new EncryptSQLParseEntry(LogicSchemas.getInstance().getDatabaseType(), encryptRule, metaData.getTable());
+        parseEngine = new EncryptSQLParseEntry(LogicSchemas.getInstance().getDatabaseType(), metaData.getTable());
     }
 }
