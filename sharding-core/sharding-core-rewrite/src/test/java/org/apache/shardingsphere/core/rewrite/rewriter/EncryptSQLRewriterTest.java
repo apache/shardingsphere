@@ -56,7 +56,7 @@ public final class EncryptSQLRewriterTest {
     public void setUp() {
         encryptRule = new EncryptRule(createEncryptRuleConfiguration());
         parameters = Arrays.<Object>asList(1, 2);
-        encryptSQLParseEntry = new EncryptSQLParseEntry(DatabaseTypes.getActualDatabaseType("MySQL"), encryptRule, createShardingTableMetaData());
+        encryptSQLParseEntry = new EncryptSQLParseEntry(DatabaseTypes.getActualDatabaseType("MySQL"), createShardingTableMetaData());
     }
     
     private EncryptRuleConfiguration createEncryptRuleConfiguration() {

@@ -28,6 +28,7 @@ import org.apache.shardingsphere.core.merge.dql.DQLMergeEngine;
 import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ShardingSelectOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderByItem;
 import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationSelectItem;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.IndexOrderByItemSegment;
@@ -83,9 +84,11 @@ public final class GroupByStreamMergedResultTest {
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.getItems().add(aggregationSelectItem1);
         selectStatement.getItems().add(aggregationSelectItem2);
-        selectStatement.getGroupByItems().add(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, OrderDirection.ASC));
-        selectStatement.getOrderByItems().add(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, OrderDirection.ASC));
-        routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), selectStatement.getItems()));
+        ShardingSelectOptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(
+                selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), selectStatement.getItems());
+        optimizedStatement.getGroupByItems().add(new OrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, OrderDirection.ASC)));
+        optimizedStatement.getOrderByItems().add(new OrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, OrderDirection.ASC)));
+        routeResult = new SQLRouteResult(optimizedStatement);
     }
     
     private ResultSet mockResultSet() throws SQLException {

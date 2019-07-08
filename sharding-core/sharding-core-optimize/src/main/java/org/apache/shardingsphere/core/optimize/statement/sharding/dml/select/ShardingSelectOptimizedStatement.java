@@ -24,6 +24,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.ShardingWhereOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingConditions;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderByItem;
 import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationSelectItem;
@@ -32,13 +33,11 @@ import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.IndexOrderByItemSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.TextOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -61,6 +60,8 @@ public final class ShardingSelectOptimizedStatement extends ShardingWhereOptimiz
     
     private final List<OrderByItem> groupByItems;
     
+    private int groupByLastIndex;
+    
     private boolean toAppendOrderByItems;
     
     private Pagination pagination;
@@ -70,20 +71,8 @@ public final class ShardingSelectOptimizedStatement extends ShardingWhereOptimiz
         super(sqlStatement, new ShardingConditions(shardingConditions), encryptConditions);
         this.selectStatement = (SelectStatement) sqlStatement;
         this.items = items;
-        orderByItems = getOrderByItems(((SelectStatement) sqlStatement).getOrderByItems());
-        groupByItems = getOrderByItems(((SelectStatement) sqlStatement).getGroupByItems());
-    }
-    
-    private List<OrderByItem> getOrderByItems(final List<OrderByItemSegment> orderByItemSegments) {
-        List<OrderByItem> result = new ArrayList<>(orderByItemSegments.size());
-        for (OrderByItemSegment each : orderByItemSegments) {
-            OrderByItem orderByItem = new OrderByItem(each);
-            result.add(orderByItem);
-            if (each instanceof IndexOrderByItemSegment) {
-                orderByItem.setIndex(((IndexOrderByItemSegment) each).getColumnIndex());
-            }
-        }
-        return result;
+        orderByItems = new LinkedList<>();
+        groupByItems = new LinkedList<>();
     }
     
     /**
