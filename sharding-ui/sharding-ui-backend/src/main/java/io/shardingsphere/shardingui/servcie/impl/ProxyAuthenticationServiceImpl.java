@@ -17,7 +17,6 @@
 
 package io.shardingsphere.shardingui.servcie.impl;
 
-import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import io.shardingsphere.shardingui.servcie.ProxyAuthenticationService;
 import io.shardingsphere.shardingui.servcie.RegistryCenterService;
@@ -45,7 +44,6 @@ public final class ProxyAuthenticationServiceImpl implements ProxyAuthentication
     
     @Override
     public void updateAuthentication(final Authentication authentication) {
-        Preconditions.checkState(!Strings.isNullOrEmpty(authentication.getUsername()), "Authority configuration is invalid.");
         registryCenterService.getActivatedRegistryCenter()
                 .persist(registryCenterService.getActivateConfigurationNode().getAuthenticationPath(), ConfigurationYamlConverter.dumpAuthentication(authentication));
     }

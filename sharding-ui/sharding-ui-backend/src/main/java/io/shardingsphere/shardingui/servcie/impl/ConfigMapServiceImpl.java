@@ -28,7 +28,6 @@ import java.util.Map;
 
 /**
  * Implementation of config map service.
- *
  * 4.0.0-RC1 has removed this directory.
  *
  * @author chenqingyang

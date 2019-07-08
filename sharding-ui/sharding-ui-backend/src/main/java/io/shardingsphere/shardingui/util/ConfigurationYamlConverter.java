@@ -28,7 +28,7 @@ import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfigura
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.core.rule.Authentication;
-import org.apache.shardingsphere.core.yaml.config.common.YamlAuthentication;
+import org.apache.shardingsphere.core.yaml.config.common.YamlAuthenticationConfiguration;
 import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.engine.DefaultYamlRepresenter;
@@ -98,8 +98,7 @@ public final class ConfigurationYamlConverter {
      * @return authentication
      */
     public static Authentication loadAuthentication(final String data) {
-        Authentication result = new AuthenticationYamlSwapper().swap(YamlEngine.unmarshal(data, YamlAuthentication.class));
-        Preconditions.checkState(!Strings.isNullOrEmpty(result.getUsername()), "Authority configuration is invalid.");
+        Authentication result = new AuthenticationYamlSwapper().swap(YamlEngine.unmarshal(data, YamlAuthenticationConfiguration.class));
         return result;
     }
 

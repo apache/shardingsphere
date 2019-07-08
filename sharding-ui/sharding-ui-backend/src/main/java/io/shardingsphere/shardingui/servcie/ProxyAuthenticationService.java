@@ -17,7 +17,6 @@
 
 package io.shardingsphere.shardingui.servcie;
 
-
 import org.apache.shardingsphere.core.rule.Authentication;
 
 /**

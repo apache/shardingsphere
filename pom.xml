@@ -34,6 +34,7 @@
         
         <module>sharding-jdbc</module>
         <module>sharding-proxy</module>
+        <module>sharding-ui</module>
         
         <module>sharding-transaction</module>
         <module>sharding-orchestration</module> 
