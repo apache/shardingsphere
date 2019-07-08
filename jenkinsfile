@@ -1,0 +1,54 @@
+def ssBuildBadge = addEmbeddableBadgeConfiguration(id: "ssbuild", subject: "Build")
+pipeline {
+    agent  {
+        label 'xenial'
+    }
+    options {
+        buildDiscarder(logRotator(
+            numToKeepStr: '60',
+        ))
+         timestamps()
+         skipStagesAfterUnstable()
+         timeout time: 60, unit: 'MINUTES'
+    }
+    stages {
+        stage('SCM checkout') {
+            steps {
+                deleteDir()
+                checkout scm
+                sh 'git submodule update --init'
+                sh 'git clone https://github.com/apache/incubator-shardingsphere/'
+            }
+        }
+        stage('Build') {
+            tools {
+                maven 'maven-3.2.1'
+                jdk 'JDK 1.8 (latest)'
+            }
+            steps {
+                script {
+                    ssBuildBadge.setStatus('running')
+                    try {
+                        sh '''
+                        echo "MAVEN_OPTS='-Xmx1024m -XX:MaxPermSize=256m'" > ~/.mavenrc
+                        mvn clean install cobertura:cobertura coveralls:report -DrepoToken=${COVERALLS_REPO_TOKEN} -Prelease
+                        '''
+                        ssBuildBadge.setStatus('passing')
+                    } catch (Exception err) {
+                        ssBuildBadge.setStatus('failing')
+                        ssBuildBadge.setColor('pink')
+                        error 'Build failed'
+                    }
+                }
+            }
+        }
+    }
+    post {
+        success {
+            junit '**/target/surefire-reports/*.xml'
+        }
+        cleanup {
+            deleteDir()
+        }
+    }
+}
