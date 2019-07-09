@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.rewrite.token;
 
 import org.apache.shardingsphere.core.constant.ShardingOperator;
 import org.apache.shardingsphere.core.rewrite.token.pojo.WhereEncryptColumnToken;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -32,10 +31,6 @@ import static org.junit.Assert.assertThat;
 public class WhereEncryptColumnTokenTest {
     
     private WhereEncryptColumnToken whereEncryptColumnToken;
-    
-    @Before
-    public void setUp() {
-    }
     
     @Test
     public void assertToStringWithoutPlaceholderWithEqual() {
