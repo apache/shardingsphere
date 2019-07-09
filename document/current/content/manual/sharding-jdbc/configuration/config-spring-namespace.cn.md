@@ -146,7 +146,12 @@ weight = 4
         <property name="password" value="" />
     </bean>
     
-    <bean id="randomStrategy" class="org.apache.shardingsphere.example.spring.namespace.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm" />
+    <!-- 4.0.0-RC1 版本 负载均衡策略配置方式 -->
+    <!-- <bean id="randomStrategy" class="org.apache.shardingsphere.example.spring.namespace.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm" /> -->
+    
+    <!-- 4.0.0-RC2 之后版本 负载均衡策略配置方式 -->
+    <master-slave:load-balance-algorithm id="randomStrategy" type="RANDOM" />
+    
     <master-slave:data-source id="masterSlaveDataSource" master-data-source-name="ds_master" slave-data-source-names="ds_slave0, ds_slave1" strategy-ref="randomStrategy">
             <master-slave:props>
                 <prop key="sql.show">${sql_show}</prop>
@@ -200,6 +205,7 @@ weight = 4
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
+       xmlns:master-slave="http://shardingsphere.apache.org/schema/shardingsphere/masterslave"
        xsi:schemaLocation="http://www.springframework.org/schema/beans 
                         http://www.springframework.org/schema/beans/spring-beans.xsd
                         http://www.springframework.org/schema/context
@@ -207,7 +213,9 @@ weight = 4
                         http://www.springframework.org/schema/tx
                         http://www.springframework.org/schema/tx/spring-tx.xsd
                         http://shardingsphere.apache.org/schema/shardingsphere/sharding 
-                        http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd">
+                        http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
+                        http://shardingsphere.apache.org/schema/shardingsphere/masterslave  
+                        http://shardingsphere.apache.org/schema/shardingsphere/masterslave/master-slave.xsd">
     <context:annotation-config />
     <context:component-scan base-package="org.apache.shardingsphere.example.spring.namespace.jpa" />
     
@@ -270,7 +278,11 @@ weight = 4
         <property name="password" value="" />
     </bean>
     
-    <bean id="randomStrategy" class="org.apache.shardingsphere.example.spring.namespace.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm" />
+    <!-- 4.0.0-RC1 版本 负载均衡策略配置方式 -->
+    <!-- <bean id="randomStrategy" class="org.apache.shardingsphere.example.spring.namespace.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm" /> -->
+    
+    <!-- 4.0.0-RC2 之后版本 负载均衡策略配置方式 -->
+    <master-slave:load-balance-algorithm id="randomStrategy" type="RANDOM" />
     
     <sharding:inline-strategy id="databaseStrategy" sharding-column="user_id" algorithm-expression="ds_ms$->{user_id % 2}" />
     <sharding:inline-strategy id="orderTableStrategy" sharding-column="order_id" algorithm-expression="t_order$->{order_id % 2}" />
@@ -561,6 +573,15 @@ weight = 4
 | executor.size (?)                  | 属性   | 工作线程数量，默认值: CPU核数                      |
 | max.connections.size.per.query (?) | 属性   | 每个物理数据库为每次查询分配的最大连接数量。默认值: 1 |
 | check.table.metadata.enabled (?)   | 属性   | 是否在启动时检查分表元数据一致性，默认值: false       |
+
+#### \<master-slave:load-balance-algorithm />
+4.0.0-RC2 版本 添加
+
+| *名称*                             |  *类型* | *说明*                                         |
+| -----------------------------------| ------ | ---------------------------------------------- |
+| id                                 |  属性  | Spring Bean Id                                  |
+| type                               |  属性  | 负载均衡算法类型，'RANDOM'或'ROUND_ROBIN' ，支持自定义拓展|
+| props-ref (?)                      |  属性  | 负载均衡算法配置参数                               |
 
 ### 数据脱敏
 
