@@ -330,7 +330,7 @@ public final class ShardingRuleTest {
         assertThat(actual.getShardingLogicTableNames(Arrays.asList("LOGIC_TABLE", "BROADCAST_TABLE")), CoreMatchers.<Collection<String>>is(Collections.singletonList("LOGIC_TABLE")));
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void assertConstructShardingRuleWithNullShardingRuleConfiguration(){
         try {
         new ShardingRule(null, createDataSourceNames());
