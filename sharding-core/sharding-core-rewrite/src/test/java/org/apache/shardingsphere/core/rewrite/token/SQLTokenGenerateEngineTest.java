@@ -57,6 +57,13 @@ public final class SQLTokenGenerateEngineTest {
     
     @Before
     public void setUp() {
+        SelectStatement selectStatement = new SelectStatement();
+        selectStatement.getSQLSegments().add(createSelectItemsSegment());
+        optimizedStatement = new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), Collections.<SelectItem>emptyList(), 
+                new GroupBy(Collections.<OrderByItem>emptyList(), 1), new OrderBy(Collections.<OrderByItem>emptyList(), false), null);
+    }
+    
+    private SelectItemsSegment createSelectItemsSegment() {
         SelectItemsSegment selectItemsSegment = mock(SelectItemsSegment.class);
         when(selectItemsSegment.getStartIndex()).thenReturn(1);
         when(selectItemsSegment.getSelectItems()).thenReturn(Collections.<SelectItemSegment>emptyList());
@@ -66,9 +73,7 @@ public final class SQLTokenGenerateEngineTest {
         when(distinctSelectItemSegment.getStartIndex()).thenReturn(1);
         when(distinctSelectItemSegment.getStopIndex()).thenReturn(2);
         when(selectItemsSegment.findSelectItemSegments(AggregationDistinctSelectItemSegment.class)).thenReturn(Collections.singletonList(distinctSelectItemSegment));
-        SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getSQLSegments().add(selectItemsSegment);
-        optimizedStatement = new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), Collections.<SelectItem>emptyList(), new GroupBy(Collections.<OrderByItem>emptyList(), 1), new OrderBy(Collections.<OrderByItem>emptyList(), false), null);
+        return selectItemsSegment;
     }
     
     @Test
