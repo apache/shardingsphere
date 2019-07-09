@@ -31,6 +31,7 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 public final class ShardingDataSourceNamesTest {
     
@@ -89,5 +90,10 @@ public final class ShardingDataSourceNamesTest {
                 new MasterSlaveRuleConfiguration("ms_ds", "master_ds", Collections.singletonList("slave_ds"), new LoadBalanceStrategyConfiguration("ROUND_ROBIN")));
         String actual = new ShardingDataSourceNames(shardingRuleConfig, Arrays.asList("master_ds", "slave_ds")).getRawMasterDataSourceName("default_ds");
         assertThat(actual, is("default_ds"));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void assertConstructShardingDataSourceNamesWithNullShardingRuleConfiguration() {
+        new ShardingDataSourceNames(null, Arrays.asList("master_ds", "slave_ds")).getRawMasterDataSourceName("default_ds");
     }
 }
