@@ -17,41 +17,63 @@
 
 package org.apache.shardingsphere.core.rewrite.token;
 
+import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ShardingSelectOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.SelectItemsSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.item.AggregationDistinctSelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.core.rewrite.token.pojo.SQLToken;
+import org.apache.shardingsphere.core.rewrite.token.pojo.SelectItemPrefixToken;
+import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.List;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class SQLTokenGenerateEngineTest {
     
-    private SQLTokenGenerateEngine sqlTokenGenerateEngine = new ShardingTokenGenerateEngine();
+    private SQLTokenGenerateEngine shardingTokenGenerateEngine = new ShardingTokenGenerateEngine();
+    
+    private SQLTokenGenerateEngine baseTokenGenerateEngine = new BaseTokenGenerateEngine();
+    
+    private ShardingSelectOptimizedStatement optimizedStatement;
     
     @Before
     public void setUp() {
         SelectItemsSegment selectItemsSegment = mock(SelectItemsSegment.class);
         when(selectItemsSegment.getStartIndex()).thenReturn(1);
         when(selectItemsSegment.getSelectItems()).thenReturn(Collections.<SelectItemSegment>emptyList());
+        AggregationDistinctSelectItemSegment distinctSelectItemSegment = mock(AggregationDistinctSelectItemSegment.class);
+        when(distinctSelectItemSegment.getDistinctExpression()).thenReturn("COUNT(DISTINCT id)");
+        when(distinctSelectItemSegment.getAlias()).thenReturn(Optional.of("c"));
+        when(distinctSelectItemSegment.getStartIndex()).thenReturn(1);
+        when(distinctSelectItemSegment.getStopIndex()).thenReturn(2);
+        when(selectItemsSegment.findSelectItemSegments(AggregationDistinctSelectItemSegment.class)).thenReturn(Collections.singletonList(distinctSelectItemSegment));
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.getSQLSegments().add(selectItemsSegment);
-        ShardingSelectOptimizedStatement optimizedStatement = 
-                new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), null, Collections.<SelectItem>emptyList());
-        
+        optimizedStatement = new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), null, Collections.<SelectItem>emptyList());
     }
     
     @Test
     public void testGenerateSQLTokens() {
+        List<SQLToken> actual = baseTokenGenerateEngine.generateSQLTokens(optimizedStatement, null, mock(ShardingRule.class), true);
+        assertThat(actual.size(), is(0));
     }
     
     @Test
     public void testGetSQLTokenGenerators() {
+        List<SQLToken> actual = shardingTokenGenerateEngine.generateSQLTokens(optimizedStatement, null, mock(ShardingRule.class), false);
+        assertThat(actual.size(), is(2));
+        assertThat(actual.get(0), CoreMatchers.<SQLToken>instanceOf(SelectItemPrefixToken.class));
     }
 }
