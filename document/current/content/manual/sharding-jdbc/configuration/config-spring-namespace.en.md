@@ -146,7 +146,12 @@ Inline expression identifier can can use `${...} ` or `$->{...}`, but the former
         <property name="password" value="" />
     </bean>
     
-    <bean id="randomStrategy" class="org.apache.shardingsphere.example.spring.namespace.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm" />
+    <!-- 4.0.0-RC1 version load balance algorithm configuration -->
+    <!-- <bean id="randomStrategy" class="org.apache.shardingsphere.example.spring.namespace.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm" /> -->
+    
+    <!-- 4.0.0-RC2 and later version load balance algorithm configuration -->
+    <master-slave:load-balance-algorithm id="randomStrategy" type="RANDOM" />
+        
     <master-slave:data-source id="masterSlaveDataSource" master-data-source-name="ds_master" slave-data-source-names="ds_slave0, ds_slave1" strategy-ref="randomStrategy">
             <master-slave:props>
                 <prop key="sql.show">${sql_show}</prop>
@@ -270,7 +275,11 @@ Inline expression identifier can can use `${...} ` or `$->{...}`, but the former
         <property name="password" value="" />
     </bean>
     
-    <bean id="randomStrategy" class="org.apache.shardingsphere.example.spring.namespace.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm" />
+    <!-- 4.0.0-RC1 version load balance algorithm configuration -->
+    <!-- <bean id="randomStrategy" class="org.apache.shardingsphere.example.spring.namespace.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm" /> -->
+    
+    <!-- 4.0.0-RC2 and later version load balance algorithm configuration -->
+    <master-slave:load-balance-algorithm id="randomStrategy" type="RANDOM" />
     
     <sharding:inline-strategy id="databaseStrategy" sharding-column="user_id" algorithm-expression="ds_ms$->{user_id % 2}" />
     <sharding:inline-strategy id="orderTableStrategy" sharding-column="order_id" algorithm-expression="t_order$->{order_id % 2}" />
@@ -572,6 +581,15 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/masterslave/ma
 | executor.size (?)                  | Attribute | Executing thread number; default value: CPU core number      |
 | max.connections.size.per.query (?) | Attribute | The maximum connection number that each physical database allocates to each query; default value: 1 |
 | check.table.metadata.enabled (?)   | Attribute | Whether to check meta-data consistency of sharding table when it initializes; default value: false |
+
+#### \<master-slave:load-balance-algorithm />
+4.0.0-RC2 version added
+
+| *Name*                             | *Type*    | *Explanation*                                                |
+| ---------------------------------- | --------- | ------------------------------------------------------------ |
+| id                                 | Attribute | Spring Bean Id                                               |
+| type                               | Attribute | Type of load balance algorithm, 'RANDOM'或'ROUND_ROBIN', support custom extension|
+| props-ref (?)                      | Attribute | Properties of load balance algorithm                         |
 
 ### Data Masking
 
