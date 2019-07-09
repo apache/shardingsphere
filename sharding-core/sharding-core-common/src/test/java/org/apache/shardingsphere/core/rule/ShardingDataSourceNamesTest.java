@@ -92,7 +92,7 @@ public final class ShardingDataSourceNamesTest {
         assertThat(actual, is("default_ds"));
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void assertConstructShardingDataSourceNamesWithNullShardingRuleConfiguration() {
         try {
             new ShardingDataSourceNames(null, Arrays.asList("master_ds", "slave_ds")).getRawMasterDataSourceName("default_ds");
