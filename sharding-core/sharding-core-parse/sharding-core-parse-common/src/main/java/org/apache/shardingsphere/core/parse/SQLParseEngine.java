@@ -60,8 +60,8 @@ public final class SQLParseEngine {
      */
     public SQLStatement parse() {
         SQLAST ast = parserEngine.parse();
+        Collection<SQLSegment> sqlSegments = extractorEngine.extract(ast);
         Map<ParserRuleContext, Integer> parameterMarkerIndexes = ast.getParameterMarkerIndexes();
-        Collection<SQLSegment> sqlSegments = extractorEngine.extract(ast, parameterMarkerIndexes);
         return fillerEngine.fill(sqlSegments, parameterMarkerIndexes.size(), ast.getSqlStatementRule());
     }
 }
