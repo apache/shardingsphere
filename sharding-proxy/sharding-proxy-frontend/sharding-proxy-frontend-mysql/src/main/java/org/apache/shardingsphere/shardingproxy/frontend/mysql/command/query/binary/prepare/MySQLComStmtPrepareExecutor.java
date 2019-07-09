@@ -19,8 +19,6 @@ package org.apache.shardingsphere.shardingproxy.frontend.mysql.command.query.bin
 
 import org.apache.shardingsphere.core.parse.entry.ShardingSQLParseEntry;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
@@ -62,12 +60,12 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     public Collection<DatabasePacket> execute() {
         // TODO we should use none-sharding parsing engine in future.
         ShardingSQLParseEntry shardingSQLParseEntry = new ShardingSQLParseEntry(
-                LogicSchemas.getInstance().getDatabaseType(), logicSchema.getShardingRule(), logicSchema.getMetaData().getTable(), logicSchema.getParsingResultCache());
+                LogicSchemas.getInstance().getDatabaseType(), logicSchema.getMetaData().getTable(), logicSchema.getParsingResultCache());
         Collection<DatabasePacket> result = new LinkedList<>();
         int currentSequenceId = 0;
         SQLStatement sqlStatement = shardingSQLParseEntry.parse(packet.getSql(), true);
         int parametersCount = sqlStatement.getParametersCount();
-        result.add(new MySQLComStmtPrepareOKPacket(++currentSequenceId, PREPARED_STATEMENT_REGISTRY.register(packet.getSql(), parametersCount), getNumColumns(sqlStatement), parametersCount, 0));
+        result.add(new MySQLComStmtPrepareOKPacket(++currentSequenceId, PREPARED_STATEMENT_REGISTRY.register(packet.getSql(), parametersCount), getNumColumns(), parametersCount, 0));
         for (int i = 0; i < parametersCount; i++) {
             // TODO add column name
             result.add(new MySQLColumnDefinition41Packet(++currentSequenceId, schemaName,
@@ -80,13 +78,8 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         return result;
     }
     
-    private int getNumColumns(final SQLStatement sqlStatement) {
-        if (sqlStatement instanceof SelectStatement) {
-            return ((SelectStatement) sqlStatement).getItems().size();
-        }
-        if (sqlStatement instanceof InsertStatement) {
-            return ((InsertStatement) sqlStatement).getColumnNames().size();
-        }
+    // TODO Set columnsCount=0 is a workaround to escape jdbc check for now, there's no issues found during a few tests.
+    private int getNumColumns() {
         return 0;
     }
 }

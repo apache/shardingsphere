@@ -88,14 +88,14 @@ public final class DatabaseTest {
     public void assertDatabaseSelectSQLPagination() {
         String originSQL = "select user_id from tbl_pagination limit 0,5";
         SQLRouteResult actual = new StatementRoutingEngine(shardingRule, mock(ShardingMetaData.class), DatabaseTypes.getActualDatabaseType("MySQL"), new ParsingResultCache()).route(originSQL);
-        SelectStatement selectStatement = (SelectStatement) actual.getSqlStatement();
+        SelectStatement selectStatement = (SelectStatement) actual.getOptimizedStatement().getSQLStatement();
         assertNotNull(selectStatement.getOffset());
         assertThat(((NumberLiteralLimitValueSegment) selectStatement.getOffset()).getValue(), is(0));
         assertNotNull(selectStatement.getRowCount());
         assertThat(((NumberLiteralLimitValueSegment) selectStatement.getRowCount()).getValue(), is(5));
         originSQL = "select user_id from tbl_pagination limit 5,5";
         actual = new StatementRoutingEngine(shardingRule, mock(ShardingMetaData.class), DatabaseTypes.getActualDatabaseType("MySQL"), new ParsingResultCache()).route(originSQL);
-        selectStatement = (SelectStatement) actual.getSqlStatement();
+        selectStatement = (SelectStatement) actual.getOptimizedStatement().getSQLStatement();
         assertNotNull(selectStatement.getOffset());
         assertThat(((NumberLiteralLimitValueSegment) selectStatement.getOffset()).getValue(), is(5));
         assertNotNull(selectStatement.getRowCount());
@@ -119,7 +119,7 @@ public final class DatabaseTest {
         when(shardingMetaData.getTable()).thenReturn(mock(ShardingTableMetaData.class));
         SQLRouteResult actual = new PreparedStatementRoutingEngine(
                 originSQL, rule, shardingMetaData, DatabaseTypes.getActualDatabaseType("MySQL"), new ParsingResultCache()).route(Lists.<Object>newArrayList(13, 173));
-        SelectStatement selectStatement = (SelectStatement) actual.getSqlStatement();
+        SelectStatement selectStatement = (SelectStatement) actual.getOptimizedStatement().getSQLStatement();
         assertNotNull(selectStatement.getOffset());
         assertThat(((NumberLiteralLimitValueSegment) selectStatement.getOffset()).getValue(), is(5));
         assertNotNull(selectStatement.getRowCount());
@@ -128,7 +128,7 @@ public final class DatabaseTest {
         originSQL = "select city_id from t_user where city_id in (?,?) limit 5,10";
         actual = new PreparedStatementRoutingEngine(
                 originSQL, rule, shardingMetaData, DatabaseTypes.getActualDatabaseType("MySQL"), new ParsingResultCache()).route(Lists.<Object>newArrayList(89, 84));
-        selectStatement = (SelectStatement) actual.getSqlStatement();
+        selectStatement = (SelectStatement) actual.getOptimizedStatement().getSQLStatement();
         assertNotNull(selectStatement.getOffset());
         assertThat(((NumberLiteralLimitValueSegment) selectStatement.getOffset()).getValue(), is(5));
         assertNotNull(selectStatement.getRowCount());

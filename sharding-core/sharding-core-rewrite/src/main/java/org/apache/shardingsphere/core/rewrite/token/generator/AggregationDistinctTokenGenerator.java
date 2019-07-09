@@ -18,32 +18,31 @@
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Function;
-import com.google.common.base.Optional;
 import com.google.common.collect.Collections2;
+import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.constant.DerivedColumn;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.SelectItemsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.AggregationDistinctSelectItemSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.pojo.AggregationDistinctToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Aggregation distinct token generator.
  *
  * @author panjuan
  */
-public final class AggregationDistinctTokenGenerator implements CollectionSQLTokenGenerator<ShardingRule> {
+public final class AggregationDistinctTokenGenerator implements CollectionSQLTokenGenerator<ShardingRule>, IgnoreForSingleRoute {
     
     @Override
-    public Collection<AggregationDistinctToken> generateSQLTokens(final SQLStatement sqlStatement, final List<Object> parameters, final ShardingRule shardingRule) {
+    public Collection<AggregationDistinctToken> generateSQLTokens(final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final ShardingRule shardingRule) {
         Collection<AggregationDistinctToken> result = new LinkedList<>();
-        for (SQLSegment each : sqlStatement.getSQLSegments()) {
+        for (SQLSegment each : optimizedStatement.getSQLStatement().getSQLSegments()) {
             Collection<AggregationDistinctSelectItemSegment> distinctSelectItemSegments = getAggregationDistinctSelectItemSegment(each);
             if (!distinctSelectItemSegments.isEmpty()) {
                 result.addAll(Collections2.transform(distinctSelectItemSegments, new Function<AggregationDistinctSelectItemSegment, AggregationDistinctToken>() {
@@ -66,10 +65,7 @@ public final class AggregationDistinctTokenGenerator implements CollectionSQLTok
     }
     
     private AggregationDistinctToken createAggregationDistinctToken(final AggregationDistinctSelectItemSegment segment) {
-        Optional<String> derivedAlias = Optional.absent();
-        if (DerivedColumn.isDerivedColumnName(segment.getAlias().get())) {
-            derivedAlias = Optional.of(segment.getAlias().get());
-        }
+        String derivedAlias = DerivedColumn.isDerivedColumnName(segment.getAlias().get()) ? segment.getAlias().get() : null;
         return new AggregationDistinctToken(segment.getStartIndex(), segment.getStopIndex(), segment.getDistinctExpression(), derivedAlias);
     }
 }

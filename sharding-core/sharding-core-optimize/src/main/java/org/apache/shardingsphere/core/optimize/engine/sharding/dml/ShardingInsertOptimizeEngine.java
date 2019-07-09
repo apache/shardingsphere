@@ -18,20 +18,21 @@
 package org.apache.shardingsphere.core.optimize.engine.sharding.dml;
 
 import com.google.common.base.Optional;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.optimize.condition.RouteCondition;
-import org.apache.shardingsphere.core.optimize.condition.RouteConditions;
+import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
-import org.apache.shardingsphere.core.optimize.keygen.GeneratedKey;
-import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
-import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResult;
-import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResultUnit;
-import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.engine.InsertClauseShardingConditionEngine;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.GeneratedKey;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.InsertOptimizeResultUnit;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.ShardingInsertColumns;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.ShardingInsertOptimizedStatement;
+import org.apache.shardingsphere.core.parse.exception.SQLParsingException;
 import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -43,55 +44,60 @@ import java.util.List;
  * @author maxiaoguang
  * @author panjuan
  */
-@RequiredArgsConstructor
 public final class ShardingInsertOptimizeEngine implements OptimizeEngine {
     
     private final ShardingRule shardingRule;
+    
+    private final ShardingTableMetaData shardingTableMetaData;
     
     private final InsertStatement insertStatement;
     
     private final List<Object> parameters;
     
+    private final InsertClauseShardingConditionEngine shardingConditionEngine;
+    
+    public ShardingInsertOptimizeEngine(final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData, final InsertStatement insertStatement, final List<Object> parameters) {
+        this.shardingRule = shardingRule;
+        this.shardingTableMetaData = shardingTableMetaData;
+        this.insertStatement = insertStatement;
+        this.parameters = parameters;
+        shardingConditionEngine = new InsertClauseShardingConditionEngine(shardingRule);
+    }
+    
     @Override
-    public OptimizeResult optimize() {
-        InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(insertStatement.getColumnNames());
-        List<AndCondition> andConditions = insertStatement.getShardingConditions().getOrConditions();
-        Optional<GeneratedKey> generatedKey = GeneratedKey.getGenerateKey(shardingRule, parameters, insertStatement);
+    public ShardingInsertOptimizedStatement optimize() {
+        Optional<OnDuplicateKeyColumnsSegment> onDuplicateKeyColumnsSegment = insertStatement.findSQLSegment(OnDuplicateKeyColumnsSegment.class);
+        if (onDuplicateKeyColumnsSegment.isPresent() && isUpdateShardingKey(onDuplicateKeyColumnsSegment.get(), insertStatement.getTables().getSingleTableName())) {
+            throw new SQLParsingException("INSERT INTO .... ON DUPLICATE KEY UPDATE can not support update for sharding column.");
+        }
+        ShardingInsertColumns insertColumns = new ShardingInsertColumns(shardingRule, shardingTableMetaData, insertStatement);
+        Optional<GeneratedKey> generatedKey = GeneratedKey.getGenerateKey(shardingRule, parameters, insertStatement, insertColumns);
         boolean isGeneratedValue = generatedKey.isPresent() && generatedKey.get().isGenerated();
         Iterator<Comparable<?>> generatedValues = isGeneratedValue ? generatedKey.get().getGeneratedValues().iterator() : null;
-        if (generatedKey.isPresent()) {
-            appendGeneratedKeyColumn(generatedKey.get(), insertOptimizeResult);
-        }
-        appendAssistedQueryColumns(insertOptimizeResult);
+        List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(insertStatement, parameters, insertColumns.getAllColumnNames(), generatedKey.orNull());
+        ShardingInsertOptimizedStatement result = new ShardingInsertOptimizedStatement(insertStatement, shardingConditions, insertColumns, generatedKey.orNull());
         int derivedColumnsCount = getDerivedColumnsCount(isGeneratedValue);
         int parametersCount = 0;
-        for (int i = 0; i < andConditions.size(); i++) {
-            InsertValue insertValue = insertStatement.getValues().get(i);
-            InsertOptimizeResultUnit unit = insertOptimizeResult.addUnit(
-                    insertValue.getValues(derivedColumnsCount), insertValue.getParameters(parameters, parametersCount, derivedColumnsCount), insertValue.getParametersCount());
+        for (InsertValue each : insertStatement.getValues()) {
+            InsertOptimizeResultUnit unit = result.addUnit(each.getValues(derivedColumnsCount), each.getParameters(parameters, parametersCount, derivedColumnsCount), each.getParametersCount());
             if (isGeneratedValue) {
                 unit.addInsertValue(generatedValues.next(), parameters);
             }
             if (shardingRule.getEncryptRule().getEncryptorEngine().isHasShardingQueryAssistedEncryptor(insertStatement.getTables().getSingleTableName())) {
-                fillAssistedQueryUnit(insertOptimizeResult.getColumnNames(), unit);
+                fillAssistedQueryUnit(insertColumns.getRegularColumnNames(), unit);
             }
-            parametersCount += insertValue.getParametersCount();
+            parametersCount += each.getParametersCount();
         }
-        List<RouteCondition> routeConditions = new ArrayList<>();
-        return generatedKey.isPresent()
-                ? createOptimizeResult(insertOptimizeResult, routeConditions, generatedKey.get()) : new OptimizeResult(new RouteConditions(routeConditions), insertOptimizeResult);
+        return result;
     }
     
-    private void appendGeneratedKeyColumn(final GeneratedKey generatedKey, final InsertOptimizeResult insertOptimizeResult) {
-        if (generatedKey.isGenerated()) {
-            insertOptimizeResult.getColumnNames().add(generatedKey.getColumnName());
+    private boolean isUpdateShardingKey(final OnDuplicateKeyColumnsSegment onDuplicateKeyColumnsSegment, final String tableName) {
+        for (ColumnSegment each : onDuplicateKeyColumnsSegment.getColumns()) {
+            if (shardingRule.isShardingColumn(each.getName(), tableName)) {
+                return true;
+            }
         }
-    }
-    
-    private void appendAssistedQueryColumns(final InsertOptimizeResult insertOptimizeResult) {
-        for (String each : shardingRule.getEncryptRule().getEncryptorEngine().getAssistedQueryColumns(insertStatement.getTables().getSingleTableName())) {
-            insertOptimizeResult.getColumnNames().add(each);
-        }
+        return false;
     }
     
     private int getDerivedColumnsCount(final boolean isGeneratedValue) {
@@ -105,11 +111,5 @@ public final class ShardingInsertOptimizeEngine implements OptimizeEngine {
                 unit.addInsertValue((Comparable<?>) unit.getColumnValue(each), parameters);
             }
         }
-    }
-    
-    private OptimizeResult createOptimizeResult(final InsertOptimizeResult insertOptimizeResult, final List<RouteCondition> routeConditions, final GeneratedKey generatedKey) {
-        OptimizeResult result = new OptimizeResult(new RouteConditions(routeConditions), insertOptimizeResult);
-        result.setGeneratedKey(generatedKey);
-        return result;
     }
 }

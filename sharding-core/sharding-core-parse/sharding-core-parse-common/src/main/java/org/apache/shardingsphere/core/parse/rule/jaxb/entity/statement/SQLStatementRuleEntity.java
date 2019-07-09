@@ -40,7 +40,4 @@ public final class SQLStatementRuleEntity {
     
     @XmlAttribute(name = "extractor-rule-refs", required = true)
     private String extractorRuleRefs;
-    
-    @XmlAttribute(name = "optimizer-class")
-    private String optimizerClass;
 }

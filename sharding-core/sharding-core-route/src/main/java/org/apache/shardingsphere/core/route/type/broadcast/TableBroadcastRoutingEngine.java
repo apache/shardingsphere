@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.core.route.type.broadcast;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.sharding.ddl.DropIndexOptimizedStatement;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
@@ -44,9 +44,7 @@ public final class TableBroadcastRoutingEngine implements RoutingEngine {
     
     private final ShardingRule shardingRule;
     
-    private final SQLStatement sqlStatement;
-    
-    private final OptimizeResult optimizeResult;
+    private final OptimizedStatement optimizedStatement;
     
     @Override
     public RoutingResult route() {
@@ -58,10 +56,8 @@ public final class TableBroadcastRoutingEngine implements RoutingEngine {
     }
     
     private Collection<String> getLogicTableNames() {
-        if (optimizeResult.getLogicTableNameForDropIndex().isPresent()) {
-            return Collections.singletonList(optimizeResult.getLogicTableNameForDropIndex().get());
-        }
-        return sqlStatement.getTables().getTableNames();
+        return optimizedStatement instanceof DropIndexOptimizedStatement
+                ? Collections.singletonList(((DropIndexOptimizedStatement) optimizedStatement).getTableName()) : optimizedStatement.getSQLStatement().getTables().getTableNames();
     }
     
     private Collection<RoutingUnit> getAllRoutingUnits(final String logicTableName) {

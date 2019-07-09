@@ -42,7 +42,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 /**
  * Table meta data loader.
@@ -161,8 +160,8 @@ public final class TableMetaDataLoader {
         return result;
     }
     
-    private Set<String> getLogicIndexes(final Connection connection, final String catalog, final String actualTableName) throws SQLException {
-        Set<String> result = new HashSet<>();
+    private Collection<String> getLogicIndexes(final Connection connection, final String catalog, final String actualTableName) throws SQLException {
+        Collection<String> result = new HashSet<>();
         try (ResultSet resultSet = connection.getMetaData().getIndexInfo(catalog, catalog, actualTableName, false, false)) {
             while (resultSet.next()) {
                 Optional<String> logicIndex = getLogicIndex(resultSet.getString("INDEX_NAME"), actualTableName);

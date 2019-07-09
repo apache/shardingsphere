@@ -26,7 +26,8 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegme
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.Iterator;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -54,9 +55,11 @@ public final class InsertNamesAndValuesAssert {
         assertInsertValues(actual.getValues(), expected.getValues());
     }
     
-    private void assertInsertValues(final List<InsertValue> actual, final List<ExpectedInsertValue> expected) {
-        for (int i = 0; i < actual.size(); i++) {
-            assertInsertValue(actual.get(i), expected.get(i));
+    private void assertInsertValues(final Collection<InsertValue> actual, final Collection<ExpectedInsertValue> expected) {
+        assertThat(actual.size(), is(expected.size()));
+        Iterator<ExpectedInsertValue> expectedIterator = expected.iterator();
+        for (InsertValue each : actual) {
+            assertInsertValue(each, expectedIterator.next());
         }
     }
     

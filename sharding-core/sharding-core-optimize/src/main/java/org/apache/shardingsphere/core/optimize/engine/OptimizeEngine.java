@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.optimize.engine;
 
-import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
+import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
 
 /**
  * Optimize engine.
@@ -30,7 +30,7 @@ public interface OptimizeEngine {
     /**
      * Optimize sharding conditions.
      *
-     * @return sharding conditions
+     * @return optimized statement
      */
-    OptimizeResult optimize();
+    OptimizedStatement optimize();
 }

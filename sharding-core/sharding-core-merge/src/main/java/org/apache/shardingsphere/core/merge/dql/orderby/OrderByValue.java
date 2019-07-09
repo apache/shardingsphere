@@ -21,10 +21,11 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.OrderByItemSegment;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderByItem;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -39,7 +40,7 @@ public final class OrderByValue implements Comparable<OrderByValue> {
     @Getter
     private final QueryResult queryResult;
     
-    private final List<OrderByItemSegment> orderByItems;
+    private final Collection<OrderByItem> orderByItems;
     
     private List<Comparable<?>> orderValues;
     
@@ -57,7 +58,7 @@ public final class OrderByValue implements Comparable<OrderByValue> {
     
     private List<Comparable<?>> getOrderValues() throws SQLException {
         List<Comparable<?>> result = new ArrayList<>(orderByItems.size());
-        for (OrderByItemSegment each : orderByItems) {
+        for (OrderByItem each : orderByItems) {
             Object value = queryResult.getValue(each.getIndex(), Object.class);
             Preconditions.checkState(null == value || value instanceof Comparable, "Order by value must implements Comparable");
             result.add((Comparable<?>) value);
@@ -67,12 +68,13 @@ public final class OrderByValue implements Comparable<OrderByValue> {
     
     @Override
     public int compareTo(final OrderByValue o) {
-        for (int i = 0; i < orderByItems.size(); i++) {
-            OrderByItemSegment thisOrderBy = orderByItems.get(i);
-            int result = CompareUtil.compareTo(orderValues.get(i), o.orderValues.get(i), thisOrderBy.getOrderDirection(), thisOrderBy.getNullOrderDirection());
+        int i = 0;
+        for (OrderByItem each : orderByItems) {
+            int result = CompareUtil.compareTo(orderValues.get(i), o.orderValues.get(i), each.getSegment().getOrderDirection(), each.getSegment().getNullOrderDirection());
             if (0 != result) {
                 return result;
             }
+            i++;
         }
         return 0;
     }

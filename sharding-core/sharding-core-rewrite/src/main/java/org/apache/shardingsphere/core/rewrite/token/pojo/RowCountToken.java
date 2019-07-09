@@ -37,4 +37,9 @@ public final class RowCountToken extends SQLToken implements Substitutable {
         this.stopIndex = stopIndex;
         this.revisedRowCount = revisedRowCount;
     }
+    
+    @Override
+    public String toString() {
+        return String.valueOf(revisedRowCount);
+    }
 }

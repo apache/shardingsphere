@@ -21,16 +21,11 @@ import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parse.aware.EncryptRuleAware;
-import org.apache.shardingsphere.core.parse.aware.ShardingRuleAware;
 import org.apache.shardingsphere.core.parse.aware.ShardingTableMetaDataAware;
 import org.apache.shardingsphere.core.parse.rule.registry.ParseRuleRegistry;
 import org.apache.shardingsphere.core.parse.rule.registry.statement.SQLStatementRule;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.rule.BaseRule;
-import org.apache.shardingsphere.core.rule.EncryptRule;
-import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 
 import java.util.Collection;
@@ -50,8 +45,6 @@ public final class SQLStatementFillerEngine {
     private final DatabaseType databaseType;
     
     private final String sql;
-    
-    private final BaseRule rule;
     
     private final ShardingTableMetaData shardingTableMetaData;
     
@@ -80,12 +73,6 @@ public final class SQLStatementFillerEngine {
     
     @SuppressWarnings("unchecked")
     private void doFill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final SQLSegmentFiller filler) {
-        if (filler instanceof ShardingRuleAware && rule instanceof ShardingRule) {
-            ((ShardingRuleAware) filler).setShardingRule((ShardingRule) rule);
-        }
-        if (filler instanceof EncryptRuleAware && rule instanceof EncryptRule) {
-            ((EncryptRuleAware) filler).setEncryptRule((EncryptRule) rule);
-        }
         if (filler instanceof ShardingTableMetaDataAware) {
             ((ShardingTableMetaDataAware) filler).setShardingTableMetaData(shardingTableMetaData);
         }

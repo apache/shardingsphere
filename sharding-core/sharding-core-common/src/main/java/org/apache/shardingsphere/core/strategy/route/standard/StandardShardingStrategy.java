@@ -24,8 +24,8 @@ import org.apache.shardingsphere.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.api.sharding.standard.RangeShardingAlgorithm;
 import org.apache.shardingsphere.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.core.strategy.route.ShardingStrategy;
-import org.apache.shardingsphere.core.strategy.route.value.BetweenRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
+import org.apache.shardingsphere.core.strategy.route.value.RangeRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
 
 import java.util.Collection;
@@ -57,14 +57,14 @@ public final class StandardShardingStrategy implements ShardingStrategy {
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<RouteValue> shardingValues) {
         RouteValue shardingValue = shardingValues.iterator().next();
         Collection<String> shardingResult = shardingValue instanceof ListRouteValue
-                ? doSharding(availableTargetNames, (ListRouteValue) shardingValue) : doSharding(availableTargetNames, (BetweenRouteValue) shardingValue);
+                ? doSharding(availableTargetNames, (ListRouteValue) shardingValue) : doSharding(availableTargetNames, (RangeRouteValue) shardingValue);
         Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         result.addAll(shardingResult);
         return result;
     }
     
     @SuppressWarnings("unchecked")
-    private Collection<String> doSharding(final Collection<String> availableTargetNames, final BetweenRouteValue<?> shardingValue) {
+    private Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeRouteValue<?> shardingValue) {
         if (null == rangeShardingAlgorithm) {
             throw new UnsupportedOperationException("Cannot find range sharding strategy in sharding rule.");
         }

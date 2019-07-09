@@ -25,7 +25,6 @@ import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.StatementRoutingEngine;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.core.strategy.encrypt.ShardingEncryptorEngine;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -53,7 +52,6 @@ public final class SimpleQueryShardingEngineTest extends BaseShardingEngineTest 
     public void setUp() {
         ShardingRule shardingRule = mock(ShardingRule.class);
         EncryptRule encryptRule = mock(EncryptRule.class);
-        when(encryptRule.getEncryptorEngine()).thenReturn(new ShardingEncryptorEngine());
         when(shardingRule.getEncryptRule()).thenReturn(encryptRule);
         shardingEngine = new SimpleQueryShardingEngine(shardingRule, getShardingProperties(), mock(ShardingMetaData.class), DatabaseTypes.getActualDatabaseType("MySQL"), new ParsingResultCache());
         setRoutingEngine();
@@ -68,7 +66,7 @@ public final class SimpleQueryShardingEngineTest extends BaseShardingEngineTest 
     
     protected void assertShard() {
         SQLRouteResult sqlRouteResult = createSQLRouteResult();
-        sqlRouteResult.getSqlStatement().setLogicSQL("SELECT 1");
+        sqlRouteResult.getOptimizedStatement().getSQLStatement().setLogicSQL("SELECT 1");
         when(routingEngine.route(getSql())).thenReturn(sqlRouteResult);
         assertSQLRouteResult(shardingEngine.shard(getSql(), getParameters()));
     }

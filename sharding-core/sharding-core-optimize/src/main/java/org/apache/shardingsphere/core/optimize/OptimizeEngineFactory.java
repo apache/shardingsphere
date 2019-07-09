@@ -20,16 +20,21 @@ package org.apache.shardingsphere.core.optimize;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.optimize.engine.DefaultOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
 import org.apache.shardingsphere.core.optimize.engine.encrypt.EncryptInsertOptimizeEngine;
-import org.apache.shardingsphere.core.optimize.engine.sharding.ddl.DDLOptimizeEngine;
+import org.apache.shardingsphere.core.optimize.engine.encrypt.EncryptWhereOptimizeEngine;
+import org.apache.shardingsphere.core.optimize.engine.sharding.ddl.ShardingDropIndexOptimizeEngine;
+import org.apache.shardingsphere.core.optimize.engine.sharding.dml.ShardingDeleteOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.engine.sharding.dml.ShardingInsertOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.engine.sharding.dml.ShardingSelectOptimizeEngine;
+import org.apache.shardingsphere.core.optimize.engine.sharding.dml.ShardingUpdateOptimizeEngine;
+import org.apache.shardingsphere.core.optimize.engine.transparent.TransparentOptimizeEngine;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.ddl.DropIndexStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
@@ -49,37 +54,46 @@ public final class OptimizeEngineFactory {
      * Create sharding optimize engine instance.
      * 
      * @param shardingRule sharding rule
+     * @param shardingTableMetaData sharding table metadata
      * @param sqlStatement SQL statement
      * @param parameters parameters
-     * @param shardingTableMetaData sharding table metadata
      * @return optimize engine instance
      */
-    public static OptimizeEngine newInstance(final ShardingRule shardingRule, final SQLStatement sqlStatement, final List<Object> parameters, final ShardingTableMetaData shardingTableMetaData) {
-        if (sqlStatement instanceof InsertStatement) {
-            return new ShardingInsertOptimizeEngine(shardingRule, (InsertStatement) sqlStatement, parameters);
-        }
+    public static OptimizeEngine newInstance(final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData, final SQLStatement sqlStatement, final List<Object> parameters) {
         if (sqlStatement instanceof SelectStatement) {
-            return new ShardingSelectOptimizeEngine((SelectStatement) sqlStatement, parameters);
+            return new ShardingSelectOptimizeEngine(shardingRule, shardingTableMetaData, (SelectStatement) sqlStatement, parameters);
         }
-        if (sqlStatement instanceof DDLStatement) {
-            return new DDLOptimizeEngine((DDLStatement) sqlStatement, shardingTableMetaData);
+        if (sqlStatement instanceof InsertStatement) {
+            return new ShardingInsertOptimizeEngine(shardingRule, shardingTableMetaData, (InsertStatement) sqlStatement, parameters);
         }
-        // TODO do with DAL
-        return new DefaultOptimizeEngine();
+        if (sqlStatement instanceof UpdateStatement) {
+            return new ShardingUpdateOptimizeEngine(shardingRule, shardingTableMetaData, (UpdateStatement) sqlStatement, parameters);
+        }
+        if (sqlStatement instanceof DeleteStatement) {
+            return new ShardingDeleteOptimizeEngine(shardingRule, shardingTableMetaData, (DeleteStatement) sqlStatement, parameters);
+        }
+        if (sqlStatement instanceof DropIndexStatement) {
+            return new ShardingDropIndexOptimizeEngine((DropIndexStatement) sqlStatement, shardingTableMetaData);
+        }
+        return new TransparentOptimizeEngine(sqlStatement);
     }
     
     /**
      * Create encrypt optimize engine instance.
      * 
      * @param encryptRule encrypt rule
-     * @param sqlStatement sql statement
+     * @param shardingTableMetaData sharding table metadata
+     * @param sqlStatement SQL statement
      * @param parameters parameters
-     * @return encrypt optimize engine instance
+     * @return optimize engine instance
      */
-    public static OptimizeEngine newInstance(final EncryptRule encryptRule, final SQLStatement sqlStatement, final List<Object> parameters) {
+    public static OptimizeEngine newInstance(final EncryptRule encryptRule, final ShardingTableMetaData shardingTableMetaData, final SQLStatement sqlStatement, final List<Object> parameters) {
         if (sqlStatement instanceof InsertStatement) {
-            return new EncryptInsertOptimizeEngine(encryptRule, (InsertStatement) sqlStatement, parameters);
+            return new EncryptInsertOptimizeEngine(encryptRule, shardingTableMetaData, (InsertStatement) sqlStatement, parameters);
         }
-        return new DefaultOptimizeEngine();
+        if (sqlStatement instanceof SelectStatement || sqlStatement instanceof UpdateStatement || sqlStatement instanceof DeleteStatement) {
+            return new EncryptWhereOptimizeEngine(encryptRule, shardingTableMetaData, sqlStatement);
+        }
+        return new TransparentOptimizeEngine(sqlStatement);
     }
 }

@@ -63,6 +63,8 @@ public class EncryptDataSource extends AbstractUnsupportedOperationDataSource im
     
     private final EncryptRule encryptRule;
     
+    private final ShardingTableMetaData shardingTableMetaData;
+    
     private final EncryptSQLParseEntry parseEngine;
     
     private final ShardingProperties shardingProperties;
@@ -75,8 +77,9 @@ public class EncryptDataSource extends AbstractUnsupportedOperationDataSource im
         this.dataSource = dataSource;
         databaseType = getDatabaseType();
         encryptRule = new EncryptRule(encryptRuleConfiguration);
+        shardingTableMetaData = createEncryptTableMetaData();
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
-        parseEngine = new EncryptSQLParseEntry(databaseType, encryptRule, createEncryptTableMetaData());
+        parseEngine = new EncryptSQLParseEntry(databaseType, shardingTableMetaData);
     }
     
     @SneakyThrows
@@ -151,7 +154,7 @@ public class EncryptDataSource extends AbstractUnsupportedOperationDataSource im
     @Override
     @SneakyThrows
     public EncryptConnection getConnection() {
-        return new EncryptConnection(databaseType, dataSource.getConnection(), encryptRule, parseEngine, shardingProperties);
+        return new EncryptConnection(databaseType, dataSource.getConnection(), encryptRule, shardingTableMetaData, parseEngine, shardingProperties);
     }
     
     @Override

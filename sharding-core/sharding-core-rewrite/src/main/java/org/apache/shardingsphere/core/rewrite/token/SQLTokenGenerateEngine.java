@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.core.rewrite.token;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.IgnoreForSingleRoute;
 import org.apache.shardingsphere.core.rewrite.token.generator.OptionalSQLTokenGenerator;
@@ -42,26 +43,26 @@ public abstract class SQLTokenGenerateEngine<T extends BaseRule> {
     /**
      * Generate SQL tokens.
      *
-     * @param sqlStatement SQL statement
-     * @param parameters SQL parameters
+     * @param optimizedStatement optimized statement
+     * @param parameterBuilder SQL parameter builder
      * @param rule rule
      * @param isSingleRoute is single route
      * @return SQL tokens
      */
     @SuppressWarnings("unchecked")
-    public final List<SQLToken> generateSQLTokens(final SQLStatement sqlStatement, final List<Object> parameters, final T rule, final boolean isSingleRoute) {
+    public final List<SQLToken> generateSQLTokens(final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final T rule, final boolean isSingleRoute) {
         List<SQLToken> result = new LinkedList<>();
         for (SQLTokenGenerator each : getSQLTokenGenerators()) {
             if (isSingleRoute && each instanceof IgnoreForSingleRoute) {
                 continue;
             }
             if (each instanceof OptionalSQLTokenGenerator) {
-                Optional<? extends SQLToken> sqlToken = ((OptionalSQLTokenGenerator) each).generateSQLToken(sqlStatement, parameters, rule);
+                Optional<? extends SQLToken> sqlToken = ((OptionalSQLTokenGenerator) each).generateSQLToken(optimizedStatement, parameterBuilder, rule);
                 if (sqlToken.isPresent()) {
                     result.add(sqlToken.get());
                 }
             } else {
-                result.addAll(((CollectionSQLTokenGenerator) each).generateSQLTokens(sqlStatement, parameters, rule));
+                result.addAll(((CollectionSQLTokenGenerator) each).generateSQLTokens(optimizedStatement, parameterBuilder, rule));
             }
         }
         return result;

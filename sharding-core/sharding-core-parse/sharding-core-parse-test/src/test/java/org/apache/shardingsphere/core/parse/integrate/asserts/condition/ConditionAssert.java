@@ -20,15 +20,13 @@ package org.apache.shardingsphere.core.parse.integrate.asserts.condition;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.parse.integrate.asserts.SQLStatementAssertMessage;
-import org.apache.shardingsphere.core.parse.integrate.jaxb.condition.ExpectedAndCondition;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.condition.ExpectedCondition;
-import org.apache.shardingsphere.core.parse.integrate.jaxb.condition.ExpectedConditions;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.condition.ExpectedValue;
 import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
-import org.apache.shardingsphere.core.parse.sql.context.condition.Conditions;
 
 import java.lang.reflect.Field;
+import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -47,22 +45,18 @@ public final class ConditionAssert {
     /**
      * Assert conditions.
      * 
-     * @param actual actual or condition
-     * @param expected expected or condition
+     * @param actual actual condition
+     * @param expected expected conditions
      */
-    public void assertConditions(final Conditions actual, final ExpectedConditions expected) {
-        assertThat(assertMessage.getFullAssertMessage("Or condition size assertion error: "), actual.getOrConditions().size(), is(expected.getAndConditions().size()));
-        int count = 0;
-        for (ExpectedAndCondition each : expected.getAndConditions()) {
-            assertAndCondition(actual.getOrConditions().get(count), each);
-            count++;
-        }
+    public void assertConditions(final AndCondition actual, final List<ExpectedCondition> expected) {
+        assertThat(assertMessage.getFullAssertMessage("Or condition size assertion error: "), actual.getConditions().size(), is(expected.size()));
+        assertAndCondition(actual, expected);
     }
     
-    private void assertAndCondition(final AndCondition actual, final ExpectedAndCondition expected) {
-        assertThat(assertMessage.getFullAssertMessage("And condition size assertion error: "), actual.getConditions().size(), is(expected.getConditions().size()));
+    private void assertAndCondition(final AndCondition actual, final List<ExpectedCondition> expected) {
+        assertThat(assertMessage.getFullAssertMessage("And condition size assertion error: "), actual.getConditions().size(), is(expected.size()));
         int count = 0;
-        for (ExpectedCondition each : expected.getConditions()) {
+        for (ExpectedCondition each : expected) {
             assertCondition(actual.getConditions().get(count), each);
             count++;
         }

@@ -25,7 +25,8 @@ import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.execute.sql.execute.result.StreamQueryResult;
 import org.apache.shardingsphere.core.merge.MergeEngine;
 import org.apache.shardingsphere.core.merge.MergeEngineFactory;
-import org.apache.shardingsphere.core.optimize.keygen.GeneratedKey;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.GeneratedKey;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.ShardingInsertOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
@@ -103,7 +104,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
         if (null != currentResultSet) {
             return currentResultSet;
         }
-        if (1 == statementExecutor.getStatements().size() && routeResult.getSqlStatement() instanceof SelectStatement) {
+        if (1 == statementExecutor.getStatements().size() && routeResult.getOptimizedStatement().getSQLStatement() instanceof SelectStatement) {
             currentResultSet = statementExecutor.getStatements().iterator().next().getResultSet();
             return currentResultSet;
         }
@@ -114,7 +115,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
             resultSets.add(resultSet);
             queryResults.add(new StreamQueryResult(resultSet, connection.getShardingContext().getShardingRule()));
         }
-        if (routeResult.getSqlStatement() instanceof SelectStatement || routeResult.getSqlStatement() instanceof DALStatement) {
+        if (routeResult.getOptimizedStatement().getSQLStatement() instanceof SelectStatement || routeResult.getOptimizedStatement().getSQLStatement() instanceof DALStatement) {
             MergeEngine mergeEngine = MergeEngineFactory.newInstance(connection.getShardingContext().getDatabaseType(),
                     connection.getShardingContext().getShardingRule(), routeResult, connection.getShardingContext().getMetaData().getTable(), queryResults);
             currentResultSet = getCurrentResultSet(resultSets, mergeEngine);
@@ -277,7 +278,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     
     @Override
     public boolean isAccumulate() {
-        return !connection.getShardingContext().getShardingRule().isAllBroadcastTables(routeResult.getSqlStatement().getTables().getTableNames());
+        return !connection.getShardingContext().getShardingRule().isAllBroadcastTables(routeResult.getOptimizedStatement().getSQLStatement().getTables().getTableNames());
     }
     
     @Override
@@ -289,8 +290,9 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     public ResultSet getGeneratedKeys() throws SQLException {
         Optional<GeneratedKey> generatedKey = getGeneratedKey();
         if (returnGeneratedKeys && generatedKey.isPresent()) {
-            Preconditions.checkState(routeResult.getOptimizeResult().getGeneratedKey().isPresent());
-            return new GeneratedKeysResultSet(routeResult.getOptimizeResult().getGeneratedKey().get().getGeneratedValues().iterator(), generatedKey.get().getColumnName(), this);
+            ShardingInsertOptimizedStatement optimizedStatement = (ShardingInsertOptimizedStatement) routeResult.getOptimizedStatement();
+            Preconditions.checkState(optimizedStatement.getGeneratedKey().isPresent());
+            return new GeneratedKeysResultSet(optimizedStatement.getGeneratedKey().get().getGeneratedValues().iterator(), generatedKey.get().getColumnName(), this);
         }
         if (1 == getRoutedStatements().size()) {
             return getRoutedStatements().iterator().next().getGeneratedKeys();
@@ -299,8 +301,8 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     }
     
     private Optional<GeneratedKey> getGeneratedKey() {
-        if (null != routeResult && routeResult.getSqlStatement() instanceof InsertStatement) {
-            return routeResult.getOptimizeResult().getGeneratedKey();
+        if (null != routeResult && routeResult.getOptimizedStatement().getSQLStatement() instanceof InsertStatement) {
+            return ((ShardingInsertOptimizedStatement) routeResult.getOptimizedStatement()).getGeneratedKey();
         }
         return Optional.absent();
     }

@@ -17,31 +17,29 @@
 
 package org.apache.shardingsphere.core;
 
+import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
-import org.apache.shardingsphere.core.rewrite.rewriter.parameter.ParameterRewriter;
-import org.apache.shardingsphere.core.rewrite.rewriter.parameter.ShardingParameterRewriter;
-import org.apache.shardingsphere.core.rewrite.rewriter.sql.EncryptSQLRewriter;
-import org.apache.shardingsphere.core.rewrite.rewriter.sql.SQLRewriter;
-import org.apache.shardingsphere.core.rewrite.rewriter.sql.ShardingSQLRewriter;
 import org.apache.shardingsphere.core.route.RouteUnit;
 import org.apache.shardingsphere.core.route.SQLLogger;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.SQLUnit;
 import org.apache.shardingsphere.core.route.hook.SPIRoutingHook;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
+import org.apache.shardingsphere.core.route.type.TableUnit;
+import org.apache.shardingsphere.core.rule.BindingTableRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Base sharding engine.
@@ -73,7 +71,7 @@ public abstract class BaseShardingEngine {
         result.getRouteUnits().addAll(HintManager.isDatabaseShardingOnly() ? convert(sql, clonedParameters, result) : rewriteAndConvert(clonedParameters, result));
         if (shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW)) {
             boolean showSimple = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SIMPLE);
-            SQLLogger.logSQL(sql, showSimple, result.getSqlStatement(), result.getRouteUnits());
+            SQLLogger.logSQL(sql, showSimple, result.getOptimizedStatement().getSQLStatement(), result.getRouteUnits());
         }
         return result;
     }
@@ -105,17 +103,42 @@ public abstract class BaseShardingEngine {
     }
     
     private Collection<RouteUnit> rewriteAndConvert(final List<Object> parameters, final SQLRouteResult sqlRouteResult) {
-        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, sqlRouteResult.getSqlStatement(), parameters, sqlRouteResult.getRoutingResult().isSingleRouting());
-        ShardingParameterRewriter shardingParameterRewriter = new ShardingParameterRewriter(sqlRouteResult);
-        Collection<SQLRewriter> sqlRewriters = new LinkedList<>();
-        sqlRewriters.add(new ShardingSQLRewriter(shardingRule, sqlRouteResult, sqlRouteResult.getOptimizeResult()));
-        if (sqlRouteResult.getSqlStatement() instanceof DMLStatement) {
-            sqlRewriters.add(new EncryptSQLRewriter(shardingRule.getEncryptRule().getEncryptorEngine(), (DMLStatement) sqlRouteResult.getSqlStatement(), sqlRouteResult.getOptimizeResult()));
-        }
-        rewriteEngine.init(Collections.<ParameterRewriter>singletonList(shardingParameterRewriter), sqlRewriters);
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, sqlRouteResult, parameters, sqlRouteResult.getRoutingResult().isSingleRouting());
         Collection<RouteUnit> result = new LinkedHashSet<>();
         for (RoutingUnit each : sqlRouteResult.getRoutingResult().getRoutingUnits()) {
-            result.add(new RouteUnit(each.getDataSourceName(), rewriteEngine.generateSQL(each)));
+            result.add(new RouteUnit(each.getDataSourceName(), 
+                    rewriteEngine.generateSQL(each, getLogicAndActualTables(each, sqlRouteResult.getOptimizedStatement().getSQLStatement().getTables().getTableNames()))));
+        }
+        return result;
+    }
+    
+    private Map<String, String> getLogicAndActualTables(final RoutingUnit routingUnit, final Collection<String> parsedTableNames) {
+        Map<String, String> result = new HashMap<>();
+        for (TableUnit each : routingUnit.getTableUnits()) {
+            String logicTableName = each.getLogicTableName().toLowerCase();
+            result.put(logicTableName, each.getActualTableName());
+            result.putAll(getLogicAndActualTablesFromBindingTable(routingUnit.getMasterSlaveLogicDataSourceName(), each, parsedTableNames));
+        }
+        return result;
+    }
+    
+    private Map<String, String> getLogicAndActualTablesFromBindingTable(final String dataSourceName, final TableUnit tableUnit, final Collection<String> parsedTableNames) {
+        Map<String, String> result = new LinkedHashMap<>();
+        Optional<BindingTableRule> bindingTableRule = shardingRule.findBindingTableRule(tableUnit.getLogicTableName());
+        if (bindingTableRule.isPresent()) {
+            result.putAll(getLogicAndActualTablesFromBindingTable(dataSourceName, tableUnit, parsedTableNames, bindingTableRule.get()));
+        }
+        return result;
+    }
+    
+    private Map<String, String> getLogicAndActualTablesFromBindingTable(
+            final String dataSourceName, final TableUnit tableUnit, final Collection<String> parsedTableNames, final BindingTableRule bindingTableRule) {
+        Map<String, String> result = new LinkedHashMap<>();
+        for (String each : parsedTableNames) {
+            String tableName = each.toLowerCase();
+            if (!tableName.equals(tableUnit.getLogicTableName().toLowerCase()) && bindingTableRule.hasLogicTable(tableName)) {
+                result.put(tableName, bindingTableRule.getBindingActualTable(dataSourceName, tableName, tableUnit.getActualTableName()));
+            }
         }
         return result;
     }

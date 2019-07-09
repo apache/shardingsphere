@@ -32,11 +32,9 @@
             <table name="t_encrypt" />
         </tables>
         <encrypt-conditions>
-            <and-condition>
-                <condition column-name="name" table-name="t_encrypt" operator="EQUAL">
-                    <value index="1" literal="tom" type="varchar" />
-                </condition>
-            </and-condition>
+            <condition column-name="name" table-name="t_encrypt" operator="EQUAL">
+                <value index="1" literal="tom" type="varchar" />
+            </condition>
         </encrypt-conditions>
     </parser-result>
     <parser-result sql-case-id="update_with_encrypt_column_in_where_and_set" parameters="'1333333333', 'invalid', 'tom'">
@@ -44,11 +42,9 @@
             <table name="t_encrypt" />
         </tables>
         <encrypt-conditions>
-            <and-condition>
-                <condition column-name="name" table-name="t_encrypt" operator="EQUAL">
-                    <value index="2" literal="tom" type="varchar" />
-                </condition>
-            </and-condition>
+            <condition column-name="name" table-name="t_encrypt" operator="EQUAL">
+                <value index="2" literal="tom" type="varchar" />
+            </condition>
         </encrypt-conditions>
     </parser-result>
     <parser-result sql-case-id="update_with_one_encrypt_column_in_function" parameters="'1333333333', 'invalid', 'tom'">
@@ -66,11 +62,9 @@
             <table name="t_encrypt"/>
         </tables>
         <encrypt-conditions>
-            <and-condition>
-                <condition column-name="mobile" table-name="t_encrypt" operator="EQUAL">
-                    <value index="1" literal="1333333333" type="varchar" />
-                </condition>
-            </and-condition>
+            <condition column-name="mobile" table-name="t_encrypt" operator="EQUAL">
+                <value index="1" literal="1333333333" type="varchar" />
+            </condition>
         </encrypt-conditions>
     </parser-result>
 </parser-result-sets>

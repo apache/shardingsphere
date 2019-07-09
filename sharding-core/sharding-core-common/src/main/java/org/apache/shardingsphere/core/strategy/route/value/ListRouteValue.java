@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.strategy.route.value;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 import java.util.Collection;
 
@@ -29,6 +30,7 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Getter
+@ToString
 public final class ListRouteValue<T extends Comparable<?>> implements RouteValue {
     
     private final String columnName;

@@ -18,10 +18,11 @@
 package org.apache.shardingsphere.core.optimize.engine.encrypt;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
-import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
-import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResult;
-import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResultUnit;
+import org.apache.shardingsphere.core.optimize.statement.encrypt.EncryptInsertColumns;
+import org.apache.shardingsphere.core.optimize.statement.encrypt.EncryptInsertOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.InsertOptimizeResultUnit;
 import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rule.EncryptRule;
@@ -39,31 +40,25 @@ public final class EncryptInsertOptimizeEngine implements OptimizeEngine {
     
     private final EncryptRule encryptRule;
     
+    private final ShardingTableMetaData shardingTableMetaData;
+    
     private final InsertStatement insertStatement;
     
     private final List<Object> parameters;
     
     @Override
-    public OptimizeResult optimize() {
-        InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(insertStatement.getColumnNames());
-        appendAssistedQueryColumns(insertOptimizeResult);
+    public EncryptInsertOptimizedStatement optimize() {
+        EncryptInsertOptimizedStatement result = new EncryptInsertOptimizedStatement(insertStatement, new EncryptInsertColumns(encryptRule, shardingTableMetaData, insertStatement));
         int derivedColumnsCount = getDerivedColumnsCount();
         int parametersCount = 0;
         for (InsertValue each : insertStatement.getValues()) {
-            InsertOptimizeResultUnit unit = insertOptimizeResult.addUnit(
-                    each.getValues(derivedColumnsCount), each.getParameters(parameters, parametersCount, derivedColumnsCount), each.getParametersCount());
+            InsertOptimizeResultUnit unit = result.addUnit(each.getValues(derivedColumnsCount), each.getParameters(parameters, parametersCount, derivedColumnsCount), each.getParametersCount());
             if (encryptRule.getEncryptorEngine().isHasShardingQueryAssistedEncryptor(insertStatement.getTables().getSingleTableName())) {
-                fillAssistedQueryUnit(insertOptimizeResult.getColumnNames(), unit);
+                fillAssistedQueryUnit(result.getInsertColumns().getRegularColumnNames(), unit);
             }
             parametersCount += each.getParametersCount();
         }
-        return new OptimizeResult(insertOptimizeResult);
-    }
-    
-    private void appendAssistedQueryColumns(final InsertOptimizeResult insertOptimizeResult) {
-        for (String each : encryptRule.getEncryptorEngine().getAssistedQueryColumns(insertStatement.getTables().getSingleTableName())) {
-            insertOptimizeResult.getColumnNames().add(each);
-        }
+        return result;
     }
     
     private int getDerivedColumnsCount() {
