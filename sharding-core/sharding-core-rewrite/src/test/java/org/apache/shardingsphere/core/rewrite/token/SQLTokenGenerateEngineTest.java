@@ -65,13 +65,13 @@ public final class SQLTokenGenerateEngineTest {
     }
     
     @Test
-    public void testGenerateSQLTokens() {
+    public void assertGenerateSQLTokensWithBaseTokenGenerateEngine() {
         List<SQLToken> actual = baseTokenGenerateEngine.generateSQLTokens(optimizedStatement, null, mock(ShardingRule.class), true);
         assertThat(actual.size(), is(0));
     }
     
     @Test
-    public void testGetSQLTokenGenerators() {
+    public void assertGetSQLTokenGeneratorsWithShardingTokenGenerateEngine() {
         List<SQLToken> actual = shardingTokenGenerateEngine.generateSQLTokens(optimizedStatement, null, mock(ShardingRule.class), false);
         assertThat(actual.size(), is(2));
         assertThat(actual.get(0), CoreMatchers.<SQLToken>instanceOf(SelectItemPrefixToken.class));
