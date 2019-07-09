@@ -20,11 +20,13 @@ package org.apache.shardingsphere.core.optimize.statement.sharding.dml.select;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.ShardingWhereOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingConditions;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.groupby.GroupBy;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderBy;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderByItem;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.pagination.Pagination;
 import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationSelectItem;
@@ -49,30 +51,26 @@ import java.util.Map;
  * @author zhangliang
  */
 @Getter
-@Setter
 public final class ShardingSelectOptimizedStatement extends ShardingWhereOptimizedStatement {
     
     private final SelectStatement selectStatement;
     
     private final Collection<SelectItem> items;
     
-    private final List<OrderByItem> orderByItems;
+    private final GroupBy groupBy;
     
-    private final List<OrderByItem> groupByItems;
+    private final OrderBy orderBy;
     
-    private int groupByLastIndex;
+    private final Pagination pagination;
     
-    private boolean toAppendOrderByItems;
-    
-    private Pagination pagination;
-    
-    public ShardingSelectOptimizedStatement(final SQLStatement sqlStatement, 
-                                            final List<ShardingCondition> shardingConditions, final AndCondition encryptConditions, final Collection<SelectItem> items) {
+    public ShardingSelectOptimizedStatement(final SQLStatement sqlStatement, final List<ShardingCondition> shardingConditions, final AndCondition encryptConditions, 
+                                            final Collection<SelectItem> items, final GroupBy groupBy, final OrderBy orderBy, final Pagination pagination) {
         super(sqlStatement, new ShardingConditions(shardingConditions), encryptConditions);
         this.selectStatement = (SelectStatement) sqlStatement;
         this.items = items;
-        orderByItems = new LinkedList<>();
-        groupByItems = new LinkedList<>();
+        this.groupBy = groupBy;
+        this.orderBy = orderBy;
+        this.pagination = pagination;
     }
     
     /**
@@ -128,8 +126,8 @@ public final class ShardingSelectOptimizedStatement extends ShardingWhereOptimiz
      */
     public void setIndexForItems(final Map<String, Integer> columnLabelIndexMap) {
         setIndexForAggregationItem(columnLabelIndexMap);
-        setIndexForOrderItem(columnLabelIndexMap, orderByItems);
-        setIndexForOrderItem(columnLabelIndexMap, groupByItems);
+        setIndexForOrderItem(columnLabelIndexMap, orderBy.getItems());
+        setIndexForOrderItem(columnLabelIndexMap, groupBy.getItems());
     }
     
     private void setIndexForAggregationItem(final Map<String, Integer> columnLabelIndexMap) {
@@ -143,7 +141,7 @@ public final class ShardingSelectOptimizedStatement extends ShardingWhereOptimiz
         }
     }
     
-    private void setIndexForOrderItem(final Map<String, Integer> columnLabelIndexMap, final List<OrderByItem> orderByItems) {
+    private void setIndexForOrderItem(final Map<String, Integer> columnLabelIndexMap, final Collection<OrderByItem> orderByItems) {
         for (OrderByItem each : orderByItems) {
             if (each.getSegment() instanceof IndexOrderByItemSegment) {
                 each.setIndex(((IndexOrderByItemSegment) each.getSegment()).getColumnIndex());
@@ -186,6 +184,6 @@ public final class ShardingSelectOptimizedStatement extends ShardingWhereOptimiz
      * @return group by and order by sequence is same or not
      */
     public boolean isSameGroupByAndOrderByItems() {
-        return !groupByItems.isEmpty() && groupByItems.equals(orderByItems);
+        return !groupBy.getItems().isEmpty() && groupBy.getItems().equals(orderBy.getItems());
     }
 }

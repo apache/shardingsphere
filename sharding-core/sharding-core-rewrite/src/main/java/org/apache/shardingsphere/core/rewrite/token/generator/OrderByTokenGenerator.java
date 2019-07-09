@@ -38,15 +38,15 @@ public final class OrderByTokenGenerator implements OptionalSQLTokenGenerator<Sh
         if (!(optimizedStatement instanceof ShardingSelectOptimizedStatement)) {
             return Optional.absent();
         }
-        if (((ShardingSelectOptimizedStatement) optimizedStatement).isToAppendOrderByItems()) {
+        if (((ShardingSelectOptimizedStatement) optimizedStatement).getOrderBy().isGenerated()) {
             return Optional.of(createOrderByToken((ShardingSelectOptimizedStatement) optimizedStatement));
         }
         return Optional.absent();
     }
     
     private OrderByToken createOrderByToken(final ShardingSelectOptimizedStatement optimizedStatement) {
-        OrderByToken result = new OrderByToken(optimizedStatement.getGroupByLastIndex() + 1);
-        for (OrderByItem each : optimizedStatement.getOrderByItems()) {
+        OrderByToken result = new OrderByToken(optimizedStatement.getGroupBy().getLastIndex() + 1);
+        for (OrderByItem each : optimizedStatement.getOrderBy().getItems()) {
             String columnLabel = each.getSegment() instanceof TextOrderByItemSegment ? ((TextOrderByItemSegment) each.getSegment()).getText() : String.valueOf(each.getIndex());
             result.getColumnLabels().add(columnLabel);
             result.getOrderDirections().add(each.getSegment().getOrderDirection()); 

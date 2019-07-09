@@ -24,8 +24,11 @@ import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
 import org.apache.shardingsphere.core.optimize.statement.encrypt.condition.WhereClauseEncryptConditionEngine;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.engine.WhereClauseShardingConditionEngine;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.Pagination;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.pagination.Pagination;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ShardingSelectOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.groupby.GroupBy;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.groupby.GroupByEngine;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderBy;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderByEngine;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderByItem;
 import org.apache.shardingsphere.core.parse.constant.DerivedColumn;
@@ -36,8 +39,6 @@ import org.apache.shardingsphere.core.parse.sql.context.selectitem.DistinctSelec
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.StarSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.table.Table;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.order.GroupBySegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.OrderByItemSegment;
@@ -68,6 +69,8 @@ public final class ShardingSelectOptimizeEngine implements OptimizeEngine {
     
     private final WhereClauseEncryptConditionEngine encryptConditionEngine;
     
+    private final GroupByEngine groupByEngine;
+    
     private final OrderByEngine orderByEngine;
     
     public ShardingSelectOptimizeEngine(final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData, final SelectStatement selectStatement, final List<Object> parameters) {
@@ -76,24 +79,19 @@ public final class ShardingSelectOptimizeEngine implements OptimizeEngine {
         this.parameters = parameters;
         shardingConditionEngine = new WhereClauseShardingConditionEngine(shardingRule, shardingTableMetaData);
         encryptConditionEngine = new WhereClauseEncryptConditionEngine(shardingRule.getEncryptRule(), shardingTableMetaData);
+        groupByEngine = new GroupByEngine();
         orderByEngine = new OrderByEngine();
     }
     
     @Override
     public ShardingSelectOptimizedStatement optimize() {
         Collection<SelectItem> items = new LinkedHashSet<>(selectStatement.getItems());
-        List<OrderByItem> orderByItems = orderByEngine.getOrderByItems(selectStatement);
-        List<OrderByItem> groupByItems = orderByEngine.getGroupByItems(selectStatement);
-        items.addAll(getDerivedColumns());
-        ShardingSelectOptimizedStatement result = new ShardingSelectOptimizedStatement(selectStatement, 
-                new ArrayList<>(shardingConditionEngine.createShardingConditions(selectStatement, parameters)), 
-                encryptConditionEngine.createEncryptConditions(selectStatement), appendAverageDerivedColumns(items));
-        result.getOrderByItems().addAll(orderByItems);
-        result.getGroupByItems().addAll(groupByItems);
-        appendDerivedOrderBy(result);
-        appendDerivedGroupBy(result);
-        setPagination(result);
-        return result;
+        GroupBy groupBy = groupByEngine.createGroupBy(selectStatement);
+        OrderBy orderBy = orderByEngine.createOrderBy(selectStatement, groupBy);
+        items.addAll(getDerivedColumns(groupBy.getItems(), orderBy.getItems()));
+        Pagination pagination = new Pagination(selectStatement.getOffset(), selectStatement.getRowCount(), parameters);
+        return new ShardingSelectOptimizedStatement(selectStatement, new ArrayList<>(shardingConditionEngine.createShardingConditions(selectStatement, parameters)), 
+                encryptConditionEngine.createEncryptConditions(selectStatement), appendAverageDerivedColumns(items), groupBy, orderBy, pagination);
     }
     
     private Collection<SelectItem> appendAverageDerivedColumns(final Collection<SelectItem> items) {
@@ -139,39 +137,36 @@ public final class ShardingSelectOptimizeEngine implements OptimizeEngine {
         averageSelectItem.getDerivedAggregationSelectItems().add(sumSelectItem);
     }
     
-    private Collection<SelectItem> getDerivedColumns() {
+    private Collection<SelectItem> getDerivedColumns(final Collection<OrderByItem> groupByItems, final Collection<OrderByItem> orderByItems) {
         Collection<SelectItem> result = new LinkedList<>();
-        // TODO reuse orderByItems & groupByItems 
-        Optional<OrderBySegment> orderBySegment = selectStatement.findSQLSegment(OrderBySegment.class);
-        if (orderBySegment.isPresent()) {
-            result.addAll(appendDerivedOrderColumns(orderBySegment.get().getOrderByItems()));
+        if (!groupByItems.isEmpty()) {
+            result.addAll(appendDerivedGroupColumns(groupByItems));
         }
-        Optional<GroupBySegment> groupBySegment = selectStatement.findSQLSegment(GroupBySegment.class);
-        if (groupBySegment.isPresent()) {
-            result.addAll(appendDerivedGroupColumns(groupBySegment.get().getGroupByItems()));
+        if (!orderByItems.isEmpty()) {
+            result.addAll(appendDerivedOrderColumns(orderByItems));
         }
         return result;
     }
     
-    private Collection<SelectItem> appendDerivedOrderColumns(final Collection<OrderByItemSegment> orderItems) {
+    private Collection<SelectItem> appendDerivedOrderColumns(final Collection<OrderByItem> orderItems) {
         Collection<SelectItem> result = new LinkedList<>();
         int derivedColumnOffset = 0;
-        for (OrderByItemSegment each : orderItems) {
-            if (!containsItem(each)) {
+        for (OrderByItem each : orderItems) {
+            if (!containsItem(each.getSegment())) {
                 String alias = DerivedColumn.ORDER_BY_ALIAS.getDerivedColumnAlias(derivedColumnOffset++);
-                result.add(new DerivedCommonSelectItem(((TextOrderByItemSegment) each).getText(), Optional.of(alias)));
+                result.add(new DerivedCommonSelectItem(((TextOrderByItemSegment) each.getSegment()).getText(), Optional.of(alias)));
             }
         }
         return result;
     }
     
-    private Collection<SelectItem> appendDerivedGroupColumns(final Collection<OrderByItemSegment> orderItems) {
+    private Collection<SelectItem> appendDerivedGroupColumns(final Collection<OrderByItem> orderByItems) {
         Collection<SelectItem> result = new LinkedList<>();
         int derivedColumnOffset = 0;
-        for (OrderByItemSegment each : orderItems) {
-            if (!containsItem(each)) {
+        for (OrderByItem each : orderByItems) {
+            if (!containsItem(each.getSegment())) {
                 String alias = DerivedColumn.GROUP_BY_ALIAS.getDerivedColumnAlias(derivedColumnOffset++);
-                result.add(new DerivedCommonSelectItem(((TextOrderByItemSegment) each).getText(), Optional.of(alias)));
+                result.add(new DerivedCommonSelectItem(((TextOrderByItemSegment) each.getSegment()).getText(), Optional.of(alias)));
             }
         }
         return result;
@@ -234,25 +229,5 @@ public final class ShardingSelectOptimizeEngine implements OptimizeEngine {
     
     private boolean isSameQualifiedName(final SelectItem selectItem, final TextOrderByItemSegment orderItem) {
         return !selectItem.getAlias().isPresent() && selectItem.getExpression().equalsIgnoreCase(orderItem.getText());
-    }
-    
-    private void appendDerivedOrderBy(final ShardingSelectOptimizedStatement optimizedStatement) {
-        if (!optimizedStatement.getGroupByItems().isEmpty() && optimizedStatement.getOrderByItems().isEmpty()) {
-            optimizedStatement.getOrderByItems().addAll(optimizedStatement.getGroupByItems());
-            optimizedStatement.setToAppendOrderByItems(true);
-        }
-    }
-    
-    private void appendDerivedGroupBy(final ShardingSelectOptimizedStatement optimizedStatement) {
-        Optional<GroupBySegment> groupBySegment = selectStatement.findSQLSegment(GroupBySegment.class);
-        if (groupBySegment.isPresent()) {
-            optimizedStatement.setGroupByLastIndex(groupBySegment.get().getStopIndex());
-        }
-    }
-    
-    private void setPagination(final ShardingSelectOptimizedStatement optimizedStatement) {
-        if (null != selectStatement.getOffset() || null != selectStatement.getRowCount()) {
-            optimizedStatement.setPagination(new Pagination(selectStatement.getOffset(), selectStatement.getRowCount(), parameters));
-        }
     }
 }

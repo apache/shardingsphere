@@ -15,9 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.statement.sharding.dml.select;
+package org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.pagination;
 
 import com.google.common.base.Optional;
+import lombok.Getter;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ShardingSelectOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.NumberLiteralPaginationValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.ParameterMarkerPaginationValueSegment;
@@ -34,6 +36,9 @@ import java.util.List;
  */
 public final class Pagination {
     
+    @Getter
+    private final boolean hasPagination;
+    
     private final PaginationValueSegment offsetSegment;
     
     private final PaginationValueSegment rowCountSegment;
@@ -43,6 +48,7 @@ public final class Pagination {
     private final Integer actualRowCount;
     
     public Pagination(final PaginationValueSegment offsetSegment, final PaginationValueSegment rowCountSegment, final List<Object> parameters) {
+        hasPagination = null != offsetSegment || null != rowCountSegment;
         this.offsetSegment = offsetSegment;
         this.rowCountSegment = rowCountSegment;
         actualOffset = null == offsetSegment ? 0 : getValue(offsetSegment, parameters);
@@ -121,7 +127,7 @@ public final class Pagination {
     }
     
     private boolean isMaxRowCount(final ShardingSelectOptimizedStatement optimizedStatement) {
-        return (!optimizedStatement.getGroupByItems().isEmpty()
+        return (!optimizedStatement.getGroupBy().getItems().isEmpty()
                 || !optimizedStatement.getAggregationSelectItems().isEmpty()) && !optimizedStatement.isSameGroupByAndOrderByItems();
     }
 }
