@@ -20,10 +20,13 @@ package org.apache.shardingsphere.core.optimize.statement.sharding.dml.select;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.ShardingWhereOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingConditions;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.groupby.GroupBy;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderBy;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderByItem;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.pagination.Pagination;
 import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationSelectItem;
@@ -32,13 +35,11 @@ import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.IndexOrderByItemSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.TextOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -50,38 +51,26 @@ import java.util.Map;
  * @author zhangliang
  */
 @Getter
-@Setter
 public final class ShardingSelectOptimizedStatement extends ShardingWhereOptimizedStatement {
     
     private final SelectStatement selectStatement;
     
     private final Collection<SelectItem> items;
     
-    private final List<OrderByItem> orderByItems;
+    private final GroupBy groupBy;
     
-    private final List<OrderByItem> groupByItems;
+    private final OrderBy orderBy;
     
-    private Pagination pagination;
+    private final Pagination pagination;
     
-    public ShardingSelectOptimizedStatement(final SQLStatement sqlStatement, 
-                                            final List<ShardingCondition> shardingConditions, final AndCondition encryptConditions, final Collection<SelectItem> items) {
+    public ShardingSelectOptimizedStatement(final SQLStatement sqlStatement, final List<ShardingCondition> shardingConditions, final AndCondition encryptConditions, 
+                                            final Collection<SelectItem> items, final GroupBy groupBy, final OrderBy orderBy, final Pagination pagination) {
         super(sqlStatement, new ShardingConditions(shardingConditions), encryptConditions);
         this.selectStatement = (SelectStatement) sqlStatement;
         this.items = items;
-        orderByItems = getOrderByItems(((SelectStatement) sqlStatement).getOrderByItems());
-        groupByItems = getOrderByItems(((SelectStatement) sqlStatement).getGroupByItems());
-    }
-    
-    private List<OrderByItem> getOrderByItems(final List<OrderByItemSegment> orderByItemSegments) {
-        List<OrderByItem> result = new ArrayList<>(orderByItemSegments.size());
-        for (OrderByItemSegment each : orderByItemSegments) {
-            OrderByItem orderByItem = new OrderByItem(each);
-            result.add(orderByItem);
-            if (each instanceof IndexOrderByItemSegment) {
-                orderByItem.setIndex(((IndexOrderByItemSegment) each).getColumnIndex());
-            }
-        }
-        return result;
+        this.groupBy = groupBy;
+        this.orderBy = orderBy;
+        this.pagination = pagination;
     }
     
     /**
@@ -137,8 +126,8 @@ public final class ShardingSelectOptimizedStatement extends ShardingWhereOptimiz
      */
     public void setIndexForItems(final Map<String, Integer> columnLabelIndexMap) {
         setIndexForAggregationItem(columnLabelIndexMap);
-        setIndexForOrderItem(columnLabelIndexMap, orderByItems);
-        setIndexForOrderItem(columnLabelIndexMap, groupByItems);
+        setIndexForOrderItem(columnLabelIndexMap, orderBy.getItems());
+        setIndexForOrderItem(columnLabelIndexMap, groupBy.getItems());
     }
     
     private void setIndexForAggregationItem(final Map<String, Integer> columnLabelIndexMap) {
@@ -152,7 +141,7 @@ public final class ShardingSelectOptimizedStatement extends ShardingWhereOptimiz
         }
     }
     
-    private void setIndexForOrderItem(final Map<String, Integer> columnLabelIndexMap, final List<OrderByItem> orderByItems) {
+    private void setIndexForOrderItem(final Map<String, Integer> columnLabelIndexMap, final Collection<OrderByItem> orderByItems) {
         for (OrderByItem each : orderByItems) {
             if (each.getSegment() instanceof IndexOrderByItemSegment) {
                 each.setIndex(((IndexOrderByItemSegment) each.getSegment()).getColumnIndex());
@@ -195,6 +184,6 @@ public final class ShardingSelectOptimizedStatement extends ShardingWhereOptimiz
      * @return group by and order by sequence is same or not
      */
     public boolean isSameGroupByAndOrderByItems() {
-        return !groupByItems.isEmpty() && groupByItems.equals(orderByItems);
+        return !groupBy.getItems().isEmpty() && groupBy.getItems().equals(orderBy.getItems());
     }
 }

@@ -73,7 +73,8 @@ public class ShardingRule implements BaseRule {
     private final EncryptRule encryptRule;
     
     public ShardingRule(final ShardingRuleConfiguration shardingRuleConfig, final Collection<String> dataSourceNames) {
-        Preconditions.checkArgument(!dataSourceNames.isEmpty(), "Data sources cannot be empty.");
+        Preconditions.checkArgument(null != shardingRuleConfig, "ShardingRuleConfig cannot be null.");
+        Preconditions.checkArgument(null != dataSourceNames && !dataSourceNames.isEmpty(), "Data sources cannot be empty.");
         this.shardingRuleConfig = shardingRuleConfig;
         shardingDataSourceNames = new ShardingDataSourceNames(shardingRuleConfig, dataSourceNames);
         tableRules = createTableRules(shardingRuleConfig);

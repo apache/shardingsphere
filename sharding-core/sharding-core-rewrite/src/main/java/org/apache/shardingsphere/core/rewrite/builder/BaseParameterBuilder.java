@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.rewrite.builder;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.Pagination;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.pagination.Pagination;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ShardingSelectOptimizedStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
@@ -69,7 +69,7 @@ public final class BaseParameterBuilder implements ParameterBuilder {
     
     private boolean isNeedRewritePagination(final SQLRouteResult sqlRouteResult) {
         return sqlRouteResult.getOptimizedStatement() instanceof ShardingSelectOptimizedStatement
-                && null != ((ShardingSelectOptimizedStatement) sqlRouteResult.getOptimizedStatement()).getPagination() && !sqlRouteResult.getRoutingResult().isSingleRouting();
+                && ((ShardingSelectOptimizedStatement) sqlRouteResult.getOptimizedStatement()).getPagination().isHasPagination() && !sqlRouteResult.getRoutingResult().isSingleRouting();
     }
     
     private void rewriteOffset(final Pagination pagination, final int offsetParameterIndex) {

@@ -26,7 +26,6 @@ import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public final class SQLStatementRuleDefinitionTest {
     
@@ -46,7 +45,6 @@ public final class SQLStatementRuleDefinitionTest {
         assertThat(sqlStatementRule.getContextName(), is("select"));
         assertThat(sqlStatementRule.getSqlStatementClass().getName(), is("org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement"));
         assertThat(sqlStatementRule.getExtractors().size(), is(3));
-        assertTrue(sqlStatementRule.getOptimizer().isPresent());
     }
     
     @Test

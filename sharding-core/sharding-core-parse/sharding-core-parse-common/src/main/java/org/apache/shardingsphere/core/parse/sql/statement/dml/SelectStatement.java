@@ -24,13 +24,11 @@ import lombok.ToString;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.StarSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.table.Table;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationValueSegment;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -46,19 +44,11 @@ public final class SelectStatement extends DMLStatement {
     
     private final Set<SelectItem> items = new LinkedHashSet<>();
     
-    private final List<OrderByItemSegment> groupByItems = new LinkedList<>();
-    
-    private final List<OrderByItemSegment> orderByItems = new LinkedList<>();
-    
-    private boolean toAppendOrderByItems;
-    
     private boolean containStar;
     
     private boolean containsSubquery;
     
     private int selectListStopIndex;
-    
-    private int groupByLastIndex;
     
     private PaginationValueSegment offset;
     

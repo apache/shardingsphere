@@ -46,9 +46,6 @@ public final class InsertParameterBuilder implements ParameterBuilder {
     
     private List<InsertParameterUnit> createInsertParameterUnits(final InsertOptimizedStatement optimizedStatement) {
         List<InsertParameterUnit> result = new LinkedList<>();
-        if (null == optimizedStatement) {
-            return result;
-        }
         for (InsertOptimizeResultUnit each : optimizedStatement.getUnits()) {
             result.add(new InsertParameterUnit(Arrays.asList(each.getParameters()), each.getDataNodes()));
         }

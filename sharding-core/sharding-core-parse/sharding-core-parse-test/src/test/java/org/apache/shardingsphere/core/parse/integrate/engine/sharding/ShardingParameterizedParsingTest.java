@@ -27,7 +27,6 @@ import org.apache.shardingsphere.core.parse.integrate.asserts.ShardingSQLStateme
 import org.apache.shardingsphere.core.parse.integrate.jaxb.ParserResultSetRegistry;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.ShardingParserResultSetRegistry;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.loader.SQLCasesLoader;
 import org.apache.shardingsphere.test.sql.loader.sharding.ShardingSQLCasesRegistry;
@@ -49,8 +48,6 @@ public final class ShardingParameterizedParsingTest {
     
     private static ParserResultSetRegistry parserResultSetRegistry = ShardingParserResultSetRegistry.getInstance().getRegistry();
     
-    private static ShardingRule shardingRule = ParsingTestCaseFixtureBuilder.buildShardingRule();
-    
     private static ParsingResultCache parsingResultCache = new ParsingResultCache();
     
     private static ShardingTableMetaData shardingTableMetaData = ParsingTestCaseFixtureBuilder.buildShardingTableMetaData();
@@ -70,7 +67,7 @@ public final class ShardingParameterizedParsingTest {
     @Test
     public void assertSupportedSQL() {
         String sql = sqlCasesLoader.getSQL(sqlCaseId, sqlCaseType, parserResultSetRegistry.get(sqlCaseId).getParameters());
-        SQLStatement sqlStatement = new ShardingSQLParseEntry(DatabaseTypes.getTrunkDatabaseType(databaseType), shardingRule, shardingTableMetaData, parsingResultCache).parse(sql, false);
+        SQLStatement sqlStatement = new ShardingSQLParseEntry(DatabaseTypes.getTrunkDatabaseType(databaseType), shardingTableMetaData, parsingResultCache).parse(sql, false);
         new ShardingSQLStatementAssert(sqlStatement, sqlCaseId, sqlCaseType).assertSQLStatement();
     }
 }

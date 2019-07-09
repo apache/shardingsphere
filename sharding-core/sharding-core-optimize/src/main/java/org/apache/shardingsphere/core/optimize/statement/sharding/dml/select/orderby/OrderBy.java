@@ -15,21 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.optimizer;
+package org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby;
 
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import java.util.Collection;
 
 /**
- * SQL statement optimizer.
+ * Order by.
  *
  * @author zhangliang
  */
-public interface SQLStatementOptimizer {
+@RequiredArgsConstructor
+@Getter
+public final class OrderBy {
     
-    /**
-     * Optimize SQL statement.
-     *
-     * @param sqlStatement SQL statement
-     */
-    void optimize(SQLStatement sqlStatement);
+    private final Collection<OrderByItem> items;
+    
+    private final boolean generated;
 }
