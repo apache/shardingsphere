@@ -94,12 +94,6 @@ public final class ShardingDataSourceNamesTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void assertConstructShardingDataSourceNamesWithNullShardingRuleConfiguration() {
-        try {
-            new ShardingDataSourceNames(null, Arrays.asList("master_ds", "slave_ds")).getRawMasterDataSourceName("default_ds");
-            fail("should throw a IllegalArgumentException when execute ShardingDataSourceNames's constructor with null ShardingRuleConfig");
-        } catch (IllegalArgumentException ignored){
-        } catch (Exception ex){
-            fail("should throw a IllegalArgumentException when execute ShardingDataSourceNames's construction with null ShardingRuleConfig");
-        }
+        new ShardingDataSourceNames(null, Arrays.asList("master_ds", "slave_ds")).getRawMasterDataSourceName("default_ds");
     }
 }

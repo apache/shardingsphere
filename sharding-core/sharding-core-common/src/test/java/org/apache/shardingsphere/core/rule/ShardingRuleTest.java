@@ -331,14 +331,8 @@ public final class ShardingRuleTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void assertConstructShardingRuleWithNullShardingRuleConfiguration(){
-        try {
+    public void assertConstructShardingRuleWithNullShardingRuleConfiguration() {
         new ShardingRule(null, createDataSourceNames());
-            fail("should throw a IllegalArgumentException when execute ShardingRule's constructor with null ShardingRuleConfiguration");
-        } catch (IllegalArgumentException ignored){
-        } catch (Exception ex){
-            fail("should throw a IllegalArgumentException when execute ShardingRule's construction with null ShardingRuleConfiguration");
-        }
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -348,13 +342,7 @@ public final class ShardingRuleTest {
         shardingRuleConfiguration.getTableRuleConfigs().add(tableRuleConfiguration);
         shardingRuleConfiguration.getMasterSlaveRuleConfigs().add(createMasterSlaveRuleConfiguration("ms_ds_0", "master_ds_0", "slave_ds_0"));
         shardingRuleConfiguration.getMasterSlaveRuleConfigs().add(createMasterSlaveRuleConfiguration("ms_ds_1", "master_ds_1", "slave_ds_1"));
-        try {
-            new ShardingRule(shardingRuleConfiguration, null);
-            fail("should throw a IllegalArgumentException when execute ShardingRule's constructor with null DataSourceNames");
-        } catch (IllegalArgumentException ignored){
-        } catch (Exception ex){
-            fail("should throw a IllegalArgumentException when execute ShardingRule's construction with null DataSourceNames");
-        }
+        new ShardingRule(shardingRuleConfiguration, null);
     }
     
     private ShardingRule createMaximumShardingRule() {
