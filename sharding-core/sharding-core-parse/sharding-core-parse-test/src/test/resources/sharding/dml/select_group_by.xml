@@ -169,9 +169,6 @@
         <group-by-columns>
             <group-by-column name="user_id" owner="o" order-direction="ASC" />
         </group-by-columns>
-        <order-by-columns>
-            <order-by-column name="user_id" owner="o" order-direction="ASC" />
-        </order-by-columns>
     </parser-result>
     
     <parser-result sql-case-id="select_group_by_with_limit" parameters="5">
@@ -249,9 +246,6 @@
         <group-by-columns>
             <group-by-column name="date_format(creation_date,'%y-%m-%d')" order-direction="ASC" />
         </group-by-columns>
-        <order-by-columns>
-            <order-by-column name="date_format(creation_date,'%y-%m-%d')" order-direction="ASC" />
-        </order-by-columns>
     </parser-result>
     
     <parser-result sql-case-id="select_group_by_with_keyword_alias">
@@ -269,9 +263,6 @@
         <group-by-columns>
             <group-by-column name="key" alias="key" order-direction="ASC" />
         </group-by-columns>
-        <order-by-columns>
-            <order-by-column name="key" alias="key" order-direction="ASC" />
-        </order-by-columns>
     </parser-result>
 
     <parser-result sql-case-id="select_group_by_with_count_without_column_name">

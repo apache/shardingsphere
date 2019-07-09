@@ -15,21 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.aware;
+package org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.groupby;
 
-import org.apache.shardingsphere.core.rule.EncryptRule;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderByItem;
+
+import java.util.Collection;
 
 /**
- * Encrypt rule aware.
+ * Group by.
  *
  * @author zhangliang
  */
-public interface EncryptRuleAware {
+@RequiredArgsConstructor
+@Getter
+public final class GroupBy {
     
-    /**
-     * Set encrypt rule.
-     *
-     * @param encryptRule encrypt rule
-     */
-    void setEncryptRule(EncryptRule encryptRule);
+    private final Collection<OrderByItem> items;
+    
+    private final int lastIndex;
 }

@@ -25,8 +25,8 @@ import org.apache.shardingsphere.core.merge.dql.common.MemoryMergedResult;
 import org.apache.shardingsphere.core.merge.dql.common.MemoryQueryResultRow;
 import org.apache.shardingsphere.core.merge.dql.groupby.aggregation.AggregationUnit;
 import org.apache.shardingsphere.core.merge.dql.groupby.aggregation.AggregationUnitFactory;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ShardingSelectOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationSelectItem;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -44,14 +44,14 @@ import java.util.Map.Entry;
  */
 public final class GroupByMemoryMergedResult extends MemoryMergedResult {
     
-    private final SelectStatement selectStatement;
+    private final ShardingSelectOptimizedStatement optimizedStatement;
     
     private final Iterator<MemoryQueryResultRow> memoryResultSetRows;
     
     public GroupByMemoryMergedResult(
-            final Map<String, Integer> labelAndIndexMap, final List<QueryResult> queryResults, final SelectStatement selectStatement) throws SQLException {
+            final Map<String, Integer> labelAndIndexMap, final List<QueryResult> queryResults, final ShardingSelectOptimizedStatement optimizedStatement) throws SQLException {
         super(labelAndIndexMap);
-        this.selectStatement = selectStatement;
+        this.optimizedStatement = optimizedStatement;
         memoryResultSetRows = init(queryResults);
     }
     
@@ -60,7 +60,7 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult {
         Map<GroupByValue, Map<AggregationSelectItem, AggregationUnit>> aggregationMap = new HashMap<>(1024);
         for (QueryResult each : queryResults) {
             while (each.next()) {
-                GroupByValue groupByValue = new GroupByValue(each, selectStatement.getGroupByItems());
+                GroupByValue groupByValue = new GroupByValue(each, optimizedStatement.getGroupBy().getItems());
                 initForFirstGroupByValue(each, groupByValue, dataMap, aggregationMap);
                 aggregate(each, groupByValue, aggregationMap);
             }
@@ -79,7 +79,7 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult {
             dataMap.put(groupByValue, new MemoryQueryResultRow(queryResult));
         }
         if (!aggregationMap.containsKey(groupByValue)) {
-            Map<AggregationSelectItem, AggregationUnit> map = Maps.toMap(selectStatement.getAggregationSelectItems(), new Function<AggregationSelectItem, AggregationUnit>() {
+            Map<AggregationSelectItem, AggregationUnit> map = Maps.toMap(optimizedStatement.getAggregationSelectItems(), new Function<AggregationSelectItem, AggregationUnit>() {
                 
                 @Override
                 public AggregationUnit apply(final AggregationSelectItem input) {
@@ -91,7 +91,7 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult {
     }
     
     private void aggregate(final QueryResult queryResult, final GroupByValue groupByValue, final Map<GroupByValue, Map<AggregationSelectItem, AggregationUnit>> aggregationMap) throws SQLException {
-        for (AggregationSelectItem each : selectStatement.getAggregationSelectItems()) {
+        for (AggregationSelectItem each : optimizedStatement.getAggregationSelectItems()) {
             List<Comparable<?>> values = new ArrayList<>(2);
             if (each.getDerivedAggregationSelectItems().isEmpty()) {
                 values.add(getAggregationValue(queryResult, each));
@@ -112,7 +112,7 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult {
     
     private void setAggregationValueToMemoryRow(final Map<GroupByValue, MemoryQueryResultRow> dataMap, final Map<GroupByValue, Map<AggregationSelectItem, AggregationUnit>> aggregationMap) {
         for (Entry<GroupByValue, MemoryQueryResultRow> entry : dataMap.entrySet()) {
-            for (AggregationSelectItem each : selectStatement.getAggregationSelectItems()) {
+            for (AggregationSelectItem each : optimizedStatement.getAggregationSelectItems()) {
                 entry.getValue().setCell(each.getIndex(), aggregationMap.get(entry.getKey()).get(each).getResult());
             }
         }
@@ -120,7 +120,7 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult {
     
     private List<MemoryQueryResultRow> getMemoryResultSetRows(final Map<GroupByValue, MemoryQueryResultRow> dataMap) {
         List<MemoryQueryResultRow> result = new ArrayList<>(dataMap.values());
-        Collections.sort(result, new GroupByRowComparator(selectStatement));
+        Collections.sort(result, new GroupByRowComparator(optimizedStatement));
         return result;
     }
     

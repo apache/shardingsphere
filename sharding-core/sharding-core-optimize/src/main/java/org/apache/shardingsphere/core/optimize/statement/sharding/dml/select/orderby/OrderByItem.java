@@ -15,25 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.filler.impl.dml;
+package org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby;
 
-import org.apache.shardingsphere.core.parse.filler.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.order.GroupBySegment;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.OrderByItemSegment;
 
 /**
- * Group by filler.
+ * Order by item.
  *
- * @author duhongjun
- * @author panjuan
+ * @author zhangliang
  */
-public final class GroupByFiller implements SQLSegmentFiller<GroupBySegment> {
+@RequiredArgsConstructor
+@Getter
+@Setter
+@EqualsAndHashCode
+public final class OrderByItem {
+    
+    private final OrderByItemSegment segment;
+    
+    private int index;
     
     @Override
-    public void fill(final GroupBySegment sqlSegment, final SQLStatement sqlStatement) {
-        SelectStatement selectStatement = (SelectStatement) sqlStatement;
-        selectStatement.setGroupByLastIndex(sqlSegment.getStopIndex());
-        selectStatement.getGroupByItems().addAll(sqlSegment.getGroupByItems());
+    public boolean equals(final Object obj) {
+        if (null == obj || !(obj instanceof OrderByItem)) {
+            return false;
+        }
+        OrderByItem orderByItem = (OrderByItem) obj;
+        return segment.getOrderDirection() == orderByItem.getSegment().getOrderDirection() && index == orderByItem.getIndex();
     }
 }
