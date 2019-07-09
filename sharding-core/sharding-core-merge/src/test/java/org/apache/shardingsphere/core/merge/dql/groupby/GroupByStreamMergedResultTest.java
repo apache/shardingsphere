@@ -26,7 +26,9 @@ import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.MergedResult;
 import org.apache.shardingsphere.core.merge.dql.DQLMergeEngine;
 import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
+import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.Pagination;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ShardingSelectOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.groupby.GroupBy;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderBy;
@@ -86,10 +88,11 @@ public final class GroupByStreamMergedResultTest {
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.getItems().add(aggregationSelectItem1);
         selectStatement.getItems().add(aggregationSelectItem2);
-        ShardingSelectOptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(
+        OptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(
                 selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), selectStatement.getItems(), 
                 new GroupBy(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, OrderDirection.ASC))), 0),
-                new OrderBy(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, OrderDirection.ASC))), false));
+                new OrderBy(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, OrderDirection.ASC))), false), 
+                new Pagination(null, null, Collections.emptyList()));
         routeResult = new SQLRouteResult(optimizedStatement);
     }
     

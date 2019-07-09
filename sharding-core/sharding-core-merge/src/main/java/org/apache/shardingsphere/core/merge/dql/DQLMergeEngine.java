@@ -136,7 +136,7 @@ public final class DQLMergeEngine implements MergeEngine {
     
     private MergedResult decorate(final MergedResult mergedResult) throws SQLException {
         Pagination pagination = ((ShardingSelectOptimizedStatement) routeResult.getOptimizedStatement()).getPagination();
-        if (null == pagination || 1 == queryResults.size()) {
+        if (!pagination.isHasPagination() || 1 == queryResults.size()) {
             return mergedResult;
         }
         String trunkDatabaseName = DatabaseTypes.getTrunkDatabaseType(databaseType.getName()).getName();

@@ -21,6 +21,7 @@ import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.Pagination;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ShardingSelectOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.groupby.GroupBy;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderBy;
@@ -65,7 +66,7 @@ public final class StandardRoutingEngineTest {
         ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, Arrays.asList("ds_0", "ds_1"));
         standardRoutingEngine = new StandardRoutingEngine(
                 shardingRule, "t_order", new ShardingSelectOptimizedStatement(new SelectStatement(), shardingConditions, new AndCondition(), Collections.<SelectItem>emptyList(), 
-                new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false)));
+                new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), new Pagination(null, null, Collections.emptyList())));
     }
     
     @Test

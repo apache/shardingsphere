@@ -69,7 +69,7 @@ public final class BaseParameterBuilder implements ParameterBuilder {
     
     private boolean isNeedRewritePagination(final SQLRouteResult sqlRouteResult) {
         return sqlRouteResult.getOptimizedStatement() instanceof ShardingSelectOptimizedStatement
-                && null != ((ShardingSelectOptimizedStatement) sqlRouteResult.getOptimizedStatement()).getPagination() && !sqlRouteResult.getRoutingResult().isSingleRouting();
+                && ((ShardingSelectOptimizedStatement) sqlRouteResult.getOptimizedStatement()).getPagination().isHasPagination() && !sqlRouteResult.getRoutingResult().isSingleRouting();
     }
     
     private void rewriteOffset(final Pagination pagination, final int offsetParameterIndex) {

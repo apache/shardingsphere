@@ -26,6 +26,7 @@ import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.ShardingInsertColumns;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.ShardingInsertOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.Pagination;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ShardingSelectOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.groupby.GroupBy;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderBy;
@@ -72,7 +73,8 @@ public final class MergeEngineFactoryTest {
     public void assertNewInstanceWithSelectStatement() throws SQLException {
         SQLRouteResult routeResult = new SQLRouteResult(
                 new ShardingSelectOptimizedStatement(new SelectStatement(), Collections.<ShardingCondition>emptyList(), new AndCondition(), 
-                        Collections.<SelectItem>emptyList(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false)));
+                        Collections.<SelectItem>emptyList(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
+                        new Pagination(null, null, Collections.emptyList())));
         assertThat(MergeEngineFactory.newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, routeResult, null, queryResults), instanceOf(DQLMergeEngine.class));
     }
     

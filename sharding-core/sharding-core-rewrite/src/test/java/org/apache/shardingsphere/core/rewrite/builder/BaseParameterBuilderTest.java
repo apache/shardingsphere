@@ -49,6 +49,7 @@ public final class BaseParameterBuilderTest {
     
     private SQLRouteResult createSQLRouteResult() {
         Pagination pagination = mock(Pagination.class);
+        when(pagination.isHasPagination()).thenReturn(true);
         when(pagination.getOffsetParameterIndex()).thenReturn(Optional.of(2));
         when(pagination.getRowCountParameterIndex()).thenReturn(Optional.of(3));
         when(pagination.getRevisedRowCount(any(ShardingSelectOptimizedStatement.class))).thenReturn(6);

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.optimize.statement.sharding.dml.select;
 
 import com.google.common.base.Optional;
+import lombok.Getter;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.NumberLiteralPaginationValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.ParameterMarkerPaginationValueSegment;
@@ -34,6 +35,9 @@ import java.util.List;
  */
 public final class Pagination {
     
+    @Getter
+    private final boolean hasPagination;
+    
     private final PaginationValueSegment offsetSegment;
     
     private final PaginationValueSegment rowCountSegment;
@@ -43,6 +47,7 @@ public final class Pagination {
     private final Integer actualRowCount;
     
     public Pagination(final PaginationValueSegment offsetSegment, final PaginationValueSegment rowCountSegment, final List<Object> parameters) {
+        hasPagination = null != offsetSegment || null != rowCountSegment;
         this.offsetSegment = offsetSegment;
         this.rowCountSegment = rowCountSegment;
         actualOffset = null == offsetSegment ? 0 : getValue(offsetSegment, parameters);

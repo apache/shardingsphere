@@ -89,10 +89,9 @@ public final class ShardingSelectOptimizeEngine implements OptimizeEngine {
         GroupBy groupBy = groupByEngine.createGroupBy(selectStatement);
         OrderBy orderBy = orderByEngine.createOrderBy(selectStatement, groupBy);
         items.addAll(getDerivedColumns(groupBy.getItems(), orderBy.getItems()));
-        ShardingSelectOptimizedStatement result = new ShardingSelectOptimizedStatement(selectStatement, new ArrayList<>(shardingConditionEngine.createShardingConditions(selectStatement, parameters)), 
-                encryptConditionEngine.createEncryptConditions(selectStatement), appendAverageDerivedColumns(items), groupBy, orderBy);
-        setPagination(result);
-        return result;
+        Pagination pagination = new Pagination(selectStatement.getOffset(), selectStatement.getRowCount(), parameters);
+        return new ShardingSelectOptimizedStatement(selectStatement, new ArrayList<>(shardingConditionEngine.createShardingConditions(selectStatement, parameters)), 
+                encryptConditionEngine.createEncryptConditions(selectStatement), appendAverageDerivedColumns(items), groupBy, orderBy, pagination);
     }
     
     private Collection<SelectItem> appendAverageDerivedColumns(final Collection<SelectItem> items) {
@@ -230,11 +229,5 @@ public final class ShardingSelectOptimizeEngine implements OptimizeEngine {
     
     private boolean isSameQualifiedName(final SelectItem selectItem, final TextOrderByItemSegment orderItem) {
         return !selectItem.getAlias().isPresent() && selectItem.getExpression().equalsIgnoreCase(orderItem.getText());
-    }
-    
-    private void setPagination(final ShardingSelectOptimizedStatement optimizedStatement) {
-        if (null != selectStatement.getOffset() || null != selectStatement.getRowCount()) {
-            optimizedStatement.setPagination(new Pagination(selectStatement.getOffset(), selectStatement.getRowCount(), parameters));
-        }
     }
 }

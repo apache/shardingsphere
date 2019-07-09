@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.optimize.statement.sharding.dml.select;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.ShardingWhereOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingConditions;
@@ -51,7 +50,6 @@ import java.util.Map;
  * @author zhangliang
  */
 @Getter
-@Setter
 public final class ShardingSelectOptimizedStatement extends ShardingWhereOptimizedStatement {
     
     private final SelectStatement selectStatement;
@@ -62,15 +60,16 @@ public final class ShardingSelectOptimizedStatement extends ShardingWhereOptimiz
     
     private final OrderBy orderBy;
     
-    private Pagination pagination;
+    private final Pagination pagination;
     
     public ShardingSelectOptimizedStatement(final SQLStatement sqlStatement, final List<ShardingCondition> shardingConditions, final AndCondition encryptConditions, 
-                                            final Collection<SelectItem> items, final GroupBy groupBy, final OrderBy orderBy) {
+                                            final Collection<SelectItem> items, final GroupBy groupBy, final OrderBy orderBy, final Pagination pagination) {
         super(sqlStatement, new ShardingConditions(shardingConditions), encryptConditions);
         this.selectStatement = (SelectStatement) sqlStatement;
         this.items = items;
         this.groupBy = groupBy;
         this.orderBy = orderBy;
+        this.pagination = pagination;
     }
     
     /**
