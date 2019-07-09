@@ -20,6 +20,9 @@ package org.apache.shardingsphere.core.rewrite.token;
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ShardingSelectOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.groupby.GroupBy;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderBy;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderByItem;
 import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.SelectItemsSegment;
@@ -65,7 +68,7 @@ public final class SQLTokenGenerateEngineTest {
         when(selectItemsSegment.findSelectItemSegments(AggregationDistinctSelectItemSegment.class)).thenReturn(Collections.singletonList(distinctSelectItemSegment));
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.getSQLSegments().add(selectItemsSegment);
-        optimizedStatement = new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), Collections.<SelectItem>emptyList());
+        optimizedStatement = new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), Collections.<SelectItem>emptyList(), new GroupBy(Collections.<OrderByItem>emptyList(), 1), new OrderBy(Collections.<OrderByItem>emptyList(), false), null);
     }
     
     @Test
