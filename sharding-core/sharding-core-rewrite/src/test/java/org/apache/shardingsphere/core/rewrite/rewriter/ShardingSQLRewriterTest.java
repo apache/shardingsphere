@@ -101,7 +101,7 @@ public final class ShardingSQLRewriterTest {
     
     private ShardingRule shardingRule;
     
-    private Map<String, String> logicTableAndActualTables;
+    private Map<String, String> logicTableAndActualTables = Collections.singletonMap("table_x", "table_1");
     
     @Before
     public void setUp() throws IOException {
@@ -109,7 +109,6 @@ public final class ShardingSQLRewriterTest {
         Preconditions.checkNotNull(url, "Cannot found rewrite rule yaml configuration.");
         YamlRootShardingConfiguration yamlShardingConfig = YamlEngine.unmarshal(new File(url.getFile()), YamlRootShardingConfiguration.class);
         shardingRule = new ShardingRule(new ShardingRuleConfigurationYamlSwapper().swap(yamlShardingConfig.getShardingRule()), yamlShardingConfig.getDataSources().keySet());
-        logicTableAndActualTables = Collections.singletonMap("table_x", "table_1");
     }
     
     @Test
@@ -617,13 +616,18 @@ public final class ShardingSQLRewriterTest {
     
     @Test
     public void assertRewriteDerivedOrderBy() {
-        SelectStatement selectStatement = new SelectStatement();
+        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(createRouteResultForDerivedOrderBy(), Collections.emptyList());
+        assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(), is("SELECT x.id, x.name FROM table_1 x GROUP BY x.id, x.name DESC ORDER BY x.id ASC,x.name DESC "));
+    }
     
+    private SQLRouteResult createRouteResultForDerivedOrderBy() {
+        SelectStatement selectStatement = new SelectStatement();
+        selectStatement.getSQLSegments().add(new TableSegment(25, 31, "table_x"));
+        selectStatement.setLogicSQL("SELECT x.id, x.name FROM table_x x GROUP BY x.id, x.name DESC");
         ColumnSegment columnSegment1 = new ColumnSegment(0, 0, "id");
         columnSegment1.setOwner(new TableSegment(0, 0, "x"));
         ColumnSegment columnSegment2 = new ColumnSegment(0, 0, "name");
         columnSegment2.setOwner(new TableSegment(0, 0, "x"));
-        selectStatement.getSQLSegments().add(new TableSegment(25, 31, "table_x"));
         OptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(
                 selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), selectStatement.getItems(), 
                 new GroupBy(Arrays.asList(
@@ -632,34 +636,9 @@ public final class ShardingSQLRewriterTest {
                 new OrderBy(Arrays.asList(
                         new OrderByItem(new ColumnOrderByItemSegment(0, 0, columnSegment1, OrderDirection.ASC, OrderDirection.ASC)),
                         new OrderByItem(new ColumnOrderByItemSegment(0, 0, columnSegment2, OrderDirection.DESC, OrderDirection.ASC))), true), new Pagination(null, null, Collections.emptyList()));
-        SQLRouteResult routeResult = new SQLRouteResult(optimizedStatement);
-        routeResult.setRoutingResult(new RoutingResult());
-        selectStatement.setLogicSQL("SELECT x.id, x.name FROM table_x x GROUP BY x.id, x.name DESC");
-        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(Collections.emptyList());
-        assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(), is("SELECT x.id, x.name FROM table_1 x GROUP BY x.id, x.name DESC ORDER BY x.id ASC,x.name DESC "));
-    }
-    
-    @Test
-    public void assertGenerateSQL() {
-        SelectStatement selectStatement = new SelectStatement();
-    
-        List<Object> parameters = new ArrayList<>(2);
-        parameters.add(1);
-        parameters.add("x");
-        selectStatement.getTables().add(new Table("table_x", "x"));
-        selectStatement.getTables().add(new Table("table_y", "y"));
-        SQLRouteResult routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), 
-                selectStatement.getItems(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
-                new Pagination(null, null, Collections.emptyList())));
-        routeResult.setRoutingResult(new RoutingResult());
-        selectStatement.setLogicSQL("SELECT table_x.id, x.name FROM table_x x, table_y y WHERE table_x.id=? AND x.name=?");
-        RoutingUnit routingUnit = new RoutingUnit("db0");
-        routingUnit.getTableUnits().add(new TableUnit("table_x", "table_x"));
-        Map<String, String> logicTableAndActualTables = new LinkedHashMap<>();
-        logicTableAndActualTables.put("table_x", "table_x");
-        logicTableAndActualTables.put("table_y", "table_y");
-        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, routeResult, parameters, routeResult.getRoutingResult().isSingleRouting());
-        assertThat(rewriteEngine.generateSQL(routingUnit, logicTableAndActualTables).getSql(), is("SELECT table_x.id, x.name FROM table_x x, table_y y WHERE table_x.id=? AND x.name=?"));
+        SQLRouteResult result = new SQLRouteResult(optimizedStatement);
+        result.setRoutingResult(new RoutingResult());
+        return result;
     }
     
     @Test
@@ -679,13 +658,6 @@ public final class ShardingSQLRewriterTest {
                 new Pagination(null, null, Collections.emptyList())));
         result.setRoutingResult(new RoutingResult());
         return result;
-    }
-    
-    @SneakyThrows
-    private BaseParameterBuilder getParameterBuilder(final SQLRewriteEngine rewriteEngine) {
-        Field field = rewriteEngine.getClass().getDeclaredField("parameterBuilder");
-        field.setAccessible(true);
-        return (BaseParameterBuilder) field.get(rewriteEngine);
     }
     
     @Test
@@ -1088,5 +1060,12 @@ public final class ShardingSQLRewriterTest {
     
     private SQLRewriteEngine createSQLRewriteEngine(final SQLRouteResult routeResult, final List<Object> parameters) {
         return new SQLRewriteEngine(shardingRule, routeResult, parameters, routeResult.getRoutingResult().isSingleRouting());
+    }
+    
+    @SneakyThrows
+    private BaseParameterBuilder getParameterBuilder(final SQLRewriteEngine rewriteEngine) {
+        Field field = rewriteEngine.getClass().getDeclaredField("parameterBuilder");
+        field.setAccessible(true);
+        return (BaseParameterBuilder) field.get(rewriteEngine);
     }
 }
