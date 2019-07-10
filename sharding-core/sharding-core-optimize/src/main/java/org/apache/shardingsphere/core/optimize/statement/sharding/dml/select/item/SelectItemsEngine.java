@@ -156,7 +156,7 @@ public final class SelectItemsEngine {
     
     private boolean containsItemInStarSelectItems(final SelectStatement selectStatement, final Collection<SelectItem> items, final OrderByItemSegment orderByItemSegment) {
         return hasUnqualifiedStarSelectItem(items)
-                || containsItemWithOwnerInStarSelectItems(selectStatement, orderByItemSegment) || containsItemWithoutOwnerInStarSelectItems(selectStatement, orderByItemSegment);
+                || containsItemWithOwnerInStarSelectItems(selectStatement, orderByItemSegment) || containsItemWithoutOwnerInStarSelectItems(selectStatement, items, orderByItemSegment);
     }
     
     private boolean hasUnqualifiedStarSelectItem(final Collection<SelectItem> items) {
@@ -173,18 +173,28 @@ public final class SelectItemsEngine {
                 && selectStatement.findStarSelectItem(((ColumnOrderByItemSegment) orderItem).getColumn().getOwner().get().getName()).isPresent();
     }
     
-    private boolean containsItemWithoutOwnerInStarSelectItems(final SelectStatement selectStatement, final OrderByItemSegment orderItem) {
+    private boolean containsItemWithoutOwnerInStarSelectItems(final SelectStatement selectStatement, final Collection<SelectItem> items, final OrderByItemSegment orderItem) {
         if (!(orderItem instanceof ColumnOrderByItemSegment)) {
             return false;
         }
         if (!((ColumnOrderByItemSegment) orderItem).getColumn().getOwner().isPresent()) {
-            for (StarSelectItem each : selectStatement.getQualifiedStarSelectItems()) {
+            for (StarSelectItem each : getQualifiedStarSelectItems(items)) {
                 if (isSameSelectItem(selectStatement, each, (ColumnOrderByItemSegment) orderItem)) {
                     return true;
                 }
             }
         }
         return false;
+    }
+    
+    private Collection<StarSelectItem> getQualifiedStarSelectItems(final Collection<SelectItem> items) {
+        Collection<StarSelectItem> result = new LinkedList<>();
+        for (SelectItem each : items) {
+            if (each instanceof StarSelectItem && ((StarSelectItem) each).getOwner().isPresent()) {
+                result.add((StarSelectItem) each);
+            }
+        }
+        return result;
     }
     
     private boolean isSameSelectItem(final SelectStatement selectStatement, final StarSelectItem starSelectItem, final ColumnOrderByItemSegment orderItem) {

@@ -26,9 +26,7 @@ import org.apache.shardingsphere.core.parse.sql.context.selectitem.StarSelectIte
 import org.apache.shardingsphere.core.parse.sql.context.table.Table;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationValueSegment;
 
-import java.util.Collection;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.Set;
 
 /**
@@ -55,21 +53,6 @@ public final class SelectStatement extends DMLStatement {
     private PaginationValueSegment rowCount;
     
     private SelectStatement parentStatement;
-    
-    /**
-     * Get qualified star select items.
-     *
-     * @return qualified star select items
-     */
-    public Collection<StarSelectItem> getQualifiedStarSelectItems() {
-        Collection<StarSelectItem> result = new LinkedList<>();
-        for (SelectItem each : items) {
-            if (each instanceof StarSelectItem && ((StarSelectItem) each).getOwner().isPresent()) {
-                result.add((StarSelectItem) each);
-            }
-        }
-        return result;
-    }
     
     /**
      * Find star select item via table name or alias.
