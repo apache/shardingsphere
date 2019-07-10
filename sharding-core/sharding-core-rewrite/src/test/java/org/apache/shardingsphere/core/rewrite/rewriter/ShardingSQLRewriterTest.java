@@ -140,29 +140,30 @@ public final class ShardingSQLRewriterTest {
     private SQLRouteResult createSQLRouteResultWithoutChange() {
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.setLogicSQL("SELECT table_y.id FROM table_y WHERE table_y.id=?");
-        SQLRouteResult routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), 
+        SQLRouteResult result = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), 
                 selectStatement.getItems(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
                 new Pagination(null, null, Collections.emptyList())));
-        routeResult.setRoutingResult(new RoutingResult());
-        return routeResult;
+        result.setRoutingResult(new RoutingResult());
+        return result;
     }
     
     @Test
     public void assertRewriteForTableName() {
+        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(createSQLRouteResultForTableName(), Arrays.<Object>asList(1, "x"));
+        assertThat(rewriteEngine.generateSQL(null, tableTokens).getSql(), is("SELECT table_1.id, x.name FROM table_1 x WHERE table_1.id=? AND x.name=?"));
+    }
+    
+    private SQLRouteResult createSQLRouteResultForTableName() {
         SelectStatement selectStatement = new SelectStatement();
-        List<Object> parameters = new ArrayList<>(2);
-        parameters.add(1);
-        parameters.add("x");
+        selectStatement.setLogicSQL("SELECT table_x.id, x.name FROM table_x x WHERE table_x.id=? AND x.name=?");
         selectStatement.getSQLSegments().add(new TableSegment(7, 13, "table_x"));
         selectStatement.getSQLSegments().add(new TableSegment(31, 37, "table_x"));
         selectStatement.getSQLSegments().add(new TableSegment(47, 53, "table_x"));
-        routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), 
+        SQLRouteResult result = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), 
                 selectStatement.getItems(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
                 new Pagination(null, null, Collections.emptyList())));
-        routeResult.setRoutingResult(new RoutingResult());
-        selectStatement.setLogicSQL("SELECT table_x.id, x.name FROM table_x x WHERE table_x.id=? AND x.name=?");
-        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(parameters);
-        assertThat(getSQLBuilder(rewriteEngine).toSQL(null, tableTokens), is("SELECT table_1.id, x.name FROM table_1 x WHERE table_1.id=? AND x.name=?"));
+        result.setRoutingResult(new RoutingResult());
+        return result;
     }
     
     @Test
