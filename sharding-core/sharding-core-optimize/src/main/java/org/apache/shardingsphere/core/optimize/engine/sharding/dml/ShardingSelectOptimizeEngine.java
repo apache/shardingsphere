@@ -73,6 +73,6 @@ public final class ShardingSelectOptimizeEngine implements OptimizeEngine {
         SelectItems selectItems = selectItemsEngine.createSelectItems(selectStatement, groupBy, orderBy);
         Pagination pagination = new Pagination(selectStatement.getOffset(), selectStatement.getRowCount(), parameters);
         return new ShardingSelectOptimizedStatement(selectStatement, new ArrayList<>(shardingConditionEngine.createShardingConditions(selectStatement, parameters)), 
-                encryptConditionEngine.createEncryptConditions(selectStatement), selectItems.getItems(), groupBy, orderBy, pagination);
+                encryptConditionEngine.createEncryptConditions(selectStatement), groupBy, orderBy, selectItems, pagination);
     }
 }

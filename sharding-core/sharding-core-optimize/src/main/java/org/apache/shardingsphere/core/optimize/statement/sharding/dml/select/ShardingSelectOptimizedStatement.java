@@ -24,6 +24,7 @@ import org.apache.shardingsphere.core.optimize.statement.sharding.dml.ShardingWh
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingConditions;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.groupby.GroupBy;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.SelectItems;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderBy;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderByItem;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.pagination.Pagination;
@@ -55,21 +56,21 @@ public final class ShardingSelectOptimizedStatement extends ShardingWhereOptimiz
     
     private final SelectStatement selectStatement;
     
-    private final Collection<SelectItem> items;
-    
     private final GroupBy groupBy;
     
     private final OrderBy orderBy;
     
+    private final SelectItems selectItems;
+    
     private final Pagination pagination;
     
-    public ShardingSelectOptimizedStatement(final SQLStatement sqlStatement, final List<ShardingCondition> shardingConditions, final AndCondition encryptConditions, 
-                                            final Collection<SelectItem> items, final GroupBy groupBy, final OrderBy orderBy, final Pagination pagination) {
+    public ShardingSelectOptimizedStatement(final SQLStatement sqlStatement, final List<ShardingCondition> shardingConditions, final AndCondition encryptConditions,
+                                            final GroupBy groupBy, final OrderBy orderBy, final SelectItems selectItems, final Pagination pagination) {
         super(sqlStatement, new ShardingConditions(shardingConditions), encryptConditions);
         this.selectStatement = (SelectStatement) sqlStatement;
-        this.items = items;
         this.groupBy = groupBy;
         this.orderBy = orderBy;
+        this.selectItems = selectItems;
         this.pagination = pagination;
     }
     
@@ -80,7 +81,7 @@ public final class ShardingSelectOptimizedStatement extends ShardingWhereOptimiz
      */
     public List<AggregationSelectItem> getAggregationSelectItems() {
         List<AggregationSelectItem> result = new LinkedList<>();
-        for (SelectItem each : items) {
+        for (SelectItem each : selectItems.getItems()) {
             if (each instanceof AggregationSelectItem) {
                 AggregationSelectItem aggregationSelectItem = (AggregationSelectItem) each;
                 result.add(aggregationSelectItem);
@@ -96,7 +97,7 @@ public final class ShardingSelectOptimizedStatement extends ShardingWhereOptimiz
      * @return distinct select items
      */
     public Optional<DistinctSelectItem> getDistinctSelectItem() {
-        for (SelectItem each : items) {
+        for (SelectItem each : selectItems.getItems()) {
             if (each instanceof DistinctSelectItem) {
                 return Optional.of((DistinctSelectItem) each);
             }
@@ -111,7 +112,7 @@ public final class ShardingSelectOptimizedStatement extends ShardingWhereOptimiz
      */
     public List<AggregationDistinctSelectItem> getAggregationDistinctSelectItems() {
         List<AggregationDistinctSelectItem> result = new LinkedList<>();
-        for (SelectItem each : items) {
+        for (SelectItem each : selectItems.getItems()) {
             if (each instanceof AggregationDistinctSelectItem) {
                 result.add((AggregationDistinctSelectItem) each);
             }
@@ -158,11 +159,11 @@ public final class ShardingSelectOptimizedStatement extends ShardingWhereOptimiz
     }
     
     private Optional<String> getAlias(final String name) {
-        if (selectStatement.isContainStar()) {
+        if (selectItems.isContainStar()) {
             return Optional.absent();
         }
         String rawName = SQLUtil.getExactlyValue(name);
-        for (SelectItem each : items) {
+        for (SelectItem each : selectItems.getItems()) {
             if (SQLUtil.getExactlyExpression(rawName).equalsIgnoreCase(SQLUtil.getExactlyExpression(SQLUtil.getExactlyValue(each.getExpression())))) {
                 return each.getAlias();
             }
