@@ -41,7 +41,6 @@ import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Set;
 
 /**
  * Select items engine.
@@ -63,8 +62,8 @@ public final class SelectItemsEngine {
      */
     public SelectItems createSelectItems(final SelectStatement selectStatement, final GroupBy groupBy, final OrderBy orderBy) {
         SelectItems result = new SelectItems();
-        Set<SelectItem> items = selectStatement.getItems();
-        items.addAll(getDerivedColumns(selectStatement, groupBy.getItems(), orderBy.getItems()));
+        Collection<SelectItem> items = selectStatement.getItems();
+        items.addAll(getDerivedColumns(selectStatement, items, groupBy.getItems(), orderBy.getItems()));
         result.getItems().addAll(appendAverageDerivedColumns(items));
         result.setContainStar(selectStatement.isContainStar());
         result.setSelectListStopIndex(selectStatement.getSelectListStopIndex());
@@ -114,22 +113,23 @@ public final class SelectItemsEngine {
         averageSelectItem.getDerivedAggregationSelectItems().add(sumSelectItem);
     }
     
-    private Collection<SelectItem> getDerivedColumns(final SelectStatement selectStatement, final Collection<OrderByItem> groupByItems, final Collection<OrderByItem> orderByItems) {
+    private Collection<SelectItem> getDerivedColumns(final SelectStatement selectStatement, 
+                                                     final Collection<SelectItem> items, final Collection<OrderByItem> groupByItems, final Collection<OrderByItem> orderByItems) {
         Collection<SelectItem> result = new LinkedList<>();
         if (!groupByItems.isEmpty()) {
-            result.addAll(appendDerivedGroupColumns(selectStatement, groupByItems));
+            result.addAll(appendDerivedGroupColumns(selectStatement, items, groupByItems));
         }
         if (!orderByItems.isEmpty()) {
-            result.addAll(appendDerivedOrderColumns(selectStatement, orderByItems));
+            result.addAll(appendDerivedOrderColumns(selectStatement, items, orderByItems));
         }
         return result;
     }
     
-    private Collection<SelectItem> appendDerivedOrderColumns(final SelectStatement selectStatement, final Collection<OrderByItem> orderItems) {
+    private Collection<SelectItem> appendDerivedOrderColumns(final SelectStatement selectStatement, final Collection<SelectItem> items, final Collection<OrderByItem> orderItems) {
         Collection<SelectItem> result = new LinkedList<>();
         int derivedColumnOffset = 0;
         for (OrderByItem each : orderItems) {
-            if (!containsItem(selectStatement, each.getSegment())) {
+            if (!containsItem(selectStatement, items, each.getSegment())) {
                 String alias = DerivedColumn.ORDER_BY_ALIAS.getDerivedColumnAlias(derivedColumnOffset++);
                 result.add(new DerivedCommonSelectItem(((TextOrderByItemSegment) each.getSegment()).getText(), Optional.of(alias)));
             }
@@ -137,11 +137,11 @@ public final class SelectItemsEngine {
         return result;
     }
     
-    private Collection<SelectItem> appendDerivedGroupColumns(final SelectStatement selectStatement, final Collection<OrderByItem> orderByItems) {
+    private Collection<SelectItem> appendDerivedGroupColumns(final SelectStatement selectStatement, final Collection<SelectItem> items, final Collection<OrderByItem> orderByItems) {
         Collection<SelectItem> result = new LinkedList<>();
         int derivedColumnOffset = 0;
         for (OrderByItem each : orderByItems) {
-            if (!containsItem(selectStatement, each.getSegment())) {
+            if (!containsItem(selectStatement, items, each.getSegment())) {
                 String alias = DerivedColumn.GROUP_BY_ALIAS.getDerivedColumnAlias(derivedColumnOffset++);
                 result.add(new DerivedCommonSelectItem(((TextOrderByItemSegment) each.getSegment()).getText(), Optional.of(alias)));
             }
@@ -149,14 +149,23 @@ public final class SelectItemsEngine {
         return result;
     }
     
-    private boolean containsItem(final SelectStatement selectStatement, final OrderByItemSegment orderByItemSegment) {
+    private boolean containsItem(final SelectStatement selectStatement, final Collection<SelectItem> items, final OrderByItemSegment orderByItemSegment) {
         return orderByItemSegment instanceof IndexOrderByItemSegment
-                || containsItemInStarSelectItems(selectStatement, orderByItemSegment) || containsItemInSelectItems(selectStatement, orderByItemSegment);
+                || containsItemInStarSelectItems(selectStatement, items, orderByItemSegment) || containsItemInSelectItems(selectStatement, orderByItemSegment);
     }
     
-    private boolean containsItemInStarSelectItems(final SelectStatement selectStatement, final OrderByItemSegment orderByItemSegment) {
-        return selectStatement.hasUnqualifiedStarSelectItem()
+    private boolean containsItemInStarSelectItems(final SelectStatement selectStatement, final Collection<SelectItem> items, final OrderByItemSegment orderByItemSegment) {
+        return hasUnqualifiedStarSelectItem(items)
                 || containsItemWithOwnerInStarSelectItems(selectStatement, orderByItemSegment) || containsItemWithoutOwnerInStarSelectItems(selectStatement, orderByItemSegment);
+    }
+    
+    private boolean hasUnqualifiedStarSelectItem(final Collection<SelectItem> items) {
+        for (SelectItem each : items) {
+            if (each instanceof StarSelectItem && !((StarSelectItem) each).getOwner().isPresent()) {
+                return true;
+            }
+        }
+        return false;
     }
     
     private boolean containsItemWithOwnerInStarSelectItems(final SelectStatement selectStatement, final OrderByItemSegment orderItem) {

@@ -57,20 +57,6 @@ public final class SelectStatement extends DMLStatement {
     private SelectStatement parentStatement;
     
     /**
-     * Judge has unqualified star select item.
-     * 
-     * @return star select item without owner
-     */
-    public boolean hasUnqualifiedStarSelectItem() {
-        for (SelectItem each : items) {
-            if (each instanceof StarSelectItem && !((StarSelectItem) each).getOwner().isPresent()) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    /**
      * Get qualified star select items.
      *
      * @return qualified star select items
