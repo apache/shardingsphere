@@ -38,6 +38,7 @@ import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RangeRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -65,8 +66,8 @@ public final class WhereClauseShardingConditionEngine {
      * @param parameters SQL parameters
      * @return sharding conditions
      */
-    public Collection<ShardingCondition> createShardingConditions(final SQLStatement sqlStatement, final List<Object> parameters) {
-        Collection<ShardingCondition> result = new LinkedList<>();
+    public List<ShardingCondition> createShardingConditions(final SQLStatement sqlStatement, final List<Object> parameters) {
+        List<ShardingCondition> result = new ArrayList<>();
         Optional<OrPredicateSegment> orPredicateSegment = sqlStatement.findSQLSegment(OrPredicateSegment.class);
         if (orPredicateSegment.isPresent()) {
             result.addAll(createShardingConditions(sqlStatement, parameters, orPredicateSegment.get()));
