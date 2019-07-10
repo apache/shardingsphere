@@ -183,3 +183,16 @@ git config --global core.longpaths true
 参考资料：
 https://docs.microsoft.com/zh-cn/windows/desktop/FileIO/naming-a-file
 https://ourcodeworld.com/articles/read/109/how-to-solve-filename-too-long-error-in-git-powershell-and-github-application-for-windows
+
+#### 14. Windows环境下，运行Sharding-Proxy，找不到或无法加载主类 org.apache.shardingshpere.shardingproxy.Bootstrap，如何解决？
+
+回答：
+
+某些解压缩工具在解压Sharding-Proxy二进制包时可能将文件名截断，导致找不到某些类。
+
+解决方案：
+
+打开cmd.exe并执行下面的命令：
+```
+tar zxvf apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz
+```
