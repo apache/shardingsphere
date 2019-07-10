@@ -50,7 +50,6 @@ public final class SelectItemsFiller implements SQLSegmentFiller<SelectItemsSegm
     public void fill(final SelectItemsSegment sqlSegment, final SQLStatement sqlStatement) {
         selectItemFiller = new SelectItemFiller();
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
-        selectStatement.setSelectListStopIndex(sqlSegment.getStopIndex());
         if (sqlSegment.isHasDistinct()) {
             fillDistinct(sqlSegment, selectStatement);
             return;

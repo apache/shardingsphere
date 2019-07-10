@@ -33,6 +33,7 @@ import org.apache.shardingsphere.core.parse.sql.context.selectitem.DistinctSelec
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.StarSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.table.Table;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.SelectItemsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.OrderByItemSegment;
@@ -66,7 +67,10 @@ public final class SelectItemsEngine {
         items.addAll(getDerivedColumns(selectStatement, items, groupBy.getItems(), orderBy.getItems()));
         result.getItems().addAll(appendAverageDerivedColumns(items));
         result.setContainStar(selectStatement.isContainStar());
-        result.setSelectListStopIndex(selectStatement.getSelectListStopIndex());
+        Optional<SelectItemsSegment> selectItemsSegment = selectStatement.findSQLSegment(SelectItemsSegment.class);
+        if (selectItemsSegment.isPresent()) {
+            result.setSelectListStopIndex(selectItemsSegment.get().getStopIndex());
+        }
         return result;
     }
     

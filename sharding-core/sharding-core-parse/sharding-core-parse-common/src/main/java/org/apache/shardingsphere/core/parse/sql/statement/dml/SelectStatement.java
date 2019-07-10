@@ -43,8 +43,6 @@ public final class SelectStatement extends DMLStatement {
     
     private boolean containsSubquery;
     
-    private int selectListStopIndex;
-    
     private PaginationValueSegment offset;
     
     private PaginationValueSegment rowCount;
