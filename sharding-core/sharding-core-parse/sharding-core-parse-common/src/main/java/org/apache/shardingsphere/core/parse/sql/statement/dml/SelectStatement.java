@@ -17,13 +17,10 @@
 
 package org.apache.shardingsphere.core.parse.sql.statement.dml;
 
-import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
-import org.apache.shardingsphere.core.parse.sql.context.selectitem.StarSelectItem;
-import org.apache.shardingsphere.core.parse.sql.context.table.Table;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationValueSegment;
 
 import java.util.LinkedHashSet;
@@ -53,27 +50,4 @@ public final class SelectStatement extends DMLStatement {
     private PaginationValueSegment rowCount;
     
     private SelectStatement parentStatement;
-    
-    /**
-     * Find star select item via table name or alias.
-     *
-     * @param tableNameOrAlias table name or alias
-     * @return star select item via table name or alias
-     */
-    public Optional<StarSelectItem> findStarSelectItem(final String tableNameOrAlias) {
-        Optional<Table> table = getTables().find(tableNameOrAlias);
-        if (!table.isPresent()) {
-            return Optional.absent();
-        }
-        for (SelectItem each : items) {
-            if (!(each instanceof StarSelectItem)) {
-                continue;
-            }
-            StarSelectItem starSelectItem = (StarSelectItem) each;
-            if (starSelectItem.getOwner().isPresent() && getTables().find(starSelectItem.getOwner().get()).equals(table)) {
-                return Optional.of(starSelectItem);
-            }
-        }
-        return Optional.absent();
-    }
 }

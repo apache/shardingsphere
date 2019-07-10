@@ -151,12 +151,12 @@ public final class SelectItemsEngine {
     
     private boolean containsItem(final SelectStatement selectStatement, final Collection<SelectItem> items, final OrderByItemSegment orderByItemSegment) {
         return orderByItemSegment instanceof IndexOrderByItemSegment
-                || containsItemInStarSelectItems(selectStatement, items, orderByItemSegment) || containsItemInSelectItems(selectStatement, orderByItemSegment);
+                || containsItemInStarSelectItems(selectStatement, items, orderByItemSegment) || containsItemInSelectItems(items, orderByItemSegment);
     }
     
     private boolean containsItemInStarSelectItems(final SelectStatement selectStatement, final Collection<SelectItem> items, final OrderByItemSegment orderByItemSegment) {
         return hasUnqualifiedStarSelectItem(items)
-                || containsItemWithOwnerInStarSelectItems(selectStatement, orderByItemSegment) || containsItemWithoutOwnerInStarSelectItems(selectStatement, items, orderByItemSegment);
+                || containsItemWithOwnerInStarSelectItems(selectStatement, items, orderByItemSegment) || containsItemWithoutOwnerInStarSelectItems(selectStatement, items, orderByItemSegment);
     }
     
     private boolean hasUnqualifiedStarSelectItem(final Collection<SelectItem> items) {
@@ -168,9 +168,26 @@ public final class SelectItemsEngine {
         return false;
     }
     
-    private boolean containsItemWithOwnerInStarSelectItems(final SelectStatement selectStatement, final OrderByItemSegment orderItem) {
+    private boolean containsItemWithOwnerInStarSelectItems(final SelectStatement selectStatement, final Collection<SelectItem> items, final OrderByItemSegment orderItem) {
         return orderItem instanceof ColumnOrderByItemSegment && ((ColumnOrderByItemSegment) orderItem).getColumn().getOwner().isPresent()
-                && selectStatement.findStarSelectItem(((ColumnOrderByItemSegment) orderItem).getColumn().getOwner().get().getName()).isPresent();
+                && findStarSelectItem(selectStatement, items, ((ColumnOrderByItemSegment) orderItem).getColumn().getOwner().get().getName()).isPresent();
+    }
+    
+    private Optional<StarSelectItem> findStarSelectItem(final SelectStatement selectStatement, final Collection<SelectItem> items, final String tableNameOrAlias) {
+        Optional<Table> table = selectStatement.getTables().find(tableNameOrAlias);
+        if (!table.isPresent()) {
+            return Optional.absent();
+        }
+        for (SelectItem each : items) {
+            if (!(each instanceof StarSelectItem)) {
+                continue;
+            }
+            StarSelectItem starSelectItem = (StarSelectItem) each;
+            if (starSelectItem.getOwner().isPresent() && selectStatement.getTables().find(starSelectItem.getOwner().get()).equals(table)) {
+                return Optional.of(starSelectItem);
+            }
+        }
+        return Optional.absent();
     }
     
     private boolean containsItemWithoutOwnerInStarSelectItems(final SelectStatement selectStatement, final Collection<SelectItem> items, final OrderByItemSegment orderItem) {
@@ -203,8 +220,8 @@ public final class SelectItemsEngine {
         return table.isPresent() && shardingTableMetaData.containsColumn(table.get().getName(), orderItem.getColumn().getName());
     }
     
-    private boolean containsItemInSelectItems(final SelectStatement selectStatement, final OrderByItemSegment orderItem) {
-        for (SelectItem each : selectStatement.getItems()) {
+    private boolean containsItemInSelectItems(final Collection<SelectItem> items, final OrderByItemSegment orderItem) {
+        for (SelectItem each : items) {
             if (orderItem instanceof IndexOrderByItemSegment) {
                 return true;
             }
