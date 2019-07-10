@@ -132,14 +132,19 @@ public final class ShardingSQLRewriterTest {
     
     @Test
     public void assertRewriteWithoutChange() {
+        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(createSQLRouteResultWithoutChange(), Collections.<Object>singletonList(1));
+        assertThat(getSQLBuilder(rewriteEngine).toSQL(null, tableTokens), is("SELECT table_y.id FROM table_y WHERE table_y.id=?"));
+        assertThat(rewriteEngine.generateSQL().getSql(), is("SELECT table_y.id FROM table_y WHERE table_y.id=?"));
+    }
+    
+    private SQLRouteResult createSQLRouteResultWithoutChange() {
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.setLogicSQL("SELECT table_y.id FROM table_y WHERE table_y.id=?");
-        routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), 
+        SQLRouteResult routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), 
                 selectStatement.getItems(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
                 new Pagination(null, null, Collections.emptyList())));
         routeResult.setRoutingResult(new RoutingResult());
-        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(Collections.<Object>singletonList(1));
-        assertThat(getSQLBuilder(rewriteEngine).toSQL(null, tableTokens), is("SELECT table_y.id FROM table_y WHERE table_y.id=?"));
+        return routeResult;
     }
     
     @Test
