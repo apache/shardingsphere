@@ -30,6 +30,7 @@ import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.Sha
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.ShardingInsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ShardingSelectOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.groupby.GroupBy;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.SelectItems;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderBy;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderByItem;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.pagination.Pagination;
@@ -94,7 +95,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShardingSQLRewriterTest {
+public final class ShardingSQLRewriteEngineTest {
     
     private ShardingRule shardingRule;
     
@@ -109,7 +110,7 @@ public final class ShardingSQLRewriterTest {
     }
     
     private ShardingRule createShardingRule() throws IOException {
-        URL url = ShardingSQLRewriterTest.class.getClassLoader().getResource("yaml/rewrite-rule.yaml");
+        URL url = ShardingSQLRewriteEngineTest.class.getClassLoader().getResource("yaml/rewrite-rule.yaml");
         Preconditions.checkNotNull(url, "Cannot found rewrite rule yaml configuration.");
         YamlRootShardingConfiguration yamlShardingConfig = YamlEngine.unmarshal(new File(url.getFile()), YamlRootShardingConfiguration.class);
         return new ShardingRule(new ShardingRuleConfigurationYamlSwapper().swap(yamlShardingConfig.getShardingRule()), yamlShardingConfig.getDataSources().keySet());
@@ -132,9 +133,9 @@ public final class ShardingSQLRewriterTest {
     private SQLRouteResult createSQLRouteResultWithoutChange() {
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.setLogicSQL("SELECT table_y.id FROM table_y WHERE table_y.id=?");
-        SQLRouteResult result = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), 
-                selectStatement.getItems(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
-                new Pagination(null, null, Collections.emptyList())));
+        SQLRouteResult result = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(),
+                new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
+                new SelectItems(0), new Pagination(null, null, Collections.emptyList())));
         result.setRoutingResult(new RoutingResult());
         return result;
     }
@@ -151,9 +152,9 @@ public final class ShardingSQLRewriterTest {
         selectStatement.getSQLSegments().add(new TableSegment(7, 13, "table_x"));
         selectStatement.getSQLSegments().add(new TableSegment(31, 37, "table_x"));
         selectStatement.getSQLSegments().add(new TableSegment(47, 53, "table_x"));
-        SQLRouteResult result = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), 
-                selectStatement.getItems(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
-                new Pagination(null, null, Collections.emptyList())));
+        SQLRouteResult result = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(),
+                new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
+                new SelectItems(0), new Pagination(null, null, Collections.emptyList())));
         result.setRoutingResult(new RoutingResult());
         return result;
     }
@@ -171,12 +172,12 @@ public final class ShardingSQLRewriterTest {
         selectStatement.getSQLSegments().add(new TableSegment(18, 24, "table_x"));
         DerivedCommonSelectItem selectItem1 = new DerivedCommonSelectItem("x.id", Optional.of("GROUP_BY_DERIVED_0"));
         DerivedCommonSelectItem selectItem2 = new DerivedCommonSelectItem("x.name", Optional.of("ORDER_BY_DERIVED_0"));
-        selectStatement.getItems().add(selectItem1);
-        selectStatement.getItems().add(selectItem2);
-        selectStatement.setSelectListStopIndex(11);
-        SQLRouteResult result = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), 
-                selectStatement.getItems(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
-                new Pagination(null, null, Collections.emptyList())));
+        SelectItems selectItems = new SelectItems(11);
+        selectItems.getItems().add(selectItem1);
+        selectItems.getItems().add(selectItem2);
+        SQLRouteResult result = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(),
+                new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
+                selectItems, new Pagination(null, null, Collections.emptyList())));
         result.setRoutingResult(new RoutingResult());
         return result;
     }
@@ -197,11 +198,11 @@ public final class ShardingSQLRewriterTest {
         AggregationSelectItem avgSelectItem = new AggregationSelectItem(AggregationType.AVG, "(x.age)", Optional.<String>absent());
         avgSelectItem.getDerivedAggregationSelectItems().add(countSelectItem);
         avgSelectItem.getDerivedAggregationSelectItems().add(sumSelectItem);
-        selectStatement.setSelectListStopIndex(16);
-        selectStatement.getItems().add(avgSelectItem);
-        SQLRouteResult result = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), 
-                selectStatement.getItems(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
-                new Pagination(null, null, Collections.emptyList())));
+        SelectItems selectItems = new SelectItems(16);
+        selectItems.getItems().add(avgSelectItem);
+        SQLRouteResult result = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(),
+                new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
+                selectItems, new Pagination(null, null, Collections.emptyList())));
         result.setRoutingResult(new RoutingResult());
         return result;
     }
@@ -403,9 +404,9 @@ public final class ShardingSQLRewriterTest {
         PaginationValueSegment rowCountSegment = new NumberLiteralLimitValueSegment(36, 36, 2);
         selectStatement.setOffset(offsetSegment);
         selectStatement.setRowCount(rowCountSegment);
-        OptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), 
-                selectStatement.getItems(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
-                new Pagination(offsetSegment, rowCountSegment, Collections.emptyList()));
+        OptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(),
+                new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
+                new SelectItems(0), new Pagination(offsetSegment, rowCountSegment, Collections.emptyList()));
         SQLRouteResult result = new SQLRouteResult(optimizedStatement);
         result.setRoutingResult(new RoutingResult());
         return result;
@@ -426,9 +427,9 @@ public final class ShardingSQLRewriterTest {
         PaginationValueSegment rowCountSegment = new NumberLiteralRowNumberValueSegment(98, 98, 4, false);
         selectStatement.setOffset(offsetSegment);
         selectStatement.setRowCount(rowCountSegment);
-        OptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), 
-                selectStatement.getItems(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
-                new Pagination(offsetSegment, rowCountSegment, Collections.emptyList()));
+        OptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(),
+                new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
+                new SelectItems(0), new Pagination(offsetSegment, rowCountSegment, Collections.emptyList()));
         SQLRouteResult result = new SQLRouteResult(optimizedStatement);
         result.setRoutingResult(new RoutingResult());
         return result;
@@ -449,9 +450,9 @@ public final class ShardingSQLRewriterTest {
         PaginationValueSegment rowCountSegment = new NumberLiteralRowNumberValueSegment(26, 26, 4, false);
         selectStatement.setOffset(offsetSegment);
         selectStatement.setRowCount(rowCountSegment);
-        OptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), 
-                selectStatement.getItems(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
-                new Pagination(offsetSegment, rowCountSegment, Collections.emptyList()));
+        OptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(),
+                new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
+                new SelectItems(0), new Pagination(offsetSegment, rowCountSegment, Collections.emptyList()));
         SQLRouteResult result = new SQLRouteResult(optimizedStatement);
         result.setRoutingResult(new RoutingResult());
         return result;
@@ -474,10 +475,10 @@ public final class ShardingSQLRewriterTest {
         selectStatement.setOffset(offsetSegment);
         selectStatement.setRowCount(rowCountSegment);
         OptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(
-                selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), selectStatement.getItems(), 
-                new GroupBy(Collections.singletonList(new OrderByItem(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.DESC, OrderDirection.ASC))), 0), 
-                new OrderBy(Collections.singletonList(new OrderByItem(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.ASC, OrderDirection.ASC))), false), 
-                new Pagination(offsetSegment, rowCountSegment, Collections.emptyList()));
+                selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(),
+                new GroupBy(Collections.singletonList(new OrderByItem(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.DESC, OrderDirection.ASC))), 0),
+                new OrderBy(Collections.singletonList(new OrderByItem(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.ASC, OrderDirection.ASC))), false),
+                new SelectItems(0), new Pagination(offsetSegment, rowCountSegment, Collections.emptyList()));
         SQLRouteResult result = new SQLRouteResult(optimizedStatement);
         result.setRoutingResult(new RoutingResult());
         return result;
@@ -501,10 +502,10 @@ public final class ShardingSQLRewriterTest {
         selectStatement.setOffset(offsetSegment);
         selectStatement.setRowCount(rowCountSegment);
         OptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(
-                selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), selectStatement.getItems(),
+                selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(),
                 new GroupBy(Collections.singletonList(new OrderByItem(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.DESC, OrderDirection.ASC))), 0),
-                new OrderBy(Collections.singletonList(new OrderByItem(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.ASC, OrderDirection.ASC))), false), 
-                new Pagination(offsetSegment, rowCountSegment, Collections.emptyList()));
+                new OrderBy(Collections.singletonList(new OrderByItem(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.ASC, OrderDirection.ASC))), false),
+                new SelectItems(0), new Pagination(offsetSegment, rowCountSegment, Collections.emptyList()));
         SQLRouteResult result = new SQLRouteResult(optimizedStatement);
         result.setRoutingResult(new RoutingResult());
         return result;
@@ -528,10 +529,10 @@ public final class ShardingSQLRewriterTest {
         selectStatement.setOffset(offsetSegment);
         selectStatement.setRowCount(rowCountSegment);
         OptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(
-                selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), selectStatement.getItems(),
+                selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(),
                 new GroupBy(Collections.singletonList(new OrderByItem(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.DESC, OrderDirection.ASC))), 0),
-                new OrderBy(Collections.singletonList(new OrderByItem(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.ASC, OrderDirection.ASC))), false), 
-                new Pagination(offsetSegment, rowCountSegment, Collections.emptyList()));
+                new OrderBy(Collections.singletonList(new OrderByItem(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.ASC, OrderDirection.ASC))), false),
+                new SelectItems(0), new Pagination(offsetSegment, rowCountSegment, Collections.emptyList()));
         SQLRouteResult result = new SQLRouteResult(optimizedStatement);
         result.setRoutingResult(new RoutingResult());
         return result;
@@ -551,9 +552,9 @@ public final class ShardingSQLRewriterTest {
         PaginationValueSegment rowCountSegment = new NumberLiteralLimitValueSegment(36, 36, 2);
         selectStatement.setOffset(offsetSegment);
         selectStatement.setRowCount(rowCountSegment);
-        OptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), 
-                selectStatement.getItems(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
-                new Pagination(offsetSegment, rowCountSegment, Collections.emptyList()));
+        OptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(),
+                new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
+                new SelectItems(0), new Pagination(offsetSegment, rowCountSegment, Collections.emptyList()));
         SQLRouteResult result = new SQLRouteResult(optimizedStatement);
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
@@ -576,9 +577,9 @@ public final class ShardingSQLRewriterTest {
         PaginationValueSegment rowCountSegment = new NumberLiteralRowNumberValueSegment(98, 98, 4, false);
         selectStatement.setOffset(offsetSegment);
         selectStatement.setRowCount(rowCountSegment);
-        OptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), 
-                selectStatement.getItems(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
-                new Pagination(offsetSegment, rowCountSegment, Collections.emptyList()));
+        OptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(),
+                new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
+                new SelectItems(0), new Pagination(offsetSegment, rowCountSegment, Collections.emptyList()));
         SQLRouteResult result = new SQLRouteResult(optimizedStatement);
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
@@ -601,9 +602,9 @@ public final class ShardingSQLRewriterTest {
         PaginationValueSegment rowCountSegment = new NumberLiteralRowNumberValueSegment(26, 26, 4, false);
         selectStatement.setOffset(offsetSegment);
         selectStatement.setRowCount(rowCountSegment);
-        OptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), 
-                selectStatement.getItems(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
-                new Pagination(offsetSegment, rowCountSegment, Collections.emptyList()));
+        OptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(),
+                new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
+                new SelectItems(0), new Pagination(offsetSegment, rowCountSegment, Collections.emptyList()));
         SQLRouteResult result = new SQLRouteResult(optimizedStatement);
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
@@ -626,13 +627,14 @@ public final class ShardingSQLRewriterTest {
         ColumnSegment columnSegment2 = new ColumnSegment(0, 0, "name");
         columnSegment2.setOwner(new TableSegment(0, 0, "x"));
         OptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(
-                selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), selectStatement.getItems(), 
+                selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(),
                 new GroupBy(Arrays.asList(
-                        new OrderByItem(new ColumnOrderByItemSegment(0, 0, columnSegment1, OrderDirection.ASC, OrderDirection.ASC)), 
+                        new OrderByItem(new ColumnOrderByItemSegment(0, 0, columnSegment1, OrderDirection.ASC, OrderDirection.ASC)),
                         new OrderByItem(new ColumnOrderByItemSegment(0, 0, columnSegment2, OrderDirection.DESC, OrderDirection.ASC))), 60),
                 new OrderBy(Arrays.asList(
                         new OrderByItem(new ColumnOrderByItemSegment(0, 0, columnSegment1, OrderDirection.ASC, OrderDirection.ASC)),
-                        new OrderByItem(new ColumnOrderByItemSegment(0, 0, columnSegment2, OrderDirection.DESC, OrderDirection.ASC))), true), new Pagination(null, null, Collections.emptyList()));
+                        new OrderByItem(new ColumnOrderByItemSegment(0, 0, columnSegment2, OrderDirection.DESC, OrderDirection.ASC))), true),
+                new SelectItems(0), new Pagination(null, null, Collections.emptyList()));
         SQLRouteResult result = new SQLRouteResult(optimizedStatement);
         result.setRoutingResult(new RoutingResult());
         return result;
@@ -650,9 +652,9 @@ public final class ShardingSQLRewriterTest {
         selectStatement.getTables().add(new Table("table_x", null));
         selectStatement.getSQLSegments().add(new IndexSegment(13, 22, "index_name", QuoteCharacter.NONE));
         selectStatement.getSQLSegments().add(new TableSegment(27, 33, "table_x"));
-        SQLRouteResult result = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), 
-                selectStatement.getItems(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
-                new Pagination(null, null, Collections.emptyList())));
+        SQLRouteResult result = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(),
+                new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
+                new SelectItems(0), new Pagination(null, null, Collections.emptyList())));
         result.setRoutingResult(new RoutingResult());
         return result;
     }
@@ -669,9 +671,9 @@ public final class ShardingSQLRewriterTest {
         selectStatement.getTables().add(new Table("table_x", null));
         selectStatement.getSQLSegments().add(new IndexSegment(13, 23, "logic_index", QuoteCharacter.NONE));
         selectStatement.getSQLSegments().add(new TableSegment(28, 34, "table_x"));
-        SQLRouteResult result = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), 
-                selectStatement.getItems(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
-                new Pagination(null, null, Collections.emptyList())));
+        SQLRouteResult result = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(),
+                new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
+                new SelectItems(0), new Pagination(null, null, Collections.emptyList())));
         result.setRoutingResult(new RoutingResult());
         return result;
     }
@@ -860,9 +862,9 @@ public final class ShardingSQLRewriterTest {
         TableSegment tableSegment = new TableSegment(14, 32, "table_x");
         tableSegment.setOwner(new SchemaSegment(14, 24, "sharding_db"));
         selectStatement.getSQLSegments().add(tableSegment);
-        SQLRouteResult result = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), 
-                selectStatement.getItems(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
-                new Pagination(null, null, Collections.emptyList())));
+        SQLRouteResult result = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(),
+                new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
+                new SelectItems(0), new Pagination(null, null, Collections.emptyList())));
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
         result.setRoutingResult(routingResult);
@@ -937,9 +939,9 @@ public final class ShardingSQLRewriterTest {
         Column column = new Column("id", "table_z");
         AndCondition encryptConditions = new AndCondition();
         encryptConditions.getConditions().add(new Condition(column, new PredicateSegment(29, 39, null, null), expressionSegments));
-        SQLRouteResult result = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), encryptConditions, 
-                selectStatement.getItems(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
-                new Pagination(null, null, Collections.emptyList())));
+        SQLRouteResult result = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), encryptConditions,
+                new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
+                new SelectItems(0), new Pagination(null, null, Collections.emptyList())));
         result.setRoutingResult(new RoutingResult());
         return result;
     }
@@ -947,7 +949,7 @@ public final class ShardingSQLRewriterTest {
     @Test
     public void assertRewriteSelectInWithQueryAssistedShardingEncryptor() {
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(createSQLRouteResultForSelectInWithQueryAssistedShardingEncryptor(), Collections.emptyList());
-        assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(), 
+        assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(),
                 is("SELECT id FROM table_k WHERE query_id IN ('assistedEncryptValue', 'assistedEncryptValue')"));
     }
     
@@ -962,9 +964,9 @@ public final class ShardingSQLRewriterTest {
         Column column = new Column("id", "table_k");
         AndCondition encryptConditions = new AndCondition();
         encryptConditions.getConditions().add(new Condition(column, new PredicateSegment(29, 39, null, null), expressionSegments));
-        SQLRouteResult result = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), encryptConditions, 
-                selectStatement.getItems(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
-                new Pagination(null, null, Collections.emptyList())));
+        SQLRouteResult result = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), encryptConditions,
+                new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
+                new SelectItems(0), new Pagination(null, null, Collections.emptyList())));
         result.setRoutingResult(new RoutingResult());
         return result;
     }
@@ -994,7 +996,7 @@ public final class ShardingSQLRewriterTest {
     @Test
     public void assertRewriteInsertWithQueryAssistedShardingEncryptor() {
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(createSQLRouteResultForInsertWithQueryAssistedShardingEncryptor(), Collections.emptyList());
-        assertThat(rewriteEngine.generateSQL(routingUnit, logicTableAndActualTables).getSql(), 
+        assertThat(rewriteEngine.generateSQL(routingUnit, logicTableAndActualTables).getSql(),
                 is("INSERT INTO `table_w` set name = 'encryptValue', id = 1, query_name = 'assistedEncryptValue' ON DUPLICATE KEY UPDATE name = VALUES(name)"));
     }
     
@@ -1010,7 +1012,7 @@ public final class ShardingSQLRewriterTest {
         ShardingInsertColumns insertColumns = mock(ShardingInsertColumns.class);
         when(insertColumns.getRegularColumnNames()).thenReturn(Collections.singletonList("name"));
         when(insertColumns.getAllColumnNames()).thenReturn(Arrays.asList("name", "id", "query_name"));
-        ShardingInsertOptimizedStatement optimizedStatement = 
+        ShardingInsertOptimizedStatement optimizedStatement =
                 new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), insertColumns, null);
         ExpressionSegment[] expressionSegments = {new LiteralExpressionSegment(0, 0, 10), new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 10)};
         optimizedStatement.addUnit(expressionSegments, new Object[0], 0);
@@ -1038,9 +1040,9 @@ public final class ShardingSQLRewriterTest {
         selectItemsSegment.getSelectItems().add(selectItemSegment1);
         selectItemsSegment.getSelectItems().add(selectItemSegment2);
         selectStatement.getSQLSegments().add(selectItemsSegment);
-        SQLRouteResult result = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), 
-                selectStatement.getItems(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
-                new Pagination(null, null, Collections.emptyList())));
+        SQLRouteResult result = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(),
+                new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
+                new SelectItems(0), new Pagination(null, null, Collections.emptyList())));
         result.setRoutingResult(new RoutingResult());
         return result;
     }
@@ -1061,8 +1063,8 @@ public final class ShardingSQLRewriterTest {
         AndCondition encryptConditions = new AndCondition();
         encryptConditions.getConditions().add(new Condition(column, new PredicateSegment(29, 32, null, null), new ParameterMarkerExpressionSegment(0, 0, 0)));
         SQLRouteResult result = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), encryptConditions,
-                selectStatement.getItems(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
-                new Pagination(null, null, Collections.emptyList())));
+                new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
+                new SelectItems(0), new Pagination(null, null, Collections.emptyList())));
         result.setRoutingResult(new RoutingResult());
         return result;
     }
@@ -1088,8 +1090,8 @@ public final class ShardingSQLRewriterTest {
         encryptConditions.getConditions().add(new Condition(column, new PredicateSegment(29, 40, null, null), expressionSegments));
         encryptConditions.getConditions().add(new Condition(column, new PredicateSegment(45, 50, null, null), new LiteralExpressionSegment(0, 0, 3)));
         SQLRouteResult result = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), encryptConditions,
-                selectStatement.getItems(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
-                new Pagination(null, null, Collections.emptyList())));
+                new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
+                new SelectItems(0), new Pagination(null, null, Collections.emptyList())));
         result.setRoutingResult(new RoutingResult());
         return result;
     }
@@ -1110,8 +1112,8 @@ public final class ShardingSQLRewriterTest {
         AndCondition encryptConditions = new AndCondition();
         encryptConditions.getConditions().add(new Condition(column, new PredicateSegment(29, 32, null, null), new ParameterMarkerExpressionSegment(0, 0, 0)));
         SQLRouteResult result = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), encryptConditions,
-                selectStatement.getItems(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
-                new Pagination(null, null, Collections.emptyList())));
+                new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
+                new SelectItems(0), new Pagination(null, null, Collections.emptyList())));
         result.setRoutingResult(new RoutingResult());
         return result;
     }
