@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.parse.filler.impl.dml;
 import org.apache.shardingsphere.core.parse.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 
 /**
  * Limit filler.
@@ -31,11 +30,5 @@ public final class LimitFiller implements SQLSegmentFiller<LimitSegment> {
     
     @Override
     public void fill(final LimitSegment sqlSegment, final SQLStatement sqlStatement) {
-        if (sqlSegment.getOffset().isPresent()) {
-            ((SelectStatement) sqlStatement).setOffset(sqlSegment.getOffset().get());
-        }
-        if (sqlSegment.getRowCount().isPresent()) {
-            ((SelectStatement) sqlStatement).setRowCount(sqlSegment.getRowCount().get());
-        }
     }
 }

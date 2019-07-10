@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.parse.integrate.asserts;
 
+import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.parse.integrate.asserts.condition.ConditionAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.groupby.GroupByAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.index.IndexAssert;
@@ -28,6 +29,7 @@ import org.apache.shardingsphere.core.parse.integrate.asserts.table.AlterTableAs
 import org.apache.shardingsphere.core.parse.integrate.asserts.table.TableAssert;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.ShardingParserResultSetRegistry;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.root.ParserResult;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.CreateTableStatement;
@@ -109,8 +111,11 @@ public final class ShardingSQLStatementAssert {
         itemAssert.assertItems(actual.getItems(), expected.getSelectItems());
 //        groupByAssert.assertGroupByItems(actual.getGroupByItems(), expected.getGroupByColumns());
 //        orderByAssert.assertOrderByItems(actual.getOrderByItems(), expected.getOrderByColumns());
-        paginationAssert.assertOffset(actual.getOffset(), expected.getOffset());
-        paginationAssert.assertRowCount(actual.getRowCount(), expected.getRowCount());
+        Optional<LimitSegment> limitSegment = actual.findSQLSegment(LimitSegment.class);
+        if (limitSegment.isPresent()) {
+            paginationAssert.assertOffset(limitSegment.get().getOffset().orNull(), expected.getOffset());
+            paginationAssert.assertRowCount(limitSegment.get().getRowCount().orNull(), expected.getRowCount());
+        }
     }
     
     private void assertCreateTableStatement(final CreateTableStatement actual) {

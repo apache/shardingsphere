@@ -78,7 +78,7 @@ public final class ShardingSelectOptimizeEngine implements OptimizeEngine {
         GroupBy groupBy = groupByEngine.createGroupBy(selectStatement);
         OrderBy orderBy = orderByEngine.createOrderBy(selectStatement, groupBy);
         SelectItems selectItems = selectItemsEngine.createSelectItems(selectStatement, groupBy, orderBy);
-        Pagination pagination = paginationEngine.createPagination(selectStatement, parameters);
+        Pagination pagination = paginationEngine.createPagination(selectStatement, selectItems, parameters);
         return new ShardingSelectOptimizedStatement(selectStatement, shardingConditions, encryptConditions, groupBy, orderBy, selectItems, pagination);
     }
 }
