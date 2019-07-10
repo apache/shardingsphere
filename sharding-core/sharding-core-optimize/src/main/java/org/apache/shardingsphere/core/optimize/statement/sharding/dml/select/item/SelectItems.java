@@ -18,55 +18,26 @@
 package org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
-import org.apache.shardingsphere.core.parse.sql.context.selectitem.StarSelectItem;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 
 /**
  * Select items.
  *
  * @author zhangliang
  */
+@RequiredArgsConstructor
 @Getter
 @Setter
 public final class SelectItems {
     
     private final Collection<SelectItem> items = new LinkedHashSet<>();
     
+    private final int selectListStopIndex;
+    
     private boolean containStar;
-    
-    private int selectListStopIndex;
-    
-    /**
-     * Judge has unqualified star select item.
-     *
-     * @return star select item without owner
-     */
-    public boolean hasUnqualifiedStarSelectItem() {
-        for (SelectItem each : items) {
-            if (each instanceof StarSelectItem && !((StarSelectItem) each).getOwner().isPresent()) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    /**
-     * Get qualified star select items.
-     *
-     * @return qualified star select items
-     */
-    public Collection<StarSelectItem> getQualifiedStarSelectItems() {
-        Collection<StarSelectItem> result = new LinkedList<>();
-        for (SelectItem each : items) {
-            if (each instanceof StarSelectItem && ((StarSelectItem) each).getOwner().isPresent()) {
-                result.add((StarSelectItem) each);
-            }
-        }
-        return result;
-    }
 }
