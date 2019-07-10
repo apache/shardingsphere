@@ -60,9 +60,9 @@ public final class SQLTokenGenerateEngineTest {
     public void setUp() {
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.getSQLSegments().add(createSelectItemsSegment());
-        optimizedStatement = new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(),  
+        optimizedStatement = new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), 
                 new GroupBy(Collections.<OrderByItem>emptyList(), 1), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
-                new SelectItems(), new Pagination(null, null, Collections.emptyList()));
+                new SelectItems(0), new Pagination(null, null, Collections.emptyList()));
     }
     
     private SelectItemsSegment createSelectItemsSegment() {

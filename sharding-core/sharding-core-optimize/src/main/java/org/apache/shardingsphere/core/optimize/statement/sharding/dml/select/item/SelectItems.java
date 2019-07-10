@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
 
@@ -29,13 +30,14 @@ import java.util.LinkedHashSet;
  *
  * @author zhangliang
  */
+@RequiredArgsConstructor
 @Getter
 @Setter
 public final class SelectItems {
     
     private final Collection<SelectItem> items = new LinkedHashSet<>();
     
-    private boolean containStar;
+    private final int selectListStopIndex;
     
-    private int selectListStopIndex;
+    private boolean containStar;
 }

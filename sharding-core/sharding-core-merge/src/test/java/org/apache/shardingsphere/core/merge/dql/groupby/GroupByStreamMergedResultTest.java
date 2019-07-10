@@ -86,11 +86,11 @@ public final class GroupByStreamMergedResultTest {
         AggregationSelectItem derivedAggregationSelectItem2 = new AggregationSelectItem(AggregationType.SUM, "(num)", Optional.of("AVG_DERIVED_SUM_0"));
         aggregationSelectItem2.setIndex(6);
         aggregationSelectItem2.getDerivedAggregationSelectItems().add(derivedAggregationSelectItem2);
-        SelectItems selectItems = new SelectItems();
+        SelectItems selectItems = new SelectItems(0);
         selectItems.getItems().add(aggregationSelectItem1);
         selectItems.getItems().add(aggregationSelectItem2);
         OptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(
-                new SelectStatement(), Collections.<ShardingCondition>emptyList(), new AndCondition(),  
+                new SelectStatement(), Collections.<ShardingCondition>emptyList(), new AndCondition(), 
                 new GroupBy(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, OrderDirection.ASC))), 0),
                 new OrderBy(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, OrderDirection.ASC))), false),
                 selectItems, new Pagination(null, null, Collections.emptyList()));
