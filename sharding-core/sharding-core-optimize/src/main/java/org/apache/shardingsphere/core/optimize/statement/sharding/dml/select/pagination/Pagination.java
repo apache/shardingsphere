@@ -62,6 +62,24 @@ public final class Pagination {
     }
     
     /**
+     * Get offset segment.
+     * 
+     * @return offset segment
+     */
+    public Optional<PaginationValueSegment> getOffsetSegment() {
+        return Optional.fromNullable(offsetSegment);
+    }
+    
+    /**
+     * Get row count segment.
+     *
+     * @return row count segment
+     */
+    public Optional<PaginationValueSegment> getRowCountSegment() {
+        return Optional.fromNullable(rowCountSegment);
+    }
+    
+    /**
      * Get actual offset.
      * 
      * @return actual offset
