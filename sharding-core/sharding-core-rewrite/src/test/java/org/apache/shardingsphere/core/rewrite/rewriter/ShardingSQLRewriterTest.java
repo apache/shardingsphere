@@ -417,173 +417,202 @@ public final class ShardingSQLRewriterTest {
     
     @Test
     public void assertRewriteRowNumber() {
-        SelectStatement selectStatement = new SelectStatement();
-        PaginationValueSegment offsetSegment = new NumberLiteralRowNumberValueSegment(119, 119, 2, true);
-        PaginationValueSegment rowCountSegment = new NumberLiteralRowNumberValueSegment(98, 98, 4, false);
-        selectStatement.setOffset(offsetSegment);
-        selectStatement.setRowCount(rowCountSegment);
-        selectStatement.getSQLSegments().add(new TableSegment(68, 74, "table_x"));
-        OptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), 
-                selectStatement.getItems(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
-                new Pagination(offsetSegment, rowCountSegment, Collections.emptyList()));
-        SQLRouteResult routeResult = new SQLRouteResult(optimizedStatement);
-        routeResult.setRoutingResult(new RoutingResult());
-        selectStatement.setLogicSQL("SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT x.id FROM table_x x) row_ WHERE rownum<=4) t WHERE t.rownum_>2");
-        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(Collections.emptyList());
+        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(createRouteResultForRowNumber(), Collections.emptyList());
         assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(),
                 is("SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT x.id FROM table_1 x) row_ WHERE rownum<=4) t WHERE t.rownum_>0"));
     }
     
-    @Test
-    public void assertRewriteTopAndRowNumber() {
+    private SQLRouteResult createRouteResultForRowNumber() {
         SelectStatement selectStatement = new SelectStatement();
-        PaginationValueSegment offsetSegment = new NumberLiteralRowNumberValueSegment(123, 123, 2, true);
-        PaginationValueSegment rowCountSegment = new NumberLiteralRowNumberValueSegment(26, 26, 4, false);
+        selectStatement.setLogicSQL("SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT x.id FROM table_x x) row_ WHERE rownum<=4) t WHERE t.rownum_>2");
+        selectStatement.getSQLSegments().add(new TableSegment(68, 74, "table_x"));
+        PaginationValueSegment offsetSegment = new NumberLiteralRowNumberValueSegment(119, 119, 2, true);
+        PaginationValueSegment rowCountSegment = new NumberLiteralRowNumberValueSegment(98, 98, 4, false);
         selectStatement.setOffset(offsetSegment);
         selectStatement.setRowCount(rowCountSegment);
-        selectStatement.getSQLSegments().add(new TableSegment(85, 91, "table_x"));
         OptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), 
                 selectStatement.getItems(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
                 new Pagination(offsetSegment, rowCountSegment, Collections.emptyList()));
-        SQLRouteResult routeResult = new SQLRouteResult(optimizedStatement);
-        routeResult.setRoutingResult(new RoutingResult());
-        selectStatement.setLogicSQL("SELECT * FROM (SELECT TOP(4) row_number() OVER (ORDER BY x.id) AS rownum_, x.id FROM table_x x) AS row_ WHERE row_.rownum_>2");
-        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(Collections.emptyList());
+        SQLRouteResult result = new SQLRouteResult(optimizedStatement);
+        result.setRoutingResult(new RoutingResult());
+        return result;
+    }
+    
+    @Test
+    public void assertRewriteTopAndRowNumber() {
+        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(createRouteResultForTopAndRowNumber(), Collections.emptyList());
         assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(),
                 is("SELECT * FROM (SELECT TOP(4) row_number() OVER (ORDER BY x.id) AS rownum_, x.id FROM table_1 x) AS row_ WHERE row_.rownum_>0"));
     }
     
+    private SQLRouteResult createRouteResultForTopAndRowNumber() {
+        SelectStatement selectStatement = new SelectStatement();
+        selectStatement.setLogicSQL("SELECT * FROM (SELECT TOP(4) row_number() OVER (ORDER BY x.id) AS rownum_, x.id FROM table_x x) AS row_ WHERE row_.rownum_>2");
+        selectStatement.getSQLSegments().add(new TableSegment(85, 91, "table_x"));
+        PaginationValueSegment offsetSegment = new NumberLiteralRowNumberValueSegment(123, 123, 2, true);
+        PaginationValueSegment rowCountSegment = new NumberLiteralRowNumberValueSegment(26, 26, 4, false);
+        selectStatement.setOffset(offsetSegment);
+        selectStatement.setRowCount(rowCountSegment);
+        OptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), 
+                selectStatement.getItems(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
+                new Pagination(offsetSegment, rowCountSegment, Collections.emptyList()));
+        SQLRouteResult result = new SQLRouteResult(optimizedStatement);
+        result.setRoutingResult(new RoutingResult());
+        return result;
+    }
+    
     @Test
     public void assertRewriteLimitForMemoryGroupBy() {
+        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(createRouteResultForLimitForMemoryGroupBy(), Collections.emptyList());
+        assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(), is("SELECT x.id FROM table_1 x LIMIT 0, 2147483647"));
+    }
+    
+    private SQLRouteResult createRouteResultForLimitForMemoryGroupBy() {
         SelectStatement selectStatement = new SelectStatement();
+        selectStatement.setLogicSQL("SELECT x.id FROM table_x x LIMIT 2, 2");
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, "id");
+        columnSegment.setOwner(new TableSegment(0, 0, "x"));
+        selectStatement.getSQLSegments().add(new TableSegment(17, 23, "table_x"));
         PaginationValueSegment offsetSegment = new NumberLiteralLimitValueSegment(33, 33, 2);
         PaginationValueSegment rowCountSegment = new NumberLiteralLimitValueSegment(36, 36, 2);
         selectStatement.setOffset(offsetSegment);
         selectStatement.setRowCount(rowCountSegment);
-        ColumnSegment columnSegment = new ColumnSegment(0, 0, "id");
-        columnSegment.setOwner(new TableSegment(0, 0, "x"));
-        selectStatement.getSQLSegments().add(new TableSegment(17, 23, "table_x"));
         OptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(
                 selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), selectStatement.getItems(), 
                 new GroupBy(Collections.singletonList(new OrderByItem(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.DESC, OrderDirection.ASC))), 0), 
                 new OrderBy(Collections.singletonList(new OrderByItem(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.ASC, OrderDirection.ASC))), false), 
                 new Pagination(offsetSegment, rowCountSegment, Collections.emptyList()));
-        SQLRouteResult routeResult = new SQLRouteResult(optimizedStatement);
-        routeResult.setRoutingResult(new RoutingResult());
-        selectStatement.setLogicSQL("SELECT x.id FROM table_x x LIMIT 2, 2");
-        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(Collections.emptyList());
-        assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(), is("SELECT x.id FROM table_1 x LIMIT 0, 2147483647"));
+        SQLRouteResult result = new SQLRouteResult(optimizedStatement);
+        result.setRoutingResult(new RoutingResult());
+        return result;
     }
     
     @Test
     public void assertRewriteRowNumForMemoryGroupBy() {
-        SelectStatement selectStatement = new SelectStatement();
-        PaginationValueSegment offsetSegment = new NumberLiteralRowNumberValueSegment(119, 119, 2, true);
-        PaginationValueSegment rowCountSegment = new NumberLiteralRowNumberValueSegment(98, 98, 4, false);
-        selectStatement.setOffset(offsetSegment);
-        selectStatement.setRowCount(rowCountSegment);
-        selectStatement.getSQLSegments().add(new TableSegment(68, 74, "table_x"));
-        ColumnSegment columnSegment = new ColumnSegment(0, 0, "id");
-        columnSegment.setOwner(new TableSegment(0, 0, "x"));
-        OptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(
-                selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), selectStatement.getItems(),
-                new GroupBy(Collections.singletonList(new OrderByItem(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.DESC, OrderDirection.ASC))), 0),
-                new OrderBy(Collections.singletonList(new OrderByItem(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.ASC, OrderDirection.ASC))), false), 
-                new Pagination(offsetSegment, rowCountSegment, Collections.emptyList()));
-        SQLRouteResult routeResult = new SQLRouteResult(optimizedStatement);
-        routeResult.setRoutingResult(new RoutingResult());
-        selectStatement.setLogicSQL("SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT x.id FROM table_x x) row_ WHERE rownum<=4) t WHERE t.rownum_>2");
-        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(Collections.emptyList());
+        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(createRouteResultForRowNumForMemoryGroupBy(), Collections.emptyList());
         assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(),
                 is("SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT x.id FROM table_1 x) row_ WHERE rownum<=2147483647) t WHERE t.rownum_>0"));
     }
     
-    @Test
-    public void assertRewriteTopAndRowNumberForMemoryGroupBy() {
+    private SQLRouteResult createRouteResultForRowNumForMemoryGroupBy() {
         SelectStatement selectStatement = new SelectStatement();
-        PaginationValueSegment offsetSegment = new NumberLiteralRowNumberValueSegment(123, 123, 2, false);
-        PaginationValueSegment rowCountSegment = new NumberLiteralRowNumberValueSegment(26, 26, 4, false);
-        selectStatement.setOffset(offsetSegment);
-        selectStatement.setRowCount(rowCountSegment);
-        selectStatement.getSQLSegments().add(new TableSegment(85, 91, "table_x"));
+        selectStatement.setLogicSQL("SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT x.id FROM table_x x) row_ WHERE rownum<=4) t WHERE t.rownum_>2");
+        selectStatement.getSQLSegments().add(new TableSegment(68, 74, "table_x"));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, "id");
         columnSegment.setOwner(new TableSegment(0, 0, "x"));
+        PaginationValueSegment offsetSegment = new NumberLiteralRowNumberValueSegment(119, 119, 2, true);
+        PaginationValueSegment rowCountSegment = new NumberLiteralRowNumberValueSegment(98, 98, 4, false);
+        selectStatement.setOffset(offsetSegment);
+        selectStatement.setRowCount(rowCountSegment);
         OptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(
                 selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), selectStatement.getItems(),
                 new GroupBy(Collections.singletonList(new OrderByItem(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.DESC, OrderDirection.ASC))), 0),
                 new OrderBy(Collections.singletonList(new OrderByItem(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.ASC, OrderDirection.ASC))), false), 
                 new Pagination(offsetSegment, rowCountSegment, Collections.emptyList()));
-        SQLRouteResult routeResult = new SQLRouteResult(optimizedStatement);
-        routeResult.setRoutingResult(new RoutingResult());
-        selectStatement.setLogicSQL("SELECT * FROM (SELECT TOP(4) row_number() OVER (ORDER BY x.id) AS rownum_, x.id FROM table_x x) AS row_ WHERE row_.rownum_>2");
-        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(Collections.emptyList());
+        SQLRouteResult result = new SQLRouteResult(optimizedStatement);
+        result.setRoutingResult(new RoutingResult());
+        return result;
+    }
+    
+    @Test
+    public void assertRewriteTopAndRowNumberForMemoryGroupBy() {
+        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(createRouteResultForTopAndRowNumberForMemoryGroupBy(), Collections.emptyList());
         assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(),
                 is("SELECT * FROM (SELECT TOP(2147483647) row_number() OVER (ORDER BY x.id) AS rownum_, x.id FROM table_1 x) AS row_ WHERE row_.rownum_>0"));
     }
     
+    private SQLRouteResult createRouteResultForTopAndRowNumberForMemoryGroupBy() {
+        SelectStatement selectStatement = new SelectStatement();
+        selectStatement.setLogicSQL("SELECT * FROM (SELECT TOP(4) row_number() OVER (ORDER BY x.id) AS rownum_, x.id FROM table_x x) AS row_ WHERE row_.rownum_>2");
+        selectStatement.getSQLSegments().add(new TableSegment(85, 91, "table_x"));
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, "id");
+        columnSegment.setOwner(new TableSegment(0, 0, "x"));
+        PaginationValueSegment offsetSegment = new NumberLiteralRowNumberValueSegment(123, 123, 2, false);
+        PaginationValueSegment rowCountSegment = new NumberLiteralRowNumberValueSegment(26, 26, 4, false);
+        selectStatement.setOffset(offsetSegment);
+        selectStatement.setRowCount(rowCountSegment);
+        OptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(
+                selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), selectStatement.getItems(),
+                new GroupBy(Collections.singletonList(new OrderByItem(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.DESC, OrderDirection.ASC))), 0),
+                new OrderBy(Collections.singletonList(new OrderByItem(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.ASC, OrderDirection.ASC))), false), 
+                new Pagination(offsetSegment, rowCountSegment, Collections.emptyList()));
+        SQLRouteResult result = new SQLRouteResult(optimizedStatement);
+        result.setRoutingResult(new RoutingResult());
+        return result;
+    }
+    
     @Test
     public void assertRewriteLimitForNotRewritePagination() {
-        SelectStatement selectStatement = new SelectStatement();
+        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(createRouteResultForLimitForNotRewritePagination(), Collections.emptyList());
+        assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(), is("SELECT x.id FROM table_1 x LIMIT 2, 2"));
+    }
     
+    private SQLRouteResult createRouteResultForLimitForNotRewritePagination() {
+        SelectStatement selectStatement = new SelectStatement();
+        selectStatement.setLogicSQL("SELECT x.id FROM table_x x LIMIT 2, 2");
+        selectStatement.getSQLSegments().add(new TableSegment(17, 23, "table_x"));
         PaginationValueSegment offsetSegment = new NumberLiteralLimitValueSegment(33, 33, 2);
         PaginationValueSegment rowCountSegment = new NumberLiteralLimitValueSegment(36, 36, 2);
         selectStatement.setOffset(offsetSegment);
         selectStatement.setRowCount(rowCountSegment);
-        selectStatement.getSQLSegments().add(new TableSegment(17, 23, "table_x"));
         OptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), 
                 selectStatement.getItems(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
                 new Pagination(offsetSegment, rowCountSegment, Collections.emptyList()));
-        SQLRouteResult routeResult = new SQLRouteResult(optimizedStatement);
+        SQLRouteResult result = new SQLRouteResult(optimizedStatement);
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
-        routeResult.setRoutingResult(routingResult);
-        selectStatement.setLogicSQL("SELECT x.id FROM table_x x LIMIT 2, 2");
-        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(Collections.emptyList());
-        assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(), is("SELECT x.id FROM table_1 x LIMIT 2, 2"));
+        result.setRoutingResult(routingResult);
+        return result;
     }
     
     @Test
     public void assertRewriteRowNumForNotRewritePagination() {
-        SelectStatement selectStatement = new SelectStatement();
-    
-        PaginationValueSegment offsetSegment = new NumberLiteralRowNumberValueSegment(119, 119, 2, true);
-        PaginationValueSegment rowCountSegment = new NumberLiteralRowNumberValueSegment(98, 98, 4, false);
-        selectStatement.setOffset(offsetSegment);
-        selectStatement.setRowCount(rowCountSegment);
-        selectStatement.getSQLSegments().add(new TableSegment(68, 74, "table_x"));
-        OptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), 
-                selectStatement.getItems(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
-                new Pagination(offsetSegment, rowCountSegment, Collections.emptyList()));
-        SQLRouteResult routeResult = new SQLRouteResult(optimizedStatement);
-        RoutingResult routingResult = new RoutingResult();
-        routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
-        routeResult.setRoutingResult(routingResult);
-        selectStatement.setLogicSQL("SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT x.id FROM table_x x) row_ WHERE rownum<=4) t WHERE t.rownum_>2");
-        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(Collections.emptyList());
+        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(createRouteResultForRowNumForNotRewritePagination(), Collections.emptyList());
         assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(),
                 is("SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT x.id FROM table_1 x) row_ WHERE rownum<=4) t WHERE t.rownum_>2"));
     }
     
+    private SQLRouteResult createRouteResultForRowNumForNotRewritePagination() {
+        SelectStatement selectStatement = new SelectStatement();
+        selectStatement.setLogicSQL("SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT x.id FROM table_x x) row_ WHERE rownum<=4) t WHERE t.rownum_>2");
+        selectStatement.getSQLSegments().add(new TableSegment(68, 74, "table_x"));
+        PaginationValueSegment offsetSegment = new NumberLiteralRowNumberValueSegment(119, 119, 2, true);
+        PaginationValueSegment rowCountSegment = new NumberLiteralRowNumberValueSegment(98, 98, 4, false);
+        selectStatement.setOffset(offsetSegment);
+        selectStatement.setRowCount(rowCountSegment);
+        OptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), 
+                selectStatement.getItems(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
+                new Pagination(offsetSegment, rowCountSegment, Collections.emptyList()));
+        SQLRouteResult result = new SQLRouteResult(optimizedStatement);
+        RoutingResult routingResult = new RoutingResult();
+        routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
+        result.setRoutingResult(routingResult);
+        return result;
+    }
+    
     @Test
     public void assertRewriteTopAndRowNumberForNotRewritePagination() {
-        SelectStatement selectStatement = new SelectStatement();
+        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(createRouteResultForTopAndRowNumberForNotRewritePagination(), Collections.emptyList());
+        assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(),
+                is("SELECT * FROM (SELECT TOP(4) row_number() OVER (ORDER BY x.id) AS rownum_, x.id FROM table_1 x) AS row_ WHERE row_.rownum_>2"));
+    }
     
+    private SQLRouteResult createRouteResultForTopAndRowNumberForNotRewritePagination() {
+        SelectStatement selectStatement = new SelectStatement();
+        selectStatement.setLogicSQL("SELECT * FROM (SELECT TOP(4) row_number() OVER (ORDER BY x.id) AS rownum_, x.id FROM table_x x) AS row_ WHERE row_.rownum_>2");
+        selectStatement.getSQLSegments().add(new TableSegment(85, 91, "table_x"));
         PaginationValueSegment offsetSegment = new NumberLiteralRowNumberValueSegment(123, 123, 2, true);
         PaginationValueSegment rowCountSegment = new NumberLiteralRowNumberValueSegment(26, 26, 4, false);
         selectStatement.setOffset(offsetSegment);
         selectStatement.setRowCount(rowCountSegment);
-        selectStatement.getSQLSegments().add(new TableSegment(85, 91, "table_x"));
         OptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), 
                 selectStatement.getItems(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
                 new Pagination(offsetSegment, rowCountSegment, Collections.emptyList()));
-        SQLRouteResult routeResult = new SQLRouteResult(optimizedStatement);
+        SQLRouteResult result = new SQLRouteResult(optimizedStatement);
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
-        routeResult.setRoutingResult(routingResult);
-        selectStatement.setLogicSQL("SELECT * FROM (SELECT TOP(4) row_number() OVER (ORDER BY x.id) AS rownum_, x.id FROM table_x x) AS row_ WHERE row_.rownum_>2");
-        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(Collections.emptyList());
-        assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(),
-                is("SELECT * FROM (SELECT TOP(4) row_number() OVER (ORDER BY x.id) AS rownum_, x.id FROM table_1 x) AS row_ WHERE row_.rownum_>2"));
+        result.setRoutingResult(routingResult);
+        return result;
     }
     
     @Test
@@ -634,25 +663,22 @@ public final class ShardingSQLRewriterTest {
     }
     
     @Test
-    public void assertIndexTokenForIndexNameTableName() {
-        SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getTables().add(new Table("table_x", null));
-        selectStatement.getSQLSegments().add(new IndexSegment(13, 22, "index_name", QuoteCharacter.NONE));
-        selectStatement.getSQLSegments().add(new TableSegment(27, 33, "table_x"));
-        SQLRouteResult routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), 
-                selectStatement.getItems(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
-                new Pagination(null, null, Collections.emptyList())));
-        routeResult.setRoutingResult(new RoutingResult());
-        selectStatement.setLogicSQL("CREATE INDEX index_name ON table_x ('column')");
-        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(Collections.emptyList());
+    public void assertRewriteIndexTokenForIndexNameTableName() {
+        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(createRouteResultForIndexTokenForIndexNameTableName(), Collections.emptyList());
         assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(), is("CREATE INDEX index_name_table_1 ON table_1 ('column')"));
     }
     
-    @SneakyThrows
-    private SQLBuilder getSQLBuilder(final SQLRewriteEngine rewriteEngine) {
-        Field field = rewriteEngine.getClass().getDeclaredField("sqlBuilder");
-        field.setAccessible(true);
-        return (SQLBuilder) field.get(rewriteEngine);
+    private SQLRouteResult createRouteResultForIndexTokenForIndexNameTableName() {
+        SelectStatement selectStatement = new SelectStatement();
+        selectStatement.setLogicSQL("CREATE INDEX index_name ON table_x ('column')");
+        selectStatement.getTables().add(new Table("table_x", null));
+        selectStatement.getSQLSegments().add(new IndexSegment(13, 22, "index_name", QuoteCharacter.NONE));
+        selectStatement.getSQLSegments().add(new TableSegment(27, 33, "table_x"));
+        SQLRouteResult result = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), 
+                selectStatement.getItems(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
+                new Pagination(null, null, Collections.emptyList())));
+        result.setRoutingResult(new RoutingResult());
+        return result;
     }
     
     @SneakyThrows
