@@ -67,7 +67,6 @@ import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
 import org.apache.shardingsphere.core.rewrite.builder.BaseParameterBuilder;
-import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
@@ -84,10 +83,8 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -188,11 +185,11 @@ public final class ShardingSQLRewriterTest {
         avgSelectItem.getDerivedAggregationSelectItems().add(sumSelectItem);
         selectStatement.setSelectListStopIndex(16);
         selectStatement.getItems().add(avgSelectItem);
-        SQLRouteResult routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), 
+        SQLRouteResult result = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), 
                 selectStatement.getItems(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
                 new Pagination(null, null, Collections.emptyList())));
-        routeResult.setRoutingResult(new RoutingResult());
-        return routeResult;
+        result.setRoutingResult(new RoutingResult());
+        return result;
     }
     
     @Test
@@ -275,9 +272,9 @@ public final class ShardingSQLRewriterTest {
         ExpressionSegment[] expressionSegments = {new LiteralExpressionSegment(0, 0, 10), new LiteralExpressionSegment(0, 0, 1)};
         optimizedStatement.addUnit(expressionSegments, new Object[0], 0);
         optimizedStatement.getUnits().get(0).getDataNodes().add(new DataNode("db0.table_1"));
-        SQLRouteResult routeResult = new SQLRouteResult(optimizedStatement);
-        routeResult.setRoutingResult(new RoutingResult());
-        return routeResult;
+        SQLRouteResult result = new SQLRouteResult(optimizedStatement);
+        result.setRoutingResult(new RoutingResult());
+        return result;
     }
     
     @Test
@@ -661,338 +658,326 @@ public final class ShardingSQLRewriterTest {
     }
     
     @Test
-    public void assertIndexTokenForIndexNameTableNameWithoutLogicTableName() {
-        SelectStatement selectStatement = new SelectStatement();
-    
-        selectStatement.getTables().add(new Table("table_x", null));
-        selectStatement.getSQLSegments().add(new IndexSegment(13, 23, "logic_index", QuoteCharacter.NONE));
-        selectStatement.getSQLSegments().add(new TableSegment(28, 34, "table_x"));
-        SQLRouteResult routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), 
-                selectStatement.getItems(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
-                new Pagination(null, null, Collections.emptyList())));
-        routeResult.setRoutingResult(new RoutingResult());
-        selectStatement.setLogicSQL("CREATE INDEX logic_index ON table_x ('column')");
-        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(Collections.emptyList());
+    public void assertRewriteIndexTokenForIndexNameTableNameWithoutLogicTableName() {
+        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(createRouteResultForIndexTokenForIndexNameTableNameWithoutLogicTableName(), Collections.emptyList());
         assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(), is("CREATE INDEX logic_index_table_1 ON table_1 ('column')"));
     }
     
+    private SQLRouteResult createRouteResultForIndexTokenForIndexNameTableNameWithoutLogicTableName() {
+        SelectStatement selectStatement = new SelectStatement();
+        selectStatement.setLogicSQL("CREATE INDEX logic_index ON table_x ('column')");
+        selectStatement.getTables().add(new Table("table_x", null));
+        selectStatement.getSQLSegments().add(new IndexSegment(13, 23, "logic_index", QuoteCharacter.NONE));
+        selectStatement.getSQLSegments().add(new TableSegment(28, 34, "table_x"));
+        SQLRouteResult result = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), 
+                selectStatement.getItems(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
+                new Pagination(null, null, Collections.emptyList())));
+        result.setRoutingResult(new RoutingResult());
+        return result;
+    }
+    
     @Test
-    public void assertTableTokenWithoutBackQuoteForShow() {
-        DALStatement showTablesStatement = new DALStatement();
-        showTablesStatement.getSQLSegments().add(new TableSegment(18, 24, "table_x"));
-        SQLRouteResult routeResult = new SQLRouteResult(new TransparentOptimizedStatement(showTablesStatement));
-        RoutingResult routingResult = new RoutingResult();
-        routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
-        routeResult.setRoutingResult(routingResult);
-        showTablesStatement.setLogicSQL("SHOW COLUMNS FROM table_x");
-        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(Collections.emptyList());
+    public void assertRewriteTableTokenWithoutBackQuoteForShow() {
+        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(createRouteResultForTableTokenWithoutBackQuoteForShow(), Collections.emptyList());
         assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(), is("SHOW COLUMNS FROM table_1"));
     }
     
-    @Test
-    public void assertTableTokenWithoutBackQuoteFromSchemaForShow() {
+    private SQLRouteResult createRouteResultForTableTokenWithoutBackQuoteForShow() {
         DALStatement showTablesStatement = new DALStatement();
-    
-        showTablesStatement.getSQLSegments().add(new FromSchemaSegment(25, 43));
         showTablesStatement.getSQLSegments().add(new TableSegment(18, 24, "table_x"));
-        SQLRouteResult routeResult = new SQLRouteResult(new TransparentOptimizedStatement(showTablesStatement));
+        SQLRouteResult result = new SQLRouteResult(new TransparentOptimizedStatement(showTablesStatement));
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
-        routeResult.setRoutingResult(routingResult);
-        showTablesStatement.setLogicSQL("SHOW COLUMNS FROM table_x FROM 'sharding_db'");
-        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(Collections.emptyList());
-        Map<String, String> logicAndActualTableMap = new LinkedHashMap<>();
-        logicAndActualTableMap.put("table_x", "table_x");
-        assertThat(rewriteEngine.generateSQL(null, logicAndActualTableMap).getSql(), is("SHOW COLUMNS FROM table_x"));
+        result.setRoutingResult(routingResult);
+        showTablesStatement.setLogicSQL("SHOW COLUMNS FROM table_x");
+        return result;
     }
     
     @Test
-    public void assertTableTokenWithBackQuoteForShow() {
-        DALStatement showTablesStatement = new DALStatement();
+    public void assertRewriteTableTokenWithoutBackQuoteFromSchemaForShow() {
+        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(createRouteResultForTableTokenWithoutBackQuoteFromSchemaForShow(), Collections.emptyList());
+        assertThat(rewriteEngine.generateSQL(null, Collections.singletonMap("table_x", "table_x")).getSql(), is("SHOW COLUMNS FROM table_x"));
+    }
     
-        showTablesStatement.getSQLSegments().add(new TableSegment(18, 26, "`table_x`"));
-        SQLRouteResult routeResult = new SQLRouteResult(new TransparentOptimizedStatement(showTablesStatement));
+    private SQLRouteResult createRouteResultForTableTokenWithoutBackQuoteFromSchemaForShow() {
+        DALStatement showTablesStatement = new DALStatement();
+        showTablesStatement.setLogicSQL("SHOW COLUMNS FROM table_x FROM 'sharding_db'");
+        showTablesStatement.getSQLSegments().add(new FromSchemaSegment(25, 43));
+        showTablesStatement.getSQLSegments().add(new TableSegment(18, 24, "table_x"));
+        SQLRouteResult result = new SQLRouteResult(new TransparentOptimizedStatement(showTablesStatement));
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
-        routeResult.setRoutingResult(routingResult);
-        showTablesStatement.setLogicSQL("SHOW COLUMNS FROM `table_x`");
-        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(Collections.emptyList());
+        result.setRoutingResult(routingResult);
+        return result;
+    }
+    
+    @Test
+    public void assertRewriteTableTokenWithBackQuoteForShow() {
+        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(createRouteResultForTableTokenWithBackQuoteForShow(), Collections.emptyList());
         assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(), is("SHOW COLUMNS FROM `table_1`"));
     }
     
-    @Test
-    public void assertTableTokenWithBackQuoteFromSchemaForShow() {
+    private SQLRouteResult createRouteResultForTableTokenWithBackQuoteForShow() {
         DALStatement showTablesStatement = new DALStatement();
-    
+        showTablesStatement.setLogicSQL("SHOW COLUMNS FROM `table_x`");
         showTablesStatement.getSQLSegments().add(new TableSegment(18, 26, "`table_x`"));
-        SQLRouteResult routeResult = new SQLRouteResult(new TransparentOptimizedStatement(showTablesStatement));
+        SQLRouteResult result = new SQLRouteResult(new TransparentOptimizedStatement(showTablesStatement));
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
-        routeResult.setRoutingResult(routingResult);
-        showTablesStatement.setLogicSQL("SHOW COLUMNS FROM `table_x` FROM 'sharding_db'");
-        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(Collections.emptyList());
+        result.setRoutingResult(routingResult);
+        return result;
+    }
+    
+    @Test
+    public void assertRewriteTableTokenWithBackQuoteFromSchemaForShow() {
+        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(createSQLRouteResultForTableTokenWithBackQuoteFromSchemaForShow(), Collections.emptyList());
         assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(), is("SHOW COLUMNS FROM `table_1` FROM 'sharding_db'"));
     }
     
-    @Test
-    public void assertTableTokenWithSchemaForShow() {
+    private SQLRouteResult createSQLRouteResultForTableTokenWithBackQuoteFromSchemaForShow() {
         DALStatement showTablesStatement = new DALStatement();
-    
-        showTablesStatement.getSQLSegments().add(new TableSegment(18, 36, "table_x"));
-        SQLRouteResult routeResult = new SQLRouteResult(new TransparentOptimizedStatement(showTablesStatement));
+        showTablesStatement.setLogicSQL("SHOW COLUMNS FROM `table_x` FROM 'sharding_db'");
+        showTablesStatement.getSQLSegments().add(new TableSegment(18, 26, "`table_x`"));
+        SQLRouteResult result = new SQLRouteResult(new TransparentOptimizedStatement(showTablesStatement));
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
-        routeResult.setRoutingResult(routingResult);
-        showTablesStatement.setLogicSQL("SHOW COLUMNS FROM sharding_db.table_x");
-        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(Collections.emptyList());
+        result.setRoutingResult(routingResult);
+        return result;
+    }
+    
+    @Test
+    public void assertRewriteTableTokenWithSchemaForShow() {
+        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(createSQLRouteResultForTableTokenWithSchemaForShow(), Collections.emptyList());
         assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(), is("SHOW COLUMNS FROM table_1"));
     }
     
-    @Test
-    public void assertTableTokenWithSchemaFromSchemaForShow() {
+    private SQLRouteResult createSQLRouteResultForTableTokenWithSchemaForShow() {
         DALStatement showTablesStatement = new DALStatement();
-    
+        showTablesStatement.setLogicSQL("SHOW COLUMNS FROM sharding_db.table_x");
         showTablesStatement.getSQLSegments().add(new TableSegment(18, 36, "table_x"));
-        SQLRouteResult routeResult = new SQLRouteResult(new TransparentOptimizedStatement(showTablesStatement));
+        SQLRouteResult result = new SQLRouteResult(new TransparentOptimizedStatement(showTablesStatement));
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
-        routeResult.setRoutingResult(routingResult);
-        showTablesStatement.setLogicSQL("SHOW COLUMNS FROM sharding_db.table_x FROM sharding_db");
-        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(Collections.emptyList());
+        result.setRoutingResult(routingResult);
+        return result;
+    }
+    
+    @Test
+    public void assertRewriteTableTokenWithSchemaFromSchemaForShow() {
+        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(createSQLRouteResultForTableTokenWithSchemaFromSchemaForShow(), Collections.emptyList());
         assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(), is("SHOW COLUMNS FROM table_1 FROM sharding_db"));
     }
     
-    @Test
-    public void assertTableTokenWithBackQuoteWithSchemaForShow() {
+    private SQLRouteResult createSQLRouteResultForTableTokenWithSchemaFromSchemaForShow() {
         DALStatement showTablesStatement = new DALStatement();
-    
-        showTablesStatement.getSQLSegments().add(new TableSegment(18, 38, "`table_x`"));
-        SQLRouteResult routeResult = new SQLRouteResult(new TransparentOptimizedStatement(showTablesStatement));
+        showTablesStatement.setLogicSQL("SHOW COLUMNS FROM sharding_db.table_x FROM sharding_db");
+        showTablesStatement.getSQLSegments().add(new TableSegment(18, 36, "table_x"));
+        SQLRouteResult result = new SQLRouteResult(new TransparentOptimizedStatement(showTablesStatement));
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
-        routeResult.setRoutingResult(routingResult);
+        result.setRoutingResult(routingResult);
+        return result;
+    }
+    
+    @Test
+    public void assertRewriteTableTokenWithBackQuoteWithSchemaForShow() {
+        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(createSQLRouteResultForTableTokenWithBackQuoteWithSchemaForShow(), Collections.emptyList());
+        assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(), is("SHOW COLUMNS FROM `table_1`"));
+    }
+    
+    private SQLRouteResult createSQLRouteResultForTableTokenWithBackQuoteWithSchemaForShow() {
+        DALStatement showTablesStatement = new DALStatement();
         showTablesStatement.setLogicSQL("SHOW COLUMNS FROM sharding_db.`table_x`");
-        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(Collections.emptyList());
-        assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(), is("SHOW COLUMNS FROM `table_1`"));
-    }
-    
-    @Test
-    public void assertTableTokenWithBackQuoteWithSchemaFromSchemaForShow() {
-        DALStatement showTablesStatement = new DALStatement();
-    
         showTablesStatement.getSQLSegments().add(new TableSegment(18, 38, "`table_x`"));
-        SQLRouteResult routeResult = new SQLRouteResult(new TransparentOptimizedStatement(showTablesStatement));
+        SQLRouteResult result = new SQLRouteResult(new TransparentOptimizedStatement(showTablesStatement));
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
-        routeResult.setRoutingResult(routingResult);
-        showTablesStatement.setLogicSQL("SHOW COLUMNS FROM sharding_db.`table_x` FROM sharding_db");
-        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(Collections.emptyList());
-        assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(), is("SHOW COLUMNS FROM `table_1` FROM sharding_db"));
+        result.setRoutingResult(routingResult);
+        return result;
     }
     
     @Test
-    public void assertTableTokenWithSchemaWithBackQuoteForShow() {
-        DALStatement showTablesStatement = new DALStatement();
+    public void assertRewriteTableTokenWithBackQuoteWithSchemaFromSchemaForShow() {
+        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(createSQLRouteResultForTableTokenWithBackQuoteWithSchemaFromSchemaForShow(), Collections.emptyList());
+        assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(), is("SHOW COLUMNS FROM `table_1` FROM sharding_db"));
+    }
     
-        showTablesStatement.getSQLSegments().add(new TableSegment(18, 40, "`table_x`"));
-        SQLRouteResult routeResult = new SQLRouteResult(new TransparentOptimizedStatement(showTablesStatement));
+    private SQLRouteResult createSQLRouteResultForTableTokenWithBackQuoteWithSchemaFromSchemaForShow() {
+        DALStatement showTablesStatement = new DALStatement();
+        showTablesStatement.setLogicSQL("SHOW COLUMNS FROM sharding_db.`table_x` FROM sharding_db");
+        showTablesStatement.getSQLSegments().add(new TableSegment(18, 38, "`table_x`"));
+        SQLRouteResult result = new SQLRouteResult(new TransparentOptimizedStatement(showTablesStatement));
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
-        routeResult.setRoutingResult(routingResult);
-        showTablesStatement.setLogicSQL("SHOW COLUMNS FROM `sharding_db`.`table_x`");
-        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(Collections.emptyList());
+        result.setRoutingResult(routingResult);
+        return result;
+    }
+    
+    @Test
+    public void assertRewriteTableTokenWithSchemaWithBackQuoteForShow() {
+        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(createSQLRouteResultForTableTokenWithSchemaWithBackQuoteForShow(), Collections.emptyList());
         assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(), is("SHOW COLUMNS FROM `table_1`"));
     }
     
-    @Test
-    public void assertTableTokenWithSchemaWithBackQuoteFromSchemaForShow() {
+    private SQLRouteResult createSQLRouteResultForTableTokenWithSchemaWithBackQuoteForShow() {
         DALStatement showTablesStatement = new DALStatement();
-    
+        showTablesStatement.setLogicSQL("SHOW COLUMNS FROM `sharding_db`.`table_x`");
         showTablesStatement.getSQLSegments().add(new TableSegment(18, 40, "`table_x`"));
-        SQLRouteResult routeResult = new SQLRouteResult(new TransparentOptimizedStatement(showTablesStatement));
+        SQLRouteResult result = new SQLRouteResult(new TransparentOptimizedStatement(showTablesStatement));
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
-        routeResult.setRoutingResult(routingResult);
-        showTablesStatement.setLogicSQL("SHOW COLUMNS FROM `sharding_db`.`table_x` FROM sharding_db");
-        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(Collections.emptyList());
-        assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(), is("SHOW COLUMNS FROM `table_1` FROM sharding_db"));
+        result.setRoutingResult(routingResult);
+        return result;
     }
     
     @Test
-    public void assertTableTokenWithSchemaForSelect() {
-        SelectStatement selectStatement = new SelectStatement();
+    public void assertRewriteTableTokenWithSchemaWithBackQuoteFromSchemaForShow() {
+        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(createSQLRouteResultForTableTokenWithSchemaWithBackQuoteFromSchemaForShow(), Collections.emptyList());
+        assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(), is("SHOW COLUMNS FROM `table_1` FROM sharding_db"));
+    }
     
+    private SQLRouteResult createSQLRouteResultForTableTokenWithSchemaWithBackQuoteFromSchemaForShow() {
+        DALStatement showTablesStatement = new DALStatement();
+        showTablesStatement.setLogicSQL("SHOW COLUMNS FROM `sharding_db`.`table_x` FROM sharding_db");
+        showTablesStatement.getSQLSegments().add(new TableSegment(18, 40, "`table_x`"));
+        SQLRouteResult result = new SQLRouteResult(new TransparentOptimizedStatement(showTablesStatement));
+        RoutingResult routingResult = new RoutingResult();
+        routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
+        result.setRoutingResult(routingResult);
+        return result;
+    }
+    
+    @Test
+    public void assertRewriteTableTokenWithSchemaForSelect() {
+        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(createSQLRouteResultForTableTokenWithSchemaForSelect(), Collections.emptyList());
+        assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(), is("SELECT * FROM table_1"));
+    }
+    
+    private SQLRouteResult createSQLRouteResultForTableTokenWithSchemaForSelect() {
+        SelectStatement selectStatement = new SelectStatement();
+        selectStatement.setLogicSQL("SELECT * FROM sharding_db.table_x");
         selectStatement.getTables().add(new Table("table_x", null));
         TableSegment tableSegment = new TableSegment(14, 32, "table_x");
         tableSegment.setOwner(new SchemaSegment(14, 24, "sharding_db"));
         selectStatement.getSQLSegments().add(tableSegment);
-        SQLRouteResult routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), 
+        SQLRouteResult result = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), 
                 selectStatement.getItems(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
                 new Pagination(null, null, Collections.emptyList())));
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
-        routeResult.setRoutingResult(routingResult);
-        selectStatement.setLogicSQL("SELECT * FROM sharding_db.table_x");
-        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(Collections.emptyList());
-        assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(), is("SELECT * FROM table_1"));
+        result.setRoutingResult(routingResult);
+        return result;
     }
     
     @Test
-    public void assertTableTokenWithSchemaForInsert() {
-        InsertStatement insertStatement = new InsertStatement();
-        insertStatement.getSQLSegments().add(new TableSegment(12, 30, "table_x"));
-        ShardingInsertColumns insertColumns = mock(ShardingInsertColumns.class);
-        when(insertColumns.getRegularColumnNames()).thenReturn(Arrays.asList("order_id", "user_id", "status", "id"));
-        when(insertColumns.getAllColumnNames()).thenReturn(Arrays.asList("order_id", "user_id", "status", "id"));
-        SQLRouteResult routeResult = new SQLRouteResult(new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), insertColumns, null));
-        routeResult.setRoutingResult(new RoutingResult());
-        insertStatement.setLogicSQL("INSERT INTO sharding_db.table_x (order_id, user_id, status) values (1, 1, 'OK')");
-        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(Collections.emptyList());
+    public void assertRewriteTableTokenWithSchemaForInsert() {
+        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(createSQLRouteResultForTableTokenWithSchemaForInsert(), Collections.emptyList());
         assertThat(rewriteEngine.generateSQL(
                 null, logicTableAndActualTables).getSql(), is("INSERT INTO table_1 (order_id, user_id, status) values (1, 1, 'OK')"));
     }
     
+    private SQLRouteResult createSQLRouteResultForTableTokenWithSchemaForInsert() {
+        InsertStatement insertStatement = new InsertStatement();
+        insertStatement.setLogicSQL("INSERT INTO sharding_db.table_x (order_id, user_id, status) values (1, 1, 'OK')");
+        insertStatement.getSQLSegments().add(new TableSegment(12, 30, "table_x"));
+        ShardingInsertColumns insertColumns = mock(ShardingInsertColumns.class);
+        when(insertColumns.getRegularColumnNames()).thenReturn(Arrays.asList("order_id", "user_id", "status", "id"));
+        when(insertColumns.getAllColumnNames()).thenReturn(Arrays.asList("order_id", "user_id", "status", "id"));
+        SQLRouteResult result = new SQLRouteResult(new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), insertColumns, null));
+        result.setRoutingResult(new RoutingResult());
+        return result;
+    }
+    
     @Test
-    public void assertTableTokenWithSchemaForUpdate() {
-        UpdateStatement updateStatement = new UpdateStatement();
-        updateStatement.getSQLSegments().add(new TableSegment(7, 27, "table_x"));
-        SQLRouteResult routeResult = new SQLRouteResult(new ShardingWhereOptimizedStatement(updateStatement, new ShardingConditions(Collections.<ShardingCondition>emptyList()), new AndCondition()));
-        routeResult.setRoutingResult(new RoutingResult());
-        updateStatement.setLogicSQL("UPDATE `sharding_db`.table_x SET user_id=1 WHERE order_id=1");
-        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(Collections.emptyList());
+    public void assertRewriteTableTokenWithSchemaForUpdate() {
+        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(createSQLRouteResultForTableTokenWithSchemaForUpdate(), Collections.emptyList());
         assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(), is("UPDATE table_1 SET user_id=1 WHERE order_id=1"));
     }
     
+    private SQLRouteResult createSQLRouteResultForTableTokenWithSchemaForUpdate() {
+        UpdateStatement updateStatement = new UpdateStatement();
+        updateStatement.setLogicSQL("UPDATE `sharding_db`.table_x SET user_id=1 WHERE order_id=1");
+        updateStatement.getSQLSegments().add(new TableSegment(7, 27, "table_x"));
+        SQLRouteResult result = new SQLRouteResult(new ShardingWhereOptimizedStatement(updateStatement, new ShardingConditions(Collections.<ShardingCondition>emptyList()), new AndCondition()));
+        result.setRoutingResult(new RoutingResult());
+        return result;
+    }
+    
     @Test
-    public void assertTableTokenWithSchemaForDelete() {
-        DeleteStatement deleteStatement = new DeleteStatement();
-        deleteStatement.getSQLSegments().add(new TableSegment(12, 34, "`table_x`"));
-        SQLRouteResult routeResult = new SQLRouteResult(new ShardingWhereOptimizedStatement(deleteStatement, new ShardingConditions(Collections.<ShardingCondition>emptyList()), new AndCondition()));
-        RoutingResult routingResult = new RoutingResult();
-        routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
-        routeResult.setRoutingResult(routingResult);
-        deleteStatement.setLogicSQL("DELETE FROM `sharding_db`.`table_x` WHERE user_id=1");
-        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(Collections.emptyList());
+    public void assertRewriteTableTokenWithSchemaForDelete() {
+        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(createSQLRouteResultForTableTokenWithSchemaForDelete(), Collections.emptyList());
         assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(), is("DELETE FROM `table_1` WHERE user_id=1"));
     }
     
-    @Test
-    public void assertSelectEqualWithShardingEncryptor() {
-        SelectStatement selectStatement = new SelectStatement();
-    
-        List<Object> parameters = new ArrayList<>(2);
-        parameters.add(1);
-        parameters.add("x");
-        Column column = new Column("id", "table_z");
-        selectStatement.getTables().add(new Table("table_z", null));
-        selectStatement.getSQLSegments().add(new TableSegment(15, 21, "table_z"));
-        AndCondition encryptConditions = new AndCondition();
-        encryptConditions.getConditions().add(new Condition(column, new PredicateSegment(29, 32, null, null), new ParameterMarkerExpressionSegment(0, 0, 0)));
-        SQLRouteResult routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), encryptConditions, 
-                selectStatement.getItems(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
-                new Pagination(null, null, Collections.emptyList())));
-        routeResult.setRoutingResult(new RoutingResult());
-        selectStatement.setLogicSQL("SELECT id FROM table_z WHERE id=? AND name=?");
-        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(parameters);
-        assertThat(rewriteEngine.generateSQL().getSql(), is("SELECT id FROM table_z WHERE id = ? AND name=?"));
-        assertThat(getParameterBuilder(rewriteEngine).getParameters().get(0), is((Object) "encryptValue"));
+    private SQLRouteResult createSQLRouteResultForTableTokenWithSchemaForDelete() {
+        DeleteStatement deleteStatement = new DeleteStatement();
+        deleteStatement.setLogicSQL("DELETE FROM `sharding_db`.`table_x` WHERE user_id=1");
+        deleteStatement.getSQLSegments().add(new TableSegment(12, 34, "`table_x`"));
+        SQLRouteResult result = new SQLRouteResult(new ShardingWhereOptimizedStatement(deleteStatement, new ShardingConditions(Collections.<ShardingCondition>emptyList()), new AndCondition()));
+        RoutingResult routingResult = new RoutingResult();
+        routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
+        result.setRoutingResult(routingResult);
+        return result;
     }
     
     @Test
-    public void assertSelectInWithShardingEncryptor() {
-        SelectStatement selectStatement = new SelectStatement();
-    
-        selectStatement.getTables().add(new Table("table_z", null));
-        selectStatement.getSQLSegments().add(new TableSegment(15, 21, "table_z"));
-        List<ExpressionSegment> expressionSegments = new LinkedList<>();
-        expressionSegments.add(new LiteralExpressionSegment(0, 0, 3));
-        expressionSegments.add(new LiteralExpressionSegment(0, 0, 5));
-        Column column = new Column("id", "table_z");
-        AndCondition encryptConditions = new AndCondition();
-        encryptConditions.getConditions().add(new Condition(column, new PredicateSegment(29, 39, null, null), expressionSegments));
-        SQLRouteResult routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), encryptConditions, 
-                selectStatement.getItems(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
-                new Pagination(null, null, Collections.emptyList())));
-        routeResult.setRoutingResult(new RoutingResult());
-        selectStatement.setLogicSQL("SELECT id FROM table_z WHERE id in (3,5)");
-        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(Collections.emptyList());
+    public void assertRewriteSelectInWithShardingEncryptor() {
+        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(createSQLRouteResultForSelectInWithShardingEncryptor(), Collections.emptyList());
         assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(), is("SELECT id FROM table_z WHERE id IN ('encryptValue', 'encryptValue')"));
     }
     
-    @Test
-    public void assertSelectInWithShardingEncryptorWithParameter() {
+    private SQLRouteResult createSQLRouteResultForSelectInWithShardingEncryptor() {
         SelectStatement selectStatement = new SelectStatement();
-    
-        List<Object> parameters = new ArrayList<>(2);
-        parameters.add(1);
-        parameters.add(2);
+        selectStatement.setLogicSQL("SELECT id FROM table_z WHERE id in (3,5)");
         selectStatement.getTables().add(new Table("table_z", null));
         selectStatement.getSQLSegments().add(new TableSegment(15, 21, "table_z"));
         List<ExpressionSegment> expressionSegments = new LinkedList<>();
-        expressionSegments.add(new ParameterMarkerExpressionSegment(0, 0, 0));
-        expressionSegments.add(new ParameterMarkerExpressionSegment(0, 0, 1));
-        Column column = new Column("id", "table_z");
-        AndCondition encryptConditions = new AndCondition();
-        encryptConditions.getConditions().add(new Condition(column, new PredicateSegment(29, 40, null, null), expressionSegments));
-        encryptConditions.getConditions().add(new Condition(column, new PredicateSegment(45, 50, null, null), new LiteralExpressionSegment(0, 0, 3)));
-        SQLRouteResult routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), encryptConditions, 
-                selectStatement.getItems(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
-                new Pagination(null, null, Collections.emptyList())));
-        routeResult.setRoutingResult(new RoutingResult());
-        selectStatement.setLogicSQL("SELECT id FROM table_z WHERE id in (?, ?) or id = 3");
-        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(parameters);
-        assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(), is("SELECT id FROM table_z WHERE id IN (?, ?) or id = 'encryptValue'"));
-        assertThat(getParameterBuilder(rewriteEngine).getParameters().get(0), is((Object) "encryptValue"));
-        assertThat(getParameterBuilder(rewriteEngine).getParameters().get(1), is((Object) "encryptValue"));
-    }
-    
-    @Test
-    public void assertSelectEqualWithQueryAssistedShardingEncryptor() {
-        List<Object> parameters = new ArrayList<>(2);
-        parameters.add(1);
-        parameters.add("k");
-        SelectStatement selectStatement = new SelectStatement();
-    
-        selectStatement.getTables().add(new Table("table_k", null));
-        Column column = new Column("id", "table_k");
-        selectStatement.getSQLSegments().add(new TableSegment(15, 21, "table_k"));
-        AndCondition encryptConditions = new AndCondition();
-        encryptConditions.getConditions().add(new Condition(column, new PredicateSegment(29, 32, null, null), new ParameterMarkerExpressionSegment(0, 0, 0)));
-        SQLRouteResult routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), encryptConditions, 
-                selectStatement.getItems(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
-                new Pagination(null, null, Collections.emptyList())));
-        routeResult.setRoutingResult(new RoutingResult());
-        selectStatement.setLogicSQL("SELECT id FROM table_k WHERE id=? AND name=?");
-        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(parameters);
-        assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(), is("SELECT id FROM table_k WHERE query_id = ? AND name=?"));
-        assertThat(getParameterBuilder(rewriteEngine).getParameters().get(0), is((Object) "assistedEncryptValue"));
-    }
-    
-    @Test
-    public void assertSelectInWithQueryAssistedShardingEncryptor() {
-        SelectStatement selectStatement = new SelectStatement();
-    
-        selectStatement.getTables().add(new Table("table_k", null));
-        selectStatement.getSQLSegments().add(new TableSegment(15, 21, "table_k"));
-        List<ExpressionSegment> expressionSegments = new LinkedList<>();
         expressionSegments.add(new LiteralExpressionSegment(0, 0, 3));
         expressionSegments.add(new LiteralExpressionSegment(0, 0, 5));
-        Column column = new Column("id", "table_k");
+        Column column = new Column("id", "table_z");
         AndCondition encryptConditions = new AndCondition();
         encryptConditions.getConditions().add(new Condition(column, new PredicateSegment(29, 39, null, null), expressionSegments));
-        SQLRouteResult routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), encryptConditions, 
+        SQLRouteResult result = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), encryptConditions, 
                 selectStatement.getItems(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
                 new Pagination(null, null, Collections.emptyList())));
-        routeResult.setRoutingResult(new RoutingResult());
-        selectStatement.setLogicSQL("SELECT id FROM table_k WHERE id in (3,5)");
-        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(Collections.emptyList());
+        result.setRoutingResult(new RoutingResult());
+        return result;
+    }
+    
+    @Test
+    public void assertRewriteSelectInWithQueryAssistedShardingEncryptor() {
+        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(createSQLRouteResultForSelectInWithQueryAssistedShardingEncryptor(), Collections.emptyList());
         assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(), 
                 is("SELECT id FROM table_k WHERE query_id IN ('assistedEncryptValue', 'assistedEncryptValue')"));
     }
     
+    private SQLRouteResult createSQLRouteResultForSelectInWithQueryAssistedShardingEncryptor() {
+        SelectStatement selectStatement = new SelectStatement();
+        selectStatement.setLogicSQL("SELECT id FROM table_k WHERE id in (3,5)");
+        selectStatement.getTables().add(new Table("table_k", null));
+        selectStatement.getSQLSegments().add(new TableSegment(15, 21, "table_k"));
+        List<ExpressionSegment> expressionSegments = new LinkedList<>();
+        expressionSegments.add(new LiteralExpressionSegment(0, 0, 3));
+        expressionSegments.add(new LiteralExpressionSegment(0, 0, 5));
+        Column column = new Column("id", "table_k");
+        AndCondition encryptConditions = new AndCondition();
+        encryptConditions.getConditions().add(new Condition(column, new PredicateSegment(29, 39, null, null), expressionSegments));
+        SQLRouteResult result = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), encryptConditions, 
+                selectStatement.getItems(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
+                new Pagination(null, null, Collections.emptyList())));
+        result.setRoutingResult(new RoutingResult());
+        return result;
+    }
+    
     @Test
-    public void assertUpdateWithShardingEncryptor() {
+    public void assertRewriteUpdateWithShardingEncryptor() {
+        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(createSQLRouteResultForUpdateWithShardingEncryptor(), Collections.emptyList());
+        assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(), is("UPDATE table_z SET id = 'encryptValue' WHERE id = 'encryptValue'"));
+    }
+    
+    private SQLRouteResult createSQLRouteResultForUpdateWithShardingEncryptor() {
         UpdateStatement updateStatement = new UpdateStatement();
+        updateStatement.setLogicSQL("UPDATE table_z SET id = 1 WHERE id = 2");
         updateStatement.getTables().add(new Table("table_z", ""));
         updateStatement.getSQLSegments().add(new TableSegment(7, 13, "table_z"));
         SetAssignmentsSegment setAssignmentsSegment = new SetAssignmentsSegment(15, 24, Collections.singleton(new AssignmentSegment(19, 24, new ColumnSegment(19, 20, "id"), null)));
@@ -1001,17 +986,23 @@ public final class ShardingSQLRewriterTest {
         updateStatement.getAssignments().put(column, new LiteralExpressionSegment(0, 0, 1));
         AndCondition encryptConditions = new AndCondition();
         encryptConditions.getConditions().add(new Condition(column, new PredicateSegment(32, 37, null, null), new LiteralExpressionSegment(0, 0, 2)));
-        SQLRouteResult routeResult = new SQLRouteResult(new ShardingWhereOptimizedStatement(updateStatement, new ShardingConditions(Collections.<ShardingCondition>emptyList()), encryptConditions));
-        routeResult.setRoutingResult(new RoutingResult());
-        updateStatement.setLogicSQL("UPDATE table_z SET id = 1 WHERE id = 2");
-        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(Collections.emptyList());
-        assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(), is("UPDATE table_z SET id = 'encryptValue' WHERE id = 'encryptValue'"));
+        SQLRouteResult result = new SQLRouteResult(new ShardingWhereOptimizedStatement(updateStatement, new ShardingConditions(Collections.<ShardingCondition>emptyList()), encryptConditions));
+        result.setRoutingResult(new RoutingResult());
+        return result;
     }
     
     @Test
-    public void assertInsertWithQueryAssistedShardingEncryptor() {
-        InsertStatement insertStatement = new InsertStatement();
+    public void assertRewriteInsertWithQueryAssistedShardingEncryptor() {
+        RoutingUnit routingUnit = new RoutingUnit("db0");
+        routingUnit.getTableUnits().add(new TableUnit("table_w", "table_1"));
+        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(createSQLRouteResultForInsertWithQueryAssistedShardingEncryptor(), Collections.emptyList());
+        assertThat(rewriteEngine.generateSQL(routingUnit, logicTableAndActualTables).getSql(), 
+                is("INSERT INTO `table_w` set name = 'encryptValue', id = 1, query_name = 'assistedEncryptValue' ON DUPLICATE KEY UPDATE name = VALUES(name)"));
+    }
     
+    private SQLRouteResult createSQLRouteResultForInsertWithQueryAssistedShardingEncryptor() {
+        InsertStatement insertStatement = new InsertStatement();
+        insertStatement.setLogicSQL("INSERT INTO `table_w` set name = 10 ON DUPLICATE KEY UPDATE name = VALUES(name)");
         insertStatement.getColumnNames().add("name");
         ColumnSegment columnSegment = new ColumnSegment(26, 29, "name");
         LiteralExpressionSegment expressionSegment = new LiteralExpressionSegment(33, 34, 10);
@@ -1026,20 +1017,20 @@ public final class ShardingSQLRewriterTest {
         ExpressionSegment[] expressionSegments = {new LiteralExpressionSegment(0, 0, 10), new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 10)};
         optimizedStatement.addUnit(expressionSegments, new Object[0], 0);
         optimizedStatement.getUnits().get(0).getDataNodes().add(new DataNode("db0.table_1"));
-        RoutingUnit routingUnit = new RoutingUnit("db0");
-        routingUnit.getTableUnits().add(new TableUnit("table_w", "table_1"));
-        SQLRouteResult routeResult = new SQLRouteResult(optimizedStatement);
-        routeResult.setRoutingResult(new RoutingResult());
-        insertStatement.setLogicSQL("INSERT INTO `table_w` set name = 10 ON DUPLICATE KEY UPDATE name = VALUES(name)");
-        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(Collections.emptyList());
-        assertThat(rewriteEngine.generateSQL(routingUnit, logicTableAndActualTables).getSql(), 
-                is("INSERT INTO `table_w` set name = 'encryptValue', id = 1, query_name = 'assistedEncryptValue' ON DUPLICATE KEY UPDATE name = VALUES(name)"));
+        SQLRouteResult result = new SQLRouteResult(optimizedStatement);
+        result.setRoutingResult(new RoutingResult());
+        return result;
     }
     
     @Test
-    public void assertSelectInWithAggregationDistinct() {
-        SelectStatement selectStatement = new SelectStatement();
+    public void assertRewriteSelectInWithAggregationDistinct() {
+        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(createSQLRouteResultForSelectInWithAggregationDistinct(), Collections.emptyList());
+        assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(), is("SELECT DISTINCT id, id FROM table_z WHERE id in (3,5)"));
+    }
     
+    private SQLRouteResult createSQLRouteResultForSelectInWithAggregationDistinct() {
+        SelectStatement selectStatement = new SelectStatement();
+        selectStatement.setLogicSQL("SELECT COUNT(DISTINCT id), SUM(DISTINCT id) FROM table_z WHERE id in (3,5)");
         selectStatement.getSQLSegments().add(new TableSegment(49, 55, "table_z"));
         AggregationDistinctSelectItemSegment selectItemSegment1 = new AggregationDistinctSelectItemSegment(7, 24, "DISTINCT id", AggregationType.COUNT, 12, "id");
         selectItemSegment1.setAlias("a");
@@ -1049,13 +1040,82 @@ public final class ShardingSQLRewriterTest {
         selectItemsSegment.getSelectItems().add(selectItemSegment1);
         selectItemsSegment.getSelectItems().add(selectItemSegment2);
         selectStatement.getSQLSegments().add(selectItemsSegment);
-        SQLRouteResult routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), 
+        SQLRouteResult result = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), 
                 selectStatement.getItems(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
                 new Pagination(null, null, Collections.emptyList())));
-        routeResult.setRoutingResult(new RoutingResult());
-        selectStatement.setLogicSQL("SELECT COUNT(DISTINCT id), SUM(DISTINCT id) FROM table_z WHERE id in (3,5)");
-        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(Collections.emptyList());
-        assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(), is("SELECT DISTINCT id, id FROM table_z WHERE id in (3,5)"));
+        result.setRoutingResult(new RoutingResult());
+        return result;
+    }
+    
+    @Test
+    public void assertRewriteSelectEqualWithShardingEncryptor() {
+        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(createSQLRouteResultForSelectEqualWithShardingEncryptor(), Arrays.<Object>asList(1, "x"));
+        assertThat(rewriteEngine.generateSQL().getSql(), is("SELECT id FROM table_z WHERE id = ? AND name=?"));
+        assertThat(getParameterBuilder(rewriteEngine).getParameters().get(0), is((Object) "encryptValue"));
+    }
+    
+    private SQLRouteResult createSQLRouteResultForSelectEqualWithShardingEncryptor() {
+        SelectStatement selectStatement = new SelectStatement();
+        selectStatement.setLogicSQL("SELECT id FROM table_z WHERE id=? AND name=?");
+        selectStatement.getTables().add(new Table("table_z", null));
+        selectStatement.getSQLSegments().add(new TableSegment(15, 21, "table_z"));
+        Column column = new Column("id", "table_z");
+        AndCondition encryptConditions = new AndCondition();
+        encryptConditions.getConditions().add(new Condition(column, new PredicateSegment(29, 32, null, null), new ParameterMarkerExpressionSegment(0, 0, 0)));
+        SQLRouteResult result = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), encryptConditions,
+                selectStatement.getItems(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
+                new Pagination(null, null, Collections.emptyList())));
+        result.setRoutingResult(new RoutingResult());
+        return result;
+    }
+    
+    @Test
+    public void assertRewriteSelectInWithShardingEncryptorWithParameter() {
+        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(createSQLRouteResultForSelectInWithShardingEncryptorWithParameter(), Arrays.<Object>asList(1, 2));
+        assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(), is("SELECT id FROM table_z WHERE id IN (?, ?) or id = 'encryptValue'"));
+        assertThat(getParameterBuilder(rewriteEngine).getParameters().get(0), is((Object) "encryptValue"));
+        assertThat(getParameterBuilder(rewriteEngine).getParameters().get(1), is((Object) "encryptValue"));
+    }
+    
+    private SQLRouteResult createSQLRouteResultForSelectInWithShardingEncryptorWithParameter() {
+        SelectStatement selectStatement = new SelectStatement();
+        selectStatement.setLogicSQL("SELECT id FROM table_z WHERE id in (?, ?) or id = 3");
+        selectStatement.getTables().add(new Table("table_z", null));
+        selectStatement.getSQLSegments().add(new TableSegment(15, 21, "table_z"));
+        List<ExpressionSegment> expressionSegments = new LinkedList<>();
+        expressionSegments.add(new ParameterMarkerExpressionSegment(0, 0, 0));
+        expressionSegments.add(new ParameterMarkerExpressionSegment(0, 0, 1));
+        Column column = new Column("id", "table_z");
+        AndCondition encryptConditions = new AndCondition();
+        encryptConditions.getConditions().add(new Condition(column, new PredicateSegment(29, 40, null, null), expressionSegments));
+        encryptConditions.getConditions().add(new Condition(column, new PredicateSegment(45, 50, null, null), new LiteralExpressionSegment(0, 0, 3)));
+        SQLRouteResult result = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), encryptConditions,
+                selectStatement.getItems(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
+                new Pagination(null, null, Collections.emptyList())));
+        result.setRoutingResult(new RoutingResult());
+        return result;
+    }
+    
+    @Test
+    public void assertRewriteSelectEqualWithQueryAssistedShardingEncryptor() {
+        SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(createSQLRouteResultForSelectEqualWithQueryAssistedShardingEncryptor(), Arrays.<Object>asList(1, "k"));
+        assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(), is("SELECT id FROM table_k WHERE query_id = ? AND name=?"));
+        assertThat(getParameterBuilder(rewriteEngine).getParameters().get(0), is((Object) "assistedEncryptValue"));
+    }
+    
+    private SQLRouteResult createSQLRouteResultForSelectEqualWithQueryAssistedShardingEncryptor() {
+        SelectStatement selectStatement = new SelectStatement();
+        selectStatement.setLogicSQL("SELECT id FROM table_k WHERE id=? AND name=?");
+        selectStatement.getTables().add(new Table("table_k", null));
+        Column column = new Column("id", "table_k");
+        selectStatement.getSQLSegments().add(new TableSegment(15, 21, "table_k"));
+        AndCondition encryptConditions = new AndCondition();
+        encryptConditions.getConditions().add(new Condition(column, new PredicateSegment(29, 32, null, null), new ParameterMarkerExpressionSegment(0, 0, 0)));
+        SQLRouteResult result = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), encryptConditions,
+                selectStatement.getItems(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
+                new Pagination(null, null, Collections.emptyList())));
+        result.setRoutingResult(new RoutingResult());
+        return result;
     }
     
     private SQLRewriteEngine createSQLRewriteEngine(final SQLRouteResult routeResult, final List<Object> parameters) {
