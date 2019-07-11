@@ -29,6 +29,8 @@ import org.apache.shardingsphere.core.parse.integrate.asserts.table.AlterTableAs
 import org.apache.shardingsphere.core.parse.integrate.asserts.table.TableAssert;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.ShardingParserResultSetRegistry;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.root.ParserResult;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.order.GroupBySegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.AlterTableStatement;
@@ -109,8 +111,14 @@ public final class ShardingSQLStatementAssert {
     
     private void assertSelectStatement(final SelectStatement actual) {
         itemAssert.assertItems(actual.getItems(), expected.getSelectItems());
-//        groupByAssert.assertGroupByItems(actual.getGroupByItems(), expected.getGroupByColumns());
-//        orderByAssert.assertOrderByItems(actual.getOrderByItems(), expected.getOrderByColumns());
+        Optional<GroupBySegment> groupBySegment = actual.findSQLSegment(GroupBySegment.class);
+        if (groupBySegment.isPresent()) {
+            groupByAssert.assertGroupByItems(groupBySegment.get().getGroupByItems(), expected.getGroupByColumns());
+        }
+        Optional<OrderBySegment> orderBySegment = actual.findSQLSegment(OrderBySegment.class);
+        if (orderBySegment.isPresent()) {
+            orderByAssert.assertOrderByItems(orderBySegment.get().getOrderByItems(), expected.getOrderByColumns());
+        }
         Optional<LimitSegment> limitSegment = actual.findSQLSegment(LimitSegment.class);
         if (limitSegment.isPresent()) {
             paginationAssert.assertOffset(limitSegment.get().getOffset().orNull(), expected.getOffset());
