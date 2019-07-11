@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.parse.filler.impl.dml;
 import org.apache.shardingsphere.core.parse.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.OrPredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 
 /**
  * Or predicate filler.
@@ -31,12 +30,7 @@ import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
  */
 public final class OrPredicateFiller implements SQLSegmentFiller<OrPredicateSegment> {
     
-    private final RowNumberPredicateFiller rowNumberPredicateFiller = new RowNumberPredicateFiller();
-    
     @Override
     public void fill(final OrPredicateSegment sqlSegment, final SQLStatement sqlStatement) {
-        if (sqlStatement instanceof SelectStatement) {
-            rowNumberPredicateFiller.fill(sqlSegment, sqlStatement);
-        }
     }
 }
