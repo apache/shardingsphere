@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item;
 
+import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -40,4 +41,19 @@ public final class SelectItems {
     private final int selectListStopIndex;
     
     private boolean containStar;
+    
+    /**
+     * Find alias.
+     * 
+     * @param itemName item name
+     * @return item alias
+     */
+    public Optional<String> findAlias(final String itemName) {
+        for (SelectItem each : items) {
+            if (itemName.equalsIgnoreCase(each.getExpression())) {
+                return each.getAlias();
+            }
+        }
+        return Optional.absent();
+    }
 }
