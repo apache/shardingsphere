@@ -747,6 +747,12 @@
                         <excldue>**/*.MD</excldue>
                         <exclude>**/*.txt</exclude>
                         <exclude>**/docs/**</exclude>
+                        <!-- UI files -->
+                        <exclude>**/.babelrc</exclude>
+                        <exclude>**/.editorconfig</exclude>
+                        <exclude>**/.eslintignore</exclude>
+                        <exclude>**/package.json</exclude>
+                        <exclude>**/assets/**</exclude>
                     </excludes>
                 </configuration>
                 <executions>
