@@ -28,7 +28,12 @@ shardingRule:
       tableStrategy:
         inline:
           shardingColumn: order_id
-          algorithmExpression: t_order_item_${order_id % 2}  
+          algorithmExpression: t_order_item_${order_id % 2}
+      keyGenerator:
+        type: SNOWFLAKE
+        column: order_item_id
+        props:
+          worker.id: 123
   bindingTables:
     - t_order,t_order_item
   
