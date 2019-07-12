@@ -25,23 +25,24 @@ sharding-sphere-example
   │   ├── repository-jpa
   │   └── repository-mybatis
   ├── sharding-jdbc-example
-  │   ├── other-feature-example
-  │   │   ├── hint-example
-  │   │   ├── broadcast-example
-  │   │   └── encrypt-example
-  │   ├── orchestration-example
-  │   │   ├── orchestration-raw-jdbc-example
-  │   │   ├── orchestration-spring-boot-example
-  │   │   └── orchestration-spring-namespace-example
   │   ├── sharding-example
   │   │   ├── sharding-raw-jdbc-example
   │   │   ├── sharding-spring-boot-jpa-example
   │   │   ├── sharding-spring-boot-mybatis-example
   │   │   ├── sharding-spring-namespace-jpa-example
   │   │   └── sharding-spring-namespace-mybatis-example
-  │   └── transaction-example
-  │       ├── transaction-2pc-xa-example
-  │       └── transaction-base-saga-example
+  │   ├── orchestration-example
+  │   │   ├── orchestration-raw-jdbc-example
+  │   │   ├── orchestration-spring-boot-example
+  │   │   └── orchestration-spring-namespace-example
+  │   ├── transaction-example
+  │   │   ├── transaction-2pc-xa-example
+  │   │   ├── transaction-base-saga-example
+  │   │   └──transaction-base-seata-example
+  │   ├── other-feature-example
+  │   │   ├── hint-example
+  │   │   ├── broadcast-example
+  │   │   └── encrypt-example
   ├── sharding-proxy-example
   │   └── sharding-proxy-boot-mybatis-example
   └── src/resources
