@@ -116,10 +116,10 @@ public final class SelectItemsEngine {
             if (selectItem.isPresent()) {
                 result.add(selectItem.get());
             }
-            result.add(new DistinctSelectItem(distinctColumnNames, Optional.<String>absent()));
+            result.add(new DistinctSelectItem(distinctColumnNames, null));
         } else if (firstSelectItemSegment instanceof ColumnSelectItemSegment) {
             ColumnSelectItemSegment columnSelectItemSegment = (ColumnSelectItemSegment) firstSelectItemSegment;
-            distinctSelectItem = new DistinctSelectItem(distinctColumnNames, columnSelectItemSegment.getAlias());
+            distinctSelectItem = new DistinctSelectItem(distinctColumnNames, columnSelectItemSegment.getAlias().orNull());
             result.add(distinctSelectItem);
             distinctColumnNames.add(columnSelectItemSegment.getName());
         } else if (firstSelectItemSegment instanceof ExpressionSelectItemSegment) {
@@ -163,7 +163,7 @@ public final class SelectItemsEngine {
     
     private DistinctSelectItem createDistinctExpressionItem(final SelectStatement selectStatement, 
                                                             final Set<String> distinctColumnNames, final ExpressionSelectItemSegment expressionSelectItemSegment) {
-        DistinctSelectItem result = new DistinctSelectItem(distinctColumnNames, expressionSelectItemSegment.getAlias());
+        DistinctSelectItem result = new DistinctSelectItem(distinctColumnNames, expressionSelectItemSegment.getAlias().orNull());
         String commonExpression = selectStatement.getLogicSQL().substring(expressionSelectItemSegment.getStartIndex(), expressionSelectItemSegment.getStopIndex() + 1);
         int leftParenPosition = commonExpression.indexOf("(");
         if (0 <= leftParenPosition) {
@@ -192,8 +192,7 @@ public final class SelectItemsEngine {
         int derivedColumnOffset = 0;
         for (OrderByItem each : orderItems) {
             if (!containsItem(selectStatement, items, each.getSegment())) {
-                String alias = DerivedColumn.ORDER_BY_ALIAS.getDerivedColumnAlias(derivedColumnOffset++);
-                result.add(new DerivedCommonSelectItem(((TextOrderByItemSegment) each.getSegment()).getText(), Optional.of(alias)));
+                result.add(new DerivedCommonSelectItem(((TextOrderByItemSegment) each.getSegment()).getText(), DerivedColumn.ORDER_BY_ALIAS.getDerivedColumnAlias(derivedColumnOffset++)));
             }
         }
         return result;
@@ -204,8 +203,7 @@ public final class SelectItemsEngine {
         int derivedColumnOffset = 0;
         for (OrderByItem each : orderByItems) {
             if (!containsItem(selectStatement, items, each.getSegment())) {
-                String alias = DerivedColumn.GROUP_BY_ALIAS.getDerivedColumnAlias(derivedColumnOffset++);
-                result.add(new DerivedCommonSelectItem(((TextOrderByItemSegment) each.getSegment()).getText(), Optional.of(alias)));
+                result.add(new DerivedCommonSelectItem(((TextOrderByItemSegment) each.getSegment()).getText(), DerivedColumn.GROUP_BY_ALIAS.getDerivedColumnAlias(derivedColumnOffset++)));
             }
         }
         return result;

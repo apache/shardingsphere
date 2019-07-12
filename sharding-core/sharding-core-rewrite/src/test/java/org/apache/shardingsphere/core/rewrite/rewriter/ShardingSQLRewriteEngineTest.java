@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.rewrite.rewriter;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.AggregationType;
@@ -169,8 +168,8 @@ public final class ShardingSQLRewriteEngineTest {
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.setLogicSQL("SELECT x.age FROM table_x x GROUP BY x.id ORDER BY x.name");
         selectStatement.getSQLSegments().add(new TableSegment(18, 24, "table_x"));
-        DerivedCommonSelectItem selectItem1 = new DerivedCommonSelectItem("x.id", Optional.of("GROUP_BY_DERIVED_0"));
-        DerivedCommonSelectItem selectItem2 = new DerivedCommonSelectItem("x.name", Optional.of("ORDER_BY_DERIVED_0"));
+        DerivedCommonSelectItem selectItem1 = new DerivedCommonSelectItem("x.id", "GROUP_BY_DERIVED_0");
+        DerivedCommonSelectItem selectItem2 = new DerivedCommonSelectItem("x.name", "ORDER_BY_DERIVED_0");
         SelectItems selectItems = new SelectItems(11);
         selectItems.getItems().add(selectItem1);
         selectItems.getItems().add(selectItem2);

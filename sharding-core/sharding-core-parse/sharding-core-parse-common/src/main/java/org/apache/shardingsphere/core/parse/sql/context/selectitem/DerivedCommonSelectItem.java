@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.parse.sql.context.selectitem;
 
-import com.google.common.base.Optional;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
@@ -30,7 +29,7 @@ import lombok.ToString;
 @ToString(callSuper = true)
 public final class DerivedCommonSelectItem extends CommonSelectItem {
     
-    public DerivedCommonSelectItem(final String expression, final Optional<String> alias) {
+    public DerivedCommonSelectItem(final String expression, final String alias) {
         super(expression, alias);
     }
 }

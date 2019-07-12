@@ -36,5 +36,10 @@ public class CommonSelectItem implements SelectItem {
     
     private final String expression;
     
-    private final Optional<String> alias;
+    private final String alias;
+    
+    @Override
+    public final Optional<String> getAlias() {
+        return Optional.fromNullable(alias);
+    }
 }

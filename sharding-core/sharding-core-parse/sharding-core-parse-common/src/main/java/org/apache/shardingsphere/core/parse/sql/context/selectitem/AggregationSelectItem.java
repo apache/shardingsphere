@@ -56,12 +56,8 @@ public class AggregationSelectItem implements SelectItem {
         return SQLUtil.getExactlyValue(type.name() + innerExpression);
     }
     
-    /**
-     * Get alias.
-     * 
-     * @return alias
-     */
-    public Optional<String> getAlias() {
+    @Override
+    public final Optional<String> getAlias() {
         return Optional.fromNullable(alias);
     }
     

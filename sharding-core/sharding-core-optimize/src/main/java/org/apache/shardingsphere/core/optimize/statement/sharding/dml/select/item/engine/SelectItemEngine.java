@@ -69,11 +69,11 @@ public final class SelectItemEngine {
     }
     
     private CommonSelectItem createColumnSelectItemSegment(final ColumnSelectItemSegment selectItemSegment) {
-        return new CommonSelectItem(selectItemSegment.getQualifiedName(), selectItemSegment.getAlias());
+        return new CommonSelectItem(selectItemSegment.getQualifiedName(), selectItemSegment.getAlias().orNull());
     }
     
     private CommonSelectItem createExpressionSelectItemSegment(final ExpressionSelectItemSegment selectItemSegment) {
-        return new CommonSelectItem(selectItemSegment.getText(), selectItemSegment.getAlias());
+        return new CommonSelectItem(selectItemSegment.getText(), selectItemSegment.getAlias().orNull());
     }
     
     private AggregationSelectItem createAggregationSelectItemSegment(final AggregationSelectItemSegment selectItemSegment, final SQLStatement sqlStatement) {
