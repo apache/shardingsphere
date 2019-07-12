@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.pagination;
+package org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.pagination.engine;
 
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.pagination.Pagination;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.LimitSegment;
 
 import java.util.List;

@@ -15,11 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.pagination;
+package org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.pagination.engine;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.SelectItems;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.pagination.Pagination;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.LimitSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.top.TopSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.OrPredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 
@@ -45,7 +47,11 @@ public final class PaginationEngine {
         if (limitSegment.isPresent()) {
             return new LimitPaginationEngine().createPagination(limitSegment.get(), parameters);
         }
+        Optional<TopSegment> topSegment = selectStatement.findSQLSegment(TopSegment.class);
         Optional<OrPredicateSegment> orPredicateSegment = selectStatement.findSQLSegment(OrPredicateSegment.class);
+        if (topSegment.isPresent()) {
+            return new TopPaginationEngine().createPagination(topSegment.get(), orPredicateSegment.or(new OrPredicateSegment()), parameters);
+        }
         if (orPredicateSegment.isPresent()) {
             return new RowNumberPaginationEngine().createPagination(orPredicateSegment.get(), selectItems, parameters);
         }

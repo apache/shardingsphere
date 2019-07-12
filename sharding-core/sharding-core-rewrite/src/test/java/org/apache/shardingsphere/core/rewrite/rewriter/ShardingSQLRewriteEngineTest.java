@@ -57,7 +57,6 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralE
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.AggregationDistinctSelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrderByItemSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.rownum.NumberLiteralRowNumberValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
@@ -400,13 +399,9 @@ public final class ShardingSQLRewriteEngineTest {
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.setLogicSQL("SELECT x.id FROM table_x x LIMIT 2, 2");
         selectStatement.getSQLSegments().add(new TableSegment(17, 23, "table_x"));
-        PaginationValueSegment offsetSegment = new NumberLiteralLimitValueSegment(33, 33, 2);
-        PaginationValueSegment rowCountSegment = new NumberLiteralLimitValueSegment(36, 36, 2);
-        selectStatement.setOffset(offsetSegment);
-        selectStatement.setRowCount(rowCountSegment);
         OptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(),
                 new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
-                new SelectItems(0), new Pagination(offsetSegment, rowCountSegment, Collections.emptyList()));
+                new SelectItems(0), new Pagination(new NumberLiteralLimitValueSegment(33, 33, 2), new NumberLiteralLimitValueSegment(36, 36, 2), Collections.emptyList()));
         SQLRouteResult result = new SQLRouteResult(optimizedStatement);
         result.setRoutingResult(new RoutingResult());
         return result;
@@ -423,13 +418,9 @@ public final class ShardingSQLRewriteEngineTest {
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.setLogicSQL("SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT x.id FROM table_x x) row_ WHERE rownum<=4) t WHERE t.rownum_>2");
         selectStatement.getSQLSegments().add(new TableSegment(68, 74, "table_x"));
-        PaginationValueSegment offsetSegment = new NumberLiteralRowNumberValueSegment(119, 119, 2, true);
-        PaginationValueSegment rowCountSegment = new NumberLiteralRowNumberValueSegment(98, 98, 4, false);
-        selectStatement.setOffset(offsetSegment);
-        selectStatement.setRowCount(rowCountSegment);
         OptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(),
                 new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
-                new SelectItems(0), new Pagination(offsetSegment, rowCountSegment, Collections.emptyList()));
+                new SelectItems(0), new Pagination(new NumberLiteralRowNumberValueSegment(119, 119, 2, true), new NumberLiteralRowNumberValueSegment(98, 98, 4, false), Collections.emptyList()));
         SQLRouteResult result = new SQLRouteResult(optimizedStatement);
         result.setRoutingResult(new RoutingResult());
         return result;
@@ -446,13 +437,9 @@ public final class ShardingSQLRewriteEngineTest {
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.setLogicSQL("SELECT * FROM (SELECT TOP(4) row_number() OVER (ORDER BY x.id) AS rownum_, x.id FROM table_x x) AS row_ WHERE row_.rownum_>2");
         selectStatement.getSQLSegments().add(new TableSegment(85, 91, "table_x"));
-        PaginationValueSegment offsetSegment = new NumberLiteralRowNumberValueSegment(123, 123, 2, true);
-        PaginationValueSegment rowCountSegment = new NumberLiteralRowNumberValueSegment(26, 26, 4, false);
-        selectStatement.setOffset(offsetSegment);
-        selectStatement.setRowCount(rowCountSegment);
         OptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(),
                 new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
-                new SelectItems(0), new Pagination(offsetSegment, rowCountSegment, Collections.emptyList()));
+                new SelectItems(0), new Pagination(new NumberLiteralRowNumberValueSegment(123, 123, 2, true), new NumberLiteralRowNumberValueSegment(26, 26, 4, false), Collections.emptyList()));
         SQLRouteResult result = new SQLRouteResult(optimizedStatement);
         result.setRoutingResult(new RoutingResult());
         return result;
@@ -470,15 +457,11 @@ public final class ShardingSQLRewriteEngineTest {
         ColumnSegment columnSegment = new ColumnSegment(0, 0, "id");
         columnSegment.setOwner(new TableSegment(0, 0, "x"));
         selectStatement.getSQLSegments().add(new TableSegment(17, 23, "table_x"));
-        PaginationValueSegment offsetSegment = new NumberLiteralLimitValueSegment(33, 33, 2);
-        PaginationValueSegment rowCountSegment = new NumberLiteralLimitValueSegment(36, 36, 2);
-        selectStatement.setOffset(offsetSegment);
-        selectStatement.setRowCount(rowCountSegment);
         OptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(
                 selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(),
                 new GroupBy(Collections.singletonList(new OrderByItem(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.DESC, OrderDirection.ASC))), 0),
                 new OrderBy(Collections.singletonList(new OrderByItem(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.ASC, OrderDirection.ASC))), false),
-                new SelectItems(0), new Pagination(offsetSegment, rowCountSegment, Collections.emptyList()));
+                new SelectItems(0), new Pagination(new NumberLiteralLimitValueSegment(33, 33, 2), new NumberLiteralLimitValueSegment(36, 36, 2), Collections.emptyList()));
         SQLRouteResult result = new SQLRouteResult(optimizedStatement);
         result.setRoutingResult(new RoutingResult());
         return result;
@@ -497,15 +480,11 @@ public final class ShardingSQLRewriteEngineTest {
         selectStatement.getSQLSegments().add(new TableSegment(68, 74, "table_x"));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, "id");
         columnSegment.setOwner(new TableSegment(0, 0, "x"));
-        PaginationValueSegment offsetSegment = new NumberLiteralRowNumberValueSegment(119, 119, 2, true);
-        PaginationValueSegment rowCountSegment = new NumberLiteralRowNumberValueSegment(98, 98, 4, false);
-        selectStatement.setOffset(offsetSegment);
-        selectStatement.setRowCount(rowCountSegment);
         OptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(
                 selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(),
                 new GroupBy(Collections.singletonList(new OrderByItem(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.DESC, OrderDirection.ASC))), 0),
                 new OrderBy(Collections.singletonList(new OrderByItem(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.ASC, OrderDirection.ASC))), false),
-                new SelectItems(0), new Pagination(offsetSegment, rowCountSegment, Collections.emptyList()));
+                new SelectItems(0), new Pagination(new NumberLiteralRowNumberValueSegment(119, 119, 2, true), new NumberLiteralRowNumberValueSegment(98, 98, 4, false), Collections.emptyList()));
         SQLRouteResult result = new SQLRouteResult(optimizedStatement);
         result.setRoutingResult(new RoutingResult());
         return result;
@@ -524,15 +503,11 @@ public final class ShardingSQLRewriteEngineTest {
         selectStatement.getSQLSegments().add(new TableSegment(85, 91, "table_x"));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, "id");
         columnSegment.setOwner(new TableSegment(0, 0, "x"));
-        PaginationValueSegment offsetSegment = new NumberLiteralRowNumberValueSegment(123, 123, 2, false);
-        PaginationValueSegment rowCountSegment = new NumberLiteralRowNumberValueSegment(26, 26, 4, false);
-        selectStatement.setOffset(offsetSegment);
-        selectStatement.setRowCount(rowCountSegment);
         OptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(
                 selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(),
                 new GroupBy(Collections.singletonList(new OrderByItem(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.DESC, OrderDirection.ASC))), 0),
                 new OrderBy(Collections.singletonList(new OrderByItem(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.ASC, OrderDirection.ASC))), false),
-                new SelectItems(0), new Pagination(offsetSegment, rowCountSegment, Collections.emptyList()));
+                new SelectItems(0), new Pagination(new NumberLiteralRowNumberValueSegment(123, 123, 2, false), new NumberLiteralRowNumberValueSegment(26, 26, 4, false), Collections.emptyList()));
         SQLRouteResult result = new SQLRouteResult(optimizedStatement);
         result.setRoutingResult(new RoutingResult());
         return result;
@@ -548,13 +523,9 @@ public final class ShardingSQLRewriteEngineTest {
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.setLogicSQL("SELECT x.id FROM table_x x LIMIT 2, 2");
         selectStatement.getSQLSegments().add(new TableSegment(17, 23, "table_x"));
-        PaginationValueSegment offsetSegment = new NumberLiteralLimitValueSegment(33, 33, 2);
-        PaginationValueSegment rowCountSegment = new NumberLiteralLimitValueSegment(36, 36, 2);
-        selectStatement.setOffset(offsetSegment);
-        selectStatement.setRowCount(rowCountSegment);
         OptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(),
                 new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
-                new SelectItems(0), new Pagination(offsetSegment, rowCountSegment, Collections.emptyList()));
+                new SelectItems(0), new Pagination(new NumberLiteralLimitValueSegment(33, 33, 2), new NumberLiteralLimitValueSegment(36, 36, 2), Collections.emptyList()));
         SQLRouteResult result = new SQLRouteResult(optimizedStatement);
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
@@ -573,13 +544,9 @@ public final class ShardingSQLRewriteEngineTest {
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.setLogicSQL("SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT x.id FROM table_x x) row_ WHERE rownum<=4) t WHERE t.rownum_>2");
         selectStatement.getSQLSegments().add(new TableSegment(68, 74, "table_x"));
-        PaginationValueSegment offsetSegment = new NumberLiteralRowNumberValueSegment(119, 119, 2, true);
-        PaginationValueSegment rowCountSegment = new NumberLiteralRowNumberValueSegment(98, 98, 4, false);
-        selectStatement.setOffset(offsetSegment);
-        selectStatement.setRowCount(rowCountSegment);
         OptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(),
                 new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
-                new SelectItems(0), new Pagination(offsetSegment, rowCountSegment, Collections.emptyList()));
+                new SelectItems(0), new Pagination(new NumberLiteralRowNumberValueSegment(119, 119, 2, true), new NumberLiteralRowNumberValueSegment(98, 98, 4, false), Collections.emptyList()));
         SQLRouteResult result = new SQLRouteResult(optimizedStatement);
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
@@ -598,13 +565,9 @@ public final class ShardingSQLRewriteEngineTest {
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.setLogicSQL("SELECT * FROM (SELECT TOP(4) row_number() OVER (ORDER BY x.id) AS rownum_, x.id FROM table_x x) AS row_ WHERE row_.rownum_>2");
         selectStatement.getSQLSegments().add(new TableSegment(85, 91, "table_x"));
-        PaginationValueSegment offsetSegment = new NumberLiteralRowNumberValueSegment(123, 123, 2, true);
-        PaginationValueSegment rowCountSegment = new NumberLiteralRowNumberValueSegment(26, 26, 4, false);
-        selectStatement.setOffset(offsetSegment);
-        selectStatement.setRowCount(rowCountSegment);
         OptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(),
                 new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
-                new SelectItems(0), new Pagination(offsetSegment, rowCountSegment, Collections.emptyList()));
+                new SelectItems(0), new Pagination(new NumberLiteralRowNumberValueSegment(123, 123, 2, true), new NumberLiteralRowNumberValueSegment(26, 26, 4, false), Collections.emptyList()));
         SQLRouteResult result = new SQLRouteResult(optimizedStatement);
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));

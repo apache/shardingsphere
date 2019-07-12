@@ -30,7 +30,7 @@ import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ite
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderBy;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderByEngine;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.pagination.Pagination;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.pagination.PaginationEngine;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.pagination.engine.PaginationEngine;
 import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;

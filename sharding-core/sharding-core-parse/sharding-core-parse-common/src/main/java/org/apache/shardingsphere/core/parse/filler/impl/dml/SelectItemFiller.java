@@ -32,7 +32,6 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.item.ColumnSelectIte
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.ExpressionSelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.ShorthandSelectItemSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.top.TopSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 
@@ -70,9 +69,6 @@ public final class SelectItemFiller implements SQLSegmentFiller<SelectItemSegmen
         if (sqlSegment instanceof SubquerySegment) {
             fillSubquerySegment((SubquerySegment) sqlSegment, sqlStatement);
         }
-        if (sqlSegment instanceof TopSegment) {
-            fillTopSegment((TopSegment) sqlSegment, selectStatement);
-        }
     }
     
     private void fillShorthandSelectItemSegment(final ShorthandSelectItemSegment selectItemSegment, final SelectStatement selectStatement) {
@@ -105,10 +101,5 @@ public final class SelectItemFiller implements SQLSegmentFiller<SelectItemSegmen
     
     private void fillSubquerySegment(final SubquerySegment subquerySegment, final SQLStatement sqlStatement) {
         new SubqueryFiller().fill(subquerySegment, sqlStatement);
-    }
-    
-    private void fillTopSegment(final TopSegment topSegment, final SelectStatement selectStatement) {
-        selectStatement.setRowCount(topSegment.getTop());
-        selectStatement.getItems().add(new CommonSelectItem("rownum", Optional.of(topSegment.getRowNumberAlias())));
     }
 }
