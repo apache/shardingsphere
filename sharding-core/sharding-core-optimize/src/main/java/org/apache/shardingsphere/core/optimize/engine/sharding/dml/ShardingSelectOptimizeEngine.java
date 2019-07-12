@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.optimize.engine.sharding.dml;
 
+import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
 import org.apache.shardingsphere.core.optimize.statement.encrypt.condition.WhereClauseEncryptConditionEngine;
@@ -32,6 +33,7 @@ import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ord
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.pagination.Pagination;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.pagination.engine.PaginationEngine;
 import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.SubqueryPredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
@@ -79,6 +81,15 @@ public final class ShardingSelectOptimizeEngine implements OptimizeEngine {
         OrderBy orderBy = orderByEngine.createOrderBy(selectStatement, groupBy);
         SelectItems selectItems = selectItemsEngine.createSelectItems(selectStatement, groupBy, orderBy);
         Pagination pagination = paginationEngine.createPagination(selectStatement, selectItems, parameters);
-        return new ShardingSelectOptimizedStatement(selectStatement, shardingConditions, encryptConditions, groupBy, orderBy, selectItems, pagination);
+        ShardingSelectOptimizedStatement result = new ShardingSelectOptimizedStatement(selectStatement, shardingConditions, encryptConditions, groupBy, orderBy, selectItems, pagination);
+        setContainsSubquery(result);
+        return result;
+    }
+    
+    private void setContainsSubquery(final ShardingSelectOptimizedStatement result) {
+        Optional<SubqueryPredicateSegment> subqueryPredicateSegment = selectStatement.findSQLSegment(SubqueryPredicateSegment.class);
+        if (subqueryPredicateSegment.isPresent() && !subqueryPredicateSegment.get().getOrPredicates().isEmpty()) {
+            result.setContainsSubquery(true);
+        }
     }
 }

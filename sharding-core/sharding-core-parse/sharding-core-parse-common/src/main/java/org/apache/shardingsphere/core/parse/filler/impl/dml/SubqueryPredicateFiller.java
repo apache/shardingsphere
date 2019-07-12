@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.parse.filler.impl.dml;
 import org.apache.shardingsphere.core.parse.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.SubqueryPredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 
 /**
  * Subquery predicate filler.
@@ -31,6 +30,5 @@ public final class SubqueryPredicateFiller implements SQLSegmentFiller<SubqueryP
     
     @Override
     public void fill(final SubqueryPredicateSegment sqlSegment, final SQLStatement sqlStatement) {
-        ((SelectStatement) sqlStatement).setContainsSubquery(!sqlSegment.getOrPredicates().isEmpty());
     }
 }

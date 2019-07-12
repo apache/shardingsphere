@@ -40,7 +40,5 @@ public final class SelectStatement extends DMLStatement {
     
     private boolean containStar;
     
-    private boolean containsSubquery;
-    
     private SelectStatement parentStatement;
 }
