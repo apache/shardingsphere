@@ -192,11 +192,11 @@ public final class ShardingSQLRewriteEngineTest {
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.setLogicSQL("SELECT AVG(x.age) FROM table_x x");
         selectStatement.getSQLSegments().add(new TableSegment(23, 29, "table_x"));
-        AggregationSelectItem countSelectItem = new AggregationSelectItem(AggregationType.COUNT, "(x.age)", Optional.of("AVG_DERIVED_COUNT_0"));
-        AggregationSelectItem sumSelectItem = new AggregationSelectItem(AggregationType.SUM, "(x.age)", Optional.of("AVG_DERIVED_SUM_0"));
-        AggregationSelectItem avgSelectItem = new AggregationSelectItem(AggregationType.AVG, "(x.age)", Optional.<String>absent());
-        avgSelectItem.getDerivedAggregationSelectItems().add(countSelectItem);
-        avgSelectItem.getDerivedAggregationSelectItems().add(sumSelectItem);
+        AggregationSelectItem countSelectItem = new AggregationSelectItem(AggregationType.COUNT, "(x.age)", "AVG_DERIVED_COUNT_0");
+        AggregationSelectItem sumSelectItem = new AggregationSelectItem(AggregationType.SUM, "(x.age)", "AVG_DERIVED_SUM_0");
+        AggregationSelectItem avgSelectItem = new AggregationSelectItem(AggregationType.AVG, "(x.age)", null);
+        avgSelectItem.getDerivedAggregationItems().add(countSelectItem);
+        avgSelectItem.getDerivedAggregationItems().add(sumSelectItem);
         SelectItems selectItems = new SelectItems(16);
         selectItems.getItems().add(avgSelectItem);
         SQLRouteResult result = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(),

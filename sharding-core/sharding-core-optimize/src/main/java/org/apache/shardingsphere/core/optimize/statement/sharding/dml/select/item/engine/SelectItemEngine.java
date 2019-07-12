@@ -80,8 +80,7 @@ public final class SelectItemEngine {
         String innerExpression = sqlStatement.getLogicSQL().substring(selectItemSegment.getInnerExpressionStartIndex(), selectItemSegment.getStopIndex() + 1);
         return selectItemSegment instanceof AggregationDistinctSelectItemSegment
                 ? new AggregationDistinctSelectItem(
-                        selectItemSegment.getType(), innerExpression, selectItemSegment.getAlias(), ((AggregationDistinctSelectItemSegment) selectItemSegment).getDistinctExpression())
-                : new AggregationSelectItem(selectItemSegment.getType(), innerExpression, selectItemSegment.getAlias());
+                        selectItemSegment.getType(), innerExpression, selectItemSegment.getAlias().orNull(), ((AggregationDistinctSelectItemSegment) selectItemSegment).getDistinctExpression())
+                : new AggregationSelectItem(selectItemSegment.getType(), innerExpression, selectItemSegment.getAlias().orNull());
     }
-    
 }

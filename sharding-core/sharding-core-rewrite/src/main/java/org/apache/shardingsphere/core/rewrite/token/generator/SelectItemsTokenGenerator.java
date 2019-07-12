@@ -54,8 +54,8 @@ public final class SelectItemsTokenGenerator implements OptionalSQLTokenGenerato
     private Collection<String> getDerivedItemTexts(final ShardingSelectOptimizedStatement optimizedStatement) {
         Collection<String> result = new LinkedList<>();
         for (SelectItem each : optimizedStatement.getSelectItems().getItems()) {
-            if (each instanceof AggregationSelectItem && !((AggregationSelectItem) each).getDerivedAggregationSelectItems().isEmpty()) {
-                result.addAll(Lists.transform(((AggregationSelectItem) each).getDerivedAggregationSelectItems(), new Function<AggregationSelectItem, String>() {
+            if (each instanceof AggregationSelectItem && !((AggregationSelectItem) each).getDerivedAggregationItems().isEmpty()) {
+                result.addAll(Lists.transform(((AggregationSelectItem) each).getDerivedAggregationItems(), new Function<AggregationSelectItem, String>() {
                     
                     @Override
                     public String apply(final AggregationSelectItem input) {

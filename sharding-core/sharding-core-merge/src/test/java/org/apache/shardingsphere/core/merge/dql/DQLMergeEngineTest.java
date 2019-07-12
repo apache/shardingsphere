@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.merge.dql;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.core.constant.AggregationType;
 import org.apache.shardingsphere.core.constant.OrderDirection;
@@ -303,7 +302,7 @@ public final class DQLMergeEngineTest {
     @Test
     public void assertBuildGroupByMemoryMergedResultWithAggregationOnly() throws SQLException {
         SelectItems selectItems = new SelectItems(0);
-        selectItems.getItems().add(new AggregationSelectItem(AggregationType.COUNT, "(*)", Optional.<String>absent()));
+        selectItems.getItems().add(new AggregationSelectItem(AggregationType.COUNT, "(*)", null));
         SQLRouteResult routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(new SelectStatement(), Collections.<ShardingCondition>emptyList(), new AndCondition(),
                 new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
                 selectItems, new Pagination(null, null, Collections.emptyList())));
@@ -314,7 +313,7 @@ public final class DQLMergeEngineTest {
     @Test
     public void assertBuildGroupByMemoryMergedResultWithAggregationOnlyWithMySQLLimit() throws SQLException {
         SelectItems selectItems = new SelectItems(0);
-        selectItems.getItems().add(new AggregationSelectItem(AggregationType.COUNT, "(*)", Optional.<String>absent()));
+        selectItems.getItems().add(new AggregationSelectItem(AggregationType.COUNT, "(*)", null));
         SQLRouteResult routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(new SelectStatement(), Collections.<ShardingCondition>emptyList(), new AndCondition(), 
                 new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
                 selectItems, new Pagination(new NumberLiteralLimitValueSegment(0, 0, 1), null, Collections.emptyList())));
@@ -327,7 +326,7 @@ public final class DQLMergeEngineTest {
     @Test
     public void assertBuildGroupByMemoryMergedResultWithAggregationOnlyWithOracleLimit() throws SQLException {
         SelectItems selectItems = new SelectItems(0);
-        selectItems.getItems().add(new AggregationSelectItem(AggregationType.COUNT, "(*)", Optional.<String>absent()));
+        selectItems.getItems().add(new AggregationSelectItem(AggregationType.COUNT, "(*)", null));
         SQLRouteResult routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(new SelectStatement(), Collections.<ShardingCondition>emptyList(), new AndCondition(),
                 new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
                 selectItems, new Pagination(new NumberLiteralRowNumberValueSegment(0, 0, 1, true), null, Collections.emptyList())));
@@ -340,7 +339,7 @@ public final class DQLMergeEngineTest {
     @Test
     public void assertBuildGroupByMemoryMergedResultWithAggregationOnlyWithSQLServerLimit() throws SQLException {
         SelectItems selectItems = new SelectItems(0);
-        selectItems.getItems().add(new AggregationSelectItem(AggregationType.COUNT, "(*)", Optional.<String>absent()));
+        selectItems.getItems().add(new AggregationSelectItem(AggregationType.COUNT, "(*)", null));
         SQLRouteResult routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(new SelectStatement(), Collections.<ShardingCondition>emptyList(), new AndCondition(), 
                 new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
                 selectItems, new Pagination(new NumberLiteralRowNumberValueSegment(0, 0, 1, true), null, Collections.emptyList())));

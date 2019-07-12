@@ -99,10 +99,10 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
     private void aggregate(final Map<AggregationSelectItem, AggregationUnit> aggregationUnitMap) throws SQLException {
         for (Entry<AggregationSelectItem, AggregationUnit> entry : aggregationUnitMap.entrySet()) {
             List<Comparable<?>> values = new ArrayList<>(2);
-            if (entry.getKey().getDerivedAggregationSelectItems().isEmpty()) {
+            if (entry.getKey().getDerivedAggregationItems().isEmpty()) {
                 values.add(getAggregationValue(entry.getKey()));
             } else {
-                for (AggregationSelectItem each : entry.getKey().getDerivedAggregationSelectItems()) {
+                for (AggregationSelectItem each : entry.getKey().getDerivedAggregationItems()) {
                     values.add(getAggregationValue(each));
                 }
             }

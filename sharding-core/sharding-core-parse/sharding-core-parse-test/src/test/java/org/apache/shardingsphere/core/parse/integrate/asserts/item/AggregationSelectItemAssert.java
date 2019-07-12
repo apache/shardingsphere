@@ -56,7 +56,7 @@ final class AggregationSelectItemAssert {
         assertThat(assertMessage.getFullAssertMessage("Aggregation select item alias assertion error: "), actual.getAlias().orNull(), is(expected.getAlias()));
         assertThat(assertMessage.getFullAssertMessage("Aggregation select item index assertion error: "), actual.getIndex(), is(expected.getIndex()));
         int count = 0;
-        for (AggregationSelectItem each : actual.getDerivedAggregationSelectItems()) {
+        for (AggregationSelectItem each : actual.getDerivedAggregationItems()) {
             assertAggregationSelectItem(each, expected.getDerivedColumns().get(count));
             count++;
         }

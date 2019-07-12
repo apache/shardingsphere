@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.execute.sql.execute.result;
 
-import com.google.common.base.Optional;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.AggregationType;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationDistinctSelectItem;
@@ -74,10 +73,10 @@ public class AggregationDistinctQueryResultTest {
     
     private List<AggregationDistinctSelectItem> getAggregationDistinctSelectItems() {
         List<AggregationDistinctSelectItem> result = new LinkedList<>();
-        AggregationDistinctSelectItem distinctCountSelectItem = new AggregationDistinctSelectItem(AggregationType.COUNT, "(DISTINCT order_id)", Optional.of("c"), "order_id");
-        AggregationDistinctSelectItem distinctAvgSelectItem = new AggregationDistinctSelectItem(AggregationType.AVG, "(DISTINCT order_id)", Optional.of("a"), "order_id");
-        distinctAvgSelectItem.getDerivedAggregationSelectItems().add(new AggregationDistinctSelectItem(AggregationType.COUNT, "(DISTINCT order_id)", Optional.of("AVG_DERIVED_COUNT_0"), "order_id"));
-        distinctAvgSelectItem.getDerivedAggregationSelectItems().add(new AggregationDistinctSelectItem(AggregationType.SUM, "(DISTINCT order_id)", Optional.of("AVG_DERIVED_SUM_0"), "order_id"));
+        AggregationDistinctSelectItem distinctCountSelectItem = new AggregationDistinctSelectItem(AggregationType.COUNT, "(DISTINCT order_id)", "c", "order_id");
+        AggregationDistinctSelectItem distinctAvgSelectItem = new AggregationDistinctSelectItem(AggregationType.AVG, "(DISTINCT order_id)", "a", "order_id");
+        distinctAvgSelectItem.getDerivedAggregationItems().add(new AggregationDistinctSelectItem(AggregationType.COUNT, "(DISTINCT order_id)", "AVG_DERIVED_COUNT_0", "order_id"));
+        distinctAvgSelectItem.getDerivedAggregationItems().add(new AggregationDistinctSelectItem(AggregationType.SUM, "(DISTINCT order_id)", "AVG_DERIVED_SUM_0", "order_id"));
         result.add(distinctCountSelectItem);
         result.add(distinctAvgSelectItem);
         return result;

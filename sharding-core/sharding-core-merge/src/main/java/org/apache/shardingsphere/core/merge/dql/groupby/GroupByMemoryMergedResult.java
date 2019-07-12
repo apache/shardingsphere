@@ -93,10 +93,10 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult {
     private void aggregate(final QueryResult queryResult, final GroupByValue groupByValue, final Map<GroupByValue, Map<AggregationSelectItem, AggregationUnit>> aggregationMap) throws SQLException {
         for (AggregationSelectItem each : optimizedStatement.getAggregationSelectItems()) {
             List<Comparable<?>> values = new ArrayList<>(2);
-            if (each.getDerivedAggregationSelectItems().isEmpty()) {
+            if (each.getDerivedAggregationItems().isEmpty()) {
                 values.add(getAggregationValue(queryResult, each));
             } else {
-                for (AggregationSelectItem derived : each.getDerivedAggregationSelectItems()) {
+                for (AggregationSelectItem derived : each.getDerivedAggregationItems()) {
                     values.add(getAggregationValue(queryResult, derived));
                 }
             }

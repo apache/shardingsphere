@@ -89,7 +89,7 @@ public final class ShardingSelectOptimizedStatement extends ShardingWhereOptimiz
             if (each instanceof AggregationSelectItem) {
                 AggregationSelectItem aggregationSelectItem = (AggregationSelectItem) each;
                 result.add(aggregationSelectItem);
-                result.addAll(aggregationSelectItem.getDerivedAggregationSelectItems());
+                result.addAll(aggregationSelectItem.getDerivedAggregationItems());
             }
         }
         return result;
@@ -139,7 +139,7 @@ public final class ShardingSelectOptimizedStatement extends ShardingWhereOptimiz
         for (AggregationSelectItem each : getAggregationSelectItems()) {
             Preconditions.checkState(columnLabelIndexMap.containsKey(each.getColumnLabel()), "Can't find index: %s, please add alias for aggregate selections", each);
             each.setIndex(columnLabelIndexMap.get(each.getColumnLabel()));
-            for (AggregationSelectItem derived : each.getDerivedAggregationSelectItems()) {
+            for (AggregationSelectItem derived : each.getDerivedAggregationItems()) {
                 Preconditions.checkState(columnLabelIndexMap.containsKey(derived.getColumnLabel()), "Can't find index: %s", derived);
                 derived.setIndex(columnLabelIndexMap.get(derived.getColumnLabel()));
             }

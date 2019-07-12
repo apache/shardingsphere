@@ -331,22 +331,22 @@ public final class SelectItemsEngine {
     private void appendDerivedAggregationDistinctSelectItems(final AggregationDistinctSelectItem averageDistinctSelectItem, final int derivedColumnOffset) {
         String countAlias = DerivedColumn.AVG_COUNT_ALIAS.getDerivedColumnAlias(derivedColumnOffset);
         AggregationDistinctSelectItem countDistinctSelectItem = new AggregationDistinctSelectItem(
-                AggregationType.COUNT, averageDistinctSelectItem.getInnerExpression(), Optional.of(countAlias), averageDistinctSelectItem.getDistinctColumnName());
+                AggregationType.COUNT, averageDistinctSelectItem.getInnerExpression(), countAlias, averageDistinctSelectItem.getDistinctColumnName());
         String sumAlias = DerivedColumn.AVG_SUM_ALIAS.getDerivedColumnAlias(derivedColumnOffset);
         AggregationDistinctSelectItem sumDistinctSelectItem = new AggregationDistinctSelectItem(
-                AggregationType.SUM, averageDistinctSelectItem.getInnerExpression(), Optional.of(sumAlias), averageDistinctSelectItem.getDistinctColumnName());
-        averageDistinctSelectItem.getDerivedAggregationSelectItems().clear();
-        averageDistinctSelectItem.getDerivedAggregationSelectItems().add(countDistinctSelectItem);
-        averageDistinctSelectItem.getDerivedAggregationSelectItems().add(sumDistinctSelectItem);
+                AggregationType.SUM, averageDistinctSelectItem.getInnerExpression(), sumAlias, averageDistinctSelectItem.getDistinctColumnName());
+        averageDistinctSelectItem.getDerivedAggregationItems().clear();
+        averageDistinctSelectItem.getDerivedAggregationItems().add(countDistinctSelectItem);
+        averageDistinctSelectItem.getDerivedAggregationItems().add(sumDistinctSelectItem);
     }
     
     private void appendDerivedAggregationSelectItems(final AggregationSelectItem averageSelectItem, final int derivedColumnOffset) {
         String countAlias = DerivedColumn.AVG_COUNT_ALIAS.getDerivedColumnAlias(derivedColumnOffset);
-        AggregationSelectItem countSelectItem = new AggregationSelectItem(AggregationType.COUNT, averageSelectItem.getInnerExpression(), Optional.of(countAlias));
+        AggregationSelectItem countSelectItem = new AggregationSelectItem(AggregationType.COUNT, averageSelectItem.getInnerExpression(), countAlias);
         String sumAlias = DerivedColumn.AVG_SUM_ALIAS.getDerivedColumnAlias(derivedColumnOffset);
-        AggregationSelectItem sumSelectItem = new AggregationSelectItem(AggregationType.SUM, averageSelectItem.getInnerExpression(), Optional.of(sumAlias));
-        averageSelectItem.getDerivedAggregationSelectItems().clear();
-        averageSelectItem.getDerivedAggregationSelectItems().add(countSelectItem);
-        averageSelectItem.getDerivedAggregationSelectItems().add(sumSelectItem);
+        AggregationSelectItem sumSelectItem = new AggregationSelectItem(AggregationType.SUM, averageSelectItem.getInnerExpression(), sumAlias);
+        averageSelectItem.getDerivedAggregationItems().clear();
+        averageSelectItem.getDerivedAggregationItems().add(countSelectItem);
+        averageSelectItem.getDerivedAggregationItems().add(sumSelectItem);
     }
 }
