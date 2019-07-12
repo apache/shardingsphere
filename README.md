@@ -25,8 +25,10 @@ sharding-sphere-example
   │   ├── repository-jpa
   │   └── repository-mybatis
   ├── sharding-jdbc-example
-  │   ├── hint-example
-  │   │   └── hint-raw-jdbc-example
+  │   ├── other-feature-example
+  │   │   ├── hint-example
+  │   │   ├── broadcast-example
+  │   │   └── encrypt-example
   │   ├── orchestration-example
   │   │   ├── orchestration-raw-jdbc-example
   │   │   ├── orchestration-spring-boot-example
@@ -73,19 +75,16 @@ you can get more detail from **[orchestration-example](./sharding-jdbc-example/o
 you can get more detail from **[transaction-example](./sharding-jdbc-example/transaction-example)**
 
 ### how to use hint routing
-you can get more detail from **[hint-example](./sharding-jdbc-example/hint-example)**
-
-### how to config none-sharding tables
-we will add none-sharding example recently.
+you can get more detail from **[hint-example](./sharding-jdbc-example/other-feature-example/hint-example)**
 
 ### how to config broadcast-table
-we will add broadcast-table example recently.
+you can get more detail from **[broadcast-table-example](./sharding-jdbc-example/other-feature-example/broadcast-table-example)**
+
+### how to encrypt & decrypt data in shardingsphere
+you can get more detail from **[encrypt-example](./sharding-jdbc-example/other-feature-example/encrypt-example)**
 
 ### how to use APM with shardingsphere
 we will add APM example recently.
-
-### how to encrypt & decrypt data in shardingsphere
-we prefer to add encrypt & decrypt example recently.
 
 ### how to use sharding-proxy with jdbc.
 we prefer to add a docker base example recently.
