@@ -76,35 +76,20 @@ public final class SelectItemsEngine {
      */
     public SelectItems createSelectItems(final SelectStatement selectStatement, final GroupBy groupBy, final OrderBy orderBy) {
         Optional<SelectItemsSegment> selectItemsSegment = selectStatement.findSQLSegment(SelectItemsSegment.class);
-        if (!selectItemsSegment.isPresent()) {
-            return new SelectItems(0);
-        }
+        Preconditions.checkState(selectItemsSegment.isPresent());
         SelectItems result = new SelectItems(selectItemsSegment.get().getStopIndex());
-        Collection<SelectItem> items = getSelectItems(selectItemsSegment.get(), selectStatement);
+        Collection<SelectItem> items = getSelectItemList(selectItemsSegment.get(), selectStatement);
         items.addAll(getDerivedColumns(selectStatement, items, groupBy, orderBy));
         result.getItems().addAll(appendAverageDerivedColumns(items));
         result.setContainStar(1 == items.size() && items.iterator().next() instanceof StarSelectItem);
         return result;
     }
     
-    private Collection<SelectItem> getSelectItems(final SelectItemsSegment sqlSegment, final SQLStatement sqlStatement) {
-        SelectStatement selectStatement = (SelectStatement) sqlStatement;
-        if (sqlSegment.isHasDistinct()) {
-            return getDistinctSelectItems(sqlSegment, selectStatement);
-        }
-        Collection<SelectItem> result = new LinkedList<>();
-        int offset = 0;
-        for (SelectItemSegment each : sqlSegment.getSelectItems()) {
-            offset = setDistinctFunctionAlias(each, offset);
-            Optional<SelectItem> selectItem = selectItemEngine.createSelectItem(each, sqlStatement);
-            if (selectItem.isPresent()) {
-                result.add(selectItem.get());
-            }
-        }
-        return result;
+    private Collection<SelectItem> getSelectItemList(final SelectItemsSegment selectItemsSegment, final SQLStatement sqlStatement) {
+        return selectItemsSegment.isHasDistinct() ? getDistinctSelectItemList(selectItemsSegment, sqlStatement) : getCommonSelectItemList(selectItemsSegment, sqlStatement);
     }
     
-    private Collection<SelectItem> getDistinctSelectItems(final SelectItemsSegment selectItemsSegment, final SelectStatement selectStatement) {
+    private Collection<SelectItem> getDistinctSelectItemList(final SelectItemsSegment selectItemsSegment, final SQLStatement sqlStatement) {
         Collection<SelectItem> result = new LinkedList<>();
         Iterator<SelectItemSegment> selectItemSegmentIterator = selectItemsSegment.getSelectItems().iterator();
         SelectItemSegment firstSelectItemSegment = selectItemSegmentIterator.next();
@@ -112,7 +97,7 @@ public final class SelectItemsEngine {
         DistinctSelectItem distinctSelectItem = null;
         int derivedColumnCount = 0;
         if (firstSelectItemSegment instanceof ShorthandSelectItemSegment) {
-            Optional<SelectItem> selectItem = selectItemEngine.createSelectItem(firstSelectItemSegment, selectStatement);
+            Optional<SelectItem> selectItem = selectItemEngine.createSelectItem(firstSelectItemSegment, sqlStatement);
             if (selectItem.isPresent()) {
                 result.add(selectItem.get());
             }
@@ -123,18 +108,18 @@ public final class SelectItemsEngine {
             result.add(distinctSelectItem);
             distinctColumnNames.add(columnSelectItemSegment.getName());
         } else if (firstSelectItemSegment instanceof ExpressionSelectItemSegment) {
-            distinctSelectItem = createDistinctExpressionItem(selectStatement, distinctColumnNames, (ExpressionSelectItemSegment) firstSelectItemSegment);
+            distinctSelectItem = createDistinctExpressionItem(sqlStatement, distinctColumnNames, (ExpressionSelectItemSegment) firstSelectItemSegment);
             result.add(distinctSelectItem);
         } else {
             derivedColumnCount = setDistinctFunctionAlias(firstSelectItemSegment, derivedColumnCount);
-            Optional<SelectItem> selectItem = selectItemEngine.createSelectItem(firstSelectItemSegment, selectStatement);
+            Optional<SelectItem> selectItem = selectItemEngine.createSelectItem(firstSelectItemSegment, sqlStatement);
             if (selectItem.isPresent()) {
                 result.add(selectItem.get());
             }
         }
         while (selectItemSegmentIterator.hasNext()) {
             SelectItemSegment nextSelectItemSegment = selectItemSegmentIterator.next();
-            Optional<SelectItem> selectItem = selectItemEngine.createSelectItem(nextSelectItemSegment, selectStatement);
+            Optional<SelectItem> selectItem = selectItemEngine.createSelectItem(nextSelectItemSegment, sqlStatement);
             if (selectItem.isPresent()) {
                 result.add(selectItem.get());
             }
@@ -161,10 +146,10 @@ public final class SelectItemsEngine {
         return derivedColumnCount;
     }
     
-    private DistinctSelectItem createDistinctExpressionItem(final SelectStatement selectStatement, 
+    private DistinctSelectItem createDistinctExpressionItem(final SQLStatement sqlStatement, 
                                                             final Set<String> distinctColumnNames, final ExpressionSelectItemSegment expressionSelectItemSegment) {
         DistinctSelectItem result = new DistinctSelectItem(distinctColumnNames, expressionSelectItemSegment.getAlias().orNull());
-        String commonExpression = selectStatement.getLogicSQL().substring(expressionSelectItemSegment.getStartIndex(), expressionSelectItemSegment.getStopIndex() + 1);
+        String commonExpression = sqlStatement.getLogicSQL().substring(expressionSelectItemSegment.getStartIndex(), expressionSelectItemSegment.getStopIndex() + 1);
         int leftParenPosition = commonExpression.indexOf("(");
         if (0 <= leftParenPosition) {
             int rightParenPosition = commonExpression.lastIndexOf(")");
@@ -172,6 +157,19 @@ public final class SelectItemsEngine {
                 rightParenPosition = commonExpression.length();
             }
             distinctColumnNames.add(commonExpression.substring(leftParenPosition + 1, rightParenPosition));
+        }
+        return result;
+    }
+    
+    private Collection<SelectItem> getCommonSelectItemList(final SelectItemsSegment selectItemsSegment, final SQLStatement sqlStatement) {
+        Collection<SelectItem> result = new LinkedList<>();
+        int derivedColumnCount = 0;
+        for (SelectItemSegment each : selectItemsSegment.getSelectItems()) {
+            derivedColumnCount = setDistinctFunctionAlias(each, derivedColumnCount);
+            Optional<SelectItem> selectItem = selectItemEngine.createSelectItem(each, sqlStatement);
+            if (selectItem.isPresent()) {
+                result.add(selectItem.get());
+            }
         }
         return result;
     }
