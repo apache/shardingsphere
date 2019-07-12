@@ -34,6 +34,7 @@ import org.apache.shardingsphere.core.strategy.route.ShardingStrategy;
 import org.apache.shardingsphere.core.strategy.route.ShardingStrategyFactory;
 import org.apache.shardingsphere.core.strategy.route.hint.HintShardingStrategy;
 import org.apache.shardingsphere.core.strategy.route.none.NoneShardingStrategy;
+import org.apache.shardingsphere.core.util.ConfigurationPrinter;
 import org.apache.shardingsphere.spi.keygen.ShardingKeyGenerator;
 
 import java.util.ArrayList;
@@ -85,6 +86,8 @@ public class ShardingRule implements BaseRule {
         defaultShardingKeyGenerator = createDefaultKeyGenerator(shardingRuleConfig.getDefaultKeyGeneratorConfig());
         masterSlaveRules = createMasterSlaveRules(shardingRuleConfig.getMasterSlaveRuleConfigs());
         encryptRule = createEncryptRule(shardingRuleConfig.getEncryptRuleConfig());
+
+        ConfigurationPrinter.printConfiguration("shardingRule", shardingRuleConfig);
     }
     
     private Collection<TableRule> createTableRules(final ShardingRuleConfiguration shardingRuleConfig) {
