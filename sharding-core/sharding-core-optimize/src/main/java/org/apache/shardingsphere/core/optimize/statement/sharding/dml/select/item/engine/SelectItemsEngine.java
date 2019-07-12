@@ -86,7 +86,7 @@ public final class SelectItemsEngine {
     }
     
     private Collection<SelectItem> getSelectItemList(final SelectItemsSegment selectItemsSegment, final SQLStatement sqlStatement) {
-        return selectItemsSegment.isHasDistinct() ? getDistinctSelectItemList(selectItemsSegment, sqlStatement) : getCommonSelectItemList(selectItemsSegment, sqlStatement);
+        return selectItemsSegment.isHasRowDistinct() ? getDistinctSelectItemList(selectItemsSegment, sqlStatement) : getCommonSelectItemList(selectItemsSegment, sqlStatement);
     }
     
     private Collection<SelectItem> getDistinctSelectItemList(final SelectItemsSegment selectItemsSegment, final SQLStatement sqlStatement) {
@@ -151,9 +151,9 @@ public final class SelectItemsEngine {
         DistinctSelectItem result = new DistinctSelectItem(distinctColumnNames, expressionSelectItemSegment.getAlias().orNull());
         String expression = sqlStatement.getLogicSQL().substring(expressionSelectItemSegment.getStartIndex(), expressionSelectItemSegment.getStopIndex() + 1);
         int leftParenIndex = expression.indexOf("(");
-        if (0 <= leftParenIndex) {
+        if (-1 != leftParenIndex) {
             int rightParenIndex = expression.lastIndexOf(")");
-            if (0 > rightParenIndex) {
+            if (-1 == rightParenIndex) {
                 rightParenIndex = expression.length();
             }
             distinctColumnNames.add(expression.substring(leftParenIndex + 1, rightParenIndex));
