@@ -17,16 +17,21 @@
 
 package org.apache.shardingsphere.shardingproxy.context;
 
-import com.google.common.eventbus.Subscribe;
-import lombok.Getter;
+import java.util.Properties;
+
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.rule.Authentication;
+import org.apache.shardingsphere.core.util.ConfigurationPrinter;
+import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.core.yaml.swapper.impl.AuthenticationYamlSwapper;
 import org.apache.shardingsphere.orchestration.internal.eventbus.ShardingOrchestrationEventBus;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.AuthenticationChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.PropertiesChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.state.event.CircuitStateChangedEvent;
 
-import java.util.Properties;
+import com.google.common.eventbus.Subscribe;
+
+import lombok.Getter;
 
 /**
  * Context of Sharding-Proxy.
@@ -66,8 +71,8 @@ public final class ShardingProxyContext {
      * @param props properties
      */
     public void init(final Authentication authentication, final Properties props) {
-        this.authentication = authentication;
-        shardingProperties = new ShardingProperties(props);
+        setAuthentication(authentication);
+        setProperties(props);
     }
     
     /**
@@ -77,7 +82,7 @@ public final class ShardingProxyContext {
      */
     @Subscribe
     public synchronized void renew(final PropertiesChangedEvent event) {
-        shardingProperties = new ShardingProperties(event.getProps());
+        setProperties(event.getProps());
     }
     
     /**
@@ -87,7 +92,7 @@ public final class ShardingProxyContext {
      */
     @Subscribe
     public synchronized void renew(final AuthenticationChangedEvent event) {
-        authentication = event.getAuthentication();
+        setAuthentication(event.getAuthentication());
     }
     
     /**
@@ -98,5 +103,26 @@ public final class ShardingProxyContext {
     @Subscribe
     public synchronized void renew(final CircuitStateChangedEvent event) {
         isCircuitBreak = event.isCircuitBreak();
+    }
+
+    /**
+     * set authentication.
+     * 
+     * @param authentication new authentication
+     */
+    public void setAuthentication(final Authentication authentication) {
+        ConfigurationPrinter.print("authentication",
+            YamlEngine.marshal(new AuthenticationYamlSwapper().swap(authentication)));
+        this.authentication = authentication;
+    }
+
+    /**
+     * set new ShardingProperties with props.
+     * 
+     * @param props new props
+     */
+    public void setProperties(final Properties props) {
+        ConfigurationPrinter.printConfiguration("props", props);
+        this.shardingProperties = new ShardingProperties(props);
     }
 }

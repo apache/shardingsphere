@@ -93,7 +93,7 @@ public class ConfigurationPrinter {
      * @param base base node name
      * @param yamlStr yaml string
      */
-    private static void print(final String base, final String yamlStr) {
+    public static void print(final String base, final String yamlStr) {
         log.info("{}\n{}", base, yamlStr);
     }
 

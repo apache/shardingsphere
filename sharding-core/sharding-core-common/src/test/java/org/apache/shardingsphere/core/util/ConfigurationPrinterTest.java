@@ -67,11 +67,16 @@ public class ConfigurationPrinterTest {
     }
 
     @Test
-    public void print() {
+    public void printMasterSlaveRuleConfiguration() {
         MasterSlaveRuleConfiguration masterSlaveRuleConfiguration =
             new MasterSlaveRuleConfiguration("ms_ds", "master_ds", Arrays.asList("slave_ds_0", "slave_ds_1"));
 
         ConfigurationPrinter.printConfiguration("masterSlaveRule", masterSlaveRuleConfiguration);
+    }
+
+    @Test
+    public void print() {
+        ConfigurationPrinter.print("base", "yamlStr");
     }
 
 }
