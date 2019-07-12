@@ -20,16 +20,17 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <packaging>pom</packaging>
-    <modules>
-        <module>broadcast-table-raw-jdbc-example</module>
-        <module>broadcast-table-spring-boot-example</module>
-        <module>broadcast-table-spring-namespace-example</module>
-    </modules>
     <parent>
         <groupId>org.apache.shardingsphere.example</groupId>
-        <artifactId>sharding-jdbc-example</artifactId>
+        <artifactId>other-feature-example</artifactId>
         <version>4.0.0-RC2-SNAPSHOT</version>
     </parent>
-    <artifactId>broadcast-table-example</artifactId>
+    <artifactId>encrypt-example</artifactId>
+    <packaging>pom</packaging>
+    
+    <modules>
+        <module>encrypt-raw-jdbc-example</module>
+        <module>encrypt-spring-boot-example</module>
+        <module>encrypt-spring-namespace-example</module>
+    </modules>
 </project>
