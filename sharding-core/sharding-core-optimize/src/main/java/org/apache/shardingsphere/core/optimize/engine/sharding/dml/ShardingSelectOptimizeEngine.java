@@ -27,7 +27,7 @@ import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.Sha
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.groupby.GroupBy;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.groupby.GroupByEngine;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.SelectItems;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.SelectItemsEngine;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.engine.SelectItemsEngine;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderBy;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderByEngine;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.pagination.Pagination;

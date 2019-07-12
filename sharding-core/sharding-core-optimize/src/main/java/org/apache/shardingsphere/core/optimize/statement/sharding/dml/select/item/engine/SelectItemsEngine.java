@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item;
+package org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.engine;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
@@ -23,18 +23,17 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.AggregationType;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.groupby.GroupBy;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.SelectItems;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderBy;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderByItem;
 import org.apache.shardingsphere.core.parse.constant.DerivedColumn;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationSelectItem;
-import org.apache.shardingsphere.core.parse.sql.context.selectitem.CommonSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.DerivedCommonSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.DistinctSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.StarSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.table.Table;
-import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.SelectItemsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.AggregationDistinctSelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.AggregationSelectItemSegment;
@@ -64,6 +63,8 @@ import java.util.Set;
 public final class SelectItemsEngine {
     
     private final ShardingTableMetaData shardingTableMetaData;
+    
+    private final SelectItemEngine selectItemEngine = new SelectItemEngine();
     
     /**
      * Create select items.
@@ -95,7 +96,7 @@ public final class SelectItemsEngine {
         int offset = 0;
         for (SelectItemSegment each : sqlSegment.getSelectItems()) {
             offset = setDistinctFunctionAlias(each, offset);
-            Optional<SelectItem> selectItem = getSelectItem(each, sqlStatement);
+            Optional<SelectItem> selectItem = selectItemEngine.createSelectItem(each, sqlStatement);
             if (selectItem.isPresent()) {
                 result.add(selectItem.get());
             }
@@ -111,7 +112,7 @@ public final class SelectItemsEngine {
         DistinctSelectItem distinctSelectItem = null;
         int derivedColumnCount = 0;
         if (firstSelectItemSegment instanceof ShorthandSelectItemSegment) {
-            Optional<SelectItem> selectItem = getSelectItem(firstSelectItemSegment, selectStatement);
+            Optional<SelectItem> selectItem = selectItemEngine.createSelectItem(firstSelectItemSegment, selectStatement);
             if (selectItem.isPresent()) {
                 result.add(selectItem.get());
             }
@@ -126,14 +127,14 @@ public final class SelectItemsEngine {
             result.add(distinctSelectItem);
         } else {
             derivedColumnCount = setDistinctFunctionAlias(firstSelectItemSegment, derivedColumnCount);
-            Optional<SelectItem> selectItem = getSelectItem(firstSelectItemSegment, selectStatement);
+            Optional<SelectItem> selectItem = selectItemEngine.createSelectItem(firstSelectItemSegment, selectStatement);
             if (selectItem.isPresent()) {
                 result.add(selectItem.get());
             }
         }
         while (selectItemSegmentIterator.hasNext()) {
             SelectItemSegment nextSelectItemSegment = selectItemSegmentIterator.next();
-            Optional<SelectItem> selectItem = getSelectItem(nextSelectItemSegment, selectStatement);
+            Optional<SelectItem> selectItem = selectItemEngine.createSelectItem(nextSelectItemSegment, selectStatement);
             if (selectItem.isPresent()) {
                 result.add(selectItem.get());
             }
@@ -173,50 +174,6 @@ public final class SelectItemsEngine {
             distinctColumnNames.add(commonExpression.substring(leftParenPosition + 1, rightParenPosition));
         }
         return result;
-    }
-    
-    private Optional<SelectItem> getSelectItem(final SelectItemSegment sqlSegment, final SQLStatement sqlStatement) {
-        SelectStatement selectStatement = (SelectStatement) sqlStatement;
-        if (sqlSegment instanceof ShorthandSelectItemSegment) {
-            return Optional.<SelectItem>of(getShorthandSelectItemSegment((ShorthandSelectItemSegment) sqlSegment));
-        }
-        if (sqlSegment instanceof ColumnSelectItemSegment) {
-            return Optional.<SelectItem>of(getColumnSelectItemSegment((ColumnSelectItemSegment) sqlSegment));
-        }
-        if (sqlSegment instanceof ExpressionSelectItemSegment) {
-            return Optional.<SelectItem>of(getExpressionSelectItemSegment((ExpressionSelectItemSegment) sqlSegment));
-        }
-        if (sqlSegment instanceof AggregationSelectItemSegment) {
-            return Optional.<SelectItem>of(getAggregationSelectItemSegment((AggregationSelectItemSegment) sqlSegment, selectStatement));
-        }
-        // TODO subquery
-        return Optional.absent();
-    }
-    
-    private StarSelectItem getShorthandSelectItemSegment(final ShorthandSelectItemSegment selectItemSegment) {
-        Optional<TableSegment> owner = selectItemSegment.getOwner();
-        return new StarSelectItem(owner.isPresent() ? owner.get().getName() : null);
-    }
-    
-    private CommonSelectItem getColumnSelectItemSegment(final ColumnSelectItemSegment selectItemSegment) {
-        return new CommonSelectItem(selectItemSegment.getQualifiedName(), selectItemSegment.getAlias());
-    }
-    
-    private CommonSelectItem getExpressionSelectItemSegment(final ExpressionSelectItemSegment selectItemSegment) {
-        return new CommonSelectItem(selectItemSegment.getText(), selectItemSegment.getAlias());
-    }
-    
-    private AggregationSelectItem getAggregationSelectItemSegment(final AggregationSelectItemSegment selectItemSegment, final SelectStatement selectStatement) {
-        if (selectItemSegment instanceof AggregationDistinctSelectItemSegment) {
-            return getAggregationDistinctSelectItemSegment((AggregationDistinctSelectItemSegment) selectItemSegment, selectStatement);
-        }
-        return new AggregationSelectItem(selectItemSegment.getType(),
-                selectStatement.getLogicSQL().substring(selectItemSegment.getInnerExpressionStartIndex(), selectItemSegment.getStopIndex() + 1), selectItemSegment.getAlias());
-    }
-    
-    private AggregationDistinctSelectItem getAggregationDistinctSelectItemSegment(final AggregationDistinctSelectItemSegment selectItemSegment, final SelectStatement selectStatement) {
-        return new AggregationDistinctSelectItem(selectItemSegment.getType(), selectStatement.getLogicSQL().substring(selectItemSegment.getInnerExpressionStartIndex(),
-                selectItemSegment.getStopIndex() + 1), selectItemSegment.getAlias(), selectItemSegment.getDistinctExpression());
     }
     
     private Collection<SelectItem> getDerivedColumns(final SelectStatement selectStatement, final Collection<SelectItem> items, final GroupBy groupBy, final OrderBy orderBy) {
