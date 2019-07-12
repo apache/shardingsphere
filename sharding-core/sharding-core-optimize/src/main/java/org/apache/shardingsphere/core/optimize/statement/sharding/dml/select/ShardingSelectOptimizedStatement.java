@@ -159,7 +159,6 @@ public final class ShardingSelectOptimizedStatement extends ShardingWhereOptimiz
                 each.setIndex(columnLabelIndexMap.get(columnLabel));
             }
         }
-        
     }
     
     private Optional<String> getAlias(final String name) {
