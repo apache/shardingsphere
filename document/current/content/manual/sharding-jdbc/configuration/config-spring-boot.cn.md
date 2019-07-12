@@ -31,10 +31,12 @@ spring.shardingsphere.sharding.tables.t_order.actual-data-nodes=ds$->{0..1}.t_or
 spring.shardingsphere.sharding.tables.t_order.table-strategy.inline.sharding-column=order_id
 spring.shardingsphere.sharding.tables.t_order.table-strategy.inline.algorithm-expression=t_order$->{order_id % 2}
 spring.shardingsphere.sharding.tables.t_order.key-generator.column=order_id
+spring.shardingsphere.sharding.tables.t_order.key-generator.type=SNOWFLAKE
 spring.shardingsphere.sharding.tables.t_order_item.actual-data-nodes=ds$->{0..1}.t_order_item$->{0..1}
 spring.shardingsphere.sharding.tables.t_order_item.table-strategy.inline.sharding-column=order_id
 spring.shardingsphere.sharding.tables.t_order_item.table-strategy.inline.algorithm-expression=t_order_item$->{order_id % 2}
 spring.shardingsphere.sharding.tables.t_order_item.key-generator.column=order_item_id
+spring.shardingsphere.sharding.tables.t_order_item.key-generator.type=SNOWFLAKE
 spring.shardingsphere.sharding.binding-tables=t_order,t_order_item
 spring.shardingsphere.sharding.broadcast-tables=t_config
 
@@ -133,10 +135,12 @@ spring.shardingsphere.sharding.tables.t_order.actual-data-nodes=ds$->{0..1}.t_or
 spring.shardingsphere.sharding.tables.t_order.table-strategy.inline.sharding-column=order_id
 spring.shardingsphere.sharding.tables.t_order.table-strategy.inline.algorithm-expression=t_order$->{order_id % 2}
 spring.shardingsphere.sharding.tables.t_order.key-generator.column=order_id
+spring.shardingsphere.sharding.tables.t_order.key-generator.type=SNOWFLAKE
 spring.shardingsphere.sharding.tables.t_order_item.actual-data-nodes=ds$->{0..1}.t_order_item$->{0..1}
 spring.shardingsphere.sharding.tables.t_order_item.table-strategy.inline.sharding-column=order_id
 spring.shardingsphere.sharding.tables.t_order_item.table-strategy.inline.algorithm-expression=t_order_item$->{order_id % 2}
 spring.shardingsphere.sharding.tables.t_order_item.key-generator.column=order_item_id
+spring.shardingsphere.sharding.tables.t_order_item.key-generator.type=SNOWFLAKE
 spring.shardingsphere.sharding.binding-tables=t_order,t_order_item
 spring.shardingsphere.sharding.broadcast-tables=t_config
 
@@ -220,9 +224,6 @@ spring.shardingsphere.sharding.tables.t_order_item.key-generator.column=order_it
 spring.shardingsphere.sharding.binding-tables=t_order,t_order_item
 spring.shardingsphere.sharding.broadcast-tables=t_config
 
-spring.shardingsphere.sharding.default-database-strategy.inline.sharding-column=user_id
-spring.shardingsphere.sharding.default-database-strategy.inline.algorithm-expression=master$->{user_id % 2}
-
 spring.shardingsphere.orchestration.name=spring_boot_ds_sharding
 spring.shardingsphere.orchestration.overwrite=true
 spring.shardingsphere.orchestration.registry.namespace=orchestration-spring-boot-sharding-test
@@ -242,10 +243,12 @@ spring.shardingsphere.sharding.tables.t_order.actual-data-nodes=ds$->{0..1}.t_or
 spring.shardingsphere.sharding.tables.t_order.table-strategy.inline.sharding-column=order_id
 spring.shardingsphere.sharding.tables.t_order.table-strategy.inline.algorithm-expression=t_order$->{order_id % 2}
 spring.shardingsphere.sharding.tables.t_order.key-generator.column=order_id
+spring.shardingsphere.sharding.tables.t_order.key-generator.type=SNOWFLAKE
 spring.shardingsphere.sharding.tables.t_order_item.actual-data-nodes=ds$->{0..1}.t_order_item$->{0..1}
 spring.shardingsphere.sharding.tables.t_order_item.table-strategy.inline.sharding-column=order_id
 spring.shardingsphere.sharding.tables.t_order_item.table-strategy.inline.algorithm-expression=t_order_item$->{order_id % 2}
 spring.shardingsphere.sharding.tables.t_order_item.key-generator.column=order_item_id
+spring.shardingsphere.sharding.tables.t_order_item.key-generator.type=SNOWFLAKE
 spring.shardingsphere.sharding.binding-tables=t_order,t_order_item
 spring.shardingsphere.sharding.broadcast-tables=t_config
 
