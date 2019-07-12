@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.engine;
 
 import com.google.common.base.Optional;
+import org.apache.shardingsphere.core.parse.constant.DerivedColumn;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.CommonSelectItem;
@@ -38,6 +39,8 @@ import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
  * @author zhangliang
  */
 public final class SelectItemEngine {
+    
+    private int derivedColumnCount;
     
     /**
      * Create select item.
@@ -78,9 +81,10 @@ public final class SelectItemEngine {
     
     private AggregationSelectItem createAggregationSelectItemSegment(final AggregationSelectItemSegment selectItemSegment, final SQLStatement sqlStatement) {
         String innerExpression = sqlStatement.getLogicSQL().substring(selectItemSegment.getInnerExpressionStartIndex(), selectItemSegment.getStopIndex() + 1);
-        return selectItemSegment instanceof AggregationDistinctSelectItemSegment
-                ? new AggregationDistinctSelectItem(
-                        selectItemSegment.getType(), innerExpression, selectItemSegment.getAlias().orNull(), ((AggregationDistinctSelectItemSegment) selectItemSegment).getDistinctExpression())
-                : new AggregationSelectItem(selectItemSegment.getType(), innerExpression, selectItemSegment.getAlias().orNull());
+        if (selectItemSegment instanceof AggregationDistinctSelectItemSegment) {
+            String alias = selectItemSegment.getAlias().or(DerivedColumn.AGGREGATION_DISTINCT_DERIVED.getDerivedColumnAlias(derivedColumnCount++));
+            return new AggregationDistinctSelectItem(selectItemSegment.getType(), innerExpression, alias, ((AggregationDistinctSelectItemSegment) selectItemSegment).getDistinctExpression());
+        }
+        return new AggregationSelectItem(selectItemSegment.getType(), innerExpression, selectItemSegment.getAlias().orNull());
     }
 }

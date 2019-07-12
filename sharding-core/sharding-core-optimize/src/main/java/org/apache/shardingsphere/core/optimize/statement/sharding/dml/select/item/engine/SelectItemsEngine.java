@@ -86,10 +86,10 @@ public final class SelectItemsEngine {
     }
     
     private Collection<SelectItem> getSelectItemList(final SelectItemsSegment selectItemsSegment, final SQLStatement sqlStatement) {
-        return selectItemsSegment.isHasRowDistinct() ? getDistinctSelectItemList(selectItemsSegment, sqlStatement) : getCommonSelectItemList(selectItemsSegment, sqlStatement);
+        return selectItemsSegment.isHasRowDistinct() ? getRowDistinctSelectItemList(selectItemsSegment, sqlStatement) : getCommonSelectItemList(selectItemsSegment, sqlStatement);
     }
     
-    private Collection<SelectItem> getDistinctSelectItemList(final SelectItemsSegment selectItemsSegment, final SQLStatement sqlStatement) {
+    private Collection<SelectItem> getRowDistinctSelectItemList(final SelectItemsSegment selectItemsSegment, final SQLStatement sqlStatement) {
         Collection<SelectItem> result = new LinkedList<>();
         Iterator<SelectItemSegment> selectItemSegmentIterator = selectItemsSegment.getSelectItems().iterator();
         SelectItemSegment firstSelectItemSegment = selectItemSegmentIterator.next();
