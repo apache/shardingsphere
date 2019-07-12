@@ -149,23 +149,21 @@ public final class SelectItemsEngine {
     private DistinctSelectItem createDistinctExpressionItem(final SQLStatement sqlStatement, 
                                                             final Set<String> distinctColumnNames, final ExpressionSelectItemSegment expressionSelectItemSegment) {
         DistinctSelectItem result = new DistinctSelectItem(distinctColumnNames, expressionSelectItemSegment.getAlias().orNull());
-        String commonExpression = sqlStatement.getLogicSQL().substring(expressionSelectItemSegment.getStartIndex(), expressionSelectItemSegment.getStopIndex() + 1);
-        int leftParenPosition = commonExpression.indexOf("(");
-        if (0 <= leftParenPosition) {
-            int rightParenPosition = commonExpression.lastIndexOf(")");
-            if (0 > rightParenPosition) {
-                rightParenPosition = commonExpression.length();
+        String expression = sqlStatement.getLogicSQL().substring(expressionSelectItemSegment.getStartIndex(), expressionSelectItemSegment.getStopIndex() + 1);
+        int leftParenIndex = expression.indexOf("(");
+        if (0 <= leftParenIndex) {
+            int rightParenIndex = expression.lastIndexOf(")");
+            if (0 > rightParenIndex) {
+                rightParenIndex = expression.length();
             }
-            distinctColumnNames.add(commonExpression.substring(leftParenPosition + 1, rightParenPosition));
+            distinctColumnNames.add(expression.substring(leftParenIndex + 1, rightParenIndex));
         }
         return result;
     }
     
     private Collection<SelectItem> getCommonSelectItemList(final SelectItemsSegment selectItemsSegment, final SQLStatement sqlStatement) {
         Collection<SelectItem> result = new LinkedList<>();
-        int derivedColumnCount = 0;
         for (SelectItemSegment each : selectItemsSegment.getSelectItems()) {
-            derivedColumnCount = setDistinctFunctionAlias(each, derivedColumnCount);
             Optional<SelectItem> selectItem = selectItemEngine.createSelectItem(each, sqlStatement);
             if (selectItem.isPresent()) {
                 result.add(selectItem.get());
