@@ -21,7 +21,7 @@ import org.apache.shardingsphere.core.parse.integrate.asserts.SQLStatementAssert
 import org.apache.shardingsphere.core.parse.integrate.jaxb.item.ExpectedSelectItems;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
 
-import java.util.Set;
+import java.util.Collection;
 
 /**
  * Item assert.
@@ -43,11 +43,10 @@ public final class ItemAssert {
      * @param actual actual items
      * @param expected expected items
      */
-    public void assertItems(final Set<SelectItem> actual, final ExpectedSelectItems expected) {
+    public void assertItems(final Collection<SelectItem> actual, final ExpectedSelectItems expected) {
         // TODO assert SelectItems total size
         // TODO assert StarSelectItem
         // TODO assert CommonSelectItem
-//        aggregationSelectItemAssert.assertAggregationSelectItems(actual, expected.getAggregationSelectItems());
-//        distinctSelectItemAssert.assertDistinctSelectItems(actual, expected.getDistinctSelectItem());
+        aggregationSelectItemAssert.assertAggregationSelectItems(actual, expected.getAggregationSelectItems());
     }
 }

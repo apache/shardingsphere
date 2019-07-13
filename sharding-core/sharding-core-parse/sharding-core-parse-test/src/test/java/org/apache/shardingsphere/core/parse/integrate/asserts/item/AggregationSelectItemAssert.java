@@ -24,8 +24,8 @@ import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationSe
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -40,7 +40,7 @@ final class AggregationSelectItemAssert {
     
     private final SQLStatementAssertMessage assertMessage;
     
-    void assertAggregationSelectItems(final Set<SelectItem> actual, final List<ExpectedAggregationSelectItem> expected) {
+    void assertAggregationSelectItems(final Collection<SelectItem> actual, final List<ExpectedAggregationSelectItem> expected) {
         List<AggregationSelectItem> aggregationSelectItems = getAggregationSelectItems(actual);
         assertThat(assertMessage.getFullAssertMessage("Table tokens size error: "), aggregationSelectItems.size(), is(expected.size()));
         int count = 0;
@@ -62,7 +62,7 @@ final class AggregationSelectItemAssert {
         }
     }
     
-    private List<AggregationSelectItem> getAggregationSelectItems(final Set<SelectItem> actual) {
+    private List<AggregationSelectItem> getAggregationSelectItems(final Collection<SelectItem> actual) {
         List<AggregationSelectItem> result = new ArrayList<>(actual.size());
         for (SelectItem each : actual) {
             if (each instanceof AggregationSelectItem) {

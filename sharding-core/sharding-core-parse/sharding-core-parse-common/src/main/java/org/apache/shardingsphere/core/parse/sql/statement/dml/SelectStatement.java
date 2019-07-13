@@ -20,10 +20,6 @@ package org.apache.shardingsphere.core.parse.sql.statement.dml;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
-
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 /**
  * Select statement.
@@ -35,10 +31,6 @@ import java.util.Set;
 @Setter
 @ToString(callSuper = true, exclude = "parentStatement")
 public final class SelectStatement extends DMLStatement {
-    
-    private final Set<SelectItem> items = new LinkedHashSet<>();
-    
-    private boolean containStar;
     
     private SelectStatement parentStatement;
 }
