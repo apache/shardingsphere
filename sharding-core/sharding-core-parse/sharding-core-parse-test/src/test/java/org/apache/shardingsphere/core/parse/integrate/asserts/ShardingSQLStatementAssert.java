@@ -18,10 +18,8 @@
 package org.apache.shardingsphere.core.parse.integrate.asserts;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.parse.integrate.asserts.condition.ConditionAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.groupby.GroupByAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.index.IndexAssert;
-import org.apache.shardingsphere.core.parse.integrate.asserts.item.ItemAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.meta.TableMetaDataAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.orderby.OrderByAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.pagination.PaginationAssert;
@@ -57,11 +55,7 @@ public final class ShardingSQLStatementAssert {
     
     private final TableAssert tableAssert;
     
-    private final ConditionAssert conditionAssert;
-    
     private final IndexAssert indexAssert;
-    
-    private final ItemAssert itemAssert;
     
     private final GroupByAssert groupByAssert;
     
@@ -79,9 +73,7 @@ public final class ShardingSQLStatementAssert {
         this.actual = actual;
         expected = ShardingParserResultSetRegistry.getInstance().getRegistry().get(sqlCaseId);
         tableAssert = new TableAssert(assertMessage);
-        conditionAssert = new ConditionAssert(assertMessage);
         indexAssert = new IndexAssert(sqlCaseType, assertMessage);
-        itemAssert = new ItemAssert(assertMessage);
         groupByAssert = new GroupByAssert(assertMessage);
         orderByAssert = new OrderByAssert(assertMessage);
         paginationAssert = new PaginationAssert(sqlCaseType, assertMessage);
@@ -110,10 +102,9 @@ public final class ShardingSQLStatementAssert {
     }
     
     private void assertSelectStatement(final SelectStatement actual) {
-        // TODO recover select items assert
+        // TODO do select items assert
 //        Optional<SelectItemsSegment> selectItemsSegment = actual.findSQLSegment(SelectItemsSegment.class);
 //        if (selectItemsSegment.isPresent()) {
-//            itemAssert.assertItems(selectItemsSegment.get().getSelectItems(), expected.getSelectItems());
 //        }
         Optional<GroupBySegment> groupBySegment = actual.findSQLSegment(GroupBySegment.class);
         if (groupBySegment.isPresent()) {

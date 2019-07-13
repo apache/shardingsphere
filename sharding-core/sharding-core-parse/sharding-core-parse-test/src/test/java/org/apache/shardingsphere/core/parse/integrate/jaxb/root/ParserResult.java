@@ -20,11 +20,8 @@ package org.apache.shardingsphere.core.parse.integrate.jaxb.root;
 import com.google.common.base.Splitter;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.core.parse.integrate.jaxb.condition.ExpectedCondition;
-import org.apache.shardingsphere.core.parse.integrate.jaxb.condition.ExpectedConditions;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.groupby.ExpectedGroupByColumn;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.insert.ExpectedInsertColumnsAndValues;
-import org.apache.shardingsphere.core.parse.integrate.jaxb.item.ExpectedSelectItems;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.meta.ExpectedTableMetaData;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.orderby.ExpectedOrderByColumn;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.pagination.ExpectedPaginationValue;
@@ -60,12 +57,6 @@ public final class ParserResult {
     @XmlElement(name = "schema")
     private List<ExpectedTable> schemas = new LinkedList<>();
     
-    @XmlElement(name = "sharding-conditions")
-    private ExpectedConditions shardingConditions = new ExpectedConditions();
-    
-    @XmlElement(name = "select-items")
-    private ExpectedSelectItems selectItems = new ExpectedSelectItems();
-    
     @XmlElement
     private ExpectedTokens tokens = new ExpectedTokens();
     
@@ -88,10 +79,6 @@ public final class ParserResult {
     
     @XmlElement(name = "alter-table")
     private ExpectedAlterTable alterTable;
-    
-    @XmlElementWrapper(name = "encrypt-conditions")
-    @XmlElement(name = "condition")
-    private List<ExpectedCondition> encryptConditions = new LinkedList<>();
     
     @XmlElement(name = "insert-columns-and-values")
     private ExpectedInsertColumnsAndValues insertColumnsAndValues = new ExpectedInsertColumnsAndValues();
