@@ -33,11 +33,8 @@ public final class ItemAssert {
     
     private final AggregationSelectItemAssert aggregationSelectItemAssert;
     
-    private final DistinctSelectItemAssert distinctSelectItemAssert;
-    
     public ItemAssert(final SQLStatementAssertMessage assertMessage) {
         aggregationSelectItemAssert = new AggregationSelectItemAssert(assertMessage);
-        distinctSelectItemAssert = new DistinctSelectItemAssert(assertMessage);
     }
     
     /**

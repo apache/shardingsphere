@@ -35,7 +35,4 @@ public final class ExpectedSelectItems {
     @XmlElementWrapper(name = "aggregation-select-items")
     @XmlElement(name = "aggregation-select-item")
     private List<ExpectedAggregationSelectItem> aggregationSelectItems = new LinkedList<>();
-    
-    @XmlElement(name = "distinct-select-item")
-    private ExpectedDistinctSelectItem distinctSelectItem;
 }

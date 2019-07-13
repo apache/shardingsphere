@@ -23,9 +23,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationSelectItem;
-import org.apache.shardingsphere.core.parse.sql.context.selectitem.DistinctRowSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
+import org.apache.shardingsphere.core.parse.sql.context.selectitem.StarSelectItem;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -82,20 +83,6 @@ public final class SelectItems {
     }
     
     /**
-     * Get distinct select items.
-     *
-     * @return distinct select items
-     */
-    public Optional<DistinctRowSelectItem> getDistinctSelectItem() {
-        for (SelectItem each : items) {
-            if (each instanceof DistinctRowSelectItem) {
-                return Optional.of((DistinctRowSelectItem) each);
-            }
-        }
-        return Optional.absent();
-    }
-    
-    /**
      * Get aggregation distinct select items.
      *
      * @return aggregation distinct select items
@@ -105,6 +92,22 @@ public final class SelectItems {
         for (SelectItem each : items) {
             if (each instanceof AggregationDistinctSelectItem) {
                 result.add((AggregationDistinctSelectItem) each);
+            }
+        }
+        return result;
+    }
+    
+    /**
+     * Get column labels.
+     * 
+     * @return column labels
+     */
+    public List<String> getColumnLabels() {
+        List<String> result = new ArrayList<>(items.size());
+        for (SelectItem each : items) {
+            // TODO read * from metadata
+            if (!(each instanceof StarSelectItem)) {
+                result.add(each.getAlias().or(each.getExpression()));
             }
         }
         return result;

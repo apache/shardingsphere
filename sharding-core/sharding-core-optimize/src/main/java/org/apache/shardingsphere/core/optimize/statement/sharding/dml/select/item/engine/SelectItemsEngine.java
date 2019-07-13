@@ -30,17 +30,11 @@ import org.apache.shardingsphere.core.parse.constant.DerivedColumn;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.DerivedCommonSelectItem;
-import org.apache.shardingsphere.core.parse.sql.context.selectitem.DistinctRowSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.StarSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.table.Table;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.SelectItemsSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.item.AggregationDistinctSelectItemSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.item.AggregationSelectItemSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.item.ColumnSelectItemSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.item.ExpressionSelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.item.ShorthandSelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.OrderByItemSegment;
@@ -49,10 +43,7 @@ import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
-import java.util.Set;
 
 /**
  * Select items engine.
@@ -86,82 +77,6 @@ public final class SelectItemsEngine {
     }
     
     private Collection<SelectItem> getSelectItemList(final SelectItemsSegment selectItemsSegment, final SQLStatement sqlStatement) {
-        return selectItemsSegment.isDistinctRow() ? getDistinctRowSelectItemList(selectItemsSegment, sqlStatement) : getCommonSelectItemList(selectItemsSegment, sqlStatement);
-    }
-    
-    private Collection<SelectItem> getDistinctRowSelectItemList(final SelectItemsSegment selectItemsSegment, final SQLStatement sqlStatement) {
-        Collection<SelectItem> result = new LinkedList<>();
-        Iterator<SelectItemSegment> selectItemSegmentIterator = selectItemsSegment.getSelectItems().iterator();
-        SelectItemSegment firstSelectItemSegment = selectItemSegmentIterator.next();
-        Set<String> distinctColumnNames = new LinkedHashSet<>();
-        DistinctRowSelectItem distinctSelectItem = null;
-        int derivedColumnCount = 0;
-        if (firstSelectItemSegment instanceof ShorthandSelectItemSegment) {
-            Optional<SelectItem> selectItem = selectItemEngine.createSelectItem(firstSelectItemSegment, sqlStatement);
-            if (selectItem.isPresent()) {
-                result.add(selectItem.get());
-            }
-            result.add(new DistinctRowSelectItem(distinctColumnNames, null));
-        } else if (firstSelectItemSegment instanceof ColumnSelectItemSegment) {
-            ColumnSelectItemSegment columnSelectItemSegment = (ColumnSelectItemSegment) firstSelectItemSegment;
-            distinctSelectItem = new DistinctRowSelectItem(distinctColumnNames, columnSelectItemSegment.getAlias().orNull());
-            result.add(distinctSelectItem);
-            distinctColumnNames.add(columnSelectItemSegment.getName());
-        } else if (firstSelectItemSegment instanceof ExpressionSelectItemSegment) {
-            distinctSelectItem = createDistinctExpressionItem(sqlStatement, distinctColumnNames, (ExpressionSelectItemSegment) firstSelectItemSegment);
-            result.add(distinctSelectItem);
-        } else {
-            derivedColumnCount = setDistinctFunctionAlias(firstSelectItemSegment, derivedColumnCount);
-            Optional<SelectItem> selectItem = selectItemEngine.createSelectItem(firstSelectItemSegment, sqlStatement);
-            if (selectItem.isPresent()) {
-                result.add(selectItem.get());
-            }
-        }
-        while (selectItemSegmentIterator.hasNext()) {
-            SelectItemSegment nextSelectItemSegment = selectItemSegmentIterator.next();
-            Optional<SelectItem> selectItem = selectItemEngine.createSelectItem(nextSelectItemSegment, sqlStatement);
-            if (selectItem.isPresent()) {
-                result.add(selectItem.get());
-            }
-            if (nextSelectItemSegment instanceof ColumnSelectItemSegment) {
-                derivedColumnCount = setDistinctFunctionAlias(nextSelectItemSegment, derivedColumnCount);
-                distinctColumnNames.add(((ColumnSelectItemSegment) nextSelectItemSegment).getName());
-            }
-        }
-        if (null != distinctSelectItem) {
-            distinctSelectItem.getDistinctColumnNames().addAll(distinctColumnNames);
-        }
-        return result;
-    }
-    
-    private int setDistinctFunctionAlias(final SelectItemSegment selectItemSegment, final int derivedColumnCount) {
-        if (selectItemSegment instanceof AggregationSelectItemSegment) {
-            AggregationSelectItemSegment aggregationSelectItemSegment = (AggregationSelectItemSegment) selectItemSegment;
-            Optional<String> alias = aggregationSelectItemSegment.getAlias();
-            if (aggregationSelectItemSegment instanceof AggregationDistinctSelectItemSegment && !alias.isPresent()) {
-                ((AggregationSelectItemSegment) selectItemSegment).setAlias(DerivedColumn.AGGREGATION_DISTINCT_DERIVED.getDerivedColumnAlias(derivedColumnCount));
-                return derivedColumnCount + 1;
-            }
-        }
-        return derivedColumnCount;
-    }
-    
-    private DistinctRowSelectItem createDistinctExpressionItem(final SQLStatement sqlStatement,
-                                                               final Set<String> distinctColumnNames, final ExpressionSelectItemSegment expressionSelectItemSegment) {
-        DistinctRowSelectItem result = new DistinctRowSelectItem(distinctColumnNames, expressionSelectItemSegment.getAlias().orNull());
-        String expression = sqlStatement.getLogicSQL().substring(expressionSelectItemSegment.getStartIndex(), expressionSelectItemSegment.getStopIndex() + 1);
-        int leftParenIndex = expression.indexOf("(");
-        if (-1 != leftParenIndex) {
-            int rightParenIndex = expression.lastIndexOf(")");
-            if (-1 == rightParenIndex) {
-                rightParenIndex = expression.length();
-            }
-            distinctColumnNames.add(expression.substring(leftParenIndex + 1, rightParenIndex));
-        }
-        return result;
-    }
-    
-    private Collection<SelectItem> getCommonSelectItemList(final SelectItemsSegment selectItemsSegment, final SQLStatement sqlStatement) {
         Collection<SelectItem> result = new LinkedList<>();
         for (SelectItemSegment each : selectItemsSegment.getSelectItems()) {
             Optional<SelectItem> selectItem = selectItemEngine.createSelectItem(each, sqlStatement);
@@ -281,16 +196,11 @@ public final class SelectItemsEngine {
             if (orderItem instanceof IndexOrderByItemSegment) {
                 return true;
             }
-            if (containsItemInDistinctItems(each, (TextOrderByItemSegment) orderItem)
-                    || isSameAlias(each, (TextOrderByItemSegment) orderItem) || isSameQualifiedName(each, (TextOrderByItemSegment) orderItem)) {
+            if (isSameAlias(each, (TextOrderByItemSegment) orderItem) || isSameQualifiedName(each, (TextOrderByItemSegment) orderItem)) {
                 return true;
             }
         }
         return false;
-    }
-    
-    private boolean containsItemInDistinctItems(final SelectItem selectItem, final TextOrderByItemSegment orderItem) {
-        return selectItem instanceof DistinctRowSelectItem && ((DistinctRowSelectItem) selectItem).getDistinctColumnNames().contains(orderItem.getText());
     }
     
     private boolean isSameAlias(final SelectItem selectItem, final TextOrderByItemSegment orderItem) {
