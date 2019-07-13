@@ -77,7 +77,7 @@ public final class SelectItemsEngine {
     public SelectItems createSelectItems(final SelectStatement selectStatement, final GroupBy groupBy, final OrderBy orderBy) {
         Optional<SelectItemsSegment> selectItemsSegment = selectStatement.findSQLSegment(SelectItemsSegment.class);
         Preconditions.checkState(selectItemsSegment.isPresent());
-        SelectItems result = new SelectItems(selectItemsSegment.get().getStopIndex());
+        SelectItems result = new SelectItems(selectItemsSegment.get().isDistinctRow(), selectItemsSegment.get().getStopIndex());
         Collection<SelectItem> items = getSelectItemList(selectItemsSegment.get(), selectStatement);
         items.addAll(getDerivedColumns(selectStatement, items, groupBy, orderBy));
         result.getItems().addAll(appendAverageDerivedColumns(items));
@@ -86,7 +86,7 @@ public final class SelectItemsEngine {
     }
     
     private Collection<SelectItem> getSelectItemList(final SelectItemsSegment selectItemsSegment, final SQLStatement sqlStatement) {
-        return selectItemsSegment.isHasDistinctRow() ? getDistinctRowSelectItemList(selectItemsSegment, sqlStatement) : getCommonSelectItemList(selectItemsSegment, sqlStatement);
+        return selectItemsSegment.isDistinctRow() ? getDistinctRowSelectItemList(selectItemsSegment, sqlStatement) : getCommonSelectItemList(selectItemsSegment, sqlStatement);
     }
     
     private Collection<SelectItem> getDistinctRowSelectItemList(final SelectItemsSegment selectItemsSegment, final SQLStatement sqlStatement) {

@@ -43,6 +43,8 @@ public final class SelectItems {
     
     private final Collection<SelectItem> items = new LinkedHashSet<>();
     
+    private final boolean distinctRow;
+    
     private final int selectListStopIndex;
     
     private boolean containStar;

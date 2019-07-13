@@ -85,7 +85,7 @@ public final class GroupByStreamMergedResultTest {
         AggregationSelectItem derivedAggregationSelectItem2 = new AggregationSelectItem(AggregationType.SUM, "(num)", "AVG_DERIVED_SUM_0");
         aggregationSelectItem2.setIndex(6);
         aggregationSelectItem2.getDerivedAggregationItems().add(derivedAggregationSelectItem2);
-        SelectItems selectItems = new SelectItems(0);
+        SelectItems selectItems = new SelectItems(false, 0);
         selectItems.getItems().add(aggregationSelectItem1);
         selectItems.getItems().add(aggregationSelectItem2);
         OptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(
