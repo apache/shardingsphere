@@ -72,7 +72,7 @@ public final class SelectItemsTokenGenerator implements OptionalSQLTokenGenerato
     private String getDerivedItemText(final SelectItem selectItem) {
         Preconditions.checkState(selectItem.getAlias().isPresent());
         if (selectItem instanceof AggregationDistinctSelectItem) {
-            return ((AggregationDistinctSelectItem) selectItem).getDistinctColumnName() + " AS " + selectItem.getAlias().get() + " ";
+            return ((AggregationDistinctSelectItem) selectItem).getDistinctInnerExpression() + " AS " + selectItem.getAlias().get() + " ";
         }
         return selectItem.getExpression() + " AS " + selectItem.getAlias().get() + " ";
     }

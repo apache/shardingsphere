@@ -28,11 +28,11 @@ import org.apache.shardingsphere.core.constant.AggregationType;
 @Getter
 public final class AggregationDistinctSelectItem extends AggregationSelectItem {
     
-    private final String distinctColumnName;
+    private final String distinctInnerExpression;
     
-    public AggregationDistinctSelectItem(final AggregationType type, final String innerExpression, final String alias, final String distinctColumnName) {
+    public AggregationDistinctSelectItem(final AggregationType type, final String innerExpression, final String alias, final String distinctInnerExpression) {
         super(type, innerExpression, alias);
-        this.distinctColumnName = distinctColumnName;
+        this.distinctInnerExpression = distinctInnerExpression;
     }
     
     /**
@@ -41,6 +41,6 @@ public final class AggregationDistinctSelectItem extends AggregationSelectItem {
      * @return distinct column label
      */
     public String getDistinctColumnLabel() {
-        return getAlias().isPresent() ? getAlias().get() : distinctColumnName;
+        return getAlias().or(distinctInnerExpression);
     }
 }

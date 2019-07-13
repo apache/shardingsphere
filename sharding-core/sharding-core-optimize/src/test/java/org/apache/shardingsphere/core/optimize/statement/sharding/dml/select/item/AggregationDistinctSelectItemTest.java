@@ -34,6 +34,6 @@ public final class AggregationDistinctSelectItemTest {
     
     @Test
     public void assertGetDistinctColumnName() {
-        assertThat(aggregationDistinctSelectItem.getDistinctColumnName(), is("order_id"));
+        assertThat(aggregationDistinctSelectItem.getDistinctInnerExpression(), is("order_id"));
     }
 }

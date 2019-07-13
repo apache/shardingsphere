@@ -235,10 +235,10 @@ public final class SelectItemsEngine {
     private void appendDerivedAggregationDistinctSelectItems(final AggregationDistinctSelectItem averageDistinctSelectItem, final int derivedColumnOffset) {
         String countAlias = DerivedColumn.AVG_COUNT_ALIAS.getDerivedColumnAlias(derivedColumnOffset);
         AggregationDistinctSelectItem countDistinctSelectItem = new AggregationDistinctSelectItem(
-                AggregationType.COUNT, averageDistinctSelectItem.getInnerExpression(), countAlias, averageDistinctSelectItem.getDistinctColumnName());
+                AggregationType.COUNT, averageDistinctSelectItem.getInnerExpression(), countAlias, averageDistinctSelectItem.getDistinctInnerExpression());
         String sumAlias = DerivedColumn.AVG_SUM_ALIAS.getDerivedColumnAlias(derivedColumnOffset);
         AggregationDistinctSelectItem sumDistinctSelectItem = new AggregationDistinctSelectItem(
-                AggregationType.SUM, averageDistinctSelectItem.getInnerExpression(), sumAlias, averageDistinctSelectItem.getDistinctColumnName());
+                AggregationType.SUM, averageDistinctSelectItem.getInnerExpression(), sumAlias, averageDistinctSelectItem.getDistinctInnerExpression());
         averageDistinctSelectItem.getDerivedAggregationItems().clear();
         averageDistinctSelectItem.getDerivedAggregationItems().add(countDistinctSelectItem);
         averageDistinctSelectItem.getDerivedAggregationItems().add(sumDistinctSelectItem);

@@ -52,7 +52,7 @@ public class AggregationSelectItem implements SelectItem {
     private int index = -1;
     
     @Override
-    public String getExpression() {
+    public final String getExpression() {
         return SQLUtil.getExactlyValue(type.name() + innerExpression);
     }
     
@@ -67,6 +67,6 @@ public class AggregationSelectItem implements SelectItem {
      * @return column label
      */
     public String getColumnLabel() {
-        return null == alias ? getExpression() : alias;
+        return getAlias().or(getExpression());
     }
 }
