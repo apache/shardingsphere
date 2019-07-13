@@ -20,11 +20,8 @@ package org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.it
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.constant.AggregationType;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.groupby.GroupBy;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.AggregationDistinctSelectItem;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.AggregationSelectItem;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.DerivedCommonSelectItem;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.SelectItem;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.SelectItems;
@@ -68,7 +65,6 @@ public final class SelectItemsEngine {
     public SelectItems createSelectItems(final SelectStatement selectStatement, final GroupBy groupBy, final OrderBy orderBy) {
         SelectItemsSegment selectItemsSegment = getSelectItemsSegment(selectStatement);
         Collection<SelectItem> items = getSelectItemList(selectItemsSegment, selectStatement);
-        appendAverageDerivedColumns(items);
         items.addAll(getDerivedGroupByColumns(selectStatement, items, groupBy.getItems()));
         items.addAll(getDerivedOrderByColumns(selectStatement, items, orderBy.getItems()));
         SelectItems result = new SelectItems(items, selectItemsSegment.isDistinctRow(), selectItemsSegment.getStopIndex());
@@ -91,46 +87,6 @@ public final class SelectItemsEngine {
             }
         }
         return result;
-    }
-    
-    private void appendAverageDerivedColumns(final Collection<SelectItem> items) {
-        int derivedColumnOffset = 0;
-        for (SelectItem each : items) {
-            if (each instanceof AggregationSelectItem && AggregationType.AVG == ((AggregationSelectItem) each).getType()) {
-                appendAverageDerivedColumns(derivedColumnOffset++, each);
-                // TODO replace avg to constant, avoid calculate useless avg
-            }
-        }
-    }
-    
-    private void appendAverageDerivedColumns(final int derivedColumnOffset, final SelectItem selectItem) {
-        if (selectItem instanceof AggregationDistinctSelectItem) {
-            appendDerivedAggregationDistinctSelectItems((AggregationDistinctSelectItem) selectItem, derivedColumnOffset);
-        } else {
-            appendDerivedAggregationSelectItems((AggregationSelectItem) selectItem, derivedColumnOffset);
-        }
-    }
-    
-    private void appendDerivedAggregationDistinctSelectItems(final AggregationDistinctSelectItem averageDistinctSelectItem, final int derivedColumnOffset) {
-        String countAlias = DerivedColumn.AVG_COUNT_ALIAS.getDerivedColumnAlias(derivedColumnOffset);
-        AggregationDistinctSelectItem countDistinctSelectItem = new AggregationDistinctSelectItem(
-                AggregationType.COUNT, averageDistinctSelectItem.getInnerExpression(), countAlias, averageDistinctSelectItem.getDistinctInnerExpression());
-        String sumAlias = DerivedColumn.AVG_SUM_ALIAS.getDerivedColumnAlias(derivedColumnOffset);
-        AggregationDistinctSelectItem sumDistinctSelectItem = new AggregationDistinctSelectItem(
-                AggregationType.SUM, averageDistinctSelectItem.getInnerExpression(), sumAlias, averageDistinctSelectItem.getDistinctInnerExpression());
-        averageDistinctSelectItem.getDerivedAggregationItems().clear();
-        averageDistinctSelectItem.getDerivedAggregationItems().add(countDistinctSelectItem);
-        averageDistinctSelectItem.getDerivedAggregationItems().add(sumDistinctSelectItem);
-    }
-    
-    private void appendDerivedAggregationSelectItems(final AggregationSelectItem averageSelectItem, final int derivedColumnOffset) {
-        String countAlias = DerivedColumn.AVG_COUNT_ALIAS.getDerivedColumnAlias(derivedColumnOffset);
-        AggregationSelectItem countSelectItem = new AggregationSelectItem(AggregationType.COUNT, averageSelectItem.getInnerExpression(), countAlias);
-        String sumAlias = DerivedColumn.AVG_SUM_ALIAS.getDerivedColumnAlias(derivedColumnOffset);
-        AggregationSelectItem sumSelectItem = new AggregationSelectItem(AggregationType.SUM, averageSelectItem.getInnerExpression(), sumAlias);
-        averageSelectItem.getDerivedAggregationItems().clear();
-        averageSelectItem.getDerivedAggregationItems().add(countSelectItem);
-        averageSelectItem.getDerivedAggregationItems().add(sumSelectItem);
     }
     
     private Collection<SelectItem> getDerivedGroupByColumns(final SelectStatement selectStatement, final Collection<SelectItem> selectItems, final Collection<OrderByItem> groupByItems) {
