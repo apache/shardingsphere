@@ -102,7 +102,7 @@ public final class SelectItems {
         List<String> result = new ArrayList<>(items.size());
         for (SelectItem each : items) {
             // TODO read * from metadata
-            if (!(each instanceof StarSelectItem)) {
+            if (!(each instanceof ShorthandSelectItem)) {
                 result.add(each.getAlias().or(each.getExpression()));
             }
         }

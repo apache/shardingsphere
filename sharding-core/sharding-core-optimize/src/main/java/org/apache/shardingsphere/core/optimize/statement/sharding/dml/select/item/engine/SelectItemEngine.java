@@ -22,7 +22,7 @@ import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ite
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.AggregationSelectItem;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.CommonSelectItem;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.SelectItem;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.StarSelectItem;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.ShorthandSelectItem;
 import org.apache.shardingsphere.core.parse.constant.DerivedColumn;
 import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.AggregationDistinctSelectItemSegment;
@@ -66,9 +66,9 @@ public final class SelectItemEngine {
         return Optional.absent();
     }
     
-    private StarSelectItem createShorthandSelectItemSegment(final ShorthandSelectItemSegment selectItemSegment) {
+    private ShorthandSelectItem createShorthandSelectItemSegment(final ShorthandSelectItemSegment selectItemSegment) {
         Optional<TableSegment> owner = selectItemSegment.getOwner();
-        return new StarSelectItem(owner.isPresent() ? owner.get().getName() : null);
+        return new ShorthandSelectItem(owner.isPresent() ? owner.get().getName() : null);
     }
     
     private CommonSelectItem createColumnSelectItemSegment(final ColumnSelectItemSegment selectItemSegment) {

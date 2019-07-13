@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 /**
- * Select all item.
+ * Shorthand select item.
  *
  * @author zhangliang
  */
@@ -33,7 +33,7 @@ import lombok.ToString;
 @Getter
 @EqualsAndHashCode
 @ToString
-public final class StarSelectItem implements SelectItem {
+public final class ShorthandSelectItem implements SelectItem {
     
     private final String owner;
     
