@@ -24,7 +24,6 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -38,7 +37,7 @@ import java.util.List;
 @Setter
 public final class SelectItems {
     
-    private final Collection<SelectItem> items = new LinkedHashSet<>();
+    private final Collection<SelectItem> items;
     
     private final boolean distinctRow;
     
