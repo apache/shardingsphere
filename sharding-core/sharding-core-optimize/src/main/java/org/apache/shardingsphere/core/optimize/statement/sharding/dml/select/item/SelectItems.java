@@ -21,10 +21,6 @@ import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationDistinctSelectItem;
-import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationSelectItem;
-import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
-import org.apache.shardingsphere.core.parse.sql.context.selectitem.StarSelectItem;
 
 import java.util.ArrayList;
 import java.util.Collection;

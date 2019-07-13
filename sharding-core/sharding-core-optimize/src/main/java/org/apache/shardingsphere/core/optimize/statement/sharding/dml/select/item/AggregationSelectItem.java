@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.context.selectitem;
+package org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item;
 
 import com.google.common.base.Optional;
 import lombok.EqualsAndHashCode;

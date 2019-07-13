@@ -15,28 +15,46 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.context.selectitem;
+package org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Strings;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 /**
- * Select item interface.
+ * Select all item.
  *
  * @author zhangliang
  */
-public interface SelectItem {
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@EqualsAndHashCode
+@ToString
+public final class StarSelectItem implements SelectItem {
+    
+    private String owner;
+    
+    @Override
+    public String getExpression() {
+        return Strings.isNullOrEmpty(owner) ? "*" : owner + ".*";
+    }
+    
+    @Override
+    public Optional<String> getAlias() {
+        return Optional.absent();
+    }
     
     /**
-     * Get expression.
+     * Get owner.
      * 
-     * @return expression
+     * @return owner
      */
-    String getExpression();
-    
-    /**
-     * Get alias.
-     * 
-     * @return alias
-     */
-    Optional<String> getAlias();
+    public Optional<String> getOwner() {
+        return Optional.fromNullable(owner);
+    }
 }

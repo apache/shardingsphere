@@ -26,7 +26,7 @@ import org.apache.shardingsphere.core.merge.dql.common.MemoryQueryResultRow;
 import org.apache.shardingsphere.core.merge.dql.groupby.aggregation.AggregationUnit;
 import org.apache.shardingsphere.core.merge.dql.groupby.aggregation.AggregationUnitFactory;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ShardingSelectOptimizedStatement;
-import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationSelectItem;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.AggregationSelectItem;
 
 import java.sql.SQLException;
 import java.util.ArrayList;

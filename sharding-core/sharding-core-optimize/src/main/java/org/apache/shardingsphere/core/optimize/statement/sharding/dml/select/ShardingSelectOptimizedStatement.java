@@ -25,13 +25,13 @@ import org.apache.shardingsphere.core.optimize.statement.sharding.dml.ShardingWh
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingConditions;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.groupby.GroupBy;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.AggregationSelectItem;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.SelectItem;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.SelectItems;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderBy;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderByItem;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.pagination.Pagination;
 import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
-import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationSelectItem;
-import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.IndexOrderByItemSegment;

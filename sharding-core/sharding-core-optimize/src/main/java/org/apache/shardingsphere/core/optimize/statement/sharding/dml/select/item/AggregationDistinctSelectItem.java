@@ -15,46 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.context.selectitem;
+package org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Strings;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import org.apache.shardingsphere.core.constant.AggregationType;
 
 /**
- * Select all item.
+ * Aggregation distinct select item.
  *
- * @author zhangliang
+ * @author panjuan
  */
-@NoArgsConstructor
-@AllArgsConstructor
 @Getter
-@EqualsAndHashCode
-@ToString
-public final class StarSelectItem implements SelectItem {
+public final class AggregationDistinctSelectItem extends AggregationSelectItem {
     
-    private String owner;
+    private final String distinctColumnName;
     
-    @Override
-    public String getExpression() {
-        return Strings.isNullOrEmpty(owner) ? "*" : owner + ".*";
-    }
-    
-    @Override
-    public Optional<String> getAlias() {
-        return Optional.absent();
+    public AggregationDistinctSelectItem(final AggregationType type, final String innerExpression, final String alias, final String distinctColumnName) {
+        super(type, innerExpression, alias);
+        this.distinctColumnName = distinctColumnName;
     }
     
     /**
-     * Get owner.
-     * 
-     * @return owner
+     * Get distinct column label.
+     *
+     * @return distinct column label
      */
-    public Optional<String> getOwner() {
-        return Optional.fromNullable(owner);
+    public String getDistinctColumnLabel() {
+        return getAlias().isPresent() ? getAlias().get() : distinctColumnName;
     }
 }

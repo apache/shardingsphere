@@ -29,6 +29,8 @@ import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.Sha
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.ShardingInsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ShardingSelectOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.groupby.GroupBy;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.AggregationSelectItem;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.DerivedCommonSelectItem;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.SelectItems;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderBy;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderByItem;
@@ -38,8 +40,6 @@ import org.apache.shardingsphere.core.parse.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
-import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationSelectItem;
-import org.apache.shardingsphere.core.parse.sql.context.selectitem.DerivedCommonSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.table.Table;
 import org.apache.shardingsphere.core.parse.sql.segment.common.SchemaSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;

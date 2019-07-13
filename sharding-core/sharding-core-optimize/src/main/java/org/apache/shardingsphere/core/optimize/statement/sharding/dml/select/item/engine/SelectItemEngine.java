@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.engine;
 
 import com.google.common.base.Optional;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.AggregationDistinctSelectItem;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.AggregationSelectItem;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.CommonSelectItem;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.SelectItem;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.StarSelectItem;
 import org.apache.shardingsphere.core.parse.constant.DerivedColumn;
-import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationDistinctSelectItem;
-import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationSelectItem;
-import org.apache.shardingsphere.core.parse.sql.context.selectitem.CommonSelectItem;
-import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
-import org.apache.shardingsphere.core.parse.sql.context.selectitem.StarSelectItem;
 import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.AggregationDistinctSelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.AggregationSelectItemSegment;

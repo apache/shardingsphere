@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.context.selectitem;
+package org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item;
 
 import org.apache.shardingsphere.core.constant.AggregationType;
 import org.junit.Test;
@@ -23,7 +23,7 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class AggregationDistinctSelectItemTest {
+public final class AggregationDistinctSelectItemTest {
     
     private final AggregationDistinctSelectItem aggregationDistinctSelectItem = new AggregationDistinctSelectItem(AggregationType.COUNT, "(DISTINCT order_id)", "c", "order_id");
     

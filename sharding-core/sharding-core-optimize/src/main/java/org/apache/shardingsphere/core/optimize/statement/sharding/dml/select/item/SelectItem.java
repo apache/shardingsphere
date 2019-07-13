@@ -15,32 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.context.selectitem;
+package org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item;
 
-import lombok.Getter;
-import org.apache.shardingsphere.core.constant.AggregationType;
+import com.google.common.base.Optional;
 
 /**
- * Aggregation distinct select item.
+ * Select item interface.
  *
- * @author panjuan
+ * @author zhangliang
  */
-@Getter
-public final class AggregationDistinctSelectItem extends AggregationSelectItem {
-    
-    private final String distinctColumnName;
-    
-    public AggregationDistinctSelectItem(final AggregationType type, final String innerExpression, final String alias, final String distinctColumnName) {
-        super(type, innerExpression, alias);
-        this.distinctColumnName = distinctColumnName;
-    }
+public interface SelectItem {
     
     /**
-     * Get distinct column label.
-     *
-     * @return distinct column label
+     * Get expression.
+     * 
+     * @return expression
      */
-    public String getDistinctColumnLabel() {
-        return getAlias().isPresent() ? getAlias().get() : distinctColumnName;
-    }
+    String getExpression();
+    
+    /**
+     * Get alias.
+     * 
+     * @return alias
+     */
+    Optional<String> getAlias();
 }
