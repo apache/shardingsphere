@@ -33,8 +33,8 @@ import org.apache.shardingsphere.core.merge.dql.orderby.OrderByStreamMergedResul
 import org.apache.shardingsphere.core.merge.dql.pagination.LimitDecoratorMergedResult;
 import org.apache.shardingsphere.core.merge.dql.pagination.RowNumberDecoratorMergedResult;
 import org.apache.shardingsphere.core.merge.dql.pagination.TopAndRowNumberDecoratorMergedResult;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.pagination.Pagination;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ShardingSelectOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.pagination.Pagination;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
@@ -78,12 +78,12 @@ public final class DQLMergeEngine implements MergeEngine {
         if (1 == result.size()) {
             return result;
         }
-        List<AggregationDistinctSelectItem> aggregationDistinctSelectItems = optimizedStatement.getAggregationDistinctSelectItems();
+        List<AggregationDistinctSelectItem> aggregationDistinctSelectItems = optimizedStatement.getSelectItems().getAggregationDistinctSelectItems();
         if (!aggregationDistinctSelectItems.isEmpty()) {
             result = getDividedQueryResults(new AggregationDistinctQueryResult(queryResults, aggregationDistinctSelectItems));
         }
         if (isNeedProcessDistinctSelectItem()) {
-            result = getDividedQueryResults(new DistinctQueryResult(queryResults, new ArrayList<>(optimizedStatement.getDistinctSelectItem().get().getDistinctColumnLabels())));
+            result = getDividedQueryResults(new DistinctQueryResult(queryResults, new ArrayList<>(optimizedStatement.getSelectItems().getDistinctSelectItem().get().getDistinctColumnLabels())));
         }
         return result.isEmpty() ? queryResults : result;
     }
@@ -99,7 +99,7 @@ public final class DQLMergeEngine implements MergeEngine {
     }
     
     private boolean isNeedProcessDistinctSelectItem() {
-        return optimizedStatement.getDistinctSelectItem().isPresent() && optimizedStatement.getGroupBy().getItems().isEmpty();
+        return optimizedStatement.getSelectItems().getDistinctSelectItem().isPresent() && optimizedStatement.getGroupBy().getItems().isEmpty();
     }
     
     private Map<String, Integer> getColumnLabelIndexMap(final QueryResult queryResult) throws SQLException {
@@ -120,7 +120,7 @@ public final class DQLMergeEngine implements MergeEngine {
     }
     
     private MergedResult build() throws SQLException {
-        if (!optimizedStatement.getGroupBy().getItems().isEmpty() || !optimizedStatement.getAggregationSelectItems().isEmpty()) {
+        if (!optimizedStatement.getGroupBy().getItems().isEmpty() || !optimizedStatement.getSelectItems().getAggregationSelectItems().isEmpty()) {
             return getGroupByMergedResult();
         }
         if (!optimizedStatement.getOrderBy().getItems().isEmpty()) {
