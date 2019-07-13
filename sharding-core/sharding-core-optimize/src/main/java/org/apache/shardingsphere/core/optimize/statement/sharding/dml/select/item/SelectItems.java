@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationSelectItem;
-import org.apache.shardingsphere.core.parse.sql.context.selectitem.DistinctSelectItem;
+import org.apache.shardingsphere.core.parse.sql.context.selectitem.DistinctRowSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
 
 import java.util.Collection;
@@ -84,10 +84,10 @@ public final class SelectItems {
      *
      * @return distinct select items
      */
-    public Optional<DistinctSelectItem> getDistinctSelectItem() {
+    public Optional<DistinctRowSelectItem> getDistinctSelectItem() {
         for (SelectItem each : items) {
-            if (each instanceof DistinctSelectItem) {
-                return Optional.of((DistinctSelectItem) each);
+            if (each instanceof DistinctRowSelectItem) {
+                return Optional.of((DistinctRowSelectItem) each);
             }
         }
         return Optional.absent();

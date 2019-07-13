@@ -23,7 +23,7 @@ import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.integrate.asserts.SQLStatementAssertMessage;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.item.ExpectedDistinctSelectItem;
-import org.apache.shardingsphere.core.parse.sql.context.selectitem.DistinctSelectItem;
+import org.apache.shardingsphere.core.parse.sql.context.selectitem.DistinctRowSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
 
 import java.util.Set;
@@ -44,7 +44,7 @@ final class DistinctSelectItemAssert {
     private final SQLStatementAssertMessage assertMessage;
     
     void assertDistinctSelectItems(final Set<SelectItem> actual, final ExpectedDistinctSelectItem expected) {
-        Optional<DistinctSelectItem> distinctSelectItem = getDistinctSelectItem(actual);
+        Optional<DistinctRowSelectItem> distinctSelectItem = getDistinctSelectItem(actual);
         if (distinctSelectItem.isPresent()) {
             assertDistinctSelectItem(distinctSelectItem.get(), expected);
         } else {
@@ -52,7 +52,7 @@ final class DistinctSelectItemAssert {
         }
     }
     
-    private void assertDistinctSelectItem(final DistinctSelectItem actual, final ExpectedDistinctSelectItem expected) {
+    private void assertDistinctSelectItem(final DistinctRowSelectItem actual, final ExpectedDistinctSelectItem expected) {
         assertThat(assertMessage.getFullAssertMessage("Distinct select item alias assertion error: "), actual.getAlias().orNull(), is(expected.getAlias()));
         assertThat(assertMessage.getFullAssertMessage("Distinct select item distinct column name size assertion error: "),
                 actual.getDistinctColumnNames().size(), is(expected.getDistinctColumnNames().size()));
@@ -60,13 +60,13 @@ final class DistinctSelectItemAssert {
                 actual.getDistinctColumnNames().containsAll(expected.getDistinctColumnNames()) && expected.getDistinctColumnNames().containsAll(actual.getDistinctColumnNames()));
     }
     
-    private Optional<DistinctSelectItem> getDistinctSelectItem(final Set<SelectItem> actual) {
+    private Optional<DistinctRowSelectItem> getDistinctSelectItem(final Set<SelectItem> actual) {
         Set<SelectItem> distinctItems = Sets.filter(actual, new Predicate<SelectItem>() {
             @Override
             public boolean apply(final SelectItem input) {
-                return input instanceof DistinctSelectItem;
+                return input instanceof DistinctRowSelectItem;
             }
         });
-        return distinctItems.isEmpty() ? Optional.<DistinctSelectItem>absent() : Optional.of((DistinctSelectItem) distinctItems.iterator().next());
+        return distinctItems.isEmpty() ? Optional.<DistinctRowSelectItem>absent() : Optional.of((DistinctRowSelectItem) distinctItems.iterator().next());
     }
 }

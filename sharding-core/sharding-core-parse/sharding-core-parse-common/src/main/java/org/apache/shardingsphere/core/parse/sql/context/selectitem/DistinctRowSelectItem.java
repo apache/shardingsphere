@@ -28,13 +28,13 @@ import java.util.Collections;
 import java.util.Set;
 
 /**
- * Distinct select item.
+ * Distinct row select item.
  *
  * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
-public final class DistinctSelectItem implements SelectItem {
+public final class DistinctRowSelectItem implements SelectItem {
     
     private final Set<String> distinctColumnNames;
     

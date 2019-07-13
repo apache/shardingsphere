@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.merge.dql;
 
 import com.google.common.base.Function;
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import lombok.Getter;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
@@ -36,6 +37,7 @@ import org.apache.shardingsphere.core.merge.dql.pagination.TopAndRowNumberDecora
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ShardingSelectOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.pagination.Pagination;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationDistinctSelectItem;
+import org.apache.shardingsphere.core.parse.sql.context.selectitem.DistinctRowSelectItem;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.spi.database.DatabaseType;
@@ -82,8 +84,9 @@ public final class DQLMergeEngine implements MergeEngine {
         if (!aggregationDistinctSelectItems.isEmpty()) {
             result = getDividedQueryResults(new AggregationDistinctQueryResult(queryResults, aggregationDistinctSelectItems));
         }
-        if (isNeedProcessDistinctSelectItem()) {
-            result = getDividedQueryResults(new DistinctQueryResult(queryResults, new ArrayList<>(optimizedStatement.getSelectItems().getDistinctSelectItem().get().getDistinctColumnLabels())));
+        Optional<DistinctRowSelectItem> distinctRowSelectItem = findDistinctRowSelectItem();
+        if (distinctRowSelectItem.isPresent()) {
+            result = getDividedQueryResults(new DistinctQueryResult(queryResults, new ArrayList<>(distinctRowSelectItem.get().getDistinctColumnLabels())));
         }
         return result.isEmpty() ? queryResults : result;
     }
@@ -98,8 +101,8 @@ public final class DQLMergeEngine implements MergeEngine {
         });
     }
     
-    private boolean isNeedProcessDistinctSelectItem() {
-        return optimizedStatement.getSelectItems().getDistinctSelectItem().isPresent() && optimizedStatement.getGroupBy().getItems().isEmpty();
+    private Optional<DistinctRowSelectItem> findDistinctRowSelectItem() {
+        return optimizedStatement.getGroupBy().getItems().isEmpty() ? optimizedStatement.getSelectItems().getDistinctSelectItem() : Optional.<DistinctRowSelectItem>absent();
     }
     
     private Map<String, Integer> getColumnLabelIndexMap(final QueryResult queryResult) throws SQLException {
