@@ -146,6 +146,6 @@ public final class Pagination {
     
     private boolean isMaxRowCount(final ShardingSelectOptimizedStatement optimizedStatement) {
         return (!optimizedStatement.getGroupBy().getItems().isEmpty()
-                || !optimizedStatement.getAggregationSelectItems().isEmpty()) && !optimizedStatement.isSameGroupByAndOrderByItems();
+                || !optimizedStatement.getSelectItems().getAggregationSelectItems().isEmpty()) && !optimizedStatement.isSameGroupByAndOrderByItems();
     }
 }

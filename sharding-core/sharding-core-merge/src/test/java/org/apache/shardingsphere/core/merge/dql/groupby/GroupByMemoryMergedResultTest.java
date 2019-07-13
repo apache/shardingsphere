@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.merge.dql.groupby;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.core.constant.AggregationType;
 import org.apache.shardingsphere.core.constant.OrderDirection;
@@ -74,17 +73,17 @@ public final class GroupByMemoryMergedResultTest {
         for (ResultSet each : resultSets) {
             queryResults.add(new TestQueryResult(each));
         }
-        AggregationSelectItem aggregationSelectItem1 = new AggregationSelectItem(AggregationType.COUNT, "(*)", Optional.<String>absent());
+        AggregationSelectItem aggregationSelectItem1 = new AggregationSelectItem(AggregationType.COUNT, "(*)", null);
         aggregationSelectItem1.setIndex(1);
-        AggregationSelectItem aggregationSelectItem2 = new AggregationSelectItem(AggregationType.AVG, "(num)", Optional.<String>absent());
+        AggregationSelectItem aggregationSelectItem2 = new AggregationSelectItem(AggregationType.AVG, "(num)", null);
         aggregationSelectItem2.setIndex(2);
-        AggregationSelectItem derivedAggregationSelectItem1 = new AggregationSelectItem(AggregationType.COUNT, "(num)", Optional.of("AVG_DERIVED_COUNT_0"));
+        AggregationSelectItem derivedAggregationSelectItem1 = new AggregationSelectItem(AggregationType.COUNT, "(num)", "AVG_DERIVED_COUNT_0");
         aggregationSelectItem2.setIndex(4);
-        aggregationSelectItem2.getDerivedAggregationSelectItems().add(derivedAggregationSelectItem1);
-        AggregationSelectItem derivedAggregationSelectItem2 = new AggregationSelectItem(AggregationType.SUM, "(num)", Optional.of("AVG_DERIVED_SUM_0"));
+        aggregationSelectItem2.getDerivedAggregationItems().add(derivedAggregationSelectItem1);
+        AggregationSelectItem derivedAggregationSelectItem2 = new AggregationSelectItem(AggregationType.SUM, "(num)", "AVG_DERIVED_SUM_0");
         aggregationSelectItem2.setIndex(5);
-        aggregationSelectItem2.getDerivedAggregationSelectItems().add(derivedAggregationSelectItem2);
-        SelectItems selectItems = new SelectItems(0);
+        aggregationSelectItem2.getDerivedAggregationItems().add(derivedAggregationSelectItem2);
+        SelectItems selectItems = new SelectItems(false, 0);
         selectItems.getItems().add(aggregationSelectItem1);
         selectItems.getItems().add(aggregationSelectItem2);
         OptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(

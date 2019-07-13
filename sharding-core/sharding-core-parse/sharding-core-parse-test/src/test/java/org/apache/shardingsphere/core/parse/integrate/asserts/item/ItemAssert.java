@@ -33,11 +33,8 @@ public final class ItemAssert {
     
     private final AggregationSelectItemAssert aggregationSelectItemAssert;
     
-    private final DistinctSelectItemAssert distinctSelectItemAssert;
-    
     public ItemAssert(final SQLStatementAssertMessage assertMessage) {
         aggregationSelectItemAssert = new AggregationSelectItemAssert(assertMessage);
-        distinctSelectItemAssert = new DistinctSelectItemAssert(assertMessage);
     }
     
     /**
@@ -50,7 +47,7 @@ public final class ItemAssert {
         // TODO assert SelectItems total size
         // TODO assert StarSelectItem
         // TODO assert CommonSelectItem
-        aggregationSelectItemAssert.assertAggregationSelectItems(actual, expected.getAggregationSelectItems());
-        distinctSelectItemAssert.assertDistinctSelectItems(actual, expected.getDistinctSelectItem());
+//        aggregationSelectItemAssert.assertAggregationSelectItems(actual, expected.getAggregationSelectItems());
+//        distinctSelectItemAssert.assertDistinctSelectItems(actual, expected.getDistinctSelectItem());
     }
 }

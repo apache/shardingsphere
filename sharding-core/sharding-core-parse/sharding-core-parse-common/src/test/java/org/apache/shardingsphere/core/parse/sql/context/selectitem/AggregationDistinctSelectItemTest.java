@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.parse.sql.context.selectitem;
 
-import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.constant.AggregationType;
 import org.junit.Test;
 
@@ -26,7 +25,7 @@ import static org.junit.Assert.assertThat;
 
 public class AggregationDistinctSelectItemTest {
     
-    private final AggregationDistinctSelectItem aggregationDistinctSelectItem = new AggregationDistinctSelectItem(AggregationType.COUNT, "(DISTINCT order_id)", Optional.of("c"), "order_id");
+    private final AggregationDistinctSelectItem aggregationDistinctSelectItem = new AggregationDistinctSelectItem(AggregationType.COUNT, "(DISTINCT order_id)", "c", "order_id");
     
     @Test
     public void assertGetDistinctColumnLabel() {

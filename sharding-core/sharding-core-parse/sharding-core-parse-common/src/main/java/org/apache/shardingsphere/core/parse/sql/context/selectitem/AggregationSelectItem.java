@@ -44,9 +44,9 @@ public class AggregationSelectItem implements SelectItem {
     
     private final String innerExpression;
     
-    private final Optional<String> alias;
+    private final String alias;
     
-    private final List<AggregationSelectItem> derivedAggregationSelectItems = new ArrayList<>(2);
+    private final List<AggregationSelectItem> derivedAggregationItems = new ArrayList<>(2);
     
     @Setter
     private int index = -1;
@@ -56,12 +56,17 @@ public class AggregationSelectItem implements SelectItem {
         return SQLUtil.getExactlyValue(type.name() + innerExpression);
     }
     
+    @Override
+    public final Optional<String> getAlias() {
+        return Optional.fromNullable(alias);
+    }
+    
     /**
      * Get column label.
      *
      * @return column label
      */
     public String getColumnLabel() {
-        return alias.isPresent() ? alias.get() : getExpression();
+        return null == alias ? getExpression() : alias;
     }
 }

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.core.optimize.statement.sharding.dml.select;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.ShardingWhereOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingConditions;
@@ -29,20 +30,16 @@ import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ord
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderByItem;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.pagination.Pagination;
 import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
-import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationSelectItem;
-import org.apache.shardingsphere.core.parse.sql.context.selectitem.DistinctSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.TextOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -52,9 +49,8 @@ import java.util.Map;
  * @author zhangliang
  */
 @Getter
+@Setter
 public final class ShardingSelectOptimizedStatement extends ShardingWhereOptimizedStatement {
-    
-    private final SelectStatement selectStatement;
     
     private final GroupBy groupBy;
     
@@ -64,60 +60,15 @@ public final class ShardingSelectOptimizedStatement extends ShardingWhereOptimiz
     
     private final Pagination pagination;
     
+    private boolean containsSubquery;
+    
     public ShardingSelectOptimizedStatement(final SQLStatement sqlStatement, final List<ShardingCondition> shardingConditions, final AndCondition encryptConditions,
                                             final GroupBy groupBy, final OrderBy orderBy, final SelectItems selectItems, final Pagination pagination) {
         super(sqlStatement, new ShardingConditions(shardingConditions), encryptConditions);
-        this.selectStatement = (SelectStatement) sqlStatement;
         this.groupBy = groupBy;
         this.orderBy = orderBy;
         this.selectItems = selectItems;
         this.pagination = pagination;
-    }
-    
-    /**
-     * Get aggregation select items.
-     *
-     * @return aggregation select items
-     */
-    public List<AggregationSelectItem> getAggregationSelectItems() {
-        List<AggregationSelectItem> result = new LinkedList<>();
-        for (SelectItem each : selectItems.getItems()) {
-            if (each instanceof AggregationSelectItem) {
-                AggregationSelectItem aggregationSelectItem = (AggregationSelectItem) each;
-                result.add(aggregationSelectItem);
-                result.addAll(aggregationSelectItem.getDerivedAggregationSelectItems());
-            }
-        }
-        return result;
-    }
-    
-    /**
-     * Get distinct select items.
-     *
-     * @return distinct select items
-     */
-    public Optional<DistinctSelectItem> getDistinctSelectItem() {
-        for (SelectItem each : selectItems.getItems()) {
-            if (each instanceof DistinctSelectItem) {
-                return Optional.of((DistinctSelectItem) each);
-            }
-        }
-        return Optional.absent();
-    }
-    
-    /**
-     * Get aggregation distinct select items.
-     *
-     * @return aggregation distinct select items
-     */
-    public List<AggregationDistinctSelectItem> getAggregationDistinctSelectItems() {
-        List<AggregationDistinctSelectItem> result = new LinkedList<>();
-        for (SelectItem each : selectItems.getItems()) {
-            if (each instanceof AggregationDistinctSelectItem) {
-                result.add((AggregationDistinctSelectItem) each);
-            }
-        }
-        return result;
     }
     
     /**
@@ -132,10 +83,10 @@ public final class ShardingSelectOptimizedStatement extends ShardingWhereOptimiz
     }
     
     private void setIndexForAggregationItem(final Map<String, Integer> columnLabelIndexMap) {
-        for (AggregationSelectItem each : getAggregationSelectItems()) {
+        for (AggregationSelectItem each : selectItems.getAggregationSelectItems()) {
             Preconditions.checkState(columnLabelIndexMap.containsKey(each.getColumnLabel()), "Can't find index: %s, please add alias for aggregate selections", each);
             each.setIndex(columnLabelIndexMap.get(each.getColumnLabel()));
-            for (AggregationSelectItem derived : each.getDerivedAggregationSelectItems()) {
+            for (AggregationSelectItem derived : each.getDerivedAggregationItems()) {
                 Preconditions.checkState(columnLabelIndexMap.containsKey(derived.getColumnLabel()), "Can't find index: %s", derived);
                 derived.setIndex(columnLabelIndexMap.get(derived.getColumnLabel()));
             }
@@ -155,7 +106,6 @@ public final class ShardingSelectOptimizedStatement extends ShardingWhereOptimiz
                 each.setIndex(columnLabelIndexMap.get(columnLabel));
             }
         }
-        
     }
     
     private Optional<String> getAlias(final String name) {

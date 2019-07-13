@@ -44,6 +44,11 @@ public final class StarSelectItem implements SelectItem {
         return Strings.isNullOrEmpty(owner) ? "*" : owner + ".*";
     }
     
+    @Override
+    public Optional<String> getAlias() {
+        return Optional.absent();
+    }
+    
     /**
      * Get owner.
      * 
@@ -51,10 +56,5 @@ public final class StarSelectItem implements SelectItem {
      */
     public Optional<String> getOwner() {
         return Optional.fromNullable(owner);
-    }
-    
-    @Override
-    public Optional<String> getAlias() {
-        return Optional.absent();
     }
 }

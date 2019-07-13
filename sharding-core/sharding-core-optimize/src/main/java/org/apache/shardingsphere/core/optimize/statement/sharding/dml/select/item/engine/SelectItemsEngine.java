@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item;
+package org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.engine;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
@@ -23,21 +23,23 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.AggregationType;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.groupby.GroupBy;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.SelectItems;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderBy;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderByItem;
 import org.apache.shardingsphere.core.parse.constant.DerivedColumn;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.DerivedCommonSelectItem;
-import org.apache.shardingsphere.core.parse.sql.context.selectitem.DistinctSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.StarSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.table.Table;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.SelectItemsSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.TextOrderByItemSegment;
+import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 
 import java.util.Collection;
@@ -53,6 +55,8 @@ public final class SelectItemsEngine {
     
     private final ShardingTableMetaData shardingTableMetaData;
     
+    private final SelectItemEngine selectItemEngine = new SelectItemEngine();
+    
     /**
      * Create select items.
      * 
@@ -63,12 +67,23 @@ public final class SelectItemsEngine {
      */
     public SelectItems createSelectItems(final SelectStatement selectStatement, final GroupBy groupBy, final OrderBy orderBy) {
         Optional<SelectItemsSegment> selectItemsSegment = selectStatement.findSQLSegment(SelectItemsSegment.class);
-        SelectItems result = new SelectItems(selectItemsSegment.isPresent() ? selectItemsSegment.get().getStopIndex() : 0);
-        Collection<SelectItem> items = selectStatement.getItems();
+        Preconditions.checkState(selectItemsSegment.isPresent());
+        SelectItems result = new SelectItems(selectItemsSegment.get().isDistinctRow(), selectItemsSegment.get().getStopIndex());
+        Collection<SelectItem> items = getSelectItemList(selectItemsSegment.get(), selectStatement);
         items.addAll(getDerivedColumns(selectStatement, items, groupBy, orderBy));
         result.getItems().addAll(appendAverageDerivedColumns(items));
-        result.setContainStar(selectStatement.isContainStar());
-        
+        result.setContainStar(1 == items.size() && items.iterator().next() instanceof StarSelectItem);
+        return result;
+    }
+    
+    private Collection<SelectItem> getSelectItemList(final SelectItemsSegment selectItemsSegment, final SQLStatement sqlStatement) {
+        Collection<SelectItem> result = new LinkedList<>();
+        for (SelectItemSegment each : selectItemsSegment.getSelectItems()) {
+            Optional<SelectItem> selectItem = selectItemEngine.createSelectItem(each, sqlStatement);
+            if (selectItem.isPresent()) {
+                result.add(selectItem.get());
+            }
+        }
         return result;
     }
     
@@ -88,8 +103,7 @@ public final class SelectItemsEngine {
         int derivedColumnOffset = 0;
         for (OrderByItem each : orderItems) {
             if (!containsItem(selectStatement, items, each.getSegment())) {
-                String alias = DerivedColumn.ORDER_BY_ALIAS.getDerivedColumnAlias(derivedColumnOffset++);
-                result.add(new DerivedCommonSelectItem(((TextOrderByItemSegment) each.getSegment()).getText(), Optional.of(alias)));
+                result.add(new DerivedCommonSelectItem(((TextOrderByItemSegment) each.getSegment()).getText(), DerivedColumn.ORDER_BY_ALIAS.getDerivedColumnAlias(derivedColumnOffset++)));
             }
         }
         return result;
@@ -100,8 +114,7 @@ public final class SelectItemsEngine {
         int derivedColumnOffset = 0;
         for (OrderByItem each : orderByItems) {
             if (!containsItem(selectStatement, items, each.getSegment())) {
-                String alias = DerivedColumn.GROUP_BY_ALIAS.getDerivedColumnAlias(derivedColumnOffset++);
-                result.add(new DerivedCommonSelectItem(((TextOrderByItemSegment) each.getSegment()).getText(), Optional.of(alias)));
+                result.add(new DerivedCommonSelectItem(((TextOrderByItemSegment) each.getSegment()).getText(), DerivedColumn.GROUP_BY_ALIAS.getDerivedColumnAlias(derivedColumnOffset++)));
             }
         }
         return result;
@@ -183,16 +196,11 @@ public final class SelectItemsEngine {
             if (orderItem instanceof IndexOrderByItemSegment) {
                 return true;
             }
-            if (containsItemInDistinctItems(each, (TextOrderByItemSegment) orderItem)
-                    || isSameAlias(each, (TextOrderByItemSegment) orderItem) || isSameQualifiedName(each, (TextOrderByItemSegment) orderItem)) {
+            if (isSameAlias(each, (TextOrderByItemSegment) orderItem) || isSameQualifiedName(each, (TextOrderByItemSegment) orderItem)) {
                 return true;
             }
         }
         return false;
-    }
-    
-    private boolean containsItemInDistinctItems(final SelectItem selectItem, final TextOrderByItemSegment orderItem) {
-        return selectItem instanceof DistinctSelectItem && ((DistinctSelectItem) selectItem).getDistinctColumnNames().contains(orderItem.getText());
     }
     
     private boolean isSameAlias(final SelectItem selectItem, final TextOrderByItemSegment orderItem) {
@@ -227,22 +235,22 @@ public final class SelectItemsEngine {
     private void appendDerivedAggregationDistinctSelectItems(final AggregationDistinctSelectItem averageDistinctSelectItem, final int derivedColumnOffset) {
         String countAlias = DerivedColumn.AVG_COUNT_ALIAS.getDerivedColumnAlias(derivedColumnOffset);
         AggregationDistinctSelectItem countDistinctSelectItem = new AggregationDistinctSelectItem(
-                AggregationType.COUNT, averageDistinctSelectItem.getInnerExpression(), Optional.of(countAlias), averageDistinctSelectItem.getDistinctColumnName());
+                AggregationType.COUNT, averageDistinctSelectItem.getInnerExpression(), countAlias, averageDistinctSelectItem.getDistinctColumnName());
         String sumAlias = DerivedColumn.AVG_SUM_ALIAS.getDerivedColumnAlias(derivedColumnOffset);
         AggregationDistinctSelectItem sumDistinctSelectItem = new AggregationDistinctSelectItem(
-                AggregationType.SUM, averageDistinctSelectItem.getInnerExpression(), Optional.of(sumAlias), averageDistinctSelectItem.getDistinctColumnName());
-        averageDistinctSelectItem.getDerivedAggregationSelectItems().clear();
-        averageDistinctSelectItem.getDerivedAggregationSelectItems().add(countDistinctSelectItem);
-        averageDistinctSelectItem.getDerivedAggregationSelectItems().add(sumDistinctSelectItem);
+                AggregationType.SUM, averageDistinctSelectItem.getInnerExpression(), sumAlias, averageDistinctSelectItem.getDistinctColumnName());
+        averageDistinctSelectItem.getDerivedAggregationItems().clear();
+        averageDistinctSelectItem.getDerivedAggregationItems().add(countDistinctSelectItem);
+        averageDistinctSelectItem.getDerivedAggregationItems().add(sumDistinctSelectItem);
     }
     
     private void appendDerivedAggregationSelectItems(final AggregationSelectItem averageSelectItem, final int derivedColumnOffset) {
         String countAlias = DerivedColumn.AVG_COUNT_ALIAS.getDerivedColumnAlias(derivedColumnOffset);
-        AggregationSelectItem countSelectItem = new AggregationSelectItem(AggregationType.COUNT, averageSelectItem.getInnerExpression(), Optional.of(countAlias));
+        AggregationSelectItem countSelectItem = new AggregationSelectItem(AggregationType.COUNT, averageSelectItem.getInnerExpression(), countAlias);
         String sumAlias = DerivedColumn.AVG_SUM_ALIAS.getDerivedColumnAlias(derivedColumnOffset);
-        AggregationSelectItem sumSelectItem = new AggregationSelectItem(AggregationType.SUM, averageSelectItem.getInnerExpression(), Optional.of(sumAlias));
-        averageSelectItem.getDerivedAggregationSelectItems().clear();
-        averageSelectItem.getDerivedAggregationSelectItems().add(countSelectItem);
-        averageSelectItem.getDerivedAggregationSelectItems().add(sumSelectItem);
+        AggregationSelectItem sumSelectItem = new AggregationSelectItem(AggregationType.SUM, averageSelectItem.getInnerExpression(), sumAlias);
+        averageSelectItem.getDerivedAggregationItems().clear();
+        averageSelectItem.getDerivedAggregationItems().add(countSelectItem);
+        averageSelectItem.getDerivedAggregationItems().add(sumSelectItem);
     }
 }

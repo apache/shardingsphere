@@ -69,7 +69,7 @@ public final class AggregationDistinctQueryMetaData {
     
     private AggregationDistinctColumnMetaData getAggregationDistinctColumnMetaData(final AggregationDistinctSelectItem selectItem, 
                                                                                    final int aggregationDistinctColumnIndex, final Multimap<String, Integer> columnLabelAndIndexMap) {
-        List<AggregationSelectItem> derivedSelectItems = selectItem.getDerivedAggregationSelectItems();
+        List<AggregationSelectItem> derivedSelectItems = selectItem.getDerivedAggregationItems();
         if (derivedSelectItems.isEmpty()) {
             return new AggregationDistinctColumnMetaData(aggregationDistinctColumnIndex, selectItem.getColumnLabel(), selectItem.getType());
         }

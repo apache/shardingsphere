@@ -10,7 +10,7 @@ about: Usage question that isn't answered in docs or discussion
 Before asking a question, make sure you have:
 
 - Googled your question.
-- Searched open and closed [GitHub issues](https://github.com/apache/incubator-shardingsphere-example/issues).
+- Searched open and closed [GitHub issues](https://github.com/apache/incubator-shardingsphere/issues).
 - Read documentation: [ShardingSphere Doc](https://shardingsphere.apache.org/document/current/en/overview).
 
 Please pay attention on issues you submitted, because we maybe need more details. 

@@ -66,7 +66,7 @@ public final class StandardRoutingEngineTest {
         ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, Arrays.asList("ds_0", "ds_1"));
         standardRoutingEngine = new StandardRoutingEngine(
                 shardingRule, "t_order", new ShardingSelectOptimizedStatement(new SelectStatement(), shardingConditions, new AndCondition(), 
-                new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), new SelectItems(0), 
+                new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), new SelectItems(false, 0), 
                 new Pagination(null, null, Collections.emptyList())));
     }
     

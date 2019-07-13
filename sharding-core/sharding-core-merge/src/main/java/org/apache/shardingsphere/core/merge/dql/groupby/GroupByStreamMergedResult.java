@@ -77,13 +77,14 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
     
     private boolean aggregateCurrentGroupByRowAndNext() throws SQLException {
         boolean result = false;
-        Map<AggregationSelectItem, AggregationUnit> aggregationUnitMap = Maps.toMap(optimizedStatement.getAggregationSelectItems(), new Function<AggregationSelectItem, AggregationUnit>() {
-            
-            @Override
-            public AggregationUnit apply(final AggregationSelectItem input) {
-                return AggregationUnitFactory.create(input.getType());
-            }
-        });
+        Map<AggregationSelectItem, AggregationUnit> aggregationUnitMap = Maps.toMap(
+                optimizedStatement.getSelectItems().getAggregationSelectItems(), new Function<AggregationSelectItem, AggregationUnit>() {
+                    
+                    @Override
+                    public AggregationUnit apply(final AggregationSelectItem input) {
+                        return AggregationUnitFactory.create(input.getType());
+                    }
+                });
         while (currentGroupByValues.equals(new GroupByValue(getCurrentQueryResult(), optimizedStatement.getGroupBy().getItems()).getGroupValues())) {
             aggregate(aggregationUnitMap);
             cacheCurrentRow();
@@ -99,10 +100,10 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
     private void aggregate(final Map<AggregationSelectItem, AggregationUnit> aggregationUnitMap) throws SQLException {
         for (Entry<AggregationSelectItem, AggregationUnit> entry : aggregationUnitMap.entrySet()) {
             List<Comparable<?>> values = new ArrayList<>(2);
-            if (entry.getKey().getDerivedAggregationSelectItems().isEmpty()) {
+            if (entry.getKey().getDerivedAggregationItems().isEmpty()) {
                 values.add(getAggregationValue(entry.getKey()));
             } else {
-                for (AggregationSelectItem each : entry.getKey().getDerivedAggregationSelectItems()) {
+                for (AggregationSelectItem each : entry.getKey().getDerivedAggregationItems()) {
                     values.add(getAggregationValue(each));
                 }
             }

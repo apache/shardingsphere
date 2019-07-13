@@ -21,10 +21,16 @@ import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationDistinctSelectItem;
+import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
+import org.apache.shardingsphere.core.parse.sql.context.selectitem.StarSelectItem;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Select items.
@@ -37,6 +43,8 @@ import java.util.LinkedHashSet;
 public final class SelectItems {
     
     private final Collection<SelectItem> items = new LinkedHashSet<>();
+    
+    private final boolean distinctRow;
     
     private final int selectListStopIndex;
     
@@ -55,5 +63,53 @@ public final class SelectItems {
             }
         }
         return Optional.absent();
+    }
+    
+    /**
+     * Get aggregation select items.
+     *
+     * @return aggregation select items
+     */
+    public List<AggregationSelectItem> getAggregationSelectItems() {
+        List<AggregationSelectItem> result = new LinkedList<>();
+        for (SelectItem each : items) {
+            if (each instanceof AggregationSelectItem) {
+                AggregationSelectItem aggregationSelectItem = (AggregationSelectItem) each;
+                result.add(aggregationSelectItem);
+                result.addAll(aggregationSelectItem.getDerivedAggregationItems());
+            }
+        }
+        return result;
+    }
+    
+    /**
+     * Get aggregation distinct select items.
+     *
+     * @return aggregation distinct select items
+     */
+    public List<AggregationDistinctSelectItem> getAggregationDistinctSelectItems() {
+        List<AggregationDistinctSelectItem> result = new LinkedList<>();
+        for (SelectItem each : items) {
+            if (each instanceof AggregationDistinctSelectItem) {
+                result.add((AggregationDistinctSelectItem) each);
+            }
+        }
+        return result;
+    }
+    
+    /**
+     * Get column labels.
+     * 
+     * @return column labels
+     */
+    public List<String> getColumnLabels() {
+        List<String> result = new ArrayList<>(items.size());
+        for (SelectItem each : items) {
+            // TODO read * from metadata
+            if (!(each instanceof StarSelectItem)) {
+                result.add(each.getAlias().or(each.getExpression()));
+            }
+        }
+        return result;
     }
 }
