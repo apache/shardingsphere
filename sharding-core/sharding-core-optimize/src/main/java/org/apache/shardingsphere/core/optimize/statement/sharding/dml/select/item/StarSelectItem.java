@@ -19,10 +19,9 @@ package org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.it
 
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
-import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 /**
@@ -30,14 +29,13 @@ import lombok.ToString;
  *
  * @author zhangliang
  */
-@NoArgsConstructor
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
 @ToString
 public final class StarSelectItem implements SelectItem {
     
-    private String owner;
+    private final String owner;
     
     @Override
     public String getExpression() {
