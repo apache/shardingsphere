@@ -17,14 +17,19 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.exception.ShardingException;
-
 import java.math.BigDecimal;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Date;
+
+import org.apache.shardingsphere.core.exception.ShardingException;
+
+import com.google.common.primitives.Ints;
+import com.google.common.primitives.Longs;
+import com.google.common.primitives.Shorts;
+
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 
 /**
  * ResultSet utility class.
@@ -53,6 +58,9 @@ public final class ResultSetUtil {
         }
         if (value instanceof Date) {
             return convertDateValue(value, convertType);
+        }
+        if (value instanceof byte[]) {
+        	return convertByteArrayValue(value, convertType);
         }
         if (String.class.equals(convertType)) {
             return value.toString();
@@ -121,6 +129,22 @@ public final class ResultSetUtil {
                 return new Timestamp(date.getTime());
             default:
                 throw new ShardingException("Unsupported Date type:%s", convertType);
+        }
+    }
+    
+    private static Object convertByteArrayValue(final Object value, final Class<?> convertType) {
+        byte[] bs = (byte[]) value;
+        switch (bs.length) {
+            case 1:
+                return convertNumberValue(bs[0], convertType);
+            case Shorts.BYTES:
+                return convertNumberValue(Shorts.fromByteArray(bs), convertType);
+            case Ints.BYTES:
+                return convertNumberValue(Ints.fromByteArray(bs), convertType);
+            case Longs.BYTES:
+                return convertNumberValue(Longs.fromByteArray(bs), convertType);
+            default:
+                return value;
         }
     }
 }
