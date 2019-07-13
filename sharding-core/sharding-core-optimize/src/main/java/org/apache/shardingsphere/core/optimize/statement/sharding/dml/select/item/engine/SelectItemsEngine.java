@@ -69,7 +69,8 @@ public final class SelectItemsEngine {
         SelectItemsSegment selectItemsSegment = getSelectItemsSegment(selectStatement);
         SelectItems result = new SelectItems(selectItemsSegment.isDistinctRow(), selectItemsSegment.getStopIndex());
         Collection<SelectItem> items = getSelectItemList(selectItemsSegment, selectStatement);
-        items.addAll(getDerivedColumns(selectStatement, items, groupBy, orderBy));
+        items.addAll(getDerivedGroupByColumns(selectStatement, items, groupBy.getItems()));
+        items.addAll(getDerivedOrderByColumns(selectStatement, items, orderBy.getItems()));
         result.getItems().addAll(appendAverageDerivedColumns(items));
         result.setContainStar(1 == items.size() && items.iterator().next() instanceof ShorthandSelectItem);
         return result;
@@ -92,34 +93,21 @@ public final class SelectItemsEngine {
         return result;
     }
     
-    private Collection<SelectItem> getDerivedColumns(final SelectStatement selectStatement, final Collection<SelectItem> items, final GroupBy groupBy, final OrderBy orderBy) {
-        Collection<SelectItem> result = new LinkedList<>();
-        if (!groupBy.getItems().isEmpty()) {
-            result.addAll(appendDerivedGroupByColumns(selectStatement, items, groupBy.getItems()));
-        }
-        if (!orderBy.getItems().isEmpty()) {
-            result.addAll(appendDerivedOrderByColumns(selectStatement, items, orderBy.getItems()));
-        }
-        return result;
+    private Collection<SelectItem> getDerivedGroupByColumns(final SelectStatement selectStatement, final Collection<SelectItem> selectItems, final Collection<OrderByItem> groupByItems) {
+        return getDerivedOrderColumns(selectStatement, selectItems, groupByItems, DerivedColumn.GROUP_BY_ALIAS);
     }
     
-    private Collection<SelectItem> appendDerivedGroupByColumns(final SelectStatement selectStatement, final Collection<SelectItem> items, final Collection<OrderByItem> groupByItems) {
-        Collection<SelectItem> result = new LinkedList<>();
-        int derivedColumnOffset = 0;
-        for (OrderByItem each : groupByItems) {
-            if (!containsItem(selectStatement, items, each.getSegment())) {
-                result.add(new DerivedCommonSelectItem(((TextOrderByItemSegment) each.getSegment()).getText(), DerivedColumn.GROUP_BY_ALIAS.getDerivedColumnAlias(derivedColumnOffset++)));
-            }
-        }
-        return result;
+    private Collection<SelectItem> getDerivedOrderByColumns(final SelectStatement selectStatement, final Collection<SelectItem> selectItems, final Collection<OrderByItem> orderByItems) {
+        return getDerivedOrderColumns(selectStatement, selectItems, orderByItems, DerivedColumn.ORDER_BY_ALIAS);
     }
     
-    private Collection<SelectItem> appendDerivedOrderByColumns(final SelectStatement selectStatement, final Collection<SelectItem> items, final Collection<OrderByItem> orderByItems) {
+    private Collection<SelectItem> getDerivedOrderColumns(final SelectStatement selectStatement, 
+                                                          final Collection<SelectItem> selectItems, final Collection<OrderByItem> orderItems, final DerivedColumn derivedColumn) {
         Collection<SelectItem> result = new LinkedList<>();
         int derivedColumnOffset = 0;
-        for (OrderByItem each : orderByItems) {
-            if (!containsItem(selectStatement, items, each.getSegment())) {
-                result.add(new DerivedCommonSelectItem(((TextOrderByItemSegment) each.getSegment()).getText(), DerivedColumn.ORDER_BY_ALIAS.getDerivedColumnAlias(derivedColumnOffset++)));
+        for (OrderByItem each : orderItems) {
+            if (!containsItem(selectStatement, selectItems, each.getSegment())) {
+                result.add(new DerivedCommonSelectItem(((TextOrderByItemSegment) each.getSegment()).getText(), derivedColumn.getDerivedColumnAlias(derivedColumnOffset++)));
             }
         }
         return result;
