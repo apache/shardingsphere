@@ -43,7 +43,18 @@ public final class SelectItems {
     
     private final int selectListStopIndex;
     
-    private boolean containStar;
+    /**
+     * Judge is unqualified shorthand item or not.
+     * 
+     * @return is unqualified shorthand item or not
+     */
+    public boolean isUnqualifiedShorthandItem() {
+        if (1 != items.size()) {
+            return false;
+        }
+        SelectItem item = items.iterator().next();
+        return item instanceof ShorthandSelectItem && !((ShorthandSelectItem) item).getOwner().isPresent();
+    }
     
     /**
      * Find alias.

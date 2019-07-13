@@ -109,7 +109,7 @@ public final class ShardingSelectOptimizedStatement extends ShardingWhereOptimiz
     }
     
     private Optional<String> getAlias(final String name) {
-        if (selectItems.isContainStar()) {
+        if (selectItems.isUnqualifiedShorthandItem()) {
             return Optional.absent();
         }
         String rawName = SQLUtil.getExactlyValue(name);

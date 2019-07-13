@@ -65,10 +65,9 @@ public final class SelectItemsEngine {
     public SelectItems createSelectItems(final SelectStatement selectStatement, final GroupBy groupBy, final OrderBy orderBy) {
         SelectItemsSegment selectItemsSegment = getSelectItemsSegment(selectStatement);
         Collection<SelectItem> items = getSelectItemList(selectItemsSegment, selectStatement);
-        items.addAll(getDerivedGroupByColumns(selectStatement, items, groupBy.getItems()));
-        items.addAll(getDerivedOrderByColumns(selectStatement, items, orderBy.getItems()));
         SelectItems result = new SelectItems(items, selectItemsSegment.isDistinctRow(), selectItemsSegment.getStopIndex());
-        result.setContainStar(isUnqualifiedShorthandItem(items));
+        result.getItems().addAll(getDerivedGroupByColumns(selectStatement, items, groupBy));
+        result.getItems().addAll(getDerivedOrderByColumns(selectStatement, items, orderBy));
         return result;
     }
     
@@ -89,12 +88,12 @@ public final class SelectItemsEngine {
         return result;
     }
     
-    private Collection<SelectItem> getDerivedGroupByColumns(final SelectStatement selectStatement, final Collection<SelectItem> selectItems, final Collection<OrderByItem> groupByItems) {
-        return getDerivedOrderColumns(selectStatement, selectItems, groupByItems, DerivedColumn.GROUP_BY_ALIAS);
+    private Collection<SelectItem> getDerivedGroupByColumns(final SelectStatement selectStatement, final Collection<SelectItem> selectItems, final GroupBy groupBy) {
+        return getDerivedOrderColumns(selectStatement, selectItems, groupBy.getItems(), DerivedColumn.GROUP_BY_ALIAS);
     }
     
-    private Collection<SelectItem> getDerivedOrderByColumns(final SelectStatement selectStatement, final Collection<SelectItem> selectItems, final Collection<OrderByItem> orderByItems) {
-        return getDerivedOrderColumns(selectStatement, selectItems, orderByItems, DerivedColumn.ORDER_BY_ALIAS);
+    private Collection<SelectItem> getDerivedOrderByColumns(final SelectStatement selectStatement, final Collection<SelectItem> selectItems, final OrderBy orderBy) {
+        return getDerivedOrderColumns(selectStatement, selectItems, orderBy.getItems(), DerivedColumn.ORDER_BY_ALIAS);
     }
     
     private Collection<SelectItem> getDerivedOrderColumns(final SelectStatement selectStatement, 
