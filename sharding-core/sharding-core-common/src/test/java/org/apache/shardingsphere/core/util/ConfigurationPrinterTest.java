@@ -13,6 +13,10 @@
 
 package org.apache.shardingsphere.core.util;
 
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,9 +27,33 @@ import org.apache.shardingsphere.api.config.encryptor.EncryptorRuleConfiguration
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
+import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+import org.slf4j.Logger;
 
 public class ConfigurationPrinterTest {
+
+    private Logger log;
+
+    @Before
+    public void setLog(){
+        log = mock(Logger.class);
+        ConfigurationPrinter.setLog(log);
+    }
+
+    public void assertEqualsWithLogInfo(final String base, final String yamlStr){
+        doAnswer(new Answer() {
+            @Override
+            public Void answer(InvocationOnMock invocationOnMock) {
+                Assert.assertEquals(base, invocationOnMock.getArgument(1));
+                Assert.assertEquals(yamlStr, invocationOnMock.getArgument(2));
+                return null;
+            }
+        }).when(log).info(anyString(), anyString(), anyString());
+    }
 
     @Test
     public void printMapConfiguration() {
@@ -33,7 +61,14 @@ public class ConfigurationPrinterTest {
         configurationMap.put("masterDataSourceName", "master_ds");
         configurationMap.put("slaveDataSourceNames", Arrays.asList("slave_ds_0", "slave_ds_1"));
 
-        ConfigurationPrinter.printConfiguration("masterSlaveRule", configurationMap);
+        String base = "masterSlaveRule";
+        String yamlStr = "slaveDataSourceNames:\n" +
+            "- slave_ds_0\n" +
+            "- slave_ds_1\n" +
+            "masterDataSourceName: master_ds\n";
+        assertEqualsWithLogInfo(base, yamlStr);
+
+        ConfigurationPrinter.printConfiguration(base, configurationMap);
     }
 
     @Test
@@ -42,7 +77,14 @@ public class ConfigurationPrinterTest {
         properties.put("masterDataSourceName", "master_ds");
         properties.put("slaveDataSourceNames", Arrays.asList("slave_ds_0", "slave_ds_1"));
 
-        ConfigurationPrinter.printConfiguration("masterSlaveRule", properties);
+        String base = "masterSlaveRule";
+        String yamlStr = "slaveDataSourceNames:\n" +
+            "- slave_ds_0\n" +
+            "- slave_ds_1\n" +
+            "masterDataSourceName: master_ds\n";
+        assertEqualsWithLogInfo(base, yamlStr);
+
+        ConfigurationPrinter.printConfiguration(base, properties);
     }
 
     @Test
@@ -54,7 +96,17 @@ public class ConfigurationPrinterTest {
             new EncryptorRuleConfiguration("aes", "user.user_name", properties);
         encryptRuleConfiguration.getEncryptorRuleConfigs().put("encryptor_aes", encryptorRuleConfiguration);
 
-        ConfigurationPrinter.printConfiguration("encryptRule", encryptRuleConfiguration);
+        String base = "encryptRule";
+        String yamlStr = "encryptors:\n" +
+            "  encryptor_aes:\n" +
+            "    assistedQueryColumns: ''\n" +
+            "    props:\n" +
+            "      aes.key.value: 123456abc\n" +
+            "    qualifiedColumns: user.user_name\n" +
+            "    type: aes\n";
+        assertEqualsWithLogInfo(base, yamlStr);
+
+        ConfigurationPrinter.printConfiguration(base, encryptRuleConfiguration);
     }
 
     @Test
@@ -63,7 +115,14 @@ public class ConfigurationPrinterTest {
         TableRuleConfiguration tableRuleConfiguration = new TableRuleConfiguration("user", "ds_${0}.user_${0..1}");
         shardingRuleConfiguration.getTableRuleConfigs().add(tableRuleConfiguration);
 
-        ConfigurationPrinter.printConfiguration("shardingRule", shardingRuleConfiguration);
+        String base = "shardingRule";
+        String yamlStr = "tables:\n" +
+            "  user:\n" +
+            "    actualDataNodes: ds_${0}.user_${0..1}\n" +
+            "    logicTable: user\n";
+        assertEqualsWithLogInfo(base, yamlStr);
+
+        ConfigurationPrinter.printConfiguration(base, shardingRuleConfiguration);
     }
 
     @Test
@@ -71,12 +130,24 @@ public class ConfigurationPrinterTest {
         MasterSlaveRuleConfiguration masterSlaveRuleConfiguration =
             new MasterSlaveRuleConfiguration("ms_ds", "master_ds", Arrays.asList("slave_ds_0", "slave_ds_1"));
 
+        String base = "masterSlaveRule";
+        String yamlStr = "masterDataSourceName: master_ds\n" +
+            "name: ms_ds\n" +
+            "slaveDataSourceNames:\n" +
+            "- slave_ds_0\n" +
+            "- slave_ds_1\n";
+        assertEqualsWithLogInfo(base, yamlStr);
+
         ConfigurationPrinter.printConfiguration("masterSlaveRule", masterSlaveRuleConfiguration);
     }
 
     @Test
     public void print() {
-        ConfigurationPrinter.print("base", "yamlStr");
+        String base = "base";
+        String yamlStr = "yamlStr";
+        assertEqualsWithLogInfo(base, yamlStr);
+
+        ConfigurationPrinter.print(base, yamlStr);
     }
 
 }

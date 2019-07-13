@@ -24,15 +24,26 @@ import org.apache.shardingsphere.core.yaml.swapper.impl.EncryptRuleConfiguration
 import org.apache.shardingsphere.core.yaml.swapper.impl.MasterSlaveRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.impl.ShardingRuleConfigurationYamlSwapper;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Configuration printer class.
  *
  * @author sunbufu
  */
-@Slf4j
 public class ConfigurationPrinter {
+
+    private static Logger log = LoggerFactory.getLogger(ConfigurationPrinter.class);
+
+    /**
+     * set ConfigurationPrinter's log.
+     * 
+     * @param log new log
+     */
+    public static void setLog(final Logger log) {
+        ConfigurationPrinter.log = log;
+    }
 
     /**
      * print properties configuration.
