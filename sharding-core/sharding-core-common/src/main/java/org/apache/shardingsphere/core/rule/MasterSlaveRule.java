@@ -21,7 +21,6 @@ import lombok.Getter;
 import org.apache.shardingsphere.api.config.masterslave.LoadBalanceStrategyConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.spi.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmServiceLoader;
-import org.apache.shardingsphere.core.util.ConfigurationPrinter;
 import org.apache.shardingsphere.spi.masterslave.MasterSlaveLoadBalanceAlgorithm;
 
 import java.util.Collection;
@@ -52,8 +51,6 @@ public class MasterSlaveRule implements BaseRule {
         this.loadBalanceAlgorithm = null == loadBalanceAlgorithm ? new MasterSlaveLoadBalanceAlgorithmServiceLoader().newService() : loadBalanceAlgorithm;
         masterSlaveRuleConfiguration = new MasterSlaveRuleConfiguration(name, masterDataSourceName, slaveDataSourceNames, 
                 new LoadBalanceStrategyConfiguration(this.loadBalanceAlgorithm.getType(), this.loadBalanceAlgorithm.getProperties()));
-
-        ConfigurationPrinter.printConfiguration("masterSlaveRule", masterSlaveRuleConfiguration);
     }
     
     public MasterSlaveRule(final MasterSlaveRuleConfiguration config) {
@@ -62,8 +59,6 @@ public class MasterSlaveRule implements BaseRule {
         slaveDataSourceNames = config.getSlaveDataSourceNames();
         loadBalanceAlgorithm = createMasterSlaveLoadBalanceAlgorithm(config.getLoadBalanceStrategyConfiguration());
         masterSlaveRuleConfiguration = config;
-
-        ConfigurationPrinter.printConfiguration("masterSlaveRule", config);
     }
     
     private MasterSlaveLoadBalanceAlgorithm createMasterSlaveLoadBalanceAlgorithm(final LoadBalanceStrategyConfiguration loadBalanceStrategyConfiguration) {

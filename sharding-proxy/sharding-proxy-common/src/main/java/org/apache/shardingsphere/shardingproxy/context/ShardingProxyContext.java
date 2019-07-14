@@ -21,9 +21,7 @@ import java.util.Properties;
 
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.rule.Authentication;
-import org.apache.shardingsphere.core.util.ConfigurationPrinter;
-import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.core.yaml.swapper.impl.AuthenticationYamlSwapper;
+import org.apache.shardingsphere.core.util.ConfigurationLogger;
 import org.apache.shardingsphere.orchestration.internal.eventbus.ShardingOrchestrationEventBus;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.AuthenticationChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.PropertiesChangedEvent;
@@ -39,6 +37,7 @@ import lombok.Getter;
  * @author chenqingyang
  * @author panjuan
  * @author zhangliang
+ * @author sunbufu
  */
 @Getter
 public final class ShardingProxyContext {
@@ -111,8 +110,7 @@ public final class ShardingProxyContext {
      * @param authentication new authentication
      */
     public void setAuthentication(final Authentication authentication) {
-        ConfigurationPrinter.print("authentication",
-            YamlEngine.marshal(new AuthenticationYamlSwapper().swap(authentication)));
+        ConfigurationLogger.log(authentication);
         this.authentication = authentication;
     }
 
@@ -122,7 +120,7 @@ public final class ShardingProxyContext {
      * @param props new props
      */
     public void setProperties(final Properties props) {
-        ConfigurationPrinter.printConfiguration("props", props);
+        ConfigurationLogger.log(props);
         this.shardingProperties = new ShardingProperties(props);
     }
 }
