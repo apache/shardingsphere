@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.optimize.statement;
 
-import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
+import org.apache.shardingsphere.core.optimize.statement.encrypt.condition.AndCondition;
 
 /**
  * Where optimized statement.

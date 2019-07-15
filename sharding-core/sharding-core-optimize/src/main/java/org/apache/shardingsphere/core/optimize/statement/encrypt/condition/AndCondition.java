@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.context.condition;
+package org.apache.shardingsphere.core.optimize.statement.encrypt.condition;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
