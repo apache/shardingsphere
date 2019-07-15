@@ -35,10 +35,6 @@ public final class DeleteStatement extends DMLStatement implements WhereSegmentA
     
     private WhereSegment where;
     
-    private int whereStartIndex;
-    
-    private int whereStopIndex;
-    
     @Override
     public Optional<WhereSegment> getWhere() {
         return Optional.fromNullable(where);

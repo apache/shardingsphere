@@ -20,9 +20,7 @@ package org.apache.shardingsphere.core.parse.filler.impl.dml;
 import org.apache.shardingsphere.core.parse.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.WhereSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.DeleteStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.WhereSegmentAvailable;
 
 /**
  * Where filler.
@@ -34,21 +32,6 @@ public final class WhereFiller implements SQLSegmentFiller<WhereSegment> {
     
     @Override
     public void fill(final WhereSegment sqlSegment, final SQLStatement sqlStatement) {
-        if (sqlStatement instanceof SelectStatement) {
-            ((SelectStatement) sqlStatement).setWhere(sqlSegment);
-        }
-        if (sqlStatement instanceof DeleteStatement) {
-            DeleteStatement deleteStatement = (DeleteStatement) sqlStatement;
-            deleteStatement.setWhere(sqlSegment);
-            deleteStatement.setWhereStartIndex(sqlSegment.getStartIndex());
-            deleteStatement.setWhereStopIndex(sqlSegment.getStopIndex());
-        } else if (sqlStatement instanceof UpdateStatement) {
-            UpdateStatement updateStatement = (UpdateStatement) sqlStatement;
-            updateStatement.setWhere(sqlSegment);
-            updateStatement.setWhereStartIndex(sqlSegment.getStartIndex());
-            updateStatement.setWhereStopIndex(sqlSegment.getStopIndex());
-            updateStatement.setWhereParameterStartIndex(sqlSegment.getWhereParameterStartIndex());
-            updateStatement.setWhereParameterEndIndex(sqlSegment.getWhereParameterEndIndex());
-        }
+        ((WhereSegmentAvailable) sqlStatement).setWhere(sqlSegment);
     }
 }

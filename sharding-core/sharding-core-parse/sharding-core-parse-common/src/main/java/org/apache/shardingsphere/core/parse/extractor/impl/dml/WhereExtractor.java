@@ -40,31 +40,19 @@ public final class WhereExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
     public Optional<WhereSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
-        WhereSegment result;
         Optional<ParserRuleContext> whereNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.WHERE_CLAUSE);
-        if (whereNode.isPresent()) {
-            result = new WhereSegment(whereNode.get().getStart().getStartIndex(), whereNode.get().getStop().getStopIndex(), parameterMarkerIndexes.size());
-            Optional<OrPredicateSegment> orPredicateSegment = predicateExtractor.extract(whereNode.get(), parameterMarkerIndexes);
-            if (orPredicateSegment.isPresent()) {
-                result.getAndPredicates().addAll(orPredicateSegment.get().getAndPredicates()); 
-            }
-            setPropertiesForRevert(result, whereNode.get(), parameterMarkerIndexes);
-        } else {
-            result = new WhereSegment(0, 0, parameterMarkerIndexes.size());
+        if (!whereNode.isPresent()) {
+            return Optional.absent();
+        }
+        WhereSegment result = new WhereSegment(whereNode.get().getStart().getStartIndex(), whereNode.get().getStop().getStopIndex(), parameterMarkerIndexes.size());
+        Optional<OrPredicateSegment> orPredicateSegment = predicateExtractor.extract(whereNode.get(), parameterMarkerIndexes);
+        if (orPredicateSegment.isPresent()) {
+            result.getAndPredicates().addAll(orPredicateSegment.get().getAndPredicates());
+        }
+        Collection<ParserRuleContext> parameterMarkerNodes = ExtractorUtils.getAllDescendantNodes(whereNode.get(), RuleName.PARAMETER_MARKER);
+        if (!parameterMarkerNodes.isEmpty()) {
+            result.setParameterStartIndex(parameterMarkerIndexes.get(parameterMarkerNodes.iterator().next()));
         }
         return Optional.of(result);
-    }
-    
-    private void setPropertiesForRevert(final WhereSegment whereSegment, final ParserRuleContext whereNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
-        if (parameterMarkerIndexes.isEmpty()) {
-            return;
-        }
-        Collection<ParserRuleContext> parameterMarkerNodes = ExtractorUtils.getAllDescendantNodes(whereNode, RuleName.PARAMETER_MARKER);
-        if (parameterMarkerNodes.isEmpty()) {
-            return;
-        }
-        int whereParameterStartIndex = parameterMarkerIndexes.get(parameterMarkerNodes.iterator().next());
-        whereSegment.setWhereParameterStartIndex(whereParameterStartIndex);
-        whereSegment.setWhereParameterEndIndex(whereParameterStartIndex + parameterMarkerNodes.size() - 1);
     }
 }
