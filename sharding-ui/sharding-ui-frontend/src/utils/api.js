@@ -16,7 +16,6 @@
  */
 
 import axios from 'axios'
-import jsonp from 'jsonp'
 import { Message } from 'element-ui'
 import C from './conf'
 
@@ -127,18 +126,6 @@ const config = {
           reject(error)
         }
       )
-    })
-  },
-
-  jsonp(url, options) {
-    return new Promise((resolve, reject) => {
-      jsonp(`${C.JSONP_HOST}${url}${options}`, null, (err, data) => {
-        if (err) {
-          reject(err)
-        } else {
-          resolve(data)
-        }
-      })
     })
   }
 }

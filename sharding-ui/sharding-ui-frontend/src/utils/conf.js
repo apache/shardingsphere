@@ -15,12 +15,7 @@
  * limitations under the License.
  */
 
-let HOST
-if (process.env.NODE_ENV === 'mock') {
-  HOST = 'https://easy-mock.com/mock/5c1c861921d37d1c3c4dc5ae/ss-ui'
-} else {
-  HOST = ''
-}
+const HOST = process.env.NODE_ENV === 'mock' ? 'https://easy-mock.com/mock/5c1c861921d37d1c3c4dc5ae/ss-ui' : ''
 
 export default {
   HOST
