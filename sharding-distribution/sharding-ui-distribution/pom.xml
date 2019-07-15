@@ -44,7 +44,7 @@
                         <artifactId>maven-assembly-plugin</artifactId>
                         <configuration>
                             <descriptors>
-                                <descriptor>src/main/resources/assembly/sharding-ui-binary-distribution.xml</descriptor>
+                                <descriptor>src/main/assembly/sharding-ui-binary-distribution.xml</descriptor>
                             </descriptors>
                         </configuration>
                         <executions>
