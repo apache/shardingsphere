@@ -16,6 +16,7 @@
 #
 
 org.apache.shardingsphere.core.spi.database.MySQLDatabaseType
+org.apache.shardingsphere.core.spi.database.MariaDBDatabaseType
 org.apache.shardingsphere.core.spi.database.PostgreSQLDatabaseType
 org.apache.shardingsphere.core.spi.database.OracleDatabaseType
 org.apache.shardingsphere.core.spi.database.SQLServerDatabaseType
