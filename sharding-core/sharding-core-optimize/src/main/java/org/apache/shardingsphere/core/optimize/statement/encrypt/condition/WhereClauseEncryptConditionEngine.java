@@ -19,11 +19,10 @@ package org.apache.shardingsphere.core.optimize.statement.encrypt.condition;
 
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parse.exception.SQLParsingException;
 import org.apache.shardingsphere.core.parse.filler.impl.dml.PredicateUtils;
 import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
-import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.WhereSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.AndPredicate;
@@ -99,19 +98,20 @@ public final class WhereClauseEncryptConditionEngine {
         if (!tableName.isPresent() || !encryptRule.getEncryptorEngine().getShardingEncryptor(tableName.get(), predicateSegment.getColumn().getName()).isPresent()) {
             return Optional.absent();
         }
-        return createEncryptCondition(predicateSegment, new Column(predicateSegment.getColumn().getName(), tableName.get()));
+        return createEncryptCondition(predicateSegment, predicateSegment.getColumn().getName(), tableName.get());
     }
 
-    private Optional<Condition> createEncryptCondition(final PredicateSegment predicateSegment, final Column column) {
+    private Optional<Condition> createEncryptCondition(final PredicateSegment predicateSegment, final String columnName, final String tableName) {
         if (predicateSegment.getRightValue() instanceof PredicateCompareRightValue) {
             PredicateCompareRightValue compareRightValue = (PredicateCompareRightValue) predicateSegment.getRightValue();
-            return isSupportedOperator(compareRightValue.getOperator()) ? PredicateUtils.createCompareCondition(compareRightValue, column, predicateSegment) : Optional.<Condition>absent();
+            return isSupportedOperator(compareRightValue.getOperator())
+                    ? PredicateUtils.createCompareCondition(compareRightValue, columnName, tableName, predicateSegment) : Optional.<Condition>absent();
         }
         if (predicateSegment.getRightValue() instanceof PredicateInRightValue) {
-            return PredicateUtils.createInCondition((PredicateInRightValue) predicateSegment.getRightValue(), column, predicateSegment);
+            return PredicateUtils.createInCondition((PredicateInRightValue) predicateSegment.getRightValue(), columnName, tableName, predicateSegment);
         }
         if (predicateSegment.getRightValue() instanceof PredicateBetweenRightValue) {
-            throw new SQLParsingException("The SQL clause 'BETWEEN...AND...' is unsupported in encrypt rule.");
+            throw new ShardingException("The SQL clause 'BETWEEN...AND...' is unsupported in encrypt rule.");
         }
         return Optional.absent();
     }

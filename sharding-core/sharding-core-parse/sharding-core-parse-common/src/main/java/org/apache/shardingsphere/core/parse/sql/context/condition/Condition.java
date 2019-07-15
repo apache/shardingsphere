@@ -18,10 +18,8 @@
 package org.apache.shardingsphere.core.parse.sql.context.condition;
 
 import com.google.common.base.Preconditions;
-import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.core.constant.ShardingOperator;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
@@ -41,13 +39,14 @@ import java.util.Map.Entry;
  * @author zhangliang
  * @author maxiaoguang
  */
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 @EqualsAndHashCode(exclude = {"predicateSegment"})
 @ToString
 public final class Condition {
     
-    private final Column column;
+    private final String columnName;
+    
+    private final String tableName;
     
     private final PredicateSegment predicateSegment;
     
@@ -57,19 +56,19 @@ public final class Condition {
     
     private final Map<Integer, Integer> positionIndexMap = new LinkedHashMap<>();
     
-    public Condition(final Column column, final PredicateSegment predicateSegment, final ExpressionSegment expressionSegment) {
-        this(column, predicateSegment, ShardingOperator.EQUAL);
+    public Condition(final String columnName, final String tableName, final PredicateSegment predicateSegment, final ExpressionSegment expressionSegment) {
+        this.columnName = columnName;
+        this.tableName = tableName;
+        this.predicateSegment = predicateSegment;
+        operator = ShardingOperator.EQUAL;
         putPositionMap(0, expressionSegment);
     }
     
-    public Condition(final Column column, final PredicateSegment predicateSegment, final ExpressionSegment beginExpressionSegment, final ExpressionSegment endExpressionSegment) {
-        this(column, predicateSegment, ShardingOperator.BETWEEN);
-        putPositionMap(0, beginExpressionSegment);
-        putPositionMap(1, endExpressionSegment);
-    }
-    
-    public Condition(final Column column, final PredicateSegment predicateSegment, final List<ExpressionSegment> expressionSegments) {
-        this(column, predicateSegment, ShardingOperator.IN);
+    public Condition(final String columnName, final String tableName, final PredicateSegment predicateSegment, final List<ExpressionSegment> expressionSegments) {
+        this.columnName = columnName;
+        this.tableName = tableName;
+        this.predicateSegment = predicateSegment;
+        operator = ShardingOperator.IN;
         int count = 0;
         for (ExpressionSegment each : expressionSegments) {
             putPositionMap(count, each);

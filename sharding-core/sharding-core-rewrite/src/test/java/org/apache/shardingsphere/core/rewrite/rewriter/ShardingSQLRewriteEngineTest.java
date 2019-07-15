@@ -899,9 +899,8 @@ public final class ShardingSQLRewriteEngineTest {
         List<ExpressionSegment> expressionSegments = new LinkedList<>();
         expressionSegments.add(new LiteralExpressionSegment(0, 0, 3));
         expressionSegments.add(new LiteralExpressionSegment(0, 0, 5));
-        Column column = new Column("id", "table_z");
         AndCondition encryptConditions = new AndCondition();
-        encryptConditions.getConditions().add(new Condition(column, new PredicateSegment(29, 39, null, null), expressionSegments));
+        encryptConditions.getConditions().add(new Condition("id", "table_z", new PredicateSegment(29, 39, null, null), expressionSegments));
         SQLRouteResult result = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), encryptConditions,
                 new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
                 new SelectItems(Collections.<SelectItem>emptyList(), false, 0), new Pagination(null, null, Collections.emptyList())));
@@ -924,9 +923,8 @@ public final class ShardingSQLRewriteEngineTest {
         List<ExpressionSegment> expressionSegments = new LinkedList<>();
         expressionSegments.add(new LiteralExpressionSegment(0, 0, 3));
         expressionSegments.add(new LiteralExpressionSegment(0, 0, 5));
-        Column column = new Column("id", "table_k");
         AndCondition encryptConditions = new AndCondition();
-        encryptConditions.getConditions().add(new Condition(column, new PredicateSegment(29, 39, null, null), expressionSegments));
+        encryptConditions.getConditions().add(new Condition("id", "table_k", new PredicateSegment(29, 39, null, null), expressionSegments));
         SQLRouteResult result = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), encryptConditions,
                 new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
                 new SelectItems(Collections.<SelectItem>emptyList(), false, 0), new Pagination(null, null, Collections.emptyList())));
@@ -947,10 +945,9 @@ public final class ShardingSQLRewriteEngineTest {
         updateStatement.getSQLSegments().add(new TableSegment(7, 13, "table_z"));
         SetAssignmentsSegment setAssignmentsSegment = new SetAssignmentsSegment(15, 24, Collections.singleton(new AssignmentSegment(19, 24, new ColumnSegment(19, 20, "id"), null)));
         updateStatement.getSQLSegments().add(setAssignmentsSegment);
-        Column column = new Column("id", "table_z");
-        updateStatement.getAssignments().put(column, new LiteralExpressionSegment(0, 0, 1));
+        updateStatement.getAssignments().put(new Column("id", "table_z"), new LiteralExpressionSegment(0, 0, 1));
         AndCondition encryptConditions = new AndCondition();
-        encryptConditions.getConditions().add(new Condition(column, new PredicateSegment(32, 37, null, null), new LiteralExpressionSegment(0, 0, 2)));
+        encryptConditions.getConditions().add(new Condition("id", "table_z", new PredicateSegment(32, 37, null, null), new LiteralExpressionSegment(0, 0, 2)));
         SQLRouteResult result = new SQLRouteResult(new ShardingWhereOptimizedStatement(updateStatement, new ShardingConditions(Collections.<ShardingCondition>emptyList()), encryptConditions));
         result.setRoutingResult(new RoutingResult());
         return result;
@@ -1022,9 +1019,8 @@ public final class ShardingSQLRewriteEngineTest {
         selectStatement.setLogicSQL("SELECT id FROM table_z WHERE id=? AND name=?");
         selectStatement.getTables().add(new Table("table_z", null));
         selectStatement.getSQLSegments().add(new TableSegment(15, 21, "table_z"));
-        Column column = new Column("id", "table_z");
         AndCondition encryptConditions = new AndCondition();
-        encryptConditions.getConditions().add(new Condition(column, new PredicateSegment(29, 32, null, null), new ParameterMarkerExpressionSegment(0, 0, 0)));
+        encryptConditions.getConditions().add(new Condition("id", "table_z", new PredicateSegment(29, 32, null, null), new ParameterMarkerExpressionSegment(0, 0, 0)));
         SQLRouteResult result = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), encryptConditions,
                 new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
                 new SelectItems(Collections.<SelectItem>emptyList(), false, 0), new Pagination(null, null, Collections.emptyList())));
@@ -1048,10 +1044,9 @@ public final class ShardingSQLRewriteEngineTest {
         List<ExpressionSegment> expressionSegments = new LinkedList<>();
         expressionSegments.add(new ParameterMarkerExpressionSegment(0, 0, 0));
         expressionSegments.add(new ParameterMarkerExpressionSegment(0, 0, 1));
-        Column column = new Column("id", "table_z");
         AndCondition encryptConditions = new AndCondition();
-        encryptConditions.getConditions().add(new Condition(column, new PredicateSegment(29, 40, null, null), expressionSegments));
-        encryptConditions.getConditions().add(new Condition(column, new PredicateSegment(45, 50, null, null), new LiteralExpressionSegment(0, 0, 3)));
+        encryptConditions.getConditions().add(new Condition("id", "table_z", new PredicateSegment(29, 40, null, null), expressionSegments));
+        encryptConditions.getConditions().add(new Condition("id", "table_z", new PredicateSegment(45, 50, null, null), new LiteralExpressionSegment(0, 0, 3)));
         SQLRouteResult result = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), encryptConditions,
                 new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
                 new SelectItems(Collections.<SelectItem>emptyList(), false, 0), new Pagination(null, null, Collections.emptyList())));
@@ -1070,10 +1065,9 @@ public final class ShardingSQLRewriteEngineTest {
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.setLogicSQL("SELECT id FROM table_k WHERE id=? AND name=?");
         selectStatement.getTables().add(new Table("table_k", null));
-        Column column = new Column("id", "table_k");
         selectStatement.getSQLSegments().add(new TableSegment(15, 21, "table_k"));
         AndCondition encryptConditions = new AndCondition();
-        encryptConditions.getConditions().add(new Condition(column, new PredicateSegment(29, 32, null, null), new ParameterMarkerExpressionSegment(0, 0, 0)));
+        encryptConditions.getConditions().add(new Condition("id", "table_k", new PredicateSegment(29, 32, null, null), new ParameterMarkerExpressionSegment(0, 0, 0)));
         SQLRouteResult result = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), encryptConditions,
                 new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
                 new SelectItems(Collections.<SelectItem>emptyList(), false, 0), new Pagination(null, null, Collections.emptyList())));

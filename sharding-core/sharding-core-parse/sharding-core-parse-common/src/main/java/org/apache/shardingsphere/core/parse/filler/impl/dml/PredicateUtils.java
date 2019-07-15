@@ -21,7 +21,6 @@ import com.google.common.base.Optional;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
 import org.apache.shardingsphere.core.parse.sql.context.table.Table;
 import org.apache.shardingsphere.core.parse.sql.context.table.Tables;
@@ -93,24 +92,27 @@ public final class PredicateUtils {
      * Create condition of compare operator.
      * 
      * @param compareRightValue right value of compare operator
-     * @param column column
+     * @param columnName column name
+     * @param tableName table name
      * @param predicateSegment predicate segment
      * @return condition
      */
-    public static Optional<Condition> createCompareCondition(final PredicateCompareRightValue compareRightValue, final Column column, final PredicateSegment predicateSegment) {
+    public static Optional<Condition> createCompareCondition(final PredicateCompareRightValue compareRightValue, 
+                                                             final String columnName, final String tableName, final PredicateSegment predicateSegment) {
         return compareRightValue.getExpression() instanceof SimpleExpressionSegment 
-                ? Optional.of(new Condition(column, predicateSegment, compareRightValue.getExpression())) : Optional.<Condition>absent();
+                ? Optional.of(new Condition(columnName, tableName, predicateSegment, compareRightValue.getExpression())) : Optional.<Condition>absent();
     }
     
     /**
      * Create condition of IN operator.
      *
      * @param inRightValue right value of IN operator
-     * @param column column
+     * @param columnName column name
+     * @param tableName table name
      * @param predicateSegment predicate segment
      * @return condition
      */
-    public static Optional<Condition> createInCondition(final PredicateInRightValue inRightValue, final Column column, final PredicateSegment predicateSegment) {
+    public static Optional<Condition> createInCondition(final PredicateInRightValue inRightValue, final String columnName, final String tableName, final PredicateSegment predicateSegment) {
         List<ExpressionSegment> expressionSegments = new LinkedList<>();
         for (ExpressionSegment each : inRightValue.getSqlExpressions()) {
             if (each instanceof SimpleExpressionSegment) {
@@ -119,6 +121,6 @@ public final class PredicateUtils {
                 return Optional.absent();
             }
         }
-        return expressionSegments.isEmpty() ? Optional.<Condition>absent() : Optional.of(new Condition(column, predicateSegment, expressionSegments));
+        return expressionSegments.isEmpty() ? Optional.<Condition>absent() : Optional.of(new Condition(columnName, tableName, predicateSegment, expressionSegments));
     }
 }

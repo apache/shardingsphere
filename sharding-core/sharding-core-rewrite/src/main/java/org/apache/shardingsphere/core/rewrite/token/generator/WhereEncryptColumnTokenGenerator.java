@@ -66,7 +66,7 @@ public final class WhereEncryptColumnTokenGenerator implements CollectionSQLToke
             return result;
         }
         for (Condition each : ((WhereOptimizedStatement) optimizedStatement).getEncryptConditions().getConditions()) {
-            this.column = new Column(each.getColumn().getName(), optimizedStatement.getSQLStatement().getTables().getSingleTableName());
+            this.column = new Column(each.getColumnName(), optimizedStatement.getSQLStatement().getTables().getSingleTableName());
             this.startIndex = each.getPredicateSegment().getStartIndex();
             this.stopIndex = each.getPredicateSegment().getStopIndex();
             result.add(createEncryptColumnToken(optimizedStatement, parameterBuilder, encryptRule.getEncryptorEngine()));
@@ -82,7 +82,7 @@ public final class WhereEncryptColumnTokenGenerator implements CollectionSQLToke
     
     private Optional<Condition> getEncryptCondition(final AndCondition encryptConditions) {
         for (Condition each : encryptConditions.getConditions()) {
-            if (each.getColumn().equals(column) && isSameIndexes(each.getPredicateSegment())) {
+            if (each.getColumnName().equalsIgnoreCase(column.getName()) && each.getTableName().equalsIgnoreCase(column.getTableName()) && isSameIndexes(each.getPredicateSegment())) {
                 return Optional.of(each);
             }
         }
