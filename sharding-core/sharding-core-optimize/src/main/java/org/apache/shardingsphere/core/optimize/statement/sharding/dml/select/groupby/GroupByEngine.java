@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.groupby;
 
-import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderByItem;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.OrderByItemSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -38,22 +36,21 @@ public final class GroupByEngine {
     /**
      * Create group by.
      *
-     * @param sqlStatement SQL statement
+     * @param selectStatement select statement
      * @return group by
      */
-    public GroupBy createGroupBy(final SQLStatement sqlStatement) {
-        Optional<GroupBySegment> groupBySegment = sqlStatement.findSQLSegment(GroupBySegment.class);
-        if (!groupBySegment.isPresent()) {
+    public GroupBy createGroupBy(final SelectStatement selectStatement) {
+        if (!selectStatement.getGroupBy().isPresent()) {
             return new GroupBy(Collections.<OrderByItem>emptyList(), 0);
         }
         Collection<OrderByItem> groupByItems = new LinkedList<>();
-        for (OrderByItemSegment each : groupBySegment.get().getGroupByItems()) {
+        for (OrderByItemSegment each : selectStatement.getGroupBy().get().getGroupByItems()) {
             OrderByItem orderByItem = new OrderByItem(each);
             if (each instanceof IndexOrderByItemSegment) {
                 orderByItem.setIndex(((IndexOrderByItemSegment) each).getColumnIndex());
             }
             groupByItems.add(orderByItem);
         }
-        return new GroupBy(groupByItems, groupBySegment.get().getStopIndex());
+        return new GroupBy(groupByItems, selectStatement.getGroupBy().get().getStopIndex());
     }
 }

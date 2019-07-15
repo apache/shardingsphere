@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby;
 
-import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.groupby.GroupBy;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.OrderByItemSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -37,17 +35,16 @@ public final class OrderByEngine {
     /**
      * Create order by.
      * 
-     * @param sqlStatement SQL statement
+     * @param selectStatement select statement
      * @param groupBy group by
      * @return order by
      */
-    public OrderBy createOrderBy(final SQLStatement sqlStatement, final GroupBy groupBy) {
-        Optional<OrderBySegment> orderBySegment = sqlStatement.findSQLSegment(OrderBySegment.class);
-        if (!orderBySegment.isPresent() || orderBySegment.get().getOrderByItems().isEmpty()) {
+    public OrderBy createOrderBy(final SelectStatement selectStatement, final GroupBy groupBy) {
+        if (!selectStatement.getOrderBy().isPresent() || selectStatement.getOrderBy().get().getOrderByItems().isEmpty()) {
             return new OrderBy(groupBy.getItems(), !groupBy.getItems().isEmpty());
         }
         List<OrderByItem> orderByItems = new LinkedList<>();
-        for (OrderByItemSegment each : orderBySegment.get().getOrderByItems()) {
+        for (OrderByItemSegment each : selectStatement.getOrderBy().get().getOrderByItems()) {
             OrderByItem orderByItem = new OrderByItem(each);
             if (each instanceof IndexOrderByItemSegment) {
                 orderByItem.setIndex(((IndexOrderByItemSegment) each).getColumnIndex());
@@ -56,5 +53,4 @@ public final class OrderByEngine {
         }
         return new OrderBy(orderByItems, false);
     }
-    
 }

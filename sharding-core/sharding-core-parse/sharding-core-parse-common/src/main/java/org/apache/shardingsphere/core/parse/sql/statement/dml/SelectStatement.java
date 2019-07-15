@@ -17,9 +17,12 @@
 
 package org.apache.shardingsphere.core.parse.sql.statement.dml;
 
+import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.order.GroupBySegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.order.OrderBySegment;
 
 /**
  * Select statement.
@@ -32,5 +35,27 @@ import lombok.ToString;
 @ToString(callSuper = true, exclude = "parentStatement")
 public final class SelectStatement extends DMLStatement {
     
+    private GroupBySegment groupBySegment;
+    
+    private OrderBySegment orderBySegment;
+    
     private SelectStatement parentStatement;
+    
+    /**
+     * Get group by.
+     * 
+     * @return group by
+     */
+    public Optional<GroupBySegment> getGroupBy() {
+        return Optional.fromNullable(groupBySegment);
+    }
+    
+    /**
+     * Get order by.
+     *
+     * @return order by
+     */
+    public Optional<OrderBySegment> getOrderBy() {
+        return Optional.fromNullable(orderBySegment);
+    }
 }
