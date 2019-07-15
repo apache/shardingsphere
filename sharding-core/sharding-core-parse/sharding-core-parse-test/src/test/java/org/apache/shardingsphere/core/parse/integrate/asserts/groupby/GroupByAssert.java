@@ -23,6 +23,7 @@ import org.apache.shardingsphere.core.parse.integrate.jaxb.groupby.ExpectedGroup
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.OrderByItemSegment;
 
+import java.util.Collection;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -44,7 +45,7 @@ public final class GroupByAssert {
      * @param actual actual group by items
      * @param expected expected group by items
      */
-    public void assertGroupByItems(final List<OrderByItemSegment> actual, final List<ExpectedGroupByColumn> expected) {
+    public void assertGroupByItems(final Collection<OrderByItemSegment> actual, final List<ExpectedGroupByColumn> expected) {
         assertThat(assertMessage.getFullAssertMessage("Group by items size error: "), actual.size(), is(expected.size()));
         int count = 0;
         for (OrderByItemSegment each : actual) {

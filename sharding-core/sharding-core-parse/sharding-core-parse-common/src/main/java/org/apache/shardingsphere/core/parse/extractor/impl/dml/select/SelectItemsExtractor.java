@@ -18,18 +18,15 @@
 package org.apache.shardingsphere.core.parse.extractor.impl.dml.select;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.extractor.api.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.extractor.impl.dml.select.item.SelectItemExtractor;
 import org.apache.shardingsphere.core.parse.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.SelectItemsSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.item.ColumnSelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemSegment;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.TreeSet;
 
@@ -61,7 +58,6 @@ public final class SelectItemsExtractor implements OptionalSQLSegmentExtractor {
             setUnqualifiedShorthandSelectItemSegment(unqualifiedShorthandNode.get(), result, parameterMarkerIndexes);
         }
         setSelectItemSegment(selectItemsNode, result, parameterMarkerIndexes);
-        result.getSelectItems().addAll(extractRowNumberSelectItem(ancestorNode, parameterMarkerIndexes));
         return Optional.of(result);
     }
     
@@ -101,18 +97,5 @@ public final class SelectItemsExtractor implements OptionalSQLSegmentExtractor {
             return findMainQueryNode(subqueryNode.get());
         }
         return ancestorNode;
-    }
-    
-    private Collection<SelectItemSegment> extractRowNumberSelectItem(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
-        Collection<SelectItemSegment> result = new LinkedList<>();
-        Collection<ParserRuleContext> selectItemNodes = ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.SELECT_ITEM);
-        for (ParserRuleContext each : selectItemNodes) {
-            Optional<? extends SelectItemSegment> selectItemSegment = selectItemExtractor.extract(each, parameterMarkerIndexes);
-            Preconditions.checkState(selectItemSegment.isPresent());
-            if (selectItemSegment.get() instanceof ColumnSelectItemSegment && rowNumberIdentifiers.contains(((ColumnSelectItemSegment) selectItemSegment.get()).getName())) {
-                result.add(selectItemSegment.get());
-            }
-        }
-        return result;
     }
 }

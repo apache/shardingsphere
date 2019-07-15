@@ -23,6 +23,7 @@ import org.apache.shardingsphere.core.parse.integrate.jaxb.orderby.ExpectedOrder
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.OrderByItemSegment;
 
+import java.util.Collection;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -44,7 +45,7 @@ public final class OrderByAssert {
      * @param actual actual order by items
      * @param expected expected order by items
      */
-    public void assertOrderByItems(final List<OrderByItemSegment> actual, final List<ExpectedOrderByColumn> expected) {
+    public void assertOrderByItems(final Collection<OrderByItemSegment> actual, final List<ExpectedOrderByColumn> expected) {
         assertThat(assertMessage.getFullAssertMessage("Order by items size error: "), actual.size(), is(expected.size()));
         int count = 0;
         for (OrderByItemSegment each : actual) {

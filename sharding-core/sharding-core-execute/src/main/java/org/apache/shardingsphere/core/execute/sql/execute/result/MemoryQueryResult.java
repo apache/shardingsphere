@@ -41,6 +41,7 @@ import java.util.List;
  *
  * @author zhangliang
  * @author panjuan
+ * @author yangyi
  */
 public final class MemoryQueryResult implements QueryResult {
     
@@ -134,6 +135,11 @@ public final class MemoryQueryResult implements QueryResult {
     @Override
     public boolean wasNull() {
         return null == currentRow;
+    }
+    
+    @Override
+    public boolean isCaseSensitive(final int columnIndex) {
+        return metaData.isCaseSensitive(columnIndex);
     }
     
     @Override

@@ -39,7 +39,7 @@ public final class SelectItemsSegment implements SQLSegment {
     
     private final int stopIndex;
     
-    private final boolean hasDistinct;
+    private final boolean distinctRow;
     
     private final Collection<SelectItemSegment> selectItems = new LinkedList<>();
     

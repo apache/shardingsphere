@@ -28,12 +28,12 @@ import org.apache.shardingsphere.core.optimize.statement.sharding.dml.ShardingWh
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingConditions;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.ShardingInsertOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ShardingSelectOptimizedStatement;
 import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
 import org.apache.shardingsphere.core.parse.entry.ShardingSQLParseEntry;
 import org.apache.shardingsphere.core.parse.hook.ParsingHook;
 import org.apache.shardingsphere.core.parse.hook.SPIParsingHook;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 import org.apache.shardingsphere.core.rule.BindingTableRule;
@@ -73,7 +73,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
     public SQLStatement parse(final String logicSQL, final boolean useCache) {
         parsingHook.start(logicSQL);
         try {
-            SQLStatement result = new ShardingSQLParseEntry(databaseType, shardingRule, shardingMetaData.getTable(), parsingResultCache).parse(logicSQL, useCache);
+            SQLStatement result = new ShardingSQLParseEntry(databaseType, shardingMetaData.getTable(), parsingResultCache).parse(logicSQL, useCache);
             parsingHook.finishSuccess(result, shardingMetaData.getTable());
             return result;
             // CHECKSTYLE:OFF
@@ -87,7 +87,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
     @Override
     public SQLRouteResult route(final SQLStatement sqlStatement, final List<Object> parameters) {
         OptimizedStatement optimizedStatement = OptimizeEngineFactory.newInstance(shardingRule, shardingMetaData.getTable(), sqlStatement, parameters).optimize();
-        boolean needMergeShardingValues = isNeedMergeShardingValues(sqlStatement);
+        boolean needMergeShardingValues = isNeedMergeShardingValues(optimizedStatement);
         if (optimizedStatement instanceof ShardingWhereOptimizedStatement && needMergeShardingValues) {
             checkSubqueryShardingValues(sqlStatement, ((ShardingWhereOptimizedStatement) optimizedStatement).getShardingConditions());
             mergeShardingConditions(((ShardingWhereOptimizedStatement) optimizedStatement).getShardingConditions());
@@ -112,9 +112,9 @@ public final class ParsingSQLRouter implements ShardingRouter {
         }
     }
     
-    private boolean isNeedMergeShardingValues(final SQLStatement sqlStatement) {
-        return sqlStatement instanceof SelectStatement 
-                && ((SelectStatement) sqlStatement).isContainsSubquery() && !shardingRule.getShardingLogicTableNames(sqlStatement.getTables().getTableNames()).isEmpty();
+    private boolean isNeedMergeShardingValues(final OptimizedStatement optimizedStatement) {
+        return optimizedStatement instanceof ShardingSelectOptimizedStatement && ((ShardingSelectOptimizedStatement) optimizedStatement).isContainsSubquery() 
+                && !shardingRule.getShardingLogicTableNames(optimizedStatement.getSQLStatement().getTables().getTableNames()).isEmpty();
     }
     
     private void checkSubqueryShardingValues(final SQLStatement sqlStatement, final ShardingConditions shardingConditions) {

@@ -17,13 +17,10 @@
 
 package org.apache.shardingsphere.core.parse.rule.registry.statement;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.parse.extractor.api.SQLSegmentExtractor;
-import org.apache.shardingsphere.core.parse.optimizer.SQLStatementOptimizer;
 import org.apache.shardingsphere.core.parse.rule.jaxb.entity.statement.SQLStatementRuleEntity;
 import org.apache.shardingsphere.core.parse.rule.registry.extractor.ExtractorRuleDefinition;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
@@ -46,15 +43,12 @@ public final class SQLStatementRule {
     
     private final Collection<SQLSegmentExtractor> extractors;
     
-    private final SQLStatementOptimizer optimizer;
-    
     @SuppressWarnings("unchecked")
     @SneakyThrows
     public SQLStatementRule(final SQLStatementRuleEntity entity, final ExtractorRuleDefinition extractorRuleDefinition) {
         contextName = entity.getContext();
         sqlStatementClass = (Class<? extends SQLStatement>) Class.forName(entity.getSqlStatementClass());
         extractors = getExtractors(entity.getExtractorRuleRefs(), extractorRuleDefinition);
-        optimizer = Strings.isNullOrEmpty(entity.getOptimizerClass()) ? null : (SQLStatementOptimizer) Class.forName(entity.getOptimizerClass()).newInstance();
     }
     
     private Collection<SQLSegmentExtractor> getExtractors(final String extractorRuleRefs, final ExtractorRuleDefinition extractorRuleDefinition) {
@@ -66,14 +60,5 @@ public final class SQLStatementRule {
             result.add(extractorRuleDefinition.getExtractor(each));
         }
         return result;
-    }
-    
-    /**
-     * Get SQL statement optimizer.
-     * 
-     * @return SQL statement optimizer
-     */
-    public Optional<SQLStatementOptimizer> getOptimizer() {
-        return Optional.fromNullable(optimizer);
     }
 }

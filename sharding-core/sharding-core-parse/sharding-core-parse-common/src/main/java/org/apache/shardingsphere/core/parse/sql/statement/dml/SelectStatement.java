@@ -21,17 +21,8 @@ import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
-import org.apache.shardingsphere.core.parse.sql.context.selectitem.StarSelectItem;
-import org.apache.shardingsphere.core.parse.sql.context.table.Table;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.OrderByItemSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationValueSegment;
-
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.order.GroupBySegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.order.OrderBySegment;
 
 /**
  * Select statement.
@@ -44,75 +35,27 @@ import java.util.Set;
 @ToString(callSuper = true, exclude = "parentStatement")
 public final class SelectStatement extends DMLStatement {
     
-    private final Set<SelectItem> items = new LinkedHashSet<>();
+    private GroupBySegment groupBySegment;
     
-    private final List<OrderByItemSegment> groupByItems = new LinkedList<>();
-    
-    private final List<OrderByItemSegment> orderByItems = new LinkedList<>();
-    
-    private boolean containStar;
-    
-    private boolean containsSubquery;
-    
-    private int selectListStopIndex;
-    
-    private int groupByLastIndex;
-    
-    private PaginationValueSegment offset;
-    
-    private PaginationValueSegment rowCount;
+    private OrderBySegment orderBySegment;
     
     private SelectStatement parentStatement;
     
     /**
-     * Judge has unqualified star select item.
+     * Get group by.
      * 
-     * @return star select item without owner
+     * @return group by
      */
-    public boolean hasUnqualifiedStarSelectItem() {
-        for (SelectItem each : items) {
-            if (each instanceof StarSelectItem && !((StarSelectItem) each).getOwner().isPresent()) {
-                return true;
-            }
-        }
-        return false;
+    public Optional<GroupBySegment> getGroupBy() {
+        return Optional.fromNullable(groupBySegment);
     }
     
     /**
-     * Get qualified star select items.
+     * Get order by.
      *
-     * @return qualified star select items
+     * @return order by
      */
-    public Collection<StarSelectItem> getQualifiedStarSelectItems() {
-        Collection<StarSelectItem> result = new LinkedList<>();
-        for (SelectItem each : items) {
-            if (each instanceof StarSelectItem && ((StarSelectItem) each).getOwner().isPresent()) {
-                result.add((StarSelectItem) each);
-            }
-        }
-        return result;
-    }
-    
-    /**
-     * Find star select item via table name or alias.
-     *
-     * @param tableNameOrAlias table name or alias
-     * @return star select item via table name or alias
-     */
-    public Optional<StarSelectItem> findStarSelectItem(final String tableNameOrAlias) {
-        Optional<Table> table = getTables().find(tableNameOrAlias);
-        if (!table.isPresent()) {
-            return Optional.absent();
-        }
-        for (SelectItem each : items) {
-            if (!(each instanceof StarSelectItem)) {
-                continue;
-            }
-            StarSelectItem starSelectItem = (StarSelectItem) each;
-            if (starSelectItem.getOwner().isPresent() && getTables().find(starSelectItem.getOwner().get()).equals(table)) {
-                return Optional.of(starSelectItem);
-            }
-        }
-        return Optional.absent();
+    public Optional<OrderBySegment> getOrderBy() {
+        return Optional.fromNullable(orderBySegment);
     }
 }

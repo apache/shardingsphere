@@ -27,7 +27,8 @@
     </logger>
     <logger name="org.apache.shardingsphere.core.execute.threadlocal.ExecutorExceptionHandler" level="off">
     </logger>
-    
+    <logger name="org.apache.shardingsphere.core.util.ConfigurationLogger" level="off" />
+
     <root>
         <level value="error" />
         <appender-ref ref="console" />

@@ -21,7 +21,6 @@ import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
 import org.apache.shardingsphere.core.parse.rule.registry.EncryptParseRuleRegistry;
-import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 
 /**
@@ -33,19 +32,16 @@ public final class EncryptSQLParseEntry extends SQLParseEntry {
     
     private final DatabaseType databaseType;
     
-    private final EncryptRule encryptRule;
-    
     private final ShardingTableMetaData shardingTableMetaData;
     
-    public EncryptSQLParseEntry(final DatabaseType databaseType, final EncryptRule encryptRule, final ShardingTableMetaData shardingTableMetaData) {
+    public EncryptSQLParseEntry(final DatabaseType databaseType, final ShardingTableMetaData shardingTableMetaData) {
         super(new ParsingResultCache());
         this.databaseType = databaseType;
-        this.encryptRule = encryptRule;
         this.shardingTableMetaData = shardingTableMetaData;
     }
     
     @Override
     protected SQLParseEngine getSQLParseEngine(final String sql) {
-        return new SQLParseEngine(EncryptParseRuleRegistry.getInstance(), databaseType, sql, encryptRule, shardingTableMetaData);
+        return new SQLParseEngine(EncryptParseRuleRegistry.getInstance(), databaseType, sql, shardingTableMetaData);
     }
 }

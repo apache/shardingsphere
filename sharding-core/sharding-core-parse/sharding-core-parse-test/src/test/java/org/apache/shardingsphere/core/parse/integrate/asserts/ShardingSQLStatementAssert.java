@@ -17,10 +17,9 @@
 
 package org.apache.shardingsphere.core.parse.integrate.asserts;
 
-import org.apache.shardingsphere.core.parse.integrate.asserts.condition.ConditionAssert;
+import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.parse.integrate.asserts.groupby.GroupByAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.index.IndexAssert;
-import org.apache.shardingsphere.core.parse.integrate.asserts.item.ItemAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.meta.TableMetaDataAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.orderby.OrderByAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.pagination.PaginationAssert;
@@ -28,6 +27,9 @@ import org.apache.shardingsphere.core.parse.integrate.asserts.table.AlterTableAs
 import org.apache.shardingsphere.core.parse.integrate.asserts.table.TableAssert;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.ShardingParserResultSetRegistry;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.root.ParserResult;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.order.GroupBySegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.order.OrderBySegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.CreateTableStatement;
@@ -53,11 +55,7 @@ public final class ShardingSQLStatementAssert {
     
     private final TableAssert tableAssert;
     
-    private final ConditionAssert conditionAssert;
-    
     private final IndexAssert indexAssert;
-    
-    private final ItemAssert itemAssert;
     
     private final GroupByAssert groupByAssert;
     
@@ -75,9 +73,7 @@ public final class ShardingSQLStatementAssert {
         this.actual = actual;
         expected = ShardingParserResultSetRegistry.getInstance().getRegistry().get(sqlCaseId);
         tableAssert = new TableAssert(assertMessage);
-        conditionAssert = new ConditionAssert(assertMessage);
         indexAssert = new IndexAssert(sqlCaseType, assertMessage);
-        itemAssert = new ItemAssert(assertMessage);
         groupByAssert = new GroupByAssert(assertMessage);
         orderByAssert = new OrderByAssert(assertMessage);
         paginationAssert = new PaginationAssert(sqlCaseType, assertMessage);
@@ -106,11 +102,23 @@ public final class ShardingSQLStatementAssert {
     }
     
     private void assertSelectStatement(final SelectStatement actual) {
-        itemAssert.assertItems(actual.getItems(), expected.getSelectItems());
-        groupByAssert.assertGroupByItems(actual.getGroupByItems(), expected.getGroupByColumns());
-        orderByAssert.assertOrderByItems(actual.getOrderByItems(), expected.getOrderByColumns());
-        paginationAssert.assertOffset(actual.getOffset(), expected.getOffset());
-        paginationAssert.assertRowCount(actual.getRowCount(), expected.getRowCount());
+        // TODO do select items assert
+//        Optional<SelectItemsSegment> selectItemsSegment = actual.findSQLSegment(SelectItemsSegment.class);
+//        if (selectItemsSegment.isPresent()) {
+//        }
+        Optional<GroupBySegment> groupBySegment = actual.findSQLSegment(GroupBySegment.class);
+        if (groupBySegment.isPresent()) {
+            groupByAssert.assertGroupByItems(groupBySegment.get().getGroupByItems(), expected.getGroupByColumns());
+        }
+        Optional<OrderBySegment> orderBySegment = actual.findSQLSegment(OrderBySegment.class);
+        if (orderBySegment.isPresent()) {
+            orderByAssert.assertOrderByItems(orderBySegment.get().getOrderByItems(), expected.getOrderByColumns());
+        }
+        Optional<LimitSegment> limitSegment = actual.findSQLSegment(LimitSegment.class);
+        if (limitSegment.isPresent()) {
+            paginationAssert.assertOffset(limitSegment.get().getOffset().orNull(), expected.getOffset());
+            paginationAssert.assertRowCount(limitSegment.get().getRowCount().orNull(), expected.getRowCount());
+        }
     }
     
     private void assertCreateTableStatement(final CreateTableStatement actual) {

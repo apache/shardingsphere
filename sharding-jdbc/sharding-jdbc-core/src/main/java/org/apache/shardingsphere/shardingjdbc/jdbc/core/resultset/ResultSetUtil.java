@@ -85,6 +85,8 @@ public final class ResultSetUtil {
     private static Object convertNumberValue(final Object value, final Class<?> convertType) {
         Number number = (Number) value;
         switch (convertType.getName()) {
+            case "boolean":
+                return 0 != number.longValue();
             case "byte":
                 return number.byteValue();
             case "short":

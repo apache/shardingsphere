@@ -202,6 +202,11 @@ public final class TestQueryResult implements QueryResult {
     }
     
     @Override
+    public boolean isCaseSensitive(final int columnIndex) throws SQLException {
+        return resultSet.getMetaData().isCaseSensitive(columnIndex);
+    }
+    
+    @Override
     public int getColumnCount() throws SQLException {
         return resultSet.getMetaData().getColumnCount();
     }

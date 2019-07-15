@@ -25,15 +25,12 @@ import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 /**
  * Group by filler.
  *
- * @author duhongjun
- * @author panjuan
+ * @author zhangliang
  */
 public final class GroupByFiller implements SQLSegmentFiller<GroupBySegment> {
     
     @Override
     public void fill(final GroupBySegment sqlSegment, final SQLStatement sqlStatement) {
-        SelectStatement selectStatement = (SelectStatement) sqlStatement;
-        selectStatement.setGroupByLastIndex(sqlSegment.getStopIndex());
-        selectStatement.getGroupByItems().addAll(sqlSegment.getGroupByItems());
+        ((SelectStatement) sqlStatement).setGroupBySegment(sqlSegment);
     }
 }

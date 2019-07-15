@@ -25,12 +25,12 @@ import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 /**
  * Order by filler.
  *
- * @author duhongjun
+ * @author zhangliang
  */
 public final class OrderByFiller implements SQLSegmentFiller<OrderBySegment> {
     
     @Override
     public void fill(final OrderBySegment sqlSegment, final SQLStatement sqlStatement) {
-        ((SelectStatement) sqlStatement).getOrderByItems().addAll(sqlSegment.getOrderByItems());
+        ((SelectStatement) sqlStatement).setOrderBySegment(sqlSegment);
     }
 }

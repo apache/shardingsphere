@@ -29,6 +29,7 @@ import org.apache.shardingsphere.core.merge.MergeEngine;
 import org.apache.shardingsphere.core.merge.MergeEngineFactory;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.GeneratedKey;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.ShardingInsertOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ShardingSelectOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
@@ -134,7 +135,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
             resultSets.add(resultSet);
             queryResults.add(new StreamQueryResult(resultSet, connection.getShardingContext().getShardingRule()));
         }
-        if (routeResult.getOptimizedStatement().getSQLStatement() instanceof SelectStatement || routeResult.getOptimizedStatement().getSQLStatement() instanceof DALStatement) {
+        if (routeResult.getOptimizedStatement() instanceof ShardingSelectOptimizedStatement || routeResult.getOptimizedStatement().getSQLStatement() instanceof DALStatement) {
             MergeEngine mergeEngine = MergeEngineFactory.newInstance(connection.getShardingContext().getDatabaseType(),
                     connection.getShardingContext().getShardingRule(), routeResult, connection.getShardingContext().getMetaData().getTable(), queryResults);
             currentResultSet = getCurrentResultSet(resultSets, mergeEngine);

@@ -25,6 +25,12 @@ import org.apache.shardingsphere.core.merge.dql.DQLMergeEngine;
 import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ShardingSelectOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.groupby.GroupBy;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.SelectItem;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.SelectItems;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderBy;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderByItem;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.pagination.Pagination;
 import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
@@ -56,8 +62,9 @@ public final class IteratorStreamMergedResultTest {
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
         when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
         queryResults = Lists.<QueryResult>newArrayList(new TestQueryResult(resultSet), new TestQueryResult(mock(ResultSet.class)), new TestQueryResult(mock(ResultSet.class)));
-        SelectStatement selectStatement = new SelectStatement();
-        routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), new AndCondition(), selectStatement.getItems()));
+        routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(new SelectStatement(), Collections.<ShardingCondition>emptyList(), new AndCondition(), 
+                new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
+                new SelectItems(Collections.<SelectItem>emptyList(), false, 0), new Pagination(null, null, Collections.emptyList())));
     }
     
     @Test

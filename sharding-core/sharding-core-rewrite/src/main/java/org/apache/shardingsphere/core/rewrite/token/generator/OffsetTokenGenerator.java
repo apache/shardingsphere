@@ -19,15 +19,12 @@ package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.Pagination;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ShardingSelectOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.pagination.Pagination;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.NumberLiteralPaginationValueSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationValueSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.pojo.OffsetToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-
-import java.util.List;
 
 /**
  * Offset token generator.
@@ -38,20 +35,12 @@ public final class OffsetTokenGenerator implements OptionalSQLTokenGenerator<Sha
     
     @Override
     public Optional<OffsetToken> generateSQLToken(final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final ShardingRule shardingRule) {
-        if (!(optimizedStatement.getSQLStatement() instanceof SelectStatement)) {
+        if (!(optimizedStatement instanceof ShardingSelectOptimizedStatement)) {
             return Optional.absent();
         }
-        Optional<PaginationValueSegment> offset = getLiteralOffsetSegment((SelectStatement) optimizedStatement.getSQLStatement());
-        return offset.isPresent()
-                ? Optional.of(new OffsetToken(offset.get().getStartIndex(), offset.get().getStopIndex(), 
-                getRevisedOffset((SelectStatement) optimizedStatement.getSQLStatement(), parameterBuilder.getOriginalParameters(), offset.get()))) : Optional.<OffsetToken>absent();
-    }
-    
-    private Optional<PaginationValueSegment> getLiteralOffsetSegment(final SelectStatement selectStatement) {
-        return selectStatement.getOffset() instanceof NumberLiteralPaginationValueSegment ? Optional.of(selectStatement.getOffset()) : Optional.<PaginationValueSegment>absent();
-    }
-    
-    private int getRevisedOffset(final SelectStatement selectStatement, final List<Object> parameters, final PaginationValueSegment offsetSegment) {
-        return new Pagination(offsetSegment, selectStatement.getRowCount(), parameters).getRevisedOffset();
+        Pagination pagination = ((ShardingSelectOptimizedStatement) optimizedStatement).getPagination();
+        return pagination.getOffsetSegment().isPresent() && pagination.getOffsetSegment().get() instanceof NumberLiteralPaginationValueSegment
+                ? Optional.of(new OffsetToken(pagination.getOffsetSegment().get().getStartIndex(), pagination.getOffsetSegment().get().getStopIndex(), pagination.getRevisedOffset()))
+                : Optional.<OffsetToken>absent();
     }
 }

@@ -39,6 +39,7 @@ public final class ResultSetUtilTest {
     @Test
     public void assertConvertNumberValueSuccess() {
         assertThat((String) ResultSetUtil.convertValue("1", String.class), is("1"));
+        assertThat((boolean) ResultSetUtil.convertValue(1, boolean.class), is(true));
         assertThat((byte) ResultSetUtil.convertValue((byte) 1, byte.class), is((byte) 1));
         assertThat((short) ResultSetUtil.convertValue((short) 1, short.class), is((short) 1));
         assertThat((int) ResultSetUtil.convertValue(new BigDecimal("1"), int.class), is(1));

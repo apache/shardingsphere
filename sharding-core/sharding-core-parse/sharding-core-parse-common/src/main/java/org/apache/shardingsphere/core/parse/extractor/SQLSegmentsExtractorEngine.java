@@ -40,19 +40,18 @@ public final class SQLSegmentsExtractorEngine {
      * Extract SQL segments.
      * 
      * @param ast SQL AST
-     * @param parameterMarkerIndexes parameter marker indexes
      * @return SQL segments
      */
-    public Collection<SQLSegment> extract(final SQLAST ast, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
+    public Collection<SQLSegment> extract(final SQLAST ast) {
         Collection<SQLSegment> result = new LinkedList<>();
         for (SQLSegmentExtractor each : ast.getSqlStatementRule().getExtractors()) {
             if (each instanceof OptionalSQLSegmentExtractor) {
-                Optional<? extends SQLSegment> sqlSegment = ((OptionalSQLSegmentExtractor) each).extract(ast.getParserRuleContext(), parameterMarkerIndexes);
+                Optional<? extends SQLSegment> sqlSegment = ((OptionalSQLSegmentExtractor) each).extract(ast.getParserRuleContext(), ast.getParameterMarkerIndexes());
                 if (sqlSegment.isPresent()) {
                     result.add(sqlSegment.get());
                 }
             } else if (each instanceof CollectionSQLSegmentExtractor) {
-                result.addAll(((CollectionSQLSegmentExtractor) each).extract(ast.getParserRuleContext(), parameterMarkerIndexes));
+                result.addAll(((CollectionSQLSegmentExtractor) each).extract(ast.getParserRuleContext(), ast.getParameterMarkerIndexes()));
             }
         }
         return result;

@@ -79,26 +79,16 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
     }
     
     @Test
-    public void assertGetBooleanForColumnIndex() {
-        for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
-            try {
-                each.getValue().getBoolean(1);
-                fail("Expected an SQLException to be thrown");
-            } catch (final Exception ex) {
-                assertFalse(ex.getMessage().isEmpty());
-            }
+    public void assertGetBooleanForColumnIndex() throws SQLException {
+        for (ResultSet each : resultSets.values()) {
+            assertThat(each.getBoolean(1), is(true));
         }
     }
     
     @Test
-    public void assertGetBooleanForColumnLabel() {
-        for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
-            try {
-                assertTrue(each.getValue().getBoolean(columnName));
-                fail("Expected an SQLException to be thrown");
-            } catch (final Exception ex) {
-                assertFalse(ex.getMessage().isEmpty());
-            }
+    public void assertGetBooleanForColumnLabel() throws SQLException {
+        for (ResultSet each : resultSets.values()) {
+            assertThat(each.getBoolean(columnName), is(true));
         }
     }
     

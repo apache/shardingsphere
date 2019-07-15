@@ -32,6 +32,7 @@ import java.sql.SQLException;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -72,6 +73,7 @@ public class QueryResultMetaDataTest {
         when(result.getColumnName(anyInt())).thenReturn("column");
         when(result.getColumnLabel(anyInt())).thenReturn("label");
         when(result.getTableName(anyInt())).thenReturn("table");
+        when(result.isCaseSensitive(anyInt())).thenReturn(false);
         return result;
     }
     
@@ -93,6 +95,11 @@ public class QueryResultMetaDataTest {
     @Test
     public void assertGetColumnIndex() {
         assertThat(queryResultMetaData.getColumnIndex("label"), is(1));
+    }
+    
+    @Test
+    public void assertIsCaseSensitive() {
+        assertFalse(queryResultMetaData.isCaseSensitive(1));
     }
     
     @Test
