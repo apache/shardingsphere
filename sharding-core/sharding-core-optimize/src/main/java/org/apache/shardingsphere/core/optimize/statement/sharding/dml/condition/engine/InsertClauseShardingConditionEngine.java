@@ -17,20 +17,19 @@
 
 package org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.engine;
 
+import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.GeneratedKey;
-import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
-import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
-import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
 import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.SimpleExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -58,55 +57,55 @@ public final class InsertClauseShardingConditionEngine {
      */
     public List<ShardingCondition> createShardingConditions(
             final InsertStatement insertStatement, final List<Object> parameters, final Collection<String> columnNames, final GeneratedKey generatedKey) {
-        List<AndCondition> andConditions = getAndConditions(insertStatement, columnNames);
-        List<ShardingCondition> result = new ArrayList<>(andConditions.size());
+        List<ShardingCondition> result = getShardingConditions(insertStatement, columnNames, parameters);
         String tableName = insertStatement.getTables().getSingleTableName();
         Iterator<Comparable<?>> generatedValues = null == generatedKey ? Collections.<Comparable<?>>emptyList().iterator() : generatedKey.getGeneratedValues().iterator();
-        for (AndCondition each : andConditions) {
-            ShardingCondition shardingCondition = new ShardingCondition();
-            shardingCondition.getRouteValues().addAll(getRouteValues(each, parameters));
+        for (ShardingCondition each : result) {
             if (isNeedAppendGeneratedKeyCondition(generatedKey, tableName)) {
-                shardingCondition.getRouteValues().add(new ListRouteValue<>(generatedKey.getColumnName(), tableName, Collections.<Comparable<?>>singletonList(generatedValues.next())));
+                each.getRouteValues().add(new ListRouteValue<>(generatedKey.getColumnName(), tableName, Collections.<Comparable<?>>singletonList(generatedValues.next())));
             }
-            result.add(shardingCondition);
         }
         return result;
     }
     
-    private List<AndCondition> getAndConditions(final InsertStatement insertStatement, final Collection<String> columnNames) {
-        List<AndCondition> result = new LinkedList<>();
+    private List<ShardingCondition> getShardingConditions(final InsertStatement insertStatement, final Collection<String> columnNames, final List<Object> parameters) {
+        List<ShardingCondition> result = new LinkedList<>();
         for (InsertValue each : insertStatement.getValues()) {
-            result.add(getAndCondition(insertStatement, columnNames.iterator(), each));
+            result.add(getShardingCondition(insertStatement, columnNames.iterator(), each, parameters));
         }
         return result;
     }
     
-    private AndCondition getAndCondition(final InsertStatement insertStatement, final Iterator<String> columnNames, final InsertValue insertValue) {
-        AndCondition result = new AndCondition();
+    private ShardingCondition getShardingCondition(final InsertStatement insertStatement, final Iterator<String> columnNames, final InsertValue insertValue, final List<Object> parameters) {
+        ShardingCondition result = new ShardingCondition();
         for (ExpressionSegment each : insertValue.getAssignments()) {
             String columnName = columnNames.next();
             if (each instanceof SimpleExpressionSegment) {
-                fillShardingCondition(result, insertStatement.getTables().getSingleTableName(), columnName, (SimpleExpressionSegment) each);
+                fillShardingCondition(result, insertStatement.getTables().getSingleTableName(), columnName, (SimpleExpressionSegment) each, parameters);
             }
         }
         return result;
     }
     
-    private void fillShardingCondition(final AndCondition andCondition, final String tableName, final String columnName, final SimpleExpressionSegment expressionSegment) {
+    private void fillShardingCondition(final ShardingCondition shardingCondition, 
+                                       final String tableName, final String columnName, final SimpleExpressionSegment expressionSegment, final List<Object> parameters) {
         if (shardingRule.isShardingColumn(columnName, tableName)) {
-            andCondition.getConditions().add(new Condition(new Column(columnName, tableName), null, expressionSegment));
+            shardingCondition.getRouteValues().add(new ListRouteValue<>(columnName, tableName, Collections.singletonList(getRouteValue(expressionSegment, parameters))));
         }
+    }
+    
+    private Comparable<?> getRouteValue(final SimpleExpressionSegment expressionSegment, final List<Object> parameters) {
+        Object result;
+        if (expressionSegment instanceof ParameterMarkerExpressionSegment) {
+            result = parameters.get(((ParameterMarkerExpressionSegment) expressionSegment).getParameterMarkerIndex());
+        } else {
+            result = ((LiteralExpressionSegment) expressionSegment).getLiterals();
+        }
+        Preconditions.checkArgument(result instanceof Comparable, "Sharding value must implements Comparable.");
+        return (Comparable) result;
     }
     
     private boolean isNeedAppendGeneratedKeyCondition(final GeneratedKey generatedKey, final String tableName) {
         return null != generatedKey && generatedKey.isGenerated() && shardingRule.isShardingColumn(generatedKey.getColumnName(), tableName);
-    }
-    
-    private Collection<ListRouteValue> getRouteValues(final AndCondition andCondition, final List<Object> parameters) {
-        Collection<ListRouteValue> result = new LinkedList<>();
-        for (Condition each : andCondition.getConditions()) {
-            result.add(new ListRouteValue<>(each.getColumn().getName(), each.getColumn().getTableName(), each.getConditionValues(parameters)));
-        }
-        return result;
     }
 }
