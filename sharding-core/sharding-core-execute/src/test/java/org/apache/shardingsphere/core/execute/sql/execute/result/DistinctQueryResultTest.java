@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.execute.sql.execute.result;
 
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import lombok.SneakyThrows;
 import org.junit.Before;
@@ -61,6 +62,7 @@ public class DistinctQueryResultTest {
             when(queryResult.getColumnCount()).thenReturn(1);
             when(queryResult.getColumnLabel(1)).thenReturn("order_id");
             when(queryResult.getValue(1, Object.class)).thenReturn(10 * i);
+            when(queryResult.isCaseSensitive(1)).thenReturn(true);
             result.add(queryResult);
             result.add(queryResult);
         }
@@ -135,6 +137,11 @@ public class DistinctQueryResultTest {
     }
     
     @Test
+    public void assertIsCaseSensitive() {
+        assertTrue(distinctQueryResult.isCaseSensitive(1));
+    }
+    
+    @Test
     public void assertGetColumnCount() {
         assertThat(distinctQueryResult.getColumnCount(), is(1));
     }
@@ -161,6 +168,12 @@ public class DistinctQueryResultTest {
         Multimap<String, Integer> expected = HashMultimap.create();
         expected.put("order_id", 1);
         assertThat(distinctQueryResult.getColumnLabelAndIndexMap(), is(expected));
+    }
+    
+    @Test
+    public void assertGetColumnCaseSensitive() {
+        List<Boolean> expected = Lists.newArrayList(false, true);
+        assertThat(distinctQueryResult.getColumnCaseSensitive(), is(expected));
     }
     
     @Test

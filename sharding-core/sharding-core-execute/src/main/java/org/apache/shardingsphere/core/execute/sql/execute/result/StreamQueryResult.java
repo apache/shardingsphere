@@ -36,6 +36,7 @@ import java.util.Calendar;
  *
  * @author zhangliang
  * @author panjuan
+ * @author yangyi
  */
 public final class StreamQueryResult implements QueryResult {
     
@@ -137,6 +138,11 @@ public final class StreamQueryResult implements QueryResult {
     @Override
     public boolean wasNull() throws SQLException {
         return resultSet.wasNull();
+    }
+    
+    @Override
+    public boolean isCaseSensitive(final int columnIndex) {
+        return metaData.isCaseSensitive(columnIndex);
     }
     
     @Override
