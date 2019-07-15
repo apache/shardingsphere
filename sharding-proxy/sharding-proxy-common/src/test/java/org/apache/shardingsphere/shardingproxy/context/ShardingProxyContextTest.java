@@ -83,23 +83,4 @@ public final class ShardingProxyContextTest {
         assertTrue(ShardingProxyContext.getInstance().isCircuitBreak());
         ShardingOrchestrationEventBus.getInstance().post(new CircuitStateChangedEvent(false));
     }
-
-    @Test
-    public void setAuthentication() {
-        Authentication authentication = new Authentication();
-        ProxyUser proxyUser = new ProxyUser("root", Collections.singletonList(""));
-        authentication.getUsers().put("root", proxyUser);
-
-        ShardingProxyContext.getInstance().setAuthentication(authentication);
-        assertEquals(ShardingProxyContext.getInstance().getAuthentication(), authentication);
-    }
-
-    @Test
-    public void setProps(){
-        Properties props = new Properties();
-        props.put("sql.show", false);
-
-        ShardingProxyContext.getInstance().setProperties(props);
-        assertEquals(ShardingProxyContext.getInstance().getShardingProperties().getProps(), props);
-    }
 }

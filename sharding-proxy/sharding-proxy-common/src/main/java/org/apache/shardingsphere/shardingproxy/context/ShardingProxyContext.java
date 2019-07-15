@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.shardingproxy.context;
 
-import java.util.Properties;
-
+import com.google.common.eventbus.Subscribe;
+import lombok.Getter;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.rule.Authentication;
 import org.apache.shardingsphere.core.util.ConfigurationLogger;
@@ -27,9 +27,7 @@ import org.apache.shardingsphere.orchestration.internal.registry.config.event.Au
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.PropertiesChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.state.event.CircuitStateChangedEvent;
 
-import com.google.common.eventbus.Subscribe;
-
-import lombok.Getter;
+import java.util.Properties;
 
 /**
  * Context of Sharding-Proxy.
@@ -70,8 +68,8 @@ public final class ShardingProxyContext {
      * @param props properties
      */
     public void init(final Authentication authentication, final Properties props) {
-        setAuthentication(authentication);
-        setProperties(props);
+        this.authentication = authentication;
+        shardingProperties = new ShardingProperties(props);
     }
     
     /**
@@ -81,7 +79,8 @@ public final class ShardingProxyContext {
      */
     @Subscribe
     public synchronized void renew(final PropertiesChangedEvent event) {
-        setProperties(event.getProps());
+        ConfigurationLogger.log(event.getProps());
+        shardingProperties = new ShardingProperties(event.getProps());
     }
     
     /**
@@ -91,7 +90,8 @@ public final class ShardingProxyContext {
      */
     @Subscribe
     public synchronized void renew(final AuthenticationChangedEvent event) {
-        setAuthentication(event.getAuthentication());
+        ConfigurationLogger.log(event.getAuthentication());
+        authentication = event.getAuthentication();
     }
     
     /**
@@ -102,25 +102,5 @@ public final class ShardingProxyContext {
     @Subscribe
     public synchronized void renew(final CircuitStateChangedEvent event) {
         isCircuitBreak = event.isCircuitBreak();
-    }
-
-    /**
-     * set authentication.
-     * 
-     * @param authentication new authentication
-     */
-    public void setAuthentication(final Authentication authentication) {
-        ConfigurationLogger.log(authentication);
-        this.authentication = authentication;
-    }
-
-    /**
-     * set new ShardingProperties with props.
-     * 
-     * @param props new props
-     */
-    public void setProperties(final Properties props) {
-        ConfigurationLogger.log(props);
-        this.shardingProperties = new ShardingProperties(props);
     }
 }

@@ -94,7 +94,10 @@ public final class Bootstrap {
 
     private static void startWithoutRegistryCenter(final Map<String, YamlProxyRuleConfiguration> ruleConfigs,
                                                    final YamlAuthenticationConfiguration authentication, final Properties prop, final int port) {
-        ShardingProxyContext.getInstance().init(getAuthentication(authentication), prop);
+        Authentication authenticationConfiguration = getAuthentication(authentication);
+        ConfigurationLogger.log(authenticationConfiguration);
+        ConfigurationLogger.log(prop);
+        ShardingProxyContext.getInstance().init(authenticationConfiguration, prop);
         LogicSchemas.getInstance().init(getDataSourceParameterMap(ruleConfigs), getRuleConfiguration(ruleConfigs));
         initOpenTracing();
         ShardingProxy.getInstance().start(port);
@@ -104,8 +107,12 @@ public final class Bootstrap {
                                                 final Collection<String> shardingSchemaNames, final Map<String, YamlProxyRuleConfiguration> ruleConfigs, final int port) {
         try (ShardingOrchestrationFacade shardingOrchestrationFacade = new ShardingOrchestrationFacade(
                 new OrchestrationConfigurationYamlSwapper().swap(serverConfig.getOrchestration()), shardingSchemaNames)) {
+            Authentication authentication = shardingOrchestrationFacade.getConfigService().loadAuthentication();
+            Properties properties = shardingOrchestrationFacade.getConfigService().loadProperties();
+            ConfigurationLogger.log(authentication);
+            ConfigurationLogger.log(properties);
             initShardingOrchestrationFacade(serverConfig, ruleConfigs, shardingOrchestrationFacade);
-            ShardingProxyContext.getInstance().init(shardingOrchestrationFacade.getConfigService().loadAuthentication(), shardingOrchestrationFacade.getConfigService().loadProperties());
+            ShardingProxyContext.getInstance().init(authentication, properties);
             LogicSchemas.getInstance().init(shardingSchemaNames, getSchemaDataSourceParameterMap(shardingOrchestrationFacade), getSchemaRules(shardingOrchestrationFacade), true);
             initOpenTracing();
             ShardingProxy.getInstance().start(port);
@@ -196,5 +203,4 @@ public final class Bootstrap {
             }
         }
     }
-
 }
