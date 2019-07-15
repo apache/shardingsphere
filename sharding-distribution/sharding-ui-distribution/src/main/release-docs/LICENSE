@@ -281,5 +281,15 @@ MIT licenses
 The following components are provided under the MIT License. See project link for details.
 The text of each license is also included at licenses/LICENSE-[project].txt.
 
-    jcl-over-slf4j 1.7.7: https://www.slf4j.org, MIT
-    slf4j 1.7.7: https://www.slf4j.org , MIT
+   jcl-over-slf4j 1.7.7: https://www.slf4j.org, MIT
+   slf4j 1.7.7: https://www.slf4j.org , MIT
+
+   axios 0.18.0: https://github.com/axios/axios, MIT
+   element-ui 2.4.9: https://github.com/ElemeFE/element, MIT
+   js-yaml 3.12.0: https://github.com/nodeca/js-yaml, MIT
+   lodash 4.17.11: https://github.com/lodash/lodash, MIT
+   normalize.css 8.0.1: https://github.com/necolas/normalize.css, MIT
+   vue 2.5.2: https://github.com/vuejs/vue, MIT
+   vue-i18n 8.4.0: https://github.com/kazupon/vue-i18n, MIT
+   vue-router 3.0.1: https://github.com/vuejs/vue-router, MIT
+   vuex 3.0.1: https://github.com/vuejs/vuex, MIT
