@@ -30,7 +30,6 @@ import org.apache.shardingsphere.core.parse.filler.impl.dml.PredicateUtils;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.WhereSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.AndPredicate;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.OrPredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.SubqueryPredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
@@ -77,13 +76,11 @@ public final class WhereClauseShardingConditionEngine {
         if (whereSegment.isPresent()) {
             result.addAll(createShardingConditions(sqlStatement, parameters, whereSegment.get().getAndPredicates()));
         }
-        Optional<SubqueryPredicateSegment> subqueryPredicateSegment = sqlStatement.findSQLSegment(SubqueryPredicateSegment.class);
-        if (subqueryPredicateSegment.isPresent()) {
-            for (OrPredicateSegment each : subqueryPredicateSegment.get().getOrPredicates()) {
-                Collection<ShardingCondition> subqueryShardingConditions = createShardingConditions(sqlStatement, parameters, each.getAndPredicates());
-                if (!result.containsAll(subqueryShardingConditions)) {
-                    result.addAll(subqueryShardingConditions);
-                }
+        Collection<SubqueryPredicateSegment> subqueryPredicateSegments = sqlStatement.findSQLSegments(SubqueryPredicateSegment.class);
+        for (SubqueryPredicateSegment each : subqueryPredicateSegments) {
+            Collection<ShardingCondition> subqueryShardingConditions = createShardingConditions(sqlStatement, parameters, each.getOrPredicateSegment().getAndPredicates());
+            if (!result.containsAll(subqueryShardingConditions)) {
+                result.addAll(subqueryShardingConditions);
             }
         }
         return result;

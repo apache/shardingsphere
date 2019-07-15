@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.optimize.engine.sharding.dml;
 
-import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
 import org.apache.shardingsphere.core.optimize.statement.encrypt.condition.WhereClauseEncryptConditionEngine;
@@ -37,6 +36,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.SubqueryPr
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -87,9 +87,12 @@ public final class ShardingSelectOptimizeEngine implements OptimizeEngine {
     }
     
     private void setContainsSubquery(final ShardingSelectOptimizedStatement result) {
-        Optional<SubqueryPredicateSegment> subqueryPredicateSegment = selectStatement.findSQLSegment(SubqueryPredicateSegment.class);
-        if (subqueryPredicateSegment.isPresent() && !subqueryPredicateSegment.get().getOrPredicates().isEmpty()) {
-            result.setContainsSubquery(true);
+        Collection<SubqueryPredicateSegment> subqueryPredicateSegments = selectStatement.findSQLSegments(SubqueryPredicateSegment.class);
+        for (SubqueryPredicateSegment each : subqueryPredicateSegments) {
+            if (!each.getOrPredicateSegment().getAndPredicates().isEmpty()) {
+                result.setContainsSubquery(true);
+                break;
+            }
         }
     }
 }

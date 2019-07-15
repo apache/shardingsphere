@@ -27,7 +27,6 @@ import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.WhereSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.AndPredicate;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.OrPredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.SubqueryPredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateBetweenRightValue;
@@ -72,10 +71,8 @@ public final class WhereClauseEncryptConditionEngine {
             conditions.addAll(createEncryptConditions(each, sqlStatement));
         }
         for (SubqueryPredicateSegment each : sqlStatement.findSQLSegments(SubqueryPredicateSegment.class)) {
-            for (OrPredicateSegment orPredicate : each.getOrPredicates()) {
-                for (AndPredicate andPredicate : orPredicate.getAndPredicates()) {
-                    conditions.addAll(createEncryptConditions(andPredicate, sqlStatement));
-                }
+            for (AndPredicate andPredicate : each.getOrPredicateSegment().getAndPredicates()) {
+                conditions.addAll(createEncryptConditions(andPredicate, sqlStatement));
             }
         }
         AndCondition result = new AndCondition();
