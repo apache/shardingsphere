@@ -89,7 +89,7 @@ public final class ShardingSelectOptimizeEngine implements OptimizeEngine {
     private void setContainsSubquery(final ShardingSelectOptimizedStatement result) {
         Collection<SubqueryPredicateSegment> subqueryPredicateSegments = selectStatement.findSQLSegments(SubqueryPredicateSegment.class);
         for (SubqueryPredicateSegment each : subqueryPredicateSegments) {
-            if (!each.getOrPredicateSegment().getAndPredicates().isEmpty()) {
+            if (!each.getAndPredicates().isEmpty()) {
                 result.setContainsSubquery(true);
                 break;
             }

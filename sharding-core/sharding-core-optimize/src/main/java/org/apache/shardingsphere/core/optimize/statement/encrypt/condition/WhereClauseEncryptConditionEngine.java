@@ -71,7 +71,7 @@ public final class WhereClauseEncryptConditionEngine {
             conditions.addAll(createEncryptConditions(each, sqlStatement));
         }
         for (SubqueryPredicateSegment each : sqlStatement.findSQLSegments(SubqueryPredicateSegment.class)) {
-            for (AndPredicate andPredicate : each.getOrPredicateSegment().getAndPredicates()) {
+            for (AndPredicate andPredicate : each.getAndPredicates()) {
                 conditions.addAll(createEncryptConditions(andPredicate, sqlStatement));
             }
         }

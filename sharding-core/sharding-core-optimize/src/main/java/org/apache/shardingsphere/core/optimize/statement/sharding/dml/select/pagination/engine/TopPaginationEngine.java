@@ -28,10 +28,10 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.rownum.Pa
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.rownum.RowNumberValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.top.TopSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.AndPredicate;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.OrPredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateCompareRightValue;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -45,19 +45,19 @@ public final class TopPaginationEngine {
      * Create pagination.
      * 
      * @param topSegment top segment
-     * @param orPredicateSegment or predicate segment
+     * @param andPredicates and predicates
      * @param parameters SQL parameters
      * @return pagination
      */
-    public Pagination createPagination(final TopSegment topSegment, final OrPredicateSegment orPredicateSegment, final List<Object> parameters) {
-        Optional<PredicateSegment> rowNumberPredicate = getRowNumberPredicate(orPredicateSegment, topSegment.getRowNumberAlias());
+    public Pagination createPagination(final TopSegment topSegment, final Collection<AndPredicate> andPredicates, final List<Object> parameters) {
+        Optional<PredicateSegment> rowNumberPredicate = getRowNumberPredicate(andPredicates, topSegment.getRowNumberAlias());
         Optional<PaginationValueSegment> offset = rowNumberPredicate.isPresent() ? createOffsetWithRowNumber(rowNumberPredicate.get()) : Optional.<PaginationValueSegment>absent();
         PaginationValueSegment rowCount = topSegment.getTop();
         return new Pagination(offset.orNull(), rowCount, parameters);
     }
     
-    private Optional<PredicateSegment> getRowNumberPredicate(final OrPredicateSegment orPredicateSegment, final String rowNumberAlias) {
-        for (AndPredicate each : orPredicateSegment.getAndPredicates()) {
+    private Optional<PredicateSegment> getRowNumberPredicate(final Collection<AndPredicate> andPredicates, final String rowNumberAlias) {
+        for (AndPredicate each : andPredicates) {
             for (PredicateSegment predicate : each.getPredicates()) {
                 if (isRowNumberColumn(predicate, rowNumberAlias) && isCompareCondition(predicate)) {
                     return Optional.of(predicate);

@@ -78,7 +78,7 @@ public final class WhereClauseShardingConditionEngine {
         }
         Collection<SubqueryPredicateSegment> subqueryPredicateSegments = sqlStatement.findSQLSegments(SubqueryPredicateSegment.class);
         for (SubqueryPredicateSegment each : subqueryPredicateSegments) {
-            Collection<ShardingCondition> subqueryShardingConditions = createShardingConditions(sqlStatement, parameters, each.getOrPredicateSegment().getAndPredicates());
+            Collection<ShardingCondition> subqueryShardingConditions = createShardingConditions(sqlStatement, parameters, each.getAndPredicates());
             if (!result.containsAll(subqueryShardingConditions)) {
                 result.addAll(subqueryShardingConditions);
             }

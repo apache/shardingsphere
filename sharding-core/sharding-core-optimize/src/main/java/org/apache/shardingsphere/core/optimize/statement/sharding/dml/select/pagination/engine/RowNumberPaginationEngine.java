@@ -27,7 +27,6 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.rownum.Nu
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.rownum.ParameterMarkerRowNumberValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.rownum.RowNumberValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.AndPredicate;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.OrPredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateCompareRightValue;
 
@@ -54,23 +53,23 @@ public final class RowNumberPaginationEngine {
     /**
      * Create pagination.
      * 
-     * @param orPredicateSegment or predicate segment
+     * @param andPredicates and predicates
      * @param selectItems select items
      * @param parameters SQL parameters
      * @return pagination
      */
-    public Pagination createPagination(final OrPredicateSegment orPredicateSegment, final SelectItems selectItems, final List<Object> parameters) {
+    public Pagination createPagination(final Collection<AndPredicate> andPredicates, final SelectItems selectItems, final List<Object> parameters) {
         Optional<String> rowNumberAlias = isRowNumberAlias(selectItems);
         if (!rowNumberAlias.isPresent()) {
             return new Pagination(null, null, parameters);
         }
-        Collection<PredicateSegment> rowNumberPredicates = getRowNumberPredicates(orPredicateSegment, rowNumberAlias.get());
+        Collection<PredicateSegment> rowNumberPredicates = getRowNumberPredicates(andPredicates, rowNumberAlias.get());
         return rowNumberPredicates.isEmpty() ? new Pagination(null, null, parameters) : createPaginationWithRowNumber(rowNumberPredicates, parameters);
     }
     
-    private Collection<PredicateSegment> getRowNumberPredicates(final OrPredicateSegment sqlSegment, final String rowNumberAlias) {
+    private Collection<PredicateSegment> getRowNumberPredicates(final Collection<AndPredicate> andPredicates, final String rowNumberAlias) {
         Collection<PredicateSegment> result = new LinkedList<>();
-        for (AndPredicate each : sqlSegment.getAndPredicates()) {
+        for (AndPredicate each : andPredicates) {
             for (PredicateSegment predicate : each.getPredicates()) {
                 if (isRowNumberColumn(predicate, rowNumberAlias) && isCompareCondition(predicate)) {
                     result.add(predicate);

@@ -21,6 +21,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 
+import java.util.Collection;
+
 /**
  * Subquery predicate segment.
  *
@@ -34,5 +36,5 @@ public final class SubqueryPredicateSegment implements SQLSegment {
     
     private final int stopIndex = 0;
     
-    private final OrPredicateSegment orPredicateSegment;
+    private final Collection<AndPredicate> andPredicates;
 }

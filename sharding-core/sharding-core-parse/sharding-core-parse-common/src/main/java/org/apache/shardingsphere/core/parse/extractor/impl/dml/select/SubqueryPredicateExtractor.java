@@ -46,7 +46,7 @@ public final class SubqueryPredicateExtractor implements CollectionSQLSegmentExt
         for (ParserRuleContext each : subqueryNodes) {
             Optional<OrPredicateSegment> orPredicateSegment = predicateExtractor.extract(each, parameterMarkerIndexes);
             if (orPredicateSegment.isPresent()) {
-                result.add(new SubqueryPredicateSegment(orPredicateSegment.get()));
+                result.add(new SubqueryPredicateSegment(orPredicateSegment.get().getAndPredicates()));
             }
         }
         return result;

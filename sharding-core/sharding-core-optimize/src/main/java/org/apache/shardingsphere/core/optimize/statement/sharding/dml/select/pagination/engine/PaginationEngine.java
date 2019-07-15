@@ -20,11 +20,13 @@ package org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.pa
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.SelectItems;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.pagination.Pagination;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.WhereSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.top.TopSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.OrPredicateSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -48,12 +50,12 @@ public final class PaginationEngine {
             return new LimitPaginationEngine().createPagination(limitSegment.get(), parameters);
         }
         Optional<TopSegment> topSegment = selectStatement.findSQLSegment(TopSegment.class);
-        Optional<OrPredicateSegment> orPredicateSegment = selectStatement.findSQLSegment(OrPredicateSegment.class);
+        Optional<WhereSegment> whereSegment = selectStatement.findSQLSegment(WhereSegment.class);
         if (topSegment.isPresent()) {
-            return new TopPaginationEngine().createPagination(topSegment.get(), orPredicateSegment.or(new OrPredicateSegment()), parameters);
+            return new TopPaginationEngine().createPagination(topSegment.get(), whereSegment.isPresent() ? whereSegment.get().getAndPredicates() : Collections.<AndPredicate>emptyList(), parameters);
         }
-        if (orPredicateSegment.isPresent()) {
-            return new RowNumberPaginationEngine().createPagination(orPredicateSegment.get(), selectItems, parameters);
+        if (whereSegment.isPresent()) {
+            return new RowNumberPaginationEngine().createPagination(whereSegment.get().getAndPredicates(), selectItems, parameters);
         }
         return new Pagination(null, null, parameters);
     }
