@@ -80,11 +80,18 @@ public final class DQLMergeEngineTest {
         when(resultSetMetaData.getColumnCount()).thenReturn(1);
         when(resultSetMetaData.getColumnLabel(1)).thenReturn("count(*)");
         singleQueryResult = Collections.<QueryResult>singletonList(new TestQueryResult(resultSet));
-        List<ResultSet> resultSets = Lists.newArrayList(resultSet, mock(ResultSet.class), mock(ResultSet.class), mock(ResultSet.class));
+        List<ResultSet> resultSets = Lists.newArrayList(resultSet, mockResultSet(), mockResultSet(), mockResultSet());
         queryResults = new ArrayList<>(resultSets.size());
         for (ResultSet each : resultSets) {
             queryResults.add(new TestQueryResult(each));
         }
+    }
+    
+    private ResultSet mockResultSet() throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
+        when(result.getMetaData()).thenReturn(resultSetMetaData);
+        return result;
     }
     
     @Test
