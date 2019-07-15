@@ -31,6 +31,6 @@ public final class GroupByFiller implements SQLSegmentFiller<GroupBySegment> {
     
     @Override
     public void fill(final GroupBySegment sqlSegment, final SQLStatement sqlStatement) {
-        ((SelectStatement) sqlStatement).setGroupBySegment(sqlSegment);
+        ((SelectStatement) sqlStatement).setGroupBy(sqlSegment);
     }
 }

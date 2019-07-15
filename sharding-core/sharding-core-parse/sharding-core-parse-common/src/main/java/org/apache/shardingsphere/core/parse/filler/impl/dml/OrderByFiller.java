@@ -31,6 +31,6 @@ public final class OrderByFiller implements SQLSegmentFiller<OrderBySegment> {
     
     @Override
     public void fill(final OrderBySegment sqlSegment, final SQLStatement sqlStatement) {
-        ((SelectStatement) sqlStatement).setOrderBySegment(sqlSegment);
+        ((SelectStatement) sqlStatement).setOrderBy(sqlSegment);
     }
 }

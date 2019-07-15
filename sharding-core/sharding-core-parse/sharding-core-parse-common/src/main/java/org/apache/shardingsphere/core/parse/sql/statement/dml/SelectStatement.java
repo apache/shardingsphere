@@ -21,6 +21,7 @@ import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.SelectItemsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.OrderBySegment;
 
@@ -35,27 +36,29 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.order.OrderBySegment
 @ToString(callSuper = true, exclude = "parentStatement")
 public final class SelectStatement extends DMLStatement {
     
-    private GroupBySegment groupBySegment;
+    private SelectItemsSegment selectItems;
     
-    private OrderBySegment orderBySegment;
+    private GroupBySegment groupBy;
+    
+    private OrderBySegment orderBy;
     
     private SelectStatement parentStatement;
     
     /**
-     * Get group by.
+     * Get group by segment.
      * 
-     * @return group by
+     * @return group by segment
      */
     public Optional<GroupBySegment> getGroupBy() {
-        return Optional.fromNullable(groupBySegment);
+        return Optional.fromNullable(groupBy);
     }
     
     /**
-     * Get order by.
+     * Get order by segment.
      *
-     * @return order by
+     * @return order by segment
      */
     public Optional<OrderBySegment> getOrderBy() {
-        return Optional.fromNullable(orderBySegment);
+        return Optional.fromNullable(orderBy);
     }
 }

@@ -28,7 +28,6 @@ import org.apache.shardingsphere.core.parse.sql.context.table.Tables;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.SimpleExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateBetweenRightValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateCompareRightValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateInRightValue;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
@@ -121,18 +120,5 @@ public final class PredicateUtils {
             }
         }
         return expressionSegments.isEmpty() ? Optional.<Condition>absent() : Optional.of(new Condition(column, predicateSegment, expressionSegments));
-    }
-    
-    /**
-     * Create condition of BETWEEN ... AND ... operator.
-     * 
-     * @param betweenRightValue right value of BETWEEN operator
-     * @param column column
-     * @param predicateSegment predicate segment
-     * @return condition
-     */
-    public static Optional<Condition> createBetweenCondition(final PredicateBetweenRightValue betweenRightValue, final Column column, final PredicateSegment predicateSegment) {
-        return betweenRightValue.getBetweenExpression() instanceof SimpleExpressionSegment && betweenRightValue.getAndExpression() instanceof SimpleExpressionSegment
-                ? Optional.of(new Condition(column, predicateSegment, betweenRightValue.getBetweenExpression(), betweenRightValue.getAndExpression())) : Optional.<Condition>absent();
     }
 }
