@@ -15,36 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.segment.dml;
+package org.apache.shardingsphere.core.parse.sql.statement.dml;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.AndPredicate;
-
-import java.util.Collection;
-import java.util.LinkedList;
+import com.google.common.base.Optional;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.WhereSegment;
 
 /**
- * Where segment.
- * 
- * @author duhongjun
+ * Where segment available.
+ *
+ * @author zhangliang
  */
-@RequiredArgsConstructor
-@Getter
-@Setter
-public final class WhereSegment implements SQLSegment {
+public interface WhereSegmentAvailable {
     
-    private final int startIndex;
+    /**
+     * Get where segment.
+     *
+     * @return where segment
+     */
+    Optional<WhereSegment> getWhere();
     
-    private final int stopIndex;
-    
-    private final int parametersCount;
-    
-    private final Collection<AndPredicate> andPredicates = new LinkedList<>();
-    
-    private int whereParameterStartIndex;
-    
-    private int whereParameterEndIndex;
+    /**
+     * Set where segment.
+     * 
+     * @param where where segment
+     */
+    void setWhere(WhereSegment where);
 }

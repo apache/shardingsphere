@@ -23,6 +23,7 @@ import org.apache.shardingsphere.core.parse.extractor.api.OptionalSQLSegmentExtr
 import org.apache.shardingsphere.core.parse.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.WhereSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.OrPredicateSegment;
 
 import java.util.Collection;
 import java.util.Map;
@@ -35,12 +36,18 @@ import java.util.Map;
  */
 public final class WhereExtractor implements OptionalSQLSegmentExtractor {
     
+    private final PredicateExtractor predicateExtractor = new PredicateExtractor();
+    
     @Override
     public Optional<WhereSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         WhereSegment result;
         Optional<ParserRuleContext> whereNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.WHERE_CLAUSE);
         if (whereNode.isPresent()) {
             result = new WhereSegment(whereNode.get().getStart().getStartIndex(), whereNode.get().getStop().getStopIndex(), parameterMarkerIndexes.size());
+            Optional<OrPredicateSegment> orPredicateSegment = predicateExtractor.extract(whereNode.get(), parameterMarkerIndexes);
+            if (orPredicateSegment.isPresent()) {
+                result.getAndPredicates().addAll(orPredicateSegment.get().getAndPredicates()); 
+            }
             setPropertiesForRevert(result, whereNode.get(), parameterMarkerIndexes);
         } else {
             result = new WhereSegment(0, 0, parameterMarkerIndexes.size());

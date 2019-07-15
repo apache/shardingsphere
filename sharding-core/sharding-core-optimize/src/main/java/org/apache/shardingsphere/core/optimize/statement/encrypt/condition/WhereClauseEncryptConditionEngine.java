@@ -25,13 +25,16 @@ import org.apache.shardingsphere.core.parse.filler.impl.dml.PredicateUtils;
 import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.WhereSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.OrPredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.SubqueryPredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateBetweenRightValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateCompareRightValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateInRightValue;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.WhereSegmentAvailable;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
 import java.util.Collection;
@@ -57,25 +60,37 @@ public final class WhereClauseEncryptConditionEngine {
      * @return encrypt conditions
      */
     public AndCondition createEncryptConditions(final SQLStatement sqlStatement) {
+        if (!(sqlStatement instanceof WhereSegmentAvailable)) {
+            return new AndCondition();
+        }
+        Optional<WhereSegment> whereSegment = ((WhereSegmentAvailable) sqlStatement).getWhere();
+        if (!whereSegment.isPresent()) {
+            return new AndCondition();
+        }
         Collection<Condition> conditions = new LinkedList<>();
-        for (OrPredicateSegment each : sqlStatement.findSQLSegments(OrPredicateSegment.class)) {
+        for (AndPredicate each : whereSegment.get().getAndPredicates()) {
             conditions.addAll(createEncryptConditions(each, sqlStatement));
+        }
+        for (SubqueryPredicateSegment each : sqlStatement.findSQLSegments(SubqueryPredicateSegment.class)) {
+            for (OrPredicateSegment orPredicate : each.getOrPredicates()) {
+                for (AndPredicate andPredicate : orPredicate.getAndPredicates()) {
+                    conditions.addAll(createEncryptConditions(andPredicate, sqlStatement));
+                }
+            }
         }
         AndCondition result = new AndCondition();
         result.getConditions().addAll(conditions);
         return result;
     }
 
-    private Collection<Condition> createEncryptConditions(final OrPredicateSegment sqlSegment, final SQLStatement sqlStatement) {
+    private Collection<Condition> createEncryptConditions(final AndPredicate andPredicate, final SQLStatement sqlStatement) {
         Collection<Condition> result = new LinkedList<>();
         Collection<Integer> stopIndexes = new HashSet<>();
-        for (AndPredicate each : sqlSegment.getAndPredicates()) {
-            for (PredicateSegment predicate : each.getPredicates()) {
-                if (stopIndexes.add(predicate.getStopIndex())) {
-                    Optional<Condition> condition = createEncryptCondition(predicate, sqlStatement);
-                    if (condition.isPresent()) {
-                        result.add(condition.get());
-                    }
+        for (PredicateSegment predicate : andPredicate.getPredicates()) {
+            if (stopIndexes.add(predicate.getStopIndex())) {
+                Optional<Condition> condition = createEncryptCondition(predicate, sqlStatement);
+                if (condition.isPresent()) {
+                    result.add(condition.get());
                 }
             }
         }

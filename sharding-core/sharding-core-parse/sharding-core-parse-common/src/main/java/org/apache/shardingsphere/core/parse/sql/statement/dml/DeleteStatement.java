@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.core.parse.sql.statement.dml;
 
+import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.WhereSegment;
 
 /**
  * Delete statement.
@@ -29,9 +31,16 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString(callSuper = true)
-public final class DeleteStatement extends DMLStatement {
+public final class DeleteStatement extends DMLStatement implements WhereSegmentAvailable {
+    
+    private WhereSegment where;
     
     private int whereStartIndex;
     
     private int whereStopIndex;
+    
+    @Override
+    public Optional<WhereSegment> getWhere() {
+        return Optional.fromNullable(where);
+    }
 }
