@@ -21,19 +21,11 @@ import com.google.common.base.Optional;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.optimize.statement.encrypt.condition.EncryptCondition;
 import org.apache.shardingsphere.core.parse.sql.context.table.Table;
 import org.apache.shardingsphere.core.parse.sql.context.table.Tables;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.SimpleExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateCompareRightValue;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateInRightValue;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
-
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Predicate utils.
@@ -86,42 +78,5 @@ public final class PredicateUtils {
             }
         }
         return Optional.absent();
-    }
-    
-    /**
-     * Create condition of compare operator.
-     * 
-     * @param compareRightValue right value of compare operator
-     * @param tableName table name
-     * @param predicateSegment predicate segment
-     * @return condition
-     */
-    public static Optional<EncryptCondition> createCompareCondition(final PredicateCompareRightValue compareRightValue,
-                                                                    final String tableName, final PredicateSegment predicateSegment) {
-        return compareRightValue.getExpression() instanceof SimpleExpressionSegment 
-                ? Optional.of(
-                        new EncryptCondition(predicateSegment.getColumn().getName(), tableName, predicateSegment.getStartIndex(), predicateSegment.getStopIndex(), compareRightValue.getExpression()))
-                : Optional.<EncryptCondition>absent();
-    }
-    
-    /**
-     * Create condition of IN operator.
-     *
-     * @param inRightValue right value of IN operator
-     * @param tableName table name
-     * @param predicateSegment predicate segment
-     * @return condition
-     */
-    public static Optional<EncryptCondition> createInCondition(final PredicateInRightValue inRightValue, final String tableName, final PredicateSegment predicateSegment) {
-        List<ExpressionSegment> expressionSegments = new LinkedList<>();
-        for (ExpressionSegment each : inRightValue.getSqlExpressions()) {
-            if (each instanceof SimpleExpressionSegment) {
-                expressionSegments.add(each);
-            } else {
-                return Optional.absent();
-            }
-        }
-        return expressionSegments.isEmpty() ? Optional.<EncryptCondition>absent()
-                : Optional.of(new EncryptCondition(predicateSegment.getColumn().getName(), tableName, predicateSegment.getStartIndex(), predicateSegment.getStopIndex(), expressionSegments));
     }
 }

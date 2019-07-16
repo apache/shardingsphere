@@ -24,6 +24,8 @@ import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.statement.PredicateUtils;
 import org.apache.shardingsphere.core.optimize.statement.encrypt.condition.EncryptCondition;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.WhereSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.SimpleExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.SubqueryPredicateSegment;
@@ -103,16 +105,33 @@ public final class WhereClauseEncryptConditionEngine {
     private Optional<EncryptCondition> createEncryptCondition(final PredicateSegment predicateSegment, final String tableName) {
         if (predicateSegment.getRightValue() instanceof PredicateCompareRightValue) {
             PredicateCompareRightValue compareRightValue = (PredicateCompareRightValue) predicateSegment.getRightValue();
-            return isSupportedOperator(compareRightValue.getOperator())
-                    ? PredicateUtils.createCompareCondition(compareRightValue, tableName, predicateSegment) : Optional.<EncryptCondition>absent();
+            return isSupportedOperator(compareRightValue.getOperator()) ? createCompareEncryptCondition(tableName, predicateSegment, compareRightValue) : Optional.<EncryptCondition>absent();
         }
         if (predicateSegment.getRightValue() instanceof PredicateInRightValue) {
-            return PredicateUtils.createInCondition((PredicateInRightValue) predicateSegment.getRightValue(), tableName, predicateSegment);
+            return createInEncryptCondition(tableName, predicateSegment, (PredicateInRightValue) predicateSegment.getRightValue());
         }
         if (predicateSegment.getRightValue() instanceof PredicateBetweenRightValue) {
             throw new ShardingException("The SQL clause 'BETWEEN...AND...' is unsupported in encrypt rule.");
         }
         return Optional.absent();
+    }
+    
+    private static Optional<EncryptCondition> createCompareEncryptCondition(final String tableName, final PredicateSegment predicateSegment, final PredicateCompareRightValue compareRightValue) {
+        return compareRightValue.getExpression() instanceof SimpleExpressionSegment
+                ? Optional.of(
+                        new EncryptCondition(predicateSegment.getColumn().getName(), tableName, predicateSegment.getStartIndex(), predicateSegment.getStopIndex(), compareRightValue.getExpression()))
+                : Optional.<EncryptCondition>absent();
+    }
+    
+    private static Optional<EncryptCondition> createInEncryptCondition(final String tableName, final PredicateSegment predicateSegment, final PredicateInRightValue inRightValue) {
+        List<ExpressionSegment> expressionSegments = new LinkedList<>();
+        for (ExpressionSegment each : inRightValue.getSqlExpressions()) {
+            if (each instanceof SimpleExpressionSegment) {
+                expressionSegments.add(each);
+            }
+        }
+        return expressionSegments.isEmpty() ? Optional.<EncryptCondition>absent()
+                : Optional.of(new EncryptCondition(predicateSegment.getColumn().getName(), tableName, predicateSegment.getStartIndex(), predicateSegment.getStopIndex(), expressionSegments));
     }
     
     private boolean isSupportedOperator(final String operator) {
