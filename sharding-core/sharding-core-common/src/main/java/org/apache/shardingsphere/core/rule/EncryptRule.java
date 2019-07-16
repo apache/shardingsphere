@@ -43,7 +43,7 @@ public final class EncryptRule implements BaseRule {
         this.encryptRuleConfig = encryptRuleConfiguration;
         encryptorEngine = new ShardingEncryptorEngine(encryptRuleConfiguration);
     }
-    
+
     /**
      * Get encrypt table names.
      * 

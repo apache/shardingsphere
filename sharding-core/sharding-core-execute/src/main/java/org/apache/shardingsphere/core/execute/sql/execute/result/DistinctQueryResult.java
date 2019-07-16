@@ -46,12 +46,15 @@ import java.util.Set;
  * Distinct query result.
  *
  * @author panjuan
+ * @author yangyi
  */
 @RequiredArgsConstructor
 @Getter(AccessLevel.PROTECTED)
 public class DistinctQueryResult implements QueryResult {
     
     private final Multimap<String, Integer> columnLabelAndIndexMap;
+    
+    private final List<Boolean> columnCaseSensitive;
     
     private final Iterator<QueryRow> resultData;
     
@@ -60,6 +63,7 @@ public class DistinctQueryResult implements QueryResult {
     @SneakyThrows
     public DistinctQueryResult(final Collection<QueryResult> queryResults, final List<String> distinctColumnLabels) {
         this.columnLabelAndIndexMap = getColumnLabelAndIndexMap(queryResults.iterator().next());
+        this.columnCaseSensitive = getColumnCaseSensitive(queryResults.iterator().next());
         resultData = getResultData(queryResults, distinctColumnLabels);
     }
     
@@ -68,6 +72,15 @@ public class DistinctQueryResult implements QueryResult {
         Multimap<String, Integer> result = HashMultimap.create();
         for (int columnIndex = 1; columnIndex <= queryResult.getColumnCount(); columnIndex++) {
             result.put(queryResult.getColumnLabel(columnIndex), columnIndex);
+        }
+        return result;
+    }
+    
+    @SneakyThrows
+    private List<Boolean> getColumnCaseSensitive(final QueryResult queryResult) {
+        List<Boolean> result = Lists.newArrayList(false);
+        for (int columnIndex = 1; columnIndex <= queryResult.getColumnCount(); columnIndex++) {
+            result.add(queryResult.isCaseSensitive(columnIndex));
         }
         return result;
     }
@@ -111,7 +124,7 @@ public class DistinctQueryResult implements QueryResult {
             public DistinctQueryResult apply(final QueryRow row) {
                 Set<QueryRow> resultData = new LinkedHashSet<>();
                 resultData.add(row);
-                return new DistinctQueryResult(columnLabelAndIndexMap, resultData.iterator());
+                return new DistinctQueryResult(columnLabelAndIndexMap, columnCaseSensitive, resultData.iterator());
             }
         }));
     }
@@ -169,6 +182,11 @@ public class DistinctQueryResult implements QueryResult {
     @Override
     public boolean wasNull() {
         return null == currentRow;
+    }
+    
+    @Override
+    public boolean isCaseSensitive(final int columnIndex) {
+        return columnCaseSensitive.get(columnIndex);
     }
     
     @Override

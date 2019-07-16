@@ -20,8 +20,8 @@ package org.apache.shardingsphere.core.optimize.statement.sharding.dml;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.optimize.statement.WhereOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.encrypt.condition.AndCondition;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingConditions;
-import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
 /**

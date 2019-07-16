@@ -21,9 +21,9 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.WhereOptimizedStatement;
-import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
+import org.apache.shardingsphere.core.optimize.statement.encrypt.condition.AndCondition;
+import org.apache.shardingsphere.core.optimize.statement.encrypt.condition.Condition;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
-import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
@@ -66,7 +66,7 @@ public final class WhereEncryptColumnTokenGenerator implements CollectionSQLToke
             return result;
         }
         for (Condition each : ((WhereOptimizedStatement) optimizedStatement).getEncryptConditions().getConditions()) {
-            this.column = new Column(each.getColumn().getName(), optimizedStatement.getSQLStatement().getTables().getSingleTableName());
+            this.column = new Column(each.getColumnName(), optimizedStatement.getSQLStatement().getTables().getSingleTableName());
             this.startIndex = each.getPredicateSegment().getStartIndex();
             this.stopIndex = each.getPredicateSegment().getStopIndex();
             result.add(createEncryptColumnToken(optimizedStatement, parameterBuilder, encryptRule.getEncryptorEngine()));
@@ -82,7 +82,7 @@ public final class WhereEncryptColumnTokenGenerator implements CollectionSQLToke
     
     private Optional<Condition> getEncryptCondition(final AndCondition encryptConditions) {
         for (Condition each : encryptConditions.getConditions()) {
-            if (each.getColumn().equals(column) && isSameIndexes(each.getPredicateSegment())) {
+            if (each.getColumnName().equalsIgnoreCase(column.getName()) && each.getTableName().equalsIgnoreCase(column.getTableName()) && isSameIndexes(each.getPredicateSegment())) {
                 return Optional.of(each);
             }
         }

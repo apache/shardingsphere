@@ -23,8 +23,9 @@ import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.dal.DALMergeEngine;
 import org.apache.shardingsphere.core.merge.dql.DQLMergeEngine;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ShardingSelectOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.transparent.TransparentOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.spi.database.DatabaseType;
@@ -54,12 +55,15 @@ public final class MergeEngineFactory {
      */
     public static MergeEngine newInstance(final DatabaseType databaseType, final ShardingRule shardingRule,
                                           final SQLRouteResult routeResult, final ShardingTableMetaData shardingTableMetaData, final List<QueryResult> queryResults) throws SQLException {
-        if (routeResult.getOptimizedStatement().getSQLStatement() instanceof SelectStatement) {
+        if (routeResult.getOptimizedStatement() instanceof ShardingSelectOptimizedStatement) {
             return new DQLMergeEngine(databaseType, routeResult, queryResults);
         } 
         if (routeResult.getOptimizedStatement().getSQLStatement() instanceof DALStatement) {
             return new DALMergeEngine(shardingRule, queryResults, (DALStatement) routeResult.getOptimizedStatement().getSQLStatement(), shardingTableMetaData);
         }
+        if (routeResult.getOptimizedStatement() instanceof TransparentOptimizedStatement) {
+            return new TransparentMergeEngine(queryResults);
+        } 
         throw new UnsupportedOperationException(String.format("Cannot support type '%s'", routeResult.getOptimizedStatement().getSQLStatement().getClass().getName()));
     }
 }

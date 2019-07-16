@@ -21,8 +21,8 @@ import com.google.common.collect.Multimap;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.AggregationType;
 import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationDistinctSelectItem;
-import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationSelectItem;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.AggregationDistinctSelectItem;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.AggregationSelectItem;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -69,7 +69,7 @@ public final class AggregationDistinctQueryMetaData {
     
     private AggregationDistinctColumnMetaData getAggregationDistinctColumnMetaData(final AggregationDistinctSelectItem selectItem, 
                                                                                    final int aggregationDistinctColumnIndex, final Multimap<String, Integer> columnLabelAndIndexMap) {
-        List<AggregationSelectItem> derivedSelectItems = selectItem.getDerivedAggregationSelectItems();
+        List<AggregationSelectItem> derivedSelectItems = selectItem.getDerivedAggregationItems();
         if (derivedSelectItems.isEmpty()) {
             return new AggregationDistinctColumnMetaData(aggregationDistinctColumnIndex, selectItem.getColumnLabel(), selectItem.getType());
         }

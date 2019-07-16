@@ -28,6 +28,7 @@ import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.entry.EncryptSQLParseEntry;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.util.ConfigurationLogger;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.EncryptRuleChangedEvent;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 
@@ -37,6 +38,7 @@ import java.util.Map;
  * Encrypt schema.
  *
  * @author panjuan
+ * @author sunbufu
  */
 @Getter
 public final class EncryptSchema extends LogicSchema {
@@ -71,6 +73,7 @@ public final class EncryptSchema extends LogicSchema {
     @Subscribe
     @SneakyThrows
     public synchronized void renew(final EncryptRuleChangedEvent encryptRuleChangedEvent) {
+        ConfigurationLogger.log(encryptRuleChangedEvent.getEncryptRuleConfiguration());
         encryptRule = new EncryptRule(encryptRuleChangedEvent.getEncryptRuleConfiguration());
         parseEngine = new EncryptSQLParseEntry(LogicSchemas.getInstance().getDatabaseType(), metaData.getTable());
     }

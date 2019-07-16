@@ -34,6 +34,7 @@ import java.util.TreeMap;
  * Query result meta data.
  *
  * @author panjuan
+ * @author yangyi
  */
 public final class QueryResultMetaData {
     
@@ -118,6 +119,17 @@ public final class QueryResultMetaData {
      */
     public Integer getColumnIndex(final String columnLabel) {
         return columnLabelAndIndexes.get(columnLabel);
+    }
+    
+    /**
+     * Whether the column value is case sensitive.
+     *
+     * @param columnIndex column index
+     * @return true if column is case sensitive, otherwise false
+     */
+    @SneakyThrows
+    public boolean isCaseSensitive(final int columnIndex) {
+        return resultSetMetaData.isCaseSensitive(columnIndex);
     }
     
     /**

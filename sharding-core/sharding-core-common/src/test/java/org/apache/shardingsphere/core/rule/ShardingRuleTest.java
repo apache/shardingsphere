@@ -328,6 +328,21 @@ public final class ShardingRuleTest {
         ShardingRule actual = createMaximumShardingRule();
         assertThat(actual.getShardingLogicTableNames(Arrays.asList("LOGIC_TABLE", "BROADCAST_TABLE")), CoreMatchers.<Collection<String>>is(Collections.singletonList("LOGIC_TABLE")));
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void assertConstructShardingRuleWithNullShardingRuleConfiguration() {
+        new ShardingRule(null, createDataSourceNames());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void assertConstructShardingRuleWithNullDataSourceNames(){
+        ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
+        TableRuleConfiguration tableRuleConfiguration = createTableRuleConfiguration("LOGIC_TABLE", "ms_ds_${0..1}.table_${0..2}");
+        shardingRuleConfiguration.getTableRuleConfigs().add(tableRuleConfiguration);
+        shardingRuleConfiguration.getMasterSlaveRuleConfigs().add(createMasterSlaveRuleConfiguration("ms_ds_0", "master_ds_0", "slave_ds_0"));
+        shardingRuleConfiguration.getMasterSlaveRuleConfigs().add(createMasterSlaveRuleConfiguration("ms_ds_1", "master_ds_1", "slave_ds_1"));
+        new ShardingRule(shardingRuleConfiguration, null);
+    }
     
     private ShardingRule createMaximumShardingRule() {
         ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();

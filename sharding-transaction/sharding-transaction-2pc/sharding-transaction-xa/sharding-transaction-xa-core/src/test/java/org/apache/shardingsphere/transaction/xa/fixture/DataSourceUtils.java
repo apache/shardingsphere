@@ -127,6 +127,8 @@ public final class DataSourceUtils {
         switch (databaseType.getName()) {
             case "MySQL":
                 return String.format("jdbc:mysql://localhost:3306/%s", databaseName);
+            case "MariaDB":
+                return String.format("jdbc:mariadb://localhost:3306/%s", databaseName);
             case "PostgreSQL":
                 return String.format("jdbc:postgresql://localhost:5432/%s", databaseName);
             case "Oracle":

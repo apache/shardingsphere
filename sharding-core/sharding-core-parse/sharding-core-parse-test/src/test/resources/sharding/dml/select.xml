@@ -532,13 +532,6 @@
         <tables>
             <table name="t_order_item" />
         </tables>
-        <select-items>
-            <distinct-select-item>
-                <distinct-columns>
-                    <distinct-column>item_id</distinct-column>
-                </distinct-columns>
-            </distinct-select-item>
-        </select-items>
         <tokens>
             <table-token start-index="29" table-name="t_order_item" length="12" />
         </tokens>
@@ -551,15 +544,6 @@
         <tables>
             <table name="t_order" />
         </tables>
-        <select-items>
-            <distinct-select-item>
-                <distinct-columns>
-                    <distinct-column>order_id</distinct-column>
-                    <distinct-column>user_id</distinct-column>
-                    <distinct-column>status</distinct-column>
-                </distinct-columns>
-            </distinct-select-item>
-        </select-items>
         <tokens>
             <table-token start-index="47" table-name="t_order" length="7" />
         </tokens>
@@ -572,12 +556,6 @@
         <tables>
             <table name="t_order" />
         </tables>
-        <select-items>
-            <distinct-select-item>
-                <distinct-columns>
-                </distinct-columns>
-            </distinct-select-item>
-        </select-items>
         <tokens>
             <table-token start-index="23" table-name="t_order" length="7" />
         </tokens>
@@ -690,13 +668,6 @@
         <tables>
             <table name="t_order_item" />
         </tables>
-        <select-items>
-            <distinct-select-item>
-                <distinct-columns>
-                    <distinct-column>item_id</distinct-column>
-                </distinct-columns>
-            </distinct-select-item>
-        </select-items>
         <tokens>
             <table-token start-index="30" table-name="t_order_item" length="12" />
         </tokens>

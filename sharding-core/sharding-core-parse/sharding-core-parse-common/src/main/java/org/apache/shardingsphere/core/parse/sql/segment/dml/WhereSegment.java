@@ -21,6 +21,10 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.AndPredicate;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Where segment.
@@ -38,7 +42,7 @@ public final class WhereSegment implements SQLSegment {
     
     private final int parametersCount;
     
-    private int whereParameterStartIndex;
+    private final Collection<AndPredicate> andPredicates = new LinkedList<>();
     
-    private int whereParameterEndIndex;
+    private int parameterStartIndex;
 }

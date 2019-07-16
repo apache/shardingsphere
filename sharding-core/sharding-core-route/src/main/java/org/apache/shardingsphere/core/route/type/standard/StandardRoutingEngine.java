@@ -215,7 +215,7 @@ public final class StandardRoutingEngine implements RoutingEngine {
     }
     
     private void reviseInsertOptimizeResult(final ShardingCondition shardingCondition, final Collection<DataNode> dataNodes) {
-        if (optimizedStatement.getSQLStatement() instanceof InsertStatement) {
+        if (optimizedStatement instanceof ShardingInsertOptimizedStatement) {
             for (InsertOptimizeResultUnit each : ((ShardingInsertOptimizedStatement) optimizedStatement).getUnits()) {
                 if (isQualifiedInsertOptimizeResultUnit(each, shardingCondition)) {
                     each.getDataNodes().addAll(dataNodes);
