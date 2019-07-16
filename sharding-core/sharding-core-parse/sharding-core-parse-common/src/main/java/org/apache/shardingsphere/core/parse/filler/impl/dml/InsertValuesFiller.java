@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.parse.filler.impl.dml;
 
 import org.apache.shardingsphere.core.parse.filler.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
+import org.apache.shardingsphere.core.parse.sql.context.InsertValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;

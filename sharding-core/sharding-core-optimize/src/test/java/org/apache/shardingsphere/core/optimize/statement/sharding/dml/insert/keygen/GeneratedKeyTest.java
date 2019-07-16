@@ -20,8 +20,8 @@ package org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.ke
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.GeneratedKey;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.ShardingInsertColumns;
-import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
-import org.apache.shardingsphere.core.parse.sql.context.table.Table;
+import org.apache.shardingsphere.core.parse.sql.context.InsertValue;
+import org.apache.shardingsphere.core.parse.sql.context.Table;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;

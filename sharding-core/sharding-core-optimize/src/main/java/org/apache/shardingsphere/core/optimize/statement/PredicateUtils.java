@@ -21,8 +21,8 @@ import com.google.common.base.Optional;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parse.sql.context.table.Table;
-import org.apache.shardingsphere.core.parse.sql.context.table.Tables;
+import org.apache.shardingsphere.core.parse.sql.context.Table;
+import org.apache.shardingsphere.core.parse.sql.context.Tables;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
@@ -40,7 +40,7 @@ public final class PredicateUtils {
      * Find table name.
      * 
      * @param predicateSegment predicate segment
-     * @param sqlStatement sql statement
+     * @param sqlStatement SQL statement
      * @param shardingTableMetaData sharding table meta data
      * @return table name
      */

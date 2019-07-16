@@ -19,6 +19,8 @@ package org.apache.shardingsphere.core.parse.sql.context.table;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
+import org.apache.shardingsphere.core.parse.sql.context.Table;
+import org.apache.shardingsphere.core.parse.sql.context.Tables;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 

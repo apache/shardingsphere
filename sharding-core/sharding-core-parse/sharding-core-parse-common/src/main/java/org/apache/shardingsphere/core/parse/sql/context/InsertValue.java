@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.context.insertvalue;
+package org.apache.shardingsphere.core.parse.sql.context;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

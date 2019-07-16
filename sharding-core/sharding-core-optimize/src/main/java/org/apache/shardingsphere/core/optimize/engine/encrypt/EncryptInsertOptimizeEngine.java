@@ -23,7 +23,7 @@ import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
 import org.apache.shardingsphere.core.optimize.statement.encrypt.EncryptInsertColumns;
 import org.apache.shardingsphere.core.optimize.statement.encrypt.EncryptInsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.InsertOptimizeResultUnit;
-import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
+import org.apache.shardingsphere.core.parse.sql.context.InsertValue;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 

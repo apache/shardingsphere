@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.core.parse.filler.impl.dml;
 
 import org.apache.shardingsphere.core.parse.filler.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
-import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
+import org.apache.shardingsphere.core.parse.sql.context.Column;
+import org.apache.shardingsphere.core.parse.sql.context.InsertValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;

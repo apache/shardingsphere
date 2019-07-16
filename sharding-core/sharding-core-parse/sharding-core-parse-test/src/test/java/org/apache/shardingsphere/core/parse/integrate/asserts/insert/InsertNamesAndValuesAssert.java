@@ -21,7 +21,7 @@ import com.google.common.base.Joiner;
 import org.apache.shardingsphere.core.parse.integrate.asserts.SQLStatementAssertMessage;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.insert.ExpectedInsertColumnsAndValues;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.insert.ExpectedInsertValue;
-import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
+import org.apache.shardingsphere.core.parse.sql.context.InsertValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.test.sql.SQLCaseType;

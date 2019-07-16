@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.generator.impl.ConditionValueBetweenOperatorGenerator;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.generator.impl.ConditionValueCompareOperatorGenerator;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.generator.impl.ConditionValueInOperatorGenerator;
-import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
+import org.apache.shardingsphere.core.parse.sql.context.Column;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateBetweenRightValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateCompareRightValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateInRightValue;

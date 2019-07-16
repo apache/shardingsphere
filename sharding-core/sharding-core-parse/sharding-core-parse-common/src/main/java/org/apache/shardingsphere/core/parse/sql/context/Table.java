@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.context.table;
+package org.apache.shardingsphere.core.parse.sql.context;
 
 import com.google.common.base.Optional;
 import lombok.EqualsAndHashCode;

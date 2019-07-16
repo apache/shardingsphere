@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.parse.filler.dal;
 
 import lombok.Setter;
 import org.apache.shardingsphere.core.parse.filler.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.sql.context.table.Table;
+import org.apache.shardingsphere.core.parse.sql.context.Table;
 import org.apache.shardingsphere.core.parse.sql.segment.dal.ShowLikeSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
