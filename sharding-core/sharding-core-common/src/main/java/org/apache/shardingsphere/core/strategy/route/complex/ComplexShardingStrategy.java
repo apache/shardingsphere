@@ -19,12 +19,15 @@ package org.apache.shardingsphere.core.strategy.route.complex;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
+import com.google.common.collect.Range;
+
 import lombok.Getter;
 import org.apache.shardingsphere.api.config.sharding.strategy.ComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.sharding.complex.ComplexKeysShardingAlgorithm;
 import org.apache.shardingsphere.api.sharding.complex.ComplexKeysShardingValue;
 import org.apache.shardingsphere.core.strategy.route.ShardingStrategy;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
+import org.apache.shardingsphere.core.strategy.route.value.RangeRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
 
 import java.util.Collection;
@@ -56,12 +59,17 @@ public final class ComplexShardingStrategy implements ShardingStrategy {
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<RouteValue> shardingValues) {
         Map<String, Collection<Comparable<?>>> columnShardingValues = new HashMap<>(shardingValues.size(), 1);
+        Map<String, Range<Comparable<?>>> columnRangeValues = new HashMap<>(shardingValues.size(), 1);
         String logicTableName = "";
         for (RouteValue each : shardingValues) {
-            columnShardingValues.put(each.getColumnName(), ((ListRouteValue) each).getValues());
+            if (each instanceof ListRouteValue) {
+                columnShardingValues.put(each.getColumnName(), ((ListRouteValue) each).getValues());
+            } else if (each instanceof RangeRouteValue) {
+                columnRangeValues.put(each.getColumnName(), ((RangeRouteValue) each).getValueRange());
+            }
             logicTableName = each.getTableName();
         }
-        Collection<String> shardingResult = shardingAlgorithm.doSharding(availableTargetNames, new ComplexKeysShardingValue(logicTableName, columnShardingValues));
+        Collection<String> shardingResult = shardingAlgorithm.doSharding(availableTargetNames, new ComplexKeysShardingValue(logicTableName, columnShardingValues, columnRangeValues));
         Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         result.addAll(shardingResult);
         return result;

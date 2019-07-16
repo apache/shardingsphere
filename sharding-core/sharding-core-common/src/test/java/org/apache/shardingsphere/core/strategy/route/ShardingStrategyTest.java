@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.strategy.route;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
 import com.google.common.collect.Sets;
 import org.apache.shardingsphere.api.config.sharding.strategy.ComplexShardingStrategyConfiguration;
@@ -34,6 +35,7 @@ import org.junit.Test;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -58,8 +60,11 @@ public final class ShardingStrategyTest {
     
     @Test
     public void assertDoShardingForMultipleKeys() {
-        ComplexShardingStrategy strategy = new ComplexShardingStrategy(new ComplexShardingStrategyConfiguration("column", new ComplexKeysShardingAlgorithmFixture()));
-        assertThat(strategy.doSharding(targets, Collections.<RouteValue>singletonList(new ListRouteValue<>("column", "logicTable", Collections.singletonList(1)))), 
-                is((Collection<String>) Sets.newHashSet("1", "2", "3")));
+        ComplexShardingStrategy strategy = new ComplexShardingStrategy(new ComplexShardingStrategyConfiguration("column1, column2", new ComplexKeysShardingAlgorithmFixture()));
+        List<RouteValue> routeValues = Lists.<RouteValue>newArrayList(
+            new ListRouteValue<>("column1", "logicTable", Collections.singletonList(1)),
+            new RangeRouteValue<>("column2", "logicTable", Range.open(1, 3))
+        );
+        assertThat(strategy.doSharding(targets, routeValues), is((Collection<String>) Sets.newHashSet("1", "2", "3")));
     }
 }
