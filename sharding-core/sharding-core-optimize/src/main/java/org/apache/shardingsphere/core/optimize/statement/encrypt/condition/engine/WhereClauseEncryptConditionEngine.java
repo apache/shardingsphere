@@ -49,9 +49,9 @@ import java.util.List;
 public final class WhereClauseEncryptConditionEngine {
     
     private final EncryptRule encryptRule;
-
+    
     private final ShardingTableMetaData shardingTableMetaData;
-
+    
     /**
      * Create encrypt conditions.
      *
@@ -99,7 +99,7 @@ public final class WhereClauseEncryptConditionEngine {
         }
         return createEncryptCondition(predicateSegment, tableName.get());
     }
-
+    
     private Optional<EncryptCondition> createEncryptCondition(final PredicateSegment predicateSegment, final String tableName) {
         if (predicateSegment.getRightValue() instanceof PredicateCompareRightValue) {
             PredicateCompareRightValue compareRightValue = (PredicateCompareRightValue) predicateSegment.getRightValue();
@@ -114,7 +114,7 @@ public final class WhereClauseEncryptConditionEngine {
         }
         return Optional.absent();
     }
-
+    
     private boolean isSupportedOperator(final String operator) {
         return "=".equals(operator) || "<>".equals(operator) || "!=".equals(operator);
     }

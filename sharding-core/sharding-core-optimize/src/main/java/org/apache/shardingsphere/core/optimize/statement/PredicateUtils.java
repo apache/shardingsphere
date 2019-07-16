@@ -99,7 +99,9 @@ public final class PredicateUtils {
     public static Optional<EncryptCondition> createCompareCondition(final PredicateCompareRightValue compareRightValue,
                                                                     final String tableName, final PredicateSegment predicateSegment) {
         return compareRightValue.getExpression() instanceof SimpleExpressionSegment 
-                ? Optional.of(new EncryptCondition(tableName, predicateSegment, compareRightValue.getExpression())) : Optional.<EncryptCondition>absent();
+                ? Optional.of(
+                        new EncryptCondition(predicateSegment.getColumn().getName(), tableName, predicateSegment.getStartIndex(), predicateSegment.getStopIndex(), compareRightValue.getExpression()))
+                : Optional.<EncryptCondition>absent();
     }
     
     /**
@@ -119,6 +121,7 @@ public final class PredicateUtils {
                 return Optional.absent();
             }
         }
-        return expressionSegments.isEmpty() ? Optional.<EncryptCondition>absent() : Optional.of(new EncryptCondition(tableName, predicateSegment, expressionSegments));
+        return expressionSegments.isEmpty() ? Optional.<EncryptCondition>absent()
+                : Optional.of(new EncryptCondition(predicateSegment.getColumn().getName(), tableName, predicateSegment.getStartIndex(), predicateSegment.getStopIndex(), expressionSegments));
     }
 }

@@ -46,7 +46,7 @@ public final class PredicateUtilsTest {
         PredicateSegment predicateSegment = new PredicateSegment(
                 0, 0, new ColumnSegment(0, 0, "id"), new PredicateInRightValue(Collections.<ExpressionSegment>singletonList(new ParameterMarkerExpressionSegment(0, 0, 1))));
         assertThat(PredicateUtils.createInCondition((PredicateInRightValue) predicateSegment.getRightValue(), "tbl", predicateSegment).toString(),
-                is("Optional.of(EncryptCondition(columnName=id, tableName=tbl, operator=IN, positionValueMap={}, positionIndexMap={0=1}))"));
+                is("Optional.of(EncryptCondition(columnName=id, tableName=tbl, startIndex=0, stopIndex=0, operator=IN, positionValueMap={}, positionIndexMap={0=1}))"));
     }
     
     @Test
@@ -55,7 +55,7 @@ public final class PredicateUtilsTest {
         PredicateCompareRightValue predicateCompareRightValue = new PredicateCompareRightValue("=", parameterMarkerExpressionSegment);
         PredicateSegment predicateSegment = new PredicateSegment(0, 0, new ColumnSegment(0, 0, "id"), predicateCompareRightValue);
         assertThat(PredicateUtils.createCompareCondition((PredicateCompareRightValue) predicateSegment.getRightValue(), "tbl", predicateSegment).toString(),
-                is("Optional.of(EncryptCondition(columnName=id, tableName=tbl, operator=EQUAL, positionValueMap={}, positionIndexMap={0=1}))"));
+                is("Optional.of(EncryptCondition(columnName=id, tableName=tbl, startIndex=0, stopIndex=0, operator=EQUAL, positionValueMap={}, positionIndexMap={0=1}))"));
     }
     
     @Test

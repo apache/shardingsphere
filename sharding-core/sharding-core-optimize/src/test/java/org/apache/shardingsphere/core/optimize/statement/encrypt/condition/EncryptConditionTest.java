@@ -17,12 +17,8 @@
 
 package org.apache.shardingsphere.core.optimize.statement.encrypt.condition;
 
-import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateCompareRightValue;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateInRightValue;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -36,18 +32,15 @@ public final class EncryptConditionTest {
     
     @Test
     public void assertGetConditionValuesForEqual() {
-        PredicateSegment predicateSegment = new PredicateSegment(0, 0, new ColumnSegment(0, 0, "col"), new PredicateCompareRightValue("EQUAL", new LiteralExpressionSegment(0, 0, 1)));
-        List<Comparable<?>> actual = new EncryptCondition("tbl", predicateSegment, new LiteralExpressionSegment(0, 0, 1)).getConditionValues(Collections.emptyList());
+        List<Comparable<?>> actual = new EncryptCondition("col", "tbl", 0, 0, new LiteralExpressionSegment(0, 0, 1)).getConditionValues(Collections.emptyList());
         assertThat(actual.size(), is(1));
         assertThat((Integer) actual.get(0), is(1));
     }
     
     @Test
     public void assertGetConditionValuesForIn() {
-        PredicateSegment predicateSegment = new PredicateSegment(0, 0, new ColumnSegment(0, 0, "col"), 
-                new PredicateInRightValue(Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 2))));
-        List<Comparable<?>> actual = new EncryptCondition("tbl", predicateSegment, Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 2)))
-                .getConditionValues(Collections.emptyList());
+        List<Comparable<?>> actual = new EncryptCondition(
+                "col", "tbl", 0, 0, Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 2))).getConditionValues(Collections.emptyList());
         assertThat(actual.size(), is(2));
         assertThat((Integer) actual.get(0), is(1));
         assertThat((Integer) actual.get(1), is(2));

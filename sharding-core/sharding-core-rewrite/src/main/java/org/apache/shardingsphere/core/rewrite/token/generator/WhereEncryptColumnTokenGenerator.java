@@ -24,7 +24,6 @@ import org.apache.shardingsphere.core.optimize.statement.WhereOptimizedStatement
 import org.apache.shardingsphere.core.optimize.statement.encrypt.condition.EncryptCondition;
 import org.apache.shardingsphere.core.optimize.statement.encrypt.condition.EncryptConditions;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.pojo.EncryptColumnToken;
@@ -67,8 +66,8 @@ public final class WhereEncryptColumnTokenGenerator implements CollectionSQLToke
         }
         for (EncryptCondition each : ((WhereOptimizedStatement) optimizedStatement).getEncryptConditions().getConditions()) {
             column = new Column(each.getColumnName(), optimizedStatement.getSQLStatement().getTables().getSingleTableName());
-            startIndex = each.getPredicateSegment().getStartIndex();
-            stopIndex = each.getPredicateSegment().getStopIndex();
+            startIndex = each.getStartIndex();
+            stopIndex = each.getStopIndex();
             result.add(createEncryptColumnToken(optimizedStatement, parameterBuilder, encryptRule.getEncryptorEngine()));
         }
         return result;
@@ -82,15 +81,11 @@ public final class WhereEncryptColumnTokenGenerator implements CollectionSQLToke
     
     private Optional<EncryptCondition> getEncryptCondition(final EncryptConditions encryptConditions) {
         for (EncryptCondition each : encryptConditions.getConditions()) {
-            if (each.getColumnName().equalsIgnoreCase(column.getName()) && each.getTableName().equalsIgnoreCase(column.getTableName()) && isSameIndexes(each.getPredicateSegment())) {
+            if (each.getColumnName().equalsIgnoreCase(column.getName()) && each.getTableName().equalsIgnoreCase(column.getTableName()) && each.isSameIndex(startIndex, stopIndex)) {
                 return Optional.of(each);
             }
         }
         return Optional.absent();
-    }
-    
-    private boolean isSameIndexes(final PredicateSegment predicateSegment) {
-        return predicateSegment.getStartIndex() == startIndex && predicateSegment.getStopIndex() == stopIndex;
     }
     
     private WhereEncryptColumnToken getEncryptColumnTokenFromConditions(

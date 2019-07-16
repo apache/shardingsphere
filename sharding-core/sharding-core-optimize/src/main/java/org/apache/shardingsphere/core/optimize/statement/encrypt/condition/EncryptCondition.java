@@ -25,7 +25,6 @@ import org.apache.shardingsphere.core.constant.ShardingOperator;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -40,15 +39,17 @@ import java.util.Map.Entry;
  * @author maxiaoguang
  */
 @Getter
-@EqualsAndHashCode(exclude = {"predicateSegment"})
-@ToString(exclude = {"predicateSegment"})
+@EqualsAndHashCode
+@ToString
 public final class EncryptCondition {
     
     private final String columnName;
     
     private final String tableName;
     
-    private final PredicateSegment predicateSegment;
+    private final int startIndex;
+    
+    private final int stopIndex;
     
     private final ShardingOperator operator;
     
@@ -56,18 +57,20 @@ public final class EncryptCondition {
     
     private final Map<Integer, Integer> positionIndexMap = new LinkedHashMap<>();
     
-    public EncryptCondition(final String tableName, final PredicateSegment predicateSegment, final ExpressionSegment expressionSegment) {
-        this.columnName = predicateSegment.getColumn().getName();
+    public EncryptCondition(final String columnName, final String tableName, final int startIndex, final int stopIndex, final ExpressionSegment expressionSegment) {
+        this.columnName = columnName;
         this.tableName = tableName;
-        this.predicateSegment = predicateSegment;
+        this.startIndex = startIndex;
+        this.stopIndex = stopIndex;
         operator = ShardingOperator.EQUAL;
         putPositionMap(0, expressionSegment);
     }
     
-    public EncryptCondition(final String tableName, final PredicateSegment predicateSegment, final List<ExpressionSegment> expressionSegments) {
-        this.columnName = predicateSegment.getColumn().getName();
+    public EncryptCondition(final String columnName, final String tableName, final int startIndex, final int stopIndex, final List<ExpressionSegment> expressionSegments) {
+        this.columnName = columnName;
         this.tableName = tableName;
-        this.predicateSegment = predicateSegment;
+        this.startIndex = startIndex;
+        this.stopIndex = stopIndex;
         operator = ShardingOperator.IN;
         int count = 0;
         for (ExpressionSegment each : expressionSegments) {
@@ -102,5 +105,16 @@ public final class EncryptCondition {
             }
         }
         return result;
+    }
+    
+    /**
+     * Judge is same index or not.
+     * 
+     * @param startIndex start index
+     * @param stopIndex stop index
+     * @return is same index or not
+     */
+    public boolean isSameIndex(final int startIndex, final int stopIndex) {
+        return this.startIndex == startIndex && this.stopIndex == stopIndex;
     }
 }
