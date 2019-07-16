@@ -21,9 +21,8 @@ import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.optimize.statement.encrypt.condition.AndCondition;
-import org.apache.shardingsphere.core.optimize.statement.encrypt.condition.Condition;
-import org.apache.shardingsphere.core.optimize.statement.encrypt.condition.PredicateUtils;
+import org.apache.shardingsphere.core.optimize.statement.PredicateUtils;
+import org.apache.shardingsphere.core.optimize.statement.encrypt.condition.EncryptCondition;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.WhereSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
@@ -36,8 +35,10 @@ import org.apache.shardingsphere.core.parse.sql.statement.dml.WhereSegmentAvaila
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Encrypt condition engine for where clause.
@@ -57,34 +58,32 @@ public final class WhereClauseEncryptConditionEngine {
      * @param sqlStatement SQL statement
      * @return encrypt conditions
      */
-    public AndCondition createEncryptConditions(final SQLStatement sqlStatement) {
+    public List<EncryptCondition> createEncryptConditions(final SQLStatement sqlStatement) {
         if (!(sqlStatement instanceof WhereSegmentAvailable)) {
-            return new AndCondition();
+            return Collections.emptyList();
         }
         Optional<WhereSegment> whereSegment = ((WhereSegmentAvailable) sqlStatement).getWhere();
         if (!whereSegment.isPresent()) {
-            return new AndCondition();
+            return Collections.emptyList();
         }
-        Collection<Condition> conditions = new LinkedList<>();
+        List<EncryptCondition> result = new LinkedList<>();
         for (AndPredicate each : whereSegment.get().getAndPredicates()) {
-            conditions.addAll(createEncryptConditions(each, sqlStatement));
+            result.addAll(createEncryptConditions(each, sqlStatement));
         }
         for (SubqueryPredicateSegment each : sqlStatement.findSQLSegments(SubqueryPredicateSegment.class)) {
             for (AndPredicate andPredicate : each.getAndPredicates()) {
-                conditions.addAll(createEncryptConditions(andPredicate, sqlStatement));
+                result.addAll(createEncryptConditions(andPredicate, sqlStatement));
             }
         }
-        AndCondition result = new AndCondition();
-        result.getConditions().addAll(conditions);
         return result;
     }
 
-    private Collection<Condition> createEncryptConditions(final AndPredicate andPredicate, final SQLStatement sqlStatement) {
-        Collection<Condition> result = new LinkedList<>();
+    private Collection<EncryptCondition> createEncryptConditions(final AndPredicate andPredicate, final SQLStatement sqlStatement) {
+        Collection<EncryptCondition> result = new LinkedList<>();
         Collection<Integer> stopIndexes = new HashSet<>();
         for (PredicateSegment predicate : andPredicate.getPredicates()) {
             if (stopIndexes.add(predicate.getStopIndex())) {
-                Optional<Condition> condition = createEncryptCondition(predicate, sqlStatement);
+                Optional<EncryptCondition> condition = createEncryptCondition(predicate, sqlStatement);
                 if (condition.isPresent()) {
                     result.add(condition.get());
                 }
@@ -93,7 +92,7 @@ public final class WhereClauseEncryptConditionEngine {
         return result;
     }
     
-    private Optional<Condition> createEncryptCondition(final PredicateSegment predicateSegment, final SQLStatement sqlStatement) {
+    private Optional<EncryptCondition> createEncryptCondition(final PredicateSegment predicateSegment, final SQLStatement sqlStatement) {
         Optional<String> tableName = PredicateUtils.findTableName(predicateSegment, sqlStatement, shardingTableMetaData);
         if (!tableName.isPresent() || !encryptRule.getEncryptorEngine().getShardingEncryptor(tableName.get(), predicateSegment.getColumn().getName()).isPresent()) {
             return Optional.absent();
@@ -101,11 +100,11 @@ public final class WhereClauseEncryptConditionEngine {
         return createEncryptCondition(predicateSegment, predicateSegment.getColumn().getName(), tableName.get());
     }
 
-    private Optional<Condition> createEncryptCondition(final PredicateSegment predicateSegment, final String columnName, final String tableName) {
+    private Optional<EncryptCondition> createEncryptCondition(final PredicateSegment predicateSegment, final String columnName, final String tableName) {
         if (predicateSegment.getRightValue() instanceof PredicateCompareRightValue) {
             PredicateCompareRightValue compareRightValue = (PredicateCompareRightValue) predicateSegment.getRightValue();
             return isSupportedOperator(compareRightValue.getOperator())
-                    ? PredicateUtils.createCompareCondition(compareRightValue, columnName, tableName, predicateSegment) : Optional.<Condition>absent();
+                    ? PredicateUtils.createCompareCondition(compareRightValue, columnName, tableName, predicateSegment) : Optional.<EncryptCondition>absent();
         }
         if (predicateSegment.getRightValue() instanceof PredicateInRightValue) {
             return PredicateUtils.createInCondition((PredicateInRightValue) predicateSegment.getRightValue(), columnName, tableName, predicateSegment);

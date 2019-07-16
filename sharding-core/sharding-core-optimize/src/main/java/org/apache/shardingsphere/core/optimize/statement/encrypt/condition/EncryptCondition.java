@@ -34,7 +34,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Condition.
+ * Encrypt condition.
  *
  * @author zhangliang
  * @author maxiaoguang
@@ -42,7 +42,7 @@ import java.util.Map.Entry;
 @Getter
 @EqualsAndHashCode(exclude = {"predicateSegment"})
 @ToString
-public final class Condition {
+public final class EncryptCondition {
     
     private final String columnName;
     
@@ -56,7 +56,7 @@ public final class Condition {
     
     private final Map<Integer, Integer> positionIndexMap = new LinkedHashMap<>();
     
-    public Condition(final String columnName, final String tableName, final PredicateSegment predicateSegment, final ExpressionSegment expressionSegment) {
+    public EncryptCondition(final String columnName, final String tableName, final PredicateSegment predicateSegment, final ExpressionSegment expressionSegment) {
         this.columnName = columnName;
         this.tableName = tableName;
         this.predicateSegment = predicateSegment;
@@ -64,7 +64,7 @@ public final class Condition {
         putPositionMap(0, expressionSegment);
     }
     
-    public Condition(final String columnName, final String tableName, final PredicateSegment predicateSegment, final List<ExpressionSegment> expressionSegments) {
+    public EncryptCondition(final String columnName, final String tableName, final PredicateSegment predicateSegment, final List<ExpressionSegment> expressionSegments) {
         this.columnName = columnName;
         this.tableName = tableName;
         this.predicateSegment = predicateSegment;

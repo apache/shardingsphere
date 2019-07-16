@@ -21,7 +21,8 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.core.optimize.statement.encrypt.condition.AndCondition;
+import org.apache.shardingsphere.core.optimize.statement.encrypt.condition.EncryptCondition;
+import org.apache.shardingsphere.core.optimize.statement.encrypt.condition.EncryptConditions;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.ShardingWhereOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingConditions;
@@ -62,9 +63,9 @@ public final class ShardingSelectOptimizedStatement extends ShardingWhereOptimiz
     
     private boolean containsSubquery;
     
-    public ShardingSelectOptimizedStatement(final SQLStatement sqlStatement, final List<ShardingCondition> shardingConditions, final AndCondition encryptConditions,
+    public ShardingSelectOptimizedStatement(final SQLStatement sqlStatement, final List<ShardingCondition> shardingConditions, final List<EncryptCondition> encryptConditions,
                                             final GroupBy groupBy, final OrderBy orderBy, final SelectItems selectItems, final Pagination pagination) {
-        super(sqlStatement, new ShardingConditions(shardingConditions), encryptConditions);
+        super(sqlStatement, new ShardingConditions(shardingConditions), new EncryptConditions(encryptConditions));
         this.groupBy = groupBy;
         this.orderBy = orderBy;
         this.selectItems = selectItems;

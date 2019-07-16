@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.statement.encrypt.condition;
+package org.apache.shardingsphere.core.optimize.statement;
 
 import com.google.common.base.Optional;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.optimize.statement.encrypt.condition.EncryptCondition;
 import org.apache.shardingsphere.core.parse.sql.context.table.Table;
 import org.apache.shardingsphere.core.parse.sql.context.table.Tables;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
@@ -96,10 +97,10 @@ public final class PredicateUtils {
      * @param predicateSegment predicate segment
      * @return condition
      */
-    public static Optional<Condition> createCompareCondition(final PredicateCompareRightValue compareRightValue, 
-                                                             final String columnName, final String tableName, final PredicateSegment predicateSegment) {
+    public static Optional<EncryptCondition> createCompareCondition(final PredicateCompareRightValue compareRightValue,
+                                                                    final String columnName, final String tableName, final PredicateSegment predicateSegment) {
         return compareRightValue.getExpression() instanceof SimpleExpressionSegment 
-                ? Optional.of(new Condition(columnName, tableName, predicateSegment, compareRightValue.getExpression())) : Optional.<Condition>absent();
+                ? Optional.of(new EncryptCondition(columnName, tableName, predicateSegment, compareRightValue.getExpression())) : Optional.<EncryptCondition>absent();
     }
     
     /**
@@ -111,7 +112,7 @@ public final class PredicateUtils {
      * @param predicateSegment predicate segment
      * @return condition
      */
-    public static Optional<Condition> createInCondition(final PredicateInRightValue inRightValue, final String columnName, final String tableName, final PredicateSegment predicateSegment) {
+    public static Optional<EncryptCondition> createInCondition(final PredicateInRightValue inRightValue, final String columnName, final String tableName, final PredicateSegment predicateSegment) {
         List<ExpressionSegment> expressionSegments = new LinkedList<>();
         for (ExpressionSegment each : inRightValue.getSqlExpressions()) {
             if (each instanceof SimpleExpressionSegment) {
@@ -120,6 +121,6 @@ public final class PredicateUtils {
                 return Optional.absent();
             }
         }
-        return expressionSegments.isEmpty() ? Optional.<Condition>absent() : Optional.of(new Condition(columnName, tableName, predicateSegment, expressionSegments));
+        return expressionSegments.isEmpty() ? Optional.<EncryptCondition>absent() : Optional.of(new EncryptCondition(columnName, tableName, predicateSegment, expressionSegments));
     }
 }

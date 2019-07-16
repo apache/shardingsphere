@@ -53,12 +53,16 @@ public final class WhereEncryptColumnToken extends EncryptColumnToken {
     public String toString() {
         switch (operator) {
             case EQUAL:
-                return parameterMarkerIndexes.isEmpty() ? String.format("%s = '%s'", columnName, indexValues.get(0)) : String.format("%s = ?", columnName);
+                return toStringFromEqual();
             case IN:
                 return toStringFromIn();
             default:
                 throw new ShardingException("Sharding operator is incorrect.");
         }
+    }
+    
+    private String toStringFromEqual() {
+        return parameterMarkerIndexes.isEmpty() ? String.format("%s = '%s'", columnName, indexValues.get(0)) : String.format("%s = ?", columnName);
     }
     
     private String toStringFromIn() {

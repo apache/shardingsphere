@@ -32,7 +32,7 @@ import java.util.List;
 @Getter
 public final class ShardingConditions {
     
-    private final List<ShardingCondition> shardingConditions;
+    private final List<ShardingCondition> conditions;
     
     /**
      * Judge sharding conditions is always false or not.
@@ -40,10 +40,10 @@ public final class ShardingConditions {
      * @return sharding conditions is always false or not
      */
     public boolean isAlwaysFalse() {
-        if (shardingConditions.isEmpty()) {
+        if (conditions.isEmpty()) {
             return false;
         }
-        for (ShardingCondition each : shardingConditions) {
+        for (ShardingCondition each : conditions) {
             if (!(each instanceof AlwaysFalseShardingCondition)) {
                 return false;
             }

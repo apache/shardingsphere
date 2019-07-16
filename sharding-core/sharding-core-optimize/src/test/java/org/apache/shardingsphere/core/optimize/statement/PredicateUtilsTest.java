@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.statement.encrypt.condition;
+package org.apache.shardingsphere.core.optimize.statement;
 
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.complex.SubquerySegment;
@@ -42,7 +42,7 @@ public final class PredicateUtilsTest {
     public void assertCreateInConditionTwo() {
         assertThat(PredicateUtils.createInCondition(
                 new PredicateInRightValue(Collections.<ExpressionSegment>singletonList(new ParameterMarkerExpressionSegment(0, 0, 1))), "id", "tbl", null).toString(),
-                is("Optional.of(Condition(columnName=id, tableName=tbl, predicateSegment=null, operator=IN, positionValueMap={}, positionIndexMap={0=1}))"));
+                is("Optional.of(EncryptCondition(columnName=id, tableName=tbl, predicateSegment=null, operator=IN, positionValueMap={}, positionIndexMap={0=1}))"));
     }
     
     @Test
@@ -50,7 +50,7 @@ public final class PredicateUtilsTest {
         ParameterMarkerExpressionSegment parameterMarkerExpressionSegment = new ParameterMarkerExpressionSegment(0, 0, 1);
         PredicateCompareRightValue predicateCompareRightValue = new PredicateCompareRightValue("=", parameterMarkerExpressionSegment);
         assertThat(PredicateUtils.createCompareCondition(predicateCompareRightValue, "id", "tbl", null).toString(),
-                is("Optional.of(Condition(columnName=id, tableName=tbl, predicateSegment=null, operator=EQUAL, positionValueMap={}, positionIndexMap={0=1}))"));
+                is("Optional.of(EncryptCondition(columnName=id, tableName=tbl, predicateSegment=null, operator=EQUAL, positionValueMap={}, positionIndexMap={0=1}))"));
     }
     
     @Test

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.optimize.statement.encrypt;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.optimize.statement.WhereOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.encrypt.condition.AndCondition;
+import org.apache.shardingsphere.core.optimize.statement.encrypt.condition.EncryptConditions;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
 /**
@@ -34,7 +34,7 @@ public final class EncryptWhereOptimizedStatement implements WhereOptimizedState
     private final SQLStatement sqlStatement;
     
     @Getter
-    private final AndCondition encryptConditions;
+    private final EncryptConditions encryptConditions;
     
     @Override
     public SQLStatement getSQLStatement() {

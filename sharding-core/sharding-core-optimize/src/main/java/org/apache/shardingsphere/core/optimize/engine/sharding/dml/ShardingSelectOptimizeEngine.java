@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.optimize.engine.sharding.dml;
 
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
-import org.apache.shardingsphere.core.optimize.statement.encrypt.condition.AndCondition;
+import org.apache.shardingsphere.core.optimize.statement.encrypt.condition.EncryptCondition;
 import org.apache.shardingsphere.core.optimize.statement.encrypt.condition.engine.WhereClauseEncryptConditionEngine;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.engine.WhereClauseShardingConditionEngine;
@@ -76,7 +76,7 @@ public final class ShardingSelectOptimizeEngine implements OptimizeEngine {
     @Override
     public ShardingSelectOptimizedStatement optimize() {
         List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(selectStatement, parameters);
-        AndCondition encryptConditions = encryptConditionEngine.createEncryptConditions(selectStatement);
+        List<EncryptCondition> encryptConditions = encryptConditionEngine.createEncryptConditions(selectStatement);
         GroupBy groupBy = groupByEngine.createGroupBy(selectStatement);
         OrderBy orderBy = orderByEngine.createOrderBy(selectStatement, groupBy);
         SelectItems selectItems = selectItemsEngine.createSelectItems(selectStatement, groupBy, orderBy);

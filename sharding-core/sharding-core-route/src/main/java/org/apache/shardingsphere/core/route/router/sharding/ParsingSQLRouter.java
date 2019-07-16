@@ -125,15 +125,15 @@ public final class ParsingSQLRouter implements ShardingRouter {
                 return;
             }
         }
-        Preconditions.checkState(null != shardingConditions.getShardingConditions() && !shardingConditions.getShardingConditions().isEmpty(), "Must have sharding column with subquery.");
-        if (shardingConditions.getShardingConditions().size() > 1) {
+        Preconditions.checkState(null != shardingConditions.getConditions() && !shardingConditions.getConditions().isEmpty(), "Must have sharding column with subquery.");
+        if (shardingConditions.getConditions().size() > 1) {
             Preconditions.checkState(isSameShardingCondition(shardingConditions), "Sharding value must same with subquery.");
         }
     }
     
     private boolean isSameShardingCondition(final ShardingConditions shardingConditions) {
-        ShardingCondition example = shardingConditions.getShardingConditions().remove(shardingConditions.getShardingConditions().size() - 1);
-        for (ShardingCondition each : shardingConditions.getShardingConditions()) {
+        ShardingCondition example = shardingConditions.getConditions().remove(shardingConditions.getConditions().size() - 1);
+        for (ShardingCondition each : shardingConditions.getConditions()) {
             if (!isSameShardingCondition(example, each)) {
                 return false;
             }
@@ -170,10 +170,10 @@ public final class ParsingSQLRouter implements ShardingRouter {
     }
     
     private void mergeShardingConditions(final ShardingConditions shardingConditions) {
-        if (shardingConditions.getShardingConditions().size() > 1) {
-            ShardingCondition shardingCondition = shardingConditions.getShardingConditions().remove(shardingConditions.getShardingConditions().size() - 1);
-            shardingConditions.getShardingConditions().clear();
-            shardingConditions.getShardingConditions().add(shardingCondition);
+        if (shardingConditions.getConditions().size() > 1) {
+            ShardingCondition shardingCondition = shardingConditions.getConditions().remove(shardingConditions.getConditions().size() - 1);
+            shardingConditions.getConditions().clear();
+            shardingConditions.getConditions().add(shardingCondition);
         }
     }
 }

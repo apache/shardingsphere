@@ -17,22 +17,19 @@
 
 package org.apache.shardingsphere.core.optimize.statement.encrypt.condition;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.ToString;
+import lombok.RequiredArgsConstructor;
 
-import java.util.LinkedList;
 import java.util.List;
 
 /**
- * And conditions.
+ * Encrypt conditions.
  *
- * @author maxiaoguang
+ * @author zhangliang
  */
+@RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode
-@ToString
-public final class AndCondition {
+public final class EncryptConditions {
     
-    private final List<Condition> conditions = new LinkedList<>();
+    private final List<EncryptCondition> conditions;
 }

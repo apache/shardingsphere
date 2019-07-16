@@ -149,7 +149,7 @@ public final class ShardingSelectOptimizeEngineTest {
         selectStatement.setWhere(whereSegment);
         ShardingConditions shardingConditions = new ShardingSelectOptimizeEngine(shardingRule, shardingTableMetaData, selectStatement, Collections.emptyList()).optimize().getShardingConditions();
         assertFalse(shardingConditions.isAlwaysFalse());
-        ShardingCondition shardingCondition = shardingConditions.getShardingConditions().get(0);
+        ShardingCondition shardingCondition = shardingConditions.getConditions().get(0);
         RouteValue shardingValue = shardingCondition.getRouteValues().get(0);
         Collection<Comparable<?>> values = ((ListRouteValue<Comparable<?>>) shardingValue).getValues();
         assertThat(values.size(), is(1));
@@ -172,7 +172,7 @@ public final class ShardingSelectOptimizeEngineTest {
         selectStatement.setWhere(whereSegment);
         ShardingConditions shardingConditions = new ShardingSelectOptimizeEngine(shardingRule, shardingTableMetaData, selectStatement, Collections.emptyList()).optimize().getShardingConditions();
         assertFalse(shardingConditions.isAlwaysFalse());
-        ShardingCondition shardingCondition = shardingConditions.getShardingConditions().get(0);
+        ShardingCondition shardingCondition = shardingConditions.getConditions().get(0);
         RouteValue shardingValue = shardingCondition.getRouteValues().get(0);
         Range<Comparable<?>> values = ((RangeRouteValue<Comparable<?>>) shardingValue).getValueRange();
         assertThat(values.lowerEndpoint(), CoreMatchers.<Comparable>is(1));
@@ -195,7 +195,7 @@ public final class ShardingSelectOptimizeEngineTest {
         selectStatement.setWhere(whereSegment);
         ShardingConditions shardingConditions = new ShardingSelectOptimizeEngine(shardingRule, shardingTableMetaData, selectStatement, Collections.emptyList()).optimize().getShardingConditions();
         assertFalse(shardingConditions.isAlwaysFalse());
-        ShardingCondition shardingCondition = shardingConditions.getShardingConditions().get(0);
+        ShardingCondition shardingCondition = shardingConditions.getConditions().get(0);
         RouteValue shardingValue = shardingCondition.getRouteValues().get(0);
         Collection<Comparable<?>> values = ((ListRouteValue<Comparable<?>>) shardingValue).getValues();
         assertThat(values.size(), is(2));
