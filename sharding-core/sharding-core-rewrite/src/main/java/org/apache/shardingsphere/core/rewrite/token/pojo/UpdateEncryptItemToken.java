@@ -29,11 +29,11 @@ public final class UpdateEncryptItemToken extends EncryptColumnToken {
     
     private final String columnName;
     
-    private final Comparable<?> columnValue;
+    private final Object columnValue;
     
     private final int parameterMarkerIndex;
     
-    public UpdateEncryptItemToken(final int startIndex, final int stopIndex, final String columnName, final Comparable<?> columnValue, final int parameterMarkerIndex) {
+    public UpdateEncryptItemToken(final int startIndex, final int stopIndex, final String columnName, final Object columnValue, final int parameterMarkerIndex) {
         super(startIndex, stopIndex);
         this.columnName = columnName;
         this.columnValue = columnValue;
@@ -44,7 +44,7 @@ public final class UpdateEncryptItemToken extends EncryptColumnToken {
         this(startIndex, stopIndex, columnName, null, 0);
     }
     
-    public UpdateEncryptItemToken(final int startIndex, final int stopIndex, final String columnName, final Comparable<?> columnValue) {
+    public UpdateEncryptItemToken(final int startIndex, final int stopIndex, final String columnName, final Object columnValue) {
         this(startIndex, stopIndex, columnName, columnValue, -1);
     }
     
@@ -53,7 +53,7 @@ public final class UpdateEncryptItemToken extends EncryptColumnToken {
         return -1 != parameterMarkerIndex ? String.format("%s = ?", columnName) : String.format("%s = %s", columnName, toStringForColumnValue(columnValue));
     }
     
-    private String toStringForColumnValue(final Comparable<?> columnValue) {
+    private String toStringForColumnValue(final Object columnValue) {
         return String.class == columnValue.getClass() ? String.format("'%s'", columnValue) : columnValue.toString();
     }
 }

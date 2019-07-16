@@ -93,14 +93,14 @@ public final class UpdateEncryptColumnTokenGenerator implements CollectionSQLTok
     
     private EncryptColumnToken createUpdateEncryptColumnToken(final ShardingEncryptorEngine encryptorEngine, final BaseParameterBuilder baseParameterBuilder) {
         ColumnNode columnNode = new ColumnNode(column.getTableName(), column.getName());
-        Comparable<?> originalColumnValue = ((UpdateStatement) sqlStatement).getColumnValue(column, baseParameterBuilder.getOriginalParameters());
-        List<Comparable<?>> encryptColumnValues = encryptorEngine.getEncryptColumnValues(columnNode, Collections.<Comparable<?>>singletonList(originalColumnValue));
+        Object originalColumnValue = ((UpdateStatement) sqlStatement).getColumnValue(column, baseParameterBuilder.getOriginalParameters());
+        List<Object> encryptColumnValues = encryptorEngine.getEncryptColumnValues(columnNode, Collections.singletonList(originalColumnValue));
         encryptParameters(getPositionIndexesFromUpdateItem(), encryptColumnValues, baseParameterBuilder);
         Optional<String> assistedColumnName = encryptorEngine.getAssistedQueryColumn(columnNode.getTableName(), columnNode.getColumnName());
         if (!assistedColumnName.isPresent()) {
             return createUpdateEncryptItemToken(encryptColumnValues);
         }
-        List<Comparable<?>> encryptAssistedColumnValues = encryptorEngine.getEncryptAssistedColumnValues(columnNode, Collections.<Comparable<?>>singletonList(originalColumnValue));
+        List<Object> encryptAssistedColumnValues = encryptorEngine.getEncryptAssistedColumnValues(columnNode, Collections.singletonList(originalColumnValue));
         baseParameterBuilder.getAddedIndexAndParameters().putAll(getIndexAndParameters(encryptAssistedColumnValues));
         return createUpdateEncryptAssistedItemToken(encryptorEngine, encryptColumnValues, encryptAssistedColumnValues);
     }
@@ -111,7 +111,7 @@ public final class UpdateEncryptColumnTokenGenerator implements CollectionSQLTok
                 ? Collections.singletonMap(0, ((ParameterMarkerExpressionSegment) result).getParameterMarkerIndex()) : new LinkedHashMap<Integer, Integer>();
     }
     
-    private void encryptParameters(final Map<Integer, Integer> positionIndexes, final List<Comparable<?>> encryptColumnValues, final BaseParameterBuilder baseParameterBuilder) {
+    private void encryptParameters(final Map<Integer, Integer> positionIndexes, final List<Object> encryptColumnValues, final BaseParameterBuilder baseParameterBuilder) {
         if (!positionIndexes.isEmpty()) {
             for (Entry<Integer, Integer> entry : positionIndexes.entrySet()) {
                 baseParameterBuilder.getOriginalParameters().set(entry.getValue(), encryptColumnValues.get(entry.getKey()));
@@ -119,20 +119,20 @@ public final class UpdateEncryptColumnTokenGenerator implements CollectionSQLTok
         }
     }
     
-    private Map<Integer, Object> getIndexAndParameters(final List<Comparable<?>> encryptAssistedColumnValues) {
+    private Map<Integer, Object> getIndexAndParameters(final List<Object> encryptAssistedColumnValues) {
         if (encryptAssistedColumnValues.isEmpty() || !isUsingParameter()) {
             return Collections.emptyMap();
         }
-        return Collections.singletonMap(getPositionIndexesFromUpdateItem().values().iterator().next() + 1, (Object) encryptAssistedColumnValues.get(0));
+        return Collections.singletonMap(getPositionIndexesFromUpdateItem().values().iterator().next() + 1, encryptAssistedColumnValues.get(0));
     }
     
-    private UpdateEncryptItemToken createUpdateEncryptItemToken(final List<Comparable<?>> encryptColumnValues) {
+    private UpdateEncryptItemToken createUpdateEncryptItemToken(final List<Object> encryptColumnValues) {
         return isUsingParameter() 
                 ? new UpdateEncryptItemToken(startIndex, stopIndex, column.getName()) : new UpdateEncryptItemToken(startIndex, stopIndex, column.getName(), encryptColumnValues.get(0));
     }
     
     private UpdateEncryptAssistedItemToken createUpdateEncryptAssistedItemToken(
-            final ShardingEncryptorEngine encryptorEngine, final List<Comparable<?>> encryptColumnValues, final List<Comparable<?>> encryptAssistedColumnValues) {
+            final ShardingEncryptorEngine encryptorEngine, final List<Object> encryptColumnValues, final List<Object> encryptAssistedColumnValues) {
         String assistedColumnName = encryptorEngine.getAssistedQueryColumn(column.getTableName(), column.getName()).get();
         return isUsingParameter() ? new UpdateEncryptAssistedItemToken(startIndex, stopIndex, column.getName(), assistedColumnName) 
                 : new UpdateEncryptAssistedItemToken(startIndex, stopIndex, column.getName(), encryptColumnValues.get(0), assistedColumnName, encryptAssistedColumnValues.get(0));

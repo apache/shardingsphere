@@ -155,14 +155,14 @@ public final class ShardingEncryptorEngine {
      * @param originalColumnValues original column values
      * @return assisted column values
      */
-    public List<Comparable<?>> getEncryptAssistedColumnValues(final ColumnNode columnNode, final List<Comparable<?>> originalColumnValues) {
+    public List<Object> getEncryptAssistedColumnValues(final ColumnNode columnNode, final List<Object> originalColumnValues) {
         final Optional<ShardingEncryptor> shardingEncryptor = getShardingEncryptor(columnNode.getTableName(), columnNode.getColumnName());
         Preconditions.checkArgument(shardingEncryptor.isPresent() && shardingEncryptor.get() instanceof ShardingQueryAssistedEncryptor,
                 String.format("Can not find ShardingQueryAssistedEncryptor by %s.", columnNode));
-        return Lists.transform(originalColumnValues, new Function<Comparable<?>, Comparable<?>>() {
+        return Lists.transform(originalColumnValues, new Function<Object, Object>() {
             
             @Override
-            public Comparable<?> apply(final Comparable<?> input) {
+            public Object apply(final Object input) {
                 return ((ShardingQueryAssistedEncryptor) shardingEncryptor.get()).queryAssistedEncrypt(input.toString());
             }
         });
@@ -175,13 +175,13 @@ public final class ShardingEncryptorEngine {
      * @param originalColumnValues original column values
      * @return encrypt column values
      */
-    public List<Comparable<?>> getEncryptColumnValues(final ColumnNode columnNode, final List<Comparable<?>> originalColumnValues) {
+    public List<Object> getEncryptColumnValues(final ColumnNode columnNode, final List<Object> originalColumnValues) {
         final Optional<ShardingEncryptor> shardingEncryptor = getShardingEncryptor(columnNode.getTableName(), columnNode.getColumnName());
         Preconditions.checkArgument(shardingEncryptor.isPresent(), String.format("Can not find ShardingEncryptor by %s.", columnNode));
-        return Lists.transform(originalColumnValues, new Function<Comparable<?>, Comparable<?>>() {
+        return Lists.transform(originalColumnValues, new Function<Object, Object>() {
             
             @Override
-            public Comparable<?> apply(final Comparable<?> input) {
+            public Object apply(final Object input) {
                 return String.valueOf(shardingEncryptor.get().encrypt(input.toString()));
             }
         });

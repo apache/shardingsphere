@@ -34,14 +34,14 @@ public final class WhereEncryptColumnToken extends EncryptColumnToken {
     
     private final String columnName;
     
-    private final Map<Integer, Comparable<?>> indexValues;
+    private final Map<Integer, Object> indexValues;
     
     private final Collection<Integer> parameterMarkerIndexes;
     
     private final ShardingOperator operator;
     
     public WhereEncryptColumnToken(final int startIndex, final int stopIndex, 
-                                   final String columnName, final Map<Integer, Comparable<?>> indexValues, final Collection<Integer> parameterMarkerIndexes, final ShardingOperator operator) {
+                                   final String columnName, final Map<Integer, Object> indexValues, final Collection<Integer> parameterMarkerIndexes, final ShardingOperator operator) {
         super(startIndex, stopIndex);
         this.columnName = columnName;
         this.indexValues = indexValues;

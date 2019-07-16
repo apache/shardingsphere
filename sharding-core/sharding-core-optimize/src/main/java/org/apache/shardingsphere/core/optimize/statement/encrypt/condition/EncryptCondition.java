@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.optimize.statement.encrypt.condition;
 
-import com.google.common.base.Preconditions;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -26,8 +25,8 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegme
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -53,7 +52,7 @@ public final class EncryptCondition {
     
     private final ShardingOperator operator;
     
-    private final Map<Integer, Comparable<?>> positionValueMap = new LinkedHashMap<>();
+    private final Map<Integer, Object> positionValueMap = new LinkedHashMap<>();
     
     private final Map<Integer, Integer> positionIndexMap = new LinkedHashMap<>();
     
@@ -83,25 +82,24 @@ public final class EncryptCondition {
         if (expressionSegment instanceof ParameterMarkerExpressionSegment) {
             positionIndexMap.put(position, ((ParameterMarkerExpressionSegment) expressionSegment).getParameterMarkerIndex());
         } else if (expressionSegment instanceof LiteralExpressionSegment) {
-            positionValueMap.put(position, (Comparable<?>) ((LiteralExpressionSegment) expressionSegment).getLiterals());
+            positionValueMap.put(position, ((LiteralExpressionSegment) expressionSegment).getLiterals());
         }
     }
     
     /**
-     * Get condition values.
+     * Get values.
      *
-     * @param parameters parameters
-     * @return condition values
+     * @param parameters SQL parameters
+     * @return values
      */
-    public List<Comparable<?>> getConditionValues(final List<Object> parameters) {
-        List<Comparable<?>> result = new LinkedList<>(positionValueMap.values());
+    public List<Object> getValues(final List<Object> parameters) {
+        List<Object> result = new ArrayList<>(positionValueMap.values());
         for (Entry<Integer, Integer> entry : positionIndexMap.entrySet()) {
             Object parameter = parameters.get(entry.getValue());
-            Preconditions.checkArgument(parameter instanceof Comparable<?>, "Parameter `%s` should extends Comparable for sharding value.", parameter);
             if (entry.getKey() < result.size()) {
-                result.add(entry.getKey(), (Comparable<?>) parameter);
+                result.add(entry.getKey(), parameter);
             } else {
-                result.add((Comparable<?>) parameter);
+                result.add(parameter);
             }
         }
         return result;

@@ -39,8 +39,8 @@ public class UpdateEncryptAssistedItemTokenTest {
         assertThat(assistedItemToken.toString(), is("column_x = 'a', column_assist = 1"));
         assertThat(assistedItemToken.getColumnName(), is("column_x"));
         assertThat(assistedItemToken.getAssistedColumnName(), is("column_assist"));
-        assertThat(assistedItemToken.getColumnValue(), is((Comparable) "a"));
-        assertThat(assistedItemToken.getAssistedColumnValue(), is((Comparable) 1));
+        assertThat(assistedItemToken.getColumnValue(), is((Object) "a"));
+        assertThat(assistedItemToken.getAssistedColumnValue(), is((Object) 1));
         assertThat(assistedItemToken.getParameterMarkerIndex(), is(-1));
     }
 }

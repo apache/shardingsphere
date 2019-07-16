@@ -29,16 +29,16 @@ public final class UpdateEncryptAssistedItemToken extends EncryptColumnToken {
     
     private final String columnName;
     
-    private final Comparable<?> columnValue;
+    private final Object columnValue;
     
     private final String assistedColumnName;
     
-    private final Comparable<?> assistedColumnValue;
+    private final Object assistedColumnValue;
     
     private final int parameterMarkerIndex;
     
     public UpdateEncryptAssistedItemToken(final int startIndex, final int stopIndex, final String columnName, 
-                                          final Comparable<?> columnValue, final String assistedColumnName, final Comparable<?> assistedColumnValue, final int parameterMarkerIndex) {
+                                          final Object columnValue, final String assistedColumnName, final Object assistedColumnValue, final int parameterMarkerIndex) {
         super(startIndex, stopIndex);
         this.columnName = columnName;
         this.columnValue = columnValue;
@@ -52,7 +52,7 @@ public final class UpdateEncryptAssistedItemToken extends EncryptColumnToken {
     }
     
     public UpdateEncryptAssistedItemToken(final int startIndex, final int stopIndex, final String columnName,
-                                          final Comparable<?> columnValue, final String assistedColumnName, final Comparable<?> assistedColumnValue) {
+                                          final Object columnValue, final String assistedColumnName, final Object assistedColumnValue) {
         this(startIndex, stopIndex, columnName, columnValue, assistedColumnName, assistedColumnValue, -1);
     }
     
@@ -62,7 +62,7 @@ public final class UpdateEncryptAssistedItemToken extends EncryptColumnToken {
                 : String.format("%s = %s, %s = %s", columnName, toStringForColumnValue(columnValue), assistedColumnName, toStringForColumnValue(assistedColumnValue));
     }
     
-    private String toStringForColumnValue(final Comparable<?> columnValue) {
+    private String toStringForColumnValue(final Object columnValue) {
         return String.class == columnValue.getClass() ? String.format("'%s'", columnValue) : columnValue.toString();
     }
 }
