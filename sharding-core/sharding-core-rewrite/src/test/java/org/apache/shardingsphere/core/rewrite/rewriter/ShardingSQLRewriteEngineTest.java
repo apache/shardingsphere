@@ -902,7 +902,7 @@ public final class ShardingSQLRewriteEngineTest {
         expressionSegments.add(new LiteralExpressionSegment(0, 0, 3));
         expressionSegments.add(new LiteralExpressionSegment(0, 0, 5));
         List<EncryptCondition> encryptConditions = new LinkedList<>();
-        encryptConditions.add(new EncryptCondition("id", "table_z", new PredicateSegment(29, 39, null, null), expressionSegments));
+        encryptConditions.add(new EncryptCondition("table_z", new PredicateSegment(29, 39, new ColumnSegment(0, 0, "id"), null), expressionSegments));
         SQLRouteResult result = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), encryptConditions,
                 new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
                 new SelectItems(Collections.<SelectItem>emptyList(), false, 0), new Pagination(null, null, Collections.emptyList())));
@@ -926,7 +926,7 @@ public final class ShardingSQLRewriteEngineTest {
         expressionSegments.add(new LiteralExpressionSegment(0, 0, 3));
         expressionSegments.add(new LiteralExpressionSegment(0, 0, 5));
         List<EncryptCondition> encryptConditions = new LinkedList<>();
-        encryptConditions.add(new EncryptCondition("id", "table_k", new PredicateSegment(29, 39, null, null), expressionSegments));
+        encryptConditions.add(new EncryptCondition("table_k", new PredicateSegment(29, 39, new ColumnSegment(0, 0, "id"), null), expressionSegments));
         SQLRouteResult result = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), encryptConditions,
                 new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
                 new SelectItems(Collections.<SelectItem>emptyList(), false, 0), new Pagination(null, null, Collections.emptyList())));
@@ -949,7 +949,7 @@ public final class ShardingSQLRewriteEngineTest {
         updateStatement.getSQLSegments().add(setAssignmentsSegment);
         updateStatement.getAssignments().put(new Column("id", "table_z"), new LiteralExpressionSegment(0, 0, 1));
         List<EncryptCondition> encryptConditions = new LinkedList<>();
-        encryptConditions.add(new EncryptCondition("id", "table_z", new PredicateSegment(32, 37, null, null), new LiteralExpressionSegment(0, 0, 2)));
+        encryptConditions.add(new EncryptCondition("table_z", new PredicateSegment(32, 37, new ColumnSegment(0, 0, "id"), null), new LiteralExpressionSegment(0, 0, 2)));
         SQLRouteResult result = new SQLRouteResult(new ShardingWhereOptimizedStatement(updateStatement, 
                 new ShardingConditions(Collections.<ShardingCondition>emptyList()), new EncryptConditions(encryptConditions)));
         result.setRoutingResult(new RoutingResult());
@@ -1023,7 +1023,7 @@ public final class ShardingSQLRewriteEngineTest {
         selectStatement.getTables().add(new Table("table_z", null));
         selectStatement.getSQLSegments().add(new TableSegment(15, 21, "table_z"));
         List<EncryptCondition> encryptConditions = new LinkedList<>();
-        encryptConditions.add(new EncryptCondition("id", "table_z", new PredicateSegment(29, 32, null, null), new ParameterMarkerExpressionSegment(0, 0, 0)));
+        encryptConditions.add(new EncryptCondition("table_z", new PredicateSegment(29, 32, new ColumnSegment(0, 0, "id"), null), new ParameterMarkerExpressionSegment(0, 0, 0)));
         SQLRouteResult result = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), encryptConditions,
                 new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
                 new SelectItems(Collections.<SelectItem>emptyList(), false, 0), new Pagination(null, null, Collections.emptyList())));
@@ -1048,8 +1048,8 @@ public final class ShardingSQLRewriteEngineTest {
         expressionSegments.add(new ParameterMarkerExpressionSegment(0, 0, 0));
         expressionSegments.add(new ParameterMarkerExpressionSegment(0, 0, 1));
         List<EncryptCondition> encryptConditions = new LinkedList<>();
-        encryptConditions.add(new EncryptCondition("id", "table_z", new PredicateSegment(29, 40, null, null), expressionSegments));
-        encryptConditions.add(new EncryptCondition("id", "table_z", new PredicateSegment(45, 50, null, null), new LiteralExpressionSegment(0, 0, 3)));
+        encryptConditions.add(new EncryptCondition("table_z", new PredicateSegment(29, 40, new ColumnSegment(0, 0, "id"), null), expressionSegments));
+        encryptConditions.add(new EncryptCondition("table_z", new PredicateSegment(45, 50, new ColumnSegment(0, 0, "id"), null), new LiteralExpressionSegment(0, 0, 3)));
         SQLRouteResult result = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), encryptConditions,
                 new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
                 new SelectItems(Collections.<SelectItem>emptyList(), false, 0), new Pagination(null, null, Collections.emptyList())));
@@ -1070,7 +1070,7 @@ public final class ShardingSQLRewriteEngineTest {
         selectStatement.getTables().add(new Table("table_k", null));
         selectStatement.getSQLSegments().add(new TableSegment(15, 21, "table_k"));
         List<EncryptCondition> encryptConditions = new LinkedList<>();
-        encryptConditions.add(new EncryptCondition("id", "table_k", new PredicateSegment(29, 32, null, null), new ParameterMarkerExpressionSegment(0, 0, 0)));
+        encryptConditions.add(new EncryptCondition("table_k", new PredicateSegment(29, 32, new ColumnSegment(0, 0, "id"), null), new ParameterMarkerExpressionSegment(0, 0, 0)));
         SQLRouteResult result = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), encryptConditions,
                 new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
                 new SelectItems(Collections.<SelectItem>emptyList(), false, 0), new Pagination(null, null, Collections.emptyList())));

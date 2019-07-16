@@ -41,7 +41,7 @@ import java.util.Map.Entry;
  */
 @Getter
 @EqualsAndHashCode(exclude = {"predicateSegment"})
-@ToString
+@ToString(exclude = {"predicateSegment"})
 public final class EncryptCondition {
     
     private final String columnName;
@@ -56,16 +56,16 @@ public final class EncryptCondition {
     
     private final Map<Integer, Integer> positionIndexMap = new LinkedHashMap<>();
     
-    public EncryptCondition(final String columnName, final String tableName, final PredicateSegment predicateSegment, final ExpressionSegment expressionSegment) {
-        this.columnName = columnName;
+    public EncryptCondition(final String tableName, final PredicateSegment predicateSegment, final ExpressionSegment expressionSegment) {
+        this.columnName = predicateSegment.getColumn().getName();
         this.tableName = tableName;
         this.predicateSegment = predicateSegment;
         operator = ShardingOperator.EQUAL;
         putPositionMap(0, expressionSegment);
     }
     
-    public EncryptCondition(final String columnName, final String tableName, final PredicateSegment predicateSegment, final List<ExpressionSegment> expressionSegments) {
-        this.columnName = columnName;
+    public EncryptCondition(final String tableName, final PredicateSegment predicateSegment, final List<ExpressionSegment> expressionSegments) {
+        this.columnName = predicateSegment.getColumn().getName();
         this.tableName = tableName;
         this.predicateSegment = predicateSegment;
         operator = ShardingOperator.IN;

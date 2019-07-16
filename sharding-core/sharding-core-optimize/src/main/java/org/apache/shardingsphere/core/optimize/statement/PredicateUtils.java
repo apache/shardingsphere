@@ -92,27 +92,25 @@ public final class PredicateUtils {
      * Create condition of compare operator.
      * 
      * @param compareRightValue right value of compare operator
-     * @param columnName column name
      * @param tableName table name
      * @param predicateSegment predicate segment
      * @return condition
      */
     public static Optional<EncryptCondition> createCompareCondition(final PredicateCompareRightValue compareRightValue,
-                                                                    final String columnName, final String tableName, final PredicateSegment predicateSegment) {
+                                                                    final String tableName, final PredicateSegment predicateSegment) {
         return compareRightValue.getExpression() instanceof SimpleExpressionSegment 
-                ? Optional.of(new EncryptCondition(columnName, tableName, predicateSegment, compareRightValue.getExpression())) : Optional.<EncryptCondition>absent();
+                ? Optional.of(new EncryptCondition(tableName, predicateSegment, compareRightValue.getExpression())) : Optional.<EncryptCondition>absent();
     }
     
     /**
      * Create condition of IN operator.
      *
      * @param inRightValue right value of IN operator
-     * @param columnName column name
      * @param tableName table name
      * @param predicateSegment predicate segment
      * @return condition
      */
-    public static Optional<EncryptCondition> createInCondition(final PredicateInRightValue inRightValue, final String columnName, final String tableName, final PredicateSegment predicateSegment) {
+    public static Optional<EncryptCondition> createInCondition(final PredicateInRightValue inRightValue, final String tableName, final PredicateSegment predicateSegment) {
         List<ExpressionSegment> expressionSegments = new LinkedList<>();
         for (ExpressionSegment each : inRightValue.getSqlExpressions()) {
             if (each instanceof SimpleExpressionSegment) {
@@ -121,6 +119,6 @@ public final class PredicateUtils {
                 return Optional.absent();
             }
         }
-        return expressionSegments.isEmpty() ? Optional.<EncryptCondition>absent() : Optional.of(new EncryptCondition(columnName, tableName, predicateSegment, expressionSegments));
+        return expressionSegments.isEmpty() ? Optional.<EncryptCondition>absent() : Optional.of(new EncryptCondition(tableName, predicateSegment, expressionSegments));
     }
 }

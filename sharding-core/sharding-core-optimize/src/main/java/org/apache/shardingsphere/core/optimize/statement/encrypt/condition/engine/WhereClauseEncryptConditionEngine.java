@@ -97,17 +97,17 @@ public final class WhereClauseEncryptConditionEngine {
         if (!tableName.isPresent() || !encryptRule.getEncryptorEngine().getShardingEncryptor(tableName.get(), predicateSegment.getColumn().getName()).isPresent()) {
             return Optional.absent();
         }
-        return createEncryptCondition(predicateSegment, predicateSegment.getColumn().getName(), tableName.get());
+        return createEncryptCondition(predicateSegment, tableName.get());
     }
 
-    private Optional<EncryptCondition> createEncryptCondition(final PredicateSegment predicateSegment, final String columnName, final String tableName) {
+    private Optional<EncryptCondition> createEncryptCondition(final PredicateSegment predicateSegment, final String tableName) {
         if (predicateSegment.getRightValue() instanceof PredicateCompareRightValue) {
             PredicateCompareRightValue compareRightValue = (PredicateCompareRightValue) predicateSegment.getRightValue();
             return isSupportedOperator(compareRightValue.getOperator())
-                    ? PredicateUtils.createCompareCondition(compareRightValue, columnName, tableName, predicateSegment) : Optional.<EncryptCondition>absent();
+                    ? PredicateUtils.createCompareCondition(compareRightValue, tableName, predicateSegment) : Optional.<EncryptCondition>absent();
         }
         if (predicateSegment.getRightValue() instanceof PredicateInRightValue) {
-            return PredicateUtils.createInCondition((PredicateInRightValue) predicateSegment.getRightValue(), columnName, tableName, predicateSegment);
+            return PredicateUtils.createInCondition((PredicateInRightValue) predicateSegment.getRightValue(), tableName, predicateSegment);
         }
         if (predicateSegment.getRightValue() instanceof PredicateBetweenRightValue) {
             throw new ShardingException("The SQL clause 'BETWEEN...AND...' is unsupported in encrypt rule.");

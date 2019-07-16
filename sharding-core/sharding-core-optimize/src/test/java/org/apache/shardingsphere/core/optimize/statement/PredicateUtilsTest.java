@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.core.optimize.statement;
 
+import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.complex.SubquerySegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateCompareRightValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateInRightValue;
 import org.junit.Test;
@@ -34,27 +36,30 @@ public final class PredicateUtilsTest {
     
     @Test
     public void assertCreateInConditionOne() {
-        assertFalse(
-                PredicateUtils.createInCondition(new PredicateInRightValue(Collections.<ExpressionSegment>singletonList(new SubquerySegment(0, 0, "test"))), null, "", null).isPresent());
+        PredicateSegment predicateSegment = new PredicateSegment(
+                0, 0, new ColumnSegment(0, 0, "id"), new PredicateInRightValue(Collections.<ExpressionSegment>singletonList(new SubquerySegment(0, 0, "test"))));
+        assertFalse(PredicateUtils.createInCondition((PredicateInRightValue) predicateSegment.getRightValue(), "", predicateSegment).isPresent());
     }
     
     @Test
     public void assertCreateInConditionTwo() {
-        assertThat(PredicateUtils.createInCondition(
-                new PredicateInRightValue(Collections.<ExpressionSegment>singletonList(new ParameterMarkerExpressionSegment(0, 0, 1))), "id", "tbl", null).toString(),
-                is("Optional.of(EncryptCondition(columnName=id, tableName=tbl, predicateSegment=null, operator=IN, positionValueMap={}, positionIndexMap={0=1}))"));
+        PredicateSegment predicateSegment = new PredicateSegment(
+                0, 0, new ColumnSegment(0, 0, "id"), new PredicateInRightValue(Collections.<ExpressionSegment>singletonList(new ParameterMarkerExpressionSegment(0, 0, 1))));
+        assertThat(PredicateUtils.createInCondition((PredicateInRightValue) predicateSegment.getRightValue(), "tbl", predicateSegment).toString(),
+                is("Optional.of(EncryptCondition(columnName=id, tableName=tbl, operator=IN, positionValueMap={}, positionIndexMap={0=1}))"));
     }
     
     @Test
     public void assertCreateCompareConditionWithNonNull() {
         ParameterMarkerExpressionSegment parameterMarkerExpressionSegment = new ParameterMarkerExpressionSegment(0, 0, 1);
         PredicateCompareRightValue predicateCompareRightValue = new PredicateCompareRightValue("=", parameterMarkerExpressionSegment);
-        assertThat(PredicateUtils.createCompareCondition(predicateCompareRightValue, "id", "tbl", null).toString(),
-                is("Optional.of(EncryptCondition(columnName=id, tableName=tbl, predicateSegment=null, operator=EQUAL, positionValueMap={}, positionIndexMap={0=1}))"));
+        PredicateSegment predicateSegment = new PredicateSegment(0, 0, new ColumnSegment(0, 0, "id"), predicateCompareRightValue);
+        assertThat(PredicateUtils.createCompareCondition((PredicateCompareRightValue) predicateSegment.getRightValue(), "tbl", predicateSegment).toString(),
+                is("Optional.of(EncryptCondition(columnName=id, tableName=tbl, operator=EQUAL, positionValueMap={}, positionIndexMap={0=1}))"));
     }
     
     @Test
     public void assertCreateCompareConditionWithNull() {
-        assertFalse(PredicateUtils.createCompareCondition(new PredicateCompareRightValue("=", null), null, null, null).isPresent());
+        assertFalse(PredicateUtils.createCompareCondition(new PredicateCompareRightValue("=", null), null, null).isPresent());
     }
 }
