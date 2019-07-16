@@ -20,6 +20,7 @@ package org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert;
 import lombok.Getter;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.statement.InsertColumns;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
@@ -47,7 +48,7 @@ public final class ShardingInsertColumns implements InsertColumns {
         String tableName = insertStatement.getTables().getSingleTableName();
         generateKeyColumnName = shardingRule.findGenerateKeyColumnName(tableName).orNull();
         assistedQueryColumnNames = shardingRule.getEncryptRule().getEncryptorEngine().getAssistedQueryColumns(tableName);
-        regularColumnNames = insertStatement.getColumnNames().isEmpty() ? getRegularColumnNamesFromMetaData(shardingTableMetaData) : getRegularColumnNamesFromSQLStatement();
+        regularColumnNames = insertStatement.getColumns().isEmpty() ? getRegularColumnNamesFromMetaData(shardingTableMetaData) : getRegularColumnNamesFromSQLStatement();
     }
     
     private Collection<String> getRegularColumnNamesFromMetaData(final ShardingTableMetaData shardingTableMetaData) {
@@ -69,7 +70,10 @@ public final class ShardingInsertColumns implements InsertColumns {
     }
     
     private Collection<String> getRegularColumnNamesFromSQLStatement() {
-        Collection<String> result = new LinkedHashSet<>(insertStatement.getColumnNames());
+        Collection<String> result = new LinkedHashSet<>(insertStatement.getColumns().size(), 1);
+        for (ColumnSegment each : insertStatement.getColumns()) {
+            result.add(each.getName());
+        }
         if (isGenerateKeyFromSQLStatement()) {
             result.remove(generateKeyColumnName);
         }
@@ -77,7 +81,7 @@ public final class ShardingInsertColumns implements InsertColumns {
     }
     
     private boolean isGenerateKeyFromSQLStatement() {
-        return null != generateKeyColumnName && insertStatement.getColumnNames().size() != insertStatement.getValues().iterator().next().getAssignments().size();
+        return null != generateKeyColumnName && insertStatement.getColumns().size() != insertStatement.getValues().iterator().next().getAssignments().size();
     }
     
     @Override

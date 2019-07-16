@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.parse.filler.impl.dml;
 
 import org.apache.shardingsphere.core.parse.filler.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
@@ -33,11 +32,6 @@ public final class InsertColumnsFiller implements SQLSegmentFiller<InsertColumns
     
     @Override
     public void fill(final InsertColumnsSegment sqlSegment, final SQLStatement sqlStatement) {
-        if (sqlStatement instanceof InsertStatement) {
-            InsertStatement insertStatement = (InsertStatement) sqlStatement;
-            for (ColumnSegment each : sqlSegment.getColumns()) {
-                insertStatement.getColumnNames().add(each.getName());
-            }
-        }
+        ((InsertStatement) sqlStatement).getColumns().addAll(sqlSegment.getColumns());
     }
 }

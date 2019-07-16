@@ -49,7 +49,7 @@ public final class SetAssignmentsFiller implements SQLSegmentFiller<SetAssignmen
     
     private void fillInsert(final SetAssignmentsSegment sqlSegment, final InsertStatement insertStatement) {
         for (AssignmentSegment each : sqlSegment.getAssignments()) {
-            insertStatement.getColumnNames().add(each.getColumn().getName());
+            insertStatement.getColumns().add(each.getColumn());
         }
         insertStatement.getValues().add(getInsertValue(sqlSegment));
     }

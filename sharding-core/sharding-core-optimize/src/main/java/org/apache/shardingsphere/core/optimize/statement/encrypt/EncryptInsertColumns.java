@@ -20,11 +20,13 @@ package org.apache.shardingsphere.core.optimize.statement.encrypt;
 import lombok.Getter;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.statement.InsertColumns;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 
 /**
  * Insert columns for encrypt.
@@ -41,7 +43,7 @@ public final class EncryptInsertColumns implements InsertColumns {
     public EncryptInsertColumns(final EncryptRule encryptRule, final ShardingTableMetaData shardingTableMetaData, final InsertStatement insertStatement) {
         String tableName = insertStatement.getTables().getSingleTableName();
         assistedQueryColumnNames = encryptRule.getEncryptorEngine().getAssistedQueryColumns(tableName);
-        regularColumnNames = insertStatement.getColumnNames().isEmpty() ? getRegularColumnNamesFromMetaData(shardingTableMetaData, tableName) : insertStatement.getColumnNames();
+        regularColumnNames = insertStatement.getColumns().isEmpty() ? getRegularColumnNamesFromMetaData(shardingTableMetaData, tableName) : getColumnNamesFromSQLStatement(insertStatement);
     }
     
     private Collection<String> getRegularColumnNamesFromMetaData(final ShardingTableMetaData shardingTableMetaData, final String tableName) {
@@ -51,6 +53,14 @@ public final class EncryptInsertColumns implements InsertColumns {
             if (!assistedQueryColumnNames.contains(each)) {
                 result.add(each);
             }
+        }
+        return result;
+    }
+    
+    private Collection<String> getColumnNamesFromSQLStatement(final InsertStatement insertStatement) {
+        Collection<String> result = new LinkedList<>();
+        for (ColumnSegment each : insertStatement.getColumns()) {
+            result.add(each.getName());
         }
         return result;
     }

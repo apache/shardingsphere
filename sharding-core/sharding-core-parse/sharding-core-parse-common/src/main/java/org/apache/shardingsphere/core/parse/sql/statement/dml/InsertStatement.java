@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.parse.sql.context.InsertValue;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -37,7 +38,7 @@ import java.util.LinkedList;
 @ToString(callSuper = true)
 public final class InsertStatement extends DMLStatement {
     
-    private final Collection<String> columnNames = new LinkedList<>();
+    private final Collection<ColumnSegment> columns = new LinkedList<>();
     
     private final Collection<InsertValue> values = new LinkedList<>();
 }
