@@ -21,9 +21,9 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.WhereOptimizedStatement;
-import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
+import org.apache.shardingsphere.core.optimize.statement.encrypt.condition.EncryptCondition;
+import org.apache.shardingsphere.core.optimize.statement.encrypt.condition.EncryptConditions;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
-import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
@@ -65,24 +65,24 @@ public final class WhereEncryptColumnTokenGenerator implements CollectionSQLToke
         if (!(optimizedStatement instanceof WhereOptimizedStatement) || ((WhereOptimizedStatement) optimizedStatement).getEncryptConditions().getConditions().isEmpty()) {
             return result;
         }
-        for (Condition each : ((WhereOptimizedStatement) optimizedStatement).getEncryptConditions().getConditions()) {
-            this.column = new Column(each.getColumn().getName(), optimizedStatement.getSQLStatement().getTables().getSingleTableName());
-            this.startIndex = each.getPredicateSegment().getStartIndex();
-            this.stopIndex = each.getPredicateSegment().getStopIndex();
+        for (EncryptCondition each : ((WhereOptimizedStatement) optimizedStatement).getEncryptConditions().getConditions()) {
+            column = new Column(each.getColumnName(), optimizedStatement.getSQLStatement().getTables().getSingleTableName());
+            startIndex = each.getPredicateSegment().getStartIndex();
+            stopIndex = each.getPredicateSegment().getStopIndex();
             result.add(createEncryptColumnToken(optimizedStatement, parameterBuilder, encryptRule.getEncryptorEngine()));
         }
         return result;
     }
     
     private EncryptColumnToken createEncryptColumnToken(final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final ShardingEncryptorEngine encryptorEngine) {
-        Optional<Condition> encryptCondition = getEncryptCondition(((WhereOptimizedStatement) optimizedStatement).getEncryptConditions());
+        Optional<EncryptCondition> encryptCondition = getEncryptCondition(((WhereOptimizedStatement) optimizedStatement).getEncryptConditions());
         Preconditions.checkArgument(encryptCondition.isPresent(), "Can not find encrypt condition");
         return getEncryptColumnTokenFromConditions(encryptorEngine, encryptCondition.get(), parameterBuilder);
     }
     
-    private Optional<Condition> getEncryptCondition(final AndCondition encryptConditions) {
-        for (Condition each : encryptConditions.getConditions()) {
-            if (each.getColumn().equals(column) && isSameIndexes(each.getPredicateSegment())) {
+    private Optional<EncryptCondition> getEncryptCondition(final EncryptConditions encryptConditions) {
+        for (EncryptCondition each : encryptConditions.getConditions()) {
+            if (each.getColumnName().equalsIgnoreCase(column.getName()) && each.getTableName().equalsIgnoreCase(column.getTableName()) && isSameIndexes(each.getPredicateSegment())) {
                 return Optional.of(each);
             }
         }
@@ -94,7 +94,7 @@ public final class WhereEncryptColumnTokenGenerator implements CollectionSQLToke
     }
     
     private WhereEncryptColumnToken getEncryptColumnTokenFromConditions(
-            final ShardingEncryptorEngine encryptorEngine, final Condition encryptCondition, final ParameterBuilder parameterBuilder) {
+            final ShardingEncryptorEngine encryptorEngine, final EncryptCondition encryptCondition, final ParameterBuilder parameterBuilder) {
         ColumnNode columnNode = new ColumnNode(column.getTableName(), column.getName());
         List<Comparable<?>> encryptColumnValues = encryptValues(encryptorEngine, columnNode, encryptCondition.getConditionValues(parameterBuilder.getOriginalParameters()));
         encryptParameters(encryptCondition.getPositionIndexMap(), encryptColumnValues, parameterBuilder);

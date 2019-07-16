@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.core.parse.sql.statement.dml;
 
+import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.WhereSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -39,17 +41,16 @@ import java.util.Map;
 @Getter
 @Setter
 @ToString(callSuper = true)
-public final class UpdateStatement extends DMLStatement {
+public final class UpdateStatement extends DMLStatement implements WhereSegmentAvailable {
     
     private final Map<Column, ExpressionSegment> assignments = new LinkedHashMap<>();
     
-    private int whereStartIndex;
+    private WhereSegment where;
     
-    private int whereStopIndex;
-    
-    private int whereParameterStartIndex;
-    
-    private int whereParameterEndIndex;
+    @Override
+    public Optional<WhereSegment> getWhere() {
+        return Optional.fromNullable(where);
+    }
     
     /**
      * Get column value.

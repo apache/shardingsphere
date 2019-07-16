@@ -31,12 +31,11 @@ import java.util.LinkedList;
  */
 @RequiredArgsConstructor
 @Getter
-// TODO OrPredicateSegment is a aggregation of all AndPredicates, it should not be a SQLSegment
 public final class OrPredicateSegment implements SQLSegment {
     
     private final int startIndex = 0;
     
     private final int stopIndex = 0;
     
-    private Collection<AndPredicate> andPredicates = new LinkedList<>();
+    private final Collection<AndPredicate> andPredicates = new LinkedList<>();
 }

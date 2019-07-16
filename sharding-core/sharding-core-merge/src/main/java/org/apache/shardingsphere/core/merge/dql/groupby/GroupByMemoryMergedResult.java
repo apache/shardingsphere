@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.merge.dql.groupby;
 
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.dql.common.MemoryMergedResult;
@@ -26,7 +27,7 @@ import org.apache.shardingsphere.core.merge.dql.common.MemoryQueryResultRow;
 import org.apache.shardingsphere.core.merge.dql.groupby.aggregation.AggregationUnit;
 import org.apache.shardingsphere.core.merge.dql.groupby.aggregation.AggregationUnitFactory;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ShardingSelectOptimizedStatement;
-import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationSelectItem;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.AggregationSelectItem;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -41,6 +42,7 @@ import java.util.Map.Entry;
  * Memory merged result for group by.
  *
  * @author zhangliang
+ * @author yangyi
  */
 public final class GroupByMemoryMergedResult extends MemoryMergedResult {
     
@@ -66,7 +68,8 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult {
             }
         }
         setAggregationValueToMemoryRow(dataMap, aggregationMap);
-        List<MemoryQueryResultRow> result = getMemoryResultSetRows(dataMap);
+        List<Boolean> valueCaseSensitive = queryResults.isEmpty() ? Collections.<Boolean>emptyList() : getValueCaseSensitive(queryResults.iterator().next());
+        List<MemoryQueryResultRow> result = getMemoryResultSetRows(dataMap, valueCaseSensitive);
         if (!result.isEmpty()) {
             setCurrentResultSetRow(result.get(0));
         }
@@ -118,9 +121,17 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult {
         }
     }
     
-    private List<MemoryQueryResultRow> getMemoryResultSetRows(final Map<GroupByValue, MemoryQueryResultRow> dataMap) {
+    private List<Boolean> getValueCaseSensitive(final QueryResult queryResult) throws SQLException {
+        List<Boolean> result = Lists.newArrayList(false);
+        for (int columnIndex = 1; columnIndex <= queryResult.getColumnCount(); columnIndex++) {
+            result.add(queryResult.isCaseSensitive(columnIndex));
+        }
+        return result;
+    }
+    
+    private List<MemoryQueryResultRow> getMemoryResultSetRows(final Map<GroupByValue, MemoryQueryResultRow> dataMap, final List<Boolean> valueCaseSensitive) {
         List<MemoryQueryResultRow> result = new ArrayList<>(dataMap.values());
-        Collections.sort(result, new GroupByRowComparator(optimizedStatement));
+        Collections.sort(result, new GroupByRowComparator(optimizedStatement, valueCaseSensitive));
         return result;
     }
     

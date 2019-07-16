@@ -18,12 +18,13 @@
 package org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.engine;
 
 import com.google.common.base.Optional;
+import org.apache.shardingsphere.core.constant.AggregationType;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.AggregationDistinctSelectItem;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.AggregationSelectItem;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.CommonSelectItem;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.SelectItem;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.ShorthandSelectItem;
 import org.apache.shardingsphere.core.parse.constant.DerivedColumn;
-import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationDistinctSelectItem;
-import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationSelectItem;
-import org.apache.shardingsphere.core.parse.sql.context.selectitem.CommonSelectItem;
-import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
-import org.apache.shardingsphere.core.parse.sql.context.selectitem.StarSelectItem;
 import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.AggregationDistinctSelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.AggregationSelectItemSegment;
@@ -34,13 +35,15 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.item.ShorthandSelect
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
 /**
- * Select items engine.
+ * Select item engine.
  *
  * @author zhangliang
  */
 public final class SelectItemEngine {
     
-    private int derivedColumnCount;
+    private int aggregationAverageDerivedColumnCount;
+    
+    private int aggregationDistinctDerivedColumnCount;
     
     /**
      * Create select item.
@@ -51,40 +54,77 @@ public final class SelectItemEngine {
      */
     public Optional<SelectItem> createSelectItem(final SelectItemSegment selectItemSegment, final SQLStatement sqlStatement) {
         if (selectItemSegment instanceof ShorthandSelectItemSegment) {
-            return Optional.<SelectItem>of(createShorthandSelectItemSegment((ShorthandSelectItemSegment) selectItemSegment));
+            return Optional.<SelectItem>of(createSelectItem((ShorthandSelectItemSegment) selectItemSegment));
         }
         if (selectItemSegment instanceof ColumnSelectItemSegment) {
-            return Optional.<SelectItem>of(createColumnSelectItemSegment((ColumnSelectItemSegment) selectItemSegment));
+            return Optional.<SelectItem>of(createSelectItem((ColumnSelectItemSegment) selectItemSegment));
         }
         if (selectItemSegment instanceof ExpressionSelectItemSegment) {
-            return Optional.<SelectItem>of(createExpressionSelectItemSegment((ExpressionSelectItemSegment) selectItemSegment));
+            return Optional.<SelectItem>of(createSelectItem((ExpressionSelectItemSegment) selectItemSegment));
+        }
+        if (selectItemSegment instanceof AggregationDistinctSelectItemSegment) {
+            return Optional.<SelectItem>of(createSelectItem((AggregationDistinctSelectItemSegment) selectItemSegment, sqlStatement));
         }
         if (selectItemSegment instanceof AggregationSelectItemSegment) {
-            return Optional.<SelectItem>of(createAggregationSelectItemSegment((AggregationSelectItemSegment) selectItemSegment, sqlStatement));
+            return Optional.<SelectItem>of(createSelectItem((AggregationSelectItemSegment) selectItemSegment, sqlStatement));
         }
         // TODO subquery
         return Optional.absent();
     }
     
-    private StarSelectItem createShorthandSelectItemSegment(final ShorthandSelectItemSegment selectItemSegment) {
+    private ShorthandSelectItem createSelectItem(final ShorthandSelectItemSegment selectItemSegment) {
         Optional<TableSegment> owner = selectItemSegment.getOwner();
-        return new StarSelectItem(owner.isPresent() ? owner.get().getName() : null);
+        return new ShorthandSelectItem(owner.isPresent() ? owner.get().getName() : null);
     }
     
-    private CommonSelectItem createColumnSelectItemSegment(final ColumnSelectItemSegment selectItemSegment) {
+    private CommonSelectItem createSelectItem(final ColumnSelectItemSegment selectItemSegment) {
         return new CommonSelectItem(selectItemSegment.getQualifiedName(), selectItemSegment.getAlias().orNull());
     }
     
-    private CommonSelectItem createExpressionSelectItemSegment(final ExpressionSelectItemSegment selectItemSegment) {
+    private CommonSelectItem createSelectItem(final ExpressionSelectItemSegment selectItemSegment) {
         return new CommonSelectItem(selectItemSegment.getText(), selectItemSegment.getAlias().orNull());
     }
     
-    private AggregationSelectItem createAggregationSelectItemSegment(final AggregationSelectItemSegment selectItemSegment, final SQLStatement sqlStatement) {
+    private AggregationDistinctSelectItem createSelectItem(final AggregationDistinctSelectItemSegment selectItemSegment, final SQLStatement sqlStatement) {
         String innerExpression = sqlStatement.getLogicSQL().substring(selectItemSegment.getInnerExpressionStartIndex(), selectItemSegment.getStopIndex() + 1);
-        if (selectItemSegment instanceof AggregationDistinctSelectItemSegment) {
-            String alias = selectItemSegment.getAlias().or(DerivedColumn.AGGREGATION_DISTINCT_DERIVED.getDerivedColumnAlias(derivedColumnCount++));
-            return new AggregationDistinctSelectItem(selectItemSegment.getType(), innerExpression, alias, ((AggregationDistinctSelectItemSegment) selectItemSegment).getDistinctExpression());
+        String alias = selectItemSegment.getAlias().or(DerivedColumn.AGGREGATION_DISTINCT_DERIVED.getDerivedColumnAlias(aggregationDistinctDerivedColumnCount++));
+        AggregationDistinctSelectItem result = new AggregationDistinctSelectItem(selectItemSegment.getType(), innerExpression, alias, selectItemSegment.getDistinctExpression());
+        if (AggregationType.AVG == result.getType()) {
+            appendAverageDistinctDerivedItem(result);
         }
-        return new AggregationSelectItem(selectItemSegment.getType(), innerExpression, selectItemSegment.getAlias().orNull());
+        return result;
+    }
+    
+    private AggregationSelectItem createSelectItem(final AggregationSelectItemSegment selectItemSegment, final SQLStatement sqlStatement) {
+        String innerExpression = sqlStatement.getLogicSQL().substring(selectItemSegment.getInnerExpressionStartIndex(), selectItemSegment.getStopIndex() + 1);
+        AggregationSelectItem result = new AggregationSelectItem(selectItemSegment.getType(), innerExpression, selectItemSegment.getAlias().orNull());
+        if (AggregationType.AVG == result.getType()) {
+            appendAverageDerivedItem(result);
+            // TODO replace avg to constant, avoid calculate useless avg
+        }
+        return result;
+    }
+    
+    private void appendAverageDistinctDerivedItem(final AggregationDistinctSelectItem averageDistinctSelectItem) {
+        String innerExpression = averageDistinctSelectItem.getInnerExpression();
+        String distinctInnerExpression = averageDistinctSelectItem.getDistinctInnerExpression();
+        String countAlias = DerivedColumn.AVG_COUNT_ALIAS.getDerivedColumnAlias(aggregationAverageDerivedColumnCount);
+        AggregationDistinctSelectItem countDistinctSelectItem = new AggregationDistinctSelectItem(AggregationType.COUNT, innerExpression, countAlias, distinctInnerExpression);
+        String sumAlias = DerivedColumn.AVG_SUM_ALIAS.getDerivedColumnAlias(aggregationAverageDerivedColumnCount);
+        AggregationDistinctSelectItem sumDistinctSelectItem = new AggregationDistinctSelectItem(AggregationType.SUM, innerExpression, sumAlias, distinctInnerExpression);
+        averageDistinctSelectItem.getDerivedAggregationItems().add(countDistinctSelectItem);
+        averageDistinctSelectItem.getDerivedAggregationItems().add(sumDistinctSelectItem);
+        aggregationAverageDerivedColumnCount++;
+    }
+    
+    private void appendAverageDerivedItem(final AggregationSelectItem averageSelectItem) {
+        String innerExpression = averageSelectItem.getInnerExpression();
+        String countAlias = DerivedColumn.AVG_COUNT_ALIAS.getDerivedColumnAlias(aggregationAverageDerivedColumnCount);
+        AggregationSelectItem countSelectItem = new AggregationSelectItem(AggregationType.COUNT, innerExpression, countAlias);
+        String sumAlias = DerivedColumn.AVG_SUM_ALIAS.getDerivedColumnAlias(aggregationAverageDerivedColumnCount);
+        AggregationSelectItem sumSelectItem = new AggregationSelectItem(AggregationType.SUM, innerExpression, sumAlias);
+        averageSelectItem.getDerivedAggregationItems().add(countSelectItem);
+        averageSelectItem.getDerivedAggregationItems().add(sumSelectItem);
+        aggregationAverageDerivedColumnCount++;
     }
 }

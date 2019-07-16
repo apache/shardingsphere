@@ -26,15 +26,16 @@ import org.apache.shardingsphere.core.merge.MergedResult;
 import org.apache.shardingsphere.core.merge.dql.DQLMergeEngine;
 import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
 import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.encrypt.condition.EncryptCondition;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ShardingSelectOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.groupby.GroupBy;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.AggregationSelectItem;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.SelectItem;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.SelectItems;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderBy;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderByItem;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.pagination.Pagination;
-import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
-import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationSelectItem;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
@@ -46,6 +47,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -83,11 +85,9 @@ public final class GroupByMemoryMergedResultTest {
         AggregationSelectItem derivedAggregationSelectItem2 = new AggregationSelectItem(AggregationType.SUM, "(num)", "AVG_DERIVED_SUM_0");
         aggregationSelectItem2.setIndex(5);
         aggregationSelectItem2.getDerivedAggregationItems().add(derivedAggregationSelectItem2);
-        SelectItems selectItems = new SelectItems(false, 0);
-        selectItems.getItems().add(aggregationSelectItem1);
-        selectItems.getItems().add(aggregationSelectItem2);
+        SelectItems selectItems = new SelectItems(Arrays.<SelectItem>asList(aggregationSelectItem1, aggregationSelectItem2), false, 0);
         OptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(
-                new SelectStatement(), Collections.<ShardingCondition>emptyList(), new AndCondition(), 
+                new SelectStatement(), Collections.<ShardingCondition>emptyList(), Collections.<EncryptCondition>emptyList(), 
                 new GroupBy(Collections.singletonList(createOrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, OrderDirection.ASC))), 0),
                 new OrderBy(Collections.singletonList(createOrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.DESC, OrderDirection.ASC))), false),
                 selectItems, new Pagination(null, null, Collections.emptyList()));

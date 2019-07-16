@@ -33,6 +33,7 @@ import org.apache.shardingsphere.core.parse.sql.statement.ddl.DropIndexStatement
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.DropTableStatement;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.util.ConfigurationLogger;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.ShardingRuleChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.state.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.state.schema.OrchestrationShardingSchema;
@@ -51,6 +52,7 @@ import java.util.Map;
  * @author panjuan
  * @author zhaojun
  * @author wangkai
+ * @author sunbufu
  */
 @Getter
 public final class ShardingSchema extends LogicSchema {
@@ -83,6 +85,7 @@ public final class ShardingSchema extends LogicSchema {
     @Subscribe
     public synchronized void renew(final ShardingRuleChangedEvent shardingRuleChangedEvent) {
         if (getName().equals(shardingRuleChangedEvent.getShardingSchemaName())) {
+            ConfigurationLogger.log(shardingRuleChangedEvent.getShardingRuleConfiguration());
             shardingRule = new OrchestrationShardingRule(shardingRuleChangedEvent.getShardingRuleConfiguration(), getDataSources().keySet());
         }
     }

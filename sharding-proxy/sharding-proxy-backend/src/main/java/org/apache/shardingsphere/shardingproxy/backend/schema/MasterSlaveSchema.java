@@ -27,6 +27,7 @@ import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.entry.MasterSlaveSQLParseEntry;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.util.ConfigurationLogger;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.MasterSlaveRuleChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.state.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.state.schema.OrchestrationShardingSchema;
@@ -39,6 +40,7 @@ import java.util.Map;
  * Master-slave schema.
  *
  * @author panjuan
+ * @author sunbufu
  */
 @Getter
 public final class MasterSlaveSchema extends LogicSchema {
@@ -78,6 +80,7 @@ public final class MasterSlaveSchema extends LogicSchema {
     @Subscribe
     public synchronized void renew(final MasterSlaveRuleChangedEvent masterSlaveRuleChangedEvent) {
         if (getName().equals(masterSlaveRuleChangedEvent.getShardingSchemaName())) {
+            ConfigurationLogger.log(masterSlaveRuleChangedEvent.getMasterSlaveRuleConfiguration());
             masterSlaveRule = new OrchestrationMasterSlaveRule(masterSlaveRuleChangedEvent.getMasterSlaveRuleConfiguration());
         }
     }

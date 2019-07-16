@@ -28,6 +28,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Arrays;
 
@@ -46,12 +47,19 @@ public final class OrderByValueTest {
     @Mock
     private ResultSet resultSet2;
     
+    @Mock
+    private ResultSetMetaData resultSetMetaData;
+    
     @Before
     public void setUp() throws SQLException {
         when(resultSet1.next()).thenReturn(true, false);
         when(resultSet2.next()).thenReturn(true, false);
         when(resultSet1.getObject(1)).thenReturn("1");
         when(resultSet1.getObject(2)).thenReturn("2");
+        when(resultSet1.getMetaData()).thenReturn(resultSetMetaData);
+        when(resultSet2.getMetaData()).thenReturn(resultSetMetaData);
+        when(resultSetMetaData.isCaseSensitive(1)).thenReturn(false);
+        when(resultSetMetaData.isCaseSensitive(1)).thenReturn(true);
     }
     
     @Test

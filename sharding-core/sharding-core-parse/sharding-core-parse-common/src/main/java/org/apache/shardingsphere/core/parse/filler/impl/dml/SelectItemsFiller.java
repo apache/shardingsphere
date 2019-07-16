@@ -17,20 +17,20 @@
 
 package org.apache.shardingsphere.core.parse.filler.impl.dml;
 
-import lombok.Setter;
 import org.apache.shardingsphere.core.parse.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.SelectItemsSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 
 /**
  * Select items filler.
  *
  * @author duhongjun
  */
-@Setter
 public final class SelectItemsFiller implements SQLSegmentFiller<SelectItemsSegment> {
     
     @Override
     public void fill(final SelectItemsSegment sqlSegment, final SQLStatement sqlStatement) {
+        ((SelectStatement) sqlStatement).setSelectItems(sqlSegment);
     }
 }

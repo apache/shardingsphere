@@ -26,7 +26,8 @@
         <appender-ref ref="console"/>
     </logger>
     <logger name="org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine" level="off" />
-    
+    <logger name="org.apache.shardingsphere.core.util.ConfigurationLogger" level="off" />
+
     <root>
         <level value="error" />
         <appender-ref ref="console" />

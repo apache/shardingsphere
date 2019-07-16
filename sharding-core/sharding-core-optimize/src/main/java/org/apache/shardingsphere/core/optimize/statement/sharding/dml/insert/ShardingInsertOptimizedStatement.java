@@ -20,13 +20,15 @@ package org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert;
 import com.google.common.base.Optional;
 import lombok.Getter;
 import org.apache.shardingsphere.core.optimize.statement.InsertOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.encrypt.condition.EncryptCondition;
+import org.apache.shardingsphere.core.optimize.statement.encrypt.condition.EncryptConditions;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.ShardingWhereOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingConditions;
-import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -46,7 +48,7 @@ public final class ShardingInsertOptimizedStatement extends ShardingWhereOptimiz
     
     public ShardingInsertOptimizedStatement(
             final SQLStatement sqlStatement, final List<ShardingCondition> shardingConditions, final ShardingInsertColumns insertColumns, final GeneratedKey generatedKey) {
-        super(sqlStatement, new ShardingConditions(shardingConditions), new AndCondition());
+        super(sqlStatement, new ShardingConditions(shardingConditions), new EncryptConditions(Collections.<EncryptCondition>emptyList()));
         this.insertColumns = insertColumns;
         this.generatedKey = generatedKey;
     }

@@ -22,17 +22,18 @@ import com.google.common.collect.Range;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.optimize.statement.PredicateUtils;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.AlwaysFalseRouteValue;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.AlwaysFalseShardingCondition;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.generator.ConditionValueGeneratorFactory;
-import org.apache.shardingsphere.core.parse.filler.impl.dml.PredicateUtils;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.WhereSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.AndPredicate;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.OrPredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.SubqueryPredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.WhereSegmentAvailable;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RangeRouteValue;
@@ -67,26 +68,27 @@ public final class WhereClauseShardingConditionEngine {
      * @return sharding conditions
      */
     public List<ShardingCondition> createShardingConditions(final SQLStatement sqlStatement, final List<Object> parameters) {
-        List<ShardingCondition> result = new ArrayList<>();
-        Optional<OrPredicateSegment> orPredicateSegment = sqlStatement.findSQLSegment(OrPredicateSegment.class);
-        if (orPredicateSegment.isPresent()) {
-            result.addAll(createShardingConditions(sqlStatement, parameters, orPredicateSegment.get()));
+        if (!(sqlStatement instanceof WhereSegmentAvailable)) {
+            return Collections.emptyList();
         }
-        Optional<SubqueryPredicateSegment> subqueryPredicateSegment = sqlStatement.findSQLSegment(SubqueryPredicateSegment.class);
-        if (subqueryPredicateSegment.isPresent()) {
-            for (OrPredicateSegment each : subqueryPredicateSegment.get().getOrPredicates()) {
-                Collection<ShardingCondition> subqueryShardingConditions = createShardingConditions(sqlStatement, parameters, each);
-                if (!result.containsAll(subqueryShardingConditions)) {
-                    result.addAll(subqueryShardingConditions);
-                }
+        List<ShardingCondition> result = new ArrayList<>();
+        Optional<WhereSegment> whereSegment = ((WhereSegmentAvailable) sqlStatement).getWhere();
+        if (whereSegment.isPresent()) {
+            result.addAll(createShardingConditions(sqlStatement, parameters, whereSegment.get().getAndPredicates()));
+        }
+        Collection<SubqueryPredicateSegment> subqueryPredicateSegments = sqlStatement.findSQLSegments(SubqueryPredicateSegment.class);
+        for (SubqueryPredicateSegment each : subqueryPredicateSegments) {
+            Collection<ShardingCondition> subqueryShardingConditions = createShardingConditions(sqlStatement, parameters, each.getAndPredicates());
+            if (!result.containsAll(subqueryShardingConditions)) {
+                result.addAll(subqueryShardingConditions);
             }
         }
         return result;
     }
     
-    private Collection<ShardingCondition> createShardingConditions(final SQLStatement sqlStatement, final List<Object> parameters, final OrPredicateSegment orPredicateSegment) {
+    private Collection<ShardingCondition> createShardingConditions(final SQLStatement sqlStatement, final List<Object> parameters, final Collection<AndPredicate> andPredicates) {
         Collection<ShardingCondition> result = new LinkedList<>();
-        for (AndPredicate each : orPredicateSegment.getAndPredicates()) {
+        for (AndPredicate each : andPredicates) {
             Map<Column, Collection<RouteValue>> routeValueMap = createRouteValueMap(sqlStatement, parameters, each);
             if (routeValueMap.isEmpty()) {
                 return Collections.emptyList();

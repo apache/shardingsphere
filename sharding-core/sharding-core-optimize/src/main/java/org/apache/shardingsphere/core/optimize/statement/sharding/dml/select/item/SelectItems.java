@@ -21,14 +21,9 @@ import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationDistinctSelectItem;
-import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationSelectItem;
-import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
-import org.apache.shardingsphere.core.parse.sql.context.selectitem.StarSelectItem;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -42,13 +37,24 @@ import java.util.List;
 @Setter
 public final class SelectItems {
     
-    private final Collection<SelectItem> items = new LinkedHashSet<>();
+    private final Collection<SelectItem> items;
     
     private final boolean distinctRow;
     
     private final int selectListStopIndex;
     
-    private boolean containStar;
+    /**
+     * Judge is unqualified shorthand item or not.
+     * 
+     * @return is unqualified shorthand item or not
+     */
+    public boolean isUnqualifiedShorthandItem() {
+        if (1 != items.size()) {
+            return false;
+        }
+        SelectItem item = items.iterator().next();
+        return item instanceof ShorthandSelectItem && !((ShorthandSelectItem) item).getOwner().isPresent();
+    }
     
     /**
      * Find alias.
@@ -106,7 +112,7 @@ public final class SelectItems {
         List<String> result = new ArrayList<>(items.size());
         for (SelectItem each : items) {
             // TODO read * from metadata
-            if (!(each instanceof StarSelectItem)) {
+            if (!(each instanceof ShorthandSelectItem)) {
                 result.add(each.getAlias().or(each.getExpression()));
             }
         }

@@ -19,14 +19,14 @@ package org.apache.shardingsphere.core.optimize.engine.sharding.dml;
 
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
-import org.apache.shardingsphere.core.optimize.statement.encrypt.condition.WhereClauseEncryptConditionEngine;
+import org.apache.shardingsphere.core.optimize.statement.encrypt.condition.EncryptConditions;
+import org.apache.shardingsphere.core.optimize.statement.encrypt.condition.engine.WhereClauseEncryptConditionEngine;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.ShardingWhereOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingConditions;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.engine.WhereClauseShardingConditionEngine;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -54,7 +54,7 @@ public final class ShardingUpdateOptimizeEngine implements OptimizeEngine {
     @Override
     public ShardingWhereOptimizedStatement optimize() {
         return new ShardingWhereOptimizedStatement(updateStatement,
-                new ShardingConditions(new ArrayList<>(shardingConditionEngine.createShardingConditions(updateStatement, parameters))), 
-                encryptConditionEngine.createEncryptConditions(updateStatement));
+                new ShardingConditions(shardingConditionEngine.createShardingConditions(updateStatement, parameters)),
+                new EncryptConditions(encryptConditionEngine.createEncryptConditions(updateStatement)));
     }
 }

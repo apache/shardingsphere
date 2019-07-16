@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.parse.extractor.impl.dml.select;
 
 import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.apache.shardingsphere.core.parse.extractor.api.OptionalSQLSegmentExtractor;
+import org.apache.shardingsphere.core.parse.extractor.api.CollectionSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.extractor.impl.dml.PredicateExtractor;
 import org.apache.shardingsphere.core.parse.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.extractor.util.RuleName;
@@ -27,6 +27,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.OrPredicat
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.SubqueryPredicateSegment;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Map;
 
 /**
@@ -34,20 +35,20 @@ import java.util.Map;
  *
  * @author duhongjun
  */
-public final class SubqueryPredicateExtractor implements OptionalSQLSegmentExtractor {
+public final class SubqueryPredicateExtractor implements CollectionSQLSegmentExtractor {
     
     private final PredicateExtractor predicateExtractor = new PredicateExtractor();
     
     @Override
-    public Optional<SubqueryPredicateSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
+    public Collection<SubqueryPredicateSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Collection<ParserRuleContext> subqueryNodes = ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.SUBQUERY);
-        SubqueryPredicateSegment result = new SubqueryPredicateSegment();
+        Collection<SubqueryPredicateSegment> result = new LinkedList<>();
         for (ParserRuleContext each : subqueryNodes) {
             Optional<OrPredicateSegment> orPredicateSegment = predicateExtractor.extract(each, parameterMarkerIndexes);
             if (orPredicateSegment.isPresent()) {
-                result.getOrPredicates().add(orPredicateSegment.get());
+                result.add(new SubqueryPredicateSegment(orPredicateSegment.get().getAndPredicates()));
             }
         }
-        return Optional.of(result);
+        return result;
     }
 }

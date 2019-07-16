@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.execute.sql.execute.result;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.AggregationType;
-import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationDistinctSelectItem;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.AggregationDistinctSelectItem;
 import org.junit.Before;
 import org.junit.Test;
 

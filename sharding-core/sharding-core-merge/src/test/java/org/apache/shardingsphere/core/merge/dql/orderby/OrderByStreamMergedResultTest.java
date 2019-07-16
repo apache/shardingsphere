@@ -25,14 +25,15 @@ import org.apache.shardingsphere.core.merge.MergedResult;
 import org.apache.shardingsphere.core.merge.dql.DQLMergeEngine;
 import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
 import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.encrypt.condition.EncryptCondition;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ShardingSelectOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.groupby.GroupBy;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.SelectItem;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.SelectItems;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderBy;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderByItem;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.pagination.Pagination;
-import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
@@ -62,16 +63,20 @@ public final class OrderByStreamMergedResultTest {
     
     @Before
     public void setUp() throws SQLException {
-        ResultSet resultSet = mock(ResultSet.class);
-        ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
-        when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
         queryResults = Lists.<QueryResult>newArrayList(
-                new TestQueryResult(resultSet), new TestQueryResult(mock(ResultSet.class)), new TestQueryResult(mock(ResultSet.class)));
+                new TestQueryResult(mockResultSet()), new TestQueryResult(mockResultSet()), new TestQueryResult(mockResultSet()));
         OptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(
-                new SelectStatement(), Collections.<ShardingCondition>emptyList(), new AndCondition(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), 
+                new SelectStatement(), Collections.<ShardingCondition>emptyList(), Collections.<EncryptCondition>emptyList(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), 
                 new OrderBy(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC))), false), 
-                new SelectItems(false, 0), new Pagination(null, null, Collections.emptyList()));
+                new SelectItems(Collections.<SelectItem>emptyList(), false, 0), new Pagination(null, null, Collections.emptyList()));
         routeResult = new SQLRouteResult(optimizedStatement);
+    }
+    
+    private ResultSet mockResultSet() throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
+        when(result.getMetaData()).thenReturn(resultSetMetaData);
+        return result;
     }
     
     @Test
@@ -120,6 +125,54 @@ public final class OrderByStreamMergedResultTest {
         assertThat(actual.getValue(1, Object.class).toString(), is("3"));
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class).toString(), is("4"));
+        assertFalse(actual.next());
+    }
+    
+    @Test
+    public void assertNextForCaseSensitive() throws SQLException {
+        when(queryResults.get(0).next()).thenReturn(true, false);
+        when(queryResults.get(0).isCaseSensitive(1)).thenReturn(true);
+        when(queryResults.get(0).getValue(1, Object.class)).thenReturn("b");
+        when(queryResults.get(1).next()).thenReturn(true, true, false);
+        when(queryResults.get(1).isCaseSensitive(1)).thenReturn(true);
+        when(queryResults.get(1).getValue(1, Object.class)).thenReturn("B", "B", "a", "a");
+        when(queryResults.get(2).next()).thenReturn(true, false);
+        when(queryResults.get(2).isCaseSensitive(1)).thenReturn(true);
+        when(queryResults.get(2).getValue(1, Object.class)).thenReturn("A");
+        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), routeResult, queryResults);
+        MergedResult actual = mergeEngine.merge();
+        assertTrue(actual.next());
+        assertThat(actual.getValue(1, Object.class).toString(), is("A"));
+        assertTrue(actual.next());
+        assertThat(actual.getValue(1, Object.class).toString(), is("B"));
+        assertTrue(actual.next());
+        assertThat(actual.getValue(1, Object.class).toString(), is("a"));
+        assertTrue(actual.next());
+        assertThat(actual.getValue(1, Object.class).toString(), is("b"));
+        assertFalse(actual.next());
+    }
+    
+    @Test
+    public void assertNextForCaseInsensitive() throws SQLException {
+        when(queryResults.get(0).next()).thenReturn(true, false);
+        when(queryResults.get(0).isCaseSensitive(1)).thenReturn(false);
+        when(queryResults.get(0).getValue(1, Object.class)).thenReturn("b");
+        when(queryResults.get(1).next()).thenReturn(true, true, false);
+        when(queryResults.get(1).isCaseSensitive(1)).thenReturn(false);
+        when(queryResults.get(1).getValue(1, Object.class)).thenReturn("a", "a", "B", "B");
+        when(queryResults.get(2).next()).thenReturn(true, false);
+        when(queryResults.get(2).isCaseSensitive(1)).thenReturn(false);
+        when(queryResults.get(2).getValue(1, Object.class)).thenReturn("A");
+        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), routeResult, queryResults);
+        MergedResult actual = mergeEngine.merge();
+        assertTrue(actual.next());
+        assertThat(actual.getValue(1, Object.class).toString(), is("a"));
+        assertTrue(actual.next());
+        assertThat(actual.getValue(1, Object.class).toString(), is("A"));
+        assertTrue(actual.next());
+        assertThat(actual.getValue(1, Object.class).toString(), is("B"));
+        assertTrue(actual.next());
+        assertThat(actual.getValue(1, Object.class).toString(), is("b"));
         assertFalse(actual.next());
     }
 }

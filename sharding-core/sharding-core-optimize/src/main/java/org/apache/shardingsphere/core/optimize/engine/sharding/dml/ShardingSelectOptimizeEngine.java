@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.core.optimize.engine.sharding.dml;
 
-import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
-import org.apache.shardingsphere.core.optimize.statement.encrypt.condition.WhereClauseEncryptConditionEngine;
+import org.apache.shardingsphere.core.optimize.statement.encrypt.condition.EncryptCondition;
+import org.apache.shardingsphere.core.optimize.statement.encrypt.condition.engine.WhereClauseEncryptConditionEngine;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.engine.WhereClauseShardingConditionEngine;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ShardingSelectOptimizedStatement;
@@ -32,11 +32,11 @@ import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ord
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderByEngine;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.pagination.Pagination;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.pagination.engine.PaginationEngine;
-import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.SubqueryPredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -76,7 +76,7 @@ public final class ShardingSelectOptimizeEngine implements OptimizeEngine {
     @Override
     public ShardingSelectOptimizedStatement optimize() {
         List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(selectStatement, parameters);
-        AndCondition encryptConditions = encryptConditionEngine.createEncryptConditions(selectStatement);
+        List<EncryptCondition> encryptConditions = encryptConditionEngine.createEncryptConditions(selectStatement);
         GroupBy groupBy = groupByEngine.createGroupBy(selectStatement);
         OrderBy orderBy = orderByEngine.createOrderBy(selectStatement, groupBy);
         SelectItems selectItems = selectItemsEngine.createSelectItems(selectStatement, groupBy, orderBy);
@@ -87,9 +87,12 @@ public final class ShardingSelectOptimizeEngine implements OptimizeEngine {
     }
     
     private void setContainsSubquery(final ShardingSelectOptimizedStatement result) {
-        Optional<SubqueryPredicateSegment> subqueryPredicateSegment = selectStatement.findSQLSegment(SubqueryPredicateSegment.class);
-        if (subqueryPredicateSegment.isPresent() && !subqueryPredicateSegment.get().getOrPredicates().isEmpty()) {
-            result.setContainsSubquery(true);
+        Collection<SubqueryPredicateSegment> subqueryPredicateSegments = selectStatement.findSQLSegments(SubqueryPredicateSegment.class);
+        for (SubqueryPredicateSegment each : subqueryPredicateSegments) {
+            if (!each.getAndPredicates().isEmpty()) {
+                result.setContainsSubquery(true);
+                break;
+            }
         }
     }
 }

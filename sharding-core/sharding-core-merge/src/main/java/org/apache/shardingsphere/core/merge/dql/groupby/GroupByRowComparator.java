@@ -26,16 +26,20 @@ import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ord
 
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.List;
 
 /**
  * Group by row comparator.
  *
  * @author zhangliang
+ * @author yangyi
  */
 @RequiredArgsConstructor
 public final class GroupByRowComparator implements Comparator<MemoryQueryResultRow> {
     
     private final ShardingSelectOptimizedStatement optimizedStatement;
+    
+    private final List<Boolean> valueCaseSensitive;
     
     @Override
     public int compare(final MemoryQueryResultRow o1, final MemoryQueryResultRow o2) {
@@ -51,7 +55,8 @@ public final class GroupByRowComparator implements Comparator<MemoryQueryResultR
             Preconditions.checkState(null == orderValue1 || orderValue1 instanceof Comparable, "Order by value must implements Comparable");
             Object orderValue2 = o2.getCell(each.getIndex());
             Preconditions.checkState(null == orderValue2 || orderValue2 instanceof Comparable, "Order by value must implements Comparable");
-            int result = CompareUtil.compareTo((Comparable) orderValue1, (Comparable) orderValue2, each.getSegment().getOrderDirection(), each.getSegment().getNullOrderDirection());
+            int result = CompareUtil.compareTo((Comparable) orderValue1, (Comparable) orderValue2, each.getSegment().getOrderDirection(),
+                each.getSegment().getNullOrderDirection(), valueCaseSensitive.get(each.getIndex()));
             if (0 != result) {
                 return result;
             }

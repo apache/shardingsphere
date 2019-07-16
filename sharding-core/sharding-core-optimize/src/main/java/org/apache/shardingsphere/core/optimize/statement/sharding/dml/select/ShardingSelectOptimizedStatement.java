@@ -21,17 +21,18 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.core.optimize.statement.encrypt.condition.EncryptCondition;
+import org.apache.shardingsphere.core.optimize.statement.encrypt.condition.EncryptConditions;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.ShardingWhereOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingConditions;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.groupby.GroupBy;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.AggregationSelectItem;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.SelectItem;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.SelectItems;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderBy;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderByItem;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.pagination.Pagination;
-import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
-import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationSelectItem;
-import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.IndexOrderByItemSegment;
@@ -62,9 +63,9 @@ public final class ShardingSelectOptimizedStatement extends ShardingWhereOptimiz
     
     private boolean containsSubquery;
     
-    public ShardingSelectOptimizedStatement(final SQLStatement sqlStatement, final List<ShardingCondition> shardingConditions, final AndCondition encryptConditions,
+    public ShardingSelectOptimizedStatement(final SQLStatement sqlStatement, final List<ShardingCondition> shardingConditions, final List<EncryptCondition> encryptConditions,
                                             final GroupBy groupBy, final OrderBy orderBy, final SelectItems selectItems, final Pagination pagination) {
-        super(sqlStatement, new ShardingConditions(shardingConditions), encryptConditions);
+        super(sqlStatement, new ShardingConditions(shardingConditions), new EncryptConditions(encryptConditions));
         this.groupBy = groupBy;
         this.orderBy = orderBy;
         this.selectItems = selectItems;
@@ -109,7 +110,7 @@ public final class ShardingSelectOptimizedStatement extends ShardingWhereOptimiz
     }
     
     private Optional<String> getAlias(final String name) {
-        if (selectItems.isContainStar()) {
+        if (selectItems.isUnqualifiedShorthandItem()) {
             return Optional.absent();
         }
         String rawName = SQLUtil.getExactlyValue(name);

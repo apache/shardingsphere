@@ -17,9 +17,14 @@
 
 package org.apache.shardingsphere.core.parse.sql.statement.dml;
 
+import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.SelectItemsSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.WhereSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.order.GroupBySegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.order.OrderBySegment;
 
 /**
  * Select statement.
@@ -30,7 +35,38 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString(callSuper = true, exclude = "parentStatement")
-public final class SelectStatement extends DMLStatement {
+public final class SelectStatement extends DMLStatement implements WhereSegmentAvailable {
+    
+    private SelectItemsSegment selectItems;
+    
+    private WhereSegment where;
+    
+    private GroupBySegment groupBy;
+    
+    private OrderBySegment orderBy;
     
     private SelectStatement parentStatement;
+    
+    @Override
+    public Optional<WhereSegment> getWhere() {
+        return Optional.fromNullable(where);
+    }
+    
+    /**
+     * Get group by segment.
+     * 
+     * @return group by segment
+     */
+    public Optional<GroupBySegment> getGroupBy() {
+        return Optional.fromNullable(groupBy);
+    }
+    
+    /**
+     * Get order by segment.
+     *
+     * @return order by segment
+     */
+    public Optional<OrderBySegment> getOrderBy() {
+        return Optional.fromNullable(orderBy);
+    }
 }

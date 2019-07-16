@@ -22,6 +22,7 @@ import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfigura
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.parse.entry.MasterSlaveSQLParseEntry;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
+import org.apache.shardingsphere.core.util.ConfigurationLogger;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.MasterSlaveConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata.CachedDatabaseMetaData;
@@ -53,6 +54,8 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     
     public MasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final Properties props) throws SQLException {
         super(dataSourceMap);
+        ConfigurationLogger.log(masterSlaveRuleConfig);
+        ConfigurationLogger.log(props);
         cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap);
         this.masterSlaveRule = new MasterSlaveRule(masterSlaveRuleConfig);
         parseEngine = new MasterSlaveSQLParseEntry(getDatabaseType());
@@ -61,6 +64,8 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     
     public MasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRule masterSlaveRule, final Properties props) throws SQLException {
         super(dataSourceMap);
+        ConfigurationLogger.log(masterSlaveRule.getMasterSlaveRuleConfiguration());
+        ConfigurationLogger.log(props);
         cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap);
         this.masterSlaveRule = masterSlaveRule;
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
