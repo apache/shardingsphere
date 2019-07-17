@@ -23,6 +23,7 @@ import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
 import org.apache.shardingsphere.core.optimize.statement.encrypt.EncryptInsertColumns;
 import org.apache.shardingsphere.core.optimize.statement.encrypt.EncryptInsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.InsertOptimizeResultUnit;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.value.InsertValueEngine;
 import org.apache.shardingsphere.core.parse.sql.context.InsertValue;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rule.EncryptRule;
@@ -46,12 +47,15 @@ public final class EncryptInsertOptimizeEngine implements OptimizeEngine {
     
     private final List<Object> parameters;
     
+    private final InsertValueEngine insertValueEngine = new InsertValueEngine();
+    
     @Override
     public EncryptInsertOptimizedStatement optimize() {
-        EncryptInsertOptimizedStatement result = new EncryptInsertOptimizedStatement(insertStatement, new EncryptInsertColumns(encryptRule, shardingTableMetaData, insertStatement));
+        EncryptInsertOptimizedStatement result = new EncryptInsertOptimizedStatement(insertStatement, 
+                new EncryptInsertColumns(encryptRule, shardingTableMetaData, insertStatement), insertValueEngine.createInsertValues(insertStatement));
         int derivedColumnsCount = getDerivedColumnsCount();
         int parametersCount = 0;
-        for (InsertValue each : insertStatement.getValues()) {
+        for (InsertValue each : result.getValues()) {
             InsertOptimizeResultUnit unit = result.addUnit(each.getValues(derivedColumnsCount), each.getParameters(parameters, parametersCount, derivedColumnsCount), each.getParametersCount());
             if (encryptRule.getEncryptorEngine().isHasShardingQueryAssistedEncryptor(insertStatement.getTables().getSingleTableName())) {
                 fillAssistedQueryUnit(result.getInsertColumns().getRegularColumnNames(), unit);

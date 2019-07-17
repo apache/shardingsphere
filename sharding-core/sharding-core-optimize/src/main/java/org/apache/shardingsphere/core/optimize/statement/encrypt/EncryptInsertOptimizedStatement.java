@@ -20,9 +20,11 @@ package org.apache.shardingsphere.core.optimize.statement.encrypt;
 import lombok.Getter;
 import org.apache.shardingsphere.core.optimize.statement.InsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.InsertOptimizeResultUnit;
+import org.apache.shardingsphere.core.parse.sql.context.InsertValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -39,11 +41,15 @@ public final class EncryptInsertOptimizedStatement implements InsertOptimizedSta
     private final EncryptInsertColumns insertColumns;
     
     @Getter
+    private final Collection<InsertValue> values;
+    
+    @Getter
     private final List<InsertOptimizeResultUnit> units = new LinkedList<>();
     
-    public EncryptInsertOptimizedStatement(final SQLStatement sqlStatement, final EncryptInsertColumns insertColumns) {
+    public EncryptInsertOptimizedStatement(final SQLStatement sqlStatement, final EncryptInsertColumns insertColumns, final Collection<InsertValue> values) {
         this.sqlStatement = sqlStatement;
         this.insertColumns = insertColumns;
+        this.values = values;
     }
     
     /**

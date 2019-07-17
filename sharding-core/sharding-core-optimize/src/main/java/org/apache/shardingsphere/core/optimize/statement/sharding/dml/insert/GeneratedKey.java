@@ -56,23 +56,24 @@ public final class GeneratedKey {
      * @param parameters SQL parameters
      * @param insertStatement insert statement
      * @param insertColumns insert columns
+     * @param insertValues insert values
      * @return generate key
      */
-    public static Optional<GeneratedKey> getGenerateKey(final ShardingRule shardingRule, 
-                                                        final List<Object> parameters, final InsertStatement insertStatement, final ShardingInsertColumns insertColumns) {
+    public static Optional<GeneratedKey> getGenerateKey(final ShardingRule shardingRule, final List<Object> parameters, 
+                                                        final InsertStatement insertStatement, final ShardingInsertColumns insertColumns, final Collection<InsertValue> insertValues) {
         Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTables().getSingleTableName());
         if (!generateKeyColumnName.isPresent()) {
             return Optional.absent();
         }
         return insertColumns.getRegularColumnNames().contains(generateKeyColumnName.get()) 
-                ? findGeneratedKey(parameters, insertStatement, insertColumns, generateKeyColumnName.get())
-                : Optional.of(createGeneratedKey(shardingRule, insertStatement, generateKeyColumnName.get()));
+                ? findGeneratedKey(parameters, insertColumns, insertValues, generateKeyColumnName.get())
+                : Optional.of(createGeneratedKey(shardingRule, insertStatement, insertValues, generateKeyColumnName.get()));
     }
     
     private static Optional<GeneratedKey> findGeneratedKey(
-            final List<Object> parameters, final InsertStatement insertStatement, final ShardingInsertColumns insertColumns, final String generateKeyColumnName) {
+            final List<Object> parameters, final ShardingInsertColumns insertColumns, final Collection<InsertValue> insertValues, final String generateKeyColumnName) {
         GeneratedKey result = null;
-        for (ExpressionSegment each : findGenerateKeyExpressionSegments(insertStatement, insertColumns, generateKeyColumnName)) {
+        for (ExpressionSegment each : findGenerateKeyExpressionSegments(insertColumns, insertValues, generateKeyColumnName)) {
             if (null == result) {
                 result = new GeneratedKey(generateKeyColumnName, false);
             }
@@ -86,10 +87,10 @@ public final class GeneratedKey {
     }
     
     private static Collection<ExpressionSegment> findGenerateKeyExpressionSegments(
-            final InsertStatement insertStatement, final ShardingInsertColumns insertColumns, final String generateKeyColumnName) {
+            final ShardingInsertColumns insertColumns, final Collection<InsertValue> insertValues, final String generateKeyColumnName) {
         Collection<ExpressionSegment> result = new LinkedList<>();
         Collection<String> columnNames = insertColumns.getRegularColumnNames();
-        for (InsertValue each : insertStatement.getValues()) {
+        for (InsertValue each : insertValues) {
             Optional<ExpressionSegment> generateKeyExpression = findGenerateKeyExpressionSegment(generateKeyColumnName, columnNames.iterator(), each);
             if (generateKeyExpression.isPresent()) {
                 result.add(generateKeyExpression.get());
@@ -107,10 +108,11 @@ public final class GeneratedKey {
         return Optional.absent();
     }
     
-    private static GeneratedKey createGeneratedKey(final ShardingRule shardingRule, final InsertStatement insertStatement, final String generateKeyColumnName) {
+    private static GeneratedKey createGeneratedKey(
+            final ShardingRule shardingRule, final InsertStatement insertStatement, final Collection<InsertValue> insertValues, final String generateKeyColumnName) {
         String tableName = insertStatement.getTables().getSingleTableName();
         GeneratedKey result = new GeneratedKey(generateKeyColumnName, true);
-        for (int i = 0; i < insertStatement.getValues().size(); i++) {
+        for (int i = 0; i < insertValues.size(); i++) {
             result.getGeneratedValues().add(shardingRule.generateKey(tableName));
         }
         return result;

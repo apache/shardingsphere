@@ -26,6 +26,7 @@ import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.Gen
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.InsertOptimizeResultUnit;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.ShardingInsertColumns;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.ShardingInsertOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.value.InsertValueEngine;
 import org.apache.shardingsphere.core.parse.exception.SQLParsingException;
 import org.apache.shardingsphere.core.parse.sql.context.InsertValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
@@ -54,6 +55,8 @@ public final class ShardingInsertOptimizeEngine implements OptimizeEngine {
     
     private final List<Object> parameters;
     
+    private final InsertValueEngine insertValueEngine;
+    
     private final InsertClauseShardingConditionEngine shardingConditionEngine;
     
     public ShardingInsertOptimizeEngine(final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData, final InsertStatement insertStatement, final List<Object> parameters) {
@@ -61,6 +64,7 @@ public final class ShardingInsertOptimizeEngine implements OptimizeEngine {
         this.shardingTableMetaData = shardingTableMetaData;
         this.insertStatement = insertStatement;
         this.parameters = parameters;
+        insertValueEngine = new InsertValueEngine();
         shardingConditionEngine = new InsertClauseShardingConditionEngine(shardingRule);
     }
     
@@ -71,14 +75,17 @@ public final class ShardingInsertOptimizeEngine implements OptimizeEngine {
             throw new SQLParsingException("INSERT INTO .... ON DUPLICATE KEY UPDATE can not support update for sharding column.");
         }
         ShardingInsertColumns insertColumns = new ShardingInsertColumns(shardingRule, shardingTableMetaData, insertStatement);
-        Optional<GeneratedKey> generatedKey = GeneratedKey.getGenerateKey(shardingRule, parameters, insertStatement, insertColumns);
+        Collection<InsertValue> insertValues = insertValueEngine.createInsertValues(insertStatement);
+        Optional<GeneratedKey> generatedKey = GeneratedKey.getGenerateKey(shardingRule, parameters, insertStatement, insertColumns, insertValues);
         boolean isGeneratedValue = generatedKey.isPresent() && generatedKey.get().isGenerated();
         Iterator<Comparable<?>> generatedValues = isGeneratedValue ? generatedKey.get().getGeneratedValues().iterator() : null;
-        List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(insertStatement, parameters, insertColumns.getAllColumnNames(), generatedKey.orNull());
-        ShardingInsertOptimizedStatement result = new ShardingInsertOptimizedStatement(insertStatement, shardingConditions, insertColumns, generatedKey.orNull());
+        List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(
+                insertStatement, parameters, insertColumns.getAllColumnNames(), insertValues, generatedKey.orNull());
+        ShardingInsertOptimizedStatement result = new ShardingInsertOptimizedStatement(
+                insertStatement, shardingConditions, insertColumns, insertValueEngine.createInsertValues(insertStatement), generatedKey.orNull());
         int derivedColumnsCount = getDerivedColumnsCount(isGeneratedValue);
         int parametersCount = 0;
-        for (InsertValue each : insertStatement.getValues()) {
+        for (InsertValue each : result.getValues()) {
             InsertOptimizeResultUnit unit = result.addUnit(each.getValues(derivedColumnsCount), each.getParameters(parameters, parametersCount, derivedColumnsCount), each.getParametersCount());
             if (isGeneratedValue) {
                 unit.addInsertValue(generatedValues.next(), parameters);

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.core.optimize.statement.encrypt;
 import lombok.Getter;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.statement.InsertColumns;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rule.EncryptRule;
@@ -43,7 +44,7 @@ public final class EncryptInsertColumns implements InsertColumns {
     public EncryptInsertColumns(final EncryptRule encryptRule, final ShardingTableMetaData shardingTableMetaData, final InsertStatement insertStatement) {
         String tableName = insertStatement.getTables().getSingleTableName();
         assistedQueryColumnNames = encryptRule.getEncryptorEngine().getAssistedQueryColumns(tableName);
-        regularColumnNames = insertStatement.getColumns().isEmpty() ? getRegularColumnNamesFromMetaData(shardingTableMetaData, tableName) : getColumnNamesFromSQLStatement(insertStatement);
+        regularColumnNames = insertStatement.useDefaultColumns() ? getRegularColumnNamesFromMetaData(shardingTableMetaData, tableName) : getColumnNamesFromSQLStatement(insertStatement);
     }
     
     private Collection<String> getRegularColumnNamesFromMetaData(final ShardingTableMetaData shardingTableMetaData, final String tableName) {
@@ -61,6 +62,11 @@ public final class EncryptInsertColumns implements InsertColumns {
         Collection<String> result = new LinkedList<>();
         for (ColumnSegment each : insertStatement.getColumns()) {
             result.add(each.getName());
+        }
+        if (insertStatement.getSetAssignment().isPresent()) {
+            for (AssignmentSegment each : insertStatement.getSetAssignment().get().getAssignments()) {
+                result.add(each.getColumn().getName());
+            }
         }
         return result;
     }

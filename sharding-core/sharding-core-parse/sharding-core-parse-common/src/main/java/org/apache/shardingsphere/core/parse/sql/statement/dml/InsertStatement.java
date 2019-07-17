@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.core.parse.sql.statement.dml;
 
+import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.parse.sql.context.InsertValue;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 
 import java.util.Collection;
@@ -41,4 +43,39 @@ public final class InsertStatement extends DMLStatement {
     private final Collection<ColumnSegment> columns = new LinkedList<>();
     
     private final Collection<InsertValue> values = new LinkedList<>();
+    
+    private SetAssignmentsSegment setAssignment;
+    
+    /**
+     * Get set assignment segment.
+     * 
+     * @return set assignment segment
+     */
+    public Optional<SetAssignmentsSegment> getSetAssignment() {
+        return Optional.fromNullable(setAssignment);
+    }
+    
+    /**
+     * Judge is use default columns or not.
+     * 
+     * @return is use default columns or not
+     */
+    public boolean useDefaultColumns() {
+        return columns.isEmpty() && null == setAssignment;
+    }
+    
+    /**
+     * Get value size.
+     * 
+     * @return value size
+     */
+    public int getValueSize() {
+        if (!values.isEmpty()) {
+            return values.iterator().next().getAssignments().size();
+        }
+        if (null != setAssignment) {
+            return setAssignment.getAssignments().size();
+        }
+        return 0;
+    }
 }

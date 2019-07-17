@@ -23,6 +23,8 @@ import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.statement.encrypt.EncryptInsertOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.context.InsertValue;
 import org.apache.shardingsphere.core.parse.sql.context.Table;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
@@ -125,9 +127,10 @@ public final class EncryptInsertOptimizeEngineTest {
     private InsertStatement createInsertStatementWithSetWithoutPlaceHolderWithEncrypt() {
         InsertStatement result = new InsertStatement();
         result.getTables().add(new Table("t_encrypt", null));
-        result.getColumns().add(new ColumnSegment(0, 0, "col1"));
-        result.getColumns().add(new ColumnSegment(0, 0, "col2"));
-        result.getValues().add(new InsertValue(Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(1, 2, 1), new LiteralExpressionSegment(3, 4, 2))));
+        AssignmentSegment assignmentSegment1 = new AssignmentSegment(0, 0, new ColumnSegment(0, 0, "col1"), new LiteralExpressionSegment(1, 2, 1));
+        AssignmentSegment assignmentSegment2 = new AssignmentSegment(0, 0, new ColumnSegment(0, 0, "col2"), new LiteralExpressionSegment(3, 4, 2));
+        SetAssignmentsSegment setAssignmentsSegment = new SetAssignmentsSegment(0, 0, Arrays.asList(assignmentSegment1, assignmentSegment2));
+        result.setSetAssignment(setAssignmentsSegment);
         return result;
     }
     
@@ -149,9 +152,10 @@ public final class EncryptInsertOptimizeEngineTest {
     private InsertStatement createInsertStatementWithSetWithPlaceHolderWithQueryEncrypt() {
         InsertStatement result = new InsertStatement();
         result.getTables().add(new Table("t_query_encrypt", null));
-        result.getColumns().add(new ColumnSegment(0, 0, "col1"));
-        result.getColumns().add(new ColumnSegment(0, 0, "col2"));
-        result.getValues().add(new InsertValue(Arrays.<ExpressionSegment>asList(new ParameterMarkerExpressionSegment(1, 2, 0), new ParameterMarkerExpressionSegment(3, 4, 1))));
+        AssignmentSegment assignmentSegment1 = new AssignmentSegment(0, 0, new ColumnSegment(0, 0, "col1"), new ParameterMarkerExpressionSegment(1, 2, 0));
+        AssignmentSegment assignmentSegment2 = new AssignmentSegment(0, 0, new ColumnSegment(0, 0, "col2"), new ParameterMarkerExpressionSegment(3, 4, 1));
+        SetAssignmentsSegment setAssignmentsSegment = new SetAssignmentsSegment(0, 0, Arrays.asList(assignmentSegment1, assignmentSegment2));
+        result.setSetAssignment(setAssignmentsSegment);
         return result;
     }
 }

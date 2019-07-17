@@ -52,12 +52,13 @@ public final class InsertClauseShardingConditionEngine {
      * @param insertStatement insert statement
      * @param parameters SQL parameters
      * @param columnNames column names
+     * @param values values
      * @param generatedKey generated key
      * @return sharding conditions
      */
     public List<ShardingCondition> createShardingConditions(
-            final InsertStatement insertStatement, final List<Object> parameters, final Collection<String> columnNames, final GeneratedKey generatedKey) {
-        List<ShardingCondition> result = getShardingConditions(insertStatement, columnNames, parameters);
+            final InsertStatement insertStatement, final List<Object> parameters, final Collection<String> columnNames, final Collection<InsertValue> values, final GeneratedKey generatedKey) {
+        List<ShardingCondition> result = getShardingConditions(insertStatement, columnNames, values, parameters);
         String tableName = insertStatement.getTables().getSingleTableName();
         Iterator<Comparable<?>> generatedValues = null == generatedKey ? Collections.<Comparable<?>>emptyList().iterator() : generatedKey.getGeneratedValues().iterator();
         for (ShardingCondition each : result) {
@@ -68,9 +69,10 @@ public final class InsertClauseShardingConditionEngine {
         return result;
     }
     
-    private List<ShardingCondition> getShardingConditions(final InsertStatement insertStatement, final Collection<String> columnNames, final List<Object> parameters) {
+    private List<ShardingCondition> getShardingConditions(
+            final InsertStatement insertStatement, final Collection<String> columnNames, final Collection<InsertValue> values, final List<Object> parameters) {
         List<ShardingCondition> result = new LinkedList<>();
-        for (InsertValue each : insertStatement.getValues()) {
+        for (InsertValue each : values) {
             result.add(getShardingCondition(insertStatement, columnNames.iterator(), each, parameters));
         }
         return result;

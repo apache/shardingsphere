@@ -25,9 +25,11 @@ import org.apache.shardingsphere.core.optimize.statement.encrypt.condition.Encry
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.ShardingWhereOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingConditions;
+import org.apache.shardingsphere.core.parse.sql.context.InsertValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -42,14 +44,17 @@ public final class ShardingInsertOptimizedStatement extends ShardingWhereOptimiz
     
     private final ShardingInsertColumns insertColumns;
     
+    private final Collection<InsertValue> values;
+    
     private final GeneratedKey generatedKey;
     
     private final List<InsertOptimizeResultUnit> units = new LinkedList<>();
     
-    public ShardingInsertOptimizedStatement(
-            final SQLStatement sqlStatement, final List<ShardingCondition> shardingConditions, final ShardingInsertColumns insertColumns, final GeneratedKey generatedKey) {
+    public ShardingInsertOptimizedStatement(final SQLStatement sqlStatement, final List<ShardingCondition> shardingConditions, 
+                                            final ShardingInsertColumns insertColumns, final Collection<InsertValue> values, final GeneratedKey generatedKey) {
         super(sqlStatement, new ShardingConditions(shardingConditions), new EncryptConditions(Collections.<EncryptCondition>emptyList()));
         this.insertColumns = insertColumns;
+        this.values = values;
         this.generatedKey = generatedKey;
     }
     

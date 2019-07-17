@@ -20,6 +20,7 @@ package org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert;
 import lombok.Getter;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.statement.InsertColumns;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -48,7 +49,7 @@ public final class ShardingInsertColumns implements InsertColumns {
         String tableName = insertStatement.getTables().getSingleTableName();
         generateKeyColumnName = shardingRule.findGenerateKeyColumnName(tableName).orNull();
         assistedQueryColumnNames = shardingRule.getEncryptRule().getEncryptorEngine().getAssistedQueryColumns(tableName);
-        regularColumnNames = insertStatement.getColumns().isEmpty() ? getRegularColumnNamesFromMetaData(shardingTableMetaData) : getRegularColumnNamesFromSQLStatement();
+        regularColumnNames = insertStatement.useDefaultColumns() ? getRegularColumnNamesFromMetaData(shardingTableMetaData) : getRegularColumnNamesFromSQLStatement();
     }
     
     private Collection<String> getRegularColumnNamesFromMetaData(final ShardingTableMetaData shardingTableMetaData) {
@@ -66,13 +67,18 @@ public final class ShardingInsertColumns implements InsertColumns {
     }
     
     private boolean isGenerateKeyFromMetaData(final Collection<String> allColumnNames) {
-        return null != generateKeyColumnName && allColumnNames.size() - assistedQueryColumnNames.size() != insertStatement.getValues().iterator().next().getAssignments().size();
+        return null != generateKeyColumnName && allColumnNames.size() - assistedQueryColumnNames.size() != insertStatement.getValueSize();
     }
     
     private Collection<String> getRegularColumnNamesFromSQLStatement() {
         Collection<String> result = new LinkedHashSet<>(insertStatement.getColumns().size(), 1);
         for (ColumnSegment each : insertStatement.getColumns()) {
             result.add(each.getName());
+        }
+        if (insertStatement.getSetAssignment().isPresent()) {
+            for (AssignmentSegment each : insertStatement.getSetAssignment().get().getAssignments()) {
+                result.add(each.getColumn().getName());
+            }
         }
         if (isGenerateKeyFromSQLStatement()) {
             result.remove(generateKeyColumnName);
@@ -81,7 +87,7 @@ public final class ShardingInsertColumns implements InsertColumns {
     }
     
     private boolean isGenerateKeyFromSQLStatement() {
-        return null != generateKeyColumnName && insertStatement.getColumns().size() != insertStatement.getValues().iterator().next().getAssignments().size();
+        return null != generateKeyColumnName && insertStatement.getColumns().size() != insertStatement.getValueSize();
     }
     
     @Override
