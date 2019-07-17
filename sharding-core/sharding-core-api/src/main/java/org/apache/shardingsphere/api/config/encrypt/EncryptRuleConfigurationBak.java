@@ -23,6 +23,7 @@ import com.google.common.collect.Collections2;
 import lombok.Getter;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -37,10 +38,18 @@ public final class EncryptRuleConfigurationBak {
     
     private final Map<String, EncryptTableRuleConfiguration> tables;
     
+    public EncryptRuleConfigurationBak() {
+        this(new LinkedHashMap<String, EncryptorRuleConfigurationBak>(), new LinkedHashMap<String, EncryptTableRuleConfiguration>());
+    }
+    
     public EncryptRuleConfigurationBak(final Map<String, EncryptorRuleConfigurationBak> encryptors, final Map<String, EncryptTableRuleConfiguration> tables) {
         this.encryptors = encryptors;
         this.tables = tables;
-        Preconditions.checkArgument(isUsingValidEncryptNames(), "Invalid encryptorNames are used in EncryptTableRuleConfigurations.");
+        Preconditions.checkArgument(isValidConfigurations(), "Invalid encryptorNames are used in EncryptTableRuleConfigurations.");
+    }
+    
+    private boolean isValidConfigurations() {
+        return (encryptors.isEmpty() && tables.isEmpty()) || isUsingValidEncryptNames();
     }
     
     private boolean isUsingValidEncryptNames() {
