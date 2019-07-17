@@ -302,8 +302,12 @@ orchestration:
 
 ```yaml
 authentication:
-  username: root
-  password:
+  users:
+    root:
+      password: root
+    sharding:
+      password: sharding 
+      authorizedSchemas: sharding_db
 ```
 
 ### 公用属性
@@ -377,12 +381,16 @@ props:
 
 ### 权限验证
 
-用于执行登录Sharding Proxy的权限验证。配置用户名、密码后，必须使用正确的用户名、密码才可登录Proxy。
+用于执行登录Sharding Proxy的权限验证。配置用户名、密码、可访问的数据库后，必须使用正确的用户名、密码才可登录Proxy。
 
 ```yaml
 authentication:
-   username: root
-   password:
+  users:
+    root: # 自定义用户名
+      password: root # 自定义用户名
+    sharding: # 自定义用户名
+      password: sharding # 自定义用户名
+      authorizedSchemas: sharding_db, masterslave_db # 该用户授权可访问的数据库，多个用逗号分隔。缺省将拥有root权限，可访问全部数据库。
 ```
 
 ## Yaml语法说明

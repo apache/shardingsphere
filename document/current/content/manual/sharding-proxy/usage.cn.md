@@ -35,6 +35,15 @@ weight = 1
 1. 使用SPI方式实现相关逻辑编码，并将生成的jar包放到Sharding-Proxy的lib目录下。
 1. 按照[配置规则](/cn/manual/sharding-proxy/configuration/)进行注册中心的配置，即可使用。
 
+## 使用自定义分片算法
+
+当用户需要使用自定义的分片算法类时，无法再通过简单的inline表达式在yaml文件进行配置。可通过以下方式配置使用自定义分片算法。
+
+1.实现ShardingAlgorithm接口定义的算法实现类。
+1.将上述java文件打包成jar包。
+1.将上述jar包拷贝至ShardingProxy解压后的conf/lib目录下。
+1.将上述自定义算法实现类的java文件引用配置在yaml文件里tableRule的`algorithmClassName`属性上，具体可参考[配置规则](/cn/manual/sharding-proxy/configuration/)。
+
 ## 分布式事务
 
 Sharding-Proxy原生支持XA事务，不需要额外的配置。

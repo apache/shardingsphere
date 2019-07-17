@@ -443,7 +443,7 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/sharding/shard
 | default-data-source-name (?)      | Attribute | Tables without sharding rules will be located through default data source |
 | default-database-strategy-ref (?) | Attribute | Default database sharding strategy, which corresponds to id of \<sharding:xxx-strategy>; default means the database is not split |
 | default-table-strategy-ref (?)    | Attribute | Default table sharding strategy,which corresponds to id of \<sharding:xxx-strategy>;  default means the database is not split |
-| default-key-generator (?)         | Attribute | Default key generator configuration, use user-defined ones or built-in ones, e.g. SNOWFLAKE, UUID. Default key generator is `org.apache.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator` |
+| default-key-generator (?)         | Attribute | Default key generator configuration, use user-defined ones or built-in ones, e.g. SNOWFLAKE/UUID/LEAF_SEGMENT. Default key generator is `org.apache.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator` |
 | encrypt-rule (?)                  | Tag       | Encrypt rule                                                 |
 
 #### \<sharding:table-rules />
