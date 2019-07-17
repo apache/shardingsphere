@@ -21,8 +21,8 @@ import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.encryptor.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.statement.encrypt.EncryptInsertOptimizedStatement;
-import org.apache.shardingsphere.core.parse.sql.context.InsertValue;
 import org.apache.shardingsphere.core.parse.sql.context.Table;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
@@ -83,7 +83,7 @@ public final class EncryptInsertOptimizeEngineTest {
         result.getTables().add(new Table("t_encrypt", null));
         result.getColumns().add(new ColumnSegment(0, 0, "col1"));
         result.getColumns().add(new ColumnSegment(0, 0, "col2"));
-        result.getValues().add(new InsertValue(Arrays.<ExpressionSegment>asList(new ParameterMarkerExpressionSegment(1, 2, 0), new ParameterMarkerExpressionSegment(3, 4, 1))));
+        result.getValues().add(new InsertValuesSegment(0, 0, Arrays.<ExpressionSegment>asList(new ParameterMarkerExpressionSegment(1, 2, 0), new ParameterMarkerExpressionSegment(3, 4, 1))));
         return result;
     }
     
@@ -107,7 +107,7 @@ public final class EncryptInsertOptimizeEngineTest {
         result.getTables().add(new Table("t_query_encrypt", null));
         result.getColumns().add(new ColumnSegment(0, 0, "col1"));
         result.getColumns().add(new ColumnSegment(0, 0, "col2"));
-        result.getValues().add(new InsertValue(Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(1, 2, 1), new LiteralExpressionSegment(3, 4, 2))));
+        result.getValues().add(new InsertValuesSegment(0, 0, Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(1, 2, 1), new LiteralExpressionSegment(3, 4, 2))));
         return result;
     }
     

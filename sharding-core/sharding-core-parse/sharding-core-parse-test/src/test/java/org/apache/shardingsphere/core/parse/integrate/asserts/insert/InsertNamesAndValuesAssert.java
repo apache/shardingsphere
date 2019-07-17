@@ -23,7 +23,7 @@ import com.google.common.collect.Collections2;
 import org.apache.shardingsphere.core.parse.integrate.asserts.SQLStatementAssertMessage;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.insert.ExpectedInsertColumnsAndValues;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.insert.ExpectedInsertValue;
-import org.apache.shardingsphere.core.parse.sql.context.InsertValue;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
@@ -64,18 +64,18 @@ public final class InsertNamesAndValuesAssert {
         assertInsertValues(actual.getValues(), expected.getValues());
     }
     
-    private void assertInsertValues(final Collection<InsertValue> actual, final Collection<ExpectedInsertValue> expected) {
+    private void assertInsertValues(final Collection<InsertValuesSegment> actual, final Collection<ExpectedInsertValue> expected) {
         assertThat(actual.size(), is(expected.size()));
         Iterator<ExpectedInsertValue> expectedIterator = expected.iterator();
-        for (InsertValue each : actual) {
+        for (InsertValuesSegment each : actual) {
             assertInsertValue(each, expectedIterator.next());
         }
     }
     
-    private void assertInsertValue(final InsertValue actual, final ExpectedInsertValue expected) {
-        assertThat(assertMessage.getFullAssertMessage("Assignments size assertion error: "), actual.getAssignments().size(), is(expected.getAssignments().size()));
+    private void assertInsertValue(final InsertValuesSegment actual, final ExpectedInsertValue expected) {
+        assertThat(assertMessage.getFullAssertMessage("Assignments size assertion error: "), actual.getValues().size(), is(expected.getAssignments().size()));
         int i = 0;
-        for (ExpressionSegment each : actual.getAssignments()) {
+        for (ExpressionSegment each : actual.getValues()) {
             assignmentAssert.assertAssignment(each, expected.getAssignments().get(i++));
         }
     }

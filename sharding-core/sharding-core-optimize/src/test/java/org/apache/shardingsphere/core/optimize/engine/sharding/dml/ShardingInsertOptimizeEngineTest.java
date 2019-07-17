@@ -20,8 +20,8 @@ package org.apache.shardingsphere.core.optimize.engine.sharding.dml;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.ShardingInsertOptimizedStatement;
-import org.apache.shardingsphere.core.parse.sql.context.InsertValue;
 import org.apache.shardingsphere.core.parse.sql.context.Table;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
@@ -110,9 +110,10 @@ public final class ShardingInsertOptimizeEngineTest {
         insertValuesStatementWithPlaceholder.getTables().add(new Table("t_order", null));
         insertValuesStatementWithPlaceholder.getColumns().add(new ColumnSegment(0, 0, "user_id"));
         insertValuesStatementWithPlaceholder.getColumns().add(new ColumnSegment(0, 0, "status"));
-        InsertValue insertValue = new InsertValue(Arrays.<ExpressionSegment>asList(new ParameterMarkerExpressionSegment(1, 2, 0), new ParameterMarkerExpressionSegment(3, 4, 1)));
-        insertValuesStatementWithPlaceholder.getValues().add(insertValue);
-        insertValuesStatementWithPlaceholder.getValues().add(insertValue);
+        InsertValuesSegment insertValuesSegment = new InsertValuesSegment(
+                0, 0, Arrays.<ExpressionSegment>asList(new ParameterMarkerExpressionSegment(1, 2, 0), new ParameterMarkerExpressionSegment(3, 4, 1)));
+        insertValuesStatementWithPlaceholder.getValues().add(insertValuesSegment);
+        insertValuesStatementWithPlaceholder.getValues().add(insertValuesSegment);
     }
     
     private void initializeInsertValuesWithPlaceholderWithEncrypt() {
@@ -120,9 +121,10 @@ public final class ShardingInsertOptimizeEngineTest {
         insertValuesStatementWithPlaceholderWithEncrypt.getTables().add(new Table("t_encrypt", null));
         insertValuesStatementWithPlaceholderWithEncrypt.getColumns().add(new ColumnSegment(0, 0, "user_id"));
         insertValuesStatementWithPlaceholderWithEncrypt.getColumns().add(new ColumnSegment(0, 0, "status"));
-        InsertValue insertValue = new InsertValue(Arrays.<ExpressionSegment>asList(new ParameterMarkerExpressionSegment(1, 2, 0), new ParameterMarkerExpressionSegment(3, 4, 1)));
-        insertValuesStatementWithPlaceholderWithEncrypt.getValues().add(insertValue);
-        insertValuesStatementWithPlaceholderWithEncrypt.getValues().add(insertValue);
+        InsertValuesSegment insertValuesSegment = new InsertValuesSegment(
+                0, 0, Arrays.<ExpressionSegment>asList(new ParameterMarkerExpressionSegment(1, 2, 0), new ParameterMarkerExpressionSegment(3, 4, 1)));
+        insertValuesStatementWithPlaceholderWithEncrypt.getValues().add(insertValuesSegment);
+        insertValuesStatementWithPlaceholderWithEncrypt.getValues().add(insertValuesSegment);
     }
     
     private void initializeInsertValuesWithoutPlaceholder() {
@@ -207,7 +209,7 @@ public final class ShardingInsertOptimizeEngineTest {
         insertValuesStatementWithoutPlaceholderWithQueryEncrypt.getColumns().add(new ColumnSegment(0, 0, "user_id"));
         insertValuesStatementWithoutPlaceholderWithQueryEncrypt.getColumns().add(new ColumnSegment(0, 0, "status"));
         insertValuesStatementWithoutPlaceholderWithQueryEncrypt.getValues().add(
-                new InsertValue(Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(1, 2, 12), new LiteralExpressionSegment(3, 4, "a"))));
+                new InsertValuesSegment(0, 0, Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(1, 2, 12), new LiteralExpressionSegment(3, 4, "a"))));
         ShardingInsertOptimizedStatement actual = new ShardingInsertOptimizeEngine(
                 shardingRule, mock(ShardingTableMetaData.class), insertValuesStatementWithoutPlaceholderWithQueryEncrypt, Collections.emptyList()).optimize();
         assertThat(actual.getUnits().get(0).getParameters().length, is(0));
@@ -217,7 +219,8 @@ public final class ShardingInsertOptimizeEngineTest {
     public void assertOptimizeInsertValuesWithoutPlaceholderWithGeneratedKey() {
         insertValuesStatementWithoutPlaceholder.getColumns().add(new ColumnSegment(0, 0, "user_id"));
         insertValuesStatementWithoutPlaceholder.getColumns().add(new ColumnSegment(0, 0, "status"));
-        insertValuesStatementWithoutPlaceholder.getValues().add(new InsertValue(Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(1, 2, 12), new LiteralExpressionSegment(3, 4, "a"))));
+        insertValuesStatementWithoutPlaceholder.getValues().add(
+                new InsertValuesSegment(0, 0, Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(1, 2, 12), new LiteralExpressionSegment(3, 4, "a"))));
         ShardingInsertOptimizedStatement actual = new ShardingInsertOptimizeEngine(
                 shardingRule, mock(ShardingTableMetaData.class), insertValuesStatementWithoutPlaceholder, Collections.emptyList()).optimize();
         assertThat(actual.getUnits().get(0).getParameters().length, is(0));

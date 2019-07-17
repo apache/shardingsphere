@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.value;
 
 import org.apache.shardingsphere.core.parse.sql.context.InsertValue;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
@@ -41,20 +42,24 @@ public final class InsertValueEngine {
      * @return insert values
      */
     public Collection<InsertValue> createInsertValues(final InsertStatement insertStatement) {
-        return (insertStatement.getSetAssignment().isPresent()) ? getInsertValues(insertStatement.getSetAssignment().get()) : insertStatement.getValues();
+        return (insertStatement.getSetAssignment().isPresent()) ? getInsertValues(insertStatement.getSetAssignment().get()) : getInsertValues(insertStatement.getValues());
     }
     
-    private Collection<InsertValue> getInsertValues(final SetAssignmentsSegment sqlSegment) {
+    private Collection<InsertValue> getInsertValues(final SetAssignmentsSegment setAssignmentsSegment) {
         Collection<InsertValue> result = new LinkedList<>();
-        result.add(getInsertValue(sqlSegment));
+        List<ExpressionSegment> columnValues = new LinkedList<>();
+        for (AssignmentSegment each : setAssignmentsSegment.getAssignments()) {
+            columnValues.add(each.getValue());
+        }
+        result.add(new InsertValue(columnValues));
         return result;
     }
     
-    private InsertValue getInsertValue(final SetAssignmentsSegment sqlSegment) {
-        List<ExpressionSegment> columnValues = new LinkedList<>();
-        for (AssignmentSegment each : sqlSegment.getAssignments()) {
-            columnValues.add(each.getValue());
+    private Collection<InsertValue> getInsertValues(final Collection<InsertValuesSegment> insertValuesSegments) {
+        Collection<InsertValue> result = new LinkedList<>();
+        for (InsertValuesSegment each : insertValuesSegments) {
+            result.add(new InsertValue(each.getValues()));
         }
-        return new InsertValue(columnValues);
+        return result;
     }
 }
