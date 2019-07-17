@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.api.config.encrypt;
 
+import lombok.Getter;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -25,6 +27,7 @@ import java.util.Map;
  *
  * @author panjuan
  */
+@Getter
 public final class EncryptTableRuleConfiguration {
     
     private final Map<String, EncryptColumnRuleConfiguration> columns = new LinkedHashMap<>();
