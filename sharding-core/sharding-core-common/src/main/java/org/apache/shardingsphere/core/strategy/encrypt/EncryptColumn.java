@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.strategy.encrypt;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -25,6 +26,7 @@ import lombok.RequiredArgsConstructor;
  * @author panjuan
  */
 @RequiredArgsConstructor
+@Getter
 public final class EncryptColumn {
     
     private final String plainColumn;
