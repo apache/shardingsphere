@@ -172,7 +172,7 @@ ShardingSphere采用snowflake算法作为默认的分布式分布式自增主键
 
 回答：
 
-为保证源码的可读性，ShardingSphere编码规范要求类、方法和变量的命名要做到望文生义，避免使用缩写，因此可能导致部分源码文件命名较长。由于Windows版本的Git是使用msys编译的，它使用了旧版本的Windows Api，限制文件名不能超过260个字符。
+为保证源码的可读性，ShardingSphere编码规范要求类、方法和变量的命名要做到顾名思义，避免使用缩写，因此可能导致部分源码文件命名较长。由于Windows版本的Git是使用msys编译的，它使用了旧版本的Windows Api，限制文件名不能超过260个字符。
 
 解决方案如下：
 
@@ -183,3 +183,16 @@ git config --global core.longpaths true
 参考资料：
 https://docs.microsoft.com/zh-cn/windows/desktop/FileIO/naming-a-file
 https://ourcodeworld.com/articles/read/109/how-to-solve-filename-too-long-error-in-git-powershell-and-github-application-for-windows
+
+#### 14. Windows环境下，运行Sharding-Proxy，找不到或无法加载主类 org.apache.shardingshpere.shardingproxy.Bootstrap，如何解决？
+
+回答：
+
+某些解压缩工具在解压Sharding-Proxy二进制包时可能将文件名截断，导致找不到某些类。
+
+解决方案：
+
+打开cmd.exe并执行下面的命令：
+```
+tar zxvf apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz
+```

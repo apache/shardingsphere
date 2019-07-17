@@ -183,3 +183,16 @@ Reference material:
 
 https://docs.microsoft.com/zh-cn/windows/desktop/FileIO/naming-a-file
 https://ourcodeworld.com/articles/read/109/how-to-solve-filename-too-long-error-in-git-powershell-and-github-application-for-windows
+
+#### 14. In Windows environment, could not find or load main class org.apache.shardingshpere.shardingproxy.Bootstrap, how to solve it?
+
+Answer:
+
+Some decompression tools may truncate the file name when decompressing the Sharding-Proxy binary package, resulting in some classes not being found.
+
+The solutions:
+
+Open cmd.exe and execute the following command: 
+```
+tar zxvf apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz
+```

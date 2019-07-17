@@ -31,10 +31,12 @@ spring.shardingsphere.sharding.tables.t_order.actual-data-nodes=ds$->{0..1}.t_or
 spring.shardingsphere.sharding.tables.t_order.table-strategy.inline.sharding-column=order_id
 spring.shardingsphere.sharding.tables.t_order.table-strategy.inline.algorithm-expression=t_order$->{order_id % 2}
 spring.shardingsphere.sharding.tables.t_order.key-generator.column=order_id
+spring.shardingsphere.sharding.tables.t_order.key-generator.type=SNOWFLAKE
 spring.shardingsphere.sharding.tables.t_order_item.actual-data-nodes=ds$->{0..1}.t_order_item$->{0..1}
 spring.shardingsphere.sharding.tables.t_order_item.table-strategy.inline.sharding-column=order_id
 spring.shardingsphere.sharding.tables.t_order_item.table-strategy.inline.algorithm-expression=t_order_item$->{order_id % 2}
 spring.shardingsphere.sharding.tables.t_order_item.key-generator.column=order_item_id
+spring.shardingsphere.sharding.tables.t_order_item.key-generator.type=SNOWFLAKE
 spring.shardingsphere.sharding.binding-tables=t_order,t_order_item
 spring.shardingsphere.sharding.broadcast-tables=t_config
 
@@ -71,6 +73,23 @@ spring.shardingsphere.masterslave.master-data-source-name=master
 spring.shardingsphere.masterslave.slave-data-source-names=slave0,slave1
 
 spring.shardingsphere.props.sql.show=true
+```
+
+### 数据脱敏
+
+```properties
+spring.shardingsphere.datasource.name=ds
+
+spring.shardingsphere.datasource.ds.type=org.apache.commons.dbcp2.BasicDataSource
+spring.shardingsphere.datasource.ds.driver-class-name=com.mysql.jdbc.Driver
+spring.shardingsphere.datasource.ds.url=jdbc:mysql://127.0.0.1:3306/encrypt?serverTimezone=UTC&useSSL=false
+spring.shardingsphere.datasource.ds.username=root
+spring.shardingsphere.datasource.ds.password=
+spring.shardingsphere.datasource.ds.max-total=100
+
+spring.shardingsphere.encrypt.encryptors.order_encrypt.type=aes
+spring.shardingsphere.encrypt.encryptors.order_encrypt.qualifiedColumns=t_order.user_id
+spring.shardingsphere.encrypt.encryptors.order_encrypt.props.aes.key.value=123456
 ```
 
 ### 数据分片 + 读写分离
@@ -116,10 +135,12 @@ spring.shardingsphere.sharding.tables.t_order.actual-data-nodes=ds$->{0..1}.t_or
 spring.shardingsphere.sharding.tables.t_order.table-strategy.inline.sharding-column=order_id
 spring.shardingsphere.sharding.tables.t_order.table-strategy.inline.algorithm-expression=t_order$->{order_id % 2}
 spring.shardingsphere.sharding.tables.t_order.key-generator.column=order_id
+spring.shardingsphere.sharding.tables.t_order.key-generator.type=SNOWFLAKE
 spring.shardingsphere.sharding.tables.t_order_item.actual-data-nodes=ds$->{0..1}.t_order_item$->{0..1}
 spring.shardingsphere.sharding.tables.t_order_item.table-strategy.inline.sharding-column=order_id
 spring.shardingsphere.sharding.tables.t_order_item.table-strategy.inline.algorithm-expression=t_order_item$->{order_id % 2}
 spring.shardingsphere.sharding.tables.t_order_item.key-generator.column=order_item_id
+spring.shardingsphere.sharding.tables.t_order_item.key-generator.type=SNOWFLAKE
 spring.shardingsphere.sharding.binding-tables=t_order,t_order_item
 spring.shardingsphere.sharding.broadcast-tables=t_config
 
@@ -203,9 +224,6 @@ spring.shardingsphere.sharding.tables.t_order_item.key-generator.column=order_it
 spring.shardingsphere.sharding.binding-tables=t_order,t_order_item
 spring.shardingsphere.sharding.broadcast-tables=t_config
 
-spring.shardingsphere.sharding.default-database-strategy.inline.sharding-column=user_id
-spring.shardingsphere.sharding.default-database-strategy.inline.algorithm-expression=master$->{user_id % 2}
-
 spring.shardingsphere.orchestration.name=spring_boot_ds_sharding
 spring.shardingsphere.orchestration.overwrite=true
 spring.shardingsphere.orchestration.registry.namespace=orchestration-spring-boot-sharding-test
@@ -225,10 +243,12 @@ spring.shardingsphere.sharding.tables.t_order.actual-data-nodes=ds$->{0..1}.t_or
 spring.shardingsphere.sharding.tables.t_order.table-strategy.inline.sharding-column=order_id
 spring.shardingsphere.sharding.tables.t_order.table-strategy.inline.algorithm-expression=t_order$->{order_id % 2}
 spring.shardingsphere.sharding.tables.t_order.key-generator.column=order_id
+spring.shardingsphere.sharding.tables.t_order.key-generator.type=SNOWFLAKE
 spring.shardingsphere.sharding.tables.t_order_item.actual-data-nodes=ds$->{0..1}.t_order_item$->{0..1}
 spring.shardingsphere.sharding.tables.t_order_item.table-strategy.inline.sharding-column=order_id
 spring.shardingsphere.sharding.tables.t_order_item.table-strategy.inline.algorithm-expression=t_order_item$->{order_id % 2}
 spring.shardingsphere.sharding.tables.t_order_item.key-generator.column=order_item_id
+spring.shardingsphere.sharding.tables.t_order_item.key-generator.type=SNOWFLAKE
 spring.shardingsphere.sharding.binding-tables=t_order,t_order_item
 spring.shardingsphere.sharding.broadcast-tables=t_config
 
@@ -331,7 +351,7 @@ spring.shardingsphere.sharding.encryptRule.encryptors.<encryptor-name>.props.<pr
 ### 治理
 
 ```properties
-#省略数据源、数据分片和读写分离配置
+#省略数据源、数据分片、读写分离和数据脱敏配置
 
 spring.shardingsphere.orchestration.name= #治理实例名称
 spring.shardingsphere.orchestration.overwrite= #本地配置是否覆盖注册中心配置。如果可覆盖，每次启动都以本地配置为准

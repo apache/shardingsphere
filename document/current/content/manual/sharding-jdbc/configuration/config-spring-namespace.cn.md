@@ -146,7 +146,12 @@ weight = 4
         <property name="password" value="" />
     </bean>
     
-    <bean id="randomStrategy" class="org.apache.shardingsphere.example.spring.namespace.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm" />
+    <!-- 4.0.0-RC1 版本 负载均衡策略配置方式 -->
+    <!-- <bean id="randomStrategy" class="org.apache.shardingsphere.example.spring.namespace.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm" /> -->
+    
+    <!-- 4.0.0-RC2 之后版本 负载均衡策略配置方式 -->
+    <master-slave:load-balance-algorithm id="randomStrategy" type="RANDOM" />
+    
     <master-slave:data-source id="masterSlaveDataSource" master-data-source-name="ds_master" slave-data-source-names="ds_slave0, ds_slave1" strategy-ref="randomStrategy">
             <master-slave:props>
                 <prop key="sql.show">${sql_show}</prop>
@@ -154,6 +159,39 @@ weight = 4
                 <prop key="foo">bar</prop>
             </master-slave:props>
     </master-slave:data-source>
+</beans>
+```
+
+### 数据脱敏
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:encrypt="http://shardingsphere.apache.org/schema/shardingsphere/encrypt"
+       xmlns:bean="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                        http://www.springframework.org/schema/beans/spring-beans.xsd 
+                        http://shardingsphere.apache.org/schema/shardingsphere/encrypt
+                        http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd 
+                        http://www.springframework.org/schema/util 
+                        http://www.springframework.org/schema/util/spring-util.xsd">
+   
+    <bean id="ds" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds?useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
+        <property name="username" value="root"/>
+        <property name="password" value=""/>
+    </bean>
+    
+    <bean:properties id="props">
+        <prop key="aes.key.value">123456</prop>
+    </bean:properties>
+    
+    <encrypt:data-source id="encryptDataSource" data-source-name="ds" >
+        <encrypt:encryptor-rule id="pwd_encryptor" type="assistedTest" qualified-columns="t_user.pwd" assisted-query-columns="t_user.assisted_query_pwd" />
+        <encrypt:encryptor-rule id="name_encryptor" type="AES" qualified-columns="t_user.user_name" props-ref="props" />
+    </encrypt:data-source>
 </beans>
 ```
 
@@ -167,6 +205,7 @@ weight = 4
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
+       xmlns:master-slave="http://shardingsphere.apache.org/schema/shardingsphere/masterslave"
        xsi:schemaLocation="http://www.springframework.org/schema/beans 
                         http://www.springframework.org/schema/beans/spring-beans.xsd
                         http://www.springframework.org/schema/context
@@ -174,7 +213,9 @@ weight = 4
                         http://www.springframework.org/schema/tx
                         http://www.springframework.org/schema/tx/spring-tx.xsd
                         http://shardingsphere.apache.org/schema/shardingsphere/sharding 
-                        http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd">
+                        http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
+                        http://shardingsphere.apache.org/schema/shardingsphere/masterslave  
+                        http://shardingsphere.apache.org/schema/shardingsphere/masterslave/master-slave.xsd">
     <context:annotation-config />
     <context:component-scan base-package="org.apache.shardingsphere.example.spring.namespace.jpa" />
     
@@ -237,7 +278,11 @@ weight = 4
         <property name="password" value="" />
     </bean>
     
-    <bean id="randomStrategy" class="org.apache.shardingsphere.example.spring.namespace.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm" />
+    <!-- 4.0.0-RC1 版本 负载均衡策略配置方式 -->
+    <!-- <bean id="randomStrategy" class="org.apache.shardingsphere.example.spring.namespace.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm" /> -->
+    
+    <!-- 4.0.0-RC2 之后版本 负载均衡策略配置方式 -->
+    <master-slave:load-balance-algorithm id="randomStrategy" type="RANDOM" />
     
     <sharding:inline-strategy id="databaseStrategy" sharding-column="user_id" algorithm-expression="ds_ms$->{user_id % 2}" />
     <sharding:inline-strategy id="orderTableStrategy" sharding-column="order_id" algorithm-expression="t_order$->{order_id % 2}" />
@@ -529,6 +574,37 @@ weight = 4
 | max.connections.size.per.query (?) | 属性   | 每个物理数据库为每次查询分配的最大连接数量。默认值: 1 |
 | check.table.metadata.enabled (?)   | 属性   | 是否在启动时检查分表元数据一致性，默认值: false       |
 
+#### \<master-slave:load-balance-algorithm />
+4.0.0-RC2 版本 添加
+
+| *名称*                             |  *类型* | *说明*                                         |
+| -----------------------------------| ------ | ---------------------------------------------- |
+| id                                 |  属性  | Spring Bean Id                                  |
+| type                               |  属性  | 负载均衡算法类型，'RANDOM'或'ROUND_ROBIN' ，支持自定义拓展|
+| props-ref (?)                      |  属性  | 负载均衡算法配置参数                               |
+
+### 数据脱敏
+
+命名空间：http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd
+
+#### \<encrypt:data-source />
+
+| *名称*                  | *类型* | *说明*                                        |
+| ----------------------- | ----- | -------------------------------------------- |
+| id                      | 属性  | Spring Bean Id                                |
+| data-source-name        | 属性  | 加密数据源Bean Id                              |
+| props (?)               | 标签  | 属性配置                                       |
+
+#### \<encrypt:encryptor-rule />
+
+| *名称*                  | *类型* | *说明*                                                    |
+| ----------------------- | ----- | --------------------------------------------------------- |
+| id                      | 属性  | 加密器的名称                                                |
+| type                    | 属性  | 加解密器类型，可自定义或选择内置类型：MD5/AES                   |
+| qualified-columns       | 属性  | 加解密字段，格式为：表名.列名，例如：tb.col1。多个列，请用逗号分隔 |
+| assisted-query-columns  | 属性  | 辅助查询字段，针对ShardingQueryAssistedEncryptor类型的加解密器进行辅助查询|
+| props-re                | 属性  | 属性配置                                                    |
+
 ### 数据分片 + 治理
 
 命名空间：http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd
@@ -547,6 +623,19 @@ weight = 4
 命名空间：http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd
 
 #### \<orchestration:master-slave-data-source />
+
+| *名称*              | *类型* | *说明*                                                                  |
+| ------------------- | ----- | ---------------------------------------------------------------------- |
+| id                  | 属性   | ID                                                                     |
+| data-source-ref (?) | 属性   | 被治理的数据库id                                                         |
+| registry-center-ref | 属性   | 注册中心id                                                              |
+| overwrite           | 属性   | 本地配置是否覆盖注册中心配置。如果可覆盖，每次启动都以本地配置为准。缺省为不覆盖 |
+
+### 数据脱敏 + 治理
+
+命名空间：http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd
+
+#### \<orchestration:encrypt-data-source />
 
 | *名称*              | *类型* | *说明*                                                                  |
 | ------------------- | ----- | ---------------------------------------------------------------------- |

@@ -69,6 +69,22 @@ weight = 1
      }
 ```
 
+### Data Masking
+
+```java
+    DataSource getEncryptDataSource() throws SQLException {
+        return EncryptDataSourceFactory.createDataSource(DataSourceUtil.createDataSource("demo_ds"), getOrderEncryptRuleConfiguration());
+    }
+
+    private static EncryptRuleConfiguration getOrderEncryptRuleConfiguration() {
+        EncryptRuleConfiguration encryptRuleConfiguration = new EncryptRuleConfiguration();
+        Properties properties = new Properties();
+        properties.setProperty("aes.key.value", "123456");
+        EncryptorRuleConfiguration encryptorRuleConfiguration = new EncryptorRuleConfiguration("AES", "t_order.order_id", properties);
+        encryptRuleConfiguration.getEncryptorRuleConfigs().put("user_encryptor", encryptorRuleConfiguration);
+    }
+```
+
 ### Data Sharding + Read-Write Split
 
 ```java
@@ -173,6 +189,7 @@ weight = 1
 
 ```java
     DataSource getDataSource() throws SQLException {
+        // OrchestrationShardingDataSourceFactory can be replaced by OrchestrationMasterSlaveDataSourceFactory or OrchestrationEncryptDataSourceFactory
         return OrchestrationShardingDataSourceFactory.createDataSource(
                 createDataSourceMap(), createShardingRuleConfig(), new HashMap<String, Object>(), new Properties(), 
                 new OrchestrationConfiguration("orchestration-sharding-data-source", getRegistryCenterConfiguration(), false));
@@ -323,6 +340,22 @@ Property configuration items, can be of the following properties.
 | max.connections.size.per.query (?) | int         | The maximum connection number allocated by each query of each physical database, default value: 1 |
 | check.table.metadata.enabled (?)   | boolean     | Check meta-data consistency or not in initialization, default value: false |
 
+### Data Masking
+
+#### EncryptDataSourceFactory
+
+| *Name*                | *DataType*                   | *Explanation*      |
+| --------------------- | ---------------------------- | ------------------ |
+| dataSource            | DataSource                   | Data source        |
+| encryptRuleConfig     | EncryptRuleConfiguration     | encrypt rule configuration |
+| props (?)             | Properties                   | Property configurations |
+
+#### EncryptRuleConfiguration
+
+| *Name*                   | *DataType*                      | *Explanation*    |
+| ------------------------ | ------------------------------- | ---------------- |
+| encryptorRuleConfigs     | Map\<String, EncryptorRuleConfiguration\> | Map of encryptor names and configurations，encryptor Same as `EncryptorRuleConfiguration` |
+
 ### Orchestration
 
 #### OrchestrationShardingDataSourceFactory
@@ -343,6 +376,16 @@ Property configuration items, can be of the following properties.
 | configMap (?)         | Map<String, Object>          | Same as `MasterSlaveDataSourceFactory` |
 | props (?)             | Properties                   | Same as `ShardingDataSourceFactory`    |
 | orchestrationConfig   | OrchestrationConfiguration   | Orchestration rule configurations |
+
+#### OrchestrationEncryptDataSourceFactory
+
+| *Name*                | *DataType*                   | *Explanation*                      |
+| --------------------- | ---------------------------- | ---------------------------------- |
+| dataSource            | DataSource                   | Same as `EncryptDataSourceFactory` |
+| encryptRuleConfig     | EncryptRuleConfiguration     | Same as `EncryptDataSourceFactory` |
+| props (?)             | Properties                   | Same as `EncryptDataSourceFactory` |
+| orchestrationConfig   | OrchestrationConfiguration   | Orchestration rule configurations  |
+
 
 #### OrchestrationConfiguration
 
