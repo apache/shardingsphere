@@ -301,8 +301,12 @@ orchestration:
 
 ```yaml
 authentication:
-  username: root
-  password:
+  users:
+    root:
+      password: root
+    sharding:
+      password: sharding 
+      authorizedSchemas: sharding_db
 ```
 
 ### Common property
@@ -380,8 +384,12 @@ It is used to verify the authentication to log in Sharding-Proxy, which must use
 
 ```yaml
 authentication:
-   username: root
-   password:
+  users:
+    root: # self-defined username
+      password: root # self-defined password
+    sharding: # self-defined username
+      password: sharding # self-defined password
+      authorizedSchemas: sharding_db, masterslave_db # schemas authorized to this user, please use commas to connect multiple schemas. Default authorizedSchemas is all of the schemas.
 ```
 
 ## Yaml Syntax Explanation

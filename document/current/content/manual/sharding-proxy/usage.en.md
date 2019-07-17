@@ -34,6 +34,10 @@ If users want to use the database orchestration function of Sharding-Proxy, they
 2. Use SPI methods in logic coding and put the generated jar package to the lib catalog of Sharding-Proxy.
 3. Follow [Configuration Rules](/en/manual/sharding-proxy/configuration/) to set the registry center and use it.
 
+### Use of user-defined sharding algorithm class
+
+TODO
+
 ## Distributed Transactions
 
 Sharding-Proxy natively supports XA transactions and there is no need for extra configurations.
