@@ -33,18 +33,18 @@ import java.util.Map.Entry;
 public final class EncryptRuleConfigurationYamlSwapper implements YamlSwapper<YamlEncryptRuleConfiguration, EncryptRuleConfiguration> {
     
     @Override
-    public YamlEncryptRuleConfiguration swap(final EncryptRuleConfiguration encryptRuleConfiguration) {
+    public YamlEncryptRuleConfiguration swap(final EncryptRuleConfiguration data) {
         YamlEncryptRuleConfiguration result = new YamlEncryptRuleConfiguration();
-        for (Entry<String, EncryptorRuleConfiguration> entry : encryptRuleConfiguration.getEncryptorRuleConfigs().entrySet()) {
+        for (Entry<String, EncryptorRuleConfiguration> entry : data.getEncryptorRuleConfigs().entrySet()) {
             result.getEncryptors().put(entry.getKey(), new EncryptorRuleConfigurationYamlSwapper().swap(entry.getValue()));
         }
         return result;
     }
     
     @Override
-    public EncryptRuleConfiguration swap(final YamlEncryptRuleConfiguration yamlEncryptRuleConfiguration) {
+    public EncryptRuleConfiguration swap(final YamlEncryptRuleConfiguration yamlConfiguration) {
         EncryptRuleConfiguration result = new EncryptRuleConfiguration();
-        for (Entry<String, YamlEncryptorRuleConfiguration> entry : yamlEncryptRuleConfiguration.getEncryptors().entrySet()) {
+        for (Entry<String, YamlEncryptorRuleConfiguration> entry : yamlConfiguration.getEncryptors().entrySet()) {
             result.getEncryptorRuleConfigs().put(entry.getKey(), new EncryptorRuleConfigurationYamlSwapper().swap(entry.getValue()));
         }
         return result;
