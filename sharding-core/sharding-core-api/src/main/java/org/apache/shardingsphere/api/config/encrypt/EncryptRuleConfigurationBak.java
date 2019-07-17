@@ -17,9 +17,12 @@
 
 package org.apache.shardingsphere.api.config.encrypt;
 
+import com.google.common.base.Function;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Collections2;
 import lombok.Getter;
 
-import java.util.LinkedHashMap;
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -30,7 +33,29 @@ import java.util.Map;
 @Getter
 public final class EncryptRuleConfigurationBak {
     
-    private final Map<String, EncryptorRuleConfigurationBak> encryptros = new LinkedHashMap<>();
+    private final Map<String, EncryptorRuleConfigurationBak> encryptors;
     
-    private final Map<String, EncryptTableRuleConfiguration> tables = new LinkedHashMap<>();
+    private final Map<String, EncryptTableRuleConfiguration> tables;
+    
+    public EncryptRuleConfigurationBak(final Map<String, EncryptorRuleConfigurationBak> encryptors, final Map<String, EncryptTableRuleConfiguration> tables) {
+        this.encryptors = encryptors;
+        this.tables = tables;
+        Preconditions.checkArgument(isUsingValidEncryptNames(), "Invalid encryptorNames are used in EncryptTableRuleConfigurations.");
+    }
+    
+    private boolean isUsingValidEncryptNames() {
+        for (EncryptTableRuleConfiguration each : tables.values()) {
+            Collection<String> encryptors = Collections2.transform(each.getColumns().values(), new Function<EncryptColumnRuleConfiguration, String>() {
+                
+                @Override
+                public String apply(final EncryptColumnRuleConfiguration input) {
+                    return input.getEncryptor();
+                }
+            });
+            if (!this.encryptors.keySet().containsAll(encryptors)) {
+                return false;
+            }
+        }
+        return true;
+    }
 }
