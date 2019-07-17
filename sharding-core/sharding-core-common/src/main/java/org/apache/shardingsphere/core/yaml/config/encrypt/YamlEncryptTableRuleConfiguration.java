@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.yaml.config.encrypt;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.core.yaml.config.YamlConfiguration;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -30,7 +31,7 @@ import java.util.Map;
  */
 @Getter
 @Setter
-public final class YamlEncryptTableRuleConfiguration {
+public final class YamlEncryptTableRuleConfiguration implements YamlConfiguration {
     
     private Map<String, YamlEncryptColumnRuleConfiguration> columns = new LinkedHashMap<>();
 }

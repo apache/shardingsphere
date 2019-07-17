@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.yaml.config.encrypt;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.core.yaml.config.YamlConfiguration;
 
 import java.util.Properties;
 
@@ -29,7 +30,7 @@ import java.util.Properties;
  */
 @Getter
 @Setter
-public final class YamlEncryptorRuleConfigurationBak {
+public final class YamlEncryptorRuleConfigurationBak implements YamlConfiguration {
     
     private String type;
     

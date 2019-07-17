@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.yaml.config.encrypt;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.core.yaml.config.YamlConfiguration;
 
 /**
  * Encrypt column rule configuration.
@@ -27,7 +28,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public final class YamlEncryptColumnRuleConfiguration {
+public final class YamlEncryptColumnRuleConfiguration implements YamlConfiguration {
     
     private String plainColumn;
     
