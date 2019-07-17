@@ -44,13 +44,13 @@ import java.util.TreeSet;
  * @author panjuan
  */
 @NoArgsConstructor
-public final class ShardingEncryptorEngineBak {
+public final class EncryptorEngine {
     
     private final Map<String, ShardingEncryptor> encryptors = new LinkedHashMap<>();
     
     private final Map<String, ShardingEncryptorStrategy> shardingEncryptorStrategies = new LinkedHashMap<>();
     
-    public ShardingEncryptorEngineBak(final EncryptRuleConfiguration encryptRuleConfiguration) {
+    public EncryptorEngine(final EncryptRuleConfiguration encryptRuleConfiguration) {
         for (Entry<String, EncryptorRuleConfiguration> entry : encryptRuleConfiguration.getEncryptorRuleConfigs().entrySet()) {
             shardingEncryptorStrategies.put(entry.getKey(), new ShardingEncryptorStrategy(entry.getValue()));
         }
