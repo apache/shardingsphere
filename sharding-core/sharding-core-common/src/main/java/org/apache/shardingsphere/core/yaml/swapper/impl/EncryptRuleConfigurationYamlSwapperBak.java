@@ -41,7 +41,7 @@ public final class EncryptRuleConfigurationYamlSwapperBak implements YamlSwapper
     @Override
     public YamlEncryptRuleConfigurationBak swap(final EncryptRuleConfigurationBak data) {
         YamlEncryptRuleConfigurationBak result = new YamlEncryptRuleConfigurationBak();
-        result.getEncryptros().putAll(Maps.transformValues(data.getEncryptros(), new Function<EncryptorRuleConfigurationBak, YamlEncryptorRuleConfigurationBak>() {
+        result.getEncryptors().putAll(Maps.transformValues(data.getEncryptors(), new Function<EncryptorRuleConfigurationBak, YamlEncryptorRuleConfigurationBak>() {
             
             @Override
             public YamlEncryptorRuleConfigurationBak apply(final EncryptorRuleConfigurationBak input) {
@@ -61,7 +61,7 @@ public final class EncryptRuleConfigurationYamlSwapperBak implements YamlSwapper
     @Override
     public EncryptRuleConfigurationBak swap(final YamlEncryptRuleConfigurationBak yamlConfiguration) {
         EncryptRuleConfigurationBak result = new EncryptRuleConfigurationBak();
-        result.getEncryptros().putAll(Maps.transformValues(yamlConfiguration.getEncryptros(), new Function<YamlEncryptorRuleConfigurationBak, EncryptorRuleConfigurationBak>() {
+        result.getEncryptors().putAll(Maps.transformValues(yamlConfiguration.getEncryptors(), new Function<YamlEncryptorRuleConfigurationBak, EncryptorRuleConfigurationBak>() {
         
             @Override
             public EncryptorRuleConfigurationBak apply(final YamlEncryptorRuleConfigurationBak input) {
