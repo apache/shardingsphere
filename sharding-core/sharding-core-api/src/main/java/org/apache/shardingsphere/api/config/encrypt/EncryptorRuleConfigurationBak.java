@@ -15,10 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.api.config.encryptor;
+package org.apache.shardingsphere.api.config.encrypt;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.api.config.TypeBasedSPIConfiguration;
 
@@ -30,20 +28,9 @@ import java.util.Properties;
  * @author panjuan
  */
 @Getter
-public final class EncryptorRuleConfiguration extends TypeBasedSPIConfiguration {
+public final class EncryptorRuleConfigurationBak extends TypeBasedSPIConfiguration {
     
-    private final String qualifiedColumns;
-    
-    private String assistedQueryColumns;
-    
-    public EncryptorRuleConfiguration(final String type, final String qualifiedColumns, final Properties properties) {
-        this(type, qualifiedColumns, "", properties);
-    }
-    
-    public EncryptorRuleConfiguration(final String type, final String qualifiedColumns, final String assistedQueryColumns, final Properties properties) {
+    public EncryptorRuleConfigurationBak(final String type, final Properties properties) {
         super(type, properties);
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(qualifiedColumns), "qualifiedColumns is required.");
-        this.qualifiedColumns = qualifiedColumns;
-        this.assistedQueryColumns = null == assistedQueryColumns ? "" : assistedQueryColumns;
     }
 }

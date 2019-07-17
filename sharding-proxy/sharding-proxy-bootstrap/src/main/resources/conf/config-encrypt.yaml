@@ -75,3 +75,23 @@
 #    encryptor_md5:
 #          type: md5
 #          qualifiedColumns: t_encrypt.name
+
+encryptRule:    
+  encryptors:
+    encryptor_aes:
+      type: aes
+      props:
+        aes.key.value: 123456abc
+    encryptor_md5:
+      type: md5
+  tables:
+    t_order:
+      user_id:
+        plainColumn: user_decrypt
+        ciphertColumn: user_encrypt
+        assistedQueryColumn: user_assisted
+        encryptor: encryptor_aes
+      order_id:
+        ciphertColumn: order_encrypt
+        assistedQueryColumn: order_assisted      
+        encryptor: encryptor_md5

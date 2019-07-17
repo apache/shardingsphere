@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.strategy.encrypt;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.api.config.encryptor.EncryptorRuleConfiguration;
+import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 import org.junit.Test;
 

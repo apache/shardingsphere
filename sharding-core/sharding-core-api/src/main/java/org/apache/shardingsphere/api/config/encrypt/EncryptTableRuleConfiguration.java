@@ -15,19 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.api.config.encryptor;
+package org.apache.shardingsphere.api.config.encrypt;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Encrypt rule configuration.
+ * Encrypt table rule configuration.
  *
  * @author panjuan
  */
-public final class EncryptRuleConfigurationBak {
+public final class EncryptTableRuleConfiguration {
     
-    private final Map<String, EncryptorRuleConfigurationBak> encryptros = new LinkedHashMap<>();
-    
-    private final Map<String, EncryptTableRuleConfiguration> tables = new LinkedHashMap<>();
+    private final Map<String, EncryptColumnRuleConfiguration> columns = new LinkedHashMap<>();
 }
