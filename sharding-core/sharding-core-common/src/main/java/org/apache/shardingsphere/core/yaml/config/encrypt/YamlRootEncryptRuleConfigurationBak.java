@@ -22,6 +22,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.core.yaml.config.YamlConfiguration;
 
 import javax.sql.DataSource;
+import java.util.Properties;
 
 /**
  * Root encrypt rule configuration for YAML.
@@ -30,9 +31,11 @@ import javax.sql.DataSource;
  */
 @Getter
 @Setter
-public class YamlRootEncryptRuleConfigurationBak implements YamlConfiguration {
+public final class YamlRootEncryptRuleConfigurationBak implements YamlConfiguration {
     
     private DataSource dataSource;
     
-    private YamlEncryptRuleConfiguration encryptRule;
+    private YamlEncryptRuleConfigurationBak encryptRule;
+    
+    private Properties props = new Properties();
 }

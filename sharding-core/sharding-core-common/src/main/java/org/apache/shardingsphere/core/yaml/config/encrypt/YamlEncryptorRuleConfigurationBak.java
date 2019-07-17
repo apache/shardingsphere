@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.yaml.config.encrypt;
 
 import lombok.Getter;
-import org.apache.shardingsphere.api.config.TypeBasedSPIConfiguration;
+import lombok.Setter;
 
 import java.util.Properties;
 
@@ -28,9 +28,10 @@ import java.util.Properties;
  * @author panjuan
  */
 @Getter
-public final class YamlEncryptorRuleConfigurationBak extends TypeBasedSPIConfiguration {
+@Setter
+public final class YamlEncryptorRuleConfigurationBak {
     
-    public YamlEncryptorRuleConfigurationBak(final String type, final Properties properties) {
-        super(type, properties);
-    }
+    private String type;
+    
+    private Properties props = new Properties();
 }

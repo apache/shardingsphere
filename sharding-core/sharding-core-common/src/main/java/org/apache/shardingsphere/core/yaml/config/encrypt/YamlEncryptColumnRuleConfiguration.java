@@ -17,21 +17,23 @@
 
 package org.apache.shardingsphere.core.yaml.config.encrypt;
 
-import lombok.RequiredArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Encrypt column rule configuration.
  *
  * @author panjuan
  */
-@RequiredArgsConstructor
+@Getter
+@Setter
 public final class YamlEncryptColumnRuleConfiguration {
     
-    private final String plainColumn;
+    private String plainColumn;
     
-    private final String cipherColumn;
+    private String cipherColumn;
     
-    private final String assistedQueryColumn;
+    private String assistedQueryColumn;
     
-    private final String encryptor;
+    private String encryptor;
 }
