@@ -18,12 +18,13 @@
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Optional;
+import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.context.Column;
-import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
@@ -69,13 +70,10 @@ public final class UpdateEncryptColumnTokenGenerator implements CollectionSQLTok
     }
     
     private Collection<EncryptColumnToken> createUpdateEncryptColumnTokens(final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final EncryptRule encryptRule) {
-        Collection<EncryptColumnToken> result = new LinkedList<>();
-        for (SQLSegment each : optimizedStatement.getSQLStatement().getSQLSegments()) {
-            if (each instanceof SetAssignmentsSegment) {
-                result.addAll(createUpdateEncryptColumnTokens(encryptRule, parameterBuilder, (SetAssignmentsSegment) each));
-            }
+        if (!(optimizedStatement.getSQLStatement() instanceof UpdateStatement)) {
+            return Collections.emptyList();
         }
-        return result;
+        return createUpdateEncryptColumnTokens(encryptRule, parameterBuilder, ((UpdateStatement) optimizedStatement.getSQLStatement()).getSetAssignment());
     }
     
     private Collection<EncryptColumnToken> createUpdateEncryptColumnTokens(final EncryptRule encryptRule, final ParameterBuilder parameterBuilder, final SetAssignmentsSegment segment) {
@@ -93,7 +91,7 @@ public final class UpdateEncryptColumnTokenGenerator implements CollectionSQLTok
     
     private EncryptColumnToken createUpdateEncryptColumnToken(final ShardingEncryptorEngine encryptorEngine, final BaseParameterBuilder baseParameterBuilder) {
         ColumnNode columnNode = new ColumnNode(column.getTableName(), column.getName());
-        Object originalColumnValue = ((UpdateStatement) sqlStatement).getColumnValue(column, baseParameterBuilder.getOriginalParameters());
+        Object originalColumnValue = getColumnValue(findAssignment(column, (UpdateStatement) sqlStatement), baseParameterBuilder.getOriginalParameters());
         List<Object> encryptColumnValues = encryptorEngine.getEncryptColumnValues(columnNode, Collections.singletonList(originalColumnValue));
         encryptParameters(getPositionIndexesFromUpdateItem(), encryptColumnValues, baseParameterBuilder);
         Optional<String> assistedColumnName = encryptorEngine.getAssistedQueryColumn(columnNode.getTableName(), columnNode.getColumnName());
@@ -105,8 +103,28 @@ public final class UpdateEncryptColumnTokenGenerator implements CollectionSQLTok
         return createUpdateEncryptAssistedItemToken(encryptorEngine, encryptColumnValues, encryptAssistedColumnValues);
     }
     
+    private AssignmentSegment findAssignment(final Column column, final UpdateStatement updateStatement) {
+        for (AssignmentSegment each : updateStatement.getSetAssignment().getAssignments()) {
+            if (column.getName().equalsIgnoreCase(each.getColumn().getName())) {
+                return each;
+            }
+        }
+        throw new ShardingException("Cannot find column '%s'", column);
+    }
+    
+    private Object getColumnValue(final AssignmentSegment assignmentSegment, final List<Object> parameters) {
+        ExpressionSegment expressionSegment = assignmentSegment.getValue();
+        if (expressionSegment instanceof ParameterMarkerExpressionSegment) {
+            return parameters.get(((ParameterMarkerExpressionSegment) expressionSegment).getParameterMarkerIndex());
+        }
+        if (expressionSegment instanceof LiteralExpressionSegment) {
+            return ((LiteralExpressionSegment) expressionSegment).getLiterals();
+        }
+        throw new ShardingException("Can not find column value by %s.", column);
+    }
+    
     private Map<Integer, Integer> getPositionIndexesFromUpdateItem() {
-        ExpressionSegment result = ((UpdateStatement) sqlStatement).getAssignments().get(column);
+        ExpressionSegment result = findAssignment(column, (UpdateStatement) sqlStatement).getValue();
         return result instanceof ParameterMarkerExpressionSegment
                 ? Collections.singletonMap(0, ((ParameterMarkerExpressionSegment) result).getParameterMarkerIndex()) : new LinkedHashMap<Integer, Integer>();
     }
@@ -139,6 +157,6 @@ public final class UpdateEncryptColumnTokenGenerator implements CollectionSQLTok
     }
     
     private boolean isUsingParameter() {
-        return ((UpdateStatement) sqlStatement).getAssignments().get(column) instanceof ParameterMarkerExpressionSegment;
+        return findAssignment(column, (UpdateStatement) sqlStatement).getValue() instanceof ParameterMarkerExpressionSegment;
     }
 }

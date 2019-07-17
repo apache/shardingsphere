@@ -21,16 +21,8 @@ import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.core.parse.sql.context.Column;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.WhereSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
-
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
 
 /**
  * Update statement.
@@ -43,30 +35,12 @@ import java.util.Map;
 @ToString(callSuper = true)
 public final class UpdateStatement extends DMLStatement implements WhereSegmentAvailable {
     
-    private final Map<Column, ExpressionSegment> assignments = new LinkedHashMap<>();
+    private SetAssignmentsSegment setAssignment;
     
     private WhereSegment where;
     
     @Override
     public Optional<WhereSegment> getWhere() {
         return Optional.fromNullable(where);
-    }
-    
-    /**
-     * Get column value.
-     * 
-     * @param column column
-     * @param parameters parameters
-     * @return column value
-     */
-    public Comparable<?> getColumnValue(final Column column, final List<Object> parameters) {
-        ExpressionSegment expressionSegment = assignments.get(column);
-        if (expressionSegment instanceof ParameterMarkerExpressionSegment) {
-            return (Comparable<?>) parameters.get(((ParameterMarkerExpressionSegment) expressionSegment).getParameterMarkerIndex());
-        }
-        if (expressionSegment instanceof LiteralExpressionSegment) {
-            return (Comparable<?>) ((LiteralExpressionSegment) expressionSegment).getLiterals();
-        }
-        throw new ShardingException("Can not find column value by %s.", column);
     }
 }

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.parse.filler.impl.dml;
 
 import org.apache.shardingsphere.core.parse.filler.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.sql.context.Column;
 import org.apache.shardingsphere.core.parse.sql.context.InsertValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
@@ -63,13 +62,6 @@ public final class SetAssignmentsFiller implements SQLSegmentFiller<SetAssignmen
     }
     
     private void fillUpdate(final SetAssignmentsSegment sqlSegment, final UpdateStatement updateStatement) {
-        String tableName = updateStatement.getTables().getSingleTableName();
-        for (AssignmentSegment each : sqlSegment.getAssignments()) {
-            fillUpdateAssignments(each, tableName, updateStatement);
-        }
-    }
-    
-    private void fillUpdateAssignments(final AssignmentSegment assignment, final String tableName, final UpdateStatement updateStatement) {
-        updateStatement.getAssignments().put(new Column(assignment.getColumn().getName(), tableName), assignment.getValue());
+        updateStatement.setSetAssignment(sqlSegment);
     }
 }

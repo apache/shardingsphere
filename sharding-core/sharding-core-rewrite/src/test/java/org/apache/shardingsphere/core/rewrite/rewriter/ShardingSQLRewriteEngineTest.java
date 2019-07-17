@@ -40,7 +40,6 @@ import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ord
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.pagination.Pagination;
 import org.apache.shardingsphere.core.optimize.statement.transparent.TransparentOptimizedStatement;
 import org.apache.shardingsphere.core.parse.constant.QuoteCharacter;
-import org.apache.shardingsphere.core.parse.sql.context.Column;
 import org.apache.shardingsphere.core.parse.sql.context.Table;
 import org.apache.shardingsphere.core.parse.sql.segment.common.SchemaSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
@@ -862,6 +861,9 @@ public final class ShardingSQLRewriteEngineTest {
         UpdateStatement updateStatement = new UpdateStatement();
         updateStatement.setLogicSQL("UPDATE `sharding_db`.table_x SET user_id=1 WHERE order_id=1");
         updateStatement.getSQLSegments().add(new TableSegment(7, 27, "table_x"));
+        updateStatement.getTables().add(new Table("table_x", null));
+        updateStatement.setSetAssignment(
+                new SetAssignmentsSegment(28, 42, Collections.singleton(new AssignmentSegment(33, 42, new ColumnSegment(33, 40, "id"), new LiteralExpressionSegment(41, 42, 1)))));
         SQLRouteResult result = new SQLRouteResult(new ShardingWhereOptimizedStatement(updateStatement, 
                 new ShardingConditions(Collections.<ShardingCondition>emptyList()), new EncryptConditions(Collections.<EncryptCondition>emptyList())));
         result.setRoutingResult(new RoutingResult());
@@ -944,9 +946,8 @@ public final class ShardingSQLRewriteEngineTest {
         updateStatement.setLogicSQL("UPDATE table_z SET id = 1 WHERE id = 2");
         updateStatement.getTables().add(new Table("table_z", ""));
         updateStatement.getSQLSegments().add(new TableSegment(7, 13, "table_z"));
-        SetAssignmentsSegment setAssignmentsSegment = new SetAssignmentsSegment(15, 24, Collections.singleton(new AssignmentSegment(19, 24, new ColumnSegment(19, 20, "id"), null)));
-        updateStatement.getSQLSegments().add(setAssignmentsSegment);
-        updateStatement.getAssignments().put(new Column("id", "table_z"), new LiteralExpressionSegment(0, 0, 1));
+        updateStatement.setSetAssignment(
+                new SetAssignmentsSegment(15, 24, Collections.singleton(new AssignmentSegment(19, 24, new ColumnSegment(19, 20, "id"), new LiteralExpressionSegment(0, 0, 2)))));
         List<EncryptCondition> encryptConditions = new LinkedList<>();
         encryptConditions.add(new EncryptCondition("id", "table_z", 32, 37, new LiteralExpressionSegment(0, 0, 2)));
         SQLRouteResult result = new SQLRouteResult(new ShardingWhereOptimizedStatement(updateStatement, 
