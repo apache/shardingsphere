@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.keygen;
 
 import com.google.common.base.Optional;
+import org.apache.shardingsphere.core.optimize.statement.InsertValue;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.GeneratedKey;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.ShardingInsertColumns;
-import org.apache.shardingsphere.core.parse.sql.context.InsertValue;
 import org.apache.shardingsphere.core.parse.sql.context.Table;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;

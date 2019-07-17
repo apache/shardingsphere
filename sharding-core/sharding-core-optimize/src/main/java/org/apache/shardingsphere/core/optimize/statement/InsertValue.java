@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.context;
+package org.apache.shardingsphere.core.optimize.statement;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

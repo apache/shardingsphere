@@ -20,11 +20,11 @@ package org.apache.shardingsphere.core.optimize.engine.encrypt;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
+import org.apache.shardingsphere.core.optimize.statement.InsertValue;
 import org.apache.shardingsphere.core.optimize.statement.encrypt.EncryptInsertColumns;
 import org.apache.shardingsphere.core.optimize.statement.encrypt.EncryptInsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.InsertOptimizeResultUnit;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.value.InsertValueEngine;
-import org.apache.shardingsphere.core.parse.sql.context.InsertValue;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 

@@ -20,12 +20,12 @@ package org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert;
 import com.google.common.base.Optional;
 import lombok.Getter;
 import org.apache.shardingsphere.core.optimize.statement.InsertOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.InsertValue;
 import org.apache.shardingsphere.core.optimize.statement.encrypt.condition.EncryptCondition;
 import org.apache.shardingsphere.core.optimize.statement.encrypt.condition.EncryptConditions;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.ShardingWhereOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingConditions;
-import org.apache.shardingsphere.core.parse.sql.context.InsertValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 

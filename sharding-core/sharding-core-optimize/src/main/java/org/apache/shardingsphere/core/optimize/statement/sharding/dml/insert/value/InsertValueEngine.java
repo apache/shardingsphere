@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.value;
 
-import org.apache.shardingsphere.core.parse.sql.context.InsertValue;
+import org.apache.shardingsphere.core.optimize.statement.InsertValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
