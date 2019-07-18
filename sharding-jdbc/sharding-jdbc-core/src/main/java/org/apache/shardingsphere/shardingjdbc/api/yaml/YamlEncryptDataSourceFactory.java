@@ -20,9 +20,9 @@ package org.apache.shardingsphere.shardingjdbc.api.yaml;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.core.yaml.config.encrypt.YamlRootEncryptRuleConfiguration;
+import org.apache.shardingsphere.core.yaml.config.encrypt.YamlRootEncryptRuleConfigurationBak;
 import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.core.yaml.swapper.impl.EncryptRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.core.yaml.swapper.impl.EncryptRuleConfigurationYamlSwapperBak;
 import org.apache.shardingsphere.shardingjdbc.api.EncryptDataSourceFactory;
 
 import javax.sql.DataSource;
@@ -44,8 +44,8 @@ public final class YamlEncryptDataSourceFactory {
      */
     @SneakyThrows
     public static DataSource createDataSource(final File yamlFile) {
-        YamlRootEncryptRuleConfiguration config = YamlEngine.unmarshal(yamlFile, YamlRootEncryptRuleConfiguration.class);
-        return EncryptDataSourceFactory.createDataSource(config.getDataSource(), new EncryptRuleConfigurationYamlSwapper().swap(config.getEncryptRule()));
+        YamlRootEncryptRuleConfigurationBak config = YamlEngine.unmarshal(yamlFile, YamlRootEncryptRuleConfigurationBak.class);
+        return EncryptDataSourceFactory.createDataSource(config.getDataSource(), new EncryptRuleConfigurationYamlSwapperBak().swap(config.getEncryptRule()));
     }
     
     /**
@@ -56,8 +56,8 @@ public final class YamlEncryptDataSourceFactory {
      */
     @SneakyThrows
     public static DataSource createDataSource(final byte[] yamlBytes) {
-        YamlRootEncryptRuleConfiguration config = YamlEngine.unmarshal(yamlBytes, YamlRootEncryptRuleConfiguration.class);
-        return EncryptDataSourceFactory.createDataSource(config.getDataSource(), new EncryptRuleConfigurationYamlSwapper().swap(config.getEncryptRule()));
+        YamlRootEncryptRuleConfigurationBak config = YamlEngine.unmarshal(yamlBytes, YamlRootEncryptRuleConfigurationBak.class);
+        return EncryptDataSourceFactory.createDataSource(config.getDataSource(), new EncryptRuleConfigurationYamlSwapperBak().swap(config.getEncryptRule()));
     }
     
     /**
@@ -69,8 +69,8 @@ public final class YamlEncryptDataSourceFactory {
      */
     @SneakyThrows
     public static DataSource createDataSource(final DataSource dataSource, final File yamlFile) {
-        YamlRootEncryptRuleConfiguration config = YamlEngine.unmarshal(yamlFile, YamlRootEncryptRuleConfiguration.class);
-        return EncryptDataSourceFactory.createDataSource(dataSource, new EncryptRuleConfigurationYamlSwapper().swap(config.getEncryptRule()));
+        YamlRootEncryptRuleConfigurationBak config = YamlEngine.unmarshal(yamlFile, YamlRootEncryptRuleConfigurationBak.class);
+        return EncryptDataSourceFactory.createDataSource(dataSource, new EncryptRuleConfigurationYamlSwapperBak().swap(config.getEncryptRule()));
     
     }
     
@@ -83,7 +83,7 @@ public final class YamlEncryptDataSourceFactory {
      */
     @SneakyThrows
     public static DataSource createDataSource(final DataSource dataSource, final byte[] yamlBytes) {
-        YamlRootEncryptRuleConfiguration config = YamlEngine.unmarshal(yamlBytes, YamlRootEncryptRuleConfiguration.class);
-        return EncryptDataSourceFactory.createDataSource(dataSource, new EncryptRuleConfigurationYamlSwapper().swap(config.getEncryptRule()));
+        YamlRootEncryptRuleConfigurationBak config = YamlEngine.unmarshal(yamlBytes, YamlRootEncryptRuleConfigurationBak.class);
+        return EncryptDataSourceFactory.createDataSource(dataSource, new EncryptRuleConfigurationYamlSwapperBak().swap(config.getEncryptRule()));
     }
 }

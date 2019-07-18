@@ -96,7 +96,7 @@ public final class WhereClauseEncryptConditionEngine {
     
     private Optional<EncryptCondition> createEncryptCondition(final PredicateSegment predicateSegment, final SQLStatement sqlStatement) {
         Optional<String> tableName = PredicateUtils.findTableName(predicateSegment, sqlStatement, shardingTableMetaData);
-        if (!tableName.isPresent() || !encryptRule.getEncryptorEngine().getShardingEncryptor(tableName.get(), predicateSegment.getColumn().getName()).isPresent()) {
+        if (!tableName.isPresent() || !encryptRule.getEncryptEngine().getShardingEncryptor(tableName.get(), predicateSegment.getColumn().getName()).isPresent()) {
             return Optional.absent();
         }
         return createEncryptCondition(predicateSegment, tableName.get());

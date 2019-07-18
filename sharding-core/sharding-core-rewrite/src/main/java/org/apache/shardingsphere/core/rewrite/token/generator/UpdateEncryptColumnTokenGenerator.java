@@ -35,7 +35,7 @@ import org.apache.shardingsphere.core.rewrite.token.pojo.UpdateEncryptAssistedIt
 import org.apache.shardingsphere.core.rewrite.token.pojo.UpdateEncryptItemToken;
 import org.apache.shardingsphere.core.rule.ColumnNode;
 import org.apache.shardingsphere.core.rule.EncryptRule;
-import org.apache.shardingsphere.core.strategy.encrypt.ShardingEncryptorEngine;
+import org.apache.shardingsphere.core.strategy.encrypt.EncryptEngine;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -80,27 +80,27 @@ public final class UpdateEncryptColumnTokenGenerator implements CollectionSQLTok
         Collection<EncryptColumnToken> result = new LinkedList<>();
         for (AssignmentSegment each : segment.getAssignments()) {
             this.column = new Column(each.getColumn().getName(), sqlStatement.getTables().getSingleTableName());
-            if (encryptRule.getEncryptorEngine().getShardingEncryptor(column.getTableName(), column.getName()).isPresent()) {
+            if (encryptRule.getEncryptEngine().getShardingEncryptor(column.getTableName(), column.getName()).isPresent()) {
                 this.startIndex = each.getColumn().getStartIndex();
                 this.stopIndex = each.getStopIndex();
-                result.add(createUpdateEncryptColumnToken(encryptRule.getEncryptorEngine(), (BaseParameterBuilder) parameterBuilder));
+                result.add(createUpdateEncryptColumnToken(encryptRule.getEncryptEngine(), (BaseParameterBuilder) parameterBuilder));
             }
         }
         return result;
     }
     
-    private EncryptColumnToken createUpdateEncryptColumnToken(final ShardingEncryptorEngine encryptorEngine, final BaseParameterBuilder baseParameterBuilder) {
+    private EncryptColumnToken createUpdateEncryptColumnToken(final EncryptEngine encryptEngine, final BaseParameterBuilder baseParameterBuilder) {
         ColumnNode columnNode = new ColumnNode(column.getTableName(), column.getName());
         Object originalColumnValue = getColumnValue(findAssignment(column, (UpdateStatement) sqlStatement), baseParameterBuilder.getOriginalParameters());
-        List<Object> encryptColumnValues = encryptorEngine.getEncryptColumnValues(columnNode, Collections.singletonList(originalColumnValue));
+        List<Object> encryptColumnValues = encryptEngine.getEncryptColumnValues(columnNode, Collections.singletonList(originalColumnValue));
         encryptParameters(getPositionIndexesFromUpdateItem(), encryptColumnValues, baseParameterBuilder);
-        Optional<String> assistedColumnName = encryptorEngine.getAssistedQueryColumn(columnNode.getTableName(), columnNode.getColumnName());
+        Optional<String> assistedColumnName = encryptEngine.getAssistedQueryColumn(columnNode.getTableName(), columnNode.getColumnName());
         if (!assistedColumnName.isPresent()) {
             return createUpdateEncryptItemToken(encryptColumnValues);
         }
-        List<Object> encryptAssistedColumnValues = encryptorEngine.getEncryptAssistedColumnValues(columnNode, Collections.singletonList(originalColumnValue));
+        List<Object> encryptAssistedColumnValues = encryptEngine.getEncryptAssistedColumnValues(columnNode, Collections.singletonList(originalColumnValue));
         baseParameterBuilder.getAddedIndexAndParameters().putAll(getIndexAndParameters(encryptAssistedColumnValues));
-        return createUpdateEncryptAssistedItemToken(encryptorEngine, encryptColumnValues, encryptAssistedColumnValues);
+        return createUpdateEncryptAssistedItemToken(encryptEngine, encryptColumnValues, encryptAssistedColumnValues);
     }
     
     private AssignmentSegment findAssignment(final Column column, final UpdateStatement updateStatement) {
@@ -150,8 +150,8 @@ public final class UpdateEncryptColumnTokenGenerator implements CollectionSQLTok
     }
     
     private UpdateEncryptAssistedItemToken createUpdateEncryptAssistedItemToken(
-            final ShardingEncryptorEngine encryptorEngine, final List<Object> encryptColumnValues, final List<Object> encryptAssistedColumnValues) {
-        String assistedColumnName = encryptorEngine.getAssistedQueryColumn(column.getTableName(), column.getName()).get();
+            final EncryptEngine encryptEngine, final List<Object> encryptColumnValues, final List<Object> encryptAssistedColumnValues) {
+        String assistedColumnName = encryptEngine.getAssistedQueryColumn(column.getTableName(), column.getName()).get();
         return isUsingParameter() ? new UpdateEncryptAssistedItemToken(startIndex, stopIndex, column.getName(), assistedColumnName) 
                 : new UpdateEncryptAssistedItemToken(startIndex, stopIndex, column.getName(), encryptColumnValues.get(0), assistedColumnName, encryptAssistedColumnValues.get(0));
     }
