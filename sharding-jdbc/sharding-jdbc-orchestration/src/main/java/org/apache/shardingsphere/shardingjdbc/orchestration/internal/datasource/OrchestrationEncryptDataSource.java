@@ -23,8 +23,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.api.config.RuleConfiguration;
-import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
-import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfiguration;
+import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfigurationBak;
+import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfigurationBak;
 import org.apache.shardingsphere.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.core.constant.ShardingConstant;
 import org.apache.shardingsphere.orchestration.config.OrchestrationConfiguration;
@@ -56,8 +56,8 @@ public class OrchestrationEncryptDataSource extends AbstractOrchestrationDataSou
     public OrchestrationEncryptDataSource(final OrchestrationConfiguration orchestrationConfig) {
         super(new ShardingOrchestrationFacade(orchestrationConfig, Collections.singletonList(ShardingConstant.LOGIC_SCHEMA_NAME)));
         ConfigurationService configService = getShardingOrchestrationFacade().getConfigService();
-        EncryptRuleConfiguration encryptRuleConfiguration = configService.loadEncryptRuleConfiguration(ShardingConstant.LOGIC_SCHEMA_NAME);
-        Preconditions.checkState(!encryptRuleConfiguration.getEncryptorRuleConfigs().isEmpty(), "No available encrypt rule configuration to load.");
+        EncryptRuleConfigurationBak encryptRuleConfiguration = configService.loadEncryptRuleConfiguration(ShardingConstant.LOGIC_SCHEMA_NAME);
+        Preconditions.checkState(!encryptRuleConfiguration.getEncryptors().isEmpty(), "No available encrypt rule configuration to load.");
         Map<String, DataSourceConfiguration> dataSourceConfigurations = configService.loadDataSourceConfigurations(ShardingConstant.LOGIC_SCHEMA_NAME);
         checkDataSourceConfiguration(dataSourceConfigurations);
         dataSource = new EncryptDataSource(DataSourceConverter.getDataSourceMap(dataSourceConfigurations).values().iterator().next(), encryptRuleConfiguration, configService.loadProperties());
@@ -78,10 +78,10 @@ public class OrchestrationEncryptDataSource extends AbstractOrchestrationDataSou
     
     private Map<String, RuleConfiguration> getRuleConfigurationMap() {
         Map<String, RuleConfiguration> result = new HashMap<>(1);
-        EncryptRuleConfiguration encryptRuleConfig = new EncryptRuleConfiguration();
-        for (Entry<String, EncryptorRuleConfiguration> entry : dataSource.getEncryptRule().getEncryptRuleConfig().getEncryptorRuleConfigs().entrySet()) {
-            encryptRuleConfig.getEncryptorRuleConfigs().put(entry.getKey(),
-                new EncryptorRuleConfiguration(entry.getValue().getType(), entry.getValue().getQualifiedColumns(), entry.getValue().getAssistedQueryColumns(), entry.getValue().getProperties()));
+        EncryptRuleConfigurationBak encryptRuleConfig = new EncryptRuleConfigurationBak();
+        for (Entry<String, EncryptorRuleConfigurationBak> entry : dataSource.getEncryptRule().getEncryptRuleConfig().getEncryptors().entrySet()) {
+            encryptRuleConfig.getEncryptors().put(entry.getKey(),
+                new EncryptorRuleConfigurationBak(entry.getValue().getType(), entry.getValue().getProperties()));
         }
         result.put(ShardingConstant.LOGIC_SCHEMA_NAME, encryptRuleConfig);
         return result;

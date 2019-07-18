@@ -22,7 +22,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
-import org.apache.shardingsphere.core.strategy.encrypt.ShardingEncryptorEngine;
+import org.apache.shardingsphere.core.strategy.encrypt.EncryptEngine;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 
 import java.sql.ResultSetMetaData;
@@ -44,14 +44,14 @@ public final class QueryResultMetaData {
     
     private final ShardingRule shardingRule;
     
-    private final ShardingEncryptorEngine shardingEncryptorEngine;
+    private final EncryptEngine encryptEngine;
     
     @SneakyThrows
     public QueryResultMetaData(final ResultSetMetaData resultSetMetaData, final ShardingRule shardingRule) {
         columnLabelAndIndexes = getColumnLabelAndIndexMap(resultSetMetaData);
         this.resultSetMetaData = resultSetMetaData;
         this.shardingRule = shardingRule;
-        this.shardingEncryptorEngine = shardingRule.getEncryptRule().getEncryptorEngine();
+        this.encryptEngine = shardingRule.getEncryptRule().getEncryptEngine();
     }
     
     @SneakyThrows
@@ -59,7 +59,7 @@ public final class QueryResultMetaData {
         columnLabelAndIndexes = getColumnLabelAndIndexMap(resultSetMetaData);
         this.resultSetMetaData = resultSetMetaData;
         this.shardingRule = null;
-        this.shardingEncryptorEngine = encryptRule.getEncryptorEngine();
+        this.encryptEngine = encryptRule.getEncryptEngine();
     }
     
     @SneakyThrows
@@ -67,7 +67,7 @@ public final class QueryResultMetaData {
         columnLabelAndIndexes = getColumnLabelAndIndexMap(resultSetMetaData);
         this.resultSetMetaData = resultSetMetaData;
         this.shardingRule = null;
-        this.shardingEncryptorEngine = new ShardingEncryptorEngine();
+        this.encryptEngine = new EncryptEngine();
     }
     
     @SneakyThrows
@@ -140,7 +140,7 @@ public final class QueryResultMetaData {
      */
     @SneakyThrows
     public Optional<ShardingEncryptor> getShardingEncryptor(final int columnIndex) {
-        return shardingEncryptorEngine.getShardingEncryptor(getTableName(columnIndex), resultSetMetaData.getColumnName(columnIndex));
+        return encryptEngine.getShardingEncryptor(getTableName(columnIndex), resultSetMetaData.getColumnName(columnIndex));
     }
     
     private String getTableName(final int columnIndex) throws SQLException {

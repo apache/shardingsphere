@@ -17,17 +17,9 @@
 
 package org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.type;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
-import java.lang.reflect.Field;
-
-import javax.annotation.Resource;
-import javax.sql.DataSource;
-
+import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
+import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfigurationBak;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationEncryptDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.registry.TestRegistryCenter;
@@ -40,7 +32,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import lombok.SneakyThrows;
+import javax.annotation.Resource;
+import javax.sql.DataSource;
+import java.lang.reflect.Field;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = OrchestrationSpringBootRegistryEncryptTest.class)
@@ -83,9 +81,9 @@ public class OrchestrationSpringBootRegistryEncryptTest {
         BasicDataSource embedDataSource = (BasicDataSource) encryptDataSource.getDataSource();
         assertThat(embedDataSource.getMaxTotal(), is(100));
         assertThat(embedDataSource.getUsername(), is("sa"));
-        EncryptRuleConfiguration encryptRuleConfig = encryptDataSource.getEncryptRule().getEncryptRuleConfig();
-        assertThat(encryptRuleConfig.getEncryptorRuleConfigs().size(), is(1));
-        assertTrue(encryptRuleConfig.getEncryptorRuleConfigs().containsKey("order_encrypt"));
-        assertThat(encryptRuleConfig.getEncryptorRuleConfigs().get("order_encrypt").getType(), is("aes"));
+        EncryptRuleConfigurationBak encryptRuleConfig = encryptDataSource.getEncryptRule().getEncryptRuleConfig();
+        assertThat(encryptRuleConfig.getEncryptors().size(), is(1));
+        assertTrue(encryptRuleConfig.getEncryptors().containsKey("order_encrypt"));
+        assertThat(encryptRuleConfig.getEncryptors().get("order_encrypt").getType(), is("aes"));
     }
 }
