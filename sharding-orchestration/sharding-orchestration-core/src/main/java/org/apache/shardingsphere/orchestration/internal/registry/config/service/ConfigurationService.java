@@ -33,7 +33,7 @@ import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveRul
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.core.yaml.swapper.impl.AuthenticationYamlSwapper;
-import org.apache.shardingsphere.core.yaml.swapper.impl.EncryptRuleConfigurationYamlSwapperBak;
+import org.apache.shardingsphere.core.yaml.swapper.impl.EncryptRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.impl.MasterSlaveRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.impl.ShardingRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.internal.registry.config.node.ConfigurationNode;
@@ -138,7 +138,7 @@ public final class ConfigurationService {
     private void persistEncryptRuleConfiguration(final String shardingSchemaName, final EncryptRuleConfiguration encryptRuleConfiguration) {
         Preconditions.checkState(null != encryptRuleConfiguration && !encryptRuleConfiguration.getEncryptors().isEmpty(),
             "No available encrypt rule configuration in `%s` for orchestration.", shardingSchemaName);
-        regCenter.persist(configNode.getRulePath(shardingSchemaName), YamlEngine.marshal(new EncryptRuleConfigurationYamlSwapperBak().swap(encryptRuleConfiguration)));
+        regCenter.persist(configNode.getRulePath(shardingSchemaName), YamlEngine.marshal(new EncryptRuleConfigurationYamlSwapper().swap(encryptRuleConfiguration)));
     }
     
     private void persistMasterSlaveRuleConfiguration(final String shardingSchemaName, final MasterSlaveRuleConfiguration masterSlaveRuleConfiguration) {
@@ -232,7 +232,7 @@ public final class ConfigurationService {
      * @return encrypt rule configuration
      */
     public EncryptRuleConfiguration loadEncryptRuleConfiguration(final String shardingSchemaName) {
-        return new EncryptRuleConfigurationYamlSwapperBak().swap(YamlEngine.unmarshal(regCenter.getDirectly(configNode.getRulePath(shardingSchemaName)), YamlEncryptRuleConfiguration.class));
+        return new EncryptRuleConfigurationYamlSwapper().swap(YamlEngine.unmarshal(regCenter.getDirectly(configNode.getRulePath(shardingSchemaName)), YamlEncryptRuleConfiguration.class));
     }
     
     /**

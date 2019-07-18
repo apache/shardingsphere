@@ -27,7 +27,7 @@ import org.apache.shardingsphere.core.rule.Authentication;
 import org.apache.shardingsphere.core.util.ConfigurationLogger;
 import org.apache.shardingsphere.core.yaml.config.common.YamlAuthenticationConfiguration;
 import org.apache.shardingsphere.core.yaml.swapper.impl.AuthenticationYamlSwapper;
-import org.apache.shardingsphere.core.yaml.swapper.impl.EncryptRuleConfigurationYamlSwapperBak;
+import org.apache.shardingsphere.core.yaml.swapper.impl.EncryptRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.impl.MasterSlaveRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.impl.ShardingRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.opentracing.ShardingTracer;
@@ -181,7 +181,7 @@ public final class Bootstrap {
             } else if (null != entry.getValue().getMasterSlaveRule()) {
                 result.put(entry.getKey(), new MasterSlaveRuleConfigurationYamlSwapper().swap(entry.getValue().getMasterSlaveRule()));
             } else if (null != entry.getValue().getEncryptRule()) {
-                result.put(entry.getKey(), new EncryptRuleConfigurationYamlSwapperBak().swap(entry.getValue().getEncryptRule()));
+                result.put(entry.getKey(), new EncryptRuleConfigurationYamlSwapper().swap(entry.getValue().getEncryptRule()));
             }
         }
         return result;

@@ -27,7 +27,7 @@ import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.rule.Authentication;
 import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.core.yaml.swapper.impl.AuthenticationYamlSwapper;
-import org.apache.shardingsphere.core.yaml.swapper.impl.EncryptRuleConfigurationYamlSwapperBak;
+import org.apache.shardingsphere.core.yaml.swapper.impl.EncryptRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.impl.MasterSlaveRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.impl.ShardingRuleConfigurationYamlSwapper;
 
@@ -64,7 +64,7 @@ public final class ConfigurationLogger {
             return;
         }
         log(encryptRuleConfiguration.getClass().getSimpleName(),
-            YamlEngine.marshal(new EncryptRuleConfigurationYamlSwapperBak().swap(encryptRuleConfiguration)));
+            YamlEngine.marshal(new EncryptRuleConfigurationYamlSwapper().swap(encryptRuleConfiguration)));
     }
 
     /**

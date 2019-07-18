@@ -33,7 +33,7 @@ import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveRul
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.core.yaml.swapper.impl.AuthenticationYamlSwapper;
-import org.apache.shardingsphere.core.yaml.swapper.impl.EncryptRuleConfigurationYamlSwapperBak;
+import org.apache.shardingsphere.core.yaml.swapper.impl.EncryptRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.impl.MasterSlaveRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.impl.ShardingRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.reg.api.RegistryCenter;
@@ -273,7 +273,7 @@ public final class ConfigurationServiceTest {
     }
     
     private EncryptRuleConfiguration createEncryptRuleConfiguration() {
-        return new EncryptRuleConfigurationYamlSwapperBak().swap(YamlEngine.unmarshal(ENCRYPT_RULE_YAML, YamlEncryptRuleConfiguration.class));
+        return new EncryptRuleConfigurationYamlSwapper().swap(YamlEngine.unmarshal(ENCRYPT_RULE_YAML, YamlEncryptRuleConfiguration.class));
     }
     
     private Authentication createAuthentication() {
