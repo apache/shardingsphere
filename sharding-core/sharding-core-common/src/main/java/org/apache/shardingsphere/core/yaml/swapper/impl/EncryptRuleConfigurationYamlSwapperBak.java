@@ -21,7 +21,7 @@ import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfigurationBak;
 import org.apache.shardingsphere.api.config.encrypt.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfigurationBak;
+import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptRuleConfigurationBak;
 import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptTableRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptorRuleConfigurationBak;
@@ -41,10 +41,10 @@ public final class EncryptRuleConfigurationYamlSwapperBak implements YamlSwapper
     @Override
     public YamlEncryptRuleConfigurationBak swap(final EncryptRuleConfigurationBak data) {
         YamlEncryptRuleConfigurationBak result = new YamlEncryptRuleConfigurationBak();
-        result.getEncryptors().putAll(Maps.transformValues(data.getEncryptors(), new Function<EncryptorRuleConfigurationBak, YamlEncryptorRuleConfigurationBak>() {
+        result.getEncryptors().putAll(Maps.transformValues(data.getEncryptors(), new Function<EncryptorRuleConfiguration, YamlEncryptorRuleConfigurationBak>() {
             
             @Override
-            public YamlEncryptorRuleConfigurationBak apply(final EncryptorRuleConfigurationBak input) {
+            public YamlEncryptorRuleConfigurationBak apply(final EncryptorRuleConfiguration input) {
                 return encryptorRuleConfigurationYamlSwapper.swap(input);
             }
         }));
@@ -61,10 +61,10 @@ public final class EncryptRuleConfigurationYamlSwapperBak implements YamlSwapper
     @Override
     public EncryptRuleConfigurationBak swap(final YamlEncryptRuleConfigurationBak yamlConfiguration) {
         EncryptRuleConfigurationBak result = new EncryptRuleConfigurationBak();
-        result.getEncryptors().putAll(Maps.transformValues(yamlConfiguration.getEncryptors(), new Function<YamlEncryptorRuleConfigurationBak, EncryptorRuleConfigurationBak>() {
+        result.getEncryptors().putAll(Maps.transformValues(yamlConfiguration.getEncryptors(), new Function<YamlEncryptorRuleConfigurationBak, EncryptorRuleConfiguration>() {
         
             @Override
-            public EncryptorRuleConfigurationBak apply(final YamlEncryptorRuleConfigurationBak input) {
+            public EncryptorRuleConfiguration apply(final YamlEncryptorRuleConfigurationBak input) {
                 return encryptorRuleConfigurationYamlSwapper.swap(input);
             }
         }));

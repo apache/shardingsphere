@@ -24,7 +24,7 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.api.config.RuleConfiguration;
 import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfigurationBak;
-import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfigurationBak;
+import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.core.constant.ShardingConstant;
 import org.apache.shardingsphere.orchestration.config.OrchestrationConfiguration;
@@ -79,9 +79,9 @@ public class OrchestrationEncryptDataSource extends AbstractOrchestrationDataSou
     private Map<String, RuleConfiguration> getRuleConfigurationMap() {
         Map<String, RuleConfiguration> result = new HashMap<>(1);
         EncryptRuleConfigurationBak encryptRuleConfig = new EncryptRuleConfigurationBak();
-        for (Entry<String, EncryptorRuleConfigurationBak> entry : dataSource.getEncryptRule().getEncryptRuleConfig().getEncryptors().entrySet()) {
+        for (Entry<String, EncryptorRuleConfiguration> entry : dataSource.getEncryptRule().getEncryptRuleConfig().getEncryptors().entrySet()) {
             encryptRuleConfig.getEncryptors().put(entry.getKey(),
-                new EncryptorRuleConfigurationBak(entry.getValue().getType(), entry.getValue().getProperties()));
+                new EncryptorRuleConfiguration(entry.getValue().getType(), entry.getValue().getProperties()));
         }
         result.put(ShardingConstant.LOGIC_SCHEMA_NAME, encryptRuleConfig);
         return result;

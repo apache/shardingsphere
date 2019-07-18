@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.orchestration.internal.registry.config.listener;
 
 import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfigurationBak;
-import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfigurationBak;
+import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
@@ -111,7 +111,7 @@ public class SchemaChangedListenerTest {
         assertThat(actual, instanceOf(EncryptRuleChangedEvent.class));
         assertThat(((EncryptRuleChangedEvent) actual).getShardingSchemaName(), is("encrypt_db"));
         assertThat(((EncryptRuleChangedEvent) actual).getEncryptRuleConfiguration().getEncryptors().size(), is(1));
-        Entry<String, EncryptorRuleConfigurationBak> entry = ((EncryptRuleChangedEvent) actual).getEncryptRuleConfiguration().getEncryptors().entrySet().iterator().next();
+        Entry<String, EncryptorRuleConfiguration> entry = ((EncryptRuleChangedEvent) actual).getEncryptRuleConfiguration().getEncryptors().entrySet().iterator().next();
         assertThat(entry.getKey(), is("order_encryptor"));
         assertThat(entry.getValue().getType(), is("AES"));
         assertThat(entry.getValue().getProperties().get("aes.key.value").toString(), is("123456"));

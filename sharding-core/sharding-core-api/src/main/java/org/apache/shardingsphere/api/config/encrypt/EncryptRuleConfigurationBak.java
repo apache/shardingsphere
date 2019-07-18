@@ -35,15 +35,15 @@ import java.util.Map;
 @Getter
 public final class EncryptRuleConfigurationBak implements RuleConfiguration {
     
-    private final Map<String, EncryptorRuleConfigurationBak> encryptors;
+    private final Map<String, EncryptorRuleConfiguration> encryptors;
     
     private final Map<String, EncryptTableRuleConfiguration> tables;
     
     public EncryptRuleConfigurationBak() {
-        this(new LinkedHashMap<String, EncryptorRuleConfigurationBak>(), new LinkedHashMap<String, EncryptTableRuleConfiguration>());
+        this(new LinkedHashMap<String, EncryptorRuleConfiguration>(), new LinkedHashMap<String, EncryptTableRuleConfiguration>());
     }
     
-    public EncryptRuleConfigurationBak(final Map<String, EncryptorRuleConfigurationBak> encryptors, final Map<String, EncryptTableRuleConfiguration> tables) {
+    public EncryptRuleConfigurationBak(final Map<String, EncryptorRuleConfiguration> encryptors, final Map<String, EncryptTableRuleConfiguration> tables) {
         this.encryptors = encryptors;
         this.tables = tables;
         Preconditions.checkArgument(isValidConfigurations(), "Invalid encryptorNames are used in EncryptTableRuleConfigurations.");

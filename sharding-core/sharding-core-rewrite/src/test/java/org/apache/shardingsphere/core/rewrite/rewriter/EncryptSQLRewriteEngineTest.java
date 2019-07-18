@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.rewrite.rewriter;
 
 import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfigurationBak;
-import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfigurationBak;
+import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
@@ -60,8 +60,8 @@ public final class EncryptSQLRewriteEngineTest {
     }
     
     private EncryptRuleConfigurationBak createEncryptRuleConfiguration() {
-        EncryptorRuleConfigurationBak encryptorConfig = new EncryptorRuleConfigurationBak("test", new Properties());
-        EncryptorRuleConfigurationBak encryptorQueryConfig = new EncryptorRuleConfigurationBak("assistedTest", new Properties());
+        EncryptorRuleConfiguration encryptorConfig = new EncryptorRuleConfiguration("test", new Properties());
+        EncryptorRuleConfiguration encryptorQueryConfig = new EncryptorRuleConfiguration("assistedTest", new Properties());
         EncryptRuleConfigurationBak result = new EncryptRuleConfigurationBak();
         result.getEncryptors().put("test", encryptorConfig);
         result.getEncryptors().put("assistedTest", encryptorQueryConfig);

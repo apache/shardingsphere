@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.yaml.swapper.impl;
 
-import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfigurationBak;
+import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptorRuleConfigurationBak;
 import org.apache.shardingsphere.core.yaml.swapper.YamlSwapper;
 
@@ -26,10 +26,10 @@ import org.apache.shardingsphere.core.yaml.swapper.YamlSwapper;
  *
  * @author panjuan
  */
-public final class EncryptorRuleConfigurationYamlSwapperBak implements YamlSwapper<YamlEncryptorRuleConfigurationBak, EncryptorRuleConfigurationBak> {
+public final class EncryptorRuleConfigurationYamlSwapperBak implements YamlSwapper<YamlEncryptorRuleConfigurationBak, EncryptorRuleConfiguration> {
     
     @Override
-    public YamlEncryptorRuleConfigurationBak swap(final EncryptorRuleConfigurationBak data) {
+    public YamlEncryptorRuleConfigurationBak swap(final EncryptorRuleConfiguration data) {
         YamlEncryptorRuleConfigurationBak result = new YamlEncryptorRuleConfigurationBak();
         result.setType(data.getType());
         result.setProps(data.getProperties());
@@ -37,7 +37,7 @@ public final class EncryptorRuleConfigurationYamlSwapperBak implements YamlSwapp
     }
     
     @Override
-    public EncryptorRuleConfigurationBak swap(final YamlEncryptorRuleConfigurationBak yamlConfiguration) {
-        return new EncryptorRuleConfigurationBak(yamlConfiguration.getType(), yamlConfiguration.getProps());
+    public EncryptorRuleConfiguration swap(final YamlEncryptorRuleConfigurationBak yamlConfiguration) {
+        return new EncryptorRuleConfiguration(yamlConfiguration.getType(), yamlConfiguration.getProps());
     }
 }
