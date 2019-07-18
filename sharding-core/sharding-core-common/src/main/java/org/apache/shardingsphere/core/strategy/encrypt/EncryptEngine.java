@@ -21,6 +21,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfigurationBak;
 import org.apache.shardingsphere.api.config.encrypt.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfigurationBak;
@@ -41,6 +42,7 @@ import java.util.Map.Entry;
  *
  * @author panjuan
  */
+@NoArgsConstructor
 public final class EncryptEngine {
     
     private final Map<String, ShardingEncryptor> encryptors = new LinkedHashMap<>();
