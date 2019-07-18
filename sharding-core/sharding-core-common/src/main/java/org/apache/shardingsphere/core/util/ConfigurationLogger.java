@@ -17,22 +17,21 @@
 
 package org.apache.shardingsphere.core.util;
 
-import java.util.Properties;
-
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.api.config.RuleConfiguration;
-import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
+import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfigurationBak;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.rule.Authentication;
 import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.core.yaml.swapper.impl.AuthenticationYamlSwapper;
-import org.apache.shardingsphere.core.yaml.swapper.impl.EncryptRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.core.yaml.swapper.impl.EncryptRuleConfigurationYamlSwapperBak;
 import org.apache.shardingsphere.core.yaml.swapper.impl.MasterSlaveRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.impl.ShardingRuleConfigurationYamlSwapper;
 
-import lombok.extern.slf4j.Slf4j;
+import java.util.Properties;
 
 /**
  * Configuration printer class.
@@ -60,12 +59,12 @@ public final class ConfigurationLogger {
      *
      * @param encryptRuleConfiguration encryptRule configuration
      */
-    public static void log(final EncryptRuleConfiguration encryptRuleConfiguration) {
+    public static void log(final EncryptRuleConfigurationBak encryptRuleConfiguration) {
         if (null == encryptRuleConfiguration) {
             return;
         }
         log(encryptRuleConfiguration.getClass().getSimpleName(),
-            YamlEngine.marshal(new EncryptRuleConfigurationYamlSwapper().swap(encryptRuleConfiguration)));
+            YamlEngine.marshal(new EncryptRuleConfigurationYamlSwapperBak().swap(encryptRuleConfiguration)));
     }
 
     /**
@@ -81,8 +80,8 @@ public final class ConfigurationLogger {
             ConfigurationLogger.log((ShardingRuleConfiguration) ruleConfiguration);
         } else if (ruleConfiguration instanceof MasterSlaveRuleConfiguration) {
             ConfigurationLogger.log((MasterSlaveRuleConfiguration) ruleConfiguration);
-        } else if (ruleConfiguration instanceof EncryptRuleConfiguration) {
-            ConfigurationLogger.log((EncryptRuleConfiguration) ruleConfiguration);
+        } else if (ruleConfiguration instanceof EncryptRuleConfigurationBak) {
+            ConfigurationLogger.log((EncryptRuleConfigurationBak) ruleConfiguration);
         }
     }
 

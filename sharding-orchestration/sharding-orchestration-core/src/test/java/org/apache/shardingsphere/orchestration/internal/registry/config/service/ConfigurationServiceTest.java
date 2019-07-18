@@ -20,20 +20,20 @@ package org.apache.shardingsphere.orchestration.internal.registry.config.service
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
-import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfiguration;
+import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfigurationBak;
+import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfigurationBak;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.rule.Authentication;
 import org.apache.shardingsphere.core.yaml.config.common.YamlAuthenticationConfiguration;
-import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptRuleConfiguration;
+import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptRuleConfigurationBak;
 import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.core.yaml.swapper.impl.AuthenticationYamlSwapper;
-import org.apache.shardingsphere.core.yaml.swapper.impl.EncryptRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.core.yaml.swapper.impl.EncryptRuleConfigurationYamlSwapperBak;
 import org.apache.shardingsphere.core.yaml.swapper.impl.MasterSlaveRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.impl.ShardingRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.reg.api.RegistryCenter;
@@ -272,8 +272,8 @@ public final class ConfigurationServiceTest {
         return new MasterSlaveRuleConfigurationYamlSwapper().swap(YamlEngine.unmarshal(MASTER_SLAVE_RULE_YAML, YamlMasterSlaveRuleConfiguration.class));
     }
     
-    private EncryptRuleConfiguration createEncryptRuleConfiguration() {
-        return new EncryptRuleConfigurationYamlSwapper().swap(YamlEngine.unmarshal(ENCRYPT_RULE_YAML, YamlEncryptRuleConfiguration.class));
+    private EncryptRuleConfigurationBak createEncryptRuleConfiguration() {
+        return new EncryptRuleConfigurationYamlSwapperBak().swap(YamlEngine.unmarshal(ENCRYPT_RULE_YAML, YamlEncryptRuleConfigurationBak.class));
     }
     
     private Authentication createAuthentication() {
@@ -345,12 +345,11 @@ public final class ConfigurationServiceTest {
     public void assertLoadEncryptRuleConfiguration() {
         when(regCenter.getDirectly("/test/config/schema/sharding_db/rule")).thenReturn(ENCRYPT_RULE_YAML);
         ConfigurationService configurationService = new ConfigurationService("test", regCenter);
-        EncryptRuleConfiguration actual = configurationService.loadEncryptRuleConfiguration("sharding_db");
-        assertThat(actual.getEncryptorRuleConfigs().size(), is(1));
-        Entry<String, EncryptorRuleConfiguration> entry = actual.getEncryptorRuleConfigs().entrySet().iterator().next();
+        EncryptRuleConfigurationBak actual = configurationService.loadEncryptRuleConfiguration("sharding_db");
+        assertThat(actual.getEncryptors().size(), is(1));
+        Entry<String, EncryptorRuleConfigurationBak> entry = actual.getEncryptors().entrySet().iterator().next();
         assertThat(entry.getKey(), is("order_encryptor"));
         assertThat(entry.getValue().getType(), is("AES"));
-        assertThat(entry.getValue().getQualifiedColumns(), is("t_order.order_id"));
         assertThat(entry.getValue().getProperties().get("aes.key.value").toString(), is("123456"));
     }
     
