@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.AggregationType;
 import org.apache.shardingsphere.core.constant.OrderDirection;
-import org.apache.shardingsphere.core.optimize.api.statement.InsertValue;
+import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.encrypt.statement.condition.EncryptCondition;
 import org.apache.shardingsphere.core.optimize.encrypt.statement.condition.EncryptConditions;

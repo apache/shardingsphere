@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.optimize.api.statement;
 
+import org.apache.shardingsphere.core.optimize.api.segment.InsertColumns;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.insert.InsertOptimizeResultUnit;
 
 import java.util.List;

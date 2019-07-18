@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.optimize.sharding.statement.dml.insert;
 
 import lombok.Getter;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.optimize.api.statement.InsertColumns;
+import org.apache.shardingsphere.core.optimize.api.segment.InsertColumns;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
