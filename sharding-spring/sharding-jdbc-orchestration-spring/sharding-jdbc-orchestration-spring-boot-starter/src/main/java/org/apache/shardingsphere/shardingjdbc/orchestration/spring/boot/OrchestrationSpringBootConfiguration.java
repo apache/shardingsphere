@@ -26,7 +26,7 @@ import org.apache.shardingsphere.core.constant.ShardingConstant;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.util.InlineExpressionParser;
-import org.apache.shardingsphere.core.yaml.swapper.impl.EncryptRuleConfigurationYamlSwapperBak;
+import org.apache.shardingsphere.core.yaml.swapper.impl.EncryptRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.impl.MasterSlaveRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.impl.ShardingRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.config.OrchestrationConfiguration;
@@ -120,7 +120,7 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     @Bean
     @Conditional(LocalEncryptRuleCondition.class)
     public DataSource encryptDataSourceByLocal(final OrchestrationConfiguration orchestrationConfiguration) {
-        EncryptRuleConfiguration encryptRuleConfig = new EncryptRuleConfigurationYamlSwapperBak().swap(encryptProperties);
+        EncryptRuleConfiguration encryptRuleConfig = new EncryptRuleConfigurationYamlSwapper().swap(encryptProperties);
         return new OrchestrationEncryptDataSource(new EncryptDataSource(dataSourceMap.values().iterator().next(), encryptRuleConfig, propProperties.getProps()), orchestrationConfiguration);
     }
     

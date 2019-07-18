@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.core.yaml.swapper.impl.EncryptRuleConfigurationYamlSwapperBak;
+import org.apache.shardingsphere.core.yaml.swapper.impl.EncryptRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.yaml.config.YamlOrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.yaml.swapper.OrchestrationConfigurationYamlSwapper;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
@@ -43,7 +43,7 @@ public final class YamlOrchestrationEncryptDataSourceFactory {
     
     private static final OrchestrationConfigurationYamlSwapper ORCHESTRATION_SWAPPER = new OrchestrationConfigurationYamlSwapper();
     
-    private static final EncryptRuleConfigurationYamlSwapperBak ENCRYPT_RULE_SWAPPER = new EncryptRuleConfigurationYamlSwapperBak();
+    private static final EncryptRuleConfigurationYamlSwapper ENCRYPT_RULE_SWAPPER = new EncryptRuleConfigurationYamlSwapper();
     
     /**
      * Create encrypt data source.
