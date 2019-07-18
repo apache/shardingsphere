@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.core.rewrite.rewriter;
 
+import org.apache.shardingsphere.api.config.encrypt.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
+import org.apache.shardingsphere.api.config.encrypt.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
@@ -62,9 +64,23 @@ public final class EncryptSQLRewriteEngineTest {
     private EncryptRuleConfiguration createEncryptRuleConfiguration() {
         EncryptorRuleConfiguration encryptorConfig = new EncryptorRuleConfiguration("test", new Properties());
         EncryptorRuleConfiguration encryptorQueryConfig = new EncryptorRuleConfiguration("assistedTest", new Properties());
+        EncryptColumnRuleConfiguration columnConfig1 = new EncryptColumnRuleConfiguration("", "", "", "test");
+        Map<String, EncryptColumnRuleConfiguration> columns1 = new LinkedHashMap<>();
+        columns1.put("col1", columnConfig1);
+        columns1.put("col2", columnConfig1);
+        EncryptTableRuleConfiguration tableConfig1 = new EncryptTableRuleConfiguration(columns1);
+        EncryptColumnRuleConfiguration columnConfig2 = new EncryptColumnRuleConfiguration("", "", "query1", "assistedTest");
+        EncryptColumnRuleConfiguration columnConfig3 = new EncryptColumnRuleConfiguration("", "", "query2", "assistedTest");
+        Map<String, EncryptColumnRuleConfiguration> columns2 = new LinkedHashMap<>();
+        columns2.put("col1", columnConfig2);
+        columns2.put("col2", columnConfig3);
+        EncryptTableRuleConfiguration tableConfig2 = new EncryptTableRuleConfiguration(columns2);
         EncryptRuleConfiguration result = new EncryptRuleConfiguration();
         result.getEncryptors().put("test", encryptorConfig);
         result.getEncryptors().put("assistedTest", encryptorQueryConfig);
+        result.getTables().put("t_encrypt", tableConfig1);
+        result.getTables().put("t_query_encrypt", tableConfig2);
+        
         return result;
     }
     
