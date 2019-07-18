@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.config;
 
 import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptRuleConfigurationBak;
-import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptorRuleConfigurationBak;
+import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptorRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.orchestration.yaml.config.YamlOrchestrationConfiguration;
@@ -109,10 +109,10 @@ public final class ShardingConfigurationLoaderTest {
         assertThat(actual.getEncryptors().size(), is(2));
         assertTrue(actual.getEncryptors().containsKey("encryptor_aes"));
         assertTrue(actual.getEncryptors().containsKey("encryptor_md5"));
-        YamlEncryptorRuleConfigurationBak aesEncryptorRule = actual.getEncryptors().get("encryptor_aes");
+        YamlEncryptorRuleConfiguration aesEncryptorRule = actual.getEncryptors().get("encryptor_aes");
         assertThat(aesEncryptorRule.getType(), is("aes"));
         assertThat(aesEncryptorRule.getProps().getProperty("aes.key.value"), is("123456abc"));
-        YamlEncryptorRuleConfigurationBak md5EncryptorRule = actual.getEncryptors().get("encryptor_md5");
+        YamlEncryptorRuleConfiguration md5EncryptorRule = actual.getEncryptors().get("encryptor_md5");
         assertThat(md5EncryptorRule.getType(), is("md5"));
     }
     
