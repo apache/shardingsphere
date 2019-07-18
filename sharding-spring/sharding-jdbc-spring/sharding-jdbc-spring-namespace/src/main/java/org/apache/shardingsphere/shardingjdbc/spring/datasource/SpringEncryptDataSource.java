@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingjdbc.spring.datasource;
 
-import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfigurationBak;
+import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
 
 import javax.sql.DataSource;
@@ -30,7 +30,7 @@ import java.util.Properties;
  */
 public class SpringEncryptDataSource extends EncryptDataSource {
     
-    public SpringEncryptDataSource(final DataSource dataSource, final EncryptRuleConfigurationBak encryptRuleConfiguration, final Properties props) {
+    public SpringEncryptDataSource(final DataSource dataSource, final EncryptRuleConfiguration encryptRuleConfiguration, final Properties props) {
         super(dataSource, encryptRuleConfiguration, null == props ? new Properties() : props);
     }
 }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.api.config.sharding;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.api.config.RuleConfiguration;
-import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfigurationBak;
+import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.ShardingStrategyConfiguration;
 
@@ -54,5 +54,5 @@ public final class ShardingRuleConfiguration implements RuleConfiguration {
     
     private Collection<MasterSlaveRuleConfiguration> masterSlaveRuleConfigs = new LinkedList<>();
     
-    private EncryptRuleConfigurationBak encryptRuleConfig;
+    private EncryptRuleConfiguration encryptRuleConfig;
 }
