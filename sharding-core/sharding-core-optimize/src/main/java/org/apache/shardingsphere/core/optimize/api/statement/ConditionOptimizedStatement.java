@@ -20,11 +20,11 @@ package org.apache.shardingsphere.core.optimize.api.statement;
 import org.apache.shardingsphere.core.optimize.encrypt.statement.condition.EncryptConditions;
 
 /**
- * Where optimized statement.
+ * Condition optimized statement.
  *
  * @author zhangliang
  */
-public interface WhereOptimizedStatement extends OptimizedStatement {
+public interface ConditionOptimizedStatement extends OptimizedStatement {
     
     /**
      * Get encrypt conditions.
