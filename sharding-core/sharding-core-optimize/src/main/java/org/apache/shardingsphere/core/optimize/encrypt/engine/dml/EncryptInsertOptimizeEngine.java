@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.encrypt.engine;
+package org.apache.shardingsphere.core.optimize.encrypt.engine.dml;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.optimize.api.engine.OptimizeEngine;
 import org.apache.shardingsphere.core.optimize.api.statement.InsertValue;
+import org.apache.shardingsphere.core.optimize.encrypt.engine.EncryptOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptInsertColumns;
 import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptInsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.insert.InsertOptimizeResultUnit;
@@ -37,7 +37,7 @@ import java.util.List;
  * @author panjuan
  */
 @RequiredArgsConstructor
-public final class EncryptInsertOptimizeEngine implements OptimizeEngine {
+public final class EncryptInsertOptimizeEngine implements EncryptOptimizeEngine {
     
     private final EncryptRule encryptRule;
     

@@ -21,7 +21,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.optimize.api.engine.OptimizeEngine;
+import org.apache.shardingsphere.core.optimize.sharding.engnie.ShardingOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.sharding.statement.ddl.DropIndexOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.DropIndexStatement;
 
@@ -31,7 +31,7 @@ import org.apache.shardingsphere.core.parse.sql.statement.ddl.DropIndexStatement
  * @author panjuan
  */
 @RequiredArgsConstructor
-public final class ShardingDropIndexOptimizeEngine implements OptimizeEngine {
+public final class ShardingDropIndexOptimizeEngine implements ShardingOptimizeEngine {
     
     private final DropIndexStatement dropIndexStatement;
     

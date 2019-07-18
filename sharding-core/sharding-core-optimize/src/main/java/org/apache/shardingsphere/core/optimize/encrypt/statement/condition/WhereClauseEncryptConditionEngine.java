@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.encrypt.engine;
+package org.apache.shardingsphere.core.optimize.encrypt.statement.condition;
 
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.optimize.encrypt.statement.condition.EncryptCondition;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.SimpleExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.AndPredicate;

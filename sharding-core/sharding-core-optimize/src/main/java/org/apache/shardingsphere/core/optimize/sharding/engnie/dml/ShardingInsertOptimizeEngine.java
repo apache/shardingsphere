@@ -19,8 +19,8 @@ package org.apache.shardingsphere.core.optimize.sharding.engnie.dml;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.optimize.api.engine.OptimizeEngine;
 import org.apache.shardingsphere.core.optimize.api.statement.InsertValue;
+import org.apache.shardingsphere.core.optimize.sharding.engnie.ShardingOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.condition.engine.InsertClauseShardingConditionEngine;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.insert.GeneratedKey;
@@ -45,7 +45,7 @@ import java.util.List;
  * @author maxiaoguang
  * @author panjuan
  */
-public final class ShardingInsertOptimizeEngine implements OptimizeEngine {
+public final class ShardingInsertOptimizeEngine implements ShardingOptimizeEngine {
     
     private final ShardingRule shardingRule;
     

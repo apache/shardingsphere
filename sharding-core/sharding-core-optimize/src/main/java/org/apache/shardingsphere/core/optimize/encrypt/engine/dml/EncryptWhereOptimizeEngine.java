@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.encrypt.engine;
+package org.apache.shardingsphere.core.optimize.encrypt.engine.dml;
 
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.optimize.api.engine.OptimizeEngine;
+import org.apache.shardingsphere.core.optimize.encrypt.engine.EncryptOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptWhereOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.encrypt.statement.condition.EncryptConditions;
+import org.apache.shardingsphere.core.optimize.encrypt.statement.condition.WhereClauseEncryptConditionEngine;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
@@ -29,7 +30,7 @@ import org.apache.shardingsphere.core.rule.EncryptRule;
  *
  * @author zhangliang
  */
-public final class EncryptWhereOptimizeEngine implements OptimizeEngine {
+public final class EncryptWhereOptimizeEngine implements EncryptOptimizeEngine {
     
     private final SQLStatement sqlStatement;
     

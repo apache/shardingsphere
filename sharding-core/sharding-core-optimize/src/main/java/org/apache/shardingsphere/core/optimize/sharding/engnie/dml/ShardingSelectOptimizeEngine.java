@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.core.optimize.sharding.engnie.dml;
 
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.optimize.api.engine.OptimizeEngine;
-import org.apache.shardingsphere.core.optimize.encrypt.engine.WhereClauseEncryptConditionEngine;
 import org.apache.shardingsphere.core.optimize.encrypt.statement.condition.EncryptCondition;
+import org.apache.shardingsphere.core.optimize.encrypt.statement.condition.WhereClauseEncryptConditionEngine;
+import org.apache.shardingsphere.core.optimize.sharding.engnie.ShardingOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.condition.engine.WhereClauseShardingConditionEngine;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.select.ShardingSelectOptimizedStatement;
@@ -44,7 +44,7 @@ import java.util.List;
  *
  * @author zhangliang
  */
-public final class ShardingSelectOptimizeEngine implements OptimizeEngine {
+public final class ShardingSelectOptimizeEngine implements ShardingOptimizeEngine {
     
     private final SelectStatement selectStatement;
     
