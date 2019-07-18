@@ -23,7 +23,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import org.apache.shardingsphere.api.config.RuleConfiguration;
 import org.apache.shardingsphere.core.config.DataSourceConfiguration;
-import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptRuleConfigurationBak;
+import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
@@ -131,7 +131,7 @@ public final class SchemaChangedListener extends PostShardingOrchestrationEventL
     }
     
     private EncryptRuleChangedEvent createEncryptRuleChangedEvent(final String shardingSchemaName, final String ruleValue) {
-        return new EncryptRuleChangedEvent(shardingSchemaName, new EncryptRuleConfigurationYamlSwapperBak().swap(YamlEngine.unmarshal(ruleValue, YamlEncryptRuleConfigurationBak.class)));
+        return new EncryptRuleChangedEvent(shardingSchemaName, new EncryptRuleConfigurationYamlSwapperBak().swap(YamlEngine.unmarshal(ruleValue, YamlEncryptRuleConfiguration.class)));
     }
     
     private MasterSlaveRuleChangedEvent createMasterSlaveRuleChangedEvent(final String shardingSchemaName, final String ruleValue) {

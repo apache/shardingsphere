@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.config;
 
-import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptRuleConfigurationBak;
+import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptorRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingRuleConfiguration;
@@ -105,7 +105,7 @@ public final class ShardingConfigurationLoaderTest {
         assertEncryptRuleConfiguration(actual.getEncryptRule());
     }
     
-    private void assertEncryptRuleConfiguration(final YamlEncryptRuleConfigurationBak actual) {
+    private void assertEncryptRuleConfiguration(final YamlEncryptRuleConfiguration actual) {
         assertThat(actual.getEncryptors().size(), is(2));
         assertTrue(actual.getEncryptors().containsKey("encryptor_aes"));
         assertTrue(actual.getEncryptors().containsKey("encryptor_md5"));
