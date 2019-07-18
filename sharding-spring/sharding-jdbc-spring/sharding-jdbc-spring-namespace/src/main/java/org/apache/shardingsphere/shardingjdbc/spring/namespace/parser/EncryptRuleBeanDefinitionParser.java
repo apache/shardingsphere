@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import static org.springframework.beans.factory.xml.BeanDefinitionParserDelegate.ID_ATTRIBUTE;
+import static org.springframework.beans.factory.xml.BeanDefinitionParserDelegate.NAME_ATTRIBUTE;
 
 /**
  * Encrypt rule parser for spring namespace.
@@ -60,7 +61,8 @@ public final class EncryptRuleBeanDefinitionParser {
     }
     
     private static Map<String, BeanDefinition> parseEncryptorRuleConfigurations(final Element element) {
-        List<Element> encryptorRuleElements = DomUtils.getChildElementsByTagName(element, EncryptDataSourceBeanDefinitionParserTag.ENCRYPTOR_CONFIG_TAG);
+        Element encryptorsRuleElement = DomUtils.getChildElementByTagName(element, EncryptDataSourceBeanDefinitionParserTag.ENCRYPTORS_CONFIG_TAG);
+        List<Element> encryptorRuleElements = DomUtils.getChildElementsByTagName(encryptorsRuleElement, EncryptDataSourceBeanDefinitionParserTag.ENCRYPTOR_CONFIG_TAG);
         Map<String, BeanDefinition> result = new ManagedMap<>(encryptorRuleElements.size());
         for (Element each : encryptorRuleElements) {
             result.put(each.getAttribute(ID_ATTRIBUTE), parseEncryptorRuleConfiguration(each));
@@ -85,10 +87,11 @@ public final class EncryptRuleBeanDefinitionParser {
     }
     
     private static Map<String, BeanDefinition> parseEncryptTableRuleConfigurations(final Element element) {
-        List<Element> encryptTableElements = DomUtils.getChildElementsByTagName(element, EncryptDataSourceBeanDefinitionParserTag.TABLE_CONFIG_TAG);
+        Element encryptTablesElement = DomUtils.getChildElementByTagName(element, EncryptDataSourceBeanDefinitionParserTag.TABLES_CONFIG_TAG);
+        List<Element> encryptTableElements = DomUtils.getChildElementsByTagName(encryptTablesElement, EncryptDataSourceBeanDefinitionParserTag.TABLE_CONFIG_TAG);
         Map<String, BeanDefinition> result = new ManagedMap<>(encryptTableElements.size());
         for (Element each : encryptTableElements) {
-            result.put(each.getAttribute(ID_ATTRIBUTE), parseEncryptTableConfiguration(each));
+            result.put(each.getAttribute(NAME_ATTRIBUTE), parseEncryptTableConfiguration(each));
         }
         return result;
     }
@@ -100,9 +103,9 @@ public final class EncryptRuleBeanDefinitionParser {
     }
     
     private static Map<String, BeanDefinition> parseEncryptColumnConfigurations(final Element element) {
-        List<Element> encryptTableElements = DomUtils.getChildElementsByTagName(element, EncryptDataSourceBeanDefinitionParserTag.COLUMN_CONFIG_TAG);
-        Map<String, BeanDefinition> result = new ManagedMap<>(encryptTableElements.size());
-        for (Element each : encryptTableElements) {
+        List<Element> encryptColumnElements = DomUtils.getChildElementsByTagName(element, EncryptDataSourceBeanDefinitionParserTag.COLUMN_CONFIG_TAG);
+        Map<String, BeanDefinition> result = new ManagedMap<>(encryptColumnElements.size());
+        for (Element each : encryptColumnElements) {
             result.put(each.getAttribute(EncryptDataSourceBeanDefinitionParserTag.COLUMN_LOGIC_COLUMN_ATTRIBUTE), parseEncryptColumnConfiguration(each));
         }
         return result;
