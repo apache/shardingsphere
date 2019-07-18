@@ -47,4 +47,13 @@ public final class EncryptColumn {
     public Optional<String> getAssistedQueryColumn() {
         return Strings.isNullOrEmpty(assistedQueryColumn) ? Optional.<String>absent() : Optional.of(assistedQueryColumn);
     }
+    
+    /**
+     * Get plain column.
+     *
+     * @return plain column
+     */
+    public Optional<String> getPlainColumn() {
+        return Strings.isNullOrEmpty(plainColumn) ? Optional.<String>absent() : Optional.of(plainColumn);
+    }
 }
