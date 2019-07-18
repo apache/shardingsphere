@@ -62,7 +62,7 @@ public final class InsertSetEncryptValueTokenGenerator implements CollectionSQLT
     
     private Optional<InsertSetEncryptValueToken> createInsertSetEncryptValueToken(final OptimizedStatement optimizedStatement, final EncryptRule encryptRule, final AssignmentSegment segment) {
         Optional<ShardingEncryptor> shardingEncryptor = 
-                encryptRule.getEncryptorEngine().getShardingEncryptor(optimizedStatement.getSQLStatement().getTables().getSingleTableName(), segment.getColumn().getName());
+                encryptRule.getEncryptEngine().getShardingEncryptor(optimizedStatement.getSQLStatement().getTables().getSingleTableName(), segment.getColumn().getName());
         if (shardingEncryptor.isPresent() && !(segment.getValue() instanceof ParameterMarkerExpressionSegment)) {
             return Optional.of(new InsertSetEncryptValueToken(segment.getValue().getStartIndex(), 
                     segment.getValue().getStopIndex(), ((InsertOptimizedStatement) optimizedStatement).getUnits().get(0).getColumnSQLExpression(segment.getColumn().getName())));

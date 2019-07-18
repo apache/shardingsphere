@@ -69,7 +69,7 @@ public final class InsertColumnsTokenGenerator implements OptionalSQLTokenGenera
     }
     
     private boolean isNeededToAppendColumns(final String tableName, final EncryptRule encryptRule) {
-        return !encryptRule.getEncryptorEngine().getAssistedQueryColumns(tableName).isEmpty();
+        return !encryptRule.getEncryptEngine().getAssistedQueryColumns(tableName).isEmpty();
     }
     
     private boolean isNeededToAppendGeneratedKey(final String tableName, final Collection<String> columnNames, final ShardingRule shardingRule) {

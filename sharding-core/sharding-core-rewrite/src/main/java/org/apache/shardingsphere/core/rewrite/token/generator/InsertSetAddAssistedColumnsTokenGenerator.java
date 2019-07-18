@@ -62,7 +62,7 @@ public final class InsertSetAddAssistedColumnsTokenGenerator implements Optional
     private List<String> getQueryAssistedColumnNames(final InsertOptimizedStatement optimizedStatement, final EncryptRule encryptRule) {
         List<String> result = new LinkedList<>();
         for (String each : optimizedStatement.getInsertColumns().getRegularColumnNames()) {
-            Optional<String> assistedColumnName = encryptRule.getEncryptorEngine().getAssistedQueryColumn(optimizedStatement.getSQLStatement().getTables().getSingleTableName(), each);
+            Optional<String> assistedColumnName = encryptRule.getEncryptEngine().getAssistedQueryColumn(optimizedStatement.getSQLStatement().getTables().getSingleTableName(), each);
             if (assistedColumnName.isPresent()) {
                 result.add(assistedColumnName.get());
             }
