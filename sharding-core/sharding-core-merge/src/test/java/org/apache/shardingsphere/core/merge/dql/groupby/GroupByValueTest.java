@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.merge.dql.groupby;
 
 import org.apache.shardingsphere.core.constant.OrderDirection;
 import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderByItem;
+import org.apache.shardingsphere.core.optimize.sharding.statement.dml.select.orderby.OrderByItem;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.junit.Before;
 import org.junit.Test;
