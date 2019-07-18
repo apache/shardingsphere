@@ -65,7 +65,7 @@ public final class MySQLTextResultSetRowPacket implements MySQLPacket {
                 } else if (each instanceof BigDecimal) {
                     payload.writeStringLenenc(((BigDecimal) each).toPlainString());
                 } else if (each instanceof Boolean) {
-                	payload.writeBytesLenenc((Boolean)each ? new byte[]{1} : new byte[]{0});
+                    payload.writeBytesLenenc((Boolean) each ? new byte[]{1} : new byte[]{0});
                 } else {
                     payload.writeStringLenenc(each.toString());
                 }
