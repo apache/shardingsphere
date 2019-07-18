@@ -22,7 +22,7 @@ import com.google.common.collect.Range;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.optimize.common.Column;
+import org.apache.shardingsphere.core.optimize.api.statement.Column;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.condition.AlwaysFalseRouteValue;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.condition.AlwaysFalseShardingCondition;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.condition.ShardingCondition;

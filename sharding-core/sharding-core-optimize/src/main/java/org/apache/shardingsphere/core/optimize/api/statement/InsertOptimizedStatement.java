@@ -15,21 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.common;
+package org.apache.shardingsphere.core.optimize.api.statement;
 
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.optimize.sharding.statement.dml.insert.InsertOptimizeResultUnit;
+
+import java.util.List;
 
 /**
- * Optimized statement.
+ * Insert optimized statement.
  *
  * @author zhangliang
  */
-public interface OptimizedStatement {
+public interface InsertOptimizedStatement extends OptimizedStatement {
     
     /**
-     * Get SQL statement.
+     * Get insert columns.
      * 
-     * @return SQL statement
+     * @return insert columns
      */
-    SQLStatement getSQLStatement();
+    InsertColumns getInsertColumns();
+    
+    /**
+     * Get insert optimize result units.
+     * 
+     * @return insert optimize result units
+     */
+    List<InsertOptimizeResultUnit> getUnits();
 }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapp
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.PreparedQueryShardingEngine;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
-import org.apache.shardingsphere.core.optimize.common.OptimizedStatement;
+import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.encrypt.EncryptOptimizeEngineFactory;
 import org.apache.shardingsphere.core.optimize.transparent.statement.TransparentOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;

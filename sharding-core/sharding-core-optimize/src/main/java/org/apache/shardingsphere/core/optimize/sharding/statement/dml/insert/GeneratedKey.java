@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.optimize.sharding.statement.dml.insert;
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.optimize.common.InsertValue;
+import org.apache.shardingsphere.core.optimize.api.statement.InsertValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;

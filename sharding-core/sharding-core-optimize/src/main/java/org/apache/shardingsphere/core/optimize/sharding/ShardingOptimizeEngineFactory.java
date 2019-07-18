@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.optimize.sharding;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.optimize.common.OptimizeEngine;
+import org.apache.shardingsphere.core.optimize.api.engine.OptimizeEngine;
 import org.apache.shardingsphere.core.optimize.sharding.engnie.ddl.ShardingDropIndexOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.sharding.engnie.dml.ShardingDeleteOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.sharding.engnie.dml.ShardingInsertOptimizeEngine;

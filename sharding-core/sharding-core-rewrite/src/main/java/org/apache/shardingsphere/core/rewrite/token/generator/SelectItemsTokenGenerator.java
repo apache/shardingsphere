@@ -21,7 +21,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import org.apache.shardingsphere.core.optimize.common.OptimizedStatement;
+import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.select.ShardingSelectOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.select.item.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.select.item.AggregationSelectItem;

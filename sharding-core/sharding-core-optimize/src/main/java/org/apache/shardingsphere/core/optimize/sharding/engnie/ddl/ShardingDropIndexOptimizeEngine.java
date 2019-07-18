@@ -21,7 +21,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.optimize.common.OptimizeEngine;
+import org.apache.shardingsphere.core.optimize.api.engine.OptimizeEngine;
 import org.apache.shardingsphere.core.optimize.sharding.statement.ddl.DropIndexOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.DropIndexStatement;
 

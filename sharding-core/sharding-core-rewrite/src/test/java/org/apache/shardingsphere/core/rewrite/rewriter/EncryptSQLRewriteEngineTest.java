@@ -23,7 +23,7 @@ import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
-import org.apache.shardingsphere.core.optimize.common.OptimizedStatement;
+import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.encrypt.EncryptOptimizeEngineFactory;
 import org.apache.shardingsphere.core.parse.entry.EncryptSQLParseEntry;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;

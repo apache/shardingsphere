@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.optimize.common.OptimizedStatement;
-import org.apache.shardingsphere.core.optimize.common.WhereOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.optimize.api.statement.WhereOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.encrypt.statement.condition.EncryptCondition;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.pojo.EncryptColumnToken;

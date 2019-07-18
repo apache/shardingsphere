@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.common;
+package org.apache.shardingsphere.core.optimize.api.statement;
 
-import org.apache.shardingsphere.core.optimize.encrypt.statement.condition.EncryptConditions;
+import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
 /**
- * Where optimized statement.
+ * Optimized statement.
  *
  * @author zhangliang
  */
-public interface WhereOptimizedStatement extends OptimizedStatement {
+public interface OptimizedStatement {
     
     /**
-     * Get encrypt conditions.
-     *
-     * @return encrypt conditions
+     * Get SQL statement.
+     * 
+     * @return SQL statement
      */
-    EncryptConditions getEncryptConditions();
+    SQLStatement getSQLStatement();
 }

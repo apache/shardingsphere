@@ -15,30 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.common;
+package org.apache.shardingsphere.core.optimize.api.statement;
 
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.insert.InsertOptimizeResultUnit;
-
-import java.util.List;
+import java.util.Collection;
 
 /**
- * Insert optimized statement.
+ * Insert columns.
  *
  * @author zhangliang
  */
-public interface InsertOptimizedStatement extends OptimizedStatement {
+public interface InsertColumns {
     
     /**
-     * Get insert columns.
+     * Get regular column names.
      * 
-     * @return insert columns
+     * @return regular column names
      */
-    InsertColumns getInsertColumns();
+    Collection<String> getRegularColumnNames();
     
     /**
-     * Get insert optimize result units.
-     * 
-     * @return insert optimize result units
+     * Get all column names.
+     *
+     * <p>
+     *     Include regular column names and derived column names with same sequence with insert values.
+     * </p>
+     *
+     * @return all column names
      */
-    List<InsertOptimizeResultUnit> getUnits();
+    Collection<String> getAllColumnNames();
 }

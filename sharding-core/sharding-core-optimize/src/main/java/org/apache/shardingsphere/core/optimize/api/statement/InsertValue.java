@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.common;
+package org.apache.shardingsphere.core.optimize.api.statement;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

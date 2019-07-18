@@ -19,8 +19,8 @@ package org.apache.shardingsphere.core.optimize.sharding.engnie.dml;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.optimize.common.InsertValue;
-import org.apache.shardingsphere.core.optimize.common.OptimizeEngine;
+import org.apache.shardingsphere.core.optimize.api.engine.OptimizeEngine;
+import org.apache.shardingsphere.core.optimize.api.statement.InsertValue;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.condition.engine.InsertClauseShardingConditionEngine;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.insert.GeneratedKey;

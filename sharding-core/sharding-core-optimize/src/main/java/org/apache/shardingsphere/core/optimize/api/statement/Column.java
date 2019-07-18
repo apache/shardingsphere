@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.common;
+package org.apache.shardingsphere.core.optimize.api.statement;
 
 import com.google.common.base.Objects;
 import lombok.Getter;

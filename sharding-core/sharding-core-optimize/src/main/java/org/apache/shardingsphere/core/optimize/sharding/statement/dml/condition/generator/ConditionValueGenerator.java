@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.optimize.sharding.statement.dml.condition.generator;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.optimize.common.Column;
+import org.apache.shardingsphere.core.optimize.api.statement.Column;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateRightValue;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
 

@@ -15,32 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.common;
+package org.apache.shardingsphere.core.optimize.api.statement;
 
-import java.util.Collection;
+import org.apache.shardingsphere.core.optimize.encrypt.statement.condition.EncryptConditions;
 
 /**
- * Insert columns.
+ * Where optimized statement.
  *
  * @author zhangliang
  */
-public interface InsertColumns {
+public interface WhereOptimizedStatement extends OptimizedStatement {
     
     /**
-     * Get regular column names.
-     * 
-     * @return regular column names
-     */
-    Collection<String> getRegularColumnNames();
-    
-    /**
-     * Get all column names.
+     * Get encrypt conditions.
      *
-     * <p>
-     *     Include regular column names and derived column names with same sequence with insert values.
-     * </p>
-     *
-     * @return all column names
+     * @return encrypt conditions
      */
-    Collection<String> getAllColumnNames();
+    EncryptConditions getEncryptConditions();
 }

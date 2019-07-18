@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.optimize.encrypt.statement;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.optimize.common.WhereOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.api.statement.WhereOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.encrypt.statement.condition.EncryptConditions;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 

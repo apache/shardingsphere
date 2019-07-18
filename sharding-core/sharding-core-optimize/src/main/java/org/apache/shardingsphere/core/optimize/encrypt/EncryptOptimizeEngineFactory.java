@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.optimize.encrypt;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.optimize.common.OptimizeEngine;
+import org.apache.shardingsphere.core.optimize.api.engine.OptimizeEngine;
 import org.apache.shardingsphere.core.optimize.encrypt.engine.EncryptInsertOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.encrypt.engine.EncryptWhereOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.transparent.engine.TransparentOptimizeEngine;

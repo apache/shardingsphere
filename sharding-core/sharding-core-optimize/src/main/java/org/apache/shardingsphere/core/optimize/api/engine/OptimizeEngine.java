@@ -15,28 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.sharding.statement.ddl;
+package org.apache.shardingsphere.core.optimize.api.engine;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
 /**
- * Optimized statement for drop index.
+ * Optimize engine.
  *
- * @author zhangliang
+ * @author maxiaoguang
+ * @author panjuan
  */
-@RequiredArgsConstructor
-public final class DropIndexOptimizedStatement implements OptimizedStatement {
+public interface OptimizeEngine {
     
-    private final SQLStatement sqlStatement;
-    
-    @Getter
-    private final String tableName;
-    
-    @Override
-    public SQLStatement getSQLStatement() {
-        return sqlStatement;
-    }
+    /**
+     * Optimize.
+     *
+     * @return optimized statement
+     */
+    OptimizedStatement optimize();
 }

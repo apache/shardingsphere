@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.optimize.sharding.statement.dml.condition
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-import org.apache.shardingsphere.core.optimize.common.Column;
+import org.apache.shardingsphere.core.optimize.api.statement.Column;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.condition.generator.ConditionValue;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.condition.generator.ConditionValueGenerator;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateCompareRightValue;

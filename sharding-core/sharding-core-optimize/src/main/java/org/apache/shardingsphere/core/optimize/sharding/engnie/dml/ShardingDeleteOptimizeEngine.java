@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.optimize.sharding.engnie.dml;
 
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.optimize.common.OptimizeEngine;
+import org.apache.shardingsphere.core.optimize.api.engine.OptimizeEngine;
 import org.apache.shardingsphere.core.optimize.encrypt.engine.WhereClauseEncryptConditionEngine;
 import org.apache.shardingsphere.core.optimize.encrypt.statement.condition.EncryptConditions;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingWhereOptimizedStatement;
