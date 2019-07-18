@@ -34,7 +34,7 @@ import org.apache.shardingsphere.core.yaml.swapper.YamlSwapper;
  */
 public final class EncryptRuleConfigurationYamlSwapperBak implements YamlSwapper<YamlEncryptRuleConfiguration, EncryptRuleConfiguration> {
     
-    private final EncryptorRuleConfigurationYamlSwapperBak encryptorRuleConfigurationYamlSwapper = new EncryptorRuleConfigurationYamlSwapperBak();
+    private final EncryptorRuleConfigurationYamlSwapper encryptorRuleConfigurationYamlSwapper = new EncryptorRuleConfigurationYamlSwapper();
     
     private final EncryptTableRuleConfigurationYamlSwapper encryptTableRuleConfigurationYamlSwapper = new EncryptTableRuleConfigurationYamlSwapper();
     

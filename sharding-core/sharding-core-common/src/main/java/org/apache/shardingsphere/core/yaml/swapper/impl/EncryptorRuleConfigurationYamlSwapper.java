@@ -26,7 +26,7 @@ import org.apache.shardingsphere.core.yaml.swapper.YamlSwapper;
  *
  * @author panjuan
  */
-public final class EncryptorRuleConfigurationYamlSwapperBak implements YamlSwapper<YamlEncryptorRuleConfiguration, EncryptorRuleConfiguration> {
+public final class EncryptorRuleConfigurationYamlSwapper implements YamlSwapper<YamlEncryptorRuleConfiguration, EncryptorRuleConfiguration> {
     
     @Override
     public YamlEncryptorRuleConfiguration swap(final EncryptorRuleConfiguration data) {
