@@ -50,9 +50,6 @@ public final class ModifyColumnDefinitionFiller implements SQLSegmentFiller<Modi
             if (null != sqlSegment.getColumnDefinition().getDataType()) {
                 oldColumnDefinition.get().setDataType(sqlSegment.getColumnDefinition().getDataType());
             }
-            alterTableStatement.getModifiedColumnDefinitions().put(oldColumnName.get(), oldColumnDefinition.get());
-        } else {
-            alterTableStatement.getModifiedColumnDefinitions().put(sqlSegment.getColumnDefinition().getColumnName(), sqlSegment.getColumnDefinition());
         }
         if (sqlSegment.getColumnPosition().isPresent()) {
             alterTableStatement.getChangedPositionColumns().add(sqlSegment.getColumnPosition().get());

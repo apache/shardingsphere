@@ -48,6 +48,5 @@ public final class RenameColumnDefinitionFiller implements SQLSegmentFiller<Rena
             return;
         }
         oldColumnDefinition.get().setColumnName(sqlSegment.getColumnName());
-        alterTableStatement.getModifiedColumnDefinitions().put(sqlSegment.getOldColumnName(), oldColumnDefinition.get());
     }
 }

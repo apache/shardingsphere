@@ -21,7 +21,6 @@
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.sql.segment.common.SchemaSegment" filler-class="org.apache.shardingsphere.core.parse.filler.impl.dal.SchemaFiller" />
     
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.sql.segment.ddl.column.ColumnDefinitionSegment" filler-class="org.apache.shardingsphere.core.parse.filler.impl.ddl.column.ColumnDefinitionFiller" />
-    <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.sql.segment.ddl.constraint.ConstraintDefinitionSegment" filler-class="org.apache.shardingsphere.core.parse.filler.impl.ddl.constraint.ConstraintDefinitionFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.sql.segment.ddl.column.alter.AddColumnDefinitionSegment" filler-class="org.apache.shardingsphere.core.parse.filler.impl.ddl.column.AddColumnDefinitionFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.sql.segment.ddl.column.alter.ModifyColumnDefinitionSegment" filler-class="org.apache.shardingsphere.core.parse.filler.impl.ddl.column.ModifyColumnDefinitionFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.sql.segment.ddl.column.alter.RenameColumnSegment" filler-class="org.apache.shardingsphere.core.parse.filler.impl.ddl.column.RenameColumnDefinitionFiller" />

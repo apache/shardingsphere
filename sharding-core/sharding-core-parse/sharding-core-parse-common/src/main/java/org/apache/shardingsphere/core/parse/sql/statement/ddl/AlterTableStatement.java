@@ -27,9 +27,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.ddl.column.ColumnDefinit
 import org.apache.shardingsphere.core.parse.sql.segment.ddl.column.position.ColumnPositionSegment;
 
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.TreeSet;
 
 /**
@@ -43,8 +41,6 @@ import java.util.TreeSet;
 public final class AlterTableStatement extends DDLStatement {
     
     private final Collection<ColumnDefinitionSegment> addedColumnDefinitions = new LinkedList<>();
-    
-    private final Map<String, ColumnDefinitionSegment> modifiedColumnDefinitions = new LinkedHashMap<>();
     
     private final Collection<ColumnPositionSegment> changedPositionColumns = new TreeSet<>();
     
