@@ -15,28 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.segment.dml;
+package org.apache.shardingsphere.core.parse.sql.segment.dml.predicate;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Insert values segment.
- *
+ * Where segment.
+ * 
  * @author duhongjun
- * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
-public final class InsertValuesSegment implements SQLSegment {
+@Setter
+public final class WhereSegment implements SQLSegment {
     
     private final int startIndex;
     
     private final int stopIndex;
     
-    private final Collection<ExpressionSegment> values;
+    private final int parametersCount;
+    
+    private final Collection<AndPredicate> andPredicates = new LinkedList<>();
+    
+    private int parameterStartIndex;
 }

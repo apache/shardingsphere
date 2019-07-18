@@ -15,34 +15,48 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.segment.dml;
+package org.apache.shardingsphere.core.parse.sql.segment.dml.item;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.AndPredicate;
 
 import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Where segment.
+ * Select items segment.
  * 
  * @author duhongjun
+ * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
-@Setter
-public final class WhereSegment implements SQLSegment {
+public final class SelectItemsSegment implements SQLSegment {
     
     private final int startIndex;
     
     private final int stopIndex;
     
-    private final int parametersCount;
+    private final boolean distinctRow;
     
-    private final Collection<AndPredicate> andPredicates = new LinkedList<>();
+    private final Collection<SelectItemSegment> selectItems = new LinkedList<>();
     
-    private int parameterStartIndex;
+    /**
+     * Find select item segments.
+     * 
+     * @param selectItemSegmentType select item segment type
+     * @param <T> select item segment
+     * @return select item segments
+     */
+    @SuppressWarnings("unchecked")
+    public <T extends SelectItemSegment> Collection<T> findSelectItemSegments(final Class<T> selectItemSegmentType) {
+        Collection<T> result = new LinkedList<>();
+        for (SelectItemSegment each : selectItems) {
+            if (each.getClass().equals(selectItemSegmentType)) {
+                result.add((T) each);
+            }
+        }
+        return result;
+    }
 }
