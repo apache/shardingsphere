@@ -15,20 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.common;
+package org.apache.shardingsphere.core.optimize.encrypt.statement;
+
+import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 
 /**
- * Optimize engine.
+ * Optimized statement for encrypt.
  *
- * @author maxiaoguang
- * @author panjuan
+ * @author zhangliang
  */
-public interface OptimizeEngine {
-    
-    /**
-     * Optimize sharding conditions.
-     *
-     * @return optimized statement
-     */
-    OptimizedStatement optimize();
+public interface EncryptOptimizedStatement extends OptimizedStatement {
 }

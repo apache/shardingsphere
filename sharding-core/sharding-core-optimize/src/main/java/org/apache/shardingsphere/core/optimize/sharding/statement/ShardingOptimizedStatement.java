@@ -15,29 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.encrypt.statement;
+package org.apache.shardingsphere.core.optimize.sharding.statement;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.optimize.api.statement.WhereOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.encrypt.statement.condition.EncryptConditions;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 
 /**
- * Where optimized statement for encrypt.
+ * Optimized statement for sharding.
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
-public final class EncryptWhereOptimizedStatement implements WhereOptimizedStatement, EncryptOptimizedStatement {
-    
-    private final SQLStatement sqlStatement;
-    
-    @Getter
-    private final EncryptConditions encryptConditions;
-    
-    @Override
-    public SQLStatement getSQLStatement() {
-        return sqlStatement;
-    }
+public interface ShardingOptimizedStatement extends OptimizedStatement {
 }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.optimize.sharding.statement.ddl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.optimize.sharding.statement.ShardingOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
 /**
@@ -28,7 +28,7 @@ import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class DropIndexOptimizedStatement implements OptimizedStatement {
+public final class DropIndexOptimizedStatement implements ShardingOptimizedStatement {
     
     private final SQLStatement sqlStatement;
     

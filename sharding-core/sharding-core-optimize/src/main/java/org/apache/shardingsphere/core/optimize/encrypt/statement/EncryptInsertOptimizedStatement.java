@@ -33,7 +33,7 @@ import java.util.List;
  *
  * @author zhangliang
  */
-public final class EncryptInsertOptimizedStatement implements InsertOptimizedStatement {
+public final class EncryptInsertOptimizedStatement implements InsertOptimizedStatement, EncryptOptimizedStatement {
     
     private final SQLStatement sqlStatement;
     
