@@ -24,7 +24,7 @@ import com.google.common.collect.Lists;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfigurationBak;
 import org.apache.shardingsphere.api.config.encrypt.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfigurationBak;
+import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.core.rule.ColumnNode;
 import org.apache.shardingsphere.core.spi.algorithm.encrypt.ShardingEncryptorServiceLoader;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
@@ -54,14 +54,14 @@ public final class EncryptEngine {
         initTables(encryptRuleConfiguration.getTables());
     }
     
-    private void initEncryptors(final Map<String, EncryptorRuleConfigurationBak> encryptors) {
+    private void initEncryptors(final Map<String, EncryptorRuleConfiguration> encryptors) {
         ShardingEncryptorServiceLoader serviceLoader = new ShardingEncryptorServiceLoader();
-        for (Entry<String, EncryptorRuleConfigurationBak> each : encryptors.entrySet()) {
+        for (Entry<String, EncryptorRuleConfiguration> each : encryptors.entrySet()) {
             this.encryptors.put(each.getKey(), createShardingEncryptor(serviceLoader, each.getValue()));
         }
     }
     
-    private ShardingEncryptor createShardingEncryptor(final ShardingEncryptorServiceLoader serviceLoader, final EncryptorRuleConfigurationBak encryptorRuleConfiguration) {
+    private ShardingEncryptor createShardingEncryptor(final ShardingEncryptorServiceLoader serviceLoader, final EncryptorRuleConfiguration encryptorRuleConfiguration) {
         ShardingEncryptor encryptor = serviceLoader.newService(encryptorRuleConfiguration.getType(), encryptorRuleConfiguration.getProperties());
         encryptor.init();
         return encryptor;

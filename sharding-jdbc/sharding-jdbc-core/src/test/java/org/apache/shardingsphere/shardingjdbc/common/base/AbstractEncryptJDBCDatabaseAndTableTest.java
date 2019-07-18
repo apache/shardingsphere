@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.common.base;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Maps;
 import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfigurationBak;
-import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfigurationBak;
+import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
@@ -65,8 +65,8 @@ public abstract class AbstractEncryptJDBCDatabaseAndTableTest extends AbstractSQ
     }
     
     private static EncryptRuleConfigurationBak createEncryptRuleConfiguration() {
-        EncryptorRuleConfigurationBak encryptorConfig = new EncryptorRuleConfigurationBak("test", new Properties());
-        EncryptorRuleConfigurationBak encryptorQueryConfig = new EncryptorRuleConfigurationBak("assistedTest", new Properties());
+        EncryptorRuleConfiguration encryptorConfig = new EncryptorRuleConfiguration("test", new Properties());
+        EncryptorRuleConfiguration encryptorQueryConfig = new EncryptorRuleConfiguration("assistedTest", new Properties());
         EncryptRuleConfigurationBak result = new EncryptRuleConfigurationBak();
         result.getEncryptors().put("test", encryptorConfig);
         result.getEncryptors().put("assistedTest", encryptorQueryConfig);

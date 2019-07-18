@@ -21,7 +21,7 @@ import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfigurationBak;
-import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfigurationBak;
+import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.config.DataSourceConfiguration;
@@ -347,7 +347,7 @@ public final class ConfigurationServiceTest {
         ConfigurationService configurationService = new ConfigurationService("test", regCenter);
         EncryptRuleConfigurationBak actual = configurationService.loadEncryptRuleConfiguration("sharding_db");
         assertThat(actual.getEncryptors().size(), is(1));
-        Entry<String, EncryptorRuleConfigurationBak> entry = actual.getEncryptors().entrySet().iterator().next();
+        Entry<String, EncryptorRuleConfiguration> entry = actual.getEncryptors().entrySet().iterator().next();
         assertThat(entry.getKey(), is("order_encryptor"));
         assertThat(entry.getValue().getType(), is("AES"));
         assertThat(entry.getValue().getProperties().get("aes.key.value").toString(), is("123456"));

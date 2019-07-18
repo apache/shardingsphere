@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.util;
 
 import org.apache.shardingsphere.api.config.RuleConfiguration;
 import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfigurationBak;
-import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfigurationBak;
+import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
@@ -104,8 +104,8 @@ public class ConfigurationLoggerTest {
         EncryptRuleConfigurationBak encryptRuleConfiguration = new EncryptRuleConfigurationBak();
         Properties properties = new Properties();
         properties.put("aes.key.value", "123456abc");
-        EncryptorRuleConfigurationBak encryptorRuleConfiguration =
-            new EncryptorRuleConfigurationBak("aes", properties);
+        EncryptorRuleConfiguration encryptorRuleConfiguration =
+            new EncryptorRuleConfiguration("aes", properties);
         encryptRuleConfiguration.getEncryptors().put("encryptor_aes", encryptorRuleConfiguration);
         return encryptRuleConfiguration;
     }
