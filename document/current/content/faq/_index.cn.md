@@ -196,3 +196,19 @@ https://ourcodeworld.com/articles/read/109/how-to-solve-filename-too-long-error-
 ```
 tar zxvf apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz
 ```
+
+#### 15. Type is required 异常的解决方法?
+
+回答：
+
+ShardingSphere中很多功能实现类的加载方式是通过[SPI](https://shardingsphere.apache.org/document/current/cn/features/spi/)注入的方式完成的，如分布式主键，注册中心等；这些功能通过配置中type类型来寻找对应的SPI实现，因此必须在配置文件中指定类型。
+
+#### 16. 为什么我实现了`ShardingKeyGenerator`接口，也配置了Type，但是自定义的分布式主键依然不生效？
+
+回答：
+
+[Service Provider Interface (SPI)](https://docs.oracle.com/javase/tutorial/sound/SPI-intro.html)是一种为了被第三方实现或扩展的API，除了实现接口外，还需要在META-INF/services中创建对应文件来指定SPI的实现类，JVM才会加载这些服务。
+
+具体的SPI使用方式，请大家自行搜索。
+
+与分布式主键`ShardingKeyGenerator`接口相同，其他ShardingSphere的[扩展功能](https://shardingsphere.apache.org/document/current/cn/features/spi/)也需要用相同的方式注入才能生效。
