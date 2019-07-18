@@ -40,7 +40,7 @@ public final class EncryptDataSourceBeanDefinitionParser extends AbstractBeanDef
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(SpringEncryptDataSource.class);
         factory.addConstructorArgValue(parseDataSource(element));
-        factory.addConstructorArgReference(EncryptDataSourceBeanDefinitionParserTag.ENCRYPT_RULE_TAG);
+        factory.addConstructorArgValue(parseEncryptRuleConfiguration(element));
         factory.addConstructorArgValue(parseProperties(element, parserContext));
         factory.setDestroyMethodName("close");
         return factory.getBeanDefinition();
@@ -49,6 +49,11 @@ public final class EncryptDataSourceBeanDefinitionParser extends AbstractBeanDef
     private RuntimeBeanReference parseDataSource(final Element element) {
         String dataSource = element.getAttribute(EncryptDataSourceBeanDefinitionParserTag.DATA_SOURCE_NAME_TAG);
         return new RuntimeBeanReference(dataSource);
+    }
+    
+    private AbstractBeanDefinition parseEncryptRuleConfiguration(final Element element) {
+        Element encryptRuleElement = DomUtils.getChildElementByTagName(element, EncryptDataSourceBeanDefinitionParserTag.ENCRYPT_RULE_TAG);
+        return EncryptRuleBeanDefinitionParser.parseEncryptRuleElement(encryptRuleElement);
     }
     
     private Properties parseProperties(final Element element, final ParserContext parserContext) {
