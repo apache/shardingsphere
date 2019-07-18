@@ -15,68 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize;
+package org.apache.shardingsphere.core.optimize.encrypt;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.optimize.common.OptimizeEngine;
 import org.apache.shardingsphere.core.optimize.encrypt.engine.EncryptInsertOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.encrypt.engine.EncryptWhereOptimizeEngine;
-import org.apache.shardingsphere.core.optimize.encrypt.engine.OptimizeEngine;
-import org.apache.shardingsphere.core.optimize.sharding.engnie.ddl.ShardingDropIndexOptimizeEngine;
-import org.apache.shardingsphere.core.optimize.sharding.engnie.dml.ShardingDeleteOptimizeEngine;
-import org.apache.shardingsphere.core.optimize.sharding.engnie.dml.ShardingInsertOptimizeEngine;
-import org.apache.shardingsphere.core.optimize.sharding.engnie.dml.ShardingSelectOptimizeEngine;
-import org.apache.shardingsphere.core.optimize.sharding.engnie.dml.ShardingUpdateOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.transparent.engine.TransparentOptimizeEngine;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.core.rule.EncryptRule;
-import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.List;
 
 /**
- * Optimize engine factory.
+ * Optimize engine factory for encrypt.
  *
  * @author zhangliang
- * @author maxiaoguang
  * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class OptimizeEngineFactory {
-    
-    /**
-     * Create sharding optimize engine instance.
-     * 
-     * @param shardingRule sharding rule
-     * @param shardingTableMetaData sharding table metadata
-     * @param sqlStatement SQL statement
-     * @param parameters parameters
-     * @return optimize engine instance
-     */
-    public static OptimizeEngine newInstance(final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData, final SQLStatement sqlStatement, final List<Object> parameters) {
-        if (sqlStatement instanceof SelectStatement) {
-            return new ShardingSelectOptimizeEngine(shardingRule, shardingTableMetaData, (SelectStatement) sqlStatement, parameters);
-        }
-        if (sqlStatement instanceof InsertStatement) {
-            return new ShardingInsertOptimizeEngine(shardingRule, shardingTableMetaData, (InsertStatement) sqlStatement, parameters);
-        }
-        if (sqlStatement instanceof UpdateStatement) {
-            return new ShardingUpdateOptimizeEngine(shardingRule, shardingTableMetaData, (UpdateStatement) sqlStatement, parameters);
-        }
-        if (sqlStatement instanceof DeleteStatement) {
-            return new ShardingDeleteOptimizeEngine(shardingRule, shardingTableMetaData, (DeleteStatement) sqlStatement, parameters);
-        }
-        if (sqlStatement instanceof DropIndexStatement) {
-            return new ShardingDropIndexOptimizeEngine((DropIndexStatement) sqlStatement, shardingTableMetaData);
-        }
-        return new TransparentOptimizeEngine(sqlStatement);
-    }
+public final class EncryptOptimizeEngineFactory {
     
     /**
      * Create encrypt optimize engine instance.

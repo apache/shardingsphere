@@ -20,6 +20,7 @@ package org.apache.shardingsphere.core.optimize.encrypt.engine;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.common.InsertValue;
+import org.apache.shardingsphere.core.optimize.common.OptimizeEngine;
 import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptInsertColumns;
 import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptInsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.insert.InsertOptimizeResultUnit;

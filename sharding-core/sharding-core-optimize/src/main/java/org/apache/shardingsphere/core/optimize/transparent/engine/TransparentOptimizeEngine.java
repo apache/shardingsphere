@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.optimize.transparent.engine;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.optimize.encrypt.engine.OptimizeEngine;
+import org.apache.shardingsphere.core.optimize.common.OptimizeEngine;
 import org.apache.shardingsphere.core.optimize.transparent.statement.TransparentOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 

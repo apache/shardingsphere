@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.optimize.encrypt.engine;
 
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.optimize.common.OptimizeEngine;
 import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptWhereOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.encrypt.statement.condition.EncryptConditions;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;

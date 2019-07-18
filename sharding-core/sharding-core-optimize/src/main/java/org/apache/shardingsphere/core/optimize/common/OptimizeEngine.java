@@ -15,9 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.encrypt.engine;
-
-import org.apache.shardingsphere.core.optimize.common.OptimizedStatement;
+package org.apache.shardingsphere.core.optimize.common;
 
 /**
  * Optimize engine.

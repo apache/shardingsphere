@@ -19,8 +19,8 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
-import org.apache.shardingsphere.core.optimize.OptimizeEngineFactory;
 import org.apache.shardingsphere.core.optimize.common.OptimizedStatement;
+import org.apache.shardingsphere.core.optimize.encrypt.EncryptOptimizeEngineFactory;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
 import org.apache.shardingsphere.core.route.SQLLogger;
@@ -80,7 +80,7 @@ public final class EncryptStatement extends AbstractUnsupportedOperationStatemen
     
     private String getRewriteSQL(final String sql) {
         SQLStatement sqlStatement = connection.getParseEngine().parse(sql, false);
-        OptimizedStatement optimizedStatement = OptimizeEngineFactory.newInstance(
+        OptimizedStatement optimizedStatement = EncryptOptimizeEngineFactory.newInstance(
                 connection.getEncryptRule(), connection.getShardingTableMetaData(), sqlStatement, Collections.emptyList()).optimize();
         SQLRewriteEngine encryptSQLRewriteEngine = new SQLRewriteEngine(connection.getEncryptRule(), optimizedStatement, Collections.emptyList());
         String result = encryptSQLRewriteEngine.generateSQL().getSql();
