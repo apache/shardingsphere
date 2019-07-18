@@ -19,9 +19,9 @@ package org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptRuleConfiguration;
+import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptRuleConfigurationBak;
 import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.core.yaml.swapper.impl.EncryptRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.core.yaml.swapper.impl.EncryptRuleConfigurationYamlSwapperBak;
 import org.apache.shardingsphere.orchestration.yaml.config.YamlOrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.yaml.swapper.OrchestrationConfigurationYamlSwapper;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
@@ -43,7 +43,7 @@ public final class YamlOrchestrationEncryptDataSourceFactory {
     
     private static final OrchestrationConfigurationYamlSwapper ORCHESTRATION_SWAPPER = new OrchestrationConfigurationYamlSwapper();
     
-    private static final EncryptRuleConfigurationYamlSwapper ENCRYPT_RULE_SWAPPER = new EncryptRuleConfigurationYamlSwapper();
+    private static final EncryptRuleConfigurationYamlSwapperBak ENCRYPT_RULE_SWAPPER = new EncryptRuleConfigurationYamlSwapperBak();
     
     /**
      * Create encrypt data source.
@@ -95,7 +95,7 @@ public final class YamlOrchestrationEncryptDataSourceFactory {
         return createDataSource(dataSource, config.getEncryptRule(), config.getOrchestration(), config.getProps());
     }
     
-    private static DataSource createDataSource(final DataSource dataSource, final YamlEncryptRuleConfiguration yamlEncryptRuleConfiguration,
+    private static DataSource createDataSource(final DataSource dataSource, final YamlEncryptRuleConfigurationBak yamlEncryptRuleConfiguration,
                                                final YamlOrchestrationConfiguration yamlOrchestrationConfiguration, final Properties properties) {
         if (null == yamlEncryptRuleConfiguration) {
             return new OrchestrationEncryptDataSource(ORCHESTRATION_SWAPPER.swap(yamlOrchestrationConfiguration));
