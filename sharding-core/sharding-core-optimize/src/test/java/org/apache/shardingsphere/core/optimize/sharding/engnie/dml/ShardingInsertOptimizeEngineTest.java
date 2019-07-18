@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.optimize.sharding.engnie.dml;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.insert.ShardingInsertOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingInsertOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.context.Table;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.InsertValuesSegment;

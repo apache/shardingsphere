@@ -21,10 +21,10 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingWhereOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.insert.InsertOptimizeResultUnit;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.insert.ShardingInsertOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingCondition;
+import org.apache.shardingsphere.core.optimize.sharding.segment.insert.InsertOptimizeResultUnit;
+import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingConditionOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingInsertOptimizedStatement;
 import org.apache.shardingsphere.core.parse.exception.SQLParsingException;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.DeleteStatement;
@@ -64,7 +64,7 @@ public final class StandardRoutingEngine implements RoutingEngine {
     
     private final String logicTableName;
     
-    private final ShardingWhereOptimizedStatement optimizedStatement;
+    private final ShardingConditionOptimizedStatement optimizedStatement;
     
     @Override
     public RoutingResult route() {

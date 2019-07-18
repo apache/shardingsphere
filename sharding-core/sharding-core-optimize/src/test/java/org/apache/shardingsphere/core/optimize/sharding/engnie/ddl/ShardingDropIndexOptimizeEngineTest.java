@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.optimize.sharding.engnie.ddl;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.optimize.sharding.statement.ddl.DropIndexOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.sharding.statement.ddl.ShardingDropIndexOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.context.Table;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.DropIndexStatement;
@@ -51,14 +51,14 @@ public final class ShardingDropIndexOptimizeEngineTest {
     @Test
     public void assertOptimizeWithTableName() {
         dropIndexStatement.getTables().add(new Table("tbl", null));
-        DropIndexOptimizedStatement actual = new ShardingDropIndexOptimizeEngine(dropIndexStatement, shardingTableMetaData).optimize();
+        ShardingDropIndexOptimizedStatement actual = new ShardingDropIndexOptimizeEngine(dropIndexStatement, shardingTableMetaData).optimize();
         assertThat(actual.getSQLStatement(), is((SQLStatement) dropIndexStatement));
         assertThat(actual.getTableName(), is("tbl"));
     }
     
     @Test
     public void assertOptimizeWithoutTableName() {
-        DropIndexOptimizedStatement actual = new ShardingDropIndexOptimizeEngine(dropIndexStatement, shardingTableMetaData).optimize();
+        ShardingDropIndexOptimizedStatement actual = new ShardingDropIndexOptimizeEngine(dropIndexStatement, shardingTableMetaData).optimize();
         assertThat(actual.getSQLStatement(), is((SQLStatement) dropIndexStatement));
         assertThat(actual.getTableName(), is("meta_tbl"));
     }

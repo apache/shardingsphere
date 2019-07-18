@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.rewrite.builder;
 
 import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.insert.InsertOptimizeResultUnit;
+import org.apache.shardingsphere.core.optimize.sharding.segment.insert.InsertOptimizeResultUnit;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.route.type.TableUnit;
 import org.apache.shardingsphere.core.rule.DataNode;

@@ -19,9 +19,9 @@ package org.apache.shardingsphere.core.optimize.encrypt.engine.dml;
 
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.encrypt.engine.EncryptOptimizeEngine;
-import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptWhereOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.encrypt.statement.condition.EncryptConditions;
-import org.apache.shardingsphere.core.optimize.encrypt.statement.condition.WhereClauseEncryptConditionEngine;
+import org.apache.shardingsphere.core.optimize.encrypt.segment.condition.EncryptConditions;
+import org.apache.shardingsphere.core.optimize.encrypt.segment.condition.WhereClauseEncryptConditionEngine;
+import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptConditionOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
@@ -42,7 +42,7 @@ public final class EncryptWhereOptimizeEngine implements EncryptOptimizeEngine {
     }
     
     @Override
-    public EncryptWhereOptimizedStatement optimize() {
-        return new EncryptWhereOptimizedStatement(sqlStatement, new EncryptConditions(encryptConditionEngine.createEncryptConditions(sqlStatement)));
+    public EncryptConditionOptimizedStatement optimize() {
+        return new EncryptConditionOptimizedStatement(sqlStatement, new EncryptConditions(encryptConditionEngine.createEncryptConditions(sqlStatement)));
     }
 }

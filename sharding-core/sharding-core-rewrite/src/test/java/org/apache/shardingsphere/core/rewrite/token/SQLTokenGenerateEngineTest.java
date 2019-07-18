@@ -18,15 +18,15 @@
 package org.apache.shardingsphere.core.rewrite.token;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.optimize.encrypt.statement.condition.EncryptCondition;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.select.ShardingSelectOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.select.groupby.GroupBy;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.select.item.SelectItem;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.select.item.SelectItems;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.select.orderby.OrderBy;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.select.orderby.OrderByItem;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.select.pagination.Pagination;
+import org.apache.shardingsphere.core.optimize.encrypt.segment.condition.EncryptCondition;
+import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingCondition;
+import org.apache.shardingsphere.core.optimize.sharding.segment.select.groupby.GroupBy;
+import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.SelectItem;
+import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.SelectItems;
+import org.apache.shardingsphere.core.optimize.sharding.segment.select.orderby.OrderBy;
+import org.apache.shardingsphere.core.optimize.sharding.segment.select.orderby.OrderByItem;
+import org.apache.shardingsphere.core.optimize.sharding.segment.select.pagination.Pagination;
+import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.AggregationDistinctSelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemsSegment;

@@ -23,22 +23,22 @@ import org.apache.shardingsphere.core.constant.AggregationType;
 import org.apache.shardingsphere.core.constant.OrderDirection;
 import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
-import org.apache.shardingsphere.core.optimize.encrypt.statement.condition.EncryptCondition;
-import org.apache.shardingsphere.core.optimize.encrypt.statement.condition.EncryptConditions;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingWhereOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.condition.ShardingConditions;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.insert.ShardingInsertColumns;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.insert.ShardingInsertOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.select.ShardingSelectOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.select.groupby.GroupBy;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.select.item.AggregationSelectItem;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.select.item.DerivedCommonSelectItem;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.select.item.SelectItem;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.select.item.SelectItems;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.select.orderby.OrderBy;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.select.orderby.OrderByItem;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.select.pagination.Pagination;
+import org.apache.shardingsphere.core.optimize.encrypt.segment.condition.EncryptCondition;
+import org.apache.shardingsphere.core.optimize.encrypt.segment.condition.EncryptConditions;
+import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingCondition;
+import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingConditions;
+import org.apache.shardingsphere.core.optimize.sharding.segment.insert.ShardingInsertColumns;
+import org.apache.shardingsphere.core.optimize.sharding.segment.select.groupby.GroupBy;
+import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.AggregationSelectItem;
+import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.DerivedCommonSelectItem;
+import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.SelectItem;
+import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.SelectItems;
+import org.apache.shardingsphere.core.optimize.sharding.segment.select.orderby.OrderBy;
+import org.apache.shardingsphere.core.optimize.sharding.segment.select.orderby.OrderByItem;
+import org.apache.shardingsphere.core.optimize.sharding.segment.select.pagination.Pagination;
+import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingConditionOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingInsertOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.transparent.statement.TransparentOptimizedStatement;
 import org.apache.shardingsphere.core.parse.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.sql.context.Table;
@@ -873,7 +873,7 @@ public final class ShardingSQLRewriteEngineTest {
         updateStatement.getTables().add(new Table("table_x", null));
         updateStatement.setSetAssignment(
                 new SetAssignmentsSegment(28, 42, Collections.singleton(new AssignmentSegment(33, 42, new ColumnSegment(33, 40, "id"), new LiteralExpressionSegment(41, 42, 1)))));
-        SQLRouteResult result = new SQLRouteResult(new ShardingWhereOptimizedStatement(updateStatement, 
+        SQLRouteResult result = new SQLRouteResult(new ShardingConditionOptimizedStatement(updateStatement, 
                 new ShardingConditions(Collections.<ShardingCondition>emptyList()), new EncryptConditions(Collections.<EncryptCondition>emptyList())));
         result.setRoutingResult(new RoutingResult());
         return result;
@@ -889,7 +889,7 @@ public final class ShardingSQLRewriteEngineTest {
         DeleteStatement deleteStatement = new DeleteStatement();
         deleteStatement.setLogicSQL("DELETE FROM `sharding_db`.`table_x` WHERE user_id=1");
         deleteStatement.getSQLSegments().add(new TableSegment(12, 34, "`table_x`"));
-        SQLRouteResult result = new SQLRouteResult(new ShardingWhereOptimizedStatement(deleteStatement, 
+        SQLRouteResult result = new SQLRouteResult(new ShardingConditionOptimizedStatement(deleteStatement, 
                 new ShardingConditions(Collections.<ShardingCondition>emptyList()), new EncryptConditions(Collections.<EncryptCondition>emptyList())));
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
@@ -960,7 +960,7 @@ public final class ShardingSQLRewriteEngineTest {
         List<EncryptCondition> encryptConditions = new LinkedList<>();
         encryptConditions.add(new EncryptCondition("id", "table_z", 32, 37, new LiteralExpressionSegment(0, 0, 2)));
         SQLRouteResult result = new SQLRouteResult(
-                new ShardingWhereOptimizedStatement(updateStatement, new ShardingConditions(Collections.<ShardingCondition>emptyList()), new EncryptConditions(encryptConditions)));
+                new ShardingConditionOptimizedStatement(updateStatement, new ShardingConditions(Collections.<ShardingCondition>emptyList()), new EncryptConditions(encryptConditions)));
         result.setRoutingResult(new RoutingResult());
         return result;
     }

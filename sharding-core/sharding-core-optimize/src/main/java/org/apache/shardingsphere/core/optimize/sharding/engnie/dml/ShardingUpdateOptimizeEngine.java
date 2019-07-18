@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.core.optimize.sharding.engnie.dml;
 
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.optimize.encrypt.statement.condition.EncryptConditions;
-import org.apache.shardingsphere.core.optimize.encrypt.statement.condition.WhereClauseEncryptConditionEngine;
+import org.apache.shardingsphere.core.optimize.encrypt.segment.condition.EncryptConditions;
+import org.apache.shardingsphere.core.optimize.encrypt.segment.condition.WhereClauseEncryptConditionEngine;
 import org.apache.shardingsphere.core.optimize.sharding.engnie.ShardingOptimizeEngine;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingWhereOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.condition.ShardingConditions;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.condition.engine.WhereClauseShardingConditionEngine;
+import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingConditions;
+import org.apache.shardingsphere.core.optimize.sharding.segment.condition.engine.WhereClauseShardingConditionEngine;
+import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingConditionOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
@@ -52,8 +52,8 @@ public final class ShardingUpdateOptimizeEngine implements ShardingOptimizeEngin
     }
     
     @Override
-    public ShardingWhereOptimizedStatement optimize() {
-        return new ShardingWhereOptimizedStatement(updateStatement,
+    public ShardingConditionOptimizedStatement optimize() {
+        return new ShardingConditionOptimizedStatement(updateStatement,
                 new ShardingConditions(shardingConditionEngine.createShardingConditions(updateStatement, parameters)),
                 new EncryptConditions(encryptConditionEngine.createEncryptConditions(updateStatement)));
     }

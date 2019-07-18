@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.core.rewrite.builder;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.select.ShardingSelectOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.select.pagination.Pagination;
+import org.apache.shardingsphere.core.optimize.sharding.segment.select.pagination.Pagination;
+import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;

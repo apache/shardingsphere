@@ -24,11 +24,11 @@ import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.ShardingOptimizeEngineFactory;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingWhereOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.condition.ShardingConditions;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.insert.ShardingInsertOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.select.ShardingSelectOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingCondition;
+import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingConditions;
+import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingConditionOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingInsertOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
 import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
 import org.apache.shardingsphere.core.parse.entry.ShardingSQLParseEntry;
 import org.apache.shardingsphere.core.parse.hook.ParsingHook;
@@ -88,9 +88,9 @@ public final class ParsingSQLRouter implements ShardingRouter {
     public SQLRouteResult route(final SQLStatement sqlStatement, final List<Object> parameters) {
         OptimizedStatement optimizedStatement = ShardingOptimizeEngineFactory.newInstance(shardingRule, shardingMetaData.getTable(), sqlStatement, parameters).optimize();
         boolean needMergeShardingValues = isNeedMergeShardingValues(optimizedStatement);
-        if (optimizedStatement instanceof ShardingWhereOptimizedStatement && needMergeShardingValues) {
-            checkSubqueryShardingValues(sqlStatement, ((ShardingWhereOptimizedStatement) optimizedStatement).getShardingConditions());
-            mergeShardingConditions(((ShardingWhereOptimizedStatement) optimizedStatement).getShardingConditions());
+        if (optimizedStatement instanceof ShardingConditionOptimizedStatement && needMergeShardingValues) {
+            checkSubqueryShardingValues(sqlStatement, ((ShardingConditionOptimizedStatement) optimizedStatement).getShardingConditions());
+            mergeShardingConditions(((ShardingConditionOptimizedStatement) optimizedStatement).getShardingConditions());
         }
         RoutingResult routingResult = RoutingEngineFactory.newInstance(shardingRule, shardingMetaData.getDataSource(), optimizedStatement).route();
         if (needMergeShardingValues) {

@@ -22,7 +22,7 @@ import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.sharding.engnie.ShardingOptimizeEngine;
-import org.apache.shardingsphere.core.optimize.sharding.statement.ddl.DropIndexOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.sharding.statement.ddl.ShardingDropIndexOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.DropIndexStatement;
 
 /**
@@ -38,8 +38,8 @@ public final class ShardingDropIndexOptimizeEngine implements ShardingOptimizeEn
     private final ShardingTableMetaData shardingTableMetaData;
     
     @Override
-    public DropIndexOptimizedStatement optimize() {
-        return new DropIndexOptimizedStatement(dropIndexStatement, getTableName());
+    public ShardingDropIndexOptimizedStatement optimize() {
+        return new ShardingDropIndexOptimizedStatement(dropIndexStatement, getTableName());
     }
     
     private String getTableName() {

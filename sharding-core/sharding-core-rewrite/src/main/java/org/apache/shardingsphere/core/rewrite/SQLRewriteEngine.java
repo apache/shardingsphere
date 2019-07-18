@@ -21,7 +21,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.insert.InsertOptimizeResultUnit;
+import org.apache.shardingsphere.core.optimize.sharding.segment.insert.InsertOptimizeResultUnit;
 import org.apache.shardingsphere.core.rewrite.builder.BaseParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.InsertParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
