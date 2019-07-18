@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.encrypt;
 
-import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptRuleConfiguration;
+import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptRuleConfigurationBak;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -26,5 +26,5 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author yangyi
  */
 @ConfigurationProperties(prefix = "spring.shardingsphere.encrypt")
-public final class SpringBootEncryptRuleConfigurationProperties extends YamlEncryptRuleConfiguration {
+public final class SpringBootEncryptRuleConfigurationProperties extends YamlEncryptRuleConfigurationBak {
 }

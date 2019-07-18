@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.shardingjdbc.spring.namespace.parser;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
-import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfiguration;
+import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfigurationBak;
+import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfigurationBak;
 import org.apache.shardingsphere.shardingjdbc.spring.datasource.SpringEncryptDataSource;
 import org.apache.shardingsphere.shardingjdbc.spring.namespace.constants.EncryptDataSourceBeanDefinitionParserTag;
 import org.apache.shardingsphere.shardingjdbc.spring.namespace.constants.EncryptorRuleBeanDefinitionParserTag;
@@ -60,7 +60,7 @@ public final class EncryptDataSourceBeanDefinitionParser extends AbstractBeanDef
     }
     
     private BeanDefinition parseEncryptRuleConfiguration(final Element element) {
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(EncryptRuleConfiguration.class);
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(EncryptRuleConfigurationBak.class);
         factory.addConstructorArgValue(parseEncryptorRulesConfiguration(element));
         return factory.getBeanDefinition();
     }
@@ -75,7 +75,7 @@ public final class EncryptDataSourceBeanDefinitionParser extends AbstractBeanDef
     }
     
     private AbstractBeanDefinition parseEncryptorRuleConfiguration(final Element element) {
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(EncryptorRuleConfiguration.class);
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(EncryptorRuleConfigurationBak.class);
         factory.addConstructorArgValue(element.getAttribute(EncryptorRuleBeanDefinitionParserTag.ENCRYPTOR_TYPE_ATTRIBUTE));
         factory.addConstructorArgValue(element.getAttribute(EncryptorRuleBeanDefinitionParserTag.ENCRYPTOR_QUALIFIED_COLUMNS_ATTRIBUTE));
         parseAssistedQueryColumns(element, factory);
