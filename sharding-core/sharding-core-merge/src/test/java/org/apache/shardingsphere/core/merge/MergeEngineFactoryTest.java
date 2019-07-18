@@ -86,13 +86,13 @@ public final class MergeEngineFactoryTest {
         assertThat(MergeEngineFactory.newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, routeResult, null, queryResults), instanceOf(DALMergeEngine.class));
     }
     
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void assertNewInstanceWithOtherStatement() throws SQLException {
         ShardingInsertColumns insertColumns = mock(ShardingInsertColumns.class);
         when(insertColumns.getRegularColumnNames()).thenReturn(Collections.<String>emptySet());
         when(insertColumns.getAllColumnNames()).thenReturn(Collections.<String>emptySet());
         SQLRouteResult routeResult = new SQLRouteResult(
                 new ShardingInsertOptimizedStatement(new InsertStatement(), Collections.<ShardingCondition>emptyList(), insertColumns, Collections.<InsertValue>emptyList(), null));
-        MergeEngineFactory.newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, routeResult, null, queryResults);
+        assertThat(MergeEngineFactory.newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, routeResult, null, queryResults), instanceOf(TransparentMergeEngine.class));
     }
 }
