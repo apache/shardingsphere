@@ -21,7 +21,6 @@ import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.optimize.statement.PredicateUtils;
 import org.apache.shardingsphere.core.optimize.statement.encrypt.condition.EncryptCondition;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.SimpleExpressionSegment;
@@ -95,7 +94,7 @@ public final class WhereClauseEncryptConditionEngine {
     }
     
     private Optional<EncryptCondition> createEncryptCondition(final PredicateSegment predicateSegment, final SQLStatement sqlStatement) {
-        Optional<String> tableName = PredicateUtils.findTableName(predicateSegment, sqlStatement, shardingTableMetaData);
+        Optional<String> tableName = sqlStatement.getTables().findTableName(predicateSegment.getColumn(), shardingTableMetaData);
         if (!tableName.isPresent() || !encryptRule.getEncryptorEngine().getShardingEncryptor(tableName.get(), predicateSegment.getColumn().getName()).isPresent()) {
             return Optional.absent();
         }

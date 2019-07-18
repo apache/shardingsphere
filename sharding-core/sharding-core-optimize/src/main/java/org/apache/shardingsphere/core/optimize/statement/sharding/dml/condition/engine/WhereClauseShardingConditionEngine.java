@@ -23,7 +23,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.statement.Column;
-import org.apache.shardingsphere.core.optimize.statement.PredicateUtils;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.AlwaysFalseRouteValue;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.AlwaysFalseShardingCondition;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
@@ -101,7 +100,7 @@ public final class WhereClauseShardingConditionEngine {
     private Map<Column, Collection<RouteValue>> createRouteValueMap(final SQLStatement sqlStatement, final List<Object> parameters, final AndPredicate andPredicate) {
         Map<Column, Collection<RouteValue>> result = new HashMap<>();
         for (PredicateSegment each : andPredicate.getPredicates()) {
-            Optional<String> tableName = PredicateUtils.findTableName(each, sqlStatement, shardingTableMetaData);
+            Optional<String> tableName = sqlStatement.getTables().findTableName(each.getColumn(), shardingTableMetaData);
             if (!tableName.isPresent() || !shardingRule.isShardingColumn(each.getColumn().getName(), tableName.get())) {
                 continue;
             }
