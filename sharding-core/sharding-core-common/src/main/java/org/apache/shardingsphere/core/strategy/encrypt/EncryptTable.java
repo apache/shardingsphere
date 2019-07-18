@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.strategy.encrypt;
 
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
-import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import org.apache.shardingsphere.api.config.encrypt.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.api.config.encrypt.EncryptTableRuleConfiguration;
@@ -65,7 +64,7 @@ public final class EncryptTable {
      */
     public boolean isHasShardingQueryAssistedEncryptor() {
         for (EncryptColumn each : columns.values()) {
-            if (!Strings.isNullOrEmpty(each.getAssistedQueryColumn())) {
+            if (each.getAssistedQueryColumn().isPresent()) {
                 return true;
             }
         }
@@ -82,7 +81,7 @@ public final class EncryptTable {
         if (!columns.containsKey(logicColumnName)) {
             return Optional.absent();
         }
-        return Optional.of(columns.get(logicColumnName).getAssistedQueryColumn());
+        return columns.get(logicColumnName).getAssistedQueryColumn();
     }
     
     /**
@@ -93,8 +92,8 @@ public final class EncryptTable {
     public Collection<String> getAssistedQueryColumns() {
         Collection<String> result = new LinkedList<>();
         for (EncryptColumn each : columns.values()) {
-            if (!Strings.isNullOrEmpty(each.getAssistedQueryColumn())) {
-                result.add(each.getAssistedQueryColumn());
+            if (each.getAssistedQueryColumn().isPresent()) {
+                result.add(each.getAssistedQueryColumn().get());
             }
         }
         return result;
