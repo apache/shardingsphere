@@ -47,7 +47,7 @@ public final class ShardingInsertColumns implements InsertColumns {
         this.insertStatement = insertStatement;
         String tableName = insertStatement.getTables().getSingleTableName();
         generateKeyColumnName = shardingRule.findGenerateKeyColumnName(tableName).orNull();
-        assistedQueryColumnNames = shardingRule.getEncryptRule().getEncryptorEngine().getAssistedQueryColumns(tableName);
+        assistedQueryColumnNames = shardingRule.getEncryptRule().getEncryptEngine().getAssistedQueryColumns(tableName);
         regularColumnNames = insertStatement.getColumns().isEmpty() ? getRegularColumnNamesFromMetaData(shardingTableMetaData) : getRegularColumnNamesFromSQLStatement();
     }
     

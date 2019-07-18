@@ -44,7 +44,7 @@ public final class ShardingRuleConfigurationYamlSwapper implements YamlSwapper<Y
     
     private final MasterSlaveRuleConfigurationYamlSwapper masterSlaveRuleConfigurationYamlSwapper = new MasterSlaveRuleConfigurationYamlSwapper();
     
-    private final EncryptRuleConfigurationYamlSwapper encryptRuleConfigurationYamlSwapper = new EncryptRuleConfigurationYamlSwapper();
+    private final EncryptRuleConfigurationYamlSwapperBak encryptRuleConfigurationYamlSwapper = new EncryptRuleConfigurationYamlSwapperBak();
     
     @Override
     public YamlShardingRuleConfiguration swap(final ShardingRuleConfiguration data) {

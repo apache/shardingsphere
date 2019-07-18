@@ -22,7 +22,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import lombok.Getter;
-import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
+import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfigurationBak;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
@@ -138,7 +138,7 @@ public class ShardingRule implements BaseRule {
         return result;
     }
     
-    private EncryptRule createEncryptRule(final EncryptRuleConfiguration encryptRuleConfig) {
+    private EncryptRule createEncryptRule(final EncryptRuleConfigurationBak encryptRuleConfig) {
         return null == encryptRuleConfig ? new EncryptRule() : new EncryptRule(shardingRuleConfig.getEncryptRuleConfig());
     }
     
