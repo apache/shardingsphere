@@ -42,7 +42,7 @@ public final class ConstraintDefinitionFiller implements SQLSegmentFiller<Constr
     public void fill(final ConstraintDefinitionSegment sqlSegment, final SQLStatement sqlStatement) {
         if (sqlStatement instanceof CreateTableStatement) {
             fill(sqlSegment, (CreateTableStatement) sqlStatement);
-        } else if (sqlStatement instanceof AlterTableStatement) {
+        } else if (null != shardingTableMetaData && sqlStatement instanceof AlterTableStatement) {
             fill(sqlSegment, (AlterTableStatement) sqlStatement, shardingTableMetaData);
         }
     }

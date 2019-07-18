@@ -41,7 +41,7 @@ public final class ModifyColumnDefinitionFiller implements SQLSegmentFiller<Modi
     public void fill(final ModifyColumnDefinitionSegment sqlSegment, final SQLStatement sqlStatement) {
         AlterTableStatement alterTableStatement = (AlterTableStatement) sqlStatement;
         Optional<String> oldColumnName = sqlSegment.getOldColumnName();
-        if (oldColumnName.isPresent()) {
+        if (null != shardingTableMetaData && oldColumnName.isPresent()) {
             Optional<ColumnDefinitionSegment> oldColumnDefinition = alterTableStatement.findColumnDefinition(oldColumnName.get(), shardingTableMetaData);
             if (!oldColumnDefinition.isPresent()) {
                 return;

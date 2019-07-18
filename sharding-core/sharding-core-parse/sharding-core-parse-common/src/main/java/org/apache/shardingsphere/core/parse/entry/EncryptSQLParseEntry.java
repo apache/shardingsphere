@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.parse.entry;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
-import org.apache.shardingsphere.core.parse.rule.registry.EncryptParseRuleRegistry;
+import org.apache.shardingsphere.core.parse.rule.registry.ParseRuleRegistry;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 
 /**
@@ -42,6 +42,6 @@ public final class EncryptSQLParseEntry extends SQLParseEntry {
     
     @Override
     protected SQLParseEngine getSQLParseEngine(final String sql) {
-        return new SQLParseEngine(EncryptParseRuleRegistry.getInstance(), databaseType, sql, shardingTableMetaData);
+        return new SQLParseEngine(ParseRuleRegistry.getInstance(), databaseType, sql, shardingTableMetaData);
     }
 }

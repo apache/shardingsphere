@@ -38,7 +38,7 @@ public final class AddColumnDefinitionFiller implements SQLSegmentFiller<AddColu
     @Override
     public void fill(final AddColumnDefinitionSegment sqlSegment, final SQLStatement sqlStatement) {
         AlterTableStatement alterTableStatement = (AlterTableStatement) sqlStatement;
-        if (!alterTableStatement.findColumnDefinitionFromMetaData(sqlSegment.getColumnDefinition().getColumnName(), shardingTableMetaData).isPresent()) {
+        if (null != shardingTableMetaData && !alterTableStatement.findColumnDefinitionFromMetaData(sqlSegment.getColumnDefinition().getColumnName(), shardingTableMetaData).isPresent()) {
             alterTableStatement.getAddedColumnDefinitions().add(sqlSegment.getColumnDefinition());
         }
         if (sqlSegment.getColumnPosition().isPresent()) {

@@ -39,6 +39,9 @@ public final class RenameColumnDefinitionFiller implements SQLSegmentFiller<Rena
     
     @Override
     public void fill(final RenameColumnSegment sqlSegment, final SQLStatement sqlStatement) {
+        if (null == shardingTableMetaData) {
+            return;
+        }
         AlterTableStatement alterTableStatement = (AlterTableStatement) sqlStatement;
         Optional<ColumnDefinitionSegment> oldColumnDefinition = alterTableStatement.findColumnDefinition(sqlSegment.getOldColumnName(), shardingTableMetaData);
         if (!oldColumnDefinition.isPresent()) {
