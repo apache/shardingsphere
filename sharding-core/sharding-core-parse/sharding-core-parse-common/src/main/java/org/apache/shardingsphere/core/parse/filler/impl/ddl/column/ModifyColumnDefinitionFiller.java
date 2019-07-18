@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.parse.filler.impl.ddl.column;
 
-import lombok.Setter;
 import org.apache.shardingsphere.core.parse.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.sql.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
@@ -28,7 +27,6 @@ import org.apache.shardingsphere.core.parse.sql.statement.ddl.AlterTableStatemen
  *
  * @author duhongjun
  */
-@Setter
 public final class ModifyColumnDefinitionFiller implements SQLSegmentFiller<ModifyColumnDefinitionSegment> {
     
     @Override

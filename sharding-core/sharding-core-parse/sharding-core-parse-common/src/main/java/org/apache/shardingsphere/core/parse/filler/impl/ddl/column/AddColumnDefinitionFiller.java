@@ -17,9 +17,6 @@
 
 package org.apache.shardingsphere.core.parse.filler.impl.ddl.column;
 
-import lombok.Setter;
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parse.aware.ShardingTableMetaDataAware;
 import org.apache.shardingsphere.core.parse.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.sql.segment.ddl.column.alter.AddColumnDefinitionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
@@ -30,19 +27,13 @@ import org.apache.shardingsphere.core.parse.sql.statement.ddl.AlterTableStatemen
  *
  * @author duhongjun
  */
-@Setter
-public final class AddColumnDefinitionFiller implements SQLSegmentFiller<AddColumnDefinitionSegment>, ShardingTableMetaDataAware {
-    
-    private ShardingTableMetaData shardingTableMetaData;
+public final class AddColumnDefinitionFiller implements SQLSegmentFiller<AddColumnDefinitionSegment> {
     
     @Override
     public void fill(final AddColumnDefinitionSegment sqlSegment, final SQLStatement sqlStatement) {
-        AlterTableStatement alterTableStatement = (AlterTableStatement) sqlStatement;
-        if (null != shardingTableMetaData && !alterTableStatement.findColumnDefinitionFromMetaData(sqlSegment.getColumnDefinition().getColumnName(), shardingTableMetaData).isPresent()) {
-            alterTableStatement.getAddedColumnDefinitions().add(sqlSegment.getColumnDefinition());
-        }
+        ((AlterTableStatement) sqlStatement).getAddedColumnDefinitions().add(sqlSegment.getColumnDefinition());
         if (sqlSegment.getColumnPosition().isPresent()) {
-            alterTableStatement.getChangedPositionColumns().add(sqlSegment.getColumnPosition().get());
+            ((AlterTableStatement) sqlStatement).getChangedPositionColumns().add(sqlSegment.getColumnPosition().get());
         }
     }
 }
