@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.shardingjdbc.orchestration.api;
 
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
-import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfiguration;
+import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfigurationBak;
+import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfigurationBak;
 import org.apache.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationEncryptDataSource;
@@ -60,12 +60,12 @@ public final class OrchestrationEncryptDataSourceFactoryTest {
         return result;
     }
     
-    private EncryptRuleConfiguration getEncryptRuleConfiguration() {
-        EncryptRuleConfiguration result = new EncryptRuleConfiguration();
+    private EncryptRuleConfigurationBak getEncryptRuleConfiguration() {
+        EncryptRuleConfigurationBak result = new EncryptRuleConfigurationBak();
         Properties properties = new Properties();
         properties.setProperty("aes.key.value", "123456");
-        EncryptorRuleConfiguration encryptorRuleConfig = new EncryptorRuleConfiguration("aes", "t_order.user_id", properties);
-        result.getEncryptorRuleConfigs().put("order_encryptor", encryptorRuleConfig);
+        EncryptorRuleConfigurationBak encryptorRuleConfig = new EncryptorRuleConfigurationBak("aes", properties);
+        result.getEncryptors().put("order_encryptor", encryptorRuleConfig);
         return result;
     }
     

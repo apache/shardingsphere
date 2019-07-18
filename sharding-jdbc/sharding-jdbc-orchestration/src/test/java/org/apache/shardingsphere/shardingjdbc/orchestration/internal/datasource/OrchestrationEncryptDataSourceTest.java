@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource;
 
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
-import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfiguration;
+import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfigurationBak;
+import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfigurationBak;
 import org.apache.shardingsphere.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.core.constant.ShardingConstant;
 import org.apache.shardingsphere.orchestration.config.OrchestrationConfiguration;
@@ -78,18 +78,17 @@ public final class OrchestrationEncryptDataSourceTest {
         encryptDataSource.renew(getEncryptRuleChangedEvent());
         assertThat(encryptDataSource.getDataSource().getEncryptRule().getEncryptTableNames().size(), is(1));
         assertThat(encryptDataSource.getDataSource().getEncryptRule().getEncryptTableNames().iterator().next(), is("t_order_item"));
-        Map<String, EncryptorRuleConfiguration> encryptorRuleConfigurations = encryptDataSource.getDataSource().getEncryptRule().getEncryptRuleConfig().getEncryptorRuleConfigs();
+        Map<String, EncryptorRuleConfigurationBak> encryptorRuleConfigurations = encryptDataSource.getDataSource().getEncryptRule().getEncryptRuleConfig().getEncryptors();
         assertThat(encryptorRuleConfigurations.size(), is(1));
         assertTrue(encryptorRuleConfigurations.containsKey("order_encryptor"));
-        EncryptorRuleConfiguration encryptorRuleConfig = encryptorRuleConfigurations.get("order_encryptor");
+        EncryptorRuleConfigurationBak encryptorRuleConfig = encryptorRuleConfigurations.get("order_encryptor");
         assertThat(encryptorRuleConfig.getType(), is("md5"));
-        assertThat(encryptorRuleConfig.getQualifiedColumns(), is("t_order_item.order_id"));
         assertThat(encryptorRuleConfig.getProperties().stringPropertyNames().size(), is(0));
     }
     
     private EncryptRuleChangedEvent getEncryptRuleChangedEvent() {
-        EncryptRuleConfiguration encryptRuleConfig = new EncryptRuleConfiguration();
-        encryptRuleConfig.getEncryptorRuleConfigs().put("order_encryptor", new EncryptorRuleConfiguration("md5", "t_order_item.order_id", new Properties()));
+        EncryptRuleConfigurationBak encryptRuleConfig = new EncryptRuleConfigurationBak();
+        encryptRuleConfig.getEncryptors().put("order_encryptor", new EncryptorRuleConfigurationBak("md5", new Properties()));
         return new EncryptRuleChangedEvent(ShardingConstant.LOGIC_SCHEMA_NAME, encryptRuleConfig);
     }
     

@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.orchestration.internal.registry.config.listener;
 
-import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
-import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfiguration;
+import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfigurationBak;
+import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfigurationBak;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
@@ -110,11 +110,10 @@ public class SchemaChangedListenerTest {
         ShardingOrchestrationEvent actual = schemaChangedListener.createShardingOrchestrationEvent(dataChangedEvent);
         assertThat(actual, instanceOf(EncryptRuleChangedEvent.class));
         assertThat(((EncryptRuleChangedEvent) actual).getShardingSchemaName(), is("encrypt_db"));
-        assertThat(((EncryptRuleChangedEvent) actual).getEncryptRuleConfiguration().getEncryptorRuleConfigs().size(), is(1));
-        Entry<String, EncryptorRuleConfiguration> entry = ((EncryptRuleChangedEvent) actual).getEncryptRuleConfiguration().getEncryptorRuleConfigs().entrySet().iterator().next();
+        assertThat(((EncryptRuleChangedEvent) actual).getEncryptRuleConfiguration().getEncryptors().size(), is(1));
+        Entry<String, EncryptorRuleConfigurationBak> entry = ((EncryptRuleChangedEvent) actual).getEncryptRuleConfiguration().getEncryptors().entrySet().iterator().next();
         assertThat(entry.getKey(), is("order_encryptor"));
         assertThat(entry.getValue().getType(), is("AES"));
-        assertThat(entry.getValue().getQualifiedColumns(), is("t_order.order_id"));
         assertThat(entry.getValue().getProperties().get("aes.key.value").toString(), is("123456"));
     }
     
@@ -159,7 +158,7 @@ public class SchemaChangedListenerTest {
         DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/logic_db/datasource", DATA_SOURCE_YAML, ChangedType.UPDATED);
         ShardingOrchestrationEvent actual = schemaChangedListener.createShardingOrchestrationEvent(dataChangedEvent);
         assertThat(actual, instanceOf(SchemaAddedEvent.class));
-        assertThat(((SchemaAddedEvent) actual).getRuleConfiguration(), instanceOf(EncryptRuleConfiguration.class));
+        assertThat(((SchemaAddedEvent) actual).getRuleConfiguration(), instanceOf(EncryptRuleConfigurationBak.class));
     }
     
     @Test

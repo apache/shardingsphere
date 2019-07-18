@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.shardingproxy.config;
 
-import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptRuleConfiguration;
-import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptorRuleConfiguration;
+import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptRuleConfigurationBak;
+import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptorRuleConfigurationBak;
 import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.orchestration.yaml.config.YamlOrchestrationConfiguration;
@@ -105,17 +105,15 @@ public final class ShardingConfigurationLoaderTest {
         assertEncryptRuleConfiguration(actual.getEncryptRule());
     }
     
-    private void assertEncryptRuleConfiguration(final YamlEncryptRuleConfiguration actual) {
+    private void assertEncryptRuleConfiguration(final YamlEncryptRuleConfigurationBak actual) {
         assertThat(actual.getEncryptors().size(), is(2));
         assertTrue(actual.getEncryptors().containsKey("encryptor_aes"));
         assertTrue(actual.getEncryptors().containsKey("encryptor_md5"));
-        YamlEncryptorRuleConfiguration aesEncryptorRule = actual.getEncryptors().get("encryptor_aes");
+        YamlEncryptorRuleConfigurationBak aesEncryptorRule = actual.getEncryptors().get("encryptor_aes");
         assertThat(aesEncryptorRule.getType(), is("aes"));
-        assertThat(aesEncryptorRule.getQualifiedColumns(), is("t_encrypt.pwd"));
         assertThat(aesEncryptorRule.getProps().getProperty("aes.key.value"), is("123456abc"));
-        YamlEncryptorRuleConfiguration md5EncryptorRule = actual.getEncryptors().get("encryptor_md5");
+        YamlEncryptorRuleConfigurationBak md5EncryptorRule = actual.getEncryptors().get("encryptor_md5");
         assertThat(md5EncryptorRule.getType(), is("md5"));
-        assertThat(md5EncryptorRule.getQualifiedColumns(), is("t_encrypt.name"));
     }
     
     private void assertDataSourceParameter(final YamlDataSourceParameter actual, final String expectedURL) {

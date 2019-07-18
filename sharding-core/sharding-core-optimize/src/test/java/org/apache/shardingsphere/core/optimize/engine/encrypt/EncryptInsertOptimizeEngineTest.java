@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.core.optimize.engine.encrypt;
 
-import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
-import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfiguration;
+import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfigurationBak;
+import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfigurationBak;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.statement.encrypt.EncryptInsertOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.context.InsertValue;
@@ -54,13 +54,13 @@ public final class EncryptInsertOptimizeEngineTest {
         encryptRule = new EncryptRule(createEncryptRuleConfiguration());
     }
     
-    private EncryptRuleConfiguration createEncryptRuleConfiguration() {
-        EncryptorRuleConfiguration encryptorConfig = new EncryptorRuleConfiguration("test", "t_encrypt.col1, t_encrypt.col2", new Properties());
-        EncryptorRuleConfiguration encryptorQueryConfig = 
-                new EncryptorRuleConfiguration("assistedTest", "t_query_encrypt.col1, t_query_encrypt.col2", "t_query_encrypt.query1, t_query_encrypt.query2", new Properties());
-        EncryptRuleConfiguration result = new EncryptRuleConfiguration();
-        result.getEncryptorRuleConfigs().put("test", encryptorConfig);
-        result.getEncryptorRuleConfigs().put("assistedTest", encryptorQueryConfig);
+    private EncryptRuleConfigurationBak createEncryptRuleConfiguration() {
+        EncryptorRuleConfigurationBak encryptorConfig = new EncryptorRuleConfigurationBak("test", new Properties());
+        EncryptorRuleConfigurationBak encryptorQueryConfig = 
+                new EncryptorRuleConfigurationBak("assistedTest", new Properties());
+        EncryptRuleConfigurationBak result = new EncryptRuleConfigurationBak();
+        result.getEncryptors().put("test", encryptorConfig);
+        result.getEncryptors().put("assistedTest", encryptorQueryConfig);
         return result;
     }
     

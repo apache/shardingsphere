@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.core.util;
 
 import org.apache.shardingsphere.api.config.RuleConfiguration;
-import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
-import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfiguration;
+import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfigurationBak;
+import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfigurationBak;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
@@ -96,17 +96,17 @@ public class ConfigurationLoggerTest {
     public void logEncryptRuleConfiguration() {
         String yamlStr = "encryptors:\n" + "  encryptor_aes:\n" + "    assistedQueryColumns: ''\n" + "    props:\n"
             + "      aes.key.value: 123456abc\n" + "    qualifiedColumns: user.user_name\n" + "    type: aes\n";
-        assertEqualsWithLogInfo(EncryptRuleConfiguration.class.getSimpleName(), yamlStr);
+        assertEqualsWithLogInfo(EncryptRuleConfigurationBak.class.getSimpleName(), yamlStr);
         ConfigurationLogger.log(getEncryptRuleConfiguration());
     }
 
-    private EncryptRuleConfiguration getEncryptRuleConfiguration() {
-        EncryptRuleConfiguration encryptRuleConfiguration = new EncryptRuleConfiguration();
+    private EncryptRuleConfigurationBak getEncryptRuleConfiguration() {
+        EncryptRuleConfigurationBak encryptRuleConfiguration = new EncryptRuleConfigurationBak();
         Properties properties = new Properties();
         properties.put("aes.key.value", "123456abc");
-        EncryptorRuleConfiguration encryptorRuleConfiguration =
-            new EncryptorRuleConfiguration("aes", "user.user_name", properties);
-        encryptRuleConfiguration.getEncryptorRuleConfigs().put("encryptor_aes", encryptorRuleConfiguration);
+        EncryptorRuleConfigurationBak encryptorRuleConfiguration =
+            new EncryptorRuleConfigurationBak("aes", properties);
+        encryptRuleConfiguration.getEncryptors().put("encryptor_aes", encryptorRuleConfiguration);
         return encryptRuleConfiguration;
     }
 
@@ -141,7 +141,7 @@ public class ConfigurationLoggerTest {
     public void logRuleConfigurationWithEncryptRuleConfiguration() {
         String yamlStr = "encryptors:\n" + "  encryptor_aes:\n" + "    assistedQueryColumns: ''\n" + "    props:\n"
             + "      aes.key.value: 123456abc\n" + "    qualifiedColumns: user.user_name\n" + "    type: aes\n";
-        assertEqualsWithLogInfo(EncryptRuleConfiguration.class.getSimpleName(), yamlStr);
+        assertEqualsWithLogInfo(EncryptRuleConfigurationBak.class.getSimpleName(), yamlStr);
         ConfigurationLogger.log((RuleConfiguration) getEncryptRuleConfiguration());
     }
     

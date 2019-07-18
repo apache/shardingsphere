@@ -60,6 +60,6 @@ public class SpringBootEncryptTest {
     public void assertWithEncryptRule() {
         EncryptRule encryptRule = ((EncryptDataSource) dataSource).getEncryptRule();
         assertThat(encryptRule.getEncryptTableNames().size(), is(1));
-        assertTrue(encryptRule.getEncryptorEngine().getShardingEncryptor("t_order", "user_id").isPresent());
+        assertTrue(encryptRule.getEncryptEngine().getShardingEncryptor("t_order", "user_id").isPresent());
     }
 }
