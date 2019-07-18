@@ -20,7 +20,7 @@ package org.apache.shardingsphere.orchestration.internal.registry.config.service
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfigurationBak;
+import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
@@ -272,7 +272,7 @@ public final class ConfigurationServiceTest {
         return new MasterSlaveRuleConfigurationYamlSwapper().swap(YamlEngine.unmarshal(MASTER_SLAVE_RULE_YAML, YamlMasterSlaveRuleConfiguration.class));
     }
     
-    private EncryptRuleConfigurationBak createEncryptRuleConfiguration() {
+    private EncryptRuleConfiguration createEncryptRuleConfiguration() {
         return new EncryptRuleConfigurationYamlSwapperBak().swap(YamlEngine.unmarshal(ENCRYPT_RULE_YAML, YamlEncryptRuleConfigurationBak.class));
     }
     
@@ -345,7 +345,7 @@ public final class ConfigurationServiceTest {
     public void assertLoadEncryptRuleConfiguration() {
         when(regCenter.getDirectly("/test/config/schema/sharding_db/rule")).thenReturn(ENCRYPT_RULE_YAML);
         ConfigurationService configurationService = new ConfigurationService("test", regCenter);
-        EncryptRuleConfigurationBak actual = configurationService.loadEncryptRuleConfiguration("sharding_db");
+        EncryptRuleConfiguration actual = configurationService.loadEncryptRuleConfiguration("sharding_db");
         assertThat(actual.getEncryptors().size(), is(1));
         Entry<String, EncryptorRuleConfiguration> entry = actual.getEncryptors().entrySet().iterator().next();
         assertThat(entry.getKey(), is("order_encryptor"));

@@ -22,7 +22,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfigurationBak;
+import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.encrypt.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.core.rule.ColumnNode;
@@ -49,7 +49,7 @@ public final class EncryptEngine {
     
     private final Map<String, EncryptTable> tables = new LinkedHashMap<>();
     
-    public EncryptEngine(final EncryptRuleConfigurationBak encryptRuleConfiguration) {
+    public EncryptEngine(final EncryptRuleConfiguration encryptRuleConfiguration) {
         initEncryptors(encryptRuleConfiguration.getEncryptors());
         initTables(encryptRuleConfiguration.getTables());
     }

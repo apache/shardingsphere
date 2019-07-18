@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.api;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfigurationBak;
+import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
 
 import javax.sql.DataSource;
@@ -40,7 +40,7 @@ public final class EncryptDataSourceFactory {
      * @param encryptRuleConfiguration encrypt rule configuration
      * @return encrypt data source
      */
-    public static DataSource createDataSource(final DataSource dataSource, final EncryptRuleConfigurationBak encryptRuleConfiguration) {
+    public static DataSource createDataSource(final DataSource dataSource, final EncryptRuleConfiguration encryptRuleConfiguration) {
         return createDataSource(dataSource, encryptRuleConfiguration, new Properties());
     }
     
@@ -52,7 +52,7 @@ public final class EncryptDataSourceFactory {
      * @param props properties
      * @return encrypt data source
      */
-    public static DataSource createDataSource(final DataSource dataSource, final EncryptRuleConfigurationBak encryptRuleConfiguration, final Properties props) {
+    public static DataSource createDataSource(final DataSource dataSource, final EncryptRuleConfiguration encryptRuleConfiguration, final Properties props) {
         return new EncryptDataSource(dataSource, encryptRuleConfiguration, props);
     }
 }

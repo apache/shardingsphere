@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.api.config.RuleConfiguration;
-import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfigurationBak;
+import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.rule.Authentication;
@@ -59,7 +59,7 @@ public final class ConfigurationLogger {
      *
      * @param encryptRuleConfiguration encryptRule configuration
      */
-    public static void log(final EncryptRuleConfigurationBak encryptRuleConfiguration) {
+    public static void log(final EncryptRuleConfiguration encryptRuleConfiguration) {
         if (null == encryptRuleConfiguration) {
             return;
         }
@@ -80,8 +80,8 @@ public final class ConfigurationLogger {
             ConfigurationLogger.log((ShardingRuleConfiguration) ruleConfiguration);
         } else if (ruleConfiguration instanceof MasterSlaveRuleConfiguration) {
             ConfigurationLogger.log((MasterSlaveRuleConfiguration) ruleConfiguration);
-        } else if (ruleConfiguration instanceof EncryptRuleConfigurationBak) {
-            ConfigurationLogger.log((EncryptRuleConfigurationBak) ruleConfiguration);
+        } else if (ruleConfiguration instanceof EncryptRuleConfiguration) {
+            ConfigurationLogger.log((EncryptRuleConfiguration) ruleConfiguration);
         }
     }
 

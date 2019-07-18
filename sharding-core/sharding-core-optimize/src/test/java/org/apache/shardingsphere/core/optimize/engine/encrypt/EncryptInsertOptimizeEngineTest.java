@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.optimize.engine.encrypt;
 
-import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfigurationBak;
+import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.statement.encrypt.EncryptInsertOptimizedStatement;
@@ -54,11 +54,11 @@ public final class EncryptInsertOptimizeEngineTest {
         encryptRule = new EncryptRule(createEncryptRuleConfiguration());
     }
     
-    private EncryptRuleConfigurationBak createEncryptRuleConfiguration() {
+    private EncryptRuleConfiguration createEncryptRuleConfiguration() {
         EncryptorRuleConfiguration encryptorConfig = new EncryptorRuleConfiguration("test", new Properties());
         EncryptorRuleConfiguration encryptorQueryConfig = 
                 new EncryptorRuleConfiguration("assistedTest", new Properties());
-        EncryptRuleConfigurationBak result = new EncryptRuleConfigurationBak();
+        EncryptRuleConfiguration result = new EncryptRuleConfiguration();
         result.getEncryptors().put("test", encryptorConfig);
         result.getEncryptors().put("assistedTest", encryptorQueryConfig);
         return result;

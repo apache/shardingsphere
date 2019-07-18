@@ -21,7 +21,7 @@ import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfigurationBak;
+import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
@@ -74,7 +74,7 @@ public class EncryptDataSource extends AbstractUnsupportedOperationDataSource im
     private PrintWriter logWriter = new PrintWriter(System.out);
     
     @SneakyThrows
-    public EncryptDataSource(final DataSource dataSource, final EncryptRuleConfigurationBak encryptRuleConfiguration, final Properties props) {
+    public EncryptDataSource(final DataSource dataSource, final EncryptRuleConfiguration encryptRuleConfiguration, final Properties props) {
         ConfigurationLogger.log(encryptRuleConfiguration);
         ConfigurationLogger.log(props);
         this.dataSource = dataSource;

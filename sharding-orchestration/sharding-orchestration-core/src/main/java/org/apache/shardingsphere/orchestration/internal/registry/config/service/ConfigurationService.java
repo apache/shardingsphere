@@ -22,7 +22,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import org.apache.shardingsphere.api.config.RuleConfiguration;
-import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfigurationBak;
+import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.config.DataSourceConfiguration;
@@ -111,8 +111,8 @@ public final class ConfigurationService {
         if (isOverwrite || !hasRuleConfiguration(shardingSchemaName)) {
             if (ruleConfig instanceof ShardingRuleConfiguration) {
                 persistShardingRuleConfiguration(shardingSchemaName, (ShardingRuleConfiguration) ruleConfig);
-            } else if (ruleConfig instanceof EncryptRuleConfigurationBak) {
-                persistEncryptRuleConfiguration(shardingSchemaName, (EncryptRuleConfigurationBak) ruleConfig);
+            } else if (ruleConfig instanceof EncryptRuleConfiguration) {
+                persistEncryptRuleConfiguration(shardingSchemaName, (EncryptRuleConfiguration) ruleConfig);
             } else {
                 persistMasterSlaveRuleConfiguration(shardingSchemaName, (MasterSlaveRuleConfiguration) ruleConfig);
             }
@@ -135,7 +135,7 @@ public final class ConfigurationService {
         regCenter.persist(configNode.getRulePath(shardingSchemaName), YamlEngine.marshal(new ShardingRuleConfigurationYamlSwapper().swap(shardingRuleConfiguration)));
     }
     
-    private void persistEncryptRuleConfiguration(final String shardingSchemaName, final EncryptRuleConfigurationBak encryptRuleConfiguration) {
+    private void persistEncryptRuleConfiguration(final String shardingSchemaName, final EncryptRuleConfiguration encryptRuleConfiguration) {
         Preconditions.checkState(null != encryptRuleConfiguration && !encryptRuleConfiguration.getEncryptors().isEmpty(),
             "No available encrypt rule configuration in `%s` for orchestration.", shardingSchemaName);
         regCenter.persist(configNode.getRulePath(shardingSchemaName), YamlEngine.marshal(new EncryptRuleConfigurationYamlSwapperBak().swap(encryptRuleConfiguration)));
@@ -231,7 +231,7 @@ public final class ConfigurationService {
      * @param shardingSchemaName sharding schema name
      * @return encrypt rule configuration
      */
-    public EncryptRuleConfigurationBak loadEncryptRuleConfiguration(final String shardingSchemaName) {
+    public EncryptRuleConfiguration loadEncryptRuleConfiguration(final String shardingSchemaName) {
         return new EncryptRuleConfigurationYamlSwapperBak().swap(YamlEngine.unmarshal(regCenter.getDirectly(configNode.getRulePath(shardingSchemaName)), YamlEncryptRuleConfigurationBak.class));
     }
     
