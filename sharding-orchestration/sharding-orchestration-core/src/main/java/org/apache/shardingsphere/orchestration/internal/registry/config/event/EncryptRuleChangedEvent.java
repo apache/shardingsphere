@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.orchestration.internal.registry.config.event;
 
-import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
-import org.apache.shardingsphere.orchestration.internal.registry.listener.ShardingOrchestrationEvent;
-
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfigurationBak;
+import org.apache.shardingsphere.orchestration.internal.registry.listener.ShardingOrchestrationEvent;
 
 /**
  * Encrypt rule changed event.
@@ -34,5 +33,5 @@ public class EncryptRuleChangedEvent implements ShardingOrchestrationEvent {
     
     private final String shardingSchemaName;
     
-    private final EncryptRuleConfiguration encryptRuleConfiguration;
+    private final EncryptRuleConfigurationBak encryptRuleConfiguration;
 }

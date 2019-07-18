@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.core.rule;
 
 import lombok.Getter;
-import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
-import org.apache.shardingsphere.core.strategy.encrypt.ShardingEncryptorEngine;
+import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfigurationBak;
+import org.apache.shardingsphere.core.strategy.encrypt.EncryptEngine;
 
 import java.util.Collection;
 
@@ -31,17 +31,17 @@ import java.util.Collection;
 @Getter
 public final class EncryptRule implements BaseRule {
     
-    private final ShardingEncryptorEngine encryptorEngine;
+    private final EncryptEngine encryptEngine;
     
-    private EncryptRuleConfiguration encryptRuleConfig;
+    private EncryptRuleConfigurationBak encryptRuleConfig;
     
     public EncryptRule() {
-        encryptorEngine = new ShardingEncryptorEngine();
+        encryptEngine = new EncryptEngine();
     }
     
-    public EncryptRule(final EncryptRuleConfiguration encryptRuleConfiguration) {
+    public EncryptRule(final EncryptRuleConfigurationBak encryptRuleConfiguration) {
         this.encryptRuleConfig = encryptRuleConfiguration;
-        encryptorEngine = new ShardingEncryptorEngine(encryptRuleConfiguration);
+        encryptEngine = new EncryptEngine(encryptRuleConfiguration);
     }
 
     /**
@@ -50,6 +50,6 @@ public final class EncryptRule implements BaseRule {
      * @return encrypt table names
      */
     public Collection<String> getEncryptTableNames() {
-        return encryptorEngine.getEncryptTableNames();
+        return encryptEngine.getEncryptTableNames();
     }
 }

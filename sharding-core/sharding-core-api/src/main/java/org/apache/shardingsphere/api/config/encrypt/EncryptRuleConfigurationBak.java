@@ -21,6 +21,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Collections2;
 import lombok.Getter;
+import org.apache.shardingsphere.api.config.RuleConfiguration;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -32,7 +33,7 @@ import java.util.Map;
  * @author panjuan
  */
 @Getter
-public final class EncryptRuleConfigurationBak {
+public final class EncryptRuleConfigurationBak implements RuleConfiguration {
     
     private final Map<String, EncryptorRuleConfigurationBak> encryptors;
     
