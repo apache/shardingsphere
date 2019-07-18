@@ -25,21 +25,27 @@
     <xsd:element name="data-source">
         <xsd:complexType>
             <xsd:sequence>
-                <xsd:element ref="encrypt-rule" />
+                <xsd:element name="encrypt-rule" type="encrypt-rule" />
                 <xsd:element ref="props" minOccurs="0" />
             </xsd:sequence>
             <xsd:attribute name="id" type="xsd:string" use="required" />
             <xsd:attribute name="data-source-name" type="xsd:string" use="required" />
         </xsd:complexType>
     </xsd:element>
-    <xsd:element name="encrypt-rule">
-        <xsd:complexType>
-            <xsd:all>
-                <xsd:element ref="encryptors" />
-                <xsd:element ref="tables" />
-            </xsd:all>
-        </xsd:complexType>
-    </xsd:element>
+    <xsd:complexType name="encrypt-rule">
+        <xsd:all>
+            <xsd:element ref="encryptors" />
+            <xsd:element ref="tables" />
+        </xsd:all>
+    </xsd:complexType>
+    <!--<xsd:element name="encrypt-rule">-->
+        <!--<xsd:complexType>-->
+            <!--<xsd:all>-->
+                <!--<xsd:element ref="encryptors" />-->
+                <!--<xsd:element ref="tables" />-->
+            <!--</xsd:all>-->
+        <!--</xsd:complexType>-->
+    <!--</xsd:element>-->
      <xsd:element name="encryptors">
        <xsd:complexType>
             <xsd:sequence>
