@@ -63,7 +63,7 @@ public final class TextProtocolBackendHandlerFactory {
         if (sql.toUpperCase().startsWith(ShardingCTLBackendHandlerFactory.SCTL)) {
             return ShardingCTLBackendHandlerFactory.newInstance(sql, backendConnection);
         }
-        SQLStatement sqlStatement = new SQLParseEngine(ParseRuleRegistry.getInstance(), databaseType, sql, null).parse();
+        SQLStatement sqlStatement = new SQLParseEngine(ParseRuleRegistry.getInstance(), databaseType, sql).parse();
         if (sqlStatement instanceof TCLStatement) {
             return createTCLBackendHandler((TCLStatement) sqlStatement, backendConnection);
         }

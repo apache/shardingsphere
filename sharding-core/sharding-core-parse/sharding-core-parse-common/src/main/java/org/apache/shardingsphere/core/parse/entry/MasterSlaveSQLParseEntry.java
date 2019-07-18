@@ -38,6 +38,6 @@ public final class MasterSlaveSQLParseEntry extends SQLParseEntry {
     
     @Override
     protected SQLParseEngine getSQLParseEngine(final String sql) {
-        return new SQLParseEngine(ParseRuleRegistry.getInstance(), databaseType, sql, null);
+        return new SQLParseEngine(ParseRuleRegistry.getInstance(), databaseType, sql);
     }
 }

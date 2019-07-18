@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.parse;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.extractor.SQLSegmentsExtractorEngine;
 import org.apache.shardingsphere.core.parse.filler.SQLStatementFillerEngine;
 import org.apache.shardingsphere.core.parse.parser.SQLAST;
@@ -46,11 +45,11 @@ public final class SQLParseEngine {
     
     private final SQLStatementFillerEngine fillerEngine;
     
-    public SQLParseEngine(final ParseRuleRegistry parseRuleRegistry, final DatabaseType databaseType, final String sql, final ShardingTableMetaData shardingTableMetaData) {
+    public SQLParseEngine(final ParseRuleRegistry parseRuleRegistry, final DatabaseType databaseType, final String sql) {
         DatabaseType trunkDatabaseType = DatabaseTypes.getTrunkDatabaseType(databaseType.getName());
         parserEngine = new SQLParserEngine(parseRuleRegistry, trunkDatabaseType, sql);
         extractorEngine = new SQLSegmentsExtractorEngine();
-        fillerEngine = new SQLStatementFillerEngine(parseRuleRegistry, trunkDatabaseType, sql, shardingTableMetaData);
+        fillerEngine = new SQLStatementFillerEngine(parseRuleRegistry, trunkDatabaseType, sql);
     }
     
     /**
