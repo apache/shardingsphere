@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.orchestration.spring;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfigurationBak;
+import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
@@ -60,7 +60,7 @@ public class OrchestrationEncryptNamespaceTest extends AbstractJUnit4SpringConte
     
     private void assertEncryptRule(final EncryptRule encryptRule) {
         assertNotNull(encryptRule.getEncryptRuleConfig());
-        EncryptRuleConfigurationBak ruleConfiguration = encryptRule.getEncryptRuleConfig();
+        EncryptRuleConfiguration ruleConfiguration = encryptRule.getEncryptRuleConfig();
         assertThat(ruleConfiguration.getEncryptors().size(), is(2));
         EncryptorRuleConfiguration encryptorRule = ruleConfiguration.getEncryptors().get("order_encryptor");
         assertNotNull(encryptorRule);

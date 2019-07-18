@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource;
 
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfigurationBak;
+import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.core.constant.ShardingConstant;
@@ -87,7 +87,7 @@ public final class OrchestrationEncryptDataSourceTest {
     }
     
     private EncryptRuleChangedEvent getEncryptRuleChangedEvent() {
-        EncryptRuleConfigurationBak encryptRuleConfig = new EncryptRuleConfigurationBak();
+        EncryptRuleConfiguration encryptRuleConfig = new EncryptRuleConfiguration();
         encryptRuleConfig.getEncryptors().put("order_encryptor", new EncryptorRuleConfiguration("md5", new Properties()));
         return new EncryptRuleChangedEvent(ShardingConstant.LOGIC_SCHEMA_NAME, encryptRuleConfig);
     }

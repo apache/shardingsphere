@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.rule;
 
 import lombok.Getter;
-import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfigurationBak;
+import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
 import org.apache.shardingsphere.core.strategy.encrypt.EncryptEngine;
 
 import java.util.Collection;
@@ -33,13 +33,13 @@ public final class EncryptRule implements BaseRule {
     
     private final EncryptEngine encryptEngine;
     
-    private EncryptRuleConfigurationBak encryptRuleConfig;
+    private EncryptRuleConfiguration encryptRuleConfig;
     
     public EncryptRule() {
         encryptEngine = new EncryptEngine();
     }
     
-    public EncryptRule(final EncryptRuleConfigurationBak encryptRuleConfiguration) {
+    public EncryptRule(final EncryptRuleConfiguration encryptRuleConfiguration) {
         this.encryptRuleConfig = encryptRuleConfiguration;
         encryptEngine = new EncryptEngine(encryptRuleConfiguration);
     }

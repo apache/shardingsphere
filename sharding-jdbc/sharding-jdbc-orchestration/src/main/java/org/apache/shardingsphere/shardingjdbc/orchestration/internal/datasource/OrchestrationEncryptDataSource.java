@@ -23,7 +23,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.api.config.RuleConfiguration;
-import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfigurationBak;
+import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.core.constant.ShardingConstant;
@@ -56,7 +56,7 @@ public class OrchestrationEncryptDataSource extends AbstractOrchestrationDataSou
     public OrchestrationEncryptDataSource(final OrchestrationConfiguration orchestrationConfig) {
         super(new ShardingOrchestrationFacade(orchestrationConfig, Collections.singletonList(ShardingConstant.LOGIC_SCHEMA_NAME)));
         ConfigurationService configService = getShardingOrchestrationFacade().getConfigService();
-        EncryptRuleConfigurationBak encryptRuleConfiguration = configService.loadEncryptRuleConfiguration(ShardingConstant.LOGIC_SCHEMA_NAME);
+        EncryptRuleConfiguration encryptRuleConfiguration = configService.loadEncryptRuleConfiguration(ShardingConstant.LOGIC_SCHEMA_NAME);
         Preconditions.checkState(!encryptRuleConfiguration.getEncryptors().isEmpty(), "No available encrypt rule configuration to load.");
         Map<String, DataSourceConfiguration> dataSourceConfigurations = configService.loadDataSourceConfigurations(ShardingConstant.LOGIC_SCHEMA_NAME);
         checkDataSourceConfiguration(dataSourceConfigurations);
@@ -78,7 +78,7 @@ public class OrchestrationEncryptDataSource extends AbstractOrchestrationDataSou
     
     private Map<String, RuleConfiguration> getRuleConfigurationMap() {
         Map<String, RuleConfiguration> result = new HashMap<>(1);
-        EncryptRuleConfigurationBak encryptRuleConfig = new EncryptRuleConfigurationBak();
+        EncryptRuleConfiguration encryptRuleConfig = new EncryptRuleConfiguration();
         for (Entry<String, EncryptorRuleConfiguration> entry : dataSource.getEncryptRule().getEncryptRuleConfig().getEncryptors().entrySet()) {
             encryptRuleConfig.getEncryptors().put(entry.getKey(),
                 new EncryptorRuleConfiguration(entry.getValue().getType(), entry.getValue().getProperties()));

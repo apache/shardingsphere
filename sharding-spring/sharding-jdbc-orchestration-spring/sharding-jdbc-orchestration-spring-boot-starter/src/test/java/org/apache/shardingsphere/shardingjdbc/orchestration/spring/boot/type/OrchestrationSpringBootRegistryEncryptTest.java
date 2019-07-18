@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.type;
 
 import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfigurationBak;
+import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationEncryptDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.registry.TestRegistryCenter;
@@ -81,7 +81,7 @@ public class OrchestrationSpringBootRegistryEncryptTest {
         BasicDataSource embedDataSource = (BasicDataSource) encryptDataSource.getDataSource();
         assertThat(embedDataSource.getMaxTotal(), is(100));
         assertThat(embedDataSource.getUsername(), is("sa"));
-        EncryptRuleConfigurationBak encryptRuleConfig = encryptDataSource.getEncryptRule().getEncryptRuleConfig();
+        EncryptRuleConfiguration encryptRuleConfig = encryptDataSource.getEncryptRule().getEncryptRuleConfig();
         assertThat(encryptRuleConfig.getEncryptors().size(), is(1));
         assertTrue(encryptRuleConfig.getEncryptors().containsKey("order_encrypt"));
         assertThat(encryptRuleConfig.getEncryptors().get("order_encrypt").getType(), is("aes"));

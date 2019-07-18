@@ -22,7 +22,7 @@ import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.api.config.RuleConfiguration;
-import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfigurationBak;
+import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
@@ -116,8 +116,8 @@ public final class LogicSchemas {
                 result = new ShardingSchema(schemaName, schemaDataSources.get(schemaName), (ShardingRuleConfiguration) ruleConfiguration, isUsingRegistry);
             } else if (ruleConfiguration instanceof MasterSlaveRuleConfiguration) {
                 result = new MasterSlaveSchema(schemaName, schemaDataSources.get(schemaName), (MasterSlaveRuleConfiguration) ruleConfiguration, isUsingRegistry);
-            } else if (ruleConfiguration instanceof EncryptRuleConfigurationBak) {
-                result = new EncryptSchema(schemaName, schemaDataSources.get(schemaName), (EncryptRuleConfigurationBak) ruleConfiguration);
+            } else if (ruleConfiguration instanceof EncryptRuleConfiguration) {
+                result = new EncryptSchema(schemaName, schemaDataSources.get(schemaName), (EncryptRuleConfiguration) ruleConfiguration);
             } else {
                 result = new TransparentSchema(schemaName, schemaDataSources.get(schemaName));
             }

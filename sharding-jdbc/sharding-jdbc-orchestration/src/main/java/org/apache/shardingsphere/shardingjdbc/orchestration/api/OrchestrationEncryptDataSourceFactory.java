@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingjdbc.orchestration.api;
 
-import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfigurationBak;
+import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
 import org.apache.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationEncryptDataSource;
@@ -41,7 +41,7 @@ public final class OrchestrationEncryptDataSourceFactory {
      * @param orchestrationConfig orchestration configuration
      * @return orchestration encrypt data source
      */
-    public static DataSource createDataSource(final DataSource dataSource, final EncryptRuleConfigurationBak encryptRuleConfig, final Properties props,
+    public static DataSource createDataSource(final DataSource dataSource, final EncryptRuleConfiguration encryptRuleConfig, final Properties props,
                                               final OrchestrationConfiguration orchestrationConfig) {
         if (null == encryptRuleConfig || encryptRuleConfig.getEncryptors().isEmpty()) {
             return createDataSource(orchestrationConfig);
