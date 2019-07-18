@@ -34,6 +34,8 @@ public final class EncryptDataSourceBeanDefinitionParserTag {
     
     public static final String ENCRYPT_RULE_TAG = "encrypt-rule";
     
+    public static final String TABLES_CONFIG_TAG = "tables";
+    
     public static final String TABLE_CONFIG_TAG = "table";
     
     public static final String COLUMN_CONFIG_TAG = "column";
@@ -47,6 +49,8 @@ public final class EncryptDataSourceBeanDefinitionParserTag {
     public static final String COLUMN_ASSISTED_QUERY_COLUMN_ATTRIBUTE = "assisted-query-column";
     
     public static final String COLUMN_ENCRYPTOR_REF_ATTRIBUTE = "encryptor-ref";
+    
+    public static final String ENCRYPTORS_CONFIG_TAG = "encryptors";
     
     public static final String ENCRYPTOR_CONFIG_TAG = "encryptor";
     
