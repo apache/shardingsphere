@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptRuleConfigurationBak;
+import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.core.yaml.swapper.impl.EncryptRuleConfigurationYamlSwapperBak;
 import org.apache.shardingsphere.orchestration.yaml.config.YamlOrchestrationConfiguration;
@@ -95,7 +95,7 @@ public final class YamlOrchestrationEncryptDataSourceFactory {
         return createDataSource(dataSource, config.getEncryptRule(), config.getOrchestration(), config.getProps());
     }
     
-    private static DataSource createDataSource(final DataSource dataSource, final YamlEncryptRuleConfigurationBak yamlEncryptRuleConfiguration,
+    private static DataSource createDataSource(final DataSource dataSource, final YamlEncryptRuleConfiguration yamlEncryptRuleConfiguration,
                                                final YamlOrchestrationConfiguration yamlOrchestrationConfiguration, final Properties properties) {
         if (null == yamlEncryptRuleConfiguration) {
             return new OrchestrationEncryptDataSource(ORCHESTRATION_SWAPPER.swap(yamlOrchestrationConfiguration));

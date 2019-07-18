@@ -35,7 +35,7 @@ public class YamlRootEncryptRuleConfigurationBak implements YamlConfiguration {
     
     private DataSource dataSource;
     
-    private YamlEncryptRuleConfigurationBak encryptRule;
+    private YamlEncryptRuleConfiguration encryptRule;
     
     private Properties props = new Properties();
 }

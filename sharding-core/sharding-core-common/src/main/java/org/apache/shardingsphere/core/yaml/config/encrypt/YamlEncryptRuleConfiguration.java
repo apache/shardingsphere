@@ -31,7 +31,7 @@ import java.util.Map;
  */
 @Getter
 @Setter
-public class YamlEncryptRuleConfigurationBak implements YamlConfiguration {
+public class YamlEncryptRuleConfiguration implements YamlConfiguration {
     
     private Map<String, YamlEncryptorRuleConfiguration> encryptors = new LinkedHashMap<>();
     
