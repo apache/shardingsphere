@@ -39,9 +39,6 @@ public final class ExpectedAlterTable {
     @XmlAttribute(name = "drop-columns")
     private String dropColumns = "";
     
-    @XmlAttribute(name = "drop-primary-key")
-    private boolean dropPrimaryKey;
-    
     @XmlElementWrapper(name = "add-columns")
     @XmlElement(name = "add-column")
     private List<ExpectedColumnDefinition> addColumns = new ArrayList<>();

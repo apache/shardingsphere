@@ -50,8 +50,6 @@ public final class AlterTableStatement extends DDLStatement {
     
     private final Collection<String> droppedColumnNames = new LinkedList<>();
     
-    private boolean dropPrimaryKey;
-    
     /**
      * Find column definition.
      *

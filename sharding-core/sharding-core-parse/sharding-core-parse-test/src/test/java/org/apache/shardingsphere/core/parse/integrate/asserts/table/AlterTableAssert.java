@@ -34,7 +34,6 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
 
 @RequiredArgsConstructor
@@ -50,7 +49,6 @@ public final class AlterTableAssert {
      */
     public void assertAlterTable(final AlterTableStatement actual, final ExpectedAlterTable expected) {
         assertThat(assertMessage.getFullAssertMessage("Drop names assertion error: "), Joiner.on(",").join(actual.getDroppedColumnNames()), is(expected.getDropColumns()));
-        assertSame(assertMessage.getFullAssertMessage("Drop primary key assertion error: "), actual.isDropPrimaryKey(), expected.isDropPrimaryKey());
         assertAddColumns(actual, expected.getAddColumns());
         assertUpdateColumns(actual, expected.getUpdateColumns());
         assertColumnPositions(actual.getChangedPositionColumns(), expected.getPositionChangedColumns());

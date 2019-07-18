@@ -339,7 +339,6 @@
         <tokens>
             <table-token start-index="12" table-name="t_order" length="7" />
         </tokens>
-        <alter-table drop-primary-key="true" />
     </parser-result>
     
     <parser-result sql-case-id="alter_table_drop_foreign_key">
@@ -358,7 +357,6 @@
         <tokens>
             <table-token start-index="12" table-name="t_order" length="7" />
         </tokens>
-        <alter-table drop-primary-key="true" />
     </parser-result>
     
     <parser-result sql-case-id="alter_table_add_index">
@@ -578,7 +576,6 @@
         <tokens>
             <table-token start-index="12" table-name="t_order" length="7" />
         </tokens>
-        <alter-table drop-primary-key="true"/>
     </parser-result>
         
     <parser-result sql-case-id="alter_table_rename_constraint">
