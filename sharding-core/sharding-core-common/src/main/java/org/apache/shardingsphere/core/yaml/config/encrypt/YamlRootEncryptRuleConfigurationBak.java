@@ -31,7 +31,7 @@ import java.util.Properties;
  */
 @Getter
 @Setter
-public final class YamlRootEncryptRuleConfigurationBak implements YamlConfiguration {
+public class YamlRootEncryptRuleConfigurationBak implements YamlConfiguration {
     
     private DataSource dataSource;
     
