@@ -19,9 +19,9 @@ package org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Range;
+import org.apache.shardingsphere.core.optimize.statement.Column;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.generator.ConditionValue;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.generator.ConditionValueGenerator;
-import org.apache.shardingsphere.core.parse.sql.context.Column;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateBetweenRightValue;
 import org.apache.shardingsphere.core.strategy.route.value.RangeRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;

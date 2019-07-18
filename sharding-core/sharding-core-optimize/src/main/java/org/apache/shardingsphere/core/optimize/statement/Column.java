@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.context;
+package org.apache.shardingsphere.core.optimize.statement;
 
 import com.google.common.base.Objects;
 import lombok.Getter;
