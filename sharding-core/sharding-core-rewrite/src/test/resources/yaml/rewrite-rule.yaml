@@ -52,6 +52,11 @@ shardingRule:
   bindingTables:
     - table_x, table_y
   encryptRule:
+    encryptors:
+      z_encryptor:
+        type: TEST
+      k_encryptor:
+        type: ASSISTEDTEST
     tables:
       table_z:
         columns:
