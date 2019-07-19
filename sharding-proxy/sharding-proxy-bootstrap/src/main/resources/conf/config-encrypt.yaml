@@ -81,8 +81,6 @@
 #      type: aes
 #      props:
 #        aes.key.value: 123456abc
-#    encryptor_md5:
-#      type: md5
 #  tables:
 #    t_encrypt:
 #      columns:
@@ -91,7 +89,3 @@
 #          cipherColumn: user_encrypt
 #          assistedQueryColumn: user_assisted
 #          encryptor: encryptor_aes
-#        order_id:
-#          cipherColumn: order_encrypt
-#          assistedQueryColumn: order_assisted      
-#          encryptor: encryptor_md5
