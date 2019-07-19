@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.core.util;
 
-import java.util.Properties;
-
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.api.config.RuleConfiguration;
-import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
+import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.rule.Authentication;
@@ -32,7 +31,7 @@ import org.apache.shardingsphere.core.yaml.swapper.impl.EncryptRuleConfiguration
 import org.apache.shardingsphere.core.yaml.swapper.impl.MasterSlaveRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.impl.ShardingRuleConfigurationYamlSwapper;
 
-import lombok.extern.slf4j.Slf4j;
+import java.util.Properties;
 
 /**
  * Configuration printer class.

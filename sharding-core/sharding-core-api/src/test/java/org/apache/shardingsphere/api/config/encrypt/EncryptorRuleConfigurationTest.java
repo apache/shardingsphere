@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.api.config.encryptor;
+package org.apache.shardingsphere.api.config.encrypt;
 
 import org.junit.Test;
 
@@ -28,20 +28,13 @@ public final class EncryptorRuleConfigurationTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void assertConstructorWithoutType() {
-        new EncryptorRuleConfiguration(null, "tb.pwd", new Properties());
-    }
-    
-    @Test(expected = IllegalArgumentException.class)
-    public void assertConstructorWithoutColumns() {
-        new EncryptorRuleConfiguration("TEST", "", new Properties());
+        new EncryptorRuleConfiguration(null, new Properties());
     }
     
     @Test
     public void assertConstructorWithoutAssistedQueryColumnsAndProperties() {
-        EncryptorRuleConfiguration actual = new EncryptorRuleConfiguration("TEST", "tb.pwd", null, null);
+        EncryptorRuleConfiguration actual = new EncryptorRuleConfiguration("TEST", new Properties());
         assertThat(actual.getType(), is("TEST"));
-        assertThat(actual.getQualifiedColumns(), is("tb.pwd"));
-        assertThat(actual.getAssistedQueryColumns(), is(""));
         assertThat(actual.getProperties(), is(new Properties()));
     }
     
@@ -49,10 +42,8 @@ public final class EncryptorRuleConfigurationTest {
     public void assertConstructorWithMinArguments() {
         Properties props = new Properties();
         props.setProperty("key", "value");
-        EncryptorRuleConfiguration actual = new EncryptorRuleConfiguration("TEST", "tb.pwd", props);
+        EncryptorRuleConfiguration actual = new EncryptorRuleConfiguration("TEST", props);
         assertThat(actual.getType(), is("TEST"));
-        assertThat(actual.getQualifiedColumns(), is("tb.pwd"));
-        assertThat(actual.getAssistedQueryColumns(), is(""));
         assertThat(actual.getProperties(), is(props));
     }
     
@@ -60,10 +51,8 @@ public final class EncryptorRuleConfigurationTest {
     public void assertConstructorWithMaxArguments() {
         Properties props = new Properties();
         props.setProperty("key", "value");
-        EncryptorRuleConfiguration actual = new EncryptorRuleConfiguration("TEST", "tb.pwd", "tb.pwd_query", props);
+        EncryptorRuleConfiguration actual = new EncryptorRuleConfiguration("TEST", props);
         assertThat(actual.getType(), is("TEST"));
-        assertThat(actual.getQualifiedColumns(), is("tb.pwd"));
-        assertThat(actual.getAssistedQueryColumns(), is("tb.pwd_query"));
         assertThat(actual.getProperties(), is(props));
     }
 }

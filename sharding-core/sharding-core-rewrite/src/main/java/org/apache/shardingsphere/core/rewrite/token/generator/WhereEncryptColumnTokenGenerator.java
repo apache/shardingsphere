@@ -62,14 +62,14 @@ public final class WhereEncryptColumnTokenGenerator implements CollectionSQLToke
         ColumnNode columnNode = new ColumnNode(tableName, encryptCondition.getColumnName());
         List<Object> encryptColumnValues = encryptValues(columnNode, encryptCondition.getValues(parameterBuilder.getOriginalParameters()), encryptRule);
         encryptParameters(encryptCondition.getPositionIndexMap(), encryptColumnValues, parameterBuilder);
-        Optional<String> assistedQueryColumnName = encryptRule.getEncryptorEngine().getAssistedQueryColumn(tableName, encryptCondition.getColumnName());
+        Optional<String> assistedQueryColumnName = encryptRule.getEncryptEngine().getAssistedQueryColumn(tableName, encryptCondition.getColumnName());
         return new WhereEncryptColumnToken(encryptCondition.getStartIndex(), encryptCondition.getStopIndex(), assistedQueryColumnName.or(encryptCondition.getColumnName()),
                 getPositionValues(encryptCondition.getPositionValueMap().keySet(), encryptColumnValues), encryptCondition.getPositionIndexMap().keySet(), encryptCondition.getOperator());
     }
     
     private List<Object> encryptValues(final ColumnNode columnNode, final List<Object> columnValues, final EncryptRule encryptRule) {
-        return encryptRule.getEncryptorEngine().getAssistedQueryColumn(columnNode.getTableName(), columnNode.getColumnName()).isPresent()
-                ? encryptRule.getEncryptorEngine().getEncryptAssistedColumnValues(columnNode, columnValues) : encryptRule.getEncryptorEngine().getEncryptColumnValues(columnNode, columnValues);
+        return encryptRule.getEncryptEngine().getAssistedQueryColumn(columnNode.getTableName(), columnNode.getColumnName()).isPresent()
+                ? encryptRule.getEncryptEngine().getEncryptAssistedColumnValues(columnNode, columnValues) : encryptRule.getEncryptEngine().getEncryptColumnValues(columnNode, columnValues);
     }
     
     private void encryptParameters(final Map<Integer, Integer> positionIndexes, final List<Object> encryptColumnValues, final ParameterBuilder parameterBuilder) {

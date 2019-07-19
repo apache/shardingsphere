@@ -72,8 +72,17 @@ shardingRule:
     encryptors:
       t_encryptor:
         type: test
-        qualifiedColumns: t_encrypt.order_id
       t_query_encryptor:
         type: assistedTest
-        qualifiedColumns: t_encrypt_query.user_id
-        assistedQueryColumns: t_encrypt_query.assisted_user_id
+    tables:
+      t_encrypt:
+        columns:
+          order_id:
+            cipherColumn: order_id
+            encryptor: t_encryptor
+      t_encrypt_query:
+        columns:
+          user_id:
+            cipherColumn: user_id
+            encryptor: t_query_encryptor
+            assistedQueryColumn: assisted_user_id

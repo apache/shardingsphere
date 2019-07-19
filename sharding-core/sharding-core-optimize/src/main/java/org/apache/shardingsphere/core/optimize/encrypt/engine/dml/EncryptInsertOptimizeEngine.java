@@ -57,7 +57,7 @@ public final class EncryptInsertOptimizeEngine implements EncryptOptimizeEngine 
         int parametersCount = 0;
         for (InsertValue each : result.getValues()) {
             InsertOptimizeResultUnit unit = result.addUnit(each.getValues(derivedColumnsCount), each.getParameters(parameters, parametersCount, derivedColumnsCount), each.getParametersCount());
-            if (encryptRule.getEncryptorEngine().isHasShardingQueryAssistedEncryptor(insertStatement.getTables().getSingleTableName())) {
+            if (encryptRule.getEncryptEngine().isHasShardingQueryAssistedEncryptor(insertStatement.getTables().getSingleTableName())) {
                 fillAssistedQueryUnit(result.getInsertColumns().getRegularColumnNames(), unit);
             }
             parametersCount += each.getParametersCount();
@@ -66,12 +66,12 @@ public final class EncryptInsertOptimizeEngine implements EncryptOptimizeEngine 
     }
     
     private int getDerivedColumnsCount() {
-        return encryptRule.getEncryptorEngine().getAssistedQueryColumnCount(insertStatement.getTables().getSingleTableName());
+        return encryptRule.getEncryptEngine().getAssistedQueryColumnCount(insertStatement.getTables().getSingleTableName());
     }
     
     private void fillAssistedQueryUnit(final Collection<String> columnNames, final InsertOptimizeResultUnit unit) {
         for (String each : columnNames) {
-            if (encryptRule.getEncryptorEngine().getAssistedQueryColumn(insertStatement.getTables().getSingleTableName(), each).isPresent()) {
+            if (encryptRule.getEncryptEngine().getAssistedQueryColumn(insertStatement.getTables().getSingleTableName(), each).isPresent()) {
                 unit.addInsertValue((Comparable<?>) unit.getColumnValue(each), parameters);
             }
         }

@@ -17,17 +17,9 @@
 
 package org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.type;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
-import java.lang.reflect.Field;
-
-import javax.annotation.Resource;
-import javax.sql.DataSource;
-
+import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
+import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationEncryptDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.registry.TestRegistryCenter;
@@ -40,7 +32,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import lombok.SneakyThrows;
+import javax.annotation.Resource;
+import javax.sql.DataSource;
+import java.lang.reflect.Field;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = OrchestrationSpringBootRegistryEncryptTest.class)
@@ -64,11 +62,15 @@ public class OrchestrationSpringBootRegistryEncryptTest {
             + "    username: sa\n");
         testRegistryCenter.persist("/demo_spring_boot_ds_registry/config/schema/logic_db/rule", "encryptors:\n"
             + "  order_encrypt:\n"
-            + "    assistedQueryColumns: ''\n"
             + "    props:\n"
             + "      aes.key.value: '123456'\n"
-            + "    qualifiedColumns: t_order.user_id\n"
-            + "    type: aes\n");
+            + "    type: aes\n" 
+            + "tables:\n" 
+            + "  t_order:\n" 
+            + "    columns:\n"
+            + "       user_id:\n"
+            + "         cipherColumn: user_id\n"
+            + "         encryptor: order_encrypt\n");
         testRegistryCenter.persist("/demo_spring_boot_ds_registry/config/props", "sql.show: 'true'\n");
         testRegistryCenter.persist("/demo_spring_boot_ds_registry/state/datasources", "");
     }
@@ -84,8 +86,8 @@ public class OrchestrationSpringBootRegistryEncryptTest {
         assertThat(embedDataSource.getMaxTotal(), is(100));
         assertThat(embedDataSource.getUsername(), is("sa"));
         EncryptRuleConfiguration encryptRuleConfig = encryptDataSource.getEncryptRule().getEncryptRuleConfig();
-        assertThat(encryptRuleConfig.getEncryptorRuleConfigs().size(), is(1));
-        assertTrue(encryptRuleConfig.getEncryptorRuleConfigs().containsKey("order_encrypt"));
-        assertThat(encryptRuleConfig.getEncryptorRuleConfigs().get("order_encrypt").getType(), is("aes"));
+        assertThat(encryptRuleConfig.getEncryptors().size(), is(1));
+        assertTrue(encryptRuleConfig.getEncryptors().containsKey("order_encrypt"));
+        assertThat(encryptRuleConfig.getEncryptors().get("order_encrypt").getType(), is("aes"));
     }
 }

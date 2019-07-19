@@ -15,22 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.spring.datasource;
+package org.apache.shardingsphere.api.config.encrypt;
 
-import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.api.config.RuleConfiguration;
 
-import javax.sql.DataSource;
-import java.util.Properties;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
- * Encrypt datasource for spring namespace.
+ * Encrypt rule configuration.
  *
  * @author panjuan
  */
-public class SpringEncryptDataSource extends EncryptDataSource {
+@RequiredArgsConstructor
+@Getter
+public final class EncryptRuleConfiguration implements RuleConfiguration {
     
-    public SpringEncryptDataSource(final DataSource dataSource, final EncryptRuleConfiguration encryptRuleConfiguration, final Properties props) {
-        super(dataSource, encryptRuleConfiguration, null == props ? new Properties() : props);
+    private final Map<String, EncryptorRuleConfiguration> encryptors;
+    
+    private final Map<String, EncryptTableRuleConfiguration> tables;
+    
+    public EncryptRuleConfiguration() {
+        this(new LinkedHashMap<String, EncryptorRuleConfiguration>(), new LinkedHashMap<String, EncryptTableRuleConfiguration>());
     }
 }

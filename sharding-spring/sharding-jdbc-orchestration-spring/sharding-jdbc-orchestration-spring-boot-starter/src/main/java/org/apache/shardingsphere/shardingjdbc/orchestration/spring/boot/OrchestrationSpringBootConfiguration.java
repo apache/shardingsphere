@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
+import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.constant.ShardingConstant;
 import org.apache.shardingsphere.core.exception.ShardingException;
@@ -163,10 +163,10 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     @ConditionalOnMissingBean(DataSource.class)
     public DataSource dataSource(final OrchestrationConfiguration orchestrationConfiguration) throws SQLException {
         try (ShardingOrchestrationFacade shardingOrchestrationFacade = new ShardingOrchestrationFacade(orchestrationConfiguration, Collections.singletonList(ShardingConstant.LOGIC_SCHEMA_NAME))) {
-            if (shardingOrchestrationFacade.getConfigService().isShardingRule(ShardingConstant.LOGIC_SCHEMA_NAME)) {
-                return new OrchestrationShardingDataSource(orchestrationConfiguration);
-            } else if (shardingOrchestrationFacade.getConfigService().isEncryptRule(ShardingConstant.LOGIC_SCHEMA_NAME)) {
+            if (shardingOrchestrationFacade.getConfigService().isEncryptRule(ShardingConstant.LOGIC_SCHEMA_NAME)) {
                 return new OrchestrationEncryptDataSource(orchestrationConfiguration);
+            } else if (shardingOrchestrationFacade.getConfigService().isShardingRule(ShardingConstant.LOGIC_SCHEMA_NAME)) {
+                return new OrchestrationShardingDataSource(orchestrationConfiguration);
             } else {
                 return new OrchestrationMasterSlaveDataSource(orchestrationConfiguration);
             }

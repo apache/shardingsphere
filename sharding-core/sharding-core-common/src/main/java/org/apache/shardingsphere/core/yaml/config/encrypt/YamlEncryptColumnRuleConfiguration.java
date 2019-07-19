@@ -15,22 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.spring.datasource;
+package org.apache.shardingsphere.core.yaml.config.encrypt;
 
-import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
-
-import javax.sql.DataSource;
-import java.util.Properties;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.core.yaml.config.YamlConfiguration;
 
 /**
- * Encrypt datasource for spring namespace.
+ * Encrypt column rule configuration.
  *
  * @author panjuan
  */
-public class SpringEncryptDataSource extends EncryptDataSource {
+@Getter
+@Setter
+public final class YamlEncryptColumnRuleConfiguration implements YamlConfiguration {
     
-    public SpringEncryptDataSource(final DataSource dataSource, final EncryptRuleConfiguration encryptRuleConfiguration, final Properties props) {
-        super(dataSource, encryptRuleConfiguration, null == props ? new Properties() : props);
-    }
+    private String plainColumn;
+    
+    private String cipherColumn;
+    
+    private String assistedQueryColumn;
+    
+    private String encryptor;
 }

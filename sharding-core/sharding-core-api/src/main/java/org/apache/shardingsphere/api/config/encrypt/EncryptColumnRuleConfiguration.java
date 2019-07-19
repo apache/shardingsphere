@@ -15,27 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.api.config.encryptor;
+package org.apache.shardingsphere.api.config.encrypt;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.api.config.RuleConfiguration;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Encryptor rule configuration.
+ * Encrypt column rule configuration.
  *
  * @author panjuan
  */
-@NoArgsConstructor
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class EncryptRuleConfiguration implements RuleConfiguration {
+public final class EncryptColumnRuleConfiguration {
     
-    private Map<String, EncryptorRuleConfiguration> encryptorRuleConfigs = new LinkedHashMap<>();
+    private final String plainColumn;
+    
+    private final String cipherColumn;
+    
+    private final String assistedQueryColumn;
+    
+    private final String encryptor;
 }

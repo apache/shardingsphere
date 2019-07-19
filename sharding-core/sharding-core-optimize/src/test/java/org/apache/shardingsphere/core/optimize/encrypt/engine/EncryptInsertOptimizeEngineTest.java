@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.core.optimize.encrypt.engine;
 
-import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
-import org.apache.shardingsphere.api.config.encryptor.EncryptorRuleConfiguration;
+import org.apache.shardingsphere.api.config.encrypt.EncryptColumnRuleConfiguration;
+import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
+import org.apache.shardingsphere.api.config.encrypt.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.encrypt.engine.dml.EncryptInsertOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptInsertOptimizedStatement;
@@ -37,7 +39,9 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -58,13 +62,32 @@ public final class EncryptInsertOptimizeEngineTest {
     }
     
     private EncryptRuleConfiguration createEncryptRuleConfiguration() {
-        EncryptorRuleConfiguration encryptorConfig = new EncryptorRuleConfiguration("test", "t_encrypt.col1, t_encrypt.col2", new Properties());
-        EncryptorRuleConfiguration encryptorQueryConfig = 
-                new EncryptorRuleConfiguration("assistedTest", "t_query_encrypt.col1, t_query_encrypt.col2", "t_query_encrypt.query1, t_query_encrypt.query2", new Properties());
+        EncryptorRuleConfiguration encryptorConfig = new EncryptorRuleConfiguration("test", new Properties());
+        EncryptorRuleConfiguration encryptorQueryConfig = new EncryptorRuleConfiguration("assistedTest", new Properties());
         EncryptRuleConfiguration result = new EncryptRuleConfiguration();
-        result.getEncryptorRuleConfigs().put("test", encryptorConfig);
-        result.getEncryptorRuleConfigs().put("assistedTest", encryptorQueryConfig);
+        result.getEncryptors().put("test", encryptorConfig);
+        result.getEncryptors().put("assistedTest", encryptorQueryConfig);
+        result.getTables().put("t_encrypt", createEncryptTableConfig1());
+        result.getTables().put("t_query_encrypt", createEncryptTableConfig2());
         return result;
+    }
+    
+    private EncryptTableRuleConfiguration createEncryptTableConfig1() {
+        EncryptColumnRuleConfiguration columnConfig1 = new EncryptColumnRuleConfiguration("", "col1", "", "test");
+        EncryptColumnRuleConfiguration columnConfig2 = new EncryptColumnRuleConfiguration("", "col2", "", "test");
+        Map<String, EncryptColumnRuleConfiguration> columns1 = new LinkedHashMap<>();
+        columns1.put("col1", columnConfig1);
+        columns1.put("col2", columnConfig2);
+        return new EncryptTableRuleConfiguration(columns1);
+    }
+    
+    private EncryptTableRuleConfiguration createEncryptTableConfig2() {
+        EncryptColumnRuleConfiguration columnConfig1 = new EncryptColumnRuleConfiguration("", "col1", "query1", "assistedTest");
+        EncryptColumnRuleConfiguration columnConfig2 = new EncryptColumnRuleConfiguration("", "col2", "query2", "assistedTest");
+        Map<String, EncryptColumnRuleConfiguration> columns2 = new LinkedHashMap<>();
+        columns2.put("col1", columnConfig1);
+        columns2.put("col2", columnConfig2);
+        return new EncryptTableRuleConfiguration(columns2);
     }
     
     @Test

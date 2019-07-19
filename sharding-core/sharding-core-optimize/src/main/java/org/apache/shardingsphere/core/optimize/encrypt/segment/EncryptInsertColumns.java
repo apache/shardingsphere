@@ -43,7 +43,7 @@ public final class EncryptInsertColumns implements InsertColumns {
     
     public EncryptInsertColumns(final EncryptRule encryptRule, final ShardingTableMetaData shardingTableMetaData, final InsertStatement insertStatement) {
         String tableName = insertStatement.getTables().getSingleTableName();
-        assistedQueryColumnNames = encryptRule.getEncryptorEngine().getAssistedQueryColumns(tableName);
+        assistedQueryColumnNames = encryptRule.getEncryptEngine().getAssistedQueryColumns(tableName);
         regularColumnNames = insertStatement.useDefaultColumns() ? getRegularColumnNamesFromMetaData(shardingTableMetaData, tableName) : getColumnNamesFromSQLStatement(insertStatement);
     }
     

@@ -37,16 +37,26 @@
 #  maxLifetimeMilliseconds: 1800000
 #  maxPoolSize: 50
 #
-#encryptRule:
+#encryptRule:    
 #  encryptors:
 #    encryptor_aes:
 #      type: aes
-#      qualifiedColumns: t_encrypt.pwd
 #      props:
 #        aes.key.value: 123456abc
 #    encryptor_md5:
-#          type: md5
-#          qualifiedColumns: t_encrypt.name
+#      type: md5
+#  tables:
+#    t_encrypt:
+#      columns:
+#        user_id:
+#          plainColumn: user_decrypt
+#          cipherColumn: user_encrypt
+#          assistedQueryColumn: user_assisted
+#          encryptor: encryptor_aes
+#        order_id:
+#          cipherColumn: order_encrypt
+#          assistedQueryColumn: order_assisted      
+#          encryptor: encryptor_md5
 
 ######################################################################################################
 #
@@ -64,14 +74,18 @@
 #  idleTimeoutMilliseconds: 60000
 #  maxLifetimeMilliseconds: 1800000
 #  maxPoolSize: 50
-#  
-#encryptRule:
+#
+#encryptRule:    
 #  encryptors:
 #    encryptor_aes:
 #      type: aes
-#      qualifiedColumns: t_encrypt.pwd
 #      props:
 #        aes.key.value: 123456abc
-#    encryptor_md5:
-#          type: md5
-#          qualifiedColumns: t_encrypt.name
+#  tables:
+#    t_encrypt:
+#      columns:
+#        user_id:
+#          plainColumn: user_decrypt
+#          cipherColumn: user_encrypt
+#          assistedQueryColumn: user_assisted
+#          encryptor: encryptor_aes

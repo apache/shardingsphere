@@ -15,24 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.spring.namespace.constants;
+package org.apache.shardingsphere.core.yaml.config.encrypt;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.core.yaml.config.YamlConfiguration;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
- * Encryptor parser tag constants.
- * 
+ * Encrypt table rule configuration.
+ *
  * @author panjuan
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class EncryptorRuleBeanDefinitionParserTag {
+@Getter
+@Setter
+public final class YamlEncryptTableRuleConfiguration implements YamlConfiguration {
     
-    public static final String ENCRYPTOR_TYPE_ATTRIBUTE = "type";
-    
-    public static final String ENCRYPTOR_QUALIFIED_COLUMNS_ATTRIBUTE = "qualified-columns";
-    
-    public static final String ENCRYPTOR_ASSISTED_QUERY_COLUMNS_ATTRIBUTE = "assisted-query-columns";
-    
-    public static final String ENCRYPTOR_PROPERTY_REF_ATTRIBUTE = "props-ref";
+    private Map<String, YamlEncryptColumnRuleConfiguration> columns = new LinkedHashMap<>();
 }

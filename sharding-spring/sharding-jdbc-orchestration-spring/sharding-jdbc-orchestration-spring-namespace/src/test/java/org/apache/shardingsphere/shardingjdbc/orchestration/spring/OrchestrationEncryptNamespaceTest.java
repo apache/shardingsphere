@@ -18,9 +18,8 @@
 package org.apache.shardingsphere.shardingjdbc.orchestration.spring;
 
 import lombok.SneakyThrows;
-
-import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
-import org.apache.shardingsphere.api.config.encryptor.EncryptorRuleConfiguration;
+import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
+import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.rule.EncryptRule;
@@ -62,14 +61,12 @@ public class OrchestrationEncryptNamespaceTest extends AbstractJUnit4SpringConte
     private void assertEncryptRule(final EncryptRule encryptRule) {
         assertNotNull(encryptRule.getEncryptRuleConfig());
         EncryptRuleConfiguration ruleConfiguration = encryptRule.getEncryptRuleConfig();
-        assertThat(ruleConfiguration.getEncryptorRuleConfigs().size(), is(2));
-        EncryptorRuleConfiguration encryptorRule = ruleConfiguration.getEncryptorRuleConfigs().get("order_encryptor");
+        assertThat(ruleConfiguration.getEncryptors().size(), is(2));
+        EncryptorRuleConfiguration encryptorRule = ruleConfiguration.getEncryptors().get("encryptor_md5");
         assertNotNull(encryptorRule);
         assertThat(encryptorRule.getType(), is("MD5"));
-        assertThat(encryptorRule.getQualifiedColumns(), is("t_order.order_id"));
-        encryptorRule = ruleConfiguration.getEncryptorRuleConfigs().get("user_encryptor");
+        encryptorRule = ruleConfiguration.getEncryptors().get("encryptor_aes");
         assertThat(encryptorRule.getType(), is("AES"));
-        assertThat(encryptorRule.getQualifiedColumns(), is("t_order.user_id"));
         assertThat(encryptorRule.getProperties().getProperty("aes.key.value"), is("123456"));
     }
     

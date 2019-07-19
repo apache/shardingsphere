@@ -37,7 +37,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.Pred
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.core.strategy.encrypt.ShardingEncryptorEngine;
+import org.apache.shardingsphere.core.strategy.encrypt.EncryptEngine;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RangeRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
@@ -76,9 +76,9 @@ public final class ShardingSelectOptimizeEngineTest {
     public void setUp() {
         when(shardingRule.isShardingColumn("column", "tbl")).thenReturn(true);
         EncryptRule encryptRule = mock(EncryptRule.class);
-        ShardingEncryptorEngine shardingEncryptorEngine = mock(ShardingEncryptorEngine.class);
-        when(shardingEncryptorEngine.getShardingEncryptor("tbl", "column")).thenReturn(Optional.<ShardingEncryptor>absent());
-        when(encryptRule.getEncryptorEngine()).thenReturn(shardingEncryptorEngine);
+        EncryptEngine encryptEngine = mock(EncryptEngine.class);
+        when(encryptEngine.getShardingEncryptor("tbl", "column")).thenReturn(Optional.<ShardingEncryptor>absent());
+        when(encryptRule.getEncryptEngine()).thenReturn(encryptEngine);
         when(shardingRule.getEncryptRule()).thenReturn(encryptRule);
         selectStatement = new SelectStatement();
         selectStatement.getTables().add(new Table("tbl", null));
