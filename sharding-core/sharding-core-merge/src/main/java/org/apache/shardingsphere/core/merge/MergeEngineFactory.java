@@ -24,7 +24,6 @@ import org.apache.shardingsphere.core.merge.dal.DALMergeEngine;
 import org.apache.shardingsphere.core.merge.dql.DQLMergeEngine;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.transparent.statement.TransparentOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -61,9 +60,6 @@ public final class MergeEngineFactory {
         if (routeResult.getOptimizedStatement().getSQLStatement() instanceof DALStatement) {
             return new DALMergeEngine(shardingRule, queryResults, (DALStatement) routeResult.getOptimizedStatement().getSQLStatement(), shardingTableMetaData);
         }
-        if (routeResult.getOptimizedStatement() instanceof TransparentOptimizedStatement) {
-            return new TransparentMergeEngine(queryResults);
-        } 
-        throw new UnsupportedOperationException(String.format("Cannot support type '%s'", routeResult.getOptimizedStatement().getSQLStatement().getClass().getName()));
+        return new TransparentMergeEngine(queryResults);
     }
 }

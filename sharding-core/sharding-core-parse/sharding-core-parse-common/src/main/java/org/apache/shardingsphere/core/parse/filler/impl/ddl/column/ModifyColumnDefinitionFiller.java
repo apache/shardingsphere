@@ -17,12 +17,7 @@
 
 package org.apache.shardingsphere.core.parse.filler.impl.ddl.column;
 
-import com.google.common.base.Optional;
-import lombok.Setter;
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parse.aware.ShardingTableMetaDataAware;
 import org.apache.shardingsphere.core.parse.filler.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.sql.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.AlterTableStatement;
@@ -32,30 +27,12 @@ import org.apache.shardingsphere.core.parse.sql.statement.ddl.AlterTableStatemen
  *
  * @author duhongjun
  */
-@Setter
-public final class ModifyColumnDefinitionFiller implements SQLSegmentFiller<ModifyColumnDefinitionSegment>, ShardingTableMetaDataAware {
-    
-    private ShardingTableMetaData shardingTableMetaData;
+public final class ModifyColumnDefinitionFiller implements SQLSegmentFiller<ModifyColumnDefinitionSegment> {
     
     @Override
     public void fill(final ModifyColumnDefinitionSegment sqlSegment, final SQLStatement sqlStatement) {
-        AlterTableStatement alterTableStatement = (AlterTableStatement) sqlStatement;
-        Optional<String> oldColumnName = sqlSegment.getOldColumnName();
-        if (oldColumnName.isPresent()) {
-            Optional<ColumnDefinitionSegment> oldColumnDefinition = alterTableStatement.findColumnDefinition(oldColumnName.get(), shardingTableMetaData);
-            if (!oldColumnDefinition.isPresent()) {
-                return;
-            }
-            oldColumnDefinition.get().setColumnName(sqlSegment.getColumnDefinition().getColumnName());
-            if (null != sqlSegment.getColumnDefinition().getDataType()) {
-                oldColumnDefinition.get().setDataType(sqlSegment.getColumnDefinition().getDataType());
-            }
-            alterTableStatement.getModifiedColumnDefinitions().put(oldColumnName.get(), oldColumnDefinition.get());
-        } else {
-            alterTableStatement.getModifiedColumnDefinitions().put(sqlSegment.getColumnDefinition().getColumnName(), sqlSegment.getColumnDefinition());
-        }
         if (sqlSegment.getColumnPosition().isPresent()) {
-            alterTableStatement.getChangedPositionColumns().add(sqlSegment.getColumnPosition().get());
+            ((AlterTableStatement) sqlStatement).getChangedPositionColumns().add(sqlSegment.getColumnPosition().get());
         }
     }
 }

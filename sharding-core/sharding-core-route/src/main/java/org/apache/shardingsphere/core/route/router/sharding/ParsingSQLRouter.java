@@ -73,7 +73,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
     public SQLStatement parse(final String logicSQL, final boolean useCache) {
         parsingHook.start(logicSQL);
         try {
-            SQLStatement result = new ShardingSQLParseEntry(databaseType, shardingMetaData.getTable(), parsingResultCache).parse(logicSQL, useCache);
+            SQLStatement result = new ShardingSQLParseEntry(databaseType, parsingResultCache).parse(logicSQL, useCache);
             parsingHook.finishSuccess(result, shardingMetaData.getTable());
             return result;
             // CHECKSTYLE:OFF

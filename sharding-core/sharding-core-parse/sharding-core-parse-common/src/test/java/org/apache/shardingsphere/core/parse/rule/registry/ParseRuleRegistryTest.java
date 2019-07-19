@@ -26,27 +26,11 @@ import static org.junit.Assert.assertTrue;
 
 public final class ParseRuleRegistryTest {
     
-    private static ParseRuleRegistry shardingParseRuleRegistry = ShardingParseRuleRegistry.getInstance();
-    
-    private static ParseRuleRegistry encryptParseRuleRegistry = EncryptParseRuleRegistry.getInstance();
-    
-    private static ParseRuleRegistry masterSlaveParseRuleRegistry = MasterSlaveParseRuleRegistry.getInstance();
+    private static ParseRuleRegistry parseRuleRegistry = ParseRuleRegistry.getInstance();
     
     @Test
     public void assertShardingParseRuleRegistry() {
-        assertNotNull(shardingParseRuleRegistry.getSQLStatementRule(DatabaseTypes.getActualDatabaseType("MySQL"), "SelectContext"));
-        assertTrue(shardingParseRuleRegistry.findSQLSegmentFiller(DatabaseTypes.getActualDatabaseType("MySQL"), ColumnDefinitionSegment.class).isPresent());
-    }
-    
-    @Test
-    public void assertEncryptParseRuleRegistry() {
-        assertNotNull(encryptParseRuleRegistry.getSQLStatementRule(DatabaseTypes.getActualDatabaseType("MySQL"), "SelectContext"));
-        assertTrue(encryptParseRuleRegistry.findSQLSegmentFiller(DatabaseTypes.getActualDatabaseType("MySQL"), ColumnDefinitionSegment.class).isPresent());
-    }
-    
-    @Test
-    public void assertMasterSlaveParseRuleRegistry() {
-        assertNotNull(masterSlaveParseRuleRegistry.getSQLStatementRule(DatabaseTypes.getActualDatabaseType("MySQL"), "SelectContext"));
-        assertTrue(masterSlaveParseRuleRegistry.findSQLSegmentFiller(DatabaseTypes.getActualDatabaseType("MySQL"), ColumnDefinitionSegment.class).isPresent());
+        assertNotNull(parseRuleRegistry.getSQLStatementRule(DatabaseTypes.getActualDatabaseType("MySQL"), "SelectContext"));
+        assertTrue(parseRuleRegistry.findSQLSegmentFiller(DatabaseTypes.getActualDatabaseType("MySQL"), ColumnDefinitionSegment.class).isPresent());
     }
 }

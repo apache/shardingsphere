@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.parse.integrate.asserts;
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.parse.integrate.asserts.groupby.GroupByAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.index.IndexAssert;
-import org.apache.shardingsphere.core.parse.integrate.asserts.meta.TableMetaDataAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.orderby.OrderByAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.pagination.PaginationAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.table.AlterTableAssert;
@@ -32,7 +31,6 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.order.OrderBySegment
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.AlterTableStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.tcl.SetAutoCommitStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.tcl.TCLStatement;
@@ -63,8 +61,6 @@ public final class ShardingSQLStatementAssert {
     
     private final PaginationAssert paginationAssert;
     
-    private final TableMetaDataAssert metaAssert;
-    
     private final AlterTableAssert alterTableAssert;
     
     public ShardingSQLStatementAssert(final SQLStatement actual, final String sqlCaseId, final SQLCaseType sqlCaseType) {
@@ -77,7 +73,6 @@ public final class ShardingSQLStatementAssert {
         groupByAssert = new GroupByAssert(assertMessage);
         orderByAssert = new OrderByAssert(assertMessage);
         paginationAssert = new PaginationAssert(sqlCaseType, assertMessage);
-        metaAssert = new TableMetaDataAssert(assertMessage);
         alterTableAssert = new AlterTableAssert(assertMessage);
     }
     
@@ -89,9 +84,6 @@ public final class ShardingSQLStatementAssert {
         indexAssert.assertParametersCount(actual.getParametersCount(), expected.getParameters().size());
         if (actual instanceof SelectStatement) {
             assertSelectStatement((SelectStatement) actual);
-        }
-        if (actual instanceof CreateTableStatement) {
-            assertCreateTableStatement((CreateTableStatement) actual);
         }
         if (actual instanceof AlterTableStatement) {
             assertAlterTableStatement((AlterTableStatement) actual);
@@ -119,10 +111,6 @@ public final class ShardingSQLStatementAssert {
             paginationAssert.assertOffset(limitSegment.get().getOffset().orNull(), expected.getOffset());
             paginationAssert.assertRowCount(limitSegment.get().getRowCount().orNull(), expected.getRowCount());
         }
-    }
-    
-    private void assertCreateTableStatement(final CreateTableStatement actual) {
-        metaAssert.assertMeta(actual.getColumnDefinitions(), expected.getMeta());
     }
     
     private void assertAlterTableStatement(final AlterTableStatement actual) {

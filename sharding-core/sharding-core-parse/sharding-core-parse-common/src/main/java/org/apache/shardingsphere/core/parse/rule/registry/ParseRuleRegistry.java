@@ -42,7 +42,9 @@ import java.util.Map;
  * @author zhangliang
  * @author duhongjun
  */
-public abstract class ParseRuleRegistry {
+public final class ParseRuleRegistry {
+    
+    private static volatile ParseRuleRegistry instance = new ParseRuleRegistry();
     
     private final ExtractorRuleDefinitionEntityLoader extractorRuleLoader = new ExtractorRuleDefinitionEntityLoader();
     
@@ -54,38 +56,38 @@ public abstract class ParseRuleRegistry {
     
     private final Map<DatabaseType, SQLStatementRuleDefinition> sqlStatementRuleDefinitions = new HashMap<>();
     
-    public ParseRuleRegistry() {
+    private ParseRuleRegistry() {
         initParseRuleDefinition();
     }
     
     private void initParseRuleDefinition() {
         ExtractorRuleDefinitionEntity generalExtractorRuleEntity = extractorRuleLoader.load(RuleDefinitionFileConstant.getExtractorRuleDefinitionFile());
         FillerRuleDefinitionEntity generalFillerRuleEntity = fillerRuleLoader.load(RuleDefinitionFileConstant.getFillerRuleDefinitionFile());
-        FillerRuleDefinitionEntity featureGeneralFillerRuleEntity = fillerRuleLoader.load(RuleDefinitionFileConstant.getFillerRuleDefinitionFile(getType()));
         for (DatabaseType each : SQLParserFactory.getAddOnDatabaseTypes()) {
-            fillerRuleDefinitions.put(each, createFillerRuleDefinition(generalFillerRuleEntity, featureGeneralFillerRuleEntity, each));
+            fillerRuleDefinitions.put(each, createFillerRuleDefinition(generalFillerRuleEntity, each));
             sqlStatementRuleDefinitions.put(each, createSQLStatementRuleDefinition(generalExtractorRuleEntity, each));
         }
     }
     
-    private FillerRuleDefinition createFillerRuleDefinition(final FillerRuleDefinitionEntity generalFillerRuleEntity,
-                                                            final FillerRuleDefinitionEntity featureGeneralFillerRuleEntity, final DatabaseType databaseType) {
-        return new FillerRuleDefinition(
-                generalFillerRuleEntity, featureGeneralFillerRuleEntity, fillerRuleLoader.load(RuleDefinitionFileConstant.getFillerRuleDefinitionFile(getType(), databaseType)));
+    private FillerRuleDefinition createFillerRuleDefinition(final FillerRuleDefinitionEntity generalFillerRuleEntity, final DatabaseType databaseType) {
+        FillerRuleDefinitionEntity databaseDialectFillerRuleEntity = fillerRuleLoader.load(RuleDefinitionFileConstant.getFillerRuleDefinitionFile(databaseType));
+        return new FillerRuleDefinition(generalFillerRuleEntity, databaseDialectFillerRuleEntity);
     }
     
     private SQLStatementRuleDefinition createSQLStatementRuleDefinition(final ExtractorRuleDefinitionEntity generalExtractorRuleEntity, final DatabaseType databaseType) {
-        ExtractorRuleDefinition extractorRuleDefinition = new ExtractorRuleDefinition(
-                generalExtractorRuleEntity, extractorRuleLoader.load(RuleDefinitionFileConstant.getExtractorRuleDefinitionFile(getType(), databaseType)));
-        return new SQLStatementRuleDefinition(statementRuleLoader.load(RuleDefinitionFileConstant.getSQLStatementRuleDefinitionFile(getType(), databaseType)), extractorRuleDefinition);
+        ExtractorRuleDefinitionEntity databaseDialectExtractorRuleEntity = extractorRuleLoader.load(RuleDefinitionFileConstant.getExtractorRuleDefinitionFile(databaseType));
+        ExtractorRuleDefinition extractorRuleDefinition = new ExtractorRuleDefinition(generalExtractorRuleEntity, databaseDialectExtractorRuleEntity);
+        return new SQLStatementRuleDefinition(statementRuleLoader.load(RuleDefinitionFileConstant.getSQLStatementRuleDefinitionFile(databaseType)), extractorRuleDefinition);
     }
     
     /**
-     * Get feature type.
-     * 
-     * @return feature type
+     * Get singleton instance of parsing rule registry.
+     *
+     * @return instance of parsing rule registry
      */
-    protected abstract String getType();
+    public static ParseRuleRegistry getInstance() {
+        return instance;
+    }
     
     /**
      * Get SQL statement rule.

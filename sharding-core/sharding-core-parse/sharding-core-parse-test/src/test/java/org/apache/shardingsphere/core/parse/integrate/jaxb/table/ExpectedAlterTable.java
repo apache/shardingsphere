@@ -21,7 +21,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.token.ExpectedColumnDefinition;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.token.ExpectedColumnPosition;
-import org.apache.shardingsphere.core.parse.integrate.jaxb.token.ExpectedUpdateColumnDefinition;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -39,16 +38,9 @@ public final class ExpectedAlterTable {
     @XmlAttribute(name = "drop-columns")
     private String dropColumns = "";
     
-    @XmlAttribute(name = "drop-primary-key")
-    private boolean dropPrimaryKey;
-    
     @XmlElementWrapper(name = "add-columns")
     @XmlElement(name = "add-column")
     private List<ExpectedColumnDefinition> addColumns = new ArrayList<>();
-    
-    @XmlElementWrapper(name = "update-columns")
-    @XmlElement(name = "update-column")
-    private List<ExpectedUpdateColumnDefinition> updateColumns = new ArrayList<>();
     
     @XmlElementWrapper(name = "position-changed-columns")
     @XmlElement(name = "position-changed-column")

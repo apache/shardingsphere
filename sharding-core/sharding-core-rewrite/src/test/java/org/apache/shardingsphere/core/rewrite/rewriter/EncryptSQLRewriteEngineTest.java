@@ -20,9 +20,7 @@ package org.apache.shardingsphere.core.rewrite.rewriter;
 import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.encryptor.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
-import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.encrypt.EncryptOptimizeEngineFactory;
 import org.apache.shardingsphere.core.parse.entry.EncryptSQLParseEntry;
@@ -35,9 +33,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -56,7 +52,7 @@ public final class EncryptSQLRewriteEngineTest {
     public void setUp() {
         encryptRule = new EncryptRule(createEncryptRuleConfiguration());
         parameters = Arrays.<Object>asList(1, 2);
-        encryptSQLParseEntry = new EncryptSQLParseEntry(DatabaseTypes.getActualDatabaseType("MySQL"), createShardingTableMetaData());
+        encryptSQLParseEntry = new EncryptSQLParseEntry(DatabaseTypes.getActualDatabaseType("MySQL"));
     }
     
     private EncryptRuleConfiguration createEncryptRuleConfiguration() {
@@ -67,19 +63,6 @@ public final class EncryptSQLRewriteEngineTest {
         result.getEncryptorRuleConfigs().put("test", encryptorConfig);
         result.getEncryptorRuleConfigs().put("assistedTest", encryptorQueryConfig);
         return result;
-    }
-    
-    private ShardingTableMetaData createShardingTableMetaData() {
-        ColumnMetaData columnMetaData1 = new ColumnMetaData("col1", "VARCHAR(10)", false);
-        ColumnMetaData columnMetaData2 = new ColumnMetaData("col2", "VARCHAR(10)", false);
-        ColumnMetaData queryColumnMetaData1 = new ColumnMetaData("query1", "VARCHAR(10)", false);
-        ColumnMetaData queryColumnMetaData2 = new ColumnMetaData("query2", "VARCHAR(10)", false);
-        TableMetaData encryptTableMetaData = new TableMetaData(Arrays.asList(columnMetaData1, columnMetaData2), Collections.<String>emptySet());
-        TableMetaData queryTableMetaData = new TableMetaData(Arrays.asList(columnMetaData1, columnMetaData2, queryColumnMetaData1, queryColumnMetaData2), Collections.<String>emptySet());
-        Map<String, TableMetaData> tables = new LinkedHashMap<>();
-        tables.put("t_encrypt", encryptTableMetaData);
-        tables.put("t_query_encrypt", queryTableMetaData);
-        return new ShardingTableMetaData(tables);
     }
     
     @Test
