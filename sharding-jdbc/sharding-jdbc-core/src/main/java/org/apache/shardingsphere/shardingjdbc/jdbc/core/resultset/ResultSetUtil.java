@@ -17,19 +17,17 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
+import com.google.common.primitives.Ints;
+import com.google.common.primitives.Longs;
+import com.google.common.primitives.Shorts;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.exception.ShardingException;
+
 import java.math.BigDecimal;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Date;
-
-import org.apache.shardingsphere.core.exception.ShardingException;
-
-import com.google.common.primitives.Ints;
-import com.google.common.primitives.Longs;
-import com.google.common.primitives.Shorts;
-
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 
 /**
  * ResultSet utility class.
@@ -60,7 +58,7 @@ public final class ResultSetUtil {
             return convertDateValue(value, convertType);
         }
         if (value instanceof byte[]) {
-        	return convertByteArrayValue(value, convertType);
+            return convertByteArrayValue(value, convertType);
         }
         if (String.class.equals(convertType)) {
             return value.toString();
@@ -133,16 +131,16 @@ public final class ResultSetUtil {
     }
     
     private static Object convertByteArrayValue(final Object value, final Class<?> convertType) {
-        byte[] bs = (byte[]) value;
-        switch (bs.length) {
+        byte[] bytesValue = (byte[]) value;
+        switch (bytesValue.length) {
             case 1:
-                return convertNumberValue(bs[0], convertType);
+                return convertNumberValue(bytesValue[0], convertType);
             case Shorts.BYTES:
-                return convertNumberValue(Shorts.fromByteArray(bs), convertType);
+                return convertNumberValue(Shorts.fromByteArray(bytesValue), convertType);
             case Ints.BYTES:
-                return convertNumberValue(Ints.fromByteArray(bs), convertType);
+                return convertNumberValue(Ints.fromByteArray(bytesValue), convertType);
             case Longs.BYTES:
-                return convertNumberValue(Longs.fromByteArray(bs), convertType);
+                return convertNumberValue(Longs.fromByteArray(bytesValue), convertType);
             default:
                 return value;
         }
