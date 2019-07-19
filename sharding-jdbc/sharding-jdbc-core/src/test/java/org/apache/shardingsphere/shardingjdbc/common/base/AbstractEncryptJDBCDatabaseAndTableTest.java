@@ -69,9 +69,9 @@ public abstract class AbstractEncryptJDBCDatabaseAndTableTest extends AbstractSQ
     private static EncryptRuleConfiguration createEncryptRuleConfiguration() {
         EncryptorRuleConfiguration encryptorConfig = new EncryptorRuleConfiguration("test", new Properties());
         EncryptorRuleConfiguration encryptorQueryConfig = new EncryptorRuleConfiguration("assistedTest", new Properties());
-        EncryptColumnRuleConfiguration columnConfig1 = new EncryptColumnRuleConfiguration("", "", "", "test");
+        EncryptColumnRuleConfiguration columnConfig1 = new EncryptColumnRuleConfiguration("", "pwd", "", "test");
         EncryptTableRuleConfiguration tableConfig1 = new EncryptTableRuleConfiguration(Collections.singletonMap("pwd", columnConfig1));
-        EncryptColumnRuleConfiguration columnConfig2 = new EncryptColumnRuleConfiguration("", "", "assist_pwd", "assistedTest");
+        EncryptColumnRuleConfiguration columnConfig2 = new EncryptColumnRuleConfiguration("", "pwd", "assist_pwd", "assistedTest");
         EncryptTableRuleConfiguration tableConfig2 = new EncryptTableRuleConfiguration(Collections.singletonMap("pwd", columnConfig2));
         EncryptRuleConfiguration result = new EncryptRuleConfiguration();
         result.getEncryptors().put("test", encryptorConfig);
