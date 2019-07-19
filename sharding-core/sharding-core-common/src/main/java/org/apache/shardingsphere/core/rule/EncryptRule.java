@@ -17,8 +17,12 @@
 
 package org.apache.shardingsphere.core.rule;
 
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import lombok.Getter;
+import org.apache.shardingsphere.api.config.encrypt.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
+import org.apache.shardingsphere.api.config.encrypt.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.core.strategy.encrypt.EncryptEngine;
 
 import java.util.Collection;
@@ -37,13 +41,34 @@ public final class EncryptRule implements BaseRule {
     
     public EncryptRule() {
         encryptEngine = new EncryptEngine();
+        encryptRuleConfig = new EncryptRuleConfiguration();
     }
     
     public EncryptRule(final EncryptRuleConfiguration encryptRuleConfiguration) {
         this.encryptRuleConfig = encryptRuleConfiguration;
+        Preconditions.checkArgument(isValidEncryptRuleConfig(), "Invalid encrypt column configurations in EncryptTableRuleConfigurations.");
         encryptEngine = new EncryptEngine(encryptRuleConfiguration);
     }
-
+    
+    private boolean isValidEncryptRuleConfig() {
+        return (encryptRuleConfig.getEncryptors().isEmpty() && encryptRuleConfig.getTables().isEmpty()) || isValidEncryptTableConfig();
+    }
+    
+    private boolean isValidEncryptTableConfig() {
+        for (EncryptTableRuleConfiguration table : encryptRuleConfig.getTables().values()) {
+            for (EncryptColumnRuleConfiguration column : table.getColumns().values()) {
+                if (!isValidColumnConfig(column)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    
+    private boolean isValidColumnConfig(final EncryptColumnRuleConfiguration column) {
+        return !Strings.isNullOrEmpty(column.getEncryptor()) && !Strings.isNullOrEmpty(column.getCipherColumn()) && encryptRuleConfig.getEncryptors().keySet().contains(column.getEncryptor());
+    }
+    
     /**
      * Get encrypt table names.
      * 
