@@ -62,11 +62,15 @@ public class OrchestrationSpringBootRegistryEncryptTest {
             + "    username: sa\n");
         testRegistryCenter.persist("/demo_spring_boot_ds_registry/config/schema/logic_db/rule", "encryptors:\n"
             + "  order_encrypt:\n"
-            + "    assistedQueryColumns: ''\n"
             + "    props:\n"
             + "      aes.key.value: '123456'\n"
-            + "    qualifiedColumns: t_order.user_id\n"
-            + "    type: aes\n");
+            + "    type: aes\n" 
+            + "tables:\n" 
+            + "  t_order:\n" 
+            + "    columns:\n"
+            + "       user_id:\n"
+            + "         cipherColumn: user_id\n"
+            + "         encryptor: order_encrypt\n");
         testRegistryCenter.persist("/demo_spring_boot_ds_registry/config/props", "sql.show: 'true'\n");
         testRegistryCenter.persist("/demo_spring_boot_ds_registry/state/datasources", "");
     }
