@@ -22,11 +22,9 @@ import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.encrypt.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
-import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.metadata.table.TableMetaData;
-import org.apache.shardingsphere.core.optimize.OptimizeEngineFactory;
-import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.optimize.encrypt.EncryptOptimizeEngineFactory;
 import org.apache.shardingsphere.core.parse.entry.EncryptSQLParseEntry;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
@@ -58,7 +56,7 @@ public final class EncryptSQLRewriteEngineTest {
     public void setUp() {
         encryptRule = new EncryptRule(createEncryptRuleConfiguration());
         parameters = Arrays.<Object>asList(1, 2);
-        encryptSQLParseEntry = new EncryptSQLParseEntry(DatabaseTypes.getActualDatabaseType("MySQL"), createShardingTableMetaData());
+        encryptSQLParseEntry = new EncryptSQLParseEntry(DatabaseTypes.getActualDatabaseType("MySQL"));
     }
     
     private EncryptRuleConfiguration createEncryptRuleConfiguration() {
@@ -89,20 +87,7 @@ public final class EncryptSQLRewriteEngineTest {
         columns2.put("col2", columnConfig2);
         return new EncryptTableRuleConfiguration(columns2);
     }
-    
-    private ShardingTableMetaData createShardingTableMetaData() {
-        ColumnMetaData columnMetaData1 = new ColumnMetaData("col1", "VARCHAR(10)", false);
-        ColumnMetaData columnMetaData2 = new ColumnMetaData("col2", "VARCHAR(10)", false);
-        ColumnMetaData queryColumnMetaData1 = new ColumnMetaData("query1", "VARCHAR(10)", false);
-        ColumnMetaData queryColumnMetaData2 = new ColumnMetaData("query2", "VARCHAR(10)", false);
-        TableMetaData encryptTableMetaData = new TableMetaData(Arrays.asList(columnMetaData1, columnMetaData2), Collections.<String>emptySet());
-        TableMetaData queryTableMetaData = new TableMetaData(Arrays.asList(columnMetaData1, columnMetaData2, queryColumnMetaData1, queryColumnMetaData2), Collections.<String>emptySet());
-        Map<String, TableMetaData> tables = new LinkedHashMap<>();
-        tables.put("t_encrypt", encryptTableMetaData);
-        tables.put("t_query_encrypt", queryTableMetaData);
-        return new ShardingTableMetaData(tables);
-    }
-    
+
     @Test
     public void assertSelectWithoutPlaceholderWithEncrypt() {
         String sql = "SELECT * FROM t_encrypt WHERE col1 = 1 or col2 = 2";
@@ -201,7 +186,7 @@ public final class EncryptSQLRewriteEngineTest {
     private SQLUnit getSQLUnit(final String sql, final List<Object> parameters) {
         // TODO panjuan: should mock sqlStatement, do not call parse module on rewrite test case
         SQLStatement sqlStatement = encryptSQLParseEntry.parse(sql, false);
-        OptimizedStatement optimizedStatement = OptimizeEngineFactory.newInstance(encryptRule, mock(ShardingTableMetaData.class), sqlStatement, parameters).optimize();
+        OptimizedStatement optimizedStatement = EncryptOptimizeEngineFactory.newInstance(encryptRule, mock(ShardingTableMetaData.class), sqlStatement, parameters).optimize();
         SQLRewriteEngine sqlRewriteEngine = new SQLRewriteEngine(encryptRule, optimizedStatement, parameters);
         return sqlRewriteEngine.generateSQL();
     }

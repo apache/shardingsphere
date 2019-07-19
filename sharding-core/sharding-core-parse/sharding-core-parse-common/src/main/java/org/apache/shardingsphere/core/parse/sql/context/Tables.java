@@ -21,6 +21,8 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -118,6 +120,33 @@ public final class Tables {
     private Optional<Table> findTableFromAlias(final String alias) {
         for (Table each : tables) {
             if (each.getAlias().isPresent() && each.getAlias().get().equalsIgnoreCase(alias)) {
+                return Optional.of(each);
+            }
+        }
+        return Optional.absent();
+    }
+    
+    /**
+     * Find table name.
+     *
+     * @param columnSegment column segment
+     * @param shardingTableMetaData sharding table meta data
+     * @return table name
+     */
+    public Optional<String> findTableName(final ColumnSegment columnSegment, final ShardingTableMetaData shardingTableMetaData) {
+        if (isSingleTable()) {
+            return Optional.of(getSingleTableName());
+        }
+        if (columnSegment.getOwner().isPresent()) {
+            Optional<Table> table = find(columnSegment.getOwner().get().getName());
+            return table.isPresent() ? Optional.of(table.get().getName()) : Optional.<String>absent();
+        }
+        return findTableNameFromMetaData(columnSegment.getName(), shardingTableMetaData);
+    }
+    
+    private Optional<String> findTableNameFromMetaData(final String columnName, final ShardingTableMetaData shardingTableMetaData) {
+        for (String each : getTableNames()) {
+            if (shardingTableMetaData.containsColumn(each, columnName)) {
                 return Optional.of(each);
             }
         }

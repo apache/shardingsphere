@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.parse.sql.statement.dml;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.WhereSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.WhereSegment;
 
 /**
  * Where segment available.

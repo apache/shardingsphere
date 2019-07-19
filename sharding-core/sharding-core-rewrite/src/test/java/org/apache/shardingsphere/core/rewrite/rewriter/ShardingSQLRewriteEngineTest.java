@@ -21,33 +21,33 @@ import com.google.common.base.Preconditions;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.AggregationType;
 import org.apache.shardingsphere.core.constant.OrderDirection;
-import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.encrypt.condition.EncryptCondition;
-import org.apache.shardingsphere.core.optimize.statement.encrypt.condition.EncryptConditions;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.ShardingWhereOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingConditions;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.ShardingInsertColumns;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.ShardingInsertOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ShardingSelectOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.groupby.GroupBy;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.AggregationSelectItem;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.DerivedCommonSelectItem;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.SelectItem;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.SelectItems;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderBy;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderByItem;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.pagination.Pagination;
-import org.apache.shardingsphere.core.optimize.statement.transparent.TransparentOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
+import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.optimize.encrypt.segment.condition.EncryptCondition;
+import org.apache.shardingsphere.core.optimize.encrypt.segment.condition.EncryptConditions;
+import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingCondition;
+import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingConditions;
+import org.apache.shardingsphere.core.optimize.sharding.segment.insert.ShardingInsertColumns;
+import org.apache.shardingsphere.core.optimize.sharding.segment.select.groupby.GroupBy;
+import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.AggregationSelectItem;
+import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.DerivedCommonSelectItem;
+import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.SelectItem;
+import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.SelectItems;
+import org.apache.shardingsphere.core.optimize.sharding.segment.select.orderby.OrderBy;
+import org.apache.shardingsphere.core.optimize.sharding.segment.select.orderby.OrderByItem;
+import org.apache.shardingsphere.core.optimize.sharding.segment.select.pagination.Pagination;
+import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingConditionOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingInsertOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.transparent.statement.TransparentOptimizedStatement;
 import org.apache.shardingsphere.core.parse.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.sql.context.Table;
 import org.apache.shardingsphere.core.parse.sql.segment.common.SchemaSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dal.FromSchemaSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.ddl.index.IndexSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.InsertValuesSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.SelectItemsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
@@ -55,6 +55,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegme
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.AggregationDistinctSelectItemSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.rownum.NumberLiteralRowNumberValueSegment;
@@ -219,7 +220,8 @@ public final class ShardingSQLRewriteEngineTest {
         ShardingInsertColumns insertColumns = mock(ShardingInsertColumns.class);
         when(insertColumns.getRegularColumnNames()).thenReturn(Arrays.asList("name", "age"));
         when(insertColumns.getAllColumnNames()).thenReturn(Arrays.asList("name", "age", "id"));
-        ShardingInsertOptimizedStatement optimizedStatement = new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), insertColumns, null);
+        ShardingInsertOptimizedStatement optimizedStatement = new ShardingInsertOptimizedStatement(
+                insertStatement, Collections.<ShardingCondition>emptyList(), insertColumns, Collections.singletonList(new InsertValue(Collections.<ExpressionSegment>emptyList())), null);
         ExpressionSegment[] expressionSegments = {new ParameterMarkerExpressionSegment(0, 0, 0), new ParameterMarkerExpressionSegment(0, 0, 1), new ParameterMarkerExpressionSegment(0, 0, 2)};
         optimizedStatement.addUnit(expressionSegments, new Object[] {"x", 1, 1}, 3);
         optimizedStatement.getUnits().get(0).getDataNodes().add(new DataNode("db0.table_1"));
@@ -245,7 +247,8 @@ public final class ShardingSQLRewriteEngineTest {
         ShardingInsertColumns insertColumns = mock(ShardingInsertColumns.class);
         when(insertColumns.getRegularColumnNames()).thenReturn(Collections.singletonList("name"));
         when(insertColumns.getAllColumnNames()).thenReturn(Arrays.asList("name", "id"));
-        ShardingInsertOptimizedStatement optimizedStatement = new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), insertColumns, null);
+        ShardingInsertOptimizedStatement optimizedStatement = new ShardingInsertOptimizedStatement(
+                insertStatement, Collections.<ShardingCondition>emptyList(), insertColumns, Collections.singletonList(new InsertValue(Collections.<ExpressionSegment>emptyList())), null);
         ExpressionSegment[] expressionSegments = {new ParameterMarkerExpressionSegment(0, 0, 0), new ParameterMarkerExpressionSegment(0, 0, 1)};
         optimizedStatement.addUnit(expressionSegments, new Object[] {"Bill", 1}, 2);
         optimizedStatement.getUnits().get(0).getDataNodes().add(new DataNode("db0.table_1"));
@@ -271,7 +274,8 @@ public final class ShardingSQLRewriteEngineTest {
         ShardingInsertColumns insertColumns = mock(ShardingInsertColumns.class);
         when(insertColumns.getRegularColumnNames()).thenReturn(Collections.singletonList("name"));
         when(insertColumns.getAllColumnNames()).thenReturn(Arrays.asList("name", "id"));
-        ShardingInsertOptimizedStatement optimizedStatement = new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), insertColumns, null);
+        ShardingInsertOptimizedStatement optimizedStatement = new ShardingInsertOptimizedStatement(
+                insertStatement, Collections.<ShardingCondition>emptyList(), insertColumns, Collections.singletonList(new InsertValue(Collections.<ExpressionSegment>emptyList())), null);
         ExpressionSegment[] expressionSegments = {new LiteralExpressionSegment(0, 0, 10), new LiteralExpressionSegment(0, 0, 1)};
         optimizedStatement.addUnit(expressionSegments, new Object[0], 0);
         optimizedStatement.getUnits().get(0).getDataNodes().add(new DataNode("db0.table_1"));
@@ -297,7 +301,8 @@ public final class ShardingSQLRewriteEngineTest {
         ShardingInsertColumns insertColumns = mock(ShardingInsertColumns.class);
         when(insertColumns.getRegularColumnNames()).thenReturn(Collections.singletonList("name"));
         when(insertColumns.getAllColumnNames()).thenReturn(Arrays.asList("name", "id"));
-        ShardingInsertOptimizedStatement optimizedStatement = new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), insertColumns, null);
+        ShardingInsertOptimizedStatement optimizedStatement = new ShardingInsertOptimizedStatement(
+                insertStatement, Collections.<ShardingCondition>emptyList(), insertColumns, Collections.singletonList(new InsertValue(Collections.<ExpressionSegment>emptyList())), null);
         ExpressionSegment[] expressionSegments = {new LiteralExpressionSegment(0, 0, 10), new LiteralExpressionSegment(0, 0, 1)};
         optimizedStatement.addUnit(expressionSegments, new Object[0], 0);
         optimizedStatement.getUnits().get(0).getDataNodes().add(new DataNode("db0.table_1"));
@@ -322,7 +327,8 @@ public final class ShardingSQLRewriteEngineTest {
         ShardingInsertColumns insertColumns = mock(ShardingInsertColumns.class);
         when(insertColumns.getRegularColumnNames()).thenReturn(Arrays.asList("name", "id"));
         when(insertColumns.getAllColumnNames()).thenReturn(Arrays.asList("name", "id"));
-        ShardingInsertOptimizedStatement optimizedStatement = new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), insertColumns, null);
+        ShardingInsertOptimizedStatement optimizedStatement = new ShardingInsertOptimizedStatement(
+                insertStatement, Collections.<ShardingCondition>emptyList(), insertColumns, Collections.singletonList(new InsertValue(Collections.<ExpressionSegment>emptyList())), null);
         ExpressionSegment[] expressionSegments = {new LiteralExpressionSegment(0, 0, 10), new LiteralExpressionSegment(0, 0, 1)};
         optimizedStatement.addUnit(expressionSegments, new Object[0], 0);
         optimizedStatement.getUnits().get(0).getDataNodes().add(new DataNode("db0.table_1"));
@@ -349,7 +355,8 @@ public final class ShardingSQLRewriteEngineTest {
         ShardingInsertColumns insertColumns = mock(ShardingInsertColumns.class);
         when(insertColumns.getRegularColumnNames()).thenReturn(Arrays.asList("name", "id"));
         when(insertColumns.getAllColumnNames()).thenReturn(Arrays.asList("name", "id"));
-        ShardingInsertOptimizedStatement optimizedStatement = new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), insertColumns, null);
+        ShardingInsertOptimizedStatement optimizedStatement = new ShardingInsertOptimizedStatement(
+                insertStatement, Collections.<ShardingCondition>emptyList(), insertColumns, Collections.singletonList(new InsertValue(Collections.<ExpressionSegment>emptyList())), null);
         ExpressionSegment[] expressionSegments = {new LiteralExpressionSegment(0, 0, 10), new LiteralExpressionSegment(0, 0, 1)};
         optimizedStatement.addUnit(expressionSegments, new Object[0], 0);
         optimizedStatement.getUnits().get(0).getDataNodes().add(new DataNode("db0.table_1"));
@@ -375,7 +382,8 @@ public final class ShardingSQLRewriteEngineTest {
         ShardingInsertColumns insertColumns = mock(ShardingInsertColumns.class);
         when(insertColumns.getRegularColumnNames()).thenReturn(Collections.singletonList("name"));
         when(insertColumns.getAllColumnNames()).thenReturn(Arrays.asList("name", "id"));
-        ShardingInsertOptimizedStatement optimizedStatement = new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), insertColumns, null);
+        ShardingInsertOptimizedStatement optimizedStatement = new ShardingInsertOptimizedStatement(
+                insertStatement, Collections.<ShardingCondition>emptyList(), insertColumns, Collections.singletonList(new InsertValue(Collections.<ExpressionSegment>emptyList())), null);
         ExpressionSegment[] expressionSegments = {new ParameterMarkerExpressionSegment(0, 0, 0), new ParameterMarkerExpressionSegment(0, 0, 1)};
         optimizedStatement.addUnit(expressionSegments, new Object[] {"x", 1}, 2);
         optimizedStatement.getUnits().get(0).getDataNodes().add(new DataNode("db0.table_1"));
@@ -846,7 +854,8 @@ public final class ShardingSQLRewriteEngineTest {
         ShardingInsertColumns insertColumns = mock(ShardingInsertColumns.class);
         when(insertColumns.getRegularColumnNames()).thenReturn(Arrays.asList("order_id", "user_id", "status", "id"));
         when(insertColumns.getAllColumnNames()).thenReturn(Arrays.asList("order_id", "user_id", "status", "id"));
-        SQLRouteResult result = new SQLRouteResult(new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), insertColumns, null));
+        SQLRouteResult result = new SQLRouteResult(new ShardingInsertOptimizedStatement(
+                insertStatement, Collections.<ShardingCondition>emptyList(), insertColumns, Collections.singletonList(new InsertValue(Collections.<ExpressionSegment>emptyList())), null));
         result.setRoutingResult(new RoutingResult());
         return result;
     }
@@ -864,7 +873,7 @@ public final class ShardingSQLRewriteEngineTest {
         updateStatement.getTables().add(new Table("table_x", null));
         updateStatement.setSetAssignment(
                 new SetAssignmentsSegment(28, 42, Collections.singleton(new AssignmentSegment(33, 42, new ColumnSegment(33, 40, "id"), new LiteralExpressionSegment(41, 42, 1)))));
-        SQLRouteResult result = new SQLRouteResult(new ShardingWhereOptimizedStatement(updateStatement, 
+        SQLRouteResult result = new SQLRouteResult(new ShardingConditionOptimizedStatement(updateStatement, 
                 new ShardingConditions(Collections.<ShardingCondition>emptyList()), new EncryptConditions(Collections.<EncryptCondition>emptyList())));
         result.setRoutingResult(new RoutingResult());
         return result;
@@ -880,7 +889,7 @@ public final class ShardingSQLRewriteEngineTest {
         DeleteStatement deleteStatement = new DeleteStatement();
         deleteStatement.setLogicSQL("DELETE FROM `sharding_db`.`table_x` WHERE user_id=1");
         deleteStatement.getSQLSegments().add(new TableSegment(12, 34, "`table_x`"));
-        SQLRouteResult result = new SQLRouteResult(new ShardingWhereOptimizedStatement(deleteStatement, 
+        SQLRouteResult result = new SQLRouteResult(new ShardingConditionOptimizedStatement(deleteStatement, 
                 new ShardingConditions(Collections.<ShardingCondition>emptyList()), new EncryptConditions(Collections.<EncryptCondition>emptyList())));
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
@@ -950,8 +959,8 @@ public final class ShardingSQLRewriteEngineTest {
                 new SetAssignmentsSegment(15, 24, Collections.singleton(new AssignmentSegment(19, 24, new ColumnSegment(19, 20, "id"), new LiteralExpressionSegment(0, 0, 2)))));
         List<EncryptCondition> encryptConditions = new LinkedList<>();
         encryptConditions.add(new EncryptCondition("id", "table_z", 32, 37, new LiteralExpressionSegment(0, 0, 2)));
-        SQLRouteResult result = new SQLRouteResult(new ShardingWhereOptimizedStatement(updateStatement, 
-                new ShardingConditions(Collections.<ShardingCondition>emptyList()), new EncryptConditions(encryptConditions)));
+        SQLRouteResult result = new SQLRouteResult(
+                new ShardingConditionOptimizedStatement(updateStatement, new ShardingConditions(Collections.<ShardingCondition>emptyList()), new EncryptConditions(encryptConditions)));
         result.setRoutingResult(new RoutingResult());
         return result;
     }
@@ -975,8 +984,8 @@ public final class ShardingSQLRewriteEngineTest {
         ShardingInsertColumns insertColumns = mock(ShardingInsertColumns.class);
         when(insertColumns.getRegularColumnNames()).thenReturn(Collections.singletonList("name"));
         when(insertColumns.getAllColumnNames()).thenReturn(Arrays.asList("name", "id", "query_name"));
-        ShardingInsertOptimizedStatement optimizedStatement =
-                new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), insertColumns, null);
+        ShardingInsertOptimizedStatement optimizedStatement = new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), insertColumns, 
+                Collections.singletonList(new InsertValue(Collections.<ExpressionSegment>singletonList(new LiteralExpressionSegment(33, 34, 10)))), null);
         ExpressionSegment[] expressionSegments = {new LiteralExpressionSegment(0, 0, 10), new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 10)};
         optimizedStatement.addUnit(expressionSegments, new Object[0], 0);
         optimizedStatement.getUnits().get(0).getDataNodes().add(new DataNode("db0.table_1"));

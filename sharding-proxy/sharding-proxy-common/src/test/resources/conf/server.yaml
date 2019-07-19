@@ -22,7 +22,7 @@ orchestration:
     serverLists: localhost:2181
     namespace: orchestration
 
-authentication:    
+authentication:
   users:
     root:
       password: root

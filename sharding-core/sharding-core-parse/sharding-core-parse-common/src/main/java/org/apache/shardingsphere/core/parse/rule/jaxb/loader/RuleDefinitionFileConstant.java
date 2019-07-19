@@ -50,12 +50,11 @@ public final class RuleDefinitionFileConstant {
     /**
      * Get extractor rule definition file name.
      *
-     * @param featureType feature type
      * @param databaseType database type
      * @return extractor rule definition file name
      */
-    public static String getExtractorRuleDefinitionFile(final String featureType, final DatabaseType databaseType) {
-        return Joiner.on('/').join(ROOT_PATH, featureType, databaseType.getName().toLowerCase(), EXTRACTOR_RULE_DEFINITION_FILE_NAME);
+    public static String getExtractorRuleDefinitionFile(final DatabaseType databaseType) {
+        return Joiner.on('/').join(ROOT_PATH, databaseType.getName().toLowerCase(), EXTRACTOR_RULE_DEFINITION_FILE_NAME);
     }
     
     /**
@@ -80,22 +79,20 @@ public final class RuleDefinitionFileConstant {
     /**
      * Get filler rule definition file name.
      *
-     * @param featureType feature type
      * @param databaseType database type
      * @return filler rule definition file name
      */
-    public static String getFillerRuleDefinitionFile(final String featureType, final DatabaseType databaseType) {
-        return Joiner.on('/').join(ROOT_PATH, featureType, databaseType.getName().toLowerCase(), FILLER_RULE_DEFINITION_FILE_NAME);
+    public static String getFillerRuleDefinitionFile(final DatabaseType databaseType) {
+        return Joiner.on('/').join(ROOT_PATH, databaseType.getName().toLowerCase(), FILLER_RULE_DEFINITION_FILE_NAME);
     }
     
     /**
      * Get SQL statement rule definition file name.
      *
-     * @param featureType feature type
      * @param databaseType database type
      * @return SQL statement rule definition file name
      */
-    public static String getSQLStatementRuleDefinitionFile(final String featureType, final DatabaseType databaseType) {
-        return Joiner.on('/').join(ROOT_PATH, featureType, databaseType.getName().toLowerCase(), SQL_STATEMENT_RULE_DEFINITION_FILE_NAME);
+    public static String getSQLStatementRuleDefinitionFile(final DatabaseType databaseType) {
+        return Joiner.on('/').join(ROOT_PATH, databaseType.getName().toLowerCase(), SQL_STATEMENT_RULE_DEFINITION_FILE_NAME);
     }
 }

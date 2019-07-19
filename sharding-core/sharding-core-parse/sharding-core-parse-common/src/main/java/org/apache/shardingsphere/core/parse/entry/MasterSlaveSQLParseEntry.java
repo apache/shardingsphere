@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.parse.entry;
 
 import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
-import org.apache.shardingsphere.core.parse.rule.registry.MasterSlaveParseRuleRegistry;
+import org.apache.shardingsphere.core.parse.rule.registry.ParseRuleRegistry;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 
 /**
@@ -38,6 +38,6 @@ public final class MasterSlaveSQLParseEntry extends SQLParseEntry {
     
     @Override
     protected SQLParseEngine getSQLParseEngine(final String sql) {
-        return new SQLParseEngine(MasterSlaveParseRuleRegistry.getInstance(), databaseType, sql, null);
+        return new SQLParseEngine(ParseRuleRegistry.getInstance(), databaseType, sql);
     }
 }

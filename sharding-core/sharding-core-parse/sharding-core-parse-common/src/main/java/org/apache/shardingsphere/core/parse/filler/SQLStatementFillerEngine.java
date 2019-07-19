@@ -20,8 +20,6 @@ package org.apache.shardingsphere.core.parse.filler;
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parse.aware.ShardingTableMetaDataAware;
 import org.apache.shardingsphere.core.parse.rule.registry.ParseRuleRegistry;
 import org.apache.shardingsphere.core.parse.rule.registry.statement.SQLStatementRule;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
@@ -46,8 +44,6 @@ public final class SQLStatementFillerEngine {
     
     private final String sql;
     
-    private final ShardingTableMetaData shardingTableMetaData;
-    
     /**
      * Fill SQL statement.
      *
@@ -56,6 +52,7 @@ public final class SQLStatementFillerEngine {
      * @param rule SQL statement rule
      * @return SQL statement
      */
+    @SuppressWarnings("unchecked")
     @SneakyThrows
     public SQLStatement fill(final Collection<SQLSegment> sqlSegments, final int parameterMarkerCount, final SQLStatementRule rule) {
         SQLStatement result = rule.getSqlStatementClass().newInstance();
@@ -65,17 +62,9 @@ public final class SQLStatementFillerEngine {
         for (SQLSegment each : sqlSegments) {
             Optional<SQLSegmentFiller> filler = parseRuleRegistry.findSQLSegmentFiller(databaseType, each.getClass());
             if (filler.isPresent()) {
-                doFill(each, result, filler.get());
+                filler.get().fill(each, result);
             }
         }
         return result;
-    }
-    
-    @SuppressWarnings("unchecked")
-    private void doFill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final SQLSegmentFiller filler) {
-        if (filler instanceof ShardingTableMetaDataAware) {
-            ((ShardingTableMetaDataAware) filler).setShardingTableMetaData(shardingTableMetaData);
-        }
-        filler.fill(sqlSegment, sqlStatement);
     }
 }

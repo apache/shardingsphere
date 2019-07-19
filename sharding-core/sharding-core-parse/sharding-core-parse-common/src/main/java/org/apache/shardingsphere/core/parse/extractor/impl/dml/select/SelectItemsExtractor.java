@@ -23,8 +23,8 @@ import org.apache.shardingsphere.core.parse.extractor.api.OptionalSQLSegmentExtr
 import org.apache.shardingsphere.core.parse.extractor.impl.dml.select.item.SelectItemExtractor;
 import org.apache.shardingsphere.core.parse.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.SelectItemsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemsSegment;
 
 import java.util.Collection;
 import java.util.Map;

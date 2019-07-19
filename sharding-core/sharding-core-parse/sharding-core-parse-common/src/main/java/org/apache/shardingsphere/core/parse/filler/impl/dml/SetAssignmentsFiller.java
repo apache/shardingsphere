@@ -18,16 +18,10 @@
 package org.apache.shardingsphere.core.parse.filler.impl.dml;
 
 import org.apache.shardingsphere.core.parse.filler.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.sql.context.InsertValue;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
-
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Set assignments filler.
@@ -40,28 +34,9 @@ public final class SetAssignmentsFiller implements SQLSegmentFiller<SetAssignmen
     @Override
     public void fill(final SetAssignmentsSegment sqlSegment, final SQLStatement sqlStatement) {
         if (sqlStatement instanceof InsertStatement) {
-            fillInsert(sqlSegment, (InsertStatement) sqlStatement);
+            ((InsertStatement) sqlStatement).setSetAssignment(sqlSegment);
         } else if (sqlStatement instanceof UpdateStatement) {
-            fillUpdate(sqlSegment, (UpdateStatement) sqlStatement);
+            ((UpdateStatement) sqlStatement).setSetAssignment(sqlSegment);
         }
-    }
-    
-    private void fillInsert(final SetAssignmentsSegment sqlSegment, final InsertStatement insertStatement) {
-        for (AssignmentSegment each : sqlSegment.getAssignments()) {
-            insertStatement.getColumns().add(each.getColumn());
-        }
-        insertStatement.getValues().add(getInsertValue(sqlSegment));
-    }
-    
-    private InsertValue getInsertValue(final SetAssignmentsSegment sqlSegment) {
-        List<ExpressionSegment> columnValues = new LinkedList<>();
-        for (AssignmentSegment each : sqlSegment.getAssignments()) {
-            columnValues.add(each.getValue());
-        }
-        return new InsertValue(columnValues);
-    }
-    
-    private void fillUpdate(final SetAssignmentsSegment sqlSegment, final UpdateStatement updateStatement) {
-        updateStatement.setSetAssignment(sqlSegment);
     }
 }

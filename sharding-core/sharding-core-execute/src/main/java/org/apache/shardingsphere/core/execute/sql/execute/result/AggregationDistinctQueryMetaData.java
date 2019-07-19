@@ -21,8 +21,8 @@ import com.google.common.collect.Multimap;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.AggregationType;
 import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.AggregationDistinctSelectItem;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.AggregationSelectItem;
+import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.AggregationDistinctSelectItem;
+import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.AggregationSelectItem;
 
 import java.util.ArrayList;
 import java.util.Collection;

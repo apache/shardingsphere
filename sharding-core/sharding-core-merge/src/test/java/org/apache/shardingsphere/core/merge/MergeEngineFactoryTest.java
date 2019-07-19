@@ -23,18 +23,19 @@ import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.dal.DALMergeEngine;
 import org.apache.shardingsphere.core.merge.dql.DQLMergeEngine;
 import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
-import org.apache.shardingsphere.core.optimize.statement.encrypt.condition.EncryptCondition;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.ShardingInsertColumns;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.ShardingInsertOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ShardingSelectOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.groupby.GroupBy;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.SelectItem;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.SelectItems;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderBy;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.orderby.OrderByItem;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.pagination.Pagination;
-import org.apache.shardingsphere.core.optimize.statement.transparent.TransparentOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
+import org.apache.shardingsphere.core.optimize.encrypt.segment.condition.EncryptCondition;
+import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingCondition;
+import org.apache.shardingsphere.core.optimize.sharding.segment.insert.ShardingInsertColumns;
+import org.apache.shardingsphere.core.optimize.sharding.segment.select.groupby.GroupBy;
+import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.SelectItem;
+import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.SelectItems;
+import org.apache.shardingsphere.core.optimize.sharding.segment.select.orderby.OrderBy;
+import org.apache.shardingsphere.core.optimize.sharding.segment.select.orderby.OrderByItem;
+import org.apache.shardingsphere.core.optimize.sharding.segment.select.pagination.Pagination;
+import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingInsertOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.transparent.statement.TransparentOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
@@ -85,12 +86,13 @@ public final class MergeEngineFactoryTest {
         assertThat(MergeEngineFactory.newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, routeResult, null, queryResults), instanceOf(DALMergeEngine.class));
     }
     
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void assertNewInstanceWithOtherStatement() throws SQLException {
         ShardingInsertColumns insertColumns = mock(ShardingInsertColumns.class);
         when(insertColumns.getRegularColumnNames()).thenReturn(Collections.<String>emptySet());
         when(insertColumns.getAllColumnNames()).thenReturn(Collections.<String>emptySet());
-        SQLRouteResult routeResult = new SQLRouteResult(new ShardingInsertOptimizedStatement(new InsertStatement(), Collections.<ShardingCondition>emptyList(), insertColumns, null));
-        MergeEngineFactory.newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, routeResult, null, queryResults);
+        SQLRouteResult routeResult = new SQLRouteResult(
+                new ShardingInsertOptimizedStatement(new InsertStatement(), Collections.<ShardingCondition>emptyList(), insertColumns, Collections.<InsertValue>emptyList(), null));
+        assertThat(MergeEngineFactory.newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, routeResult, null, queryResults), instanceOf(TransparentMergeEngine.class));
     }
 }

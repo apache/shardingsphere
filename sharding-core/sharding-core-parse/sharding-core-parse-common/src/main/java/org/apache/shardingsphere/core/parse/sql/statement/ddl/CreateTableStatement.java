@@ -21,8 +21,8 @@ import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.parse.sql.segment.ddl.column.ColumnDefinitionSegment;
 
+import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Create table statement.
@@ -33,5 +33,5 @@ import java.util.List;
 @ToString(callSuper = true)
 public final class CreateTableStatement extends DDLStatement {
     
-    private final List<ColumnDefinitionSegment> columnDefinitions = new LinkedList<>();
+    private final Collection<ColumnDefinitionSegment> columnDefinitions = new LinkedList<>();
 }

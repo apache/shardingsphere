@@ -18,8 +18,7 @@
 package org.apache.shardingsphere.core.parse.filler.impl.dml;
 
 import org.apache.shardingsphere.core.parse.filler.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.sql.context.InsertValue;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.InsertValuesSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 
@@ -33,6 +32,6 @@ public final class InsertValuesFiller implements SQLSegmentFiller<InsertValuesSe
     
     @Override
     public void fill(final InsertValuesSegment sqlSegment, final SQLStatement sqlStatement) {
-        ((InsertStatement) sqlStatement).getValues().add(new InsertValue(sqlSegment.getValues()));
+        ((InsertStatement) sqlStatement).getValues().add(sqlSegment);
     }
 }

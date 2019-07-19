@@ -23,7 +23,7 @@ import org.apache.shardingsphere.core.parse.extractor.api.CollectionSQLSegmentEx
 import org.apache.shardingsphere.core.parse.extractor.impl.common.expression.ExpressionExtractor;
 import org.apache.shardingsphere.core.parse.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.InsertValuesSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 
 import java.util.Collection;

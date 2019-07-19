@@ -53,8 +53,6 @@ public class QueryResultUtil {
     public static Object getValueByColumnType(final ResultSet resultSet, final int columnIndex) throws SQLException {
         ResultSetMetaData metaData = resultSet.getMetaData();
         switch (metaData.getColumnType(columnIndex)) {
-            case Types.BIT:
-                return resultSet.getBytes(columnIndex);
             case Types.BOOLEAN:
                 return resultSet.getBoolean(columnIndex);
             case Types.TINYINT:
