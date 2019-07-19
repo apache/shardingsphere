@@ -19,14 +19,11 @@ package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
-import org.apache.shardingsphere.core.parse.sql.context.Column;
+import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.core.rewrite.builder.BaseParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
@@ -35,15 +32,11 @@ import org.apache.shardingsphere.core.rewrite.token.pojo.UpdateEncryptAssistedIt
 import org.apache.shardingsphere.core.rewrite.token.pojo.UpdateEncryptItemToken;
 import org.apache.shardingsphere.core.rule.ColumnNode;
 import org.apache.shardingsphere.core.rule.EncryptRule;
-import org.apache.shardingsphere.core.strategy.encrypt.EncryptEngine;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * Encrypt column token generator.
@@ -52,67 +45,43 @@ import java.util.Map.Entry;
  */
 public final class UpdateEncryptColumnTokenGenerator implements CollectionSQLTokenGenerator<EncryptRule> {
     
-    private Column column;
-    
-    private int startIndex;
-    
-    private int stopIndex;
-    
-    private SQLStatement sqlStatement;
-    
     @Override
     public Collection<EncryptColumnToken> generateSQLTokens(final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final EncryptRule encryptRule) {
-        if (!(optimizedStatement.getSQLStatement() instanceof UpdateStatement)) {
-            return Collections.emptyList();
-        }
-        this.sqlStatement = optimizedStatement.getSQLStatement();
-        return createUpdateEncryptColumnTokens(optimizedStatement, parameterBuilder, encryptRule);
+        return optimizedStatement.getSQLStatement() instanceof UpdateStatement
+                ? createEncryptColumnToken(optimizedStatement, parameterBuilder, encryptRule) : Collections.<EncryptColumnToken>emptyList();
     }
     
-    private Collection<EncryptColumnToken> createUpdateEncryptColumnTokens(final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final EncryptRule encryptRule) {
-        if (!(optimizedStatement.getSQLStatement() instanceof UpdateStatement)) {
-            return Collections.emptyList();
-        }
-        return createUpdateEncryptColumnTokens(encryptRule, parameterBuilder, ((UpdateStatement) optimizedStatement.getSQLStatement()).getSetAssignment());
-    }
-    
-    private Collection<EncryptColumnToken> createUpdateEncryptColumnTokens(final EncryptRule encryptRule, final ParameterBuilder parameterBuilder, final SetAssignmentsSegment segment) {
+    private Collection<EncryptColumnToken> createEncryptColumnToken(final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final EncryptRule encryptRule) {
         Collection<EncryptColumnToken> result = new LinkedList<>();
-        for (AssignmentSegment each : segment.getAssignments()) {
-            this.column = new Column(each.getColumn().getName(), sqlStatement.getTables().getSingleTableName());
-            if (encryptRule.getEncryptEngine().getShardingEncryptor(column.getTableName(), column.getName()).isPresent()) {
-                this.startIndex = each.getColumn().getStartIndex();
-                this.stopIndex = each.getStopIndex();
-                result.add(createUpdateEncryptColumnToken(encryptRule.getEncryptEngine(), (BaseParameterBuilder) parameterBuilder));
+        String tableName = optimizedStatement.getSQLStatement().getTables().getSingleTableName();
+        for (AssignmentSegment each : ((UpdateStatement) optimizedStatement.getSQLStatement()).getSetAssignment().getAssignments()) {
+            if (encryptRule.getEncryptEngine().getShardingEncryptor(tableName, each.getColumn().getName()).isPresent()) {
+                result.add(createEncryptColumnToken(tableName, each, (BaseParameterBuilder) parameterBuilder, encryptRule));
             }
         }
         return result;
     }
     
-    private EncryptColumnToken createUpdateEncryptColumnToken(final EncryptEngine encryptEngine, final BaseParameterBuilder baseParameterBuilder) {
-        ColumnNode columnNode = new ColumnNode(column.getTableName(), column.getName());
-        Object originalColumnValue = getColumnValue(findAssignment(column, (UpdateStatement) sqlStatement), baseParameterBuilder.getOriginalParameters());
-        List<Object> encryptColumnValues = encryptEngine.getEncryptColumnValues(columnNode, Collections.singletonList(originalColumnValue));
-        encryptParameters(getPositionIndexesFromUpdateItem(), encryptColumnValues, baseParameterBuilder);
-        Optional<String> assistedColumnName = encryptEngine.getAssistedQueryColumn(columnNode.getTableName(), columnNode.getColumnName());
-        if (!assistedColumnName.isPresent()) {
-            return createUpdateEncryptItemToken(encryptColumnValues);
+    private EncryptColumnToken createEncryptColumnToken(
+            final String tableName, final AssignmentSegment assignmentSegment, final BaseParameterBuilder parameterBuilder, final EncryptRule encryptRule) {
+        ColumnNode columnNode = new ColumnNode(tableName, assignmentSegment.getColumn().getName());
+        Object originalAssignmentValue = getAssignmentValue(assignmentSegment, parameterBuilder.getOriginalParameters());
+        Object encryptAssignmentValue = encryptRule.getEncryptEngine().getEncryptColumnValues(columnNode, Collections.singletonList(originalAssignmentValue)).iterator().next();
+        if (assignmentSegment.getValue() instanceof ParameterMarkerExpressionSegment) {
+            parameterBuilder.getOriginalParameters().set(((ParameterMarkerExpressionSegment) assignmentSegment.getValue()).getParameterMarkerIndex(), encryptAssignmentValue);
         }
-        List<Object> encryptAssistedColumnValues = encryptEngine.getEncryptAssistedColumnValues(columnNode, Collections.singletonList(originalColumnValue));
-        baseParameterBuilder.getAddedIndexAndParameters().putAll(getIndexAndParameters(encryptAssistedColumnValues));
-        return createUpdateEncryptAssistedItemToken(encryptEngine, encryptColumnValues, encryptAssistedColumnValues);
+        Optional<String> assistedQueryColumnName = encryptRule.getEncryptEngine().getAssistedQueryColumn(tableName, assignmentSegment.getColumn().getName());
+        if (!assistedQueryColumnName.isPresent()) {
+            return createUpdateEncryptItemToken(assignmentSegment, encryptAssignmentValue);
+        }
+        Object assistedQueryValue = encryptRule.getEncryptEngine().getEncryptAssistedColumnValues(columnNode, Collections.singletonList(originalAssignmentValue)).iterator().next();
+        if (assignmentSegment.getValue() instanceof ParameterMarkerExpressionSegment) {
+            parameterBuilder.getAddedIndexAndParameters().put(((ParameterMarkerExpressionSegment) assignmentSegment.getValue()).getParameterMarkerIndex() + 1, assistedQueryValue);
+        }
+        return createUpdateEncryptAssistedItemToken(assignmentSegment, encryptAssignmentValue, assistedQueryColumnName.get(), assistedQueryValue);
     }
     
-    private AssignmentSegment findAssignment(final Column column, final UpdateStatement updateStatement) {
-        for (AssignmentSegment each : updateStatement.getSetAssignment().getAssignments()) {
-            if (column.getName().equalsIgnoreCase(each.getColumn().getName())) {
-                return each;
-            }
-        }
-        throw new ShardingException("Cannot find column '%s'", column);
-    }
-    
-    private Object getColumnValue(final AssignmentSegment assignmentSegment, final List<Object> parameters) {
+    private Object getAssignmentValue(final AssignmentSegment assignmentSegment, final List<Object> parameters) {
         ExpressionSegment expressionSegment = assignmentSegment.getValue();
         if (expressionSegment instanceof ParameterMarkerExpressionSegment) {
             return parameters.get(((ParameterMarkerExpressionSegment) expressionSegment).getParameterMarkerIndex());
@@ -120,43 +89,24 @@ public final class UpdateEncryptColumnTokenGenerator implements CollectionSQLTok
         if (expressionSegment instanceof LiteralExpressionSegment) {
             return ((LiteralExpressionSegment) expressionSegment).getLiterals();
         }
-        throw new ShardingException("Can not find column value by %s.", column);
+        throw new ShardingException("Can not find column value by %s.", assignmentSegment.getColumn().getName());
     }
     
-    private Map<Integer, Integer> getPositionIndexesFromUpdateItem() {
-        ExpressionSegment result = findAssignment(column, (UpdateStatement) sqlStatement).getValue();
-        return result instanceof ParameterMarkerExpressionSegment
-                ? Collections.singletonMap(0, ((ParameterMarkerExpressionSegment) result).getParameterMarkerIndex()) : new LinkedHashMap<Integer, Integer>();
-    }
-    
-    private void encryptParameters(final Map<Integer, Integer> positionIndexes, final List<Object> encryptColumnValues, final BaseParameterBuilder baseParameterBuilder) {
-        if (!positionIndexes.isEmpty()) {
-            for (Entry<Integer, Integer> entry : positionIndexes.entrySet()) {
-                baseParameterBuilder.getOriginalParameters().set(entry.getValue(), encryptColumnValues.get(entry.getKey()));
-            }
-        }
-    }
-    
-    private Map<Integer, Object> getIndexAndParameters(final List<Object> encryptAssistedColumnValues) {
-        if (encryptAssistedColumnValues.isEmpty() || !isUsingParameter()) {
-            return Collections.emptyMap();
-        }
-        return Collections.singletonMap(getPositionIndexesFromUpdateItem().values().iterator().next() + 1, encryptAssistedColumnValues.get(0));
-    }
-    
-    private UpdateEncryptItemToken createUpdateEncryptItemToken(final List<Object> encryptColumnValues) {
-        return isUsingParameter() 
-                ? new UpdateEncryptItemToken(startIndex, stopIndex, column.getName()) : new UpdateEncryptItemToken(startIndex, stopIndex, column.getName(), encryptColumnValues.get(0));
+    private UpdateEncryptItemToken createUpdateEncryptItemToken(final AssignmentSegment assignmentSegment, final Object encryptValue) {
+        int startIndex = assignmentSegment.getColumn().getStartIndex();
+        int stopIndex = assignmentSegment.getStopIndex();
+        String encryptColumnName = assignmentSegment.getColumn().getName();
+        return assignmentSegment.getValue() instanceof ParameterMarkerExpressionSegment
+                ? new UpdateEncryptItemToken(startIndex, stopIndex, encryptColumnName) : new UpdateEncryptItemToken(startIndex, stopIndex, encryptColumnName, encryptValue);
     }
     
     private UpdateEncryptAssistedItemToken createUpdateEncryptAssistedItemToken(
-            final EncryptEngine encryptEngine, final List<Object> encryptColumnValues, final List<Object> encryptAssistedColumnValues) {
-        String assistedColumnName = encryptEngine.getAssistedQueryColumn(column.getTableName(), column.getName()).get();
-        return isUsingParameter() ? new UpdateEncryptAssistedItemToken(startIndex, stopIndex, column.getName(), assistedColumnName) 
-                : new UpdateEncryptAssistedItemToken(startIndex, stopIndex, column.getName(), encryptColumnValues.get(0), assistedColumnName, encryptAssistedColumnValues.get(0));
-    }
-    
-    private boolean isUsingParameter() {
-        return findAssignment(column, (UpdateStatement) sqlStatement).getValue() instanceof ParameterMarkerExpressionSegment;
+            final AssignmentSegment assignmentSegment, final Object encryptValue, final String assistedQueryColumnName, final Object assistedQueryValue) {
+        int startIndex = assignmentSegment.getColumn().getStartIndex();
+        int stopIndex = assignmentSegment.getStopIndex();
+        String encryptColumnName = assignmentSegment.getColumn().getName();
+        return assignmentSegment.getValue() instanceof ParameterMarkerExpressionSegment
+                ? new UpdateEncryptAssistedItemToken(startIndex, stopIndex, encryptColumnName, assistedQueryColumnName)
+                : new UpdateEncryptAssistedItemToken(startIndex, stopIndex, encryptColumnName, encryptValue, assistedQueryColumnName, assistedQueryValue);
     }
 }
