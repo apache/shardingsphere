@@ -41,8 +41,8 @@ public final class OrchestrationEncryptDataSourceFactory {
      * @param orchestrationConfig orchestration configuration
      * @return orchestration encrypt data source
      */
-    public static DataSource createDataSource(final DataSource dataSource, final EncryptRuleConfiguration encryptRuleConfig, final Properties props,
-                                              final OrchestrationConfiguration orchestrationConfig) {
+    public static DataSource createDataSource(final DataSource dataSource, 
+                                              final EncryptRuleConfiguration encryptRuleConfig, final Properties props, final OrchestrationConfiguration orchestrationConfig) {
         if (null == encryptRuleConfig || encryptRuleConfig.getEncryptors().isEmpty()) {
             return createDataSource(orchestrationConfig);
         }
