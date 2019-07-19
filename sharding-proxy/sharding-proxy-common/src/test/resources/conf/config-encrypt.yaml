@@ -35,7 +35,7 @@ encryptRule:
           encryptor: encryptor_aes
         name:
           cipherColumn: name
-          encryptor:encryptor_md5
+          encryptor: encryptor_md5
   encryptors:
     encryptor_aes:
       type: aes
