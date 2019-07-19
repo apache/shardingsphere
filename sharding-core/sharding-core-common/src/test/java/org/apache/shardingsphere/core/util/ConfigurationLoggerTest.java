@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.core.util;
 
 import org.apache.shardingsphere.api.config.RuleConfiguration;
+import org.apache.shardingsphere.api.config.encrypt.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
+import org.apache.shardingsphere.api.config.encrypt.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
@@ -94,8 +96,9 @@ public class ConfigurationLoggerTest {
 
     @Test
     public void logEncryptRuleConfiguration() {
-        String yamlStr = "encryptors:\n" + "  encryptor_aes:\n" + "    assistedQueryColumns: ''\n" + "    props:\n"
-            + "      aes.key.value: 123456abc\n" + "    qualifiedColumns: user.user_name\n" + "    type: aes\n";
+        String yamlStr = "encryptors:\n" + "  encryptor_aes:\n" + "    props:\n" + "      aes.key.value: 123456abc\n" + "    type: aes\n" 
+                + "tables:\n" + "  t_encrypt:\n" + "    columns:\n" + "      user_id:\n" + "        assistedQueryColumn: user_assisted\n" 
+                + "        cipherColumn: user_encrypt\n" + "        encryptor: encryptor_aes\n" + "        plainColumn: user_decrypt\n";
         assertEqualsWithLogInfo(EncryptRuleConfiguration.class.getSimpleName(), yamlStr);
         ConfigurationLogger.log(getEncryptRuleConfiguration());
     }
@@ -107,6 +110,9 @@ public class ConfigurationLoggerTest {
         EncryptorRuleConfiguration encryptorRuleConfiguration =
             new EncryptorRuleConfiguration("aes", properties);
         encryptRuleConfiguration.getEncryptors().put("encryptor_aes", encryptorRuleConfiguration);
+        EncryptTableRuleConfiguration tableRuleConfiguration = 
+                new EncryptTableRuleConfiguration(Collections.singletonMap("user_id", new EncryptColumnRuleConfiguration("user_decrypt", "user_encrypt", "user_assisted", "encryptor_aes")));
+        encryptRuleConfiguration.getTables().put("t_encrypt", tableRuleConfiguration);
         return encryptRuleConfiguration;
     }
 
@@ -139,8 +145,9 @@ public class ConfigurationLoggerTest {
 
     @Test
     public void logRuleConfigurationWithEncryptRuleConfiguration() {
-        String yamlStr = "encryptors:\n" + "  encryptor_aes:\n" + "    assistedQueryColumns: ''\n" + "    props:\n"
-            + "      aes.key.value: 123456abc\n" + "    qualifiedColumns: user.user_name\n" + "    type: aes\n";
+        String yamlStr = "encryptors:\n" + "  encryptor_aes:\n" + "    props:\n" + "      aes.key.value: 123456abc\n" + "    type: aes\n" 
+                + "tables:\n" + "  t_encrypt:\n" + "    columns:\n" + "      user_id:\n" + "        assistedQueryColumn: user_assisted\n" 
+                + "        cipherColumn: user_encrypt\n" + "        encryptor: encryptor_aes\n" + "        plainColumn: user_decrypt\n";
         assertEqualsWithLogInfo(EncryptRuleConfiguration.class.getSimpleName(), yamlStr);
         ConfigurationLogger.log((RuleConfiguration) getEncryptRuleConfiguration());
     }
