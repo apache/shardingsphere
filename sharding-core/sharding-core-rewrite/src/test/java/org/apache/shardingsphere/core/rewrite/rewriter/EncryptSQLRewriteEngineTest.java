@@ -69,24 +69,24 @@ public final class EncryptSQLRewriteEngineTest {
         result.getEncryptors().put("assistedTest", encryptorQueryConfig);
         result.getTables().put("t_encrypt", createEncryptTableConfig1());
         result.getTables().put("t_query_encrypt", createEncryptTableConfig2());
-        
         return result;
     }
     
     private EncryptTableRuleConfiguration createEncryptTableConfig1() {
-        EncryptColumnRuleConfiguration columnConfig1 = new EncryptColumnRuleConfiguration("", "", "", "test");
+        EncryptColumnRuleConfiguration columnConfig1 = new EncryptColumnRuleConfiguration("", "col1", "", "test");
+        EncryptColumnRuleConfiguration columnConfig2 = new EncryptColumnRuleConfiguration("", "col2", "", "test");
         Map<String, EncryptColumnRuleConfiguration> columns1 = new LinkedHashMap<>();
         columns1.put("col1", columnConfig1);
-        columns1.put("col2", columnConfig1);
+        columns1.put("col2", columnConfig2);
         return new EncryptTableRuleConfiguration(columns1);
     }
     
     private EncryptTableRuleConfiguration createEncryptTableConfig2() {
-        EncryptColumnRuleConfiguration columnConfig2 = new EncryptColumnRuleConfiguration("", "", "query1", "assistedTest");
-        EncryptColumnRuleConfiguration columnConfig3 = new EncryptColumnRuleConfiguration("", "", "query2", "assistedTest");
+        EncryptColumnRuleConfiguration columnConfig1 = new EncryptColumnRuleConfiguration("", "col1", "query1", "assistedTest");
+        EncryptColumnRuleConfiguration columnConfig2 = new EncryptColumnRuleConfiguration("", "col2", "query2", "assistedTest");
         Map<String, EncryptColumnRuleConfiguration> columns2 = new LinkedHashMap<>();
-        columns2.put("col1", columnConfig2);
-        columns2.put("col2", columnConfig3);
+        columns2.put("col1", columnConfig1);
+        columns2.put("col2", columnConfig2);
         return new EncryptTableRuleConfiguration(columns2);
     }
     
