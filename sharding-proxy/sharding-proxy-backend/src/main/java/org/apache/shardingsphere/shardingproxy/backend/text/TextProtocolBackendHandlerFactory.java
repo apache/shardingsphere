@@ -65,7 +65,7 @@ public final class TextProtocolBackendHandlerFactory {
         }
         SQLStatement sqlStatement = new SQLParseEngine(ParseRuleRegistry.getInstance(), databaseType, sql).parse();
         if (sqlStatement instanceof TCLStatement) {
-            return createTCLBackendHandler((TCLStatement) sqlStatement, backendConnection);
+            return createTCLBackendHandler(sql, (TCLStatement) sqlStatement, backendConnection);
         }
         if (sqlStatement instanceof DALStatement) {
             return createDALBackendHandler((DALStatement) sqlStatement, sql, backendConnection);
@@ -73,7 +73,7 @@ public final class TextProtocolBackendHandlerFactory {
         return new QueryBackendHandler(sql, backendConnection);
     }
     
-    private static TextProtocolBackendHandler createTCLBackendHandler(final TCLStatement tclStatement, final BackendConnection backendConnection) {
+    private static TextProtocolBackendHandler createTCLBackendHandler(final String sql, final TCLStatement tclStatement, final BackendConnection backendConnection) {
         if (tclStatement instanceof BeginTransactionStatement) {
             return new TransactionBackendHandler(TransactionOperationType.BEGIN, backendConnection);
         }
@@ -89,7 +89,7 @@ public final class TextProtocolBackendHandlerFactory {
         if (tclStatement instanceof RollbackStatement) {
             return new TransactionBackendHandler(TransactionOperationType.ROLLBACK, backendConnection);
         }
-        return new BroadcastBackendHandler(tclStatement.getLogicSQL(), backendConnection);
+        return new BroadcastBackendHandler(sql, backendConnection);
     }
     
     private static TextProtocolBackendHandler createDALBackendHandler(final DALStatement dalStatement, final String sql, final BackendConnection backendConnection) {
