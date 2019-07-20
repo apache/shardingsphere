@@ -29,7 +29,7 @@ import org.apache.shardingsphere.core.optimize.sharding.segment.condition.Shardi
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingConditionOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingInsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
-import org.apache.shardingsphere.core.parse.entry.ShardingSQLParseEntry;
+import org.apache.shardingsphere.core.parse.entry.SQLParseEntry;
 import org.apache.shardingsphere.core.parse.hook.ParsingHook;
 import org.apache.shardingsphere.core.parse.hook.SPIParsingHook;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
@@ -59,7 +59,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
     
     private final ShardingMetaData shardingMetaData;
     
-    private final ShardingSQLParseEntry shardingSQLParseEntry;
+    private final SQLParseEntry sqlParseEntry;
     
     private final List<Comparable<?>> generatedValues = new LinkedList<>();
     
@@ -69,7 +69,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
     public SQLStatement parse(final String logicSQL, final boolean useCache) {
         parsingHook.start(logicSQL);
         try {
-            SQLStatement result = shardingSQLParseEntry.parse(logicSQL, useCache);
+            SQLStatement result = sqlParseEntry.parse(logicSQL, useCache);
             parsingHook.finishSuccess(result, shardingMetaData.getTable());
             return result;
             // CHECKSTYLE:OFF

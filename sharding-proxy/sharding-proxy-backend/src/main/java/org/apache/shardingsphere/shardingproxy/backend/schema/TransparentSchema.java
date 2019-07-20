@@ -48,7 +48,7 @@ public final class TransparentSchema extends LogicSchema {
     }
     
     @Override
-    public SQLParseEntry getParseEngine() {
+    public SQLParseEntry getParseEntry() {
         return null;
     }
     

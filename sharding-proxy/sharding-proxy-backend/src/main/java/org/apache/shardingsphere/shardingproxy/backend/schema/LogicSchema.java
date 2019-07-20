@@ -49,10 +49,13 @@ public abstract class LogicSchema {
     
     private final String name;
     
+    private final SQLParseEntry parseEntry;
+    
     private JDBCBackendDataSource backendDataSource;
     
     public LogicSchema(final String name, final Map<String, YamlDataSourceParameter> dataSources) {
         this.name = name;
+        parseEntry = new SQLParseEntry(LogicSchemas.getInstance().getDatabaseType());
         backendDataSource = new JDBCBackendDataSource(dataSources);
         ShardingOrchestrationEventBus.getInstance().register(this);
     }
@@ -71,13 +74,6 @@ public abstract class LogicSchema {
      */
     // TODO : It is used in many places, but we can consider how to optimize it because of being irrational for logic schema.
     public abstract ShardingRule getShardingRule();
-    
-    /**
-     * Get SQL parse engine.
-     * 
-     * @return parse engine
-     */
-    public abstract SQLParseEntry getParseEngine();
     
     /**
      * Get data source parameters.

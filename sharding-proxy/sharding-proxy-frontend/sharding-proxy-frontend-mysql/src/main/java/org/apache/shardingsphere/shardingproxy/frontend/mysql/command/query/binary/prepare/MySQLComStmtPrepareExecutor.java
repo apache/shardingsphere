@@ -59,7 +59,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     public Collection<DatabasePacket> execute() {
         Collection<DatabasePacket> result = new LinkedList<>();
         int currentSequenceId = 0;
-        SQLStatement sqlStatement = logicSchema.getParseEngine().parse(packet.getSql(), true);
+        SQLStatement sqlStatement = logicSchema.getParseEntry().parse(packet.getSql(), true);
         int parametersCount = sqlStatement.getParametersCount();
         result.add(new MySQLComStmtPrepareOKPacket(++currentSequenceId, PREPARED_STATEMENT_REGISTRY.register(packet.getSql(), parametersCount), getNumColumns(), parametersCount, 0));
         Tables tables = new Tables(sqlStatement);

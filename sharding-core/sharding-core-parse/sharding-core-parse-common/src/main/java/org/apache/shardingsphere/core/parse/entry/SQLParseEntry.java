@@ -21,7 +21,9 @@ import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
+import org.apache.shardingsphere.core.parse.rule.registry.ParseRuleRegistry;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.spi.database.DatabaseType;
 
 /**
  * SQL parse entry.
@@ -29,9 +31,11 @@ import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public abstract class SQLParseEntry {
+public final class SQLParseEntry {
     
-    private final ParsingResultCache parsingResultCache;
+    private final DatabaseType databaseType;
+    
+    private final ParsingResultCache parsingResultCache = new ParsingResultCache();
     
     /**
      * Parse SQL.
@@ -40,12 +44,12 @@ public abstract class SQLParseEntry {
      * @param useCache use cache or not
      * @return SQL statement
      */
-    public final SQLStatement parse(final String sql, final boolean useCache) {
+    public SQLStatement parse(final String sql, final boolean useCache) {
         Optional<SQLStatement> cachedSQLStatement = getSQLStatementFromCache(sql, useCache);
         if (cachedSQLStatement.isPresent()) {
             return cachedSQLStatement.get();
         }
-        SQLStatement result = getSQLParseEngine(sql).parse();
+        SQLStatement result = new SQLParseEngine(ParseRuleRegistry.getInstance(), databaseType, sql).parse();
         if (useCache) {
             parsingResultCache.put(sql, result);
         }
@@ -55,6 +59,4 @@ public abstract class SQLParseEntry {
     private Optional<SQLStatement> getSQLStatementFromCache(final String sql, final boolean useCache) {
         return useCache ? Optional.fromNullable(parsingResultCache.getSQLStatement(sql)) : Optional.<SQLStatement>absent();
     }
-    
-    protected abstract SQLParseEngine getSQLParseEngine(String sql);
 }

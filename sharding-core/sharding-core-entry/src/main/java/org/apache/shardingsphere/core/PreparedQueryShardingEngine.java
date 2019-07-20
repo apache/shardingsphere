@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core;
 
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
-import org.apache.shardingsphere.core.parse.entry.ShardingSQLParseEntry;
+import org.apache.shardingsphere.core.parse.entry.SQLParseEntry;
 import org.apache.shardingsphere.core.route.PreparedStatementRoutingEngine;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -45,9 +45,9 @@ public final class PreparedQueryShardingEngine extends BaseShardingEngine {
     private final PreparedStatementRoutingEngine routingEngine;
     
     public PreparedQueryShardingEngine(final String sql, final ShardingRule shardingRule, final ShardingProperties shardingProperties,
-                                       final ShardingMetaData metaData, final DatabaseType databaseType, final ShardingSQLParseEntry shardingSQLParseEntry) {
+                                       final ShardingMetaData metaData, final DatabaseType databaseType, final SQLParseEntry sqlParseEntry) {
         super(shardingRule, shardingProperties, metaData);
-        routingEngine = new PreparedStatementRoutingEngine(sql, shardingRule, metaData, databaseType, shardingSQLParseEntry);
+        routingEngine = new PreparedStatementRoutingEngine(sql, shardingRule, metaData, databaseType, sqlParseEntry);
     }
     
     @Override

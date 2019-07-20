@@ -25,7 +25,6 @@ import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parse.entry.EncryptSQLParseEntry;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.util.ConfigurationLogger;
@@ -49,14 +48,11 @@ public final class EncryptSchema extends LogicSchema {
     
     private EncryptRule encryptRule;
     
-    private EncryptSQLParseEntry parseEngine;
-    
     public EncryptSchema(final String name, final Map<String, YamlDataSourceParameter> dataSources, final EncryptRuleConfiguration encryptRuleConfiguration) {
         super(name, dataSources);
         encryptRule = new EncryptRule(encryptRuleConfiguration);
         shardingRule = new ShardingRule(new ShardingRuleConfiguration(), getDataSources().keySet());
         metaData = createShardingMetaData();
-        parseEngine = new EncryptSQLParseEntry(LogicSchemas.getInstance().getDatabaseType());
     }
     
     private ShardingMetaData createShardingMetaData() {
@@ -75,6 +71,5 @@ public final class EncryptSchema extends LogicSchema {
     public synchronized void renew(final EncryptRuleChangedEvent encryptRuleChangedEvent) {
         ConfigurationLogger.log(encryptRuleChangedEvent.getEncryptRuleConfiguration());
         encryptRule = new EncryptRule(encryptRuleChangedEvent.getEncryptRuleConfiguration());
-        parseEngine = new EncryptSQLParseEntry(LogicSchemas.getInstance().getDatabaseType());
     }
 }
