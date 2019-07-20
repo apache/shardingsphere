@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core;
 
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
-import org.apache.shardingsphere.core.parse.entry.SQLParseEntry;
+import org.apache.shardingsphere.core.parse.SQLParseEntry;
 import org.apache.shardingsphere.core.route.PreparedStatementRoutingEngine;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;

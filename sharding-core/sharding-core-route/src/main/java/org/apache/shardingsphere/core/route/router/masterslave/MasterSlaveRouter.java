@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.route.router.masterslave;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
-import org.apache.shardingsphere.core.parse.entry.SQLParseEntry;
+import org.apache.shardingsphere.core.parse.SQLParseEntry;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.SQLLogger;

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.dbtest.engine.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
-import org.apache.shardingsphere.core.parse.SQLParseEngine;
+import org.apache.shardingsphere.core.parse.core.SQLParseKernel;
 import org.apache.shardingsphere.core.parse.rule.registry.ParseRuleRegistry;
 import org.apache.shardingsphere.dbtest.cases.assertion.IntegrateTestCasesLoader;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCase;
@@ -66,7 +66,7 @@ public final class IntegrateTestParameters {
             String sqlCaseId = each[0].toString();
             String databaseType = each[1].toString();
             SQLCaseType caseType = (SQLCaseType) each[2];
-            Class<?> sqlStatementClass = new SQLParseEngine(ParseRuleRegistry.getInstance(), 
+            Class<?> sqlStatementClass = new SQLParseKernel(ParseRuleRegistry.getInstance(), 
                     DatabaseTypes.getTrunkDatabaseType(databaseType), sqlCasesLoader.getSQL(sqlCaseId, SQLCaseType.Placeholder, Collections.emptyList())).parse().getClass();
             if (!sqlType.getSqlStatementClass().isAssignableFrom(sqlStatementClass)) {
                 continue;
@@ -119,7 +119,7 @@ public final class IntegrateTestParameters {
             String sqlCaseId = each[0].toString();
             String databaseType = each[1].toString();
             SQLCaseType caseType = (SQLCaseType) each[2];
-            Class<?> sqlStatementClass = new SQLParseEngine(ParseRuleRegistry.getInstance(), 
+            Class<?> sqlStatementClass = new SQLParseKernel(ParseRuleRegistry.getInstance(), 
                     DatabaseTypes.getTrunkDatabaseType(databaseType), sqlCasesLoader.getSQL(sqlCaseId, SQLCaseType.Placeholder, Collections.emptyList())).parse().getClass();
             if (!sqlType.getSqlStatementClass().isAssignableFrom(sqlStatementClass)) {
                 continue;

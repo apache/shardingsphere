@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.parse.rule.registry.extractor;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.core.parse.extractor.api.SQLSegmentExtractor;
+import org.apache.shardingsphere.core.parse.core.extractor.api.SQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.rule.jaxb.entity.extractor.ExtractorRuleDefinitionEntity;
 import org.apache.shardingsphere.core.parse.rule.jaxb.entity.extractor.ExtractorRuleEntity;
 

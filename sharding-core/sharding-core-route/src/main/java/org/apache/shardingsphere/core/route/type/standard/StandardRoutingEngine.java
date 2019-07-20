@@ -21,11 +21,11 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
+import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.sharding.segment.insert.InsertOptimizeResultUnit;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingConditionOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingInsertOptimizedStatement;
-import org.apache.shardingsphere.core.parse.exception.SQLParsingException;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
@@ -69,7 +69,7 @@ public final class StandardRoutingEngine implements RoutingEngine {
     @Override
     public RoutingResult route() {
         if (isDMLForModify(optimizedStatement.getSQLStatement()) && !optimizedStatement.getTables().isSingleTable()) {
-            throw new SQLParsingException("Cannot support Multiple-Table for '%s'.", optimizedStatement.getSQLStatement());
+            throw new ShardingException("Cannot support Multiple-Table for '%s'.", optimizedStatement.getSQLStatement());
         }
         return generateRoutingResult(getDataNodes(shardingRule.getTableRule(logicTableName)));
     }

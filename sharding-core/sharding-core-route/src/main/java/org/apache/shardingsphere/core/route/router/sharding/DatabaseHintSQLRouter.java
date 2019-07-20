@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.route.router.sharding;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.optimize.transparent.statement.TransparentOptimizedStatement;
-import org.apache.shardingsphere.core.parse.SQLParseEngine;
+import org.apache.shardingsphere.core.parse.core.SQLParseKernel;
 import org.apache.shardingsphere.core.parse.rule.registry.ParseRuleRegistry;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
@@ -47,7 +47,7 @@ public final class DatabaseHintSQLRouter implements ShardingRouter {
     
     @Override
     public SQLStatement parse(final String logicSQL, final boolean useCache) {
-        return new SQLParseEngine(ParseRuleRegistry.getInstance(), databaseType, logicSQL).parse();
+        return new SQLParseKernel(ParseRuleRegistry.getInstance(), databaseType, logicSQL).parse();
     }
     
     @Override

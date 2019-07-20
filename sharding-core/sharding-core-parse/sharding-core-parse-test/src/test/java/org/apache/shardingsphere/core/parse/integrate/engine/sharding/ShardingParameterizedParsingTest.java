@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.parse.integrate.engine.sharding;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
-import org.apache.shardingsphere.core.parse.entry.SQLParseEntry;
+import org.apache.shardingsphere.core.parse.SQLParseEntry;
 import org.apache.shardingsphere.core.parse.integrate.asserts.ShardingSQLStatementAssert;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.ParserResultSetRegistry;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.ShardingParserResultSetRegistry;

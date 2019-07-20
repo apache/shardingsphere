@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.optimize.sharding.engnie.dml;
 
 import com.google.common.base.Optional;
+import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
 import org.apache.shardingsphere.core.optimize.sharding.engnie.ShardingOptimizeEngine;
@@ -28,7 +29,6 @@ import org.apache.shardingsphere.core.optimize.sharding.segment.insert.InsertOpt
 import org.apache.shardingsphere.core.optimize.sharding.segment.insert.ShardingInsertColumns;
 import org.apache.shardingsphere.core.optimize.sharding.segment.insert.value.InsertValueEngine;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingInsertOptimizedStatement;
-import org.apache.shardingsphere.core.parse.exception.SQLParsingException;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
@@ -99,7 +99,7 @@ public final class ShardingInsertOptimizeEngine implements ShardingOptimizeEngin
     private void checkDuplicateKeyForShardingKey(final String tableName) {
         Optional<OnDuplicateKeyColumnsSegment> onDuplicateKeyColumnsSegment = insertStatement.findSQLSegment(OnDuplicateKeyColumnsSegment.class);
         if (onDuplicateKeyColumnsSegment.isPresent() && isUpdateShardingKey(onDuplicateKeyColumnsSegment.get(), tableName)) {
-            throw new SQLParsingException("INSERT INTO .... ON DUPLICATE KEY UPDATE can not support update for sharding column.");
+            throw new ShardingException("INSERT INTO .... ON DUPLICATE KEY UPDATE can not support update for sharding column.");
         }
     }
     

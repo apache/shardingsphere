@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.parse.integrate.engine.encrypt;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
-import org.apache.shardingsphere.core.parse.entry.SQLParseEntry;
+import org.apache.shardingsphere.core.parse.SQLParseEntry;
 import org.apache.shardingsphere.core.parse.integrate.asserts.EncryptSQLStatementAssert;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.EncryptParserResultSetRegistry;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.ParserResultSetRegistry;

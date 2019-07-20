@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.parse.rule.registry.filler;
 
-import org.apache.shardingsphere.core.parse.filler.impl.ddl.column.ColumnDefinitionFiller;
+import org.apache.shardingsphere.core.parse.core.filler.impl.ddl.column.ColumnDefinitionFiller;
 import org.apache.shardingsphere.core.parse.rule.jaxb.entity.filler.FillerRuleDefinitionEntity;
 import org.apache.shardingsphere.core.parse.rule.jaxb.loader.filler.FillerRuleDefinitionEntityLoader;
 import org.apache.shardingsphere.core.parse.sql.segment.ddl.column.ColumnDefinitionSegment;

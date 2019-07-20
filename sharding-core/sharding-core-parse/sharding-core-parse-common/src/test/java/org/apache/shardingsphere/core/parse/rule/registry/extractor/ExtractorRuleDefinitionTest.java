@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.parse.rule.registry.extractor;
 
-import org.apache.shardingsphere.core.parse.extractor.impl.common.schema.SchemaExtractor;
+import org.apache.shardingsphere.core.parse.core.extractor.impl.common.schema.SchemaExtractor;
 import org.apache.shardingsphere.core.parse.rule.jaxb.entity.extractor.ExtractorRuleDefinitionEntity;
 import org.apache.shardingsphere.core.parse.rule.jaxb.loader.extractor.ExtractorRuleDefinitionEntityLoader;
 import org.junit.Test;
