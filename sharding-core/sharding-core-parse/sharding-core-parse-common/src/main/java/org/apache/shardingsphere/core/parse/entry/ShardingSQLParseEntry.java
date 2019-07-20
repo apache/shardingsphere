@@ -31,8 +31,8 @@ public final class ShardingSQLParseEntry extends SQLParseEntry {
     
     private final DatabaseType databaseType;
     
-    public ShardingSQLParseEntry(final DatabaseType databaseType, final ParsingResultCache parsingResultCache) {
-        super(parsingResultCache);
+    public ShardingSQLParseEntry(final DatabaseType databaseType) {
+        super(new ParsingResultCache());
         this.databaseType = databaseType;
     }
     

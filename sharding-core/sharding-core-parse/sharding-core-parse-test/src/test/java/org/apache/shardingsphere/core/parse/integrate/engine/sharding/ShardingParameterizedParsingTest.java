@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.parse.integrate.engine.sharding;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
-import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
 import org.apache.shardingsphere.core.parse.entry.ShardingSQLParseEntry;
 import org.apache.shardingsphere.core.parse.integrate.asserts.ShardingSQLStatementAssert;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.ParserResultSetRegistry;
@@ -46,8 +45,6 @@ public final class ShardingParameterizedParsingTest {
     
     private static ParserResultSetRegistry parserResultSetRegistry = ShardingParserResultSetRegistry.getInstance().getRegistry();
     
-    private static ParsingResultCache parsingResultCache = new ParsingResultCache();
-    
     private final String sqlCaseId;
     
     private final String databaseType;
@@ -63,7 +60,7 @@ public final class ShardingParameterizedParsingTest {
     @Test
     public void assertSupportedSQL() {
         String sql = sqlCasesLoader.getSQL(sqlCaseId, sqlCaseType, parserResultSetRegistry.get(sqlCaseId).getParameters());
-        SQLStatement sqlStatement = new ShardingSQLParseEntry(DatabaseTypes.getTrunkDatabaseType(databaseType), parsingResultCache).parse(sql, false);
+        SQLStatement sqlStatement = new ShardingSQLParseEntry(DatabaseTypes.getTrunkDatabaseType(databaseType)).parse(sql, false);
         new ShardingSQLStatementAssert(sqlStatement, sqlCaseId, sqlCaseType).assertSQLStatement();
     }
 }

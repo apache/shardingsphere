@@ -25,7 +25,7 @@ import org.apache.shardingsphere.core.execute.metadata.TableMetaDataInitializer;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
-import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
+import org.apache.shardingsphere.core.parse.entry.SQLParseEntry;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.orchestration.internal.eventbus.ShardingOrchestrationEventBus;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
@@ -49,13 +49,10 @@ public abstract class LogicSchema {
     
     private final String name;
     
-    private final ParsingResultCache parsingResultCache;
-    
     private JDBCBackendDataSource backendDataSource;
     
     public LogicSchema(final String name, final Map<String, YamlDataSourceParameter> dataSources) {
         this.name = name;
-        parsingResultCache = new ParsingResultCache();
         backendDataSource = new JDBCBackendDataSource(dataSources);
         ShardingOrchestrationEventBus.getInstance().register(this);
     }
@@ -74,6 +71,13 @@ public abstract class LogicSchema {
      */
     // TODO : It is used in many places, but we can consider how to optimize it because of being irrational for logic schema.
     public abstract ShardingRule getShardingRule();
+    
+    /**
+     * Get SQL parse engine.
+     * 
+     * @return parse engine
+     */
+    public abstract SQLParseEntry getParseEngine();
     
     /**
      * Get data source parameters.

@@ -252,7 +252,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     private void shard(final String sql) {
         ShardingContext shardingContext = connection.getShardingContext();
         SimpleQueryShardingEngine shardingEngine = new SimpleQueryShardingEngine(shardingContext.getShardingRule(), 
-                shardingContext.getShardingProperties(), shardingContext.getMetaData(), shardingContext.getDatabaseType(), shardingContext.getParsingResultCache());
+                shardingContext.getShardingProperties(), shardingContext.getMetaData(), shardingContext.getDatabaseType(), shardingContext.getShardingSQLParseEntry());
         routeResult = shardingEngine.shard(sql, Collections.emptyList());
     }
     

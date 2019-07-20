@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.parse.integrate.engine.sharding;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
-import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
 import org.apache.shardingsphere.core.parse.entry.ShardingSQLParseEntry;
 import org.apache.shardingsphere.core.parse.exception.SQLParsingException;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
@@ -39,8 +38,6 @@ public final class ShardingParameterizedUnsupportedParsingTest {
     
     private static SQLCasesLoader sqlCasesLoader = ShardingUnsupportedSQLCasesRegistry.getInstance().getSqlCasesLoader();
     
-    private static ParsingResultCache parsingResultCache = new ParsingResultCache();
-    
     private final String sqlCaseId;
     
     private final String databaseType;
@@ -55,6 +52,6 @@ public final class ShardingParameterizedUnsupportedParsingTest {
     @Test(expected = SQLParsingException.class)
     public void assertUnsupportedSQL() {
         String sql = sqlCasesLoader.getSQL(sqlCaseId, sqlCaseType, Collections.emptyList());
-        new ShardingSQLParseEntry(DatabaseTypes.getTrunkDatabaseType(databaseType), parsingResultCache).parse(sql, false);
+        new ShardingSQLParseEntry(DatabaseTypes.getTrunkDatabaseType(databaseType)).parse(sql, false);
     }
 }
