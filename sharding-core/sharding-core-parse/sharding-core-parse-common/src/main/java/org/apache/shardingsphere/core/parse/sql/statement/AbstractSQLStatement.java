@@ -55,7 +55,7 @@ public abstract class AbstractSQLStatement implements SQLStatement {
     @SuppressWarnings("unchecked")
     public final <T extends SQLSegment> Optional<T> findSQLSegment(final Class<T> sqlSegmentType) {
         for (SQLSegment each : sqlSegments) {
-            if (each.getClass().equals(sqlSegmentType)) {
+            if (sqlSegmentType.isAssignableFrom(each.getClass())) {
                 return Optional.of((T) each);
             }
         }
@@ -67,7 +67,7 @@ public abstract class AbstractSQLStatement implements SQLStatement {
     public final <T extends SQLSegment> Collection<T> findSQLSegments(final Class<T> sqlSegmentType) {
         Collection<T> result = new LinkedList<>();
         for (SQLSegment each : sqlSegments) {
-            if (each.getClass().equals(sqlSegmentType)) {
+            if (sqlSegmentType.isAssignableFrom(each.getClass())) {
                 result.add((T) each);
             }
         }

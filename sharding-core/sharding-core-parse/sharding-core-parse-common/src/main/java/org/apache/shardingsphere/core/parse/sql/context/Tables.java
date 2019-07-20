@@ -23,6 +23,8 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.parse.sql.segment.AliasAvailable;
+import org.apache.shardingsphere.core.parse.sql.segment.TableAvailable;
 import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
@@ -47,9 +49,12 @@ public final class Tables {
     private String schema;
     
     public Tables(final SQLStatement sqlStatement) {
-        for (TableSegment each : sqlStatement.findSQLSegments(TableSegment.class)) {
-            add(new Table(each.getName(), each.getAlias().orNull()));
-            setSchema(each);
+        for (TableAvailable each : sqlStatement.findSQLSegments(TableAvailable.class)) {
+            String alias = each instanceof AliasAvailable ? ((AliasAvailable) each).getAlias().orNull() : null;
+            add(new Table(each.getTableName(), alias));
+            if (each instanceof TableSegment) {
+                setSchema((TableSegment) each);
+            }
         }
     }
     
