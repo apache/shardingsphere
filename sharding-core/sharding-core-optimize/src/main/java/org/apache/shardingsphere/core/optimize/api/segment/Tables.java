@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.context;
+package org.apache.shardingsphere.core.optimize.api.segment;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
