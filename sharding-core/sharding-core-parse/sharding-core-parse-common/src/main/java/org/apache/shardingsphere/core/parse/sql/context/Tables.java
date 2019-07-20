@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.parse.sql.context;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
@@ -32,7 +31,6 @@ import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.TreeSet;
 
 /**
@@ -40,18 +38,17 @@ import java.util.TreeSet;
  * 
  * @author zhangliang
  */
-@NoArgsConstructor
-@ToString(of = "tables")
+@ToString
 public final class Tables {
     
-    private final List<Table> tables = new ArrayList<>();
+    private final Collection<Table> tables = new ArrayList<>();
     
     private String schema;
     
     public Tables(final SQLStatement sqlStatement) {
         for (TableAvailable each : sqlStatement.findSQLSegments(TableAvailable.class)) {
             String alias = each instanceof AliasAvailable ? ((AliasAvailable) each).getAlias().orNull() : null;
-            add(new Table(each.getTableName(), alias));
+            tables.add(new Table(each.getTableName(), alias));
             if (each instanceof TableSegment) {
                 setSchema((TableSegment) each);
             }
@@ -65,15 +62,6 @@ public final class Tables {
             }
             schema = tableSegment.getOwner().get().getName();
         }
-    }
-    
-    /**
-     * Add table.
-     * 
-     * @param table table
-     */
-    public void add(final Table table) {
-        tables.add(table);
     }
     
     /**
@@ -105,7 +93,7 @@ public final class Tables {
      */
     public String getSingleTableName() {
         Preconditions.checkArgument(!isEmpty());
-        return tables.get(0).getName();
+        return tables.iterator().next().getName();
     }
     
     /**
@@ -184,14 +172,5 @@ public final class Tables {
      */
     public Optional<String> getSchema() {
         return Optional.fromNullable(schema);
-    }
-    
-    /**
-     * Set schema.
-     * 
-     * @param schema schema
-     */
-    public void setSchema(final String schema) {
-        this.schema = schema;
     }
 }

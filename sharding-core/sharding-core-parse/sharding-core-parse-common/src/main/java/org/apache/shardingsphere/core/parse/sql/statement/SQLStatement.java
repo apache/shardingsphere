@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.parse.sql.statement;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.parse.sql.context.Tables;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 
 import java.util.Collection;
@@ -82,11 +81,4 @@ public interface SQLStatement {
      * @return SQL segments
      */
     <T extends SQLSegment> Collection<T> findSQLSegments(Class<T> sqlSegmentType);
-    
-    /**
-     * Get tables.
-     * 
-     * @return tables
-     */
-    Tables getTables();
 }

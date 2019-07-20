@@ -21,7 +21,6 @@ import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.core.parse.sql.context.Tables;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 
 import java.util.Collection;
@@ -39,8 +38,6 @@ import java.util.LinkedList;
 public abstract class AbstractSQLStatement implements SQLStatement {
     
     private final Collection<SQLSegment> sqlSegments = new LinkedList<>();
-    
-    private final Tables tables = new Tables();
     
     private String logicSQL;
     
