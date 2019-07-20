@@ -22,6 +22,7 @@ import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
 import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.encrypt.segment.EncryptInsertColumns;
 import org.apache.shardingsphere.core.optimize.sharding.segment.insert.InsertOptimizeResultUnit;
+import org.apache.shardingsphere.core.parse.sql.context.Tables;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
@@ -39,6 +40,9 @@ public final class EncryptInsertOptimizedStatement implements InsertOptimizedSta
     private final SQLStatement sqlStatement;
     
     @Getter
+    private final Tables tables;
+    
+    @Getter
     private final EncryptInsertColumns insertColumns;
     
     @Getter
@@ -49,6 +53,7 @@ public final class EncryptInsertOptimizedStatement implements InsertOptimizedSta
     
     public EncryptInsertOptimizedStatement(final SQLStatement sqlStatement, final EncryptInsertColumns insertColumns, final Collection<InsertValue> values) {
         this.sqlStatement = sqlStatement;
+        tables = new Tables(sqlStatement);
         this.insertColumns = insertColumns;
         this.values = values;
     }

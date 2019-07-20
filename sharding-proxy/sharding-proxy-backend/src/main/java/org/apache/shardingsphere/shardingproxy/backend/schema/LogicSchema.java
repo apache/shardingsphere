@@ -24,8 +24,8 @@ import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesCons
 import org.apache.shardingsphere.core.execute.metadata.TableMetaDataInitializer;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
+import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.orchestration.internal.eventbus.ShardingOrchestrationEventBus;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
@@ -117,8 +117,8 @@ public abstract class LogicSchema {
     /**
      * Refresh table meta data.
      * 
-     * @param sqlStatement SQL statement
+     * @param optimizedStatement optimized statement
      */
-    public void refreshTableMetaData(final SQLStatement sqlStatement) {
+    public void refreshTableMetaData(final OptimizedStatement optimizedStatement) {
     }
 }

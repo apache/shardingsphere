@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.optimize.sharding.engnie.ddl;
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.sharding.statement.ddl.ShardingDropIndexOptimizedStatement;
-import org.apache.shardingsphere.core.parse.sql.context.Table;
+import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.DropIndexStatement;
 import org.junit.Before;
@@ -50,7 +50,7 @@ public final class ShardingDropIndexOptimizeEngineTest {
     
     @Test
     public void assertOptimizeWithTableName() {
-        dropIndexStatement.getTables().add(new Table("tbl", null));
+        dropIndexStatement.getSQLSegments().add(new TableSegment(0, 0, "tbl"));
         ShardingDropIndexOptimizedStatement actual = new ShardingDropIndexOptimizeEngine(dropIndexStatement, shardingTableMetaData).optimize();
         assertThat(actual.getSQLStatement(), is((SQLStatement) dropIndexStatement));
         assertThat(actual.getTableName(), is("tbl"));

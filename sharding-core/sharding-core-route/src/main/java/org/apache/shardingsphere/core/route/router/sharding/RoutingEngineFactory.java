@@ -65,7 +65,7 @@ public final class RoutingEngineFactory {
      */
     public static RoutingEngine newInstance(final ShardingRule shardingRule, final ShardingDataSourceMetaData shardingDataSourceMetaData, final OptimizedStatement optimizedStatement) {
         SQLStatement sqlStatement = optimizedStatement.getSQLStatement();
-        Collection<String> tableNames = sqlStatement.getTables().getTableNames();
+        Collection<String> tableNames = optimizedStatement.getTables().getTableNames();
         if (sqlStatement instanceof TCLStatement) {
             return new DatabaseBroadcastRoutingEngine(shardingRule);
         }
@@ -106,12 +106,12 @@ public final class RoutingEngineFactory {
     }
     
     private static RoutingEngine getDCLRoutingEngine(final ShardingRule shardingRule, final OptimizedStatement optimizedStatement, final ShardingDataSourceMetaData shardingDataSourceMetaData) {
-        return isGrantForSingleTable(optimizedStatement.getSQLStatement()) 
+        return isGrantForSingleTable(optimizedStatement) 
                 ? new TableBroadcastRoutingEngine(shardingRule, optimizedStatement) : new InstanceBroadcastRoutingEngine(shardingRule, shardingDataSourceMetaData);
     }
     
-    private static boolean isGrantForSingleTable(final SQLStatement sqlStatement) {
-        return !sqlStatement.getTables().isEmpty() && !"*".equals(sqlStatement.getTables().getSingleTableName());
+    private static boolean isGrantForSingleTable(final OptimizedStatement optimizedStatement) {
+        return !optimizedStatement.getTables().isEmpty() && !"*".equals(optimizedStatement.getTables().getSingleTableName());
     }
     
     private static RoutingEngine getShardingRoutingEngine(final ShardingRule shardingRule, final ShardingConditionOptimizedStatement optimizedStatement, final Collection<String> tableNames) {

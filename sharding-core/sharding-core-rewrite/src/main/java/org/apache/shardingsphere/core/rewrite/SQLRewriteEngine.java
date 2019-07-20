@@ -102,7 +102,7 @@ public final class SQLRewriteEngine {
     private void encryptInsertOptimizeResultUnit(final EncryptEngine encryptEngine, final OptimizedStatement optimizedStatement) {
         for (InsertOptimizeResultUnit unit : ((InsertOptimizedStatement) optimizedStatement).getUnits()) {
             for (String each : ((InsertOptimizedStatement) optimizedStatement).getInsertColumns().getRegularColumnNames()) {
-                encryptInsertOptimizeResult(encryptEngine, unit, optimizedStatement.getSQLStatement().getTables().getSingleTableName(), each);
+                encryptInsertOptimizeResult(encryptEngine, unit, optimizedStatement.getTables().getSingleTableName(), each);
             }
         }
     }

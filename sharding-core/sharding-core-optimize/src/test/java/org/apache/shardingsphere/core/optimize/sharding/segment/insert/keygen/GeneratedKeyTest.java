@@ -21,7 +21,7 @@ import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
 import org.apache.shardingsphere.core.optimize.sharding.segment.insert.GeneratedKey;
 import org.apache.shardingsphere.core.optimize.sharding.segment.insert.ShardingInsertColumns;
-import org.apache.shardingsphere.core.parse.sql.context.Table;
+import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.complex.CommonExpressionSegment;
@@ -58,7 +58,7 @@ public final class GeneratedKeyTest {
     
     @Before
     public void setUp() {
-        insertStatement.getTables().add(new Table("tbl", null));
+        insertStatement.setTable(new TableSegment(0, 0, "tbl"));
         insertStatement.getColumns().add(new ColumnSegment(0, 0, "id"));
         when(insertColumns.getRegularColumnNames()).thenReturn(Collections.singletonList("id"));
     }

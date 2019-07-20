@@ -26,6 +26,7 @@ import org.apache.shardingsphere.core.parse.integrate.asserts.table.AlterTableAs
 import org.apache.shardingsphere.core.parse.integrate.asserts.table.TableAssert;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.ShardingParserResultSetRegistry;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.root.ParserResult;
+import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.LimitSegment;
@@ -80,7 +81,7 @@ public final class ShardingSQLStatementAssert {
      * Assert SQL statement.
      */
     public void assertSQLStatement() {
-        tableAssert.assertTables(actual.getTables(), expected.getTables());
+        tableAssert.assertTables(actual.findSQLSegments(TableSegment.class), expected.getTables());
         indexAssert.assertParametersCount(actual.getParametersCount(), expected.getParameters().size());
         if (actual instanceof SelectStatement) {
             assertSelectStatement((SelectStatement) actual);

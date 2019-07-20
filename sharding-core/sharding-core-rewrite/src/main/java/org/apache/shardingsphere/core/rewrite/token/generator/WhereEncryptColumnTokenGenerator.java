@@ -52,7 +52,7 @@ public final class WhereEncryptColumnTokenGenerator implements CollectionSQLToke
         Collection<EncryptColumnToken> result = new LinkedList<>();
         for (EncryptCondition each : optimizedStatement.getEncryptConditions().getConditions()) {
             // FIXME where SQL may have more than one table, optimizedStatement.getSQLStatement().getTables().getSingleTableName() is incorrect
-            result.add(createWhereEncryptColumnToken(optimizedStatement.getSQLStatement().getTables().getSingleTableName(), each, parameterBuilder, encryptRule));
+            result.add(createWhereEncryptColumnToken(optimizedStatement.getTables().getSingleTableName(), each, parameterBuilder, encryptRule));
         }
         return result;
     }

@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.core.optimize.encrypt.statement;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.optimize.api.statement.ConditionOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.encrypt.segment.condition.EncryptConditions;
+import org.apache.shardingsphere.core.parse.sql.context.Tables;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
 /**
@@ -28,13 +28,21 @@ import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
 public final class EncryptConditionOptimizedStatement implements ConditionOptimizedStatement, EncryptOptimizedStatement {
     
     private final SQLStatement sqlStatement;
     
     @Getter
+    private final Tables tables;
+    
+    @Getter
     private final EncryptConditions encryptConditions;
+    
+    public EncryptConditionOptimizedStatement(final SQLStatement sqlStatement, final EncryptConditions encryptConditions) {
+        this.sqlStatement = sqlStatement;
+        tables = new Tables(sqlStatement);
+        this.encryptConditions = encryptConditions;
+    }
     
     @Override
     public SQLStatement getSQLStatement() {

@@ -24,6 +24,7 @@ import org.apache.shardingsphere.core.parse.sql.context.Tables;
 import org.apache.shardingsphere.core.parse.sql.segment.common.SchemaSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 
 /**
  * Table filler.
@@ -42,6 +43,9 @@ public final class TableFiller implements SQLSegmentFiller<TableSegment> {
                 throw new SQLParsingException("Cannot support multiple schemas in one SQL");
             }
             sqlStatement.getTables().setSchema(sqlSegment.getOwner().get().getName());
+        }
+        if (sqlStatement instanceof InsertStatement) {
+            ((InsertStatement) sqlStatement).setTable(sqlSegment);
         }
     }
     

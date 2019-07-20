@@ -19,10 +19,13 @@ package org.apache.shardingsphere.core.parse.sql.context;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,13 +38,29 @@ import java.util.TreeSet;
  * 
  * @author zhangliang
  */
-@Setter
+@NoArgsConstructor
 @ToString(of = "tables")
 public final class Tables {
     
     private final List<Table> tables = new ArrayList<>();
     
     private String schema;
+    
+    public Tables(final SQLStatement sqlStatement) {
+        for (TableSegment each : sqlStatement.findSQLSegments(TableSegment.class)) {
+            add(new Table(each.getName(), each.getAlias().orNull()));
+            setSchema(each);
+        }
+    }
+    
+    private void setSchema(final TableSegment tableSegment) {
+        if (tableSegment.getOwner().isPresent()) {
+            if (null != schema && !tableSegment.getOwner().get().getName().equalsIgnoreCase(schema)) {
+                throw new ShardingException("Cannot support multiple schemas in one SQL");
+            }
+            schema = tableSegment.getOwner().get().getName();
+        }
+    }
     
     /**
      * Add table.
@@ -160,5 +179,14 @@ public final class Tables {
      */
     public Optional<String> getSchema() {
         return Optional.fromNullable(schema);
+    }
+    
+    /**
+     * Set schema.
+     * 
+     * @param schema schema
+     */
+    public void setSchema(final String schema) {
+        this.schema = schema;
     }
 }

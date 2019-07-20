@@ -21,6 +21,7 @@ import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
@@ -40,11 +41,13 @@ import java.util.LinkedList;
 @ToString(callSuper = true)
 public final class InsertStatement extends DMLStatement {
     
+    private TableSegment table;
+    
+    private SetAssignmentsSegment setAssignment;
+    
     private final Collection<ColumnSegment> columns = new LinkedList<>();
     
     private final Collection<InsertValuesSegment> values = new LinkedList<>();
-    
-    private SetAssignmentsSegment setAssignment;
     
     /**
      * Get set assignment segment.

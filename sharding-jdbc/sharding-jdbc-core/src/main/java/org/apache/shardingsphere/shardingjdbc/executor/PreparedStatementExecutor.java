@@ -66,7 +66,7 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
      * @throws SQLException SQL exception
      */
     public void init(final SQLRouteResult routeResult) throws SQLException {
-        setSqlStatement(routeResult.getOptimizedStatement().getSQLStatement());
+        setOptimizedStatement(routeResult.getOptimizedStatement());
         getExecuteGroups().addAll(obtainExecuteGroups(routeResult.getRouteUnits()));
         cacheStatements();
     }

@@ -22,7 +22,6 @@ import com.google.common.collect.Range;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingConditions;
-import org.apache.shardingsphere.core.parse.sql.context.Table;
 import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
@@ -81,7 +80,7 @@ public final class ShardingSelectOptimizeEngineTest {
         when(encryptRule.getEncryptEngine()).thenReturn(encryptEngine);
         when(shardingRule.getEncryptRule()).thenReturn(encryptRule);
         selectStatement = new SelectStatement();
-        selectStatement.getTables().add(new Table("tbl", null));
+        selectStatement.getSQLSegments().add(new TableSegment(0, 0, "tbl"));
     }
     
     @Test

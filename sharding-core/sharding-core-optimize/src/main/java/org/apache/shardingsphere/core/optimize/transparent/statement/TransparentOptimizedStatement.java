@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.core.optimize.transparent.statement;
 
-import lombok.RequiredArgsConstructor;
+import lombok.Getter;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.parse.sql.context.Tables;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
 /**
@@ -26,10 +27,17 @@ import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
 public final class TransparentOptimizedStatement implements OptimizedStatement {
     
     private final SQLStatement sqlStatement;
+    
+    @Getter
+    private final Tables tables;
+    
+    public TransparentOptimizedStatement(final SQLStatement sqlStatement) {
+        this.sqlStatement = sqlStatement;
+        tables = new Tables(sqlStatement);
+    }
     
     @Override
     public SQLStatement getSQLStatement() {

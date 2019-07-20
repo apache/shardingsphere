@@ -32,6 +32,7 @@ import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.Sele
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.orderby.OrderBy;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.pagination.Pagination;
+import org.apache.shardingsphere.core.parse.sql.context.Tables;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.IndexOrderByItemSegment;
@@ -52,6 +53,8 @@ import java.util.Map;
 @Setter
 public final class ShardingSelectOptimizedStatement extends ShardingConditionOptimizedStatement {
     
+    private final Tables tables;
+    
     private final GroupBy groupBy;
     
     private final OrderBy orderBy;
@@ -65,6 +68,7 @@ public final class ShardingSelectOptimizedStatement extends ShardingConditionOpt
     public ShardingSelectOptimizedStatement(final SQLStatement sqlStatement, final List<ShardingCondition> shardingConditions, final List<EncryptCondition> encryptConditions,
                                             final GroupBy groupBy, final OrderBy orderBy, final SelectItems selectItems, final Pagination pagination) {
         super(sqlStatement, new ShardingConditions(shardingConditions), new EncryptConditions(encryptConditions));
+        this.tables = new Tables(sqlStatement);
         this.groupBy = groupBy;
         this.orderBy = orderBy;
         this.selectItems = selectItems;

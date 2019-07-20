@@ -23,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.sharding.engnie.ShardingOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.sharding.statement.ddl.ShardingDropIndexOptimizedStatement;
+import org.apache.shardingsphere.core.parse.sql.context.Tables;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.DropIndexStatement;
 
 /**
@@ -39,12 +40,14 @@ public final class ShardingDropIndexOptimizeEngine implements ShardingOptimizeEn
     
     @Override
     public ShardingDropIndexOptimizedStatement optimize() {
-        return new ShardingDropIndexOptimizedStatement(dropIndexStatement, getTableName());
+        Tables tables = new Tables(dropIndexStatement);
+        return new ShardingDropIndexOptimizedStatement(dropIndexStatement, tables, getTableName(tables));
     }
     
-    private String getTableName() {
-        if (!dropIndexStatement.getTables().isEmpty()) {
-            return dropIndexStatement.getTables().getSingleTableName();
+    // TODO simplify from tables
+    private String getTableName(final Tables tables) {
+        if (!tables.isEmpty()) {
+            return tables.getSingleTableName();
         }
         Optional<String> tableName = shardingTableMetaData.getLogicTableName(dropIndexStatement.getIndexName());
         Preconditions.checkState(tableName.isPresent(), "Cannot find table for index name `%s` from sharding rule.", dropIndexStatement.getIndexName());

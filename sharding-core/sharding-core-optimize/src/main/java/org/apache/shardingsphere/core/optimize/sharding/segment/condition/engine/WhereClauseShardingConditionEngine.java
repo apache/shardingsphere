@@ -27,6 +27,7 @@ import org.apache.shardingsphere.core.optimize.sharding.segment.condition.Always
 import org.apache.shardingsphere.core.optimize.sharding.segment.condition.AlwaysFalseShardingCondition;
 import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.sharding.segment.condition.generator.ConditionValueGeneratorFactory;
+import org.apache.shardingsphere.core.parse.sql.context.Tables;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.SubqueryPredicateSegment;
@@ -72,12 +73,13 @@ public final class WhereClauseShardingConditionEngine {
         }
         List<ShardingCondition> result = new ArrayList<>();
         Optional<WhereSegment> whereSegment = ((WhereSegmentAvailable) sqlStatement).getWhere();
+        Tables tables = new Tables(sqlStatement);
         if (whereSegment.isPresent()) {
-            result.addAll(createShardingConditions(sqlStatement, parameters, whereSegment.get().getAndPredicates()));
+            result.addAll(createShardingConditions(tables, whereSegment.get().getAndPredicates(), parameters));
         }
         Collection<SubqueryPredicateSegment> subqueryPredicateSegments = sqlStatement.findSQLSegments(SubqueryPredicateSegment.class);
         for (SubqueryPredicateSegment each : subqueryPredicateSegments) {
-            Collection<ShardingCondition> subqueryShardingConditions = createShardingConditions(sqlStatement, parameters, each.getAndPredicates());
+            Collection<ShardingCondition> subqueryShardingConditions = createShardingConditions(tables, each.getAndPredicates(), parameters);
             if (!result.containsAll(subqueryShardingConditions)) {
                 result.addAll(subqueryShardingConditions);
             }
@@ -85,10 +87,10 @@ public final class WhereClauseShardingConditionEngine {
         return result;
     }
     
-    private Collection<ShardingCondition> createShardingConditions(final SQLStatement sqlStatement, final List<Object> parameters, final Collection<AndPredicate> andPredicates) {
+    private Collection<ShardingCondition> createShardingConditions(final Tables tables, final Collection<AndPredicate> andPredicates, final List<Object> parameters) {
         Collection<ShardingCondition> result = new LinkedList<>();
         for (AndPredicate each : andPredicates) {
-            Map<Column, Collection<RouteValue>> routeValueMap = createRouteValueMap(sqlStatement, parameters, each);
+            Map<Column, Collection<RouteValue>> routeValueMap = createRouteValueMap(tables, each, parameters);
             if (routeValueMap.isEmpty()) {
                 return Collections.emptyList();
             }
@@ -97,10 +99,10 @@ public final class WhereClauseShardingConditionEngine {
         return result;
     }
     
-    private Map<Column, Collection<RouteValue>> createRouteValueMap(final SQLStatement sqlStatement, final List<Object> parameters, final AndPredicate andPredicate) {
+    private Map<Column, Collection<RouteValue>> createRouteValueMap(final Tables tables, final AndPredicate andPredicate, final List<Object> parameters) {
         Map<Column, Collection<RouteValue>> result = new HashMap<>();
         for (PredicateSegment each : andPredicate.getPredicates()) {
-            Optional<String> tableName = sqlStatement.getTables().findTableName(each.getColumn(), shardingTableMetaData);
+            Optional<String> tableName = tables.findTableName(each.getColumn(), shardingTableMetaData);
             if (!tableName.isPresent() || !shardingRule.isShardingColumn(each.getColumn().getName(), tableName.get())) {
                 continue;
             }

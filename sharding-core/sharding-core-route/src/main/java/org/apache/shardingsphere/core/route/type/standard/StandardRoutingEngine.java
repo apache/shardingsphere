@@ -68,7 +68,7 @@ public final class StandardRoutingEngine implements RoutingEngine {
     
     @Override
     public RoutingResult route() {
-        if (isDMLForModify(optimizedStatement.getSQLStatement()) && !optimizedStatement.getSQLStatement().getTables().isSingleTable()) {
+        if (isDMLForModify(optimizedStatement.getSQLStatement()) && !optimizedStatement.getTables().isSingleTable()) {
             throw new SQLParsingException("Cannot support Multiple-Table for '%s'.", optimizedStatement.getSQLStatement());
         }
         return generateRoutingResult(getDataNodes(shardingRule.getTableRule(logicTableName)));

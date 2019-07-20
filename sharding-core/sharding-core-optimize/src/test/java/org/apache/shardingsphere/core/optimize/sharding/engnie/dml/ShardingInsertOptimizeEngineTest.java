@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.optimize.sharding.engnie.dml;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingInsertOptimizedStatement;
-import org.apache.shardingsphere.core.parse.sql.context.Table;
+import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
@@ -107,7 +107,7 @@ public final class ShardingInsertOptimizeEngineTest {
     
     private void initializeInsertValuesWithPlaceholder() {
         insertValuesStatementWithPlaceholder = new InsertStatement();
-        insertValuesStatementWithPlaceholder.getTables().add(new Table("t_order", null));
+        insertValuesStatementWithPlaceholder.setTable(new TableSegment(0, 0, "t_order"));
         insertValuesStatementWithPlaceholder.getColumns().add(new ColumnSegment(0, 0, "user_id"));
         insertValuesStatementWithPlaceholder.getColumns().add(new ColumnSegment(0, 0, "status"));
         InsertValuesSegment insertValuesSegment = new InsertValuesSegment(
@@ -118,7 +118,7 @@ public final class ShardingInsertOptimizeEngineTest {
     
     private void initializeInsertValuesWithPlaceholderWithEncrypt() {
         insertValuesStatementWithPlaceholderWithEncrypt = new InsertStatement();
-        insertValuesStatementWithPlaceholderWithEncrypt.getTables().add(new Table("t_encrypt", null));
+        insertValuesStatementWithPlaceholderWithEncrypt.setTable(new TableSegment(0, 0, "t_encrypt"));
         insertValuesStatementWithPlaceholderWithEncrypt.getColumns().add(new ColumnSegment(0, 0, "user_id"));
         insertValuesStatementWithPlaceholderWithEncrypt.getColumns().add(new ColumnSegment(0, 0, "status"));
         InsertValuesSegment insertValuesSegment = new InsertValuesSegment(
@@ -129,38 +129,38 @@ public final class ShardingInsertOptimizeEngineTest {
     
     private void initializeInsertValuesWithoutPlaceholder() {
         insertValuesStatementWithoutPlaceholder = new InsertStatement();
-        insertValuesStatementWithoutPlaceholder.getTables().add(new Table("t_order", null));
+        insertValuesStatementWithoutPlaceholder.setTable(new TableSegment(0, 0, "t_order"));
     }
     
     private void initializeInsertValuesWithoutPlaceholderWithQueryEncrypt() {
         insertValuesStatementWithoutPlaceholderWithQueryEncrypt = new InsertStatement();
-        insertValuesStatementWithoutPlaceholderWithQueryEncrypt.getTables().add(new Table("t_encrypt_query", null));
+        insertValuesStatementWithoutPlaceholderWithQueryEncrypt.setTable(new TableSegment(0, 0, "t_encrypt_query"));
     }
     
     private void initializeInsertSetWithPlaceholder() {
         insertSetStatementWithPlaceholder = new InsertStatement();
-        insertSetStatementWithPlaceholder.getTables().add(new Table("t_order", null));
+        insertSetStatementWithPlaceholder.setTable(new TableSegment(0, 0, "t_order"));
         insertSetStatementWithPlaceholder.getColumns().add(new ColumnSegment(0, 0, "user_id"));
         insertSetStatementWithPlaceholder.getColumns().add(new ColumnSegment(0, 0, "status"));
     }
     
     private void initializeInsertSetWithPlaceholderWithQueryEncrypt() {
         insertSetStatementWithPlaceholderWithQueryEncrypt = new InsertStatement();
-        insertSetStatementWithPlaceholderWithQueryEncrypt.getTables().add(new Table("t_encrypt_query", null));
+        insertSetStatementWithPlaceholderWithQueryEncrypt.setTable(new TableSegment(0, 0, "t_encrypt_query"));
         insertSetStatementWithPlaceholderWithQueryEncrypt.getColumns().add(new ColumnSegment(0, 0, "user_id"));
         insertSetStatementWithPlaceholderWithQueryEncrypt.getColumns().add(new ColumnSegment(0, 0, "status"));
     }
     
     private void initializeInsertSetWithoutPlaceholder() {
         insertSetStatementWithoutPlaceholder = new InsertStatement();
-        insertSetStatementWithoutPlaceholder.getTables().add(new Table("t_order", null));
+        insertSetStatementWithoutPlaceholder.setTable(new TableSegment(0, 0, "t_order"));
         insertSetStatementWithoutPlaceholder.getColumns().add(new ColumnSegment(0, 0, "user_id"));
         insertSetStatementWithoutPlaceholder.getColumns().add(new ColumnSegment(0, 0, "status"));
     }
     
     private void initializeInsertSetWithoutPlaceholderWithEncrypt() {
         insertSetStatementWithoutPlaceholderWithEncrypt = new InsertStatement();
-        insertSetStatementWithoutPlaceholderWithEncrypt.getTables().add(new Table("t_encrypt", null));
+        insertSetStatementWithoutPlaceholderWithEncrypt.setTable(new TableSegment(0, 0, "t_encrypt"));
         insertSetStatementWithoutPlaceholderWithEncrypt.getColumns().add(new ColumnSegment(0, 0, "user_id"));
         insertSetStatementWithoutPlaceholderWithEncrypt.getColumns().add(new ColumnSegment(0, 0, "status"));
     }

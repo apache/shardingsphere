@@ -24,7 +24,7 @@ import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.encrypt.engine.dml.EncryptInsertOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptInsertOptimizedStatement;
-import org.apache.shardingsphere.core.parse.sql.context.Table;
+import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
@@ -104,7 +104,7 @@ public final class EncryptInsertOptimizeEngineTest {
     
     private InsertStatement createInsertStatementWithValuesWithPlaceHolderWithEncrypt() {
         InsertStatement result = new InsertStatement();
-        result.getTables().add(new Table("t_encrypt", null));
+        result.setTable(new TableSegment(0, 0, "t_encrypt"));
         result.getColumns().add(new ColumnSegment(0, 0, "col1"));
         result.getColumns().add(new ColumnSegment(0, 0, "col2"));
         result.getValues().add(new InsertValuesSegment(0, 0, Arrays.<ExpressionSegment>asList(new ParameterMarkerExpressionSegment(1, 2, 0), new ParameterMarkerExpressionSegment(3, 4, 1))));
@@ -128,7 +128,7 @@ public final class EncryptInsertOptimizeEngineTest {
     
     private InsertStatement createInsertStatementWithValuesWithoutPlaceHolderWithQueryEncrypt() {
         InsertStatement result = new InsertStatement();
-        result.getTables().add(new Table("t_query_encrypt", null));
+        result.setTable(new TableSegment(0, 0, "t_query_encrypt"));
         result.getColumns().add(new ColumnSegment(0, 0, "col1"));
         result.getColumns().add(new ColumnSegment(0, 0, "col2"));
         result.getValues().add(new InsertValuesSegment(0, 0, Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(1, 2, 1), new LiteralExpressionSegment(3, 4, 2))));
@@ -150,7 +150,7 @@ public final class EncryptInsertOptimizeEngineTest {
     
     private InsertStatement createInsertStatementWithSetWithoutPlaceHolderWithEncrypt() {
         InsertStatement result = new InsertStatement();
-        result.getTables().add(new Table("t_encrypt", null));
+        result.setTable(new TableSegment(0, 0, "t_encrypt"));
         AssignmentSegment assignmentSegment1 = new AssignmentSegment(0, 0, new ColumnSegment(0, 0, "col1"), new LiteralExpressionSegment(1, 2, 1));
         AssignmentSegment assignmentSegment2 = new AssignmentSegment(0, 0, new ColumnSegment(0, 0, "col2"), new LiteralExpressionSegment(3, 4, 2));
         SetAssignmentsSegment setAssignmentsSegment = new SetAssignmentsSegment(0, 0, Arrays.asList(assignmentSegment1, assignmentSegment2));
@@ -175,7 +175,7 @@ public final class EncryptInsertOptimizeEngineTest {
     
     private InsertStatement createInsertStatementWithSetWithPlaceHolderWithQueryEncrypt() {
         InsertStatement result = new InsertStatement();
-        result.getTables().add(new Table("t_query_encrypt", null));
+        result.setTable(new TableSegment(0, 0, "t_query_encrypt"));
         AssignmentSegment assignmentSegment1 = new AssignmentSegment(0, 0, new ColumnSegment(0, 0, "col1"), new ParameterMarkerExpressionSegment(1, 2, 0));
         AssignmentSegment assignmentSegment2 = new AssignmentSegment(0, 0, new ColumnSegment(0, 0, "col2"), new ParameterMarkerExpressionSegment(3, 4, 1));
         SetAssignmentsSegment setAssignmentsSegment = new SetAssignmentsSegment(0, 0, Arrays.asList(assignmentSegment1, assignmentSegment2));

@@ -61,7 +61,7 @@ public final class GeneratedKey {
      */
     public static Optional<GeneratedKey> getGenerateKey(final ShardingRule shardingRule, final List<Object> parameters, 
                                                         final InsertStatement insertStatement, final ShardingInsertColumns insertColumns, final Collection<InsertValue> insertValues) {
-        Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTables().getSingleTableName());
+        Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTable().getTableName());
         if (!generateKeyColumnName.isPresent()) {
             return Optional.absent();
         }
@@ -110,10 +110,9 @@ public final class GeneratedKey {
     
     private static GeneratedKey createGeneratedKey(
             final ShardingRule shardingRule, final InsertStatement insertStatement, final Collection<InsertValue> insertValues, final String generateKeyColumnName) {
-        String tableName = insertStatement.getTables().getSingleTableName();
         GeneratedKey result = new GeneratedKey(generateKeyColumnName, true);
         for (int i = 0; i < insertValues.size(); i++) {
-            result.getGeneratedValues().add(shardingRule.generateKey(tableName));
+            result.getGeneratedValues().add(shardingRule.generateKey(insertStatement.getTable().getTableName()));
         }
         return result;
     }

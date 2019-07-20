@@ -279,7 +279,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     
     @Override
     public boolean isAccumulate() {
-        return !connection.getShardingContext().getShardingRule().isAllBroadcastTables(routeResult.getOptimizedStatement().getSQLStatement().getTables().getTableNames());
+        return !connection.getShardingContext().getShardingRule().isAllBroadcastTables(routeResult.getOptimizedStatement().getTables().getTableNames());
     }
     
     @Override

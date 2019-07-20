@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.optimize.api.statement;
 
+import org.apache.shardingsphere.core.parse.sql.context.Tables;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
 /**
@@ -32,4 +33,11 @@ public interface OptimizedStatement {
      * @return SQL statement
      */
     SQLStatement getSQLStatement();
+    
+    /**
+     * Get tables.
+     *
+     * @return tables
+     */
+    Tables getTables();
 }

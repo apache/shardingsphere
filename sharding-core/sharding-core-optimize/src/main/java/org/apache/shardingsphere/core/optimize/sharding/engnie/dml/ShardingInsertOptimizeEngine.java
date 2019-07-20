@@ -70,10 +70,6 @@ public final class ShardingInsertOptimizeEngine implements ShardingOptimizeEngin
     
     @Override
     public ShardingInsertOptimizedStatement optimize() {
-        Optional<OnDuplicateKeyColumnsSegment> onDuplicateKeyColumnsSegment = insertStatement.findSQLSegment(OnDuplicateKeyColumnsSegment.class);
-        if (onDuplicateKeyColumnsSegment.isPresent() && isUpdateShardingKey(onDuplicateKeyColumnsSegment.get(), insertStatement.getTables().getSingleTableName())) {
-            throw new SQLParsingException("INSERT INTO .... ON DUPLICATE KEY UPDATE can not support update for sharding column.");
-        }
         ShardingInsertColumns insertColumns = new ShardingInsertColumns(shardingRule, shardingTableMetaData, insertStatement);
         Collection<InsertValue> insertValues = insertValueEngine.createInsertValues(insertStatement);
         Optional<GeneratedKey> generatedKey = GeneratedKey.getGenerateKey(shardingRule, parameters, insertStatement, insertColumns, insertValues);
@@ -83,19 +79,28 @@ public final class ShardingInsertOptimizeEngine implements ShardingOptimizeEngin
                 insertStatement, parameters, insertColumns.getAllColumnNames(), insertValues, generatedKey.orNull());
         ShardingInsertOptimizedStatement result = new ShardingInsertOptimizedStatement(
                 insertStatement, shardingConditions, insertColumns, insertValueEngine.createInsertValues(insertStatement), generatedKey.orNull());
-        int derivedColumnsCount = getDerivedColumnsCount(isGeneratedValue);
+        String tableName = insertStatement.getTable().getTableName();
+        checkDuplicateKeyForShardingKey(tableName);
+        int derivedColumnsCount = getDerivedColumnsCount(tableName, isGeneratedValue);
         int parametersCount = 0;
         for (InsertValue each : result.getValues()) {
             InsertOptimizeResultUnit unit = result.addUnit(each.getValues(derivedColumnsCount), each.getParameters(parameters, parametersCount, derivedColumnsCount), each.getParametersCount());
             if (isGeneratedValue) {
                 unit.addInsertValue(generatedValues.next(), parameters);
             }
-            if (shardingRule.getEncryptRule().getEncryptEngine().isHasShardingQueryAssistedEncryptor(insertStatement.getTables().getSingleTableName())) {
-                fillAssistedQueryUnit(insertColumns.getRegularColumnNames(), unit);
+            if (shardingRule.getEncryptRule().getEncryptEngine().isHasShardingQueryAssistedEncryptor(tableName)) {
+                fillAssistedQueryUnit(tableName, insertColumns.getRegularColumnNames(), unit);
             }
             parametersCount += each.getParametersCount();
         }
         return result;
+    }
+    
+    private void checkDuplicateKeyForShardingKey(final String tableName) {
+        Optional<OnDuplicateKeyColumnsSegment> onDuplicateKeyColumnsSegment = insertStatement.findSQLSegment(OnDuplicateKeyColumnsSegment.class);
+        if (onDuplicateKeyColumnsSegment.isPresent() && isUpdateShardingKey(onDuplicateKeyColumnsSegment.get(), tableName)) {
+            throw new SQLParsingException("INSERT INTO .... ON DUPLICATE KEY UPDATE can not support update for sharding column.");
+        }
     }
     
     private boolean isUpdateShardingKey(final OnDuplicateKeyColumnsSegment onDuplicateKeyColumnsSegment, final String tableName) {
@@ -107,14 +112,14 @@ public final class ShardingInsertOptimizeEngine implements ShardingOptimizeEngin
         return false;
     }
     
-    private int getDerivedColumnsCount(final boolean isGeneratedValue) {
-        int assistedQueryColumnsCount = shardingRule.getEncryptRule().getEncryptEngine().getAssistedQueryColumnCount(insertStatement.getTables().getSingleTableName());
+    private int getDerivedColumnsCount(final String tableName, final boolean isGeneratedValue) {
+        int assistedQueryColumnsCount = shardingRule.getEncryptRule().getEncryptEngine().getAssistedQueryColumnCount(tableName);
         return isGeneratedValue ? assistedQueryColumnsCount + 1 : assistedQueryColumnsCount;
     }
     
-    private void fillAssistedQueryUnit(final Collection<String> columnNames, final InsertOptimizeResultUnit unit) {
+    private void fillAssistedQueryUnit(final String tableName, final Collection<String> columnNames, final InsertOptimizeResultUnit unit) {
         for (String each : columnNames) {
-            if (shardingRule.getEncryptRule().getEncryptEngine().getAssistedQueryColumn(insertStatement.getTables().getSingleTableName(), each).isPresent()) {
+            if (shardingRule.getEncryptRule().getEncryptEngine().getAssistedQueryColumn(tableName, each).isPresent()) {
                 unit.addInsertValue((Comparable<?>) unit.getColumnValue(each), parameters);
             }
         }

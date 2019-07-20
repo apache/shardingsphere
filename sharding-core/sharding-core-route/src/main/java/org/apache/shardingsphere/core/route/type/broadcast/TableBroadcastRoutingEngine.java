@@ -57,7 +57,7 @@ public final class TableBroadcastRoutingEngine implements RoutingEngine {
     
     private Collection<String> getLogicTableNames() {
         return optimizedStatement instanceof ShardingDropIndexOptimizedStatement
-                ? Collections.singletonList(((ShardingDropIndexOptimizedStatement) optimizedStatement).getTableName()) : optimizedStatement.getSQLStatement().getTables().getTableNames();
+                ? Collections.singletonList(((ShardingDropIndexOptimizedStatement) optimizedStatement).getTableName()) : optimizedStatement.getTables().getTableNames();
     }
     
     private Collection<RoutingUnit> getAllRoutingUnits(final String logicTableName) {

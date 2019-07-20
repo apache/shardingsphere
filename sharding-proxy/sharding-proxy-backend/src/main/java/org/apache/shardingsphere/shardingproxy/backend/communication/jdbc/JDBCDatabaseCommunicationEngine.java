@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.merge.MergeEngineFactory;
 import org.apache.shardingsphere.core.merge.MergedResult;
 import org.apache.shardingsphere.core.merge.dal.show.ShowTablesMergedResult;
+import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.constant.DerivedColumn;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.DDLStatement;
@@ -84,13 +85,13 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         if (routeResult.getRouteUnits().isEmpty()) {
             return new UpdateResponse();
         }
-        SQLStatement sqlStatement = routeResult.getOptimizedStatement().getSQLStatement();
-        if (isExecuteDDLInXATransaction(sqlStatement)) {
-            return new ErrorResponse(new TableModifyInTransactionException(sqlStatement.getTables().isSingleTable() ? sqlStatement.getTables().getSingleTableName() : "unknown_table"));
+        OptimizedStatement optimizedStatement = routeResult.getOptimizedStatement();
+        if (isExecuteDDLInXATransaction(optimizedStatement.getSQLStatement())) {
+            return new ErrorResponse(new TableModifyInTransactionException(optimizedStatement.getTables().isSingleTable() ? optimizedStatement.getTables().getSingleTableName() : "unknown_table"));
         }
         response = executeEngine.execute(routeResult);
         if (logicSchema instanceof ShardingSchema) {
-            logicSchema.refreshTableMetaData(routeResult.getOptimizedStatement().getSQLStatement());
+            logicSchema.refreshTableMetaData(routeResult.getOptimizedStatement());
         }
         return merge(routeResult);
     }
@@ -102,7 +103,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     
     private BackendResponse merge(final SQLRouteResult routeResult) throws SQLException {
         if (response instanceof UpdateResponse) {
-            if (!isAllBroadcastTables(routeResult.getOptimizedStatement().getSQLStatement())) {
+            if (!isAllBroadcastTables(routeResult.getOptimizedStatement())) {
                 ((UpdateResponse) response).mergeUpdateCount();
             }
             return response;
@@ -115,8 +116,8 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         return getQueryHeaderResponseWithoutDerivedColumns(((QueryResponse) response).getQueryHeaders());
     }
     
-    private boolean isAllBroadcastTables(final SQLStatement sqlStatement) {
-        return logicSchema instanceof ShardingSchema && logicSchema.getShardingRule().isAllBroadcastTables(sqlStatement.getTables().getTableNames());
+    private boolean isAllBroadcastTables(final OptimizedStatement optimizedStatement) {
+        return logicSchema instanceof ShardingSchema && logicSchema.getShardingRule().isAllBroadcastTables(optimizedStatement.getTables().getTableNames());
     }
     
     private QueryResponse getQueryHeaderResponseWithoutDerivedColumns(final List<QueryHeader> queryHeaders) {

@@ -59,11 +59,11 @@ public final class InsertClauseShardingConditionEngine {
     public List<ShardingCondition> createShardingConditions(
             final InsertStatement insertStatement, final List<Object> parameters, final Collection<String> columnNames, final Collection<InsertValue> values, final GeneratedKey generatedKey) {
         List<ShardingCondition> result = getShardingConditions(insertStatement, columnNames, values, parameters);
-        String tableName = insertStatement.getTables().getSingleTableName();
         Iterator<Comparable<?>> generatedValues = null == generatedKey ? Collections.<Comparable<?>>emptyList().iterator() : generatedKey.getGeneratedValues().iterator();
         for (ShardingCondition each : result) {
-            if (isNeedAppendGeneratedKeyCondition(generatedKey, tableName)) {
-                each.getRouteValues().add(new ListRouteValue<>(generatedKey.getColumnName(), tableName, Collections.<Comparable<?>>singletonList(generatedValues.next())));
+            if (isNeedAppendGeneratedKeyCondition(generatedKey, insertStatement.getTable().getTableName())) {
+                each.getRouteValues().add(
+                        new ListRouteValue<>(generatedKey.getColumnName(), insertStatement.getTable().getTableName(), Collections.<Comparable<?>>singletonList(generatedValues.next())));
             }
         }
         return result;
@@ -83,7 +83,7 @@ public final class InsertClauseShardingConditionEngine {
         for (ExpressionSegment each : insertValue.getAssignments()) {
             String columnName = columnNames.next();
             if (each instanceof SimpleExpressionSegment) {
-                fillShardingCondition(result, insertStatement.getTables().getSingleTableName(), columnName, (SimpleExpressionSegment) each, parameters);
+                fillShardingCondition(result, insertStatement.getTable().getTableName(), columnName, (SimpleExpressionSegment) each, parameters);
             }
         }
         return result;

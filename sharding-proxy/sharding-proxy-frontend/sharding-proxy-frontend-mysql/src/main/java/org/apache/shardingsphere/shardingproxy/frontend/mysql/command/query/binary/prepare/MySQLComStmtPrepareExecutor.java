@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.frontend.mysql.command.query.binary.prepare;
 
 import org.apache.shardingsphere.core.parse.entry.ShardingSQLParseEntry;
+import org.apache.shardingsphere.core.parse.sql.context.Tables;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
@@ -65,10 +66,11 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         SQLStatement sqlStatement = shardingSQLParseEntry.parse(packet.getSql(), true);
         int parametersCount = sqlStatement.getParametersCount();
         result.add(new MySQLComStmtPrepareOKPacket(++currentSequenceId, PREPARED_STATEMENT_REGISTRY.register(packet.getSql(), parametersCount), getNumColumns(), parametersCount, 0));
+        Tables tables = new Tables(sqlStatement);
         for (int i = 0; i < parametersCount; i++) {
             // TODO add column name
             result.add(new MySQLColumnDefinition41Packet(++currentSequenceId, schemaName,
-                    sqlStatement.getTables().isSingleTable() ? sqlStatement.getTables().getSingleTableName() : "", "", "", "", 100, MySQLColumnType.MYSQL_TYPE_VARCHAR, 0));
+                    tables.isSingleTable() ? tables.getSingleTableName() : "", "", "", "", 100, MySQLColumnType.MYSQL_TYPE_VARCHAR, 0));
         }
         if (parametersCount > 0) {
             result.add(new MySQLEofPacket(++currentSequenceId));

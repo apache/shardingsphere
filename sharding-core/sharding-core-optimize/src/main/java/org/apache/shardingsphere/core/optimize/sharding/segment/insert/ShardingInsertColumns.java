@@ -46,14 +46,13 @@ public final class ShardingInsertColumns implements InsertColumns {
     
     public ShardingInsertColumns(final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData, final InsertStatement insertStatement) {
         this.insertStatement = insertStatement;
-        String tableName = insertStatement.getTables().getSingleTableName();
-        generateKeyColumnName = shardingRule.findGenerateKeyColumnName(tableName).orNull();
-        assistedQueryColumnNames = shardingRule.getEncryptRule().getEncryptEngine().getAssistedQueryColumns(tableName);
+        generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTable().getTableName()).orNull();
+        assistedQueryColumnNames = shardingRule.getEncryptRule().getEncryptEngine().getAssistedQueryColumns(insertStatement.getTable().getTableName());
         regularColumnNames = insertStatement.useDefaultColumns() ? getRegularColumnNamesFromMetaData(shardingTableMetaData) : getRegularColumnNamesFromSQLStatement();
     }
     
     private Collection<String> getRegularColumnNamesFromMetaData(final ShardingTableMetaData shardingTableMetaData) {
-        Collection<String> allColumnNames = shardingTableMetaData.getAllColumnNames(insertStatement.getTables().getSingleTableName());
+        Collection<String> allColumnNames = shardingTableMetaData.getAllColumnNames(insertStatement.getTable().getTableName());
         Collection<String> result = new LinkedHashSet<>(allColumnNames.size() - assistedQueryColumnNames.size());
         for (String each : allColumnNames) {
             if (!assistedQueryColumnNames.contains(each)) {

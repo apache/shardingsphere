@@ -53,7 +53,7 @@ public final class UpdateEncryptColumnTokenGenerator implements CollectionSQLTok
     
     private Collection<EncryptColumnToken> createEncryptColumnToken(final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final EncryptRule encryptRule) {
         Collection<EncryptColumnToken> result = new LinkedList<>();
-        String tableName = optimizedStatement.getSQLStatement().getTables().getSingleTableName();
+        String tableName = optimizedStatement.getTables().getSingleTableName();
         for (AssignmentSegment each : ((UpdateStatement) optimizedStatement.getSQLStatement()).getSetAssignment().getAssignments()) {
             if (encryptRule.getEncryptEngine().getShardingEncryptor(tableName, each.getColumn().getName()).isPresent()) {
                 result.add(createEncryptColumnToken(tableName, each, (BaseParameterBuilder) parameterBuilder, encryptRule));

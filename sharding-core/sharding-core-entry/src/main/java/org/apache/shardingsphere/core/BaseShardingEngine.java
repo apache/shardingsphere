@@ -107,7 +107,7 @@ public abstract class BaseShardingEngine {
         Collection<RouteUnit> result = new LinkedHashSet<>();
         for (RoutingUnit each : sqlRouteResult.getRoutingResult().getRoutingUnits()) {
             result.add(new RouteUnit(each.getDataSourceName(), 
-                    rewriteEngine.generateSQL(each, getLogicAndActualTables(each, sqlRouteResult.getOptimizedStatement().getSQLStatement().getTables().getTableNames()))));
+                    rewriteEngine.generateSQL(each, getLogicAndActualTables(each, sqlRouteResult.getOptimizedStatement().getTables().getTableNames()))));
         }
         return result;
     }
