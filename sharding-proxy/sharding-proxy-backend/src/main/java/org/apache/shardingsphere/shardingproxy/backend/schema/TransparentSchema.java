@@ -22,7 +22,7 @@ import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parse.SQLParseEntry;
+import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 
@@ -48,7 +48,7 @@ public final class TransparentSchema extends LogicSchema {
     }
     
     @Override
-    public SQLParseEntry getParseEntry() {
+    public SQLParseEngine getParseEngine() {
         return null;
     }
     

@@ -26,12 +26,12 @@ import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 
 /**
- * SQL parse entry.
+ * SQL parse engine.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class SQLParseEntry {
+public final class SQLParseEngine {
     
     private final DatabaseType databaseType;
     

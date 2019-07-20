@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
-import org.apache.shardingsphere.core.parse.SQLParseEntry;
+import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 
@@ -40,12 +40,12 @@ public final class ShardingRouterFactory {
      * @param shardingRule sharding rule
      * @param shardingMetaData sharding meta data
      * @param databaseType database type
-     * @param sqlParseEntry parsing engine
+     * @param sqlParseEngine parsing engine
      * @return sharding router instance
      */
     public static ShardingRouter newInstance(
-            final ShardingRule shardingRule, final ShardingMetaData shardingMetaData, final DatabaseType databaseType, final SQLParseEntry sqlParseEntry) {
+            final ShardingRule shardingRule, final ShardingMetaData shardingMetaData, final DatabaseType databaseType, final SQLParseEngine sqlParseEngine) {
         return HintManager.isDatabaseShardingOnly()
-                ? new DatabaseHintSQLRouter(databaseType, shardingRule) : new ParsingSQLRouter(shardingRule, shardingMetaData, sqlParseEntry);
+                ? new DatabaseHintSQLRouter(databaseType, shardingRule) : new ParsingSQLRouter(shardingRule, shardingMetaData, sqlParseEngine);
     }
 }

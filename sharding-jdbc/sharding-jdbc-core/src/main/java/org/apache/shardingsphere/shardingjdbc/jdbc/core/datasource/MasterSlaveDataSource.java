@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource;
 import lombok.Getter;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
-import org.apache.shardingsphere.core.parse.SQLParseEntry;
+import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.util.ConfigurationLogger;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
@@ -48,7 +48,7 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     
     private final MasterSlaveRule masterSlaveRule;
     
-    private final SQLParseEntry parseEntry;
+    private final SQLParseEngine parseEngine;
     
     private final ShardingProperties shardingProperties;
     
@@ -58,7 +58,7 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
         ConfigurationLogger.log(props);
         cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap);
         this.masterSlaveRule = new MasterSlaveRule(masterSlaveRuleConfig);
-        parseEntry = new SQLParseEntry(getDatabaseType());
+        parseEngine = new SQLParseEngine(getDatabaseType());
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
     }
     
@@ -69,7 +69,7 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
         cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap);
         this.masterSlaveRule = masterSlaveRule;
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
-        parseEntry = new SQLParseEntry(getDatabaseType());
+        parseEngine = new SQLParseEngine(getDatabaseType());
     }
     
     private DatabaseMetaData createCachedDatabaseMetaData(final Map<String, DataSource> dataSourceMap) throws SQLException {
@@ -80,6 +80,6 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     
     @Override
     public final MasterSlaveConnection getConnection() {
-        return new MasterSlaveConnection(this, getDataSourceMap(), parseEntry);
+        return new MasterSlaveConnection(this, getDataSourceMap(), parseEngine);
     }
 }

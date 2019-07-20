@@ -27,7 +27,7 @@ import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
-import org.apache.shardingsphere.core.parse.SQLParseEntry;
+import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.util.ConfigurationLogger;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
@@ -66,7 +66,7 @@ public class EncryptDataSource extends AbstractUnsupportedOperationDataSource im
     
     private final ShardingTableMetaData shardingTableMetaData;
     
-    private final SQLParseEntry parseEntry;
+    private final SQLParseEngine parseEngine;
     
     private final ShardingProperties shardingProperties;
     
@@ -82,7 +82,7 @@ public class EncryptDataSource extends AbstractUnsupportedOperationDataSource im
         encryptRule = new EncryptRule(encryptRuleConfiguration);
         shardingTableMetaData = createEncryptTableMetaData();
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
-        parseEntry = new SQLParseEntry(databaseType);
+        parseEngine = new SQLParseEngine(databaseType);
     }
     
     @SneakyThrows
@@ -157,7 +157,7 @@ public class EncryptDataSource extends AbstractUnsupportedOperationDataSource im
     @Override
     @SneakyThrows
     public EncryptConnection getConnection() {
-        return new EncryptConnection(databaseType, dataSource.getConnection(), encryptRule, shardingTableMetaData, parseEntry, shardingProperties);
+        return new EncryptConnection(databaseType, dataSource.getConnection(), encryptRule, shardingTableMetaData, parseEngine, shardingProperties);
     }
     
     @Override

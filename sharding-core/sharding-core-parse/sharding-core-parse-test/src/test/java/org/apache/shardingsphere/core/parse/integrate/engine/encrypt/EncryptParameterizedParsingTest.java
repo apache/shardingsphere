@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.parse.integrate.engine.encrypt;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
-import org.apache.shardingsphere.core.parse.SQLParseEntry;
+import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.parse.integrate.asserts.EncryptSQLStatementAssert;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.EncryptParserResultSetRegistry;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.ParserResultSetRegistry;
@@ -56,7 +56,7 @@ public final class EncryptParameterizedParsingTest {
     @Test
     public void assertSupportedSQL() {
         String sql = sqlCasesLoader.getSQL(sqlCaseId, sqlCaseType, parserResultSetRegistry.get(sqlCaseId).getParameters());
-        SQLStatement sqlStatement = new SQLParseEntry(DatabaseTypes.getActualDatabaseType(databaseType)).parse(sql, false);
+        SQLStatement sqlStatement = new SQLParseEngine(DatabaseTypes.getActualDatabaseType(databaseType)).parse(sql, false);
         new EncryptSQLStatementAssert(sqlStatement, sqlCaseId, sqlCaseType).assertSQLStatement();
     }
 }

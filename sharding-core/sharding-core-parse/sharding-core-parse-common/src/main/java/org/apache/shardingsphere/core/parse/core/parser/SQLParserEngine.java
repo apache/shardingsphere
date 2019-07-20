@@ -56,11 +56,11 @@ public final class SQLParserEngine {
         if (parseTree instanceof ErrorNode) {
             throw new SQLParsingException(String.format("Unsupported SQL of `%s`", sql));
         }
-        SQLStatementRule sqlStatementRule = parseRuleRegistry.getSQLStatementRule(databaseType, parseTree.getClass().getSimpleName());
-        if (null == sqlStatementRule) {
+        SQLStatementRule rule = parseRuleRegistry.getSQLStatementRule(databaseType, parseTree.getClass().getSimpleName());
+        if (null == rule) {
             throw new SQLParsingException(String.format("Unsupported SQL of `%s`", sql));
         }
-        return new SQLAST((ParserRuleContext) parseTree, getParameterMarkerIndexes((ParserRuleContext) parseTree), sqlStatementRule);
+        return new SQLAST((ParserRuleContext) parseTree, getParameterMarkerIndexes((ParserRuleContext) parseTree), rule);
     }
     
     private Map<ParserRuleContext, Integer> getParameterMarkerIndexes(final ParserRuleContext rootNode) {
