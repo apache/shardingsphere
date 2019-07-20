@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.constant;
+package org.apache.shardingsphere.core.optimize.sharding.segment.select.item;
 
 import org.junit.Test;
 

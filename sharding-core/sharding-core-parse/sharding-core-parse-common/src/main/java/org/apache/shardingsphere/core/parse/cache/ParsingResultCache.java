@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.parse.cache;
 
+import com.google.common.base.Optional;
 import org.apache.commons.collections4.map.AbstractReferenceMap;
 import org.apache.commons.collections4.map.ReferenceMap;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
@@ -49,8 +50,8 @@ public final class ParsingResultCache {
      * @param sql SQL
      * @return SQL statement
      */
-    public SQLStatement getSQLStatement(final String sql) {
-        return cache.get(sql);
+    public Optional<SQLStatement> getSQLStatement(final String sql) {
+        return Optional.fromNullable(cache.get(sql));
     }
     
     /**

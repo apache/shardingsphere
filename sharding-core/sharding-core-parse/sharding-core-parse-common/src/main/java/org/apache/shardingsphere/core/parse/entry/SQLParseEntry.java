@@ -45,18 +45,16 @@ public final class SQLParseEntry {
      * @return SQL statement
      */
     public SQLStatement parse(final String sql, final boolean useCache) {
-        Optional<SQLStatement> cachedSQLStatement = getSQLStatementFromCache(sql, useCache);
-        if (cachedSQLStatement.isPresent()) {
-            return cachedSQLStatement.get();
+        if (useCache) {
+            Optional<SQLStatement> cachedSQLStatement = parsingResultCache.getSQLStatement(sql);
+            if (cachedSQLStatement.isPresent()) {
+                return cachedSQLStatement.get();
+            }
         }
         SQLStatement result = new SQLParseEngine(ParseRuleRegistry.getInstance(), databaseType, sql).parse();
         if (useCache) {
             parsingResultCache.put(sql, result);
         }
         return result;
-    }
-    
-    private Optional<SQLStatement> getSQLStatementFromCache(final String sql, final boolean useCache) {
-        return useCache ? Optional.fromNullable(parsingResultCache.getSQLStatement(sql)) : Optional.<SQLStatement>absent();
     }
 }
