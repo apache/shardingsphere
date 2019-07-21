@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.rewrite;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.segment.insert.InsertOptimizeResultUnit;
@@ -45,6 +46,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * SQL rewrite engine.
@@ -64,11 +66,11 @@ public final class SQLRewriteEngine {
     
     private final ParameterBuilder parameterBuilder;
     
-    public SQLRewriteEngine(final ShardingRule shardingRule, final SQLRouteResult sqlRouteResult, final List<Object> parameters, final boolean isSingleRoute) {
+    public SQLRewriteEngine(final ShardingRule shardingRule, final SQLRouteResult sqlRouteResult, final List<Object> parameters, final ShardingProperties properties) {
         baseRule = shardingRule;
         this.optimizedStatement = getEncryptedOptimizedStatement(shardingRule.getEncryptRule().getEncryptEngine(), sqlRouteResult.getOptimizedStatement());
         parameterBuilder = createParameterBuilder(parameters, sqlRouteResult);
-        sqlTokens = createSQLTokens(isSingleRoute);
+        sqlTokens = createSQLTokens(properties);
         sqlBuilder = new SQLBuilder(optimizedStatement.getSQLStatement().getLogicSQL(), sqlTokens);
     }
     
@@ -76,15 +78,15 @@ public final class SQLRewriteEngine {
         baseRule = encryptRule;
         this.optimizedStatement = getEncryptedOptimizedStatement(encryptRule.getEncryptEngine(), optimizedStatement);
         parameterBuilder = createParameterBuilder(parameters);
-        sqlTokens = createSQLTokens(true);
+        sqlTokens = createSQLTokens(new ShardingProperties(new Properties()));
         sqlBuilder = new SQLBuilder(optimizedStatement.getSQLStatement().getLogicSQL(), sqlTokens);
     }
     
-    public SQLRewriteEngine(final MasterSlaveRule masterSlaveRule, final OptimizedStatement optimizedStatement) {
+    public SQLRewriteEngine(final MasterSlaveRule masterSlaveRule, final OptimizedStatement optimizedStatement, final ShardingProperties properties) {
         baseRule = masterSlaveRule;
         this.optimizedStatement = optimizedStatement;
         parameterBuilder = createParameterBuilder(Collections.emptyList());
-        sqlTokens = createSQLTokens(true);
+        sqlTokens = createSQLTokens(properties);
         sqlBuilder = new SQLBuilder(optimizedStatement.getSQLStatement().getLogicSQL(), sqlTokens);
     }
     
@@ -134,15 +136,15 @@ public final class SQLRewriteEngine {
         return new BaseParameterBuilder(parameters);
     }
     
-    private List<SQLToken> createSQLTokens(final boolean isSingleRoute) {
+    private List<SQLToken> createSQLTokens(final ShardingProperties properties) {
         List<SQLToken> result = new LinkedList<>();
-        result.addAll(new BaseTokenGenerateEngine().generateSQLTokens(optimizedStatement, parameterBuilder, baseRule, isSingleRoute));
+        result.addAll(new BaseTokenGenerateEngine().generateSQLTokens(optimizedStatement, parameterBuilder, baseRule, properties));
         if (baseRule instanceof ShardingRule) {
             ShardingRule shardingRule = (ShardingRule) baseRule;
-            result.addAll(new ShardingTokenGenerateEngine().generateSQLTokens(optimizedStatement, parameterBuilder, shardingRule, isSingleRoute));
-            result.addAll(new EncryptTokenGenerateEngine().generateSQLTokens(optimizedStatement, parameterBuilder, shardingRule.getEncryptRule(), isSingleRoute));
+            result.addAll(new ShardingTokenGenerateEngine().generateSQLTokens(optimizedStatement, parameterBuilder, shardingRule, properties));
+                result.addAll(new EncryptTokenGenerateEngine().generateSQLTokens(optimizedStatement, parameterBuilder, shardingRule.getEncryptRule(), properties));
         } else if (baseRule instanceof EncryptRule) {
-            result.addAll(new EncryptTokenGenerateEngine().generateSQLTokens(optimizedStatement, parameterBuilder, (EncryptRule) baseRule, isSingleRoute));
+            result.addAll(new EncryptTokenGenerateEngine().generateSQLTokens(optimizedStatement, parameterBuilder, (EncryptRule) baseRule, properties));
         }
         Collections.sort(result);
         return result;
