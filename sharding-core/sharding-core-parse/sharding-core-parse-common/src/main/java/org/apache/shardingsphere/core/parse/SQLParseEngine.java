@@ -21,7 +21,7 @@ import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.cache.SQLParseResultCache;
 import org.apache.shardingsphere.core.parse.core.SQLParseKernel;
-import org.apache.shardingsphere.core.parse.rule.registry.ParseRuleRegistry;
+import org.apache.shardingsphere.core.parse.core.rule.registry.ParseRuleRegistry;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 

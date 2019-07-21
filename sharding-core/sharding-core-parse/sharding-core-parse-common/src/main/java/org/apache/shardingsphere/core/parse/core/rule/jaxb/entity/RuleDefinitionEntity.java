@@ -15,27 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.core.parser;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.apache.shardingsphere.core.parse.core.rule.registry.statement.SQLStatementRule;
-
-import java.util.Map;
+package org.apache.shardingsphere.core.parse.core.rule.jaxb.entity;
 
 /**
- * Abstract syntax tree of SQL.
+ * Rule definition entity for JAXB.
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
-@Getter
-public final class SQLAST {
-    
-    private final ParserRuleContext parserRuleContext;
-    
-    private final Map<ParserRuleContext, Integer> parameterMarkerIndexes;
-    
-    private final SQLStatementRule sqlStatementRule;
+public interface RuleDefinitionEntity {
 }

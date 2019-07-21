@@ -15,27 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.core.parser;
+package org.apache.shardingsphere.core.parse.core.rule.jaxb.loader.statement;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.apache.shardingsphere.core.parse.core.rule.registry.statement.SQLStatementRule;
+import org.junit.Test;
 
-import java.util.Map;
+import static org.junit.Assert.assertFalse;
 
-/**
- * Abstract syntax tree of SQL.
- *
- * @author zhangliang
- */
-@RequiredArgsConstructor
-@Getter
-public final class SQLAST {
+public final class SQLStatementRuleDefinitionEntityLoaderTest {
     
-    private final ParserRuleContext parserRuleContext;
+    @Test
+    public void assertLoad() {
+        assertFalse(new SQLStatementRuleDefinitionEntityLoader().load("META-INF/parsing-rule-definition/mysql/sql-statement-rule-definition.xml").getRules().isEmpty());
+    }
     
-    private final Map<ParserRuleContext, Integer> parameterMarkerIndexes;
-    
-    private final SQLStatementRule sqlStatementRule;
+    @Test(expected = NullPointerException.class)
+    public void assertLoadWithNotExistedPath() {
+        new SQLStatementRuleDefinitionEntityLoader().load("not-existed.xml");
+    }
 }

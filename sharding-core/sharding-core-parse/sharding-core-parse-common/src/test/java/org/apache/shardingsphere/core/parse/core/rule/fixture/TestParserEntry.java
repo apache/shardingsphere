@@ -15,27 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.core.parser;
+package org.apache.shardingsphere.core.parse.core.rule.fixture;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.apache.shardingsphere.core.parse.core.rule.registry.statement.SQLStatementRule;
+import org.antlr.v4.runtime.Lexer;
+import org.apache.shardingsphere.core.parse.api.SQLParser;
+import org.apache.shardingsphere.core.parse.spi.SQLParserEntry;
 
-import java.util.Map;
-
-/**
- * Abstract syntax tree of SQL.
- *
- * @author zhangliang
- */
-@RequiredArgsConstructor
-@Getter
-public final class SQLAST {
+public final class TestParserEntry implements SQLParserEntry {
     
-    private final ParserRuleContext parserRuleContext;
+    @Override
+    public String getDatabaseType() {
+        return "MySQL";
+    }
     
-    private final Map<ParserRuleContext, Integer> parameterMarkerIndexes;
+    @Override
+    public Class<? extends Lexer> getLexerClass() {
+        return null;
+    }
     
-    private final SQLStatementRule sqlStatementRule;
+    @Override
+    public Class<? extends SQLParser> getParserClass() {
+        return null;
+    }
 }
