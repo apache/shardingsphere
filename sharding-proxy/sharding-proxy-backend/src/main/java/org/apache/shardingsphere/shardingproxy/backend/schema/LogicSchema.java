@@ -26,6 +26,7 @@ import org.apache.shardingsphere.core.metadata.ShardingMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.SQLParseEngine;
+import org.apache.shardingsphere.core.parse.SQLParseEngineFactory;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.orchestration.internal.eventbus.ShardingOrchestrationEventBus;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
@@ -55,7 +56,7 @@ public abstract class LogicSchema {
     
     public LogicSchema(final String name, final Map<String, YamlDataSourceParameter> dataSources) {
         this.name = name;
-        parseEngine = new SQLParseEngine(LogicSchemas.getInstance().getDatabaseType());
+        parseEngine = SQLParseEngineFactory.getSQLParseEngine(LogicSchemas.getInstance().getDatabaseType());
         backendDataSource = new JDBCBackendDataSource(dataSources);
         ShardingOrchestrationEventBus.getInstance().register(this);
     }

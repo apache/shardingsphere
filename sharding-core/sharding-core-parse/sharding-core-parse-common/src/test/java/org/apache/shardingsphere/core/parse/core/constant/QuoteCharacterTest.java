@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.constant;
+package org.apache.shardingsphere.core.parse.core.constant;
 
 import org.junit.Test;
 

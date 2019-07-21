@@ -50,7 +50,7 @@ public final class TableTokenGenerator implements CollectionSQLTokenGenerator<Ba
     @Override
     public Collection<TableToken> generateSQLTokens(final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final BaseRule baseRule) {
         Collection<TableToken> result = new LinkedList<>();
-        for (SQLSegment each : optimizedStatement.getSQLStatement().getSQLSegments()) {
+        for (SQLSegment each : optimizedStatement.getSQLStatement().getAllSQLSegments()) {
             if (each instanceof SelectItemsSegment) {
                 result.addAll(createTableTokens(optimizedStatement, baseRule, (SelectItemsSegment) each));
             } else if (each instanceof ColumnSegment) {

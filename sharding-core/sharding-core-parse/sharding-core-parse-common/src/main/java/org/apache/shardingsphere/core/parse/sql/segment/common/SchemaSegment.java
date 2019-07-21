@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.parse.sql.segment.common;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.parse.constant.QuoteCharacter;
+import org.apache.shardingsphere.core.parse.core.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 

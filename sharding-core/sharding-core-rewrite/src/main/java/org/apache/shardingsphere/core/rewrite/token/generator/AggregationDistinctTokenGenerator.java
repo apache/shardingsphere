@@ -42,7 +42,7 @@ public final class AggregationDistinctTokenGenerator implements CollectionSQLTok
     @Override
     public Collection<AggregationDistinctToken> generateSQLTokens(final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final ShardingRule shardingRule) {
         Collection<AggregationDistinctToken> result = new LinkedList<>();
-        for (SQLSegment each : optimizedStatement.getSQLStatement().getSQLSegments()) {
+        for (SQLSegment each : optimizedStatement.getSQLStatement().getAllSQLSegments()) {
             Collection<AggregationDistinctSelectItemSegment> distinctSelectItemSegments = getAggregationDistinctSelectItemSegment(each);
             if (!distinctSelectItemSegments.isEmpty()) {
                 result.addAll(Collections2.transform(distinctSelectItemSegments, new Function<AggregationDistinctSelectItemSegment, AggregationDistinctToken>() {

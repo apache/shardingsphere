@@ -21,6 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.parse.SQLParseEngine;
+import org.apache.shardingsphere.core.parse.SQLParseEngineFactory;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.util.ConfigurationLogger;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
@@ -58,7 +59,7 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
         ConfigurationLogger.log(props);
         cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap);
         this.masterSlaveRule = new MasterSlaveRule(masterSlaveRuleConfig);
-        parseEngine = new SQLParseEngine(getDatabaseType());
+        parseEngine = SQLParseEngineFactory.getSQLParseEngine(getDatabaseType());
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
     }
     
@@ -69,7 +70,7 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
         cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap);
         this.masterSlaveRule = masterSlaveRule;
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
-        parseEngine = new SQLParseEngine(getDatabaseType());
+        parseEngine = SQLParseEngineFactory.getSQLParseEngine(getDatabaseType());
     }
     
     private DatabaseMetaData createCachedDatabaseMetaData(final Map<String, DataSource> dataSourceMap) throws SQLException {

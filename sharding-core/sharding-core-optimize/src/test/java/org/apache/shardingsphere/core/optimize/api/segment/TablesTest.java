@@ -42,7 +42,7 @@ public final class TablesTest {
     @Test
     public void assertIsNotEmpty() {
         SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getSQLSegments().add(createTableSegment("table", "tbl"));
+        selectStatement.getAllSQLSegments().add(createTableSegment("table", "tbl"));
         Tables tables = new Tables(selectStatement);
         assertFalse(tables.isEmpty());
     }
@@ -50,7 +50,7 @@ public final class TablesTest {
     @Test
     public void assertIsSingleTable() {
         SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getSQLSegments().add(createTableSegment("table", "tbl"));
+        selectStatement.getAllSQLSegments().add(createTableSegment("table", "tbl"));
         Tables tables = new Tables(selectStatement);
         assertTrue(tables.isSingleTable());
     }
@@ -58,8 +58,8 @@ public final class TablesTest {
     @Test
     public void assertIsSingleTableWithCaseSensitiveNames() {
         SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getSQLSegments().add(createTableSegment("table", "tbl"));
-        selectStatement.getSQLSegments().add(createTableSegment("Table", null));
+        selectStatement.getAllSQLSegments().add(createTableSegment("table", "tbl"));
+        selectStatement.getAllSQLSegments().add(createTableSegment("Table", null));
         Tables tables = new Tables(selectStatement);
         assertTrue(tables.isSingleTable());
     }
@@ -67,8 +67,8 @@ public final class TablesTest {
     @Test
     public void assertIsNotSingleTable() {
         SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getSQLSegments().add(createTableSegment("table_1", "tbl_1"));
-        selectStatement.getSQLSegments().add(createTableSegment("table_2", "tbl_2"));
+        selectStatement.getAllSQLSegments().add(createTableSegment("table_1", "tbl_1"));
+        selectStatement.getAllSQLSegments().add(createTableSegment("table_2", "tbl_2"));
         Tables tables = new Tables(selectStatement);
         assertFalse(tables.isSingleTable());
     }
@@ -76,7 +76,7 @@ public final class TablesTest {
     @Test
     public void assertGetSingleTableName() {
         SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getSQLSegments().add(createTableSegment("table", "tbl"));
+        selectStatement.getAllSQLSegments().add(createTableSegment("table", "tbl"));
         Tables tables = new Tables(selectStatement);
         assertThat(tables.getSingleTableName(), is("table"));
     }
@@ -84,8 +84,8 @@ public final class TablesTest {
     @Test
     public void assertGetTableNames() {
         SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getSQLSegments().add(createTableSegment("table_1", "tbl_1"));
-        selectStatement.getSQLSegments().add(createTableSegment("table_2", "tbl_2"));
+        selectStatement.getAllSQLSegments().add(createTableSegment("table_1", "tbl_1"));
+        selectStatement.getAllSQLSegments().add(createTableSegment("table_2", "tbl_2"));
         Tables tables = new Tables(selectStatement);
         assertThat(tables.getTableNames(), CoreMatchers.<Collection<String>>is(Sets.newHashSet("table_1", "table_2")));
     }
@@ -93,8 +93,8 @@ public final class TablesTest {
     @Test
     public void assertFindTableWithName() {
         SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getSQLSegments().add(createTableSegment("table_1", "tbl_1"));
-        selectStatement.getSQLSegments().add(createTableSegment("table_2", "tbl_2"));
+        selectStatement.getAllSQLSegments().add(createTableSegment("table_1", "tbl_1"));
+        selectStatement.getAllSQLSegments().add(createTableSegment("table_2", "tbl_2"));
         Tables tables = new Tables(selectStatement);
         Optional<Table> table = tables.find("table_1");
         assertTrue(table.isPresent());
@@ -105,8 +105,8 @@ public final class TablesTest {
     @Test
     public void assertFindTableWithAlias() {
         SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getSQLSegments().add(createTableSegment("table_1", "tbl_1"));
-        selectStatement.getSQLSegments().add(createTableSegment("table_2", "tbl_2"));
+        selectStatement.getAllSQLSegments().add(createTableSegment("table_1", "tbl_1"));
+        selectStatement.getAllSQLSegments().add(createTableSegment("table_2", "tbl_2"));
         Tables tables = new Tables(selectStatement);
         Optional<Table> table = tables.find("tbl_1");
         assertTrue(table.isPresent());
@@ -117,8 +117,8 @@ public final class TablesTest {
     @Test
     public void assertNotFoundTable() {
         SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getSQLSegments().add(createTableSegment("table_1", "tbl_1"));
-        selectStatement.getSQLSegments().add(createTableSegment("table_2", "tbl_2"));
+        selectStatement.getAllSQLSegments().add(createTableSegment("table_1", "tbl_1"));
+        selectStatement.getAllSQLSegments().add(createTableSegment("table_2", "tbl_2"));
         Tables tables = new Tables(selectStatement);
         Optional<Table> table = tables.find("table_3");
         assertFalse(table.isPresent());

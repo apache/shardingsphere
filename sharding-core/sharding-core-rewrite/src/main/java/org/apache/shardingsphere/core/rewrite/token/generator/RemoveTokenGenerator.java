@@ -37,7 +37,7 @@ public final class RemoveTokenGenerator implements CollectionSQLTokenGenerator<B
     @Override
     public Collection<RemoveToken> generateSQLTokens(final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final BaseRule baseRule) {
         Collection<RemoveToken> result = new LinkedList<>();
-        for (SQLSegment each : optimizedStatement.getSQLStatement().getSQLSegments()) {
+        for (SQLSegment each : optimizedStatement.getSQLStatement().getAllSQLSegments()) {
             if (each instanceof RemoveAvailable) {
                 result.add(new RemoveToken(each.getStartIndex(), each.getStopIndex()));
             }

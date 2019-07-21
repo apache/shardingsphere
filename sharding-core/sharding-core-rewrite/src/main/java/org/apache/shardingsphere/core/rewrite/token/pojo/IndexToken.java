@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.rewrite.token.pojo;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.parse.constant.QuoteCharacter;
+import org.apache.shardingsphere.core.parse.core.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 
 import java.util.Map;

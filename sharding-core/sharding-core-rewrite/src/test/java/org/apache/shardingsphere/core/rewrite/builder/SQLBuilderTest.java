@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.rewrite.builder;
 
-import org.apache.shardingsphere.core.parse.constant.QuoteCharacter;
+import org.apache.shardingsphere.core.parse.core.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SQLToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.TableToken;
 import org.junit.Before;

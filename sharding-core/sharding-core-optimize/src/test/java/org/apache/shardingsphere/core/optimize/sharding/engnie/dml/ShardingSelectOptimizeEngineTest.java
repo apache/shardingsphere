@@ -80,7 +80,7 @@ public final class ShardingSelectOptimizeEngineTest {
         when(encryptRule.getEncryptEngine()).thenReturn(encryptEngine);
         when(shardingRule.getEncryptRule()).thenReturn(encryptRule);
         selectStatement = new SelectStatement();
-        selectStatement.getSQLSegments().add(new TableSegment(0, 0, "tbl"));
+        selectStatement.getAllSQLSegments().add(new TableSegment(0, 0, "tbl"));
     }
     
     @Test

@@ -32,19 +32,20 @@ import java.util.LinkedList;
  * @author zhangliang
  * @author panjuan
  */
-@Getter
 @Setter
 @ToString
 public abstract class AbstractSQLStatement implements SQLStatement {
     
     private final Collection<SQLSegment> sqlSegments = new LinkedList<>();
     
+    @Getter
     private String logicSQL;
     
+    @Getter
     private int parametersCount;
     
     @Override
-    public final Collection<SQLSegment> getSQLSegments() {
+    public final Collection<SQLSegment> getAllSQLSegments() {
         return sqlSegments;
     }
     

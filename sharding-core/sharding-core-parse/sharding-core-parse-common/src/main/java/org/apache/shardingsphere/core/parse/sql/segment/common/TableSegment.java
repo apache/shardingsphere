@@ -21,7 +21,7 @@ import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.core.parse.constant.QuoteCharacter;
+import org.apache.shardingsphere.core.parse.core.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.sql.segment.AliasAvailable;
 import org.apache.shardingsphere.core.parse.sql.segment.OwnerAvailable;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;

@@ -50,7 +50,7 @@ public final class ShardingDropIndexOptimizeEngineTest {
     
     @Test
     public void assertOptimizeWithTableName() {
-        dropIndexStatement.getSQLSegments().add(new TableSegment(0, 0, "tbl"));
+        dropIndexStatement.getAllSQLSegments().add(new TableSegment(0, 0, "tbl"));
         ShardingDropIndexOptimizedStatement actual = new ShardingDropIndexOptimizeEngine(dropIndexStatement, shardingTableMetaData).optimize();
         assertThat(actual.getSQLStatement(), is((SQLStatement) dropIndexStatement));
         assertThat(actual.getTableName(), is("tbl"));

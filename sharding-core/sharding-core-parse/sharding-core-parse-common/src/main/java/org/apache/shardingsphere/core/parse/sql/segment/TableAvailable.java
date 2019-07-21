@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.parse.sql.segment;
 
-import org.apache.shardingsphere.core.parse.constant.QuoteCharacter;
+import org.apache.shardingsphere.core.parse.core.constant.QuoteCharacter;
 
 /**
  * Table available.

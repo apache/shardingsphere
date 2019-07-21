@@ -58,11 +58,11 @@ public interface SQLStatement {
     void setParametersCount(int parametersCount);
     
     /**
-     * Get SQL segments.
+     * Get all SQL segments.
      * 
-     * @return SQL segments
+     * @return all SQL segments
      */
-    Collection<SQLSegment> getSQLSegments();
+    Collection<SQLSegment> getAllSQLSegments();
     
     /**
      * Find SQL segment.

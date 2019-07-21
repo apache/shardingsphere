@@ -58,7 +58,7 @@ public final class SQLStatementFillerEngine {
         SQLStatement result = rule.getSqlStatementClass().newInstance();
         result.setLogicSQL(sql);
         result.setParametersCount(parameterMarkerCount);
-        result.getSQLSegments().addAll(sqlSegments);
+        result.getAllSQLSegments().addAll(sqlSegments);
         for (SQLSegment each : sqlSegments) {
             Optional<SQLSegmentFiller> filler = parseRuleRegistry.findSQLSegmentFiller(databaseType, each.getClass());
             if (filler.isPresent()) {
