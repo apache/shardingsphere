@@ -21,6 +21,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.AggregationSelectItem;
@@ -42,7 +43,8 @@ import java.util.LinkedList;
 public final class SelectItemsTokenGenerator implements OptionalSQLTokenGenerator<ShardingRule>, IgnoreForSingleRoute {
     
     @Override
-    public Optional<SelectItemsToken> generateSQLToken(final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final ShardingRule shardingRule) {
+    public Optional<SelectItemsToken> generateSQLToken(
+            final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final ShardingRule shardingRule, final ShardingProperties properties) {
         if (!(optimizedStatement instanceof ShardingSelectOptimizedStatement)) {
             return Optional.absent();
         }

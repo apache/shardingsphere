@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Optional;
+import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
@@ -41,7 +42,8 @@ import java.util.LinkedList;
 public final class InsertSetEncryptValueTokenGenerator implements CollectionSQLTokenGenerator<EncryptRule> {
     
     @Override
-    public Collection<InsertSetEncryptValueToken> generateSQLTokens(final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final EncryptRule encryptRule) {
+    public Collection<InsertSetEncryptValueToken> generateSQLTokens(
+            final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final EncryptRule encryptRule, final ShardingProperties properties) {
         Optional<SetAssignmentsSegment> setAssignmentsSegment = optimizedStatement.getSQLStatement().findSQLSegment(SetAssignmentsSegment.class);
         if (!(optimizedStatement.getSQLStatement() instanceof InsertStatement && setAssignmentsSegment.isPresent())) {
             return Collections.emptyList();

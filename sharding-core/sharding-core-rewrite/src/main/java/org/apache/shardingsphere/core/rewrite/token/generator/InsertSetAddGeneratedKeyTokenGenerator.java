@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Optional;
+import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
@@ -37,7 +38,8 @@ import java.util.List;
 public final class InsertSetAddGeneratedKeyTokenGenerator implements OptionalSQLTokenGenerator<ShardingRule> {
     
     @Override
-    public Optional<InsertSetAddGeneratedKeyToken> generateSQLToken(final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final ShardingRule shardingRule) {
+    public Optional<InsertSetAddGeneratedKeyToken> generateSQLToken(
+            final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final ShardingRule shardingRule, final ShardingProperties properties) {
         Optional<SetAssignmentsSegment> setAssignmentsSegment = optimizedStatement.getSQLStatement().findSQLSegment(SetAssignmentsSegment.class);
         if (!(optimizedStatement instanceof InsertOptimizedStatement && setAssignmentsSegment.isPresent())) {
             return Optional.absent();

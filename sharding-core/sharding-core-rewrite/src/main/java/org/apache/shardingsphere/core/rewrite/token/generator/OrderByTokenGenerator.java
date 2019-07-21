@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Optional;
+import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
@@ -34,7 +35,8 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 public final class OrderByTokenGenerator implements OptionalSQLTokenGenerator<ShardingRule>, IgnoreForSingleRoute {
     
     @Override
-    public Optional<OrderByToken> generateSQLToken(final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final ShardingRule shardingRule) {
+    public Optional<OrderByToken> generateSQLToken(
+            final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final ShardingRule shardingRule, final ShardingProperties properties) {
         if (!(optimizedStatement instanceof ShardingSelectOptimizedStatement)) {
             return Optional.absent();
         }

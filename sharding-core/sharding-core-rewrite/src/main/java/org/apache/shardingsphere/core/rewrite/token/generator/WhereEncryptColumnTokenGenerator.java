@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Optional;
+import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.optimize.api.statement.ConditionOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.encrypt.segment.condition.EncryptCondition;
@@ -43,7 +44,8 @@ import java.util.Map.Entry;
 public final class WhereEncryptColumnTokenGenerator implements CollectionSQLTokenGenerator<EncryptRule> {
     
     @Override
-    public Collection<EncryptColumnToken> generateSQLTokens(final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final EncryptRule encryptRule) {
+    public Collection<EncryptColumnToken> generateSQLTokens(
+            final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final EncryptRule encryptRule, final ShardingProperties properties) {
         return optimizedStatement instanceof ConditionOptimizedStatement
                 ? createEncryptColumnToken((ConditionOptimizedStatement) optimizedStatement, parameterBuilder, encryptRule) : Collections.<EncryptColumnToken>emptyList();
     }
