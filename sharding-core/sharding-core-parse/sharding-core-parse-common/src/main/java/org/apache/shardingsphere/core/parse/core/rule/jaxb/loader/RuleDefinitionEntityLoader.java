@@ -15,27 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.core.parser;
+package org.apache.shardingsphere.core.parse.core.rule.jaxb.loader;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.apache.shardingsphere.core.parse.core.rule.registry.statement.SQLStatementRule;
-
-import java.util.Map;
+import org.apache.shardingsphere.core.parse.core.rule.jaxb.entity.RuleDefinitionEntity;
 
 /**
- * Abstract syntax tree of SQL.
+ * Rule definition entity loader for JAXB.
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
-@Getter
-public final class SQLAST {
+public interface RuleDefinitionEntityLoader {
     
-    private final ParserRuleContext parserRuleContext;
-    
-    private final Map<ParserRuleContext, Integer> parameterMarkerIndexes;
-    
-    private final SQLStatementRule sqlStatementRule;
+    /**
+     * Load rule definition from XML.
+     * 
+     * @param ruleDefinitionFile rule definition file
+     * @return rule definition entity for JAXB
+     */
+    RuleDefinitionEntity load(String ruleDefinitionFile);
 }

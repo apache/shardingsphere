@@ -23,7 +23,7 @@ import org.apache.shardingsphere.core.parse.core.extractor.SQLSegmentsExtractorE
 import org.apache.shardingsphere.core.parse.core.filler.SQLStatementFillerEngine;
 import org.apache.shardingsphere.core.parse.core.parser.SQLAST;
 import org.apache.shardingsphere.core.parse.core.parser.SQLParserEngine;
-import org.apache.shardingsphere.core.parse.rule.registry.ParseRuleRegistry;
+import org.apache.shardingsphere.core.parse.core.rule.registry.ParseRuleRegistry;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.spi.database.DatabaseType;

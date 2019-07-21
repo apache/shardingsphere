@@ -15,27 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.core.parser;
+package org.apache.shardingsphere.core.parse.core.rule.registry;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.apache.shardingsphere.core.parse.core.rule.registry.statement.SQLStatementRule;
+import org.apache.shardingsphere.core.database.DatabaseTypes;
+import org.apache.shardingsphere.core.parse.sql.segment.ddl.column.ColumnDefinitionSegment;
+import org.junit.Test;
 
-import java.util.Map;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-/**
- * Abstract syntax tree of SQL.
- *
- * @author zhangliang
- */
-@RequiredArgsConstructor
-@Getter
-public final class SQLAST {
+public final class ParseRuleRegistryTest {
     
-    private final ParserRuleContext parserRuleContext;
+    private static ParseRuleRegistry parseRuleRegistry = ParseRuleRegistry.getInstance();
     
-    private final Map<ParserRuleContext, Integer> parameterMarkerIndexes;
-    
-    private final SQLStatementRule sqlStatementRule;
+    @Test
+    public void assertShardingParseRuleRegistry() {
+        assertNotNull(parseRuleRegistry.getSQLStatementRule(DatabaseTypes.getActualDatabaseType("MySQL"), "SelectContext"));
+        assertTrue(parseRuleRegistry.findSQLSegmentFiller(DatabaseTypes.getActualDatabaseType("MySQL"), ColumnDefinitionSegment.class).isPresent());
+    }
 }

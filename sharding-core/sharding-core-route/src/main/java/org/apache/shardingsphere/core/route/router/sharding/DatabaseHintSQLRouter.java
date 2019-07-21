@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.route.router.sharding;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.optimize.transparent.statement.TransparentOptimizedStatement;
 import org.apache.shardingsphere.core.parse.core.SQLParseKernel;
-import org.apache.shardingsphere.core.parse.rule.registry.ParseRuleRegistry;
+import org.apache.shardingsphere.core.parse.core.rule.registry.ParseRuleRegistry;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.type.RoutingResult;

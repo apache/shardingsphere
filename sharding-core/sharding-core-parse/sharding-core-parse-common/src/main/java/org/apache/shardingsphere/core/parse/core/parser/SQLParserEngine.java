@@ -23,9 +23,9 @@ import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.core.parse.core.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.core.extractor.util.RuleName;
+import org.apache.shardingsphere.core.parse.core.rule.registry.ParseRuleRegistry;
+import org.apache.shardingsphere.core.parse.core.rule.registry.statement.SQLStatementRule;
 import org.apache.shardingsphere.core.parse.exception.SQLParsingException;
-import org.apache.shardingsphere.core.parse.rule.registry.ParseRuleRegistry;
-import org.apache.shardingsphere.core.parse.rule.registry.statement.SQLStatementRule;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 
 import java.util.Collection;

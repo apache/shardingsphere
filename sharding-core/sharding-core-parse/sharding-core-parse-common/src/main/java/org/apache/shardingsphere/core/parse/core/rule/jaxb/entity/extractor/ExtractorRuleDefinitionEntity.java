@@ -15,27 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.core.parser;
+package org.apache.shardingsphere.core.parse.core.rule.jaxb.entity.extractor;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.apache.shardingsphere.core.parse.core.rule.registry.statement.SQLStatementRule;
+import org.apache.shardingsphere.core.parse.core.rule.jaxb.entity.RuleDefinitionEntity;
 
-import java.util.Map;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Abstract syntax tree of SQL.
+ * Extractor rule definition entity for JAXB.
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
+@XmlRootElement(name = "extractor-rule-definition")
 @Getter
-public final class SQLAST {
+public final class ExtractorRuleDefinitionEntity implements RuleDefinitionEntity {
     
-    private final ParserRuleContext parserRuleContext;
-    
-    private final Map<ParserRuleContext, Integer> parameterMarkerIndexes;
-    
-    private final SQLStatementRule sqlStatementRule;
+    @XmlElement(name = "extractor-rule")
+    private Collection<ExtractorRuleEntity> rules = new LinkedList<>();
 }
