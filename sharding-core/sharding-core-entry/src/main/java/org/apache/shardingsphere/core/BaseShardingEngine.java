@@ -116,7 +116,7 @@ public abstract class BaseShardingEngine {
     private ShardingProperties createShardingProperties(final SQLRouteResult sqlRouteResult) {
         Properties properties = new Properties();
         properties.setProperty(ShardingPropertiesConstant.IS_SINGLE_ROUTE.getKey(), String.valueOf(sqlRouteResult.getRoutingResult().isSingleRouting()));
-        properties.setProperty(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN.getKey(), shardingProperties.getProps().getProperty(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN.getKey()));
+        properties.setProperty(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN.getKey(), String.valueOf(shardingProperties.getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN)));
         return new ShardingProperties(properties);
     }
     
