@@ -18,11 +18,13 @@
 package org.apache.shardingsphere.core.parse.core.filler;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.parse.core.rule.registry.ParseRuleRegistry;
 import org.apache.shardingsphere.core.parse.core.rule.registry.statement.SQLStatementRule;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
+import org.apache.shardingsphere.core.parse.sql.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 
@@ -56,8 +58,9 @@ public final class SQLStatementFillerEngine {
     @SneakyThrows
     public SQLStatement fill(final Collection<SQLSegment> sqlSegments, final int parameterMarkerCount, final SQLStatementRule rule) {
         SQLStatement result = rule.getSqlStatementClass().newInstance();
-        result.setLogicSQL(sql);
-        result.setParametersCount(parameterMarkerCount);
+        Preconditions.checkArgument(result instanceof AbstractSQLStatement, "%s must extends AbstractSQLStatement", result.getClass().getName());
+        ((AbstractSQLStatement) result).setLogicSQL(sql);
+        ((AbstractSQLStatement) result).setParametersCount(parameterMarkerCount);
         result.getAllSQLSegments().addAll(sqlSegments);
         for (SQLSegment each : sqlSegments) {
             Optional<SQLSegmentFiller> filler = parseRuleRegistry.findSQLSegmentFiller(databaseType, each.getClass());
