@@ -31,11 +31,11 @@ import java.util.LinkedList;
  * @author panjuan
  */
 @Getter
-public final class UpdateEncryptParameterItemToken extends EncryptColumnToken {
+public final class UpdateEncryptParameterColumnToken extends EncryptColumnToken {
     
     private final Collection<String> columnNames = new LinkedList<>();
     
-    public UpdateEncryptParameterItemToken(final int startIndex, final int stopIndex) {
+    public UpdateEncryptParameterColumnToken(final int startIndex, final int stopIndex) {
         super(startIndex, stopIndex);
     }
     
