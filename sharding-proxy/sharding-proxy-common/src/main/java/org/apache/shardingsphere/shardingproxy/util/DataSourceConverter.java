@@ -89,7 +89,7 @@ public final class DataSourceConverter {
         result.getProperties().put("maxPoolSize", dataSourceParameter.getMaxPoolSize());
         result.getProperties().put("minPoolSize", dataSourceParameter.getMinPoolSize());
         result.getProperties().put("maintenanceIntervalMilliseconds", dataSourceParameter.getMaintenanceIntervalMilliseconds());
-        result.getProperties().put("readonly", dataSourceParameter.isReadonly());
+        result.getProperties().put("readOnly", dataSourceParameter.isReadOnly());
         return result;
     }
 }
