@@ -21,6 +21,9 @@ import com.google.common.base.CharMatcher;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+
 /**
  * SQL utility class.
  * 
@@ -29,6 +32,32 @@ import lombok.AllArgsConstructor;
  */
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLUtil {
+    
+    /**
+     * Get exactly number value and type.
+     *
+     * @param value string to be converted
+     * @param radix radix
+     * @return exactly number value and type
+     */
+    public static Number getExactlyNumber(final String value, final int radix) {
+        try {
+            return getBigInteger(value, radix);
+        } catch (final NumberFormatException ex) {
+            return new BigDecimal(value);
+        }
+    }
+    
+    private static Number getBigInteger(final String value, final int radix) {
+        BigInteger result = new BigInteger(value, radix);
+        if (result.compareTo(new BigInteger(String.valueOf(Integer.MIN_VALUE))) >= 0 && result.compareTo(new BigInteger(String.valueOf(Integer.MAX_VALUE))) <= 0) {
+            return result.intValue();
+        }
+        if (result.compareTo(new BigInteger(String.valueOf(Long.MIN_VALUE))) >= 0 && result.compareTo(new BigInteger(String.valueOf(Long.MAX_VALUE))) <= 0) {
+            return result.longValue();
+        }
+        return result;
+    }
     
     /**
      * Get exactly value for SQL expression.

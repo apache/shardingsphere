@@ -29,7 +29,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.Lim
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.LimitValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.ParameterMarkerLimitValueSegment;
-import org.apache.shardingsphere.core.util.NumberUtil;
+import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 import java.util.Map;
 
@@ -71,6 +71,6 @@ public final class LimitExtractor implements OptionalSQLSegmentExtractor {
         Optional<ParserRuleContext> numberLiteralsNode = ExtractorUtils.findFirstChildNode(limitValueNode, RuleName.NUMBER_LITERALS);
         Preconditions.checkState(numberLiteralsNode.isPresent());
         return new NumberLiteralLimitValueSegment(
-                limitValueNode.getStart().getStartIndex(), limitValueNode.getStop().getStopIndex(), NumberUtil.getExactlyNumber(numberLiteralsNode.get().getText(), 10).intValue());
+                limitValueNode.getStart().getStartIndex(), limitValueNode.getStop().getStopIndex(), SQLUtil.getExactlyNumber(numberLiteralsNode.get().getText(), 10).intValue());
     }
 }

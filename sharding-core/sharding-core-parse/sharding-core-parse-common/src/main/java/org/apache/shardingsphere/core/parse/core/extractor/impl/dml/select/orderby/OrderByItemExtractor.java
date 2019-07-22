@@ -30,7 +30,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrd
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.OrderByItemSegment;
-import org.apache.shardingsphere.core.util.NumberUtil;
+import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -56,7 +56,7 @@ public final class OrderByItemExtractor implements CollectionSQLSegmentExtractor
             Optional<ParserRuleContext> indexNode = ExtractorUtils.findFirstChildNode(each, RuleName.NUMBER_LITERALS);
             if (indexNode.isPresent()) {
                 result.add(new IndexOrderByItemSegment(indexNode.get().getStart().getStartIndex(), indexNode.get().getStop().getStopIndex(), 
-                        NumberUtil.getExactlyNumber(indexNode.get().getText(), 10).intValue(), orderDirection, nullOrderDirection));
+                        SQLUtil.getExactlyNumber(indexNode.get().getText(), 10).intValue(), orderDirection, nullOrderDirection));
                 continue;
             }
             Optional<ParserRuleContext> expressionNode = ExtractorUtils.findFirstChildNode(each, RuleName.EXPR);

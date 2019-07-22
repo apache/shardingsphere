@@ -23,7 +23,7 @@ import org.apache.shardingsphere.core.parse.core.extractor.api.OptionalSQLSegmen
 import org.apache.shardingsphere.core.parse.core.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.core.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
-import org.apache.shardingsphere.core.util.NumberUtil;
+import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 import java.util.Map;
 
@@ -55,7 +55,7 @@ public final class LiteralExpressionExtractor implements OptionalSQLSegmentExtra
     
     private Optional<Number> getNumberLiterals(final ParserRuleContext literalsNode) {
         Optional<ParserRuleContext> numberLiteralsNode = ExtractorUtils.findFirstChildNode(literalsNode, RuleName.NUMBER_LITERALS);
-        return numberLiteralsNode.isPresent() ? Optional.of(NumberUtil.getExactlyNumber(numberLiteralsNode.get().getText(), 10)) : Optional.<Number>absent();
+        return numberLiteralsNode.isPresent() ? Optional.of(SQLUtil.getExactlyNumber(numberLiteralsNode.get().getText(), 10)) : Optional.<Number>absent();
     }
     
     private Optional<String> getStringLiterals(final ParserRuleContext literalsNode) {
