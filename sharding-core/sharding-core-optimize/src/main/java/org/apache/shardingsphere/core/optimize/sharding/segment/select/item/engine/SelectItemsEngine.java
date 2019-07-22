@@ -37,7 +37,6 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrd
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.TextOrderByItemSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 
 import java.util.Collection;
@@ -58,14 +57,15 @@ public final class SelectItemsEngine {
     /**
      * Create select items.
      * 
+     * @param sql SQL
      * @param selectStatement SQL statement
      * @param groupBy group by
      * @param orderBy order by
      * @return select items
      */
-    public SelectItems createSelectItems(final SelectStatement selectStatement, final GroupBy groupBy, final OrderBy orderBy) {
+    public SelectItems createSelectItems(final String sql, final SelectStatement selectStatement, final GroupBy groupBy, final OrderBy orderBy) {
         SelectItemsSegment selectItemsSegment = selectStatement.getSelectItems();
-        Collection<SelectItem> items = getSelectItemList(selectItemsSegment, selectStatement);
+        Collection<SelectItem> items = getSelectItemList(sql, selectItemsSegment);
         SelectItems result = new SelectItems(items, selectItemsSegment.isDistinctRow(), selectItemsSegment.getStopIndex());
         Tables tables = new Tables(selectStatement);
         result.getItems().addAll(getDerivedGroupByColumns(tables, items, groupBy));
@@ -73,10 +73,10 @@ public final class SelectItemsEngine {
         return result;
     }
     
-    private Collection<SelectItem> getSelectItemList(final SelectItemsSegment selectItemsSegment, final SQLStatement sqlStatement) {
+    private Collection<SelectItem> getSelectItemList(final String sql, final SelectItemsSegment selectItemsSegment) {
         Collection<SelectItem> result = new LinkedList<>();
         for (SelectItemSegment each : selectItemsSegment.getSelectItems()) {
-            Optional<SelectItem> selectItem = selectItemEngine.createSelectItem(each, sqlStatement);
+            Optional<SelectItem> selectItem = selectItemEngine.createSelectItem(sql, each);
             if (selectItem.isPresent()) {
                 result.add(selectItem.get());
             }

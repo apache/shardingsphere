@@ -59,7 +59,7 @@ public final class ShardingSelectOptimizeEngine implements ShardingOptimizeEngin
         List<EncryptCondition> encryptConditions = encryptConditionEngine.createEncryptConditions(sqlStatement);
         GroupBy groupBy = groupByEngine.createGroupBy(sqlStatement);
         OrderBy orderBy = orderByEngine.createOrderBy(sqlStatement, groupBy);
-        SelectItems selectItems = selectItemsEngine.createSelectItems(sqlStatement, groupBy, orderBy);
+        SelectItems selectItems = selectItemsEngine.createSelectItems(sql, sqlStatement, groupBy, orderBy);
         Pagination pagination = paginationEngine.createPagination(sqlStatement, selectItems, parameters);
         ShardingSelectOptimizedStatement result = new ShardingSelectOptimizedStatement(sqlStatement, shardingConditions, encryptConditions, groupBy, orderBy, selectItems, pagination);
         setContainsSubquery(sqlStatement, result);
