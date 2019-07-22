@@ -30,7 +30,6 @@ import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.pojo.EncryptColumnToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.UpdateEncryptAssistedItemToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.UpdateEncryptItemToken;
-import org.apache.shardingsphere.core.rule.ColumnNode;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
 import java.util.Collection;
@@ -65,9 +64,9 @@ public final class UpdateEncryptColumnTokenGenerator implements CollectionSQLTok
     
     private EncryptColumnToken createEncryptColumnToken(
             final String tableName, final AssignmentSegment assignmentSegment, final BaseParameterBuilder parameterBuilder, final EncryptRule encryptRule) {
-        ColumnNode columnNode = new ColumnNode(tableName, assignmentSegment.getColumn().getName());
         Object originalAssignmentValue = getAssignmentValue(assignmentSegment, parameterBuilder.getOriginalParameters());
-        Object encryptAssignmentValue = encryptRule.getEncryptEngine().getEncryptColumnValues(columnNode, Collections.singletonList(originalAssignmentValue)).iterator().next();
+        Object encryptAssignmentValue = encryptRule.getEncryptEngine().getEncryptColumnValues(
+                tableName, assignmentSegment.getColumn().getName(), Collections.singletonList(originalAssignmentValue)).iterator().next();
         if (assignmentSegment.getValue() instanceof ParameterMarkerExpressionSegment) {
             parameterBuilder.getOriginalParameters().set(((ParameterMarkerExpressionSegment) assignmentSegment.getValue()).getParameterMarkerIndex(), encryptAssignmentValue);
         }
@@ -75,7 +74,8 @@ public final class UpdateEncryptColumnTokenGenerator implements CollectionSQLTok
         if (!assistedQueryColumnName.isPresent()) {
             return createUpdateEncryptItemToken(assignmentSegment, encryptAssignmentValue);
         }
-        Object assistedQueryValue = encryptRule.getEncryptEngine().getEncryptAssistedColumnValues(columnNode, Collections.singletonList(originalAssignmentValue)).iterator().next();
+        Object assistedQueryValue = encryptRule.getEncryptEngine().getEncryptAssistedColumnValues(
+                tableName, assignmentSegment.getColumn().getName(), Collections.singletonList(originalAssignmentValue)).iterator().next();
         if (assignmentSegment.getValue() instanceof ParameterMarkerExpressionSegment) {
             parameterBuilder.getAddedIndexAndParameters().put(((ParameterMarkerExpressionSegment) assignmentSegment.getValue()).getParameterMarkerIndex() + 1, assistedQueryValue);
         }
