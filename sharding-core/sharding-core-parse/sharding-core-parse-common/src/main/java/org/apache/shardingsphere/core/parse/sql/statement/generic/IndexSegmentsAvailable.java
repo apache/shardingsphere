@@ -15,12 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.segment;
+package org.apache.shardingsphere.core.parse.sql.statement.generic;
+
+import org.apache.shardingsphere.core.parse.sql.segment.ddl.index.IndexSegment;
+
+import java.util.Collection;
 
 /**
- * Remove available.
+ * Indexes segment available.
  *
  * @author zhangliang
  */
-public interface RemoveAvailable extends SQLSegment {
+public interface IndexSegmentsAvailable {
+    
+    /**
+     * Get indexes segment.
+     * 
+     * @return indexes segment
+     */
+    Collection<IndexSegment> getIndexes();
 }

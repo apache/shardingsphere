@@ -183,10 +183,11 @@ public final class EncryptSQLRewriteEngineTest {
         assertThat(actual.getParameters().get(3), is((Object) "assistedEncryptValue"));
     }
     
+    @SuppressWarnings("unchecked")
     private SQLUnit getSQLUnit(final String sql, final List<Object> parameters) {
         // TODO panjuan: should mock sqlStatement, do not call parse module on rewrite test case
         SQLStatement sqlStatement = parseEngine.parse(sql, false);
-        OptimizedStatement optimizedStatement = EncryptOptimizeEngineFactory.newInstance(encryptRule, mock(ShardingTableMetaData.class), sqlStatement, parameters).optimize();
+        OptimizedStatement optimizedStatement = EncryptOptimizeEngineFactory.newInstance(sqlStatement).optimize(encryptRule, mock(ShardingTableMetaData.class), sql, parameters, sqlStatement);
         SQLRewriteEngine sqlRewriteEngine = new SQLRewriteEngine(encryptRule, optimizedStatement, parameters, true);
         return sqlRewriteEngine.generateSQL();
     }

@@ -22,27 +22,22 @@ import org.apache.shardingsphere.core.optimize.encrypt.engine.EncryptOptimizeEng
 import org.apache.shardingsphere.core.optimize.encrypt.segment.condition.EncryptConditions;
 import org.apache.shardingsphere.core.optimize.encrypt.segment.condition.WhereClauseEncryptConditionEngine;
 import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptConditionOptimizedStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.rule.EncryptRule;
+
+import java.util.List;
 
 /**
  * Where optimize engine for encrypt.
  *
  * @author zhangliang
  */
-public final class EncryptWhereOptimizeEngine implements EncryptOptimizeEngine {
-    
-    private final SQLStatement sqlStatement;
-    
-    private final WhereClauseEncryptConditionEngine encryptConditionEngine;
-    
-    public EncryptWhereOptimizeEngine(final EncryptRule encryptRule, final ShardingTableMetaData shardingTableMetaData, final SQLStatement sqlStatement) {
-        this.sqlStatement = sqlStatement;
-        encryptConditionEngine = new WhereClauseEncryptConditionEngine(encryptRule, shardingTableMetaData);
-    }
+public final class EncryptWhereOptimizeEngine implements EncryptOptimizeEngine<DMLStatement> {
     
     @Override
-    public EncryptConditionOptimizedStatement optimize() {
+    public EncryptConditionOptimizedStatement optimize(final EncryptRule encryptRule, 
+                                                       final ShardingTableMetaData shardingTableMetaData, final String sql, final List<Object> parameters, final DMLStatement sqlStatement) {
+        WhereClauseEncryptConditionEngine encryptConditionEngine = new WhereClauseEncryptConditionEngine(encryptRule, shardingTableMetaData);
         return new EncryptConditionOptimizedStatement(sqlStatement, new EncryptConditions(encryptConditionEngine.createEncryptConditions(sqlStatement)));
     }
 }

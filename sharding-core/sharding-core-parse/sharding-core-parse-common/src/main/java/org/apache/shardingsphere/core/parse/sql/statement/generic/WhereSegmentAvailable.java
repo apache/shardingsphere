@@ -15,27 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.statement.ddl;
+package org.apache.shardingsphere.core.parse.sql.statement.generic;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-import org.apache.shardingsphere.core.parse.sql.segment.ddl.index.IndexSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.generic.IndexSegmentAvailable;
-import org.apache.shardingsphere.core.parse.sql.statement.generic.TableSegmentAvailable;
+import com.google.common.base.Optional;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.WhereSegment;
 
 /**
- * Create index statement.
+ * Where segment available.
  *
- * @author panjuan
+ * @author zhangliang
  */
-@Getter
-@Setter
-@ToString(callSuper = true)
-public final class CreateIndexStatement extends DDLStatement implements TableSegmentAvailable, IndexSegmentAvailable {
+public interface WhereSegmentAvailable {
     
-    private IndexSegment index;
+    /**
+     * Get where segment.
+     *
+     * @return where segment
+     */
+    Optional<WhereSegment> getWhere();
     
-    private TableSegment table;
+    /**
+     * Set where segment.
+     * 
+     * @param where where segment
+     */
+    void setWhere(WhereSegment where);
 }

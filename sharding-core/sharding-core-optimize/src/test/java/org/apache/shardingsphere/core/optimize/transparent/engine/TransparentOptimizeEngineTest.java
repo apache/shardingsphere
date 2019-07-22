@@ -22,6 +22,8 @@ import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.DDLStatement;
 import org.junit.Test;
 
+import java.util.Collections;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -30,7 +32,7 @@ public final class TransparentOptimizeEngineTest {
     @Test
     public void assertOptimize() {
         SQLStatement sqlStatement = new DDLStatement();
-        TransparentOptimizedStatement actual = new TransparentOptimizeEngine(sqlStatement).optimize();
+        TransparentOptimizedStatement actual = new TransparentOptimizeEngine().optimize(null, null, "", Collections.emptyList(), sqlStatement);
         assertThat(actual.getSQLStatement(), is(sqlStatement));
     }
 }

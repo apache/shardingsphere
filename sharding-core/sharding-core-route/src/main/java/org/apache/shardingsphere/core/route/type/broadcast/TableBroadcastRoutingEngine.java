@@ -29,7 +29,6 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 
 /**
@@ -57,7 +56,7 @@ public final class TableBroadcastRoutingEngine implements RoutingEngine {
     
     private Collection<String> getLogicTableNames() {
         return optimizedStatement instanceof ShardingDropIndexOptimizedStatement
-                ? Collections.singletonList(((ShardingDropIndexOptimizedStatement) optimizedStatement).getTableName()) : optimizedStatement.getTables().getTableNames();
+                ? ((ShardingDropIndexOptimizedStatement) optimizedStatement).getTableNames() : optimizedStatement.getTables().getTableNames();
     }
     
     private Collection<RoutingUnit> getAllRoutingUnits(final String logicTableName) {

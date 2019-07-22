@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.parse.sql.statement.ddl;
 
 import lombok.ToString;
-import org.apache.shardingsphere.core.parse.sql.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.generic.AbstractSQLStatement;
 
 /**
  * DDL statement.

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.parse.core.filler.impl.dml;
 import org.apache.shardingsphere.core.parse.core.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.WhereSegmentAvailable;
+import org.apache.shardingsphere.core.parse.sql.statement.generic.WhereSegmentAvailable;
 
 /**
  * Where filler.

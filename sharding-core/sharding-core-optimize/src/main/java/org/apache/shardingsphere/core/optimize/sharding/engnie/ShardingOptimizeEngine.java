@@ -17,16 +17,23 @@
 
 package org.apache.shardingsphere.core.optimize.sharding.engnie;
 
+import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.api.engine.OptimizeEngine;
 import org.apache.shardingsphere.core.optimize.sharding.statement.ShardingOptimizedStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.rule.ShardingRule;
+
+import java.util.List;
 
 /**
  * Optimize engine for sharding.
  *
  * @author zhangliang
+ * 
+ * @param <T> type of SQL statement
  */
-public interface ShardingOptimizeEngine extends OptimizeEngine {
+public interface ShardingOptimizeEngine<T extends SQLStatement> extends OptimizeEngine<ShardingRule, T> {
     
     @Override
-    ShardingOptimizedStatement optimize();
+    ShardingOptimizedStatement optimize(ShardingRule shardingRule, ShardingTableMetaData shardingTableMetaData, String sql, List<Object> parameters, T sqlStatement);
 }

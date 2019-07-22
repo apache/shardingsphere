@@ -15,29 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.statement.dml;
+package org.apache.shardingsphere.core.parse.sql.statement.generic;
 
-import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 
 /**
- * Where segment available.
+ * Table segment available.
  *
  * @author zhangliang
  */
-public interface WhereSegmentAvailable {
+public interface TableSegmentAvailable {
     
     /**
-     * Get where segment.
-     *
-     * @return where segment
-     */
-    Optional<WhereSegment> getWhere();
-    
-    /**
-     * Set where segment.
+     * Get table segment.
      * 
-     * @param where where segment
+     * @return table segment
      */
-    void setWhere(WhereSegment where);
+    TableSegment getTable();
+    
+    /**
+     * Set table segment.
+     * 
+     * @param table table segment
+     */
+    void setTable(TableSegment table);
 }

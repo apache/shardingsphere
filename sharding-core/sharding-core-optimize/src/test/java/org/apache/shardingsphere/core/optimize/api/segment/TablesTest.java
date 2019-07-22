@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.optimize.api.segment;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
-import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;

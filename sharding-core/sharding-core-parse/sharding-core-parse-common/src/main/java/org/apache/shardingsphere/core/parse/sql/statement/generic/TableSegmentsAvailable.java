@@ -15,28 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.segment;
+package org.apache.shardingsphere.core.parse.sql.statement.generic;
 
-import org.apache.shardingsphere.core.parse.core.constant.QuoteCharacter;
+import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
+
+import java.util.Collection;
 
 /**
- * Table available.
+ * Table segments available.
  *
  * @author zhangliang
  */
-public interface TableAvailable extends SQLSegment {
+public interface TableSegmentsAvailable {
     
     /**
-     * Get table name.
-     *
-     * @return table name
+     * Get table segments.
+     * 
+     * @return table segments
      */
-    String getTableName();
-    
-    /**
-     * Get table quote character.
-     *
-     * @return table quote character
-     */
-    QuoteCharacter getTableQuoteCharacter();
+    Collection<TableSegment> getTables();
 }

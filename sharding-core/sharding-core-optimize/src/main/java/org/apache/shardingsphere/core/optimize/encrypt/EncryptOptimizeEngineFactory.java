@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.optimize.encrypt;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.api.engine.OptimizeEngine;
 import org.apache.shardingsphere.core.optimize.encrypt.engine.dml.EncryptInsertOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.encrypt.engine.dml.EncryptWhereOptimizeEngine;
@@ -29,9 +28,6 @@ import org.apache.shardingsphere.core.parse.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.core.rule.EncryptRule;
-
-import java.util.List;
 
 /**
  * Optimize engine factory for encrypt.
@@ -44,20 +40,17 @@ public final class EncryptOptimizeEngineFactory {
     
     /**
      * Create encrypt optimize engine instance.
-     * 
-     * @param encryptRule encrypt rule
-     * @param shardingTableMetaData sharding table metadata
+     *
      * @param sqlStatement SQL statement
-     * @param parameters parameters
      * @return optimize engine instance
      */
-    public static OptimizeEngine newInstance(final EncryptRule encryptRule, final ShardingTableMetaData shardingTableMetaData, final SQLStatement sqlStatement, final List<Object> parameters) {
+    public static OptimizeEngine newInstance(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof InsertStatement) {
-            return new EncryptInsertOptimizeEngine(encryptRule, shardingTableMetaData, (InsertStatement) sqlStatement, parameters);
+            return new EncryptInsertOptimizeEngine();
         }
         if (sqlStatement instanceof SelectStatement || sqlStatement instanceof UpdateStatement || sqlStatement instanceof DeleteStatement) {
-            return new EncryptWhereOptimizeEngine(encryptRule, shardingTableMetaData, sqlStatement);
+            return new EncryptWhereOptimizeEngine();
         }
-        return new TransparentOptimizeEngine(sqlStatement);
+        return new TransparentOptimizeEngine();
     }
 }

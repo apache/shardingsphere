@@ -22,6 +22,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.cache.SQLParseResultCache;
 import org.apache.shardingsphere.core.parse.core.SQLParseKernel;
 import org.apache.shardingsphere.core.parse.core.rule.registry.ParseRuleRegistry;
+import org.apache.shardingsphere.core.parse.hook.ParsingHook;
+import org.apache.shardingsphere.core.parse.hook.SPIParsingHook;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 
@@ -45,6 +47,21 @@ public final class SQLParseEngine {
      * @return SQL statement
      */
     public SQLStatement parse(final String sql, final boolean useCache) {
+        ParsingHook parsingHook = new SPIParsingHook();
+        parsingHook.start(sql);
+        try {
+            SQLStatement result = parse0(sql, useCache);
+            parsingHook.finishSuccess(result);
+            return result;
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            parsingHook.finishFailure(ex);
+            throw ex;
+        }
+    }
+    
+    private SQLStatement parse0(final String sql, final boolean useCache) {
         if (useCache) {
             Optional<SQLStatement> cachedSQLStatement = cache.getSQLStatement(sql);
             if (cachedSQLStatement.isPresent()) {

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.parse.hook;
 
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
 /**
@@ -38,9 +37,8 @@ public interface ParsingHook {
      * Handle when parse finished success.
      *
      * @param sqlStatement sql statement
-     * @param shardingTableMetaData sharding table meta data
      */
-    void finishSuccess(SQLStatement sqlStatement, ShardingTableMetaData shardingTableMetaData);
+    void finishSuccess(SQLStatement sqlStatement);
     
     /**
      * Handle when parse finished failure.

@@ -17,20 +17,33 @@
 
 package org.apache.shardingsphere.core.optimize.api.engine;
 
+import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.rule.BaseRule;
+
+import java.util.List;
 
 /**
  * Optimize engine.
  *
  * @author maxiaoguang
  * @author panjuan
+ * 
+ * @param <R> type of rule
+ * @param <T> type of SQL statement
  */
-public interface OptimizeEngine {
+public interface OptimizeEngine<R extends BaseRule, T extends SQLStatement> {
     
     /**
      * Optimize.
-     *
+     * 
+     * @param rule rule
+     * @param shardingTableMetaData table meta data
+     * @param sql SQL
+     * @param parameters SQL parameters
+     * @param sqlStatement SQL statement
      * @return optimized statement
      */
-    OptimizedStatement optimize();
+    OptimizedStatement optimize(R rule, ShardingTableMetaData shardingTableMetaData, String sql, List<Object> parameters, T sqlStatement);
 }

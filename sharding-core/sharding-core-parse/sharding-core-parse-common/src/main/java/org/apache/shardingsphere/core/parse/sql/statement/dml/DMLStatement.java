@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.parse.sql.statement.dml;
 
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.shardingsphere.core.parse.sql.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.generic.AbstractSQLStatement;
 
 /**
  * DML statement.

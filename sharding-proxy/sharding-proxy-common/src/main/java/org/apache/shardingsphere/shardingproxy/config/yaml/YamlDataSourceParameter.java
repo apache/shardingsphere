@@ -49,4 +49,6 @@ public final class YamlDataSourceParameter {
     private int minPoolSize = 1;
     
     private long maintenanceIntervalMilliseconds = 30 * 1000;
+
+    private boolean readOnly = false;
 }
