@@ -40,7 +40,8 @@ public interface CollectionSQLTokenGenerator<T extends BaseRule> extends SQLToke
      * @param optimizedStatement optimized statement
      * @param parameterBuilder SQL parameter builder
      * @param rule rule
+     * @param isQueryWithCipherColumn is query with cipher column
      * @return SQL tokens
      */
-    Collection<? extends SQLToken> generateSQLTokens(OptimizedStatement optimizedStatement, ParameterBuilder parameterBuilder, T rule);
+    Collection<? extends SQLToken> generateSQLTokens(OptimizedStatement optimizedStatement, ParameterBuilder parameterBuilder, T rule, boolean isQueryWithCipherColumn);
 }

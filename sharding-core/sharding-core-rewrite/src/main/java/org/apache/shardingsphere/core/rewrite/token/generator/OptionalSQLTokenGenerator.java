@@ -39,7 +39,8 @@ public interface OptionalSQLTokenGenerator<T extends BaseRule> extends SQLTokenG
      * @param optimizedStatement optimized statement
      * @param parameterBuilder SQL parameter builder
      * @param rule rule
+     * @param isQueryWithCipherColumn is query with cipher column
      * @return SQL token
      */
-    Optional<? extends SQLToken> generateSQLToken(OptimizedStatement optimizedStatement, ParameterBuilder parameterBuilder, T rule);
+    Optional<? extends SQLToken> generateSQLToken(OptimizedStatement optimizedStatement, ParameterBuilder parameterBuilder, T rule, boolean isQueryWithCipherColumn);
 }

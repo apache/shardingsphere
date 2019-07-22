@@ -82,14 +82,14 @@ public final class SQLTokenGenerateEngineTest {
     @SuppressWarnings("unchecked")
     @Test
     public void assertGenerateSQLTokensWithBaseTokenGenerateEngine() {
-        List<SQLToken> actual = baseTokenGenerateEngine.generateSQLTokens(optimizedStatement, null, mock(ShardingRule.class), true);
+        List<SQLToken> actual = baseTokenGenerateEngine.generateSQLTokens(optimizedStatement, null, mock(ShardingRule.class), true, false);
         assertThat(actual.size(), is(0));
     }
     
     @SuppressWarnings("unchecked")
     @Test
     public void assertGetSQLTokenGeneratorsWithShardingTokenGenerateEngineWithoutSingleRoute() {
-        List<SQLToken> actual = shardingTokenGenerateEngine.generateSQLTokens(optimizedStatement, null, mock(ShardingRule.class), false);
+        List<SQLToken> actual = shardingTokenGenerateEngine.generateSQLTokens(optimizedStatement, null, mock(ShardingRule.class), false, false);
         assertThat(actual.size(), is(2));
         assertThat(actual.get(0), CoreMatchers.<SQLToken>instanceOf(SelectItemPrefixToken.class));
     }
@@ -97,14 +97,14 @@ public final class SQLTokenGenerateEngineTest {
     @SuppressWarnings("unchecked")
     @Test
     public void assertGetSQLTokenGeneratorsWithShardingTokenGenerateEngineWithSingleRoute() {
-        List<SQLToken> actual = shardingTokenGenerateEngine.generateSQLTokens(optimizedStatement, null, mock(ShardingRule.class), true);
+        List<SQLToken> actual = shardingTokenGenerateEngine.generateSQLTokens(optimizedStatement, null, mock(ShardingRule.class), true, false);
         assertThat(actual.size(), is(0));
     }
     
     @SuppressWarnings("unchecked")
     @Test
     public void assertGenerateSQLTokensWithEncryptTokenGenerateEngine() {
-        List<SQLToken> actual = encryptTokenGenerateEngine.generateSQLTokens(optimizedStatement, null, mock(EncryptRule.class), true);
+        List<SQLToken> actual = encryptTokenGenerateEngine.generateSQLTokens(optimizedStatement, null, mock(EncryptRule.class), true, false);
         assertThat(actual.size(), is(0));
     }
 }
