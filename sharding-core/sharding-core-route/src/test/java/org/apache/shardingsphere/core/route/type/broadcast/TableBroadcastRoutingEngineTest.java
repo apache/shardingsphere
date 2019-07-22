@@ -21,7 +21,7 @@ import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.core.optimize.transparent.statement.TransparentOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.ddl.CreateIndexStatement;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.junit.Before;
@@ -63,10 +63,10 @@ public final class TableBroadcastRoutingEngineTest {
     }
     
     private RoutingResult createDDLStatementRoutingResult() {
-        DDLStatement ddlStatement = new DDLStatement();
-        ddlStatement.setLogicSQL("CREATE INDEX t_order_index on t_order");
-        ddlStatement.getAllSQLSegments().add(new TableSegment(0, 0, "t_order"));
-        ddlStatement.setIndexName("t_order_index");
-        return new TableBroadcastRoutingEngine(shardingRule, new TransparentOptimizedStatement(ddlStatement)).route();
+        CreateIndexStatement createIndexStatement = new CreateIndexStatement();
+        createIndexStatement.setLogicSQL("CREATE INDEX t_order_index on t_order");
+        createIndexStatement.getAllSQLSegments().add(new TableSegment(0, 0, "t_order"));
+        createIndexStatement.setIndexName("t_order_index");
+        return new TableBroadcastRoutingEngine(shardingRule, new TransparentOptimizedStatement(createIndexStatement)).route();
     }
 }
