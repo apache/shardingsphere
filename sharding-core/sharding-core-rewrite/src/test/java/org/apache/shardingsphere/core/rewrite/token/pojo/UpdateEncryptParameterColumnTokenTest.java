@@ -15,27 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.token;
+package org.apache.shardingsphere.core.rewrite.token.pojo;
 
-import org.apache.shardingsphere.core.rewrite.token.pojo.UpdateEncryptItemToken;
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class UpdateEncryptItemTokenTest {
+public final class UpdateEncryptParameterColumnTokenTest {
     
-    private UpdateEncryptItemToken updateEncryptItemToken;
+    private UpdateEncryptParameterColumnToken updateEncryptParameterColumnToken;
     
-    @Test
-    public void assertToStringWithPlaceholderWithoutAssistedColumn() {
-        updateEncryptItemToken = new UpdateEncryptItemToken(0, 0, "column_x");
-        assertThat(updateEncryptItemToken.toString(), is("column_x = ?"));
+    @Before
+    public void setUp() {
+        updateEncryptParameterColumnToken = new UpdateEncryptParameterColumnToken(0, 1);
+        updateEncryptParameterColumnToken.addUpdateColumn("c1");
+        updateEncryptParameterColumnToken.addUpdateColumn("c2");
     }
     
     @Test
-    public void assertToStringWithoutPlaceholderWithoutAssistedColumn() {
-        updateEncryptItemToken = new UpdateEncryptItemToken(0, 0, "column_x", 1);
-        assertThat(updateEncryptItemToken.toString(), is("column_x = 1"));
+    public void assertToString() {
+        assertThat(updateEncryptParameterColumnToken.toString(), is("c1 = ?, c2 = ?"));
+    }
+    
+    @Test
+    public void assertGetColumnNames() {
+        assertThat(updateEncryptParameterColumnToken.getColumnNames().size(), is(2));
     }
 }
