@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SQLToken;
@@ -40,8 +39,8 @@ public interface OptionalSQLTokenGenerator<T extends BaseRule> extends SQLTokenG
      * @param optimizedStatement optimized statement
      * @param parameterBuilder SQL parameter builder
      * @param rule rule
-     * @param properties properties
+     * @param isQueryWithCipherColumn is query with cipher column
      * @return SQL token
      */
-    Optional<? extends SQLToken> generateSQLToken(OptimizedStatement optimizedStatement, ParameterBuilder parameterBuilder, T rule, ShardingProperties properties);
+    Optional<? extends SQLToken> generateSQLToken(OptimizedStatement optimizedStatement, ParameterBuilder parameterBuilder, T rule, boolean isQueryWithCipherColumn);
 }

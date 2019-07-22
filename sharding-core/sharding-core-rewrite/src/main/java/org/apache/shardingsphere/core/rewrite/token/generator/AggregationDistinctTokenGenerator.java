@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
-import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.DerivedColumn;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
@@ -42,7 +41,7 @@ public final class AggregationDistinctTokenGenerator implements CollectionSQLTok
     
     @Override
     public Collection<AggregationDistinctToken> generateSQLTokens(
-            final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final ShardingRule shardingRule, final ShardingProperties properties) {
+            final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final ShardingRule shardingRule, final boolean isQueryWithCipherColumn) {
         Collection<AggregationDistinctToken> result = new LinkedList<>();
         for (SQLSegment each : optimizedStatement.getSQLStatement().getAllSQLSegments()) {
             Collection<AggregationDistinctSelectItemSegment> distinctSelectItemSegments = getAggregationDistinctSelectItemSegment(each);
