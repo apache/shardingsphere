@@ -21,6 +21,7 @@ import org.apache.shardingsphere.core.parse.core.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.CreateIndexStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.DropIndexStatement;
 
 /**
@@ -36,6 +37,8 @@ public final class IndexFiller implements SQLSegmentFiller<IndexSegment> {
             ((CreateIndexStatement) sqlStatement).setIndex(sqlSegment);
         } else if (sqlStatement instanceof DropIndexStatement) {
             ((DropIndexStatement) sqlStatement).getIndexes().add(sqlSegment);
+        } else if (sqlStatement instanceof CreateTableStatement) {
+            ((CreateTableStatement) sqlStatement).getIndexes().add(sqlSegment);
         }
     }
 }

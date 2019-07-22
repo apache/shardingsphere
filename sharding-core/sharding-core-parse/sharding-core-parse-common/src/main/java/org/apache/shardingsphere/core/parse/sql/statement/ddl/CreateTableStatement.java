@@ -18,8 +18,11 @@
 package org.apache.shardingsphere.core.parse.sql.statement.ddl;
 
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
+import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.ddl.column.ColumnDefinitionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.ddl.index.IndexSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -30,8 +33,13 @@ import java.util.LinkedList;
  * @author zhangliang
  */
 @Getter
+@Setter
 @ToString(callSuper = true)
 public final class CreateTableStatement extends DDLStatement {
     
+    private TableSegment table;
+    
     private final Collection<ColumnDefinitionSegment> columnDefinitions = new LinkedList<>();
+    
+    private final Collection<IndexSegment> indexes = new LinkedList<>();
 }
