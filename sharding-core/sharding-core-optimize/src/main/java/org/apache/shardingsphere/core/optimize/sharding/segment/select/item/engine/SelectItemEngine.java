@@ -25,13 +25,13 @@ import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.Comm
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.DerivedColumn;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.SelectItem;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.ShorthandSelectItem;
-import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.AggregationDistinctSelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.AggregationSelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.ColumnSelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.ExpressionSelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.ShorthandSelectItemSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
 /**

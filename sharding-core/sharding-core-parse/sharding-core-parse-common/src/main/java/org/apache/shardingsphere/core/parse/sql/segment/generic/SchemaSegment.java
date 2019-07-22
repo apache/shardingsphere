@@ -15,12 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.segment;
+package org.apache.shardingsphere.core.parse.sql.segment.generic;
+
+import lombok.Getter;
+import org.apache.shardingsphere.core.parse.core.constant.QuoteCharacter;
+import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
+import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 /**
- * Remove available.
+ * Schema segment.
  *
  * @author zhangliang
  */
-public interface RemoveAvailable extends SQLSegment {
+@Getter
+public final class SchemaSegment implements SQLSegment {
+    
+    private final int startIndex;
+    
+    private final int stopIndex;
+    
+    private final String name;
+    
+    private final QuoteCharacter quoteCharacter;
+    
+    public SchemaSegment(final int startIndex, final int stopIndex, final String name) {
+        this.startIndex = startIndex;
+        this.stopIndex = stopIndex;
+        this.name = SQLUtil.getExactlyValue(name);
+        this.quoteCharacter = QuoteCharacter.getQuoteCharacter(name);
+    }
 }

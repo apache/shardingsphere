@@ -24,7 +24,6 @@ import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.encrypt.engine.dml.EncryptInsertOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptInsertOptimizedStatement;
-import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
@@ -32,6 +31,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.junit.Before;

@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
-import org.apache.shardingsphere.core.parse.sql.segment.RemoveAvailable;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.generic.RemoveAvailable;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.pojo.RemoveToken;
 import org.apache.shardingsphere.core.rule.BaseRule;

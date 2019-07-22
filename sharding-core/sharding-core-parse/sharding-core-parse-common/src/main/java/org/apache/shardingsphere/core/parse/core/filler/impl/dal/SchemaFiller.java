@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.parse.core.filler.impl.dal;
 
 import org.apache.shardingsphere.core.parse.core.filler.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.sql.segment.common.SchemaSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.UseStatement;
 

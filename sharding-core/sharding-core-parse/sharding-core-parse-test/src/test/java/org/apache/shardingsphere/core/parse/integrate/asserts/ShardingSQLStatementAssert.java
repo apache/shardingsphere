@@ -26,10 +26,10 @@ import org.apache.shardingsphere.core.parse.integrate.asserts.table.AlterTableAs
 import org.apache.shardingsphere.core.parse.integrate.asserts.table.TableAssert;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.ShardingParserResultSetRegistry;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.root.ParserResult;
-import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.LimitSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;

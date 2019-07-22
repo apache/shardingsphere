@@ -20,8 +20,8 @@ package org.apache.shardingsphere.core.parse.sql.statement.ddl;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.generic.TableSegmentAvailable;
 
 import java.util.Collection;

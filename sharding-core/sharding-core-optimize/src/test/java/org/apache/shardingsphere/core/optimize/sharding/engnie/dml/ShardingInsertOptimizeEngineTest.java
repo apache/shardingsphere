@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.optimize.sharding.engnie.dml;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingInsertOptimizedStatement;
-import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
@@ -28,6 +27,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlRootShardingConfiguration;

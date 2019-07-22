@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.parse.integrate.asserts.table;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.integrate.asserts.SQLStatementAssertMessage;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.table.ExpectedTable;
-import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 
 import java.util.Collection;
 import java.util.HashMap;

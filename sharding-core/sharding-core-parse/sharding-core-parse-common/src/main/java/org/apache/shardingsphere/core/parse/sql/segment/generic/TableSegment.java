@@ -15,17 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.segment.common;
+package org.apache.shardingsphere.core.parse.sql.segment.generic;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.parse.core.constant.QuoteCharacter;
-import org.apache.shardingsphere.core.parse.sql.segment.AliasAvailable;
-import org.apache.shardingsphere.core.parse.sql.segment.OwnerAvailable;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.TableAvailable;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 /**

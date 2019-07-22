@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.parse.sql.statement.generic;
 
-import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 
 /**
  * Table segment available.

@@ -15,13 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.statement;
+package org.apache.shardingsphere.core.parse.sql.statement.generic;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
+import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;

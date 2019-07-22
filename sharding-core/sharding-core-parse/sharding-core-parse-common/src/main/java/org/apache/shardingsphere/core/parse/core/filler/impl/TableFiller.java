@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.parse.core.filler.impl;
 
 import org.apache.shardingsphere.core.parse.core.filler.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.generic.TableSegmentAvailable;
 import org.apache.shardingsphere.core.parse.sql.statement.generic.TableSegmentsAvailable;

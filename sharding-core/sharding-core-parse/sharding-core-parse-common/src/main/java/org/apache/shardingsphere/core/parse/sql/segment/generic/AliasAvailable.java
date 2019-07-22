@@ -15,30 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.segment;
+package org.apache.shardingsphere.core.parse.sql.segment.generic;
 
 import com.google.common.base.Optional;
+import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 
 /**
- * Owner available.
+ * Alias available.
  *
  * @author zhangliang
- * 
- * @param <T> type of SQL segment
  */
-public interface OwnerAvailable<T extends SQLSegment> extends SQLSegment {
+public interface AliasAvailable extends SQLSegment {
     
     /**
-     * Get owner.
+     * Get alias.
      *
-     * @return owner
+     * @return alias
      */
-    Optional<T> getOwner();
+    Optional<String> getAlias();
     
     /**
-     * Set owner.
+     * Set alias.
      *
-     * @param owner owner
+     * @param alias alias
      */
-    void setOwner(T owner);
+    void setAlias(String alias);
 }

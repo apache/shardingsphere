@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.segment;
+package org.apache.shardingsphere.core.parse.sql.segment.generic;
 
 import org.apache.shardingsphere.core.parse.core.constant.QuoteCharacter;
+import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 
 /**
  * Table available.

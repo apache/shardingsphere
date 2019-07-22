@@ -22,7 +22,6 @@ import com.google.common.collect.Range;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingConditions;
-import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
@@ -33,6 +32,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.WhereSegme
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateBetweenRightValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateCompareRightValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateInRightValue;
+import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;

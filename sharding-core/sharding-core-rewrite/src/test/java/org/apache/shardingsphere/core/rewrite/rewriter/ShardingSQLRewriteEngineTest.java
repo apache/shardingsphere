@@ -41,8 +41,6 @@ import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingIn
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.transparent.statement.TransparentOptimizedStatement;
 import org.apache.shardingsphere.core.parse.core.constant.QuoteCharacter;
-import org.apache.shardingsphere.core.parse.sql.segment.common.SchemaSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dal.FromSchemaSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
@@ -58,6 +56,8 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemsSegm
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.rownum.NumberLiteralRowNumberValueSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;

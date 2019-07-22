@@ -23,7 +23,7 @@ import org.apache.shardingsphere.core.parse.core.extractor.api.CollectionSQLSegm
 import org.apache.shardingsphere.core.parse.core.extractor.impl.common.table.TablesExtractor;
 import org.apache.shardingsphere.core.parse.core.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.core.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 
 import java.util.Collection;
 import java.util.Collections;
