@@ -21,6 +21,7 @@ import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.sharding.statement.ddl.ShardingDropIndexOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.DropIndexStatement;
 import org.junit.Before;
@@ -44,7 +45,7 @@ public final class ShardingDropIndexOptimizeEngineTest {
     @Before
     public void setUp() {
         dropIndexStatement = new DropIndexStatement();
-        dropIndexStatement.setIndexName("idx");
+        dropIndexStatement.setIndex(new IndexSegment(0, 0, "idx"));
         when(shardingTableMetaData.getLogicTableName("idx")).thenReturn(Optional.of("meta_tbl"));
     }
     

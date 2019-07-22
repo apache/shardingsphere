@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.shardingproxy.backend.schema;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
@@ -141,27 +140,27 @@ public final class ShardingSchema extends LogicSchema {
     
     private void refreshTableMetaDataForCreateIndex(final OptimizedStatement optimizedStatement) {
         CreateIndexStatement createIndexStatement = (CreateIndexStatement) optimizedStatement.getSQLStatement();
-        if (Strings.isNullOrEmpty(createIndexStatement.getIndexName())) {
+        if (null == createIndexStatement.getIndex()) {
             return;
         }
-        getMetaData().getTable().get(optimizedStatement.getTables().getSingleTableName()).getLogicIndexes().add(createIndexStatement.getIndexName());
+        getMetaData().getTable().get(optimizedStatement.getTables().getSingleTableName()).getLogicIndexes().add(createIndexStatement.getIndex().getName());
     }
     
     private void refreshTableMetaDataForDropIndex(final OptimizedStatement optimizedStatement) {
         DropIndexStatement dropIndexStatement = (DropIndexStatement) optimizedStatement.getSQLStatement();
-        if (Strings.isNullOrEmpty(dropIndexStatement.getIndexName())) {
+        if (null == dropIndexStatement.getIndex()) {
             return;
         }
         Optional<String> logicTableName = getLogicTableName(optimizedStatement);
         if (logicTableName.isPresent()) {
-            getMetaData().getTable().get(logicTableName.get()).getLogicIndexes().remove(dropIndexStatement.getIndexName());
+            getMetaData().getTable().get(logicTableName.get()).getLogicIndexes().remove(dropIndexStatement.getIndex().getName());
         }
     }
     
     private Optional<String> getLogicTableName(final OptimizedStatement optimizedStatement) {
         DropIndexStatement dropIndexStatement = (DropIndexStatement) optimizedStatement.getSQLStatement();
         if (optimizedStatement.getTables().isEmpty()) {
-            return getMetaData().getTable().getLogicTableName(dropIndexStatement.getIndexName());
+            return getMetaData().getTable().getLogicTableName(dropIndexStatement.getIndex().getName());
         }
         return Optional.of(optimizedStatement.getTables().getSingleTableName());
     }

@@ -47,6 +47,6 @@ public final class IndexTokenGenerator implements CollectionSQLTokenGenerator<Sh
     }
     
     private IndexToken createIndexToken(final IndexSegment segment) {
-        return new IndexToken(segment.getStartIndex(), segment.getStopIndex(), segment.getIndexName(), segment.getQuoteCharacter());
+        return new IndexToken(segment.getStartIndex(), segment.getStopIndex(), segment.getName(), segment.getQuoteCharacter());
     }
 }

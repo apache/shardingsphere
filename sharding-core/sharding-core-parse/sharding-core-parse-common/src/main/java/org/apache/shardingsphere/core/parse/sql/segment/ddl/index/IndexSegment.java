@@ -36,14 +36,14 @@ public final class IndexSegment implements SQLSegment {
     
     private final int stopIndex;
     
-    private final String indexName;
+    private final String name;
     
     private final QuoteCharacter quoteCharacter;
     
-    public IndexSegment(final int startIndex, final int stopIndex, final String indexName) {
+    public IndexSegment(final int startIndex, final int stopIndex, final String name) {
         this.startIndex = startIndex;
         this.stopIndex = stopIndex;
-        this.indexName = SQLUtil.getExactlyValue(indexName);
-        quoteCharacter = QuoteCharacter.getQuoteCharacter(indexName);
+        this.name = SQLUtil.getExactlyValue(name);
+        quoteCharacter = QuoteCharacter.getQuoteCharacter(name);
     }
 }

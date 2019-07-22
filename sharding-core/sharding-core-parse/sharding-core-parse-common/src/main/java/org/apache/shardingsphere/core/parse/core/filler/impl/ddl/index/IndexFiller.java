@@ -33,9 +33,9 @@ public final class IndexFiller implements SQLSegmentFiller<IndexSegment> {
     @Override
     public void fill(final IndexSegment sqlSegment, final SQLStatement sqlStatement) {
         if (sqlStatement instanceof CreateIndexStatement) {
-            ((CreateIndexStatement) sqlStatement).setIndexName(sqlSegment.getIndexName());
+            ((CreateIndexStatement) sqlStatement).setIndex(sqlSegment);
         } else if (sqlStatement instanceof DropIndexStatement) {
-            ((DropIndexStatement) sqlStatement).setIndexName(sqlSegment.getIndexName());
+            ((DropIndexStatement) sqlStatement).setIndex(sqlSegment);
         }
     }
 }
