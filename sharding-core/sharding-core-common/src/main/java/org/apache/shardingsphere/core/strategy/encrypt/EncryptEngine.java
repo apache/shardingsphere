@@ -99,6 +99,37 @@ public final class EncryptEngine {
     }
     
     /**
+     * Get encrypt table names.
+     *
+     * @return encrypt table names
+     */
+    public Collection<String> getEncryptTableNames() {
+        return tables.keySet();
+    }
+    
+    /**
+     * Get plain column.
+     *
+     * @param logicTableName logic table name
+     * @param logicColumnName logic column name
+     * @return plain column
+     */
+    public Optional<String> getPlainColumn(final String logicTableName, final String logicColumnName) {
+        return tables.get(logicTableName).getPlainColumn(logicColumnName);
+    }
+    
+    /**
+     * Get cipher column.
+     * 
+     * @param logicTableName logic table name
+     * @param logicColumnName logic column name
+     * @return cipher column
+     */
+    public String getCipherColumn(final String logicTableName, final String logicColumnName) {
+        return tables.get(logicTableName).getCipherColumn(logicColumnName);
+    }
+    
+    /**
      * Get assisted query column.
      * 
      * @param logicTableName logic table name
@@ -133,15 +164,6 @@ public final class EncryptEngine {
      */
     public Integer getAssistedQueryColumnCount(final String logicTableName) {
         return getAssistedQueryColumns(logicTableName).size();
-    }
-    
-    /**
-     * Get encrypt table names.
-     *
-     * @return encrypt table names
-     */
-    public Collection<String> getEncryptTableNames() {
-        return tables.keySet();
     }
     
     /**
