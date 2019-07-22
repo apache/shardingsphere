@@ -25,7 +25,6 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.encrypt.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfiguration;
-import org.apache.shardingsphere.core.rule.ColumnNode;
 import org.apache.shardingsphere.core.spi.algorithm.encrypt.ShardingEncryptorServiceLoader;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 import org.apache.shardingsphere.spi.encrypt.ShardingQueryAssistedEncryptor;
@@ -99,6 +98,37 @@ public final class EncryptEngine {
     }
     
     /**
+     * Get encrypt table names.
+     *
+     * @return encrypt table names
+     */
+    public Collection<String> getEncryptTableNames() {
+        return tables.keySet();
+    }
+    
+    /**
+     * Get plain column.
+     *
+     * @param logicTableName logic table name
+     * @param logicColumnName logic column name
+     * @return plain column
+     */
+    public Optional<String> getPlainColumn(final String logicTableName, final String logicColumnName) {
+        return tables.get(logicTableName).getPlainColumn(logicColumnName);
+    }
+    
+    /**
+     * Get cipher column.
+     * 
+     * @param logicTableName logic table name
+     * @param logicColumnName logic column name
+     * @return cipher column
+     */
+    public String getCipherColumn(final String logicTableName, final String logicColumnName) {
+        return tables.get(logicTableName).getCipherColumn(logicColumnName);
+    }
+    
+    /**
      * Get assisted query column.
      * 
      * @param logicTableName logic table name
@@ -136,25 +166,17 @@ public final class EncryptEngine {
     }
     
     /**
-     * Get encrypt table names.
-     *
-     * @return encrypt table names
-     */
-    public Collection<String> getEncryptTableNames() {
-        return tables.keySet();
-    }
-    
-    /**
      * Get encrypt assisted column values.
      * 
-     * @param columnNode column node
+     * @param logicTable logic table
+     * @param logicColumn logic column
      * @param originalColumnValues original column values
      * @return assisted column values
      */
-    public List<Object> getEncryptAssistedColumnValues(final ColumnNode columnNode, final List<Object> originalColumnValues) {
-        final Optional<ShardingEncryptor> shardingEncryptor = getShardingEncryptor(columnNode.getTableName(), columnNode.getColumnName());
+    public List<Object> getEncryptAssistedColumnValues(final String logicTable, final String logicColumn, final List<Object> originalColumnValues) {
+        final Optional<ShardingEncryptor> shardingEncryptor = getShardingEncryptor(logicTable, logicColumn);
         Preconditions.checkArgument(shardingEncryptor.isPresent() && shardingEncryptor.get() instanceof ShardingQueryAssistedEncryptor,
-                String.format("Can not find ShardingQueryAssistedEncryptor by %s.", columnNode));
+                String.format("Can not find ShardingQueryAssistedEncryptor by %s.%s.", logicTable, logicColumn));
         return Lists.transform(originalColumnValues, new Function<Object, Object>() {
             
             @Override
@@ -166,14 +188,15 @@ public final class EncryptEngine {
     
     /**
      * get encrypt column values.
-     * 
-     * @param columnNode column node
+     *
+     * @param logicTable logic table
+     * @param logicColumn logic column
      * @param originalColumnValues original column values
      * @return encrypt column values
      */
-    public List<Object> getEncryptColumnValues(final ColumnNode columnNode, final List<Object> originalColumnValues) {
-        final Optional<ShardingEncryptor> shardingEncryptor = getShardingEncryptor(columnNode.getTableName(), columnNode.getColumnName());
-        Preconditions.checkArgument(shardingEncryptor.isPresent(), String.format("Can not find ShardingEncryptor by %s.", columnNode));
+    public List<Object> getEncryptColumnValues(final String logicTable, final String logicColumn, final List<Object> originalColumnValues) {
+        final Optional<ShardingEncryptor> shardingEncryptor = getShardingEncryptor(logicTable, logicColumn);
+        Preconditions.checkArgument(shardingEncryptor.isPresent(), String.format("Can not find ShardingQueryAssistedEncryptor by %s.%s.", logicTable, logicColumn));
         return Lists.transform(originalColumnValues, new Function<Object, Object>() {
             
             @Override

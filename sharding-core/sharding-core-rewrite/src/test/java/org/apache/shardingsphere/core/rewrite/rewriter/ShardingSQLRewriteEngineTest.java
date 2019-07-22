@@ -1077,7 +1077,7 @@ public final class ShardingSQLRewriteEngineTest {
     }
     
     private SQLRewriteEngine createSQLRewriteEngine(final SQLRouteResult routeResult, final List<Object> parameters) {
-        return new SQLRewriteEngine(shardingRule, routeResult, parameters, routeResult.getRoutingResult().isSingleRouting(), false);
+        return new SQLRewriteEngine(shardingRule, routeResult, parameters, routeResult.getRoutingResult().isSingleRouting(), true);
     }
     
     @SneakyThrows
