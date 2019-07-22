@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.core.rewrite.token;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
-import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.generator.CollectionSQLTokenGenerator;
@@ -48,23 +46,25 @@ public abstract class SQLTokenGenerateEngine<T extends BaseRule> {
      * @param optimizedStatement optimized statement
      * @param parameterBuilder SQL parameter builder
      * @param rule rule
-     * @param properties properties
+     * @param isSingleRoute is single route
+     * @param isQueryWithCipherColumn  is query with cipher column
      * @return SQL tokens
      */
     @SuppressWarnings("unchecked")
-    public final List<SQLToken> generateSQLTokens(final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final T rule, final ShardingProperties properties) {
+    public final List<SQLToken> generateSQLTokens(
+            final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final T rule, final boolean isSingleRoute, final boolean isQueryWithCipherColumn) {
         List<SQLToken> result = new LinkedList<>();
         for (SQLTokenGenerator each : getSQLTokenGenerators()) {
-            if (properties.<Boolean>getValue(ShardingPropertiesConstant.IS_SINGLE_ROUTE) && each instanceof IgnoreForSingleRoute) {
+            if (isSingleRoute && each instanceof IgnoreForSingleRoute) {
                 continue;
             }
             if (each instanceof OptionalSQLTokenGenerator) {
-                Optional<? extends SQLToken> sqlToken = ((OptionalSQLTokenGenerator) each).generateSQLToken(optimizedStatement, parameterBuilder, rule, properties);
+                Optional<? extends SQLToken> sqlToken = ((OptionalSQLTokenGenerator) each).generateSQLToken(optimizedStatement, parameterBuilder, rule, isQueryWithCipherColumn);
                 if (sqlToken.isPresent()) {
                     result.add(sqlToken.get());
                 }
             } else {
-                result.addAll(((CollectionSQLTokenGenerator) each).generateSQLTokens(optimizedStatement, parameterBuilder, rule, properties));
+                result.addAll(((CollectionSQLTokenGenerator) each).generateSQLTokens(optimizedStatement, parameterBuilder, rule, isQueryWithCipherColumn));
             }
         }
         return result;
