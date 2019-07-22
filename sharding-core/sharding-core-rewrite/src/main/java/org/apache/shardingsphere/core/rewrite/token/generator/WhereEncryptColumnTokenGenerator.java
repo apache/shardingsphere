@@ -71,12 +71,12 @@ public final class WhereEncryptColumnTokenGenerator implements CollectionSQLToke
     }
     
     private WhereEncryptColumnToken createWhereEncryptColumnToken(final EncryptCondition encryptCondition) {
-        List<Object> originalValues = encryptCondition.getValues(parameterBuilder.getOriginalParameters());
+        List<Object> originalColumnValues = encryptCondition.getValues(parameterBuilder.getOriginalParameters());
         if (isQueryWithCipherColumn) {
-            return createWhereEncryptColumnToken(encryptCondition, originalValues);
+            return createWhereEncryptColumnToken(encryptCondition, originalColumnValues);
         }
         return new WhereEncryptColumnToken(encryptCondition.getStartIndex(), encryptCondition.getStopIndex(), getPlainColumn(encryptCondition, encryptRule),
-                getPositionValues(encryptCondition.getPositionValueMap().keySet(), originalValues), encryptCondition.getPositionIndexMap().keySet(), encryptCondition.getOperator());
+                getPositionValues(encryptCondition.getPositionValueMap().keySet(), originalColumnValues), encryptCondition.getPositionIndexMap().keySet(), encryptCondition.getOperator());
     }
     
     private WhereEncryptColumnToken createWhereEncryptColumnToken(final EncryptCondition encryptCondition, final List<Object> originalValues) {
