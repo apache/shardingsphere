@@ -40,7 +40,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 /**
  * Base sharding engine.
@@ -104,20 +103,14 @@ public abstract class BaseShardingEngine {
     }
     
     private Collection<RouteUnit> rewriteAndConvert(final List<Object> parameters, final SQLRouteResult sqlRouteResult) {
-        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, sqlRouteResult, parameters, createShardingProperties(sqlRouteResult));
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, 
+                sqlRouteResult, parameters, sqlRouteResult.getRoutingResult().isSingleRouting(), shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN));
         Collection<RouteUnit> result = new LinkedHashSet<>();
         for (RoutingUnit each : sqlRouteResult.getRoutingResult().getRoutingUnits()) {
             result.add(new RouteUnit(each.getDataSourceName(), 
                     rewriteEngine.generateSQL(each, getLogicAndActualTables(each, sqlRouteResult.getOptimizedStatement().getTables().getTableNames()))));
         }
         return result;
-    }
-    
-    private ShardingProperties createShardingProperties(final SQLRouteResult sqlRouteResult) {
-        Properties properties = new Properties();
-        properties.setProperty(ShardingPropertiesConstant.IS_SINGLE_ROUTE.getKey(), String.valueOf(sqlRouteResult.getRoutingResult().isSingleRouting()));
-        properties.setProperty(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN.getKey(), String.valueOf(shardingProperties.getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN)));
-        return new ShardingProperties(properties);
     }
     
     private Map<String, String> getLogicAndActualTables(final RoutingUnit routingUnit, final Collection<String> parsedTableNames) {

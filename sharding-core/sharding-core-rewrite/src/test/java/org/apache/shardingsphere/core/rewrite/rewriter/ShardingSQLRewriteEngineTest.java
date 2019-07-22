@@ -21,8 +21,6 @@ import com.google.common.base.Preconditions;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.AggregationType;
 import org.apache.shardingsphere.core.constant.OrderDirection;
-import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
-import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.encrypt.segment.condition.EncryptCondition;
@@ -88,7 +86,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -1080,9 +1077,7 @@ public final class ShardingSQLRewriteEngineTest {
     }
     
     private SQLRewriteEngine createSQLRewriteEngine(final SQLRouteResult routeResult, final List<Object> parameters) {
-        Properties properties = new Properties();
-        properties.setProperty(ShardingPropertiesConstant.IS_SINGLE_ROUTE.getKey(), String.valueOf(routeResult.getRoutingResult().isSingleRouting()));
-        return new SQLRewriteEngine(shardingRule, routeResult, parameters, new ShardingProperties(properties));
+        return new SQLRewriteEngine(shardingRule, routeResult, parameters, routeResult.getRoutingResult().isSingleRouting(), false);
     }
     
     @SneakyThrows

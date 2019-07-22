@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.core.rewrite.token;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
-import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.optimize.encrypt.segment.condition.EncryptCondition;
 import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.groupby.GroupBy;
@@ -43,7 +41,6 @@ import org.junit.Test;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -85,18 +82,14 @@ public final class SQLTokenGenerateEngineTest {
     @SuppressWarnings("unchecked")
     @Test
     public void assertGenerateSQLTokensWithBaseTokenGenerateEngine() {
-        Properties properties = new Properties();
-        properties.setProperty(ShardingPropertiesConstant.IS_SINGLE_ROUTE.getKey(), String.valueOf(true));
-        List<SQLToken> actual = baseTokenGenerateEngine.generateSQLTokens(optimizedStatement, null, mock(ShardingRule.class), new ShardingProperties(properties));
+        List<SQLToken> actual = baseTokenGenerateEngine.generateSQLTokens(optimizedStatement, null, mock(ShardingRule.class), true, false);
         assertThat(actual.size(), is(0));
     }
     
     @SuppressWarnings("unchecked")
     @Test
     public void assertGetSQLTokenGeneratorsWithShardingTokenGenerateEngineWithoutSingleRoute() {
-        Properties properties = new Properties();
-        properties.setProperty(ShardingPropertiesConstant.IS_SINGLE_ROUTE.getKey(), String.valueOf(false));
-        List<SQLToken> actual = shardingTokenGenerateEngine.generateSQLTokens(optimizedStatement, null, mock(ShardingRule.class), new ShardingProperties(properties));
+        List<SQLToken> actual = shardingTokenGenerateEngine.generateSQLTokens(optimizedStatement, null, mock(ShardingRule.class), false, false);
         assertThat(actual.size(), is(2));
         assertThat(actual.get(0), CoreMatchers.<SQLToken>instanceOf(SelectItemPrefixToken.class));
     }
@@ -104,18 +97,14 @@ public final class SQLTokenGenerateEngineTest {
     @SuppressWarnings("unchecked")
     @Test
     public void assertGetSQLTokenGeneratorsWithShardingTokenGenerateEngineWithSingleRoute() {
-        Properties properties = new Properties();
-        properties.setProperty(ShardingPropertiesConstant.IS_SINGLE_ROUTE.getKey(), String.valueOf(true));
-        List<SQLToken> actual = shardingTokenGenerateEngine.generateSQLTokens(optimizedStatement, null, mock(ShardingRule.class), new ShardingProperties(properties));
+        List<SQLToken> actual = shardingTokenGenerateEngine.generateSQLTokens(optimizedStatement, null, mock(ShardingRule.class), true, false);
         assertThat(actual.size(), is(0));
     }
     
     @SuppressWarnings("unchecked")
     @Test
     public void assertGenerateSQLTokensWithEncryptTokenGenerateEngine() {
-        Properties properties = new Properties();
-        properties.setProperty(ShardingPropertiesConstant.IS_SINGLE_ROUTE.getKey(), String.valueOf(true));
-        List<SQLToken> actual = encryptTokenGenerateEngine.generateSQLTokens(optimizedStatement, null, mock(EncryptRule.class), new ShardingProperties(properties));
+        List<SQLToken> actual = encryptTokenGenerateEngine.generateSQLTokens(optimizedStatement, null, mock(EncryptRule.class), true, false);
         assertThat(actual.size(), is(0));
     }
 }
