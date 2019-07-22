@@ -76,12 +76,6 @@ public enum ShardingPropertiesConstant {
     EXECUTOR_SIZE("executor.size", String.valueOf(0), int.class),
     
     /**
-     * After routing, is single routing or not.
-     * 
-     */
-    IS_SINGLE_ROUTE("is.single.routing", String.valueOf(Boolean.FALSE), boolean.class),
-    
-    /**
      * Max opened connection size for each query.
      */
     MAX_CONNECTIONS_SIZE_PER_QUERY("max.connections.size.per.query", String.valueOf(1), int.class),
