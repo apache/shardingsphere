@@ -30,13 +30,6 @@ import java.util.Collection;
 public interface SQLStatement {
     
     /**
-     * Get logic SQL.
-     *
-     * @return logic SQL
-     */
-    String getLogicSQL();
-    
-    /**
      * Get count of parameters.
      *
      * @return count of parameters

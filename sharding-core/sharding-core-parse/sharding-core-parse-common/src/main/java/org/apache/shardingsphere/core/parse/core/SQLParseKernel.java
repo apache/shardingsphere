@@ -49,7 +49,7 @@ public final class SQLParseKernel {
         DatabaseType trunkDatabaseType = DatabaseTypes.getTrunkDatabaseType(databaseType.getName());
         parserEngine = new SQLParserEngine(parseRuleRegistry, trunkDatabaseType, sql);
         extractorEngine = new SQLSegmentsExtractorEngine();
-        fillerEngine = new SQLStatementFillerEngine(parseRuleRegistry, trunkDatabaseType, sql);
+        fillerEngine = new SQLStatementFillerEngine(parseRuleRegistry, trunkDatabaseType);
     }
     
     /**

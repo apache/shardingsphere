@@ -40,10 +40,6 @@ public abstract class AbstractSQLStatement implements SQLStatement {
     
     @Getter
     @Setter
-    private String logicSQL;
-    
-    @Getter
-    @Setter
     private int parametersCount;
     
     @Override

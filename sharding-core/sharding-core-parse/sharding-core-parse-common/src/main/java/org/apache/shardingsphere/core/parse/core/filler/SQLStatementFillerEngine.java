@@ -44,8 +44,6 @@ public final class SQLStatementFillerEngine {
     
     private final DatabaseType databaseType;
     
-    private final String sql;
-    
     /**
      * Fill SQL statement.
      *
@@ -59,7 +57,6 @@ public final class SQLStatementFillerEngine {
     public SQLStatement fill(final Collection<SQLSegment> sqlSegments, final int parameterMarkerCount, final SQLStatementRule rule) {
         SQLStatement result = rule.getSqlStatementClass().newInstance();
         Preconditions.checkArgument(result instanceof AbstractSQLStatement, "%s must extends AbstractSQLStatement", result.getClass().getName());
-        ((AbstractSQLStatement) result).setLogicSQL(sql);
         ((AbstractSQLStatement) result).setParametersCount(parameterMarkerCount);
         result.getAllSQLSegments().addAll(sqlSegments);
         for (SQLSegment each : sqlSegments) {

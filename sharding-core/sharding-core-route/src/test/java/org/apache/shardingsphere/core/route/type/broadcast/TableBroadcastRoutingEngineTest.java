@@ -65,7 +65,6 @@ public final class TableBroadcastRoutingEngineTest {
     
     private RoutingResult createDDLStatementRoutingResult() {
         CreateIndexStatement createIndexStatement = new CreateIndexStatement();
-        createIndexStatement.setLogicSQL("CREATE INDEX t_order_index on t_order");
         createIndexStatement.getAllSQLSegments().add(new TableSegment(0, 0, "t_order"));
         createIndexStatement.setIndex(new IndexSegment(0, 0, "t_order_index"));
         return new TableBroadcastRoutingEngine(shardingRule, new TransparentOptimizedStatement(createIndexStatement)).route();
