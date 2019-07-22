@@ -187,7 +187,7 @@ public final class EncryptSQLRewriteEngineTest {
         // TODO panjuan: should mock sqlStatement, do not call parse module on rewrite test case
         SQLStatement sqlStatement = parseEngine.parse(sql, false);
         OptimizedStatement optimizedStatement = EncryptOptimizeEngineFactory.newInstance(encryptRule, mock(ShardingTableMetaData.class), sqlStatement, parameters).optimize();
-        SQLRewriteEngine sqlRewriteEngine = new SQLRewriteEngine(encryptRule, optimizedStatement, parameters, false);
+        SQLRewriteEngine sqlRewriteEngine = new SQLRewriteEngine(encryptRule, optimizedStatement, parameters, true);
         return sqlRewriteEngine.generateSQL();
     }
 }
