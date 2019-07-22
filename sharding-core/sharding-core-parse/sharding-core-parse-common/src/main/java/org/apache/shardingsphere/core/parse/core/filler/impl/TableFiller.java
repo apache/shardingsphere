@@ -20,6 +20,8 @@ package org.apache.shardingsphere.core.parse.core.filler.impl;
 import org.apache.shardingsphere.core.parse.core.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.ddl.CreateIndexStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 
 /**
@@ -35,6 +37,10 @@ public final class TableFiller implements SQLSegmentFiller<TableSegment> {
     public void fill(final TableSegment sqlSegment, final SQLStatement sqlStatement) {
         if (sqlStatement instanceof InsertStatement) {
             ((InsertStatement) sqlStatement).setTable(sqlSegment);
+        } else if (sqlStatement instanceof CreateIndexStatement) {
+            ((CreateIndexStatement) sqlStatement).setTable(sqlSegment);
+        } else if (sqlStatement instanceof DropIndexStatement) {
+            ((DropIndexStatement) sqlStatement).setTable(sqlSegment);
         }
     }
 }

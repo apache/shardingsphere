@@ -20,6 +20,7 @@ package org.apache.shardingsphere.core.parse.sql.statement.ddl;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.ddl.index.IndexSegment;
 
 /**
@@ -33,4 +34,6 @@ import org.apache.shardingsphere.core.parse.sql.segment.ddl.index.IndexSegment;
 public final class CreateIndexStatement extends DDLStatement {
     
     private IndexSegment index;
+    
+    private TableSegment table;
 }

@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.core.parse.sql.statement.ddl;
 
+import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.ddl.index.IndexSegment;
 
 import java.util.Collection;
@@ -36,4 +38,15 @@ import java.util.LinkedList;
 public final class DropIndexStatement extends DDLStatement {
     
     private final Collection<IndexSegment> indexes = new LinkedList<>();
+    
+    private TableSegment table;
+    
+    /**
+     * Get table.
+     * 
+     * @return table segment 
+     */
+    public Optional<TableSegment> getTable() {
+        return Optional.fromNullable(table);
+    }
 }
