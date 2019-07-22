@@ -98,4 +98,24 @@ public final class EncryptTable {
         }
         return result;
     }
+    
+    /**
+     * Get plain column.
+     * 
+     * @param logicColumnName logic column name
+     * @return plain column
+     */
+    public Optional<String> getPlainColumn(final String logicColumnName) {
+        return columns.get(logicColumnName).getPlainColumn();
+    }
+    
+    /**
+     * Get cipher column.
+     *
+     * @param logicColumnName logic column name
+     * @return cipher column
+     */
+    public String getCipherColumn(final String logicColumnName) {
+        return columns.get(logicColumnName).getCipherColumn();
+    }
 }
