@@ -25,7 +25,10 @@ import org.apache.shardingsphere.core.parse.sql.statement.ddl.CreateIndexStateme
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.DropTableStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
 
 /**
  * Table filler.
@@ -38,8 +41,14 @@ public final class TableFiller implements SQLSegmentFiller<TableSegment> {
     
     @Override
     public void fill(final TableSegment sqlSegment, final SQLStatement sqlStatement) {
-        if (sqlStatement instanceof InsertStatement) {
+        if (sqlStatement instanceof SelectStatement) {
+            ((SelectStatement) sqlStatement).getTables().add(sqlSegment);
+        } else if (sqlStatement instanceof InsertStatement) {
             ((InsertStatement) sqlStatement).setTable(sqlSegment);
+        } else if (sqlStatement instanceof UpdateStatement) {
+            ((UpdateStatement) sqlStatement).getTables().add(sqlSegment);
+        } else if (sqlStatement instanceof DeleteStatement) {
+            ((DeleteStatement) sqlStatement).getTables().add(sqlSegment);
         } else if (sqlStatement instanceof CreateTableStatement) {
             ((CreateTableStatement) sqlStatement).setTable(sqlSegment);
         } else if (sqlStatement instanceof AlterTableStatement) {
