@@ -24,7 +24,12 @@ import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.api.segment.Tables;
 import org.apache.shardingsphere.core.optimize.sharding.engnie.ShardingOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.sharding.statement.ddl.ShardingDropIndexOptimizedStatement;
+import org.apache.shardingsphere.core.parse.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.DropIndexStatement;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
 
 /**
  * Drop index optimize engine for sharding.
@@ -41,16 +46,20 @@ public final class ShardingDropIndexOptimizeEngine implements ShardingOptimizeEn
     @Override
     public ShardingDropIndexOptimizedStatement optimize() {
         Tables tables = new Tables(dropIndexStatement);
-        return new ShardingDropIndexOptimizedStatement(dropIndexStatement, tables, getTableName(tables));
+        return new ShardingDropIndexOptimizedStatement(dropIndexStatement, tables, getTableNames(tables));
     }
     
     // TODO simplify from tables
-    private String getTableName(final Tables tables) {
+    private Collection<String> getTableNames(final Tables tables) {
         if (!tables.isEmpty()) {
-            return tables.getSingleTableName();
+            return Collections.singletonList(tables.getSingleTableName());
         }
-        Optional<String> tableName = shardingTableMetaData.getLogicTableName(dropIndexStatement.getIndex().getName());
-        Preconditions.checkState(tableName.isPresent(), "Cannot find table for index name `%s` from sharding rule.", dropIndexStatement.getIndex().getName());
-        return tableName.get();
+        Collection<String> result = new LinkedList<>();
+        for (IndexSegment each : dropIndexStatement.getIndexes()) {
+            Optional<String> tableName = shardingTableMetaData.getLogicTableName(each.getName());
+            Preconditions.checkState(tableName.isPresent(), "Cannot find table for index name `%s` from sharding rule.", each.getName());
+            result.add(tableName.get());
+        }
+        return result;
     }
 }

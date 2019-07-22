@@ -23,6 +23,8 @@ import org.apache.shardingsphere.core.optimize.api.segment.Tables;
 import org.apache.shardingsphere.core.optimize.sharding.statement.ShardingOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
+import java.util.Collection;
+
 /**
  * Drop index optimized statement for sharding.
  *
@@ -37,7 +39,7 @@ public final class ShardingDropIndexOptimizedStatement implements ShardingOptimi
     private final Tables tables;
     
     @Getter
-    private final String tableName;
+    private final Collection<String> tableNames;
     
     @Override
     public SQLStatement getSQLStatement() {

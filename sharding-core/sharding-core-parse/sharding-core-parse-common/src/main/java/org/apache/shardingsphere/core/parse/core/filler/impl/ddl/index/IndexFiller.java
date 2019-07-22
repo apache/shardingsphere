@@ -35,7 +35,7 @@ public final class IndexFiller implements SQLSegmentFiller<IndexSegment> {
         if (sqlStatement instanceof CreateIndexStatement) {
             ((CreateIndexStatement) sqlStatement).setIndex(sqlSegment);
         } else if (sqlStatement instanceof DropIndexStatement) {
-            ((DropIndexStatement) sqlStatement).setIndex(sqlSegment);
+            ((DropIndexStatement) sqlStatement).getIndexes().add(sqlSegment);
         }
     }
 }

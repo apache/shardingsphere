@@ -45,7 +45,7 @@ public final class ShardingDropIndexOptimizeEngineTest {
     @Before
     public void setUp() {
         dropIndexStatement = new DropIndexStatement();
-        dropIndexStatement.setIndex(new IndexSegment(0, 0, "idx"));
+        dropIndexStatement.getIndexes().add(new IndexSegment(0, 0, "idx"));
         when(shardingTableMetaData.getLogicTableName("idx")).thenReturn(Optional.of("meta_tbl"));
     }
     
@@ -54,13 +54,13 @@ public final class ShardingDropIndexOptimizeEngineTest {
         dropIndexStatement.getAllSQLSegments().add(new TableSegment(0, 0, "tbl"));
         ShardingDropIndexOptimizedStatement actual = new ShardingDropIndexOptimizeEngine(dropIndexStatement, shardingTableMetaData).optimize();
         assertThat(actual.getSQLStatement(), is((SQLStatement) dropIndexStatement));
-        assertThat(actual.getTableName(), is("tbl"));
+        assertThat(actual.getTableNames().iterator().next(), is("tbl"));
     }
     
     @Test
     public void assertOptimizeWithoutTableName() {
         ShardingDropIndexOptimizedStatement actual = new ShardingDropIndexOptimizeEngine(dropIndexStatement, shardingTableMetaData).optimize();
         assertThat(actual.getSQLStatement(), is((SQLStatement) dropIndexStatement));
-        assertThat(actual.getTableName(), is("meta_tbl"));
+        assertThat(actual.getTableNames().iterator().next(), is("meta_tbl"));
     }
 }

@@ -22,6 +22,9 @@ import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.parse.sql.segment.ddl.index.IndexSegment;
 
+import java.util.Collection;
+import java.util.LinkedList;
+
 /**
  * Drop index statement.
  *
@@ -32,5 +35,5 @@ import org.apache.shardingsphere.core.parse.sql.segment.ddl.index.IndexSegment;
 @ToString(callSuper = true)
 public final class DropIndexStatement extends DDLStatement {
     
-    private IndexSegment index;
+    private final Collection<IndexSegment> indexes = new LinkedList<>();
 }
