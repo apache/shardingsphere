@@ -26,6 +26,8 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemsSegm
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.core.parse.sql.statement.generic.TableSegmentsAvailable;
+import org.apache.shardingsphere.core.parse.sql.statement.generic.WhereSegmentAvailable;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -39,7 +41,7 @@ import java.util.LinkedList;
 @Getter
 @Setter
 @ToString(callSuper = true, exclude = "parentStatement")
-public final class SelectStatement extends DMLStatement implements WhereSegmentAvailable {
+public final class SelectStatement extends DMLStatement implements TableSegmentsAvailable, WhereSegmentAvailable {
     
     private final Collection<TableSegment> tables = new LinkedList<>();
     

@@ -32,7 +32,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.Pred
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateCompareRightValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateInRightValue;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.WhereSegmentAvailable;
+import org.apache.shardingsphere.core.parse.sql.statement.generic.WhereSegmentAvailable;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
 import java.util.Collection;

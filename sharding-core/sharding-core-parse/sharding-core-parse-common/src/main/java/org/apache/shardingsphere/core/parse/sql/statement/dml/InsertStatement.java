@@ -25,6 +25,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.core.parse.sql.statement.generic.TableSegmentAvailable;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -39,7 +40,7 @@ import java.util.LinkedList;
 @Getter
 @Setter
 @ToString(callSuper = true)
-public final class InsertStatement extends DMLStatement {
+public final class InsertStatement extends DMLStatement implements TableSegmentAvailable {
     
     private TableSegment table;
     

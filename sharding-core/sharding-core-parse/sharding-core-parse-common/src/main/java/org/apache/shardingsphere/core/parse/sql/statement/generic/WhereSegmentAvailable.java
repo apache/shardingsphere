@@ -15,23 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.core.filler.impl.dml;
+package org.apache.shardingsphere.core.parse.sql.statement.generic;
 
-import org.apache.shardingsphere.core.parse.core.filler.SQLSegmentFiller;
+import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.generic.WhereSegmentAvailable;
 
 /**
- * Where filler.
+ * Where segment available.
  *
- * @author duhongjun
  * @author zhangliang
  */
-public final class WhereFiller implements SQLSegmentFiller<WhereSegment> {
+public interface WhereSegmentAvailable {
     
-    @Override
-    public void fill(final WhereSegment sqlSegment, final SQLStatement sqlStatement) {
-        ((WhereSegmentAvailable) sqlStatement).setWhere(sqlSegment);
-    }
+    /**
+     * Get where segment.
+     *
+     * @return where segment
+     */
+    Optional<WhereSegment> getWhere();
+    
+    /**
+     * Set where segment.
+     * 
+     * @param where where segment
+     */
+    void setWhere(WhereSegment where);
 }

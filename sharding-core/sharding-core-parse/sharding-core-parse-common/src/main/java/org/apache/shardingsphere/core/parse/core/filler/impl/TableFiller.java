@@ -20,15 +20,8 @@ package org.apache.shardingsphere.core.parse.core.filler.impl;
 import org.apache.shardingsphere.core.parse.core.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.ddl.AlterTableStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.ddl.CreateIndexStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.ddl.CreateTableStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.ddl.DropIndexStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.ddl.DropTableStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.DeleteStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.generic.TableSegmentAvailable;
+import org.apache.shardingsphere.core.parse.sql.statement.generic.TableSegmentsAvailable;
 
 /**
  * Table filler.
@@ -41,24 +34,10 @@ public final class TableFiller implements SQLSegmentFiller<TableSegment> {
     
     @Override
     public void fill(final TableSegment sqlSegment, final SQLStatement sqlStatement) {
-        if (sqlStatement instanceof SelectStatement) {
-            ((SelectStatement) sqlStatement).getTables().add(sqlSegment);
-        } else if (sqlStatement instanceof InsertStatement) {
-            ((InsertStatement) sqlStatement).setTable(sqlSegment);
-        } else if (sqlStatement instanceof UpdateStatement) {
-            ((UpdateStatement) sqlStatement).getTables().add(sqlSegment);
-        } else if (sqlStatement instanceof DeleteStatement) {
-            ((DeleteStatement) sqlStatement).getTables().add(sqlSegment);
-        } else if (sqlStatement instanceof CreateTableStatement) {
-            ((CreateTableStatement) sqlStatement).setTable(sqlSegment);
-        } else if (sqlStatement instanceof AlterTableStatement) {
-            ((AlterTableStatement) sqlStatement).setTable(sqlSegment);
-        } else if (sqlStatement instanceof DropTableStatement) {
-            ((DropTableStatement) sqlStatement).getTables().add(sqlSegment);
-        } else if (sqlStatement instanceof CreateIndexStatement) {
-            ((CreateIndexStatement) sqlStatement).setTable(sqlSegment);
-        } else if (sqlStatement instanceof DropIndexStatement) {
-            ((DropIndexStatement) sqlStatement).setTable(sqlSegment);
+        if (sqlStatement instanceof TableSegmentAvailable) {
+            ((TableSegmentAvailable) sqlStatement).setTable(sqlSegment);
+        } else if (sqlStatement instanceof TableSegmentsAvailable) {
+            ((TableSegmentsAvailable) sqlStatement).getTables().add(sqlSegment);
         }
     }
 }

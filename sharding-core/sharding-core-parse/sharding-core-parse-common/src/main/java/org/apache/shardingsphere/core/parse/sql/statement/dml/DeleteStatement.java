@@ -23,6 +23,8 @@ import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.core.parse.sql.statement.generic.TableSegmentsAvailable;
+import org.apache.shardingsphere.core.parse.sql.statement.generic.WhereSegmentAvailable;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -35,7 +37,7 @@ import java.util.LinkedList;
 @Getter
 @Setter
 @ToString(callSuper = true)
-public final class DeleteStatement extends DMLStatement implements WhereSegmentAvailable {
+public final class DeleteStatement extends DMLStatement implements TableSegmentsAvailable, WhereSegmentAvailable {
     
     private final Collection<TableSegment> tables = new LinkedList<>();
     

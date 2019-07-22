@@ -22,6 +22,8 @@ import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.core.parse.sql.statement.generic.IndexSegmentAvailable;
+import org.apache.shardingsphere.core.parse.sql.statement.generic.TableSegmentAvailable;
 
 /**
  * Create index statement.
@@ -31,7 +33,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.ddl.index.IndexSegment;
 @Getter
 @Setter
 @ToString(callSuper = true)
-public final class CreateIndexStatement extends DDLStatement {
+public final class CreateIndexStatement extends DDLStatement implements TableSegmentAvailable, IndexSegmentAvailable {
     
     private IndexSegment index;
     
