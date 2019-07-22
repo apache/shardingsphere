@@ -37,25 +37,11 @@ public interface SQLStatement {
     String getLogicSQL();
     
     /**
-     * Set logic SQL.
-     *
-     * @param logicSQL logic SQL
-     */
-    void setLogicSQL(String logicSQL);
-    
-    /**
      * Get count of parameters.
      *
      * @return count of parameters
      */
     int getParametersCount();
-    
-    /**
-     * Set count of parameters.
-     *
-     * @param parametersCount count of parameters
-     */
-    void setParametersCount(int parametersCount);
     
     /**
      * Get all SQL segments.

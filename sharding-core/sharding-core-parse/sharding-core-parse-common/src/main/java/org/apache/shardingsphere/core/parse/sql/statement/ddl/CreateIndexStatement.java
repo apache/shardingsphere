@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.parse.sql.statement.ddl;
 
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 /**
@@ -26,6 +27,9 @@ import lombok.ToString;
  * @author panjuan
  */
 @Getter
+@Setter
 @ToString(callSuper = true)
 public final class CreateIndexStatement extends DDLStatement {
+    
+    private String indexName;
 }
