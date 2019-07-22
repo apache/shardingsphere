@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
@@ -48,7 +47,7 @@ public final class UpdateEncryptColumnTokenGenerator implements CollectionSQLTok
     
     @Override
     public Collection<EncryptColumnToken> generateSQLTokens(
-            final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final EncryptRule encryptRule, final ShardingProperties properties) {
+            final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final EncryptRule encryptRule, final boolean isQueryWithCipherColumn) {
         return optimizedStatement.getSQLStatement() instanceof UpdateStatement
                 ? createEncryptColumnToken(optimizedStatement, parameterBuilder, encryptRule) : Collections.<EncryptColumnToken>emptyList();
     }

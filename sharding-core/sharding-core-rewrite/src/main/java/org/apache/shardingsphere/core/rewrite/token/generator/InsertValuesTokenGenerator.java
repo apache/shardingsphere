@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.segment.insert.InsertOptimizeResultUnit;
@@ -44,7 +43,7 @@ public final class InsertValuesTokenGenerator implements OptionalSQLTokenGenerat
     
     @Override
     public Optional<InsertValuesToken> generateSQLToken(
-            final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final BaseRule baseRule, final ShardingProperties properties) {
+            final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final BaseRule baseRule, final boolean isQueryWithCipherColumn) {
         Collection<InsertValuesSegment> insertValuesSegments = optimizedStatement.getSQLStatement().findSQLSegments(InsertValuesSegment.class);
         if (!(optimizedStatement.getSQLStatement() instanceof InsertStatement) || insertValuesSegments.isEmpty()) {
             return Optional.absent();

@@ -21,7 +21,6 @@ import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.AggregationSelectItem;
@@ -44,7 +43,7 @@ public final class SelectItemsTokenGenerator implements OptionalSQLTokenGenerato
     
     @Override
     public Optional<SelectItemsToken> generateSQLToken(
-            final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final ShardingRule shardingRule, final ShardingProperties properties) {
+            final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final ShardingRule shardingRule, final boolean isQueryWithCipherColumn) {
         if (!(optimizedStatement instanceof ShardingSelectOptimizedStatement)) {
             return Optional.absent();
         }

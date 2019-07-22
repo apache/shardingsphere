@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.pagination.Pagination;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
@@ -36,7 +35,7 @@ public final class OffsetTokenGenerator implements OptionalSQLTokenGenerator<Sha
     
     @Override
     public Optional<OffsetToken> generateSQLToken(
-            final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final ShardingRule shardingRule, final ShardingProperties properties) {
+            final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final ShardingRule shardingRule, final boolean isQueryWithCipherColumn) {
         if (!(optimizedStatement instanceof ShardingSelectOptimizedStatement)) {
             return Optional.absent();
         }

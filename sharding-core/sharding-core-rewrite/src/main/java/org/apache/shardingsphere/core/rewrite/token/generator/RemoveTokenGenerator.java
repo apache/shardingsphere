@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
-import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.RemoveAvailable;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
@@ -37,7 +36,7 @@ public final class RemoveTokenGenerator implements CollectionSQLTokenGenerator<B
     
     @Override
     public Collection<RemoveToken> generateSQLTokens(
-            final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final BaseRule baseRule, final ShardingProperties properties) {
+            final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final BaseRule baseRule, final boolean isQueryWithCipherColumn) {
         Collection<RemoveToken> result = new LinkedList<>();
         for (SQLSegment each : optimizedStatement.getSQLStatement().getAllSQLSegments()) {
             if (each instanceof RemoveAvailable) {
