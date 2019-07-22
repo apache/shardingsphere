@@ -95,8 +95,9 @@ public final class WhereEncryptColumnTokenGenerator implements CollectionSQLToke
     
     private List<Object> getEncryptedColumnValues(final EncryptCondition encryptCondition, final List<Object> originalValues) {
         Optional<String> assistedQueryColumn = encryptRule.getEncryptEngine().getAssistedQueryColumn(encryptCondition.getTableName(), encryptCondition.getColumnName());
-        return assistedQueryColumn.isPresent() ? encryptRule.getEncryptEngine().getEncryptAssistedColumnValues(encryptCondition.getTableName(),
-                encryptCondition.getColumnName(), originalValues) : encryptRule.getEncryptEngine().getEncryptColumnValues(encryptCondition.getTableName(), encryptCondition.getColumnName(), originalValues);
+        return assistedQueryColumn.isPresent() 
+                ? encryptRule.getEncryptEngine().getEncryptAssistedColumnValues(encryptCondition.getTableName(), encryptCondition.getColumnName(), originalValues) 
+                : encryptRule.getEncryptEngine().getEncryptColumnValues(encryptCondition.getTableName(), encryptCondition.getColumnName(), originalValues);
     }
     
     private void encryptParameters(final Map<Integer, Integer> positionIndexes, final List<Object> encryptColumnValues, final ParameterBuilder parameterBuilder) {
