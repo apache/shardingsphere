@@ -41,7 +41,7 @@ public final class SPIParsingHookTest {
     
     @Test
     public void assertFinishSuccess() {
-        spiParsingHook.finishSuccess(null, null);
+        spiParsingHook.finishSuccess(null);
         assertTrue(ParsingHookFixture.containsAction("finishSuccess"));
     }
     
