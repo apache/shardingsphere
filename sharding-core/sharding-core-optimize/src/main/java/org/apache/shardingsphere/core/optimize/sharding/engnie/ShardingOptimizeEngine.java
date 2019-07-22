@@ -35,5 +35,5 @@ import java.util.List;
 public interface ShardingOptimizeEngine<T extends SQLStatement> extends OptimizeEngine<ShardingRule, T> {
     
     @Override
-    ShardingOptimizedStatement optimize(ShardingRule shardingRule, ShardingTableMetaData shardingTableMetaData, T sqlStatement, List<Object> parameters);
+    ShardingOptimizedStatement optimize(ShardingRule shardingRule, ShardingTableMetaData shardingTableMetaData, String sql, List<Object> parameters, T sqlStatement);
 }

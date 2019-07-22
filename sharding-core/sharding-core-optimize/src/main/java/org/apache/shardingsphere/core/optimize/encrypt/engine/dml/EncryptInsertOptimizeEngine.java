@@ -39,7 +39,7 @@ public final class EncryptInsertOptimizeEngine implements EncryptOptimizeEngine<
     
     @Override
     public EncryptInsertOptimizedStatement optimize(final EncryptRule encryptRule, 
-                                                    final ShardingTableMetaData shardingTableMetaData, final InsertStatement sqlStatement, final List<Object> parameters) {
+                                                    final ShardingTableMetaData shardingTableMetaData, final String sql, final List<Object> parameters, final InsertStatement sqlStatement) {
         InsertValueEngine insertValueEngine = new InsertValueEngine();
         EncryptInsertOptimizedStatement result = new EncryptInsertOptimizedStatement(
                 sqlStatement, new EncryptInsertColumns(encryptRule, shardingTableMetaData, sqlStatement), insertValueEngine.createInsertValues(sqlStatement));

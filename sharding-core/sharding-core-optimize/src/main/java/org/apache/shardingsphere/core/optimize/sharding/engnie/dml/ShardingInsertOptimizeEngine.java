@@ -49,7 +49,7 @@ public final class ShardingInsertOptimizeEngine implements ShardingOptimizeEngin
     
     @Override
     public ShardingInsertOptimizedStatement optimize(final ShardingRule shardingRule,
-                                                     final ShardingTableMetaData shardingTableMetaData, final InsertStatement sqlStatement, final List<Object> parameters) {
+                                                     final ShardingTableMetaData shardingTableMetaData, final String sql, final List<Object> parameters, final InsertStatement sqlStatement) {
         InsertClauseShardingConditionEngine shardingConditionEngine = new InsertClauseShardingConditionEngine(shardingRule);
         ShardingInsertColumns insertColumns = new ShardingInsertColumns(shardingRule, shardingTableMetaData, sqlStatement);
         InsertValueEngine insertValueEngine = new InsertValueEngine();

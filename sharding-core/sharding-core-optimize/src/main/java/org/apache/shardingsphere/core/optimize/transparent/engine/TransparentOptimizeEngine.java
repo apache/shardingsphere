@@ -34,7 +34,8 @@ import java.util.List;
 public final class TransparentOptimizeEngine implements OptimizeEngine<BaseRule, SQLStatement> {
     
     @Override
-    public TransparentOptimizedStatement optimize(final BaseRule rule, final ShardingTableMetaData shardingTableMetaData, final SQLStatement sqlStatement, final List<Object> parameters) {
+    public TransparentOptimizedStatement optimize(final BaseRule rule, 
+                                                  final ShardingTableMetaData shardingTableMetaData, final String sql, final List<Object> parameters, final SQLStatement sqlStatement) {
         return new TransparentOptimizedStatement(sqlStatement);
     }
 }

@@ -56,14 +56,14 @@ public final class ShardingDropIndexOptimizeEngineTest {
     @Test
     public void assertOptimizeWithTableName() {
         dropIndexStatement.getAllSQLSegments().add(new TableSegment(0, 0, "tbl"));
-        ShardingDropIndexOptimizedStatement actual = new ShardingDropIndexOptimizeEngine().optimize(mock(ShardingRule.class), shardingTableMetaData, dropIndexStatement, Collections.emptyList());
+        ShardingDropIndexOptimizedStatement actual = new ShardingDropIndexOptimizeEngine().optimize(mock(ShardingRule.class), shardingTableMetaData, "", Collections.emptyList(), dropIndexStatement);
         assertThat(actual.getSQLStatement(), is((SQLStatement) dropIndexStatement));
         assertThat(actual.getTableNames().iterator().next(), is("tbl"));
     }
     
     @Test
     public void assertOptimizeWithoutTableName() {
-        ShardingDropIndexOptimizedStatement actual = new ShardingDropIndexOptimizeEngine().optimize(mock(ShardingRule.class), shardingTableMetaData, dropIndexStatement, Collections.emptyList());
+        ShardingDropIndexOptimizedStatement actual = new ShardingDropIndexOptimizeEngine().optimize(mock(ShardingRule.class), shardingTableMetaData, "", Collections.emptyList(), dropIndexStatement);
         assertThat(actual.getSQLStatement(), is((SQLStatement) dropIndexStatement));
         assertThat(actual.getTableNames().iterator().next(), is("meta_tbl"));
     }

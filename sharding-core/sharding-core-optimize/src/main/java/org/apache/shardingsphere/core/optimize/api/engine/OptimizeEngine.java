@@ -40,9 +40,10 @@ public interface OptimizeEngine<R extends BaseRule, T extends SQLStatement> {
      * 
      * @param rule rule
      * @param shardingTableMetaData table meta data
-     * @param sqlStatement SQL statement
+     * @param sql SQL
      * @param parameters SQL parameters
+     * @param sqlStatement SQL statement
      * @return optimized statement
      */
-    OptimizedStatement optimize(R rule, ShardingTableMetaData shardingTableMetaData, T sqlStatement, List<Object> parameters);
+    OptimizedStatement optimize(R rule, ShardingTableMetaData shardingTableMetaData, String sql, List<Object> parameters, T sqlStatement);
 }

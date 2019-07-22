@@ -35,5 +35,5 @@ import java.util.List;
 public interface EncryptOptimizeEngine<T extends SQLStatement> extends OptimizeEngine<EncryptRule, T> {
     
     @Override
-    EncryptOptimizedStatement optimize(EncryptRule encryptRule, ShardingTableMetaData shardingTableMetaData, T sqlStatement, List<Object> parameters);
+    EncryptOptimizedStatement optimize(EncryptRule encryptRule, ShardingTableMetaData shardingTableMetaData, String sql, List<Object> parameters, T sqlStatement);
 }

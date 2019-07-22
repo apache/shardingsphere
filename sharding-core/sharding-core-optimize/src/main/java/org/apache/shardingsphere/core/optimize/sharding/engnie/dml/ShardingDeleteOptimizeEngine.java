@@ -38,7 +38,7 @@ public final class ShardingDeleteOptimizeEngine implements ShardingOptimizeEngin
     
     @Override
     public ShardingConditionOptimizedStatement optimize(final ShardingRule shardingRule, 
-                                                        final ShardingTableMetaData shardingTableMetaData, final DeleteStatement sqlStatement, final List<Object> parameters) {
+                                                        final ShardingTableMetaData shardingTableMetaData, final String sql, final List<Object> parameters, final DeleteStatement sqlStatement) {
         WhereClauseShardingConditionEngine shardingConditionEngine = new WhereClauseShardingConditionEngine(shardingRule, shardingTableMetaData);
         WhereClauseEncryptConditionEngine encryptConditionEngine = new WhereClauseEncryptConditionEngine(shardingRule.getEncryptRule(), shardingTableMetaData);
         return new ShardingConditionOptimizedStatement(sqlStatement,

@@ -32,7 +32,7 @@ public final class TransparentOptimizeEngineTest {
     @Test
     public void assertOptimize() {
         SQLStatement sqlStatement = new DDLStatement();
-        TransparentOptimizedStatement actual = new TransparentOptimizeEngine().optimize(null, null, sqlStatement, Collections.emptyList());
+        TransparentOptimizedStatement actual = new TransparentOptimizeEngine().optimize(null, null, "", Collections.emptyList(), sqlStatement);
         assertThat(actual.getSQLStatement(), is(sqlStatement));
     }
 }

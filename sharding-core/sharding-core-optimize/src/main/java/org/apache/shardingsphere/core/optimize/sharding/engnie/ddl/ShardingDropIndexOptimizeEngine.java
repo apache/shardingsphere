@@ -41,7 +41,7 @@ public final class ShardingDropIndexOptimizeEngine implements ShardingOptimizeEn
     
     @Override
     public ShardingDropIndexOptimizedStatement optimize(final ShardingRule shardingRule, 
-                                                        final ShardingTableMetaData shardingTableMetaData, final DropIndexStatement sqlStatement, final List<Object> parameters) {
+                                                        final ShardingTableMetaData shardingTableMetaData, final String sql, final List<Object> parameters, final DropIndexStatement sqlStatement) {
         Tables tables = new Tables(sqlStatement);
         return new ShardingDropIndexOptimizedStatement(sqlStatement, tables, getTableNames(shardingTableMetaData, sqlStatement, tables));
     }

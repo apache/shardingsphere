@@ -36,7 +36,7 @@ public final class EncryptWhereOptimizeEngine implements EncryptOptimizeEngine<D
     
     @Override
     public EncryptConditionOptimizedStatement optimize(final EncryptRule encryptRule, 
-                                                       final ShardingTableMetaData shardingTableMetaData, final DMLStatement sqlStatement, final List<Object> parameters) {
+                                                       final ShardingTableMetaData shardingTableMetaData, final String sql, final List<Object> parameters, final DMLStatement sqlStatement) {
         WhereClauseEncryptConditionEngine encryptConditionEngine = new WhereClauseEncryptConditionEngine(encryptRule, shardingTableMetaData);
         return new EncryptConditionOptimizedStatement(sqlStatement, new EncryptConditions(encryptConditionEngine.createEncryptConditions(sqlStatement)));
     }

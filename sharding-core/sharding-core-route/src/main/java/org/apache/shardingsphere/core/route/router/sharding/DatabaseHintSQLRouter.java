@@ -52,7 +52,7 @@ public final class DatabaseHintSQLRouter implements ShardingRouter {
     
     @Override
     // TODO insert SQL need parse gen key
-    public SQLRouteResult route(final SQLStatement sqlStatement, final List<Object> parameters) {
+    public SQLRouteResult route(final String logicSQL, final List<Object> parameters, final SQLStatement sqlStatement) {
         SQLRouteResult result = new SQLRouteResult(new TransparentOptimizedStatement(sqlStatement));
         RoutingResult routingResult = new DatabaseHintRoutingEngine(
                 shardingRule.getShardingDataSourceNames().getDataSourceNames(), (HintShardingStrategy) shardingRule.getDefaultDatabaseShardingStrategy()).route();
