@@ -24,8 +24,8 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.parse.core.rule.registry.ParseRuleRegistry;
 import org.apache.shardingsphere.core.parse.core.rule.registry.statement.SQLStatementRule;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.generic.AbstractSQLStatement;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 
 import java.util.Collection;

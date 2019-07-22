@@ -15,30 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.segment;
+package org.apache.shardingsphere.core.parse.sql.segment.generic;
 
-import com.google.common.base.Optional;
+import org.apache.shardingsphere.core.parse.core.constant.QuoteCharacter;
+import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 
 /**
- * Owner available.
+ * Table available.
  *
  * @author zhangliang
- * 
- * @param <T> type of SQL segment
  */
-public interface OwnerAvailable<T extends SQLSegment> extends SQLSegment {
+public interface TableAvailable extends SQLSegment {
     
     /**
-     * Get owner.
+     * Get table name.
      *
-     * @return owner
+     * @return table name
      */
-    Optional<T> getOwner();
+    String getTableName();
     
     /**
-     * Set owner.
+     * Get table quote character.
      *
-     * @param owner owner
+     * @return table quote character
      */
-    void setOwner(T owner);
+    QuoteCharacter getTableQuoteCharacter();
 }

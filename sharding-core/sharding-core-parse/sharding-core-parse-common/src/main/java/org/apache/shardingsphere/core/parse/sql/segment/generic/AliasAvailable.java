@@ -15,27 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.statement.ddl;
+package org.apache.shardingsphere.core.parse.sql.segment.generic;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-import org.apache.shardingsphere.core.parse.sql.segment.ddl.index.IndexSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.generic.IndexSegmentAvailable;
-import org.apache.shardingsphere.core.parse.sql.statement.generic.TableSegmentAvailable;
+import com.google.common.base.Optional;
+import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 
 /**
- * Create index statement.
+ * Alias available.
  *
- * @author panjuan
+ * @author zhangliang
  */
-@Getter
-@Setter
-@ToString(callSuper = true)
-public final class CreateIndexStatement extends DDLStatement implements TableSegmentAvailable, IndexSegmentAvailable {
+public interface AliasAvailable extends SQLSegment {
     
-    private IndexSegment index;
+    /**
+     * Get alias.
+     *
+     * @return alias
+     */
+    Optional<String> getAlias();
     
-    private TableSegment table;
+    /**
+     * Set alias.
+     *
+     * @param alias alias
+     */
+    void setAlias(String alias);
 }

@@ -25,6 +25,12 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemsSegm
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.core.parse.sql.statement.generic.TableSegmentsAvailable;
+import org.apache.shardingsphere.core.parse.sql.statement.generic.WhereSegmentAvailable;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Select statement.
@@ -35,7 +41,9 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.WhereSegme
 @Getter
 @Setter
 @ToString(callSuper = true, exclude = "parentStatement")
-public final class SelectStatement extends DMLStatement implements WhereSegmentAvailable {
+public final class SelectStatement extends DMLStatement implements TableSegmentsAvailable, WhereSegmentAvailable {
+    
+    private final Collection<TableSegment> tables = new LinkedList<>();
     
     private SelectItemsSegment selectItems;
     

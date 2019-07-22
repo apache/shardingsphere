@@ -22,10 +22,10 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.parse.core.constant.QuoteCharacter;
-import org.apache.shardingsphere.core.parse.sql.segment.OwnerAvailable;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateRightValue;
+import org.apache.shardingsphere.core.parse.sql.segment.generic.OwnerAvailable;
+import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 /**

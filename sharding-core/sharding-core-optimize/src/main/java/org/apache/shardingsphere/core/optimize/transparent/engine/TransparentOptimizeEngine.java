@@ -17,10 +17,13 @@
 
 package org.apache.shardingsphere.core.optimize.transparent.engine;
 
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.api.engine.OptimizeEngine;
 import org.apache.shardingsphere.core.optimize.transparent.statement.TransparentOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.rule.BaseRule;
+
+import java.util.List;
 
 /**
  * Transparent optimize engine.
@@ -28,13 +31,11 @@ import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
  * @author panjuan
  * @author zhangliang
  */
-@RequiredArgsConstructor
-public final class TransparentOptimizeEngine implements OptimizeEngine {
-    
-    private final SQLStatement sqlStatement;
+public final class TransparentOptimizeEngine implements OptimizeEngine<BaseRule, SQLStatement> {
     
     @Override
-    public TransparentOptimizedStatement optimize() {
+    public TransparentOptimizedStatement optimize(final BaseRule rule, 
+                                                  final ShardingTableMetaData shardingTableMetaData, final String sql, final List<Object> parameters, final SQLStatement sqlStatement) {
         return new TransparentOptimizedStatement(sqlStatement);
     }
 }

@@ -24,11 +24,11 @@ import org.apache.shardingsphere.core.constant.AggregationType;
 import org.apache.shardingsphere.core.parse.core.extractor.api.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.core.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.core.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.sql.segment.AliasAvailable;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.AggregationDistinctSelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.AggregationSelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.ExpressionSelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.generic.AliasAvailable;
 
 import java.util.Map;
 

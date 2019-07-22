@@ -20,8 +20,8 @@ package org.apache.shardingsphere.core.parse.core.filler.impl.ddl.index;
 import org.apache.shardingsphere.core.parse.core.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.ddl.CreateIndexStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.ddl.DropIndexStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.generic.IndexSegmentAvailable;
+import org.apache.shardingsphere.core.parse.sql.statement.generic.IndexSegmentsAvailable;
 
 /**
  * Index filler.
@@ -32,10 +32,10 @@ public final class IndexFiller implements SQLSegmentFiller<IndexSegment> {
     
     @Override
     public void fill(final IndexSegment sqlSegment, final SQLStatement sqlStatement) {
-        if (sqlStatement instanceof CreateIndexStatement) {
-            ((CreateIndexStatement) sqlStatement).setIndexName(sqlSegment.getIndexName());
-        } else if (sqlStatement instanceof DropIndexStatement) {
-            ((DropIndexStatement) sqlStatement).setIndexName(sqlSegment.getIndexName());
+        if (sqlStatement instanceof IndexSegmentAvailable) {
+            ((IndexSegmentAvailable) sqlStatement).setIndex(sqlSegment);
+        } else if (sqlStatement instanceof IndexSegmentsAvailable) {
+            ((IndexSegmentsAvailable) sqlStatement).getIndexes().add(sqlSegment);
         }
     }
 }

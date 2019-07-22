@@ -64,28 +64,29 @@ public final class SQLRewriteEngine {
     
     private final ParameterBuilder parameterBuilder;
     
-    public SQLRewriteEngine(final ShardingRule shardingRule, final SQLRouteResult sqlRouteResult, final List<Object> parameters, final boolean isSingleRoute, final boolean isQueryWithCipherColumn) {
+    public SQLRewriteEngine(final ShardingRule shardingRule, 
+                            final SQLRouteResult sqlRouteResult, final String sql, final List<Object> parameters, final boolean isSingleRoute, final boolean isQueryWithCipherColumn) {
         baseRule = shardingRule;
         this.optimizedStatement = getEncryptedOptimizedStatement(shardingRule.getEncryptRule().getEncryptEngine(), sqlRouteResult.getOptimizedStatement());
         parameterBuilder = createParameterBuilder(parameters, sqlRouteResult);
         sqlTokens = createSQLTokens(isSingleRoute, isQueryWithCipherColumn);
-        sqlBuilder = new SQLBuilder(optimizedStatement.getSQLStatement().getLogicSQL(), sqlTokens);
+        sqlBuilder = new SQLBuilder(sql, sqlTokens);
     }
     
-    public SQLRewriteEngine(final EncryptRule encryptRule, final OptimizedStatement optimizedStatement, final List<Object> parameters, final boolean isQueryWithCipherColumn) {
+    public SQLRewriteEngine(final EncryptRule encryptRule, final OptimizedStatement optimizedStatement, final String sql, final List<Object> parameters, final boolean isQueryWithCipherColumn) {
         baseRule = encryptRule;
         this.optimizedStatement = getEncryptedOptimizedStatement(encryptRule.getEncryptEngine(), optimizedStatement);
         parameterBuilder = createParameterBuilder(parameters);
         sqlTokens = createSQLTokens(false, isQueryWithCipherColumn);
-        sqlBuilder = new SQLBuilder(optimizedStatement.getSQLStatement().getLogicSQL(), sqlTokens);
+        sqlBuilder = new SQLBuilder(sql, sqlTokens);
     }
     
-    public SQLRewriteEngine(final MasterSlaveRule masterSlaveRule, final OptimizedStatement optimizedStatement) {
+    public SQLRewriteEngine(final MasterSlaveRule masterSlaveRule, final OptimizedStatement optimizedStatement, final String sql) {
         baseRule = masterSlaveRule;
         this.optimizedStatement = optimizedStatement;
         parameterBuilder = createParameterBuilder(Collections.emptyList());
         sqlTokens = createSQLTokens(false, false);
-        sqlBuilder = new SQLBuilder(optimizedStatement.getSQLStatement().getLogicSQL(), sqlTokens);
+        sqlBuilder = new SQLBuilder(sql, sqlTokens);
     }
     
     private OptimizedStatement getEncryptedOptimizedStatement(final EncryptEngine encryptEngine, final OptimizedStatement optimizedStatement) {

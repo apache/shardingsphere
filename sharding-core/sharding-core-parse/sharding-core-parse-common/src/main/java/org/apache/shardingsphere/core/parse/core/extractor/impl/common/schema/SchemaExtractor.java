@@ -22,7 +22,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.core.extractor.api.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.core.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.core.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.sql.segment.common.SchemaSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.generic.SchemaSegment;
 
 import java.util.Map;
 

@@ -20,6 +20,12 @@ package org.apache.shardingsphere.core.parse.sql.statement.ddl;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.shardingsphere.core.parse.sql.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.core.parse.sql.statement.generic.TableSegmentAvailable;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Drop index statement.
@@ -29,7 +35,9 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString(callSuper = true)
-public final class DropIndexStatement extends DDLStatement {
+public final class DropIndexStatement extends DDLStatement implements TableSegmentAvailable {
     
-    private String indexName;
+    private final Collection<IndexSegment> indexes = new LinkedList<>();
+    
+    private TableSegment table;
 }

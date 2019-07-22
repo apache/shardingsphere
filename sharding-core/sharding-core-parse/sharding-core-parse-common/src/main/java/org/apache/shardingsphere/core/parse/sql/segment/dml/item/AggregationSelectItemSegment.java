@@ -21,7 +21,7 @@ import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.AggregationType;
-import org.apache.shardingsphere.core.parse.sql.segment.AliasAvailable;
+import org.apache.shardingsphere.core.parse.sql.segment.generic.AliasAvailable;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 /**

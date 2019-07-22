@@ -30,8 +30,6 @@ import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingCo
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingInsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
 import org.apache.shardingsphere.core.parse.SQLParseEngine;
-import org.apache.shardingsphere.core.parse.hook.ParsingHook;
-import org.apache.shardingsphere.core.parse.hook.SPIParsingHook;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
@@ -63,26 +61,15 @@ public final class ParsingSQLRouter implements ShardingRouter {
     
     private final List<Comparable<?>> generatedValues = new LinkedList<>();
     
-    private final ParsingHook parsingHook = new SPIParsingHook();
-    
     @Override
     public SQLStatement parse(final String logicSQL, final boolean useCache) {
-        parsingHook.start(logicSQL);
-        try {
-            SQLStatement result = parseEngine.parse(logicSQL, useCache);
-            parsingHook.finishSuccess(result, shardingMetaData.getTable());
-            return result;
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            parsingHook.finishFailure(ex);
-            throw ex;
-        }
+        return parseEngine.parse(logicSQL, useCache);
     }
     
+    @SuppressWarnings("unchecked")
     @Override
-    public SQLRouteResult route(final SQLStatement sqlStatement, final List<Object> parameters) {
-        OptimizedStatement optimizedStatement = ShardingOptimizeEngineFactory.newInstance(shardingRule, shardingMetaData.getTable(), sqlStatement, parameters).optimize();
+    public SQLRouteResult route(final String logicSQL, final List<Object> parameters, final SQLStatement sqlStatement) {
+        OptimizedStatement optimizedStatement = ShardingOptimizeEngineFactory.newInstance(sqlStatement).optimize(shardingRule, shardingMetaData.getTable(), logicSQL, parameters, sqlStatement);
         boolean needMergeShardingValues = isNeedMergeShardingValues(optimizedStatement);
         if (optimizedStatement instanceof ShardingConditionOptimizedStatement && needMergeShardingValues) {
             checkSubqueryShardingValues(optimizedStatement, ((ShardingConditionOptimizedStatement) optimizedStatement).getShardingConditions());

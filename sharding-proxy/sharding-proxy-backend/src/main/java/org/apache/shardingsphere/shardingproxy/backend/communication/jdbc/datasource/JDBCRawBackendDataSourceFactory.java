@@ -61,6 +61,7 @@ public final class JDBCRawBackendDataSourceFactory implements JDBCBackendDataSou
         config.setMaxLifetime(dataSourceParameter.getMaxLifetimeMilliseconds());
         config.setMaximumPoolSize(dataSourceParameter.getMaxPoolSize());
         config.setMinimumIdle(dataSourceParameter.getMinPoolSize());
+        config.setReadOnly(dataSourceParameter.isReadOnly());
         config.addDataSourceProperty("useServerPrepStmts", Boolean.TRUE.toString());
         config.addDataSourceProperty("cachePrepStmts", "true");
         config.addDataSourceProperty("prepStmtCacheSize", 250);

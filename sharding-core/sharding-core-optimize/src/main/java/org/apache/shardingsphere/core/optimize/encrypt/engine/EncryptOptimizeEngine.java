@@ -17,16 +17,23 @@
 
 package org.apache.shardingsphere.core.optimize.encrypt.engine;
 
+import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.api.engine.OptimizeEngine;
 import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptOptimizedStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.rule.EncryptRule;
+
+import java.util.List;
 
 /**
  * Optimize engine for encrypt.
  *
  * @author zhangliang
+ * 
+ * @param <T> type of SQL statement
  */
-public interface EncryptOptimizeEngine extends OptimizeEngine {
+public interface EncryptOptimizeEngine<T extends SQLStatement> extends OptimizeEngine<EncryptRule, T> {
     
     @Override
-    EncryptOptimizedStatement optimize();
+    EncryptOptimizedStatement optimize(EncryptRule encryptRule, ShardingTableMetaData shardingTableMetaData, String sql, List<Object> parameters, T sqlStatement);
 }

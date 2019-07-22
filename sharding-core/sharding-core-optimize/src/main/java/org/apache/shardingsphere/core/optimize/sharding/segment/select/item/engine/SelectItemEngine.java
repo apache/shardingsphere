@@ -25,14 +25,13 @@ import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.Comm
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.DerivedColumn;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.SelectItem;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.ShorthandSelectItem;
-import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.AggregationDistinctSelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.AggregationSelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.ColumnSelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.ExpressionSelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.ShorthandSelectItemSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 
 /**
  * Select item engine.
@@ -48,11 +47,11 @@ public final class SelectItemEngine {
     /**
      * Create select item.
      * 
+     * @param sql SQL
      * @param selectItemSegment select item segment
-     * @param sqlStatement SQL statement
      * @return select item
      */
-    public Optional<SelectItem> createSelectItem(final SelectItemSegment selectItemSegment, final SQLStatement sqlStatement) {
+    public Optional<SelectItem> createSelectItem(final String sql, final SelectItemSegment selectItemSegment) {
         if (selectItemSegment instanceof ShorthandSelectItemSegment) {
             return Optional.<SelectItem>of(createSelectItem((ShorthandSelectItemSegment) selectItemSegment));
         }
@@ -63,10 +62,10 @@ public final class SelectItemEngine {
             return Optional.<SelectItem>of(createSelectItem((ExpressionSelectItemSegment) selectItemSegment));
         }
         if (selectItemSegment instanceof AggregationDistinctSelectItemSegment) {
-            return Optional.<SelectItem>of(createSelectItem((AggregationDistinctSelectItemSegment) selectItemSegment, sqlStatement));
+            return Optional.<SelectItem>of(createSelectItem(sql, (AggregationDistinctSelectItemSegment) selectItemSegment));
         }
         if (selectItemSegment instanceof AggregationSelectItemSegment) {
-            return Optional.<SelectItem>of(createSelectItem((AggregationSelectItemSegment) selectItemSegment, sqlStatement));
+            return Optional.<SelectItem>of(createSelectItem(sql, (AggregationSelectItemSegment) selectItemSegment));
         }
         // TODO subquery
         return Optional.absent();
@@ -85,8 +84,8 @@ public final class SelectItemEngine {
         return new CommonSelectItem(selectItemSegment.getText(), selectItemSegment.getAlias().orNull());
     }
     
-    private AggregationDistinctSelectItem createSelectItem(final AggregationDistinctSelectItemSegment selectItemSegment, final SQLStatement sqlStatement) {
-        String innerExpression = sqlStatement.getLogicSQL().substring(selectItemSegment.getInnerExpressionStartIndex(), selectItemSegment.getStopIndex() + 1);
+    private AggregationDistinctSelectItem createSelectItem(final String sql, final AggregationDistinctSelectItemSegment selectItemSegment) {
+        String innerExpression = sql.substring(selectItemSegment.getInnerExpressionStartIndex(), selectItemSegment.getStopIndex() + 1);
         String alias = selectItemSegment.getAlias().or(DerivedColumn.AGGREGATION_DISTINCT_DERIVED.getDerivedColumnAlias(aggregationDistinctDerivedColumnCount++));
         AggregationDistinctSelectItem result = new AggregationDistinctSelectItem(selectItemSegment.getType(), innerExpression, alias, selectItemSegment.getDistinctExpression());
         if (AggregationType.AVG == result.getType()) {
@@ -95,8 +94,8 @@ public final class SelectItemEngine {
         return result;
     }
     
-    private AggregationSelectItem createSelectItem(final AggregationSelectItemSegment selectItemSegment, final SQLStatement sqlStatement) {
-        String innerExpression = sqlStatement.getLogicSQL().substring(selectItemSegment.getInnerExpressionStartIndex(), selectItemSegment.getStopIndex() + 1);
+    private AggregationSelectItem createSelectItem(final String sql, final AggregationSelectItemSegment selectItemSegment) {
+        String innerExpression = sql.substring(selectItemSegment.getInnerExpressionStartIndex(), selectItemSegment.getStopIndex() + 1);
         AggregationSelectItem result = new AggregationSelectItem(selectItemSegment.getType(), innerExpression, selectItemSegment.getAlias().orNull());
         if (AggregationType.AVG == result.getType()) {
             appendAverageDerivedItem(result);

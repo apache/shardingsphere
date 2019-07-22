@@ -15,33 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.segment.common;
+package org.apache.shardingsphere.core.parse.sql.statement.generic;
 
-import lombok.Getter;
-import org.apache.shardingsphere.core.parse.core.constant.QuoteCharacter;
-import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
-import org.apache.shardingsphere.core.parse.util.SQLUtil;
+import org.apache.shardingsphere.core.parse.sql.segment.ddl.index.IndexSegment;
 
 /**
- * Schema segment.
+ * Index segment available.
  *
  * @author zhangliang
  */
-@Getter
-public final class SchemaSegment implements SQLSegment {
+public interface IndexSegmentAvailable {
     
-    private final int startIndex;
+    /**
+     * Get index segment.
+     * 
+     * @return index segment
+     */
+    IndexSegment getIndex();
     
-    private final int stopIndex;
-    
-    private final String name;
-    
-    private final QuoteCharacter quoteCharacter;
-    
-    public SchemaSegment(final int startIndex, final int stopIndex, final String name) {
-        this.startIndex = startIndex;
-        this.stopIndex = stopIndex;
-        this.name = SQLUtil.getExactlyValue(name);
-        this.quoteCharacter = QuoteCharacter.getQuoteCharacter(name);
-    }
+    /**
+     * Set index segment.
+     * 
+     * @param index index segment
+     */
+    void setIndex(IndexSegment index);
 }
