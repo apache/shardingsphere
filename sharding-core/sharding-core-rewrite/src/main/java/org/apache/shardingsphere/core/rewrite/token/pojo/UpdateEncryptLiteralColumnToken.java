@@ -43,6 +43,16 @@ public final class UpdateEncryptLiteralColumnToken extends EncryptColumnToken {
         return Joiner.on(", ").join(columns);
     }
     
+    /**
+     * Add update column.
+     *
+     * @param columnName column name
+     * @param columnValue column value
+     */
+    public void addUpdateColumn(final String columnName, final Object columnValue) {
+        columns.add(new UpdateColumn(columnName, columnValue));
+    }
+    
     @RequiredArgsConstructor
     private final class UpdateColumn {
         
