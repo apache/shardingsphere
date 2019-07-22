@@ -42,7 +42,8 @@ public final class InsertOptimizedStatementTest {
         ShardingInsertOptimizedStatement insertClauseOptimizedStatement = new ShardingInsertOptimizedStatement(new InsertStatement(), Collections.<ShardingCondition>emptyList(), insertColumns, null);
         ExpressionSegment[] expressions = {new LiteralExpressionSegment(0, 0, 1), new ParameterMarkerExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, "test")};
         Object[] parameters = {"parameter"};
-        insertClauseOptimizedStatement.addUnit(expressions, parameters, 1);
+        InsertOptimizeResultUnit unit = insertClauseOptimizedStatement.createUnit(expressions, parameters, 1);
+        insertClauseOptimizedStatement.addUnit(unit);
         assertThat(insertClauseOptimizedStatement.getInsertColumns().getAllColumnNames().size(), is(3));
         assertThat(insertClauseOptimizedStatement.getUnits().get(0).getValues(), is(expressions));
         assertThat(insertClauseOptimizedStatement.getUnits().get(0).getParameters()[0], is((Object) "parameter"));

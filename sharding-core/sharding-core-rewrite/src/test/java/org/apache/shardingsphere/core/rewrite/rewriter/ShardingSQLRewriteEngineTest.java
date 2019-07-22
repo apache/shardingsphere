@@ -27,6 +27,7 @@ import org.apache.shardingsphere.core.optimize.statement.encrypt.condition.Condi
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.ShardingWhereOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingConditions;
+import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.InsertOptimizeResultUnit;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.ShardingInsertColumns;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.ShardingInsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ShardingSelectOptimizedStatement;
@@ -223,7 +224,8 @@ public final class ShardingSQLRewriteEngineTest {
         when(insertColumns.getAllColumnNames()).thenReturn(Arrays.asList("name", "age", "id"));
         ShardingInsertOptimizedStatement optimizedStatement = new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), insertColumns, null);
         ExpressionSegment[] expressionSegments = {new ParameterMarkerExpressionSegment(0, 0, 0), new ParameterMarkerExpressionSegment(0, 0, 1), new ParameterMarkerExpressionSegment(0, 0, 2)};
-        optimizedStatement.addUnit(expressionSegments, new Object[] {"x", 1, 1}, 3);
+        InsertOptimizeResultUnit unit = optimizedStatement.createUnit(expressionSegments, new Object[] {"x", 1, 1}, 3);
+        optimizedStatement.addUnit(unit);
         optimizedStatement.getUnits().get(0).getDataNodes().add(new DataNode("db0.table_1"));
         SQLRouteResult result = new SQLRouteResult(optimizedStatement);
         result.setRoutingResult(new RoutingResult());
@@ -249,7 +251,8 @@ public final class ShardingSQLRewriteEngineTest {
         when(insertColumns.getAllColumnNames()).thenReturn(Arrays.asList("name", "id"));
         ShardingInsertOptimizedStatement optimizedStatement = new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), insertColumns, null);
         ExpressionSegment[] expressionSegments = {new ParameterMarkerExpressionSegment(0, 0, 0), new ParameterMarkerExpressionSegment(0, 0, 1)};
-        optimizedStatement.addUnit(expressionSegments, new Object[] {"Bill", 1}, 2);
+        InsertOptimizeResultUnit unit = optimizedStatement.createUnit(expressionSegments, new Object[] {"Bill", 1}, 2);
+        optimizedStatement.addUnit(unit);
         optimizedStatement.getUnits().get(0).getDataNodes().add(new DataNode("db0.table_1"));
         SQLRouteResult result = new SQLRouteResult(optimizedStatement);
         result.setRoutingResult(new RoutingResult());
@@ -275,7 +278,8 @@ public final class ShardingSQLRewriteEngineTest {
         when(insertColumns.getAllColumnNames()).thenReturn(Arrays.asList("name", "id"));
         ShardingInsertOptimizedStatement optimizedStatement = new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), insertColumns, null);
         ExpressionSegment[] expressionSegments = {new LiteralExpressionSegment(0, 0, 10), new LiteralExpressionSegment(0, 0, 1)};
-        optimizedStatement.addUnit(expressionSegments, new Object[0], 0);
+        InsertOptimizeResultUnit unit = optimizedStatement.createUnit(expressionSegments, new Object[0], 0);
+        optimizedStatement.addUnit(unit);
         optimizedStatement.getUnits().get(0).getDataNodes().add(new DataNode("db0.table_1"));
         SQLRouteResult result = new SQLRouteResult(optimizedStatement);
         result.setRoutingResult(new RoutingResult());
@@ -301,7 +305,8 @@ public final class ShardingSQLRewriteEngineTest {
         when(insertColumns.getAllColumnNames()).thenReturn(Arrays.asList("name", "id"));
         ShardingInsertOptimizedStatement optimizedStatement = new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), insertColumns, null);
         ExpressionSegment[] expressionSegments = {new LiteralExpressionSegment(0, 0, 10), new LiteralExpressionSegment(0, 0, 1)};
-        optimizedStatement.addUnit(expressionSegments, new Object[0], 0);
+        InsertOptimizeResultUnit unit = optimizedStatement.createUnit(expressionSegments, new Object[0], 0);
+        optimizedStatement.addUnit(unit);
         optimizedStatement.getUnits().get(0).getDataNodes().add(new DataNode("db0.table_1"));
         SQLRouteResult result = new SQLRouteResult(optimizedStatement);
         result.setRoutingResult(new RoutingResult());
@@ -326,7 +331,8 @@ public final class ShardingSQLRewriteEngineTest {
         when(insertColumns.getAllColumnNames()).thenReturn(Arrays.asList("name", "id"));
         ShardingInsertOptimizedStatement optimizedStatement = new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), insertColumns, null);
         ExpressionSegment[] expressionSegments = {new LiteralExpressionSegment(0, 0, 10), new LiteralExpressionSegment(0, 0, 1)};
-        optimizedStatement.addUnit(expressionSegments, new Object[0], 0);
+        InsertOptimizeResultUnit unit = optimizedStatement.createUnit(expressionSegments, new Object[0], 0);
+        optimizedStatement.addUnit(unit);
         optimizedStatement.getUnits().get(0).getDataNodes().add(new DataNode("db0.table_1"));
         SQLRouteResult result = new SQLRouteResult(optimizedStatement);
         result.setRoutingResult(new RoutingResult());
@@ -353,7 +359,8 @@ public final class ShardingSQLRewriteEngineTest {
         when(insertColumns.getAllColumnNames()).thenReturn(Arrays.asList("name", "id"));
         ShardingInsertOptimizedStatement optimizedStatement = new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), insertColumns, null);
         ExpressionSegment[] expressionSegments = {new LiteralExpressionSegment(0, 0, 10), new LiteralExpressionSegment(0, 0, 1)};
-        optimizedStatement.addUnit(expressionSegments, new Object[0], 0);
+        InsertOptimizeResultUnit unit = optimizedStatement.createUnit(expressionSegments, new Object[0], 0);
+        optimizedStatement.addUnit(unit);
         optimizedStatement.getUnits().get(0).getDataNodes().add(new DataNode("db0.table_1"));
         SQLRouteResult result = new SQLRouteResult(optimizedStatement);
         result.setRoutingResult(new RoutingResult());
@@ -379,7 +386,8 @@ public final class ShardingSQLRewriteEngineTest {
         when(insertColumns.getAllColumnNames()).thenReturn(Arrays.asList("name", "id"));
         ShardingInsertOptimizedStatement optimizedStatement = new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), insertColumns, null);
         ExpressionSegment[] expressionSegments = {new ParameterMarkerExpressionSegment(0, 0, 0), new ParameterMarkerExpressionSegment(0, 0, 1)};
-        optimizedStatement.addUnit(expressionSegments, new Object[] {"x", 1}, 2);
+        InsertOptimizeResultUnit unit = optimizedStatement.createUnit(expressionSegments, new Object[] {"x", 1}, 2);
+        optimizedStatement.addUnit(unit);
         optimizedStatement.getUnits().get(0).getDataNodes().add(new DataNode("db0.table_1"));
         SQLRouteResult result = new SQLRouteResult(optimizedStatement);
         result.setRoutingResult(new RoutingResult());
@@ -975,7 +983,8 @@ public final class ShardingSQLRewriteEngineTest {
         ShardingInsertOptimizedStatement optimizedStatement =
                 new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), insertColumns, null);
         ExpressionSegment[] expressionSegments = {new LiteralExpressionSegment(0, 0, 10), new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 10)};
-        optimizedStatement.addUnit(expressionSegments, new Object[0], 0);
+        InsertOptimizeResultUnit unit = optimizedStatement.createUnit(expressionSegments, new Object[0], 0);
+        optimizedStatement.addUnit(unit);
         optimizedStatement.getUnits().get(0).getDataNodes().add(new DataNode("db0.table_1"));
         SQLRouteResult result = new SQLRouteResult(optimizedStatement);
         result.setRoutingResult(new RoutingResult());

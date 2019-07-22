@@ -79,7 +79,8 @@ public final class ShardingInsertOptimizeEngine implements OptimizeEngine {
         int derivedColumnsCount = getDerivedColumnsCount(isGeneratedValue);
         int parametersCount = 0;
         for (InsertValue each : insertStatement.getValues()) {
-            InsertOptimizeResultUnit unit = result.addUnit(each.getValues(derivedColumnsCount), each.getParameters(parameters, parametersCount, derivedColumnsCount), each.getParametersCount());
+            InsertOptimizeResultUnit unit = result.createUnit(each.getValues(derivedColumnsCount), each.getParameters(parameters, parametersCount, derivedColumnsCount), each.getParametersCount());
+            result.addUnit(unit);
             if (isGeneratedValue) {
                 unit.addInsertValue(generatedValues.next(), parameters);
             }

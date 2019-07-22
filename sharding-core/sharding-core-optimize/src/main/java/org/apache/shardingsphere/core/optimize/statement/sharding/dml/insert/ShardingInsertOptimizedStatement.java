@@ -50,19 +50,27 @@ public final class ShardingInsertOptimizedStatement extends ShardingWhereOptimiz
         this.insertColumns = insertColumns;
         this.generatedKey = generatedKey;
     }
-    
+
     /**
-     * Add insert optimize result uint.
+     * Create insert optimize unit.
      *
      * @param insertValues insert values
      * @param parameters SQL parameters
      * @param startIndexOfAppendedParameters start index of appended parameters
      * @return insert optimize result unit
      */
-    public InsertOptimizeResultUnit addUnit(final ExpressionSegment[] insertValues, final Object[] parameters, final int startIndexOfAppendedParameters) {
+    public InsertOptimizeResultUnit createUnit(final ExpressionSegment[] insertValues, final Object[] parameters, final int startIndexOfAppendedParameters) {
         InsertOptimizeResultUnit result = new InsertOptimizeResultUnit(insertColumns.getAllColumnNames(), insertValues, parameters, startIndexOfAppendedParameters);
-        units.add(result);
         return result;
+    }
+
+    /**
+     * Add insert optimize result unit into units.
+     *
+     * @param  insertOptimizeResultUnit one insertOptimizeResultUnit object
+     */
+    public void addUnit(final InsertOptimizeResultUnit insertOptimizeResultUnit) {
+        units.add(insertOptimizeResultUnit);
     }
     
     /**
