@@ -34,27 +34,15 @@ import java.util.List;
  *
  * @author zhangliang
  */
-public final class ShardingDeleteOptimizeEngine implements ShardingOptimizeEngine {
-    
-    private final DeleteStatement deleteStatement;
-    
-    private final List<Object> parameters;
-    
-    private final WhereClauseShardingConditionEngine shardingConditionEngine;
-    
-    private final WhereClauseEncryptConditionEngine encryptConditionEngine;
-    
-    public ShardingDeleteOptimizeEngine(final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData, final DeleteStatement deleteStatement, final List<Object> parameters) {
-        this.deleteStatement = deleteStatement;
-        this.parameters = parameters;
-        shardingConditionEngine = new WhereClauseShardingConditionEngine(shardingRule, shardingTableMetaData);
-        encryptConditionEngine = new WhereClauseEncryptConditionEngine(shardingRule.getEncryptRule(), shardingTableMetaData);
-    }
+public final class ShardingDeleteOptimizeEngine implements ShardingOptimizeEngine<DeleteStatement> {
     
     @Override
-    public ShardingConditionOptimizedStatement optimize() {
-        return new ShardingConditionOptimizedStatement(deleteStatement,
-                new ShardingConditions(shardingConditionEngine.createShardingConditions(deleteStatement, parameters)),
-                new EncryptConditions(encryptConditionEngine.createEncryptConditions(deleteStatement)));
+    public ShardingConditionOptimizedStatement optimize(final ShardingRule shardingRule, 
+                                                        final ShardingTableMetaData shardingTableMetaData, final DeleteStatement sqlStatement, final List<Object> parameters) {
+        WhereClauseShardingConditionEngine shardingConditionEngine = new WhereClauseShardingConditionEngine(shardingRule, shardingTableMetaData);
+        WhereClauseEncryptConditionEngine encryptConditionEngine = new WhereClauseEncryptConditionEngine(shardingRule.getEncryptRule(), shardingTableMetaData);
+        return new ShardingConditionOptimizedStatement(sqlStatement,
+                new ShardingConditions(shardingConditionEngine.createShardingConditions(sqlStatement, parameters)),
+                new EncryptConditions(encryptConditionEngine.createEncryptConditions(sqlStatement)));
     }
 }

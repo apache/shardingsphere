@@ -24,14 +24,18 @@ import org.apache.shardingsphere.core.parse.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.DropIndexStatement;
+import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Collections;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -52,14 +56,14 @@ public final class ShardingDropIndexOptimizeEngineTest {
     @Test
     public void assertOptimizeWithTableName() {
         dropIndexStatement.getAllSQLSegments().add(new TableSegment(0, 0, "tbl"));
-        ShardingDropIndexOptimizedStatement actual = new ShardingDropIndexOptimizeEngine(dropIndexStatement, shardingTableMetaData).optimize();
+        ShardingDropIndexOptimizedStatement actual = new ShardingDropIndexOptimizeEngine().optimize(mock(ShardingRule.class), shardingTableMetaData, dropIndexStatement, Collections.emptyList());
         assertThat(actual.getSQLStatement(), is((SQLStatement) dropIndexStatement));
         assertThat(actual.getTableNames().iterator().next(), is("tbl"));
     }
     
     @Test
     public void assertOptimizeWithoutTableName() {
-        ShardingDropIndexOptimizedStatement actual = new ShardingDropIndexOptimizeEngine(dropIndexStatement, shardingTableMetaData).optimize();
+        ShardingDropIndexOptimizedStatement actual = new ShardingDropIndexOptimizeEngine().optimize(mock(ShardingRule.class), shardingTableMetaData, dropIndexStatement, Collections.emptyList());
         assertThat(actual.getSQLStatement(), is((SQLStatement) dropIndexStatement));
         assertThat(actual.getTableNames().iterator().next(), is("meta_tbl"));
     }

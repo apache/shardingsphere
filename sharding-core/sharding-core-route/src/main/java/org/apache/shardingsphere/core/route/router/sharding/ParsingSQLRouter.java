@@ -66,9 +66,10 @@ public final class ParsingSQLRouter implements ShardingRouter {
         return parseEngine.parse(logicSQL, useCache);
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public SQLRouteResult route(final SQLStatement sqlStatement, final List<Object> parameters) {
-        OptimizedStatement optimizedStatement = ShardingOptimizeEngineFactory.newInstance(shardingRule, shardingMetaData.getTable(), sqlStatement, parameters).optimize();
+        OptimizedStatement optimizedStatement = ShardingOptimizeEngineFactory.newInstance(sqlStatement).optimize(shardingRule, shardingMetaData.getTable(), sqlStatement, parameters);
         boolean needMergeShardingValues = isNeedMergeShardingValues(optimizedStatement);
         if (optimizedStatement instanceof ShardingConditionOptimizedStatement && needMergeShardingValues) {
             checkSubqueryShardingValues(optimizedStatement, ((ShardingConditionOptimizedStatement) optimizedStatement).getShardingConditions());

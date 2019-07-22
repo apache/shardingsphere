@@ -44,53 +44,33 @@ import java.util.List;
  *
  * @author zhangliang
  */
-public final class ShardingSelectOptimizeEngine implements ShardingOptimizeEngine {
-    
-    private final SelectStatement selectStatement;
-    
-    private final List<Object> parameters;
-    
-    private final WhereClauseShardingConditionEngine shardingConditionEngine;
-    
-    private final WhereClauseEncryptConditionEngine encryptConditionEngine;
-    
-    private final GroupByEngine groupByEngine;
-    
-    private final OrderByEngine orderByEngine;
-    
-    private final SelectItemsEngine selectItemsEngine;
-    
-    private final PaginationEngine paginationEngine;
-    
-    public ShardingSelectOptimizeEngine(final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData, final SelectStatement selectStatement, final List<Object> parameters) {
-        this.selectStatement = selectStatement;
-        this.parameters = parameters;
-        shardingConditionEngine = new WhereClauseShardingConditionEngine(shardingRule, shardingTableMetaData);
-        encryptConditionEngine = new WhereClauseEncryptConditionEngine(shardingRule.getEncryptRule(), shardingTableMetaData);
-        groupByEngine = new GroupByEngine();
-        orderByEngine = new OrderByEngine();
-        selectItemsEngine = new SelectItemsEngine(shardingTableMetaData);
-        paginationEngine = new PaginationEngine();
-    }
+public final class ShardingSelectOptimizeEngine implements ShardingOptimizeEngine<SelectStatement> {
     
     @Override
-    public ShardingSelectOptimizedStatement optimize() {
-        List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(selectStatement, parameters);
-        List<EncryptCondition> encryptConditions = encryptConditionEngine.createEncryptConditions(selectStatement);
-        GroupBy groupBy = groupByEngine.createGroupBy(selectStatement);
-        OrderBy orderBy = orderByEngine.createOrderBy(selectStatement, groupBy);
-        SelectItems selectItems = selectItemsEngine.createSelectItems(selectStatement, groupBy, orderBy);
-        Pagination pagination = paginationEngine.createPagination(selectStatement, selectItems, parameters);
-        ShardingSelectOptimizedStatement result = new ShardingSelectOptimizedStatement(selectStatement, shardingConditions, encryptConditions, groupBy, orderBy, selectItems, pagination);
-        setContainsSubquery(result);
+    public ShardingSelectOptimizedStatement optimize(final ShardingRule shardingRule,
+                                                     final ShardingTableMetaData shardingTableMetaData, final SelectStatement sqlStatement, final List<Object> parameters) {
+        WhereClauseShardingConditionEngine shardingConditionEngine = new WhereClauseShardingConditionEngine(shardingRule, shardingTableMetaData);
+        WhereClauseEncryptConditionEngine encryptConditionEngine = new WhereClauseEncryptConditionEngine(shardingRule.getEncryptRule(), shardingTableMetaData);
+        GroupByEngine groupByEngine = new GroupByEngine();
+        OrderByEngine orderByEngine = new OrderByEngine();
+        SelectItemsEngine selectItemsEngine = new SelectItemsEngine(shardingTableMetaData);
+        PaginationEngine paginationEngine = new PaginationEngine();
+        List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(sqlStatement, parameters);
+        List<EncryptCondition> encryptConditions = encryptConditionEngine.createEncryptConditions(sqlStatement);
+        GroupBy groupBy = groupByEngine.createGroupBy(sqlStatement);
+        OrderBy orderBy = orderByEngine.createOrderBy(sqlStatement, groupBy);
+        SelectItems selectItems = selectItemsEngine.createSelectItems(sqlStatement, groupBy, orderBy);
+        Pagination pagination = paginationEngine.createPagination(sqlStatement, selectItems, parameters);
+        ShardingSelectOptimizedStatement result = new ShardingSelectOptimizedStatement(sqlStatement, shardingConditions, encryptConditions, groupBy, orderBy, selectItems, pagination);
+        setContainsSubquery(sqlStatement, result);
         return result;
     }
     
-    private void setContainsSubquery(final ShardingSelectOptimizedStatement result) {
-        Collection<SubqueryPredicateSegment> subqueryPredicateSegments = selectStatement.findSQLSegments(SubqueryPredicateSegment.class);
+    private void setContainsSubquery(final SelectStatement sqlStatement, final ShardingSelectOptimizedStatement optimizedStatement) {
+        Collection<SubqueryPredicateSegment> subqueryPredicateSegments = sqlStatement.findSQLSegments(SubqueryPredicateSegment.class);
         for (SubqueryPredicateSegment each : subqueryPredicateSegments) {
             if (!each.getAndPredicates().isEmpty()) {
-                result.setContainsSubquery(true);
+                optimizedStatement.setContainsSubquery(true);
                 break;
             }
         }

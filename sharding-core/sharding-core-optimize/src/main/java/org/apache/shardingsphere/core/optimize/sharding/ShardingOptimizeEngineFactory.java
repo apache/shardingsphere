@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.optimize.sharding;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.api.engine.OptimizeEngine;
 import org.apache.shardingsphere.core.optimize.sharding.engnie.ddl.ShardingDropIndexOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.sharding.engnie.dml.ShardingDeleteOptimizeEngine;
@@ -33,9 +32,6 @@ import org.apache.shardingsphere.core.parse.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.core.rule.ShardingRule;
-
-import java.util.List;
 
 /**
  * Optimize engine factory for sharding.
@@ -49,29 +45,26 @@ public final class ShardingOptimizeEngineFactory {
     
     /**
      * Create sharding optimize engine instance.
-     * 
-     * @param shardingRule sharding rule
-     * @param shardingTableMetaData sharding table metadata
+     *
      * @param sqlStatement SQL statement
-     * @param parameters parameters
      * @return optimize engine instance
      */
-    public static OptimizeEngine newInstance(final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData, final SQLStatement sqlStatement, final List<Object> parameters) {
+    public static OptimizeEngine newInstance(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof SelectStatement) {
-            return new ShardingSelectOptimizeEngine(shardingRule, shardingTableMetaData, (SelectStatement) sqlStatement, parameters);
+            return new ShardingSelectOptimizeEngine();
         }
         if (sqlStatement instanceof InsertStatement) {
-            return new ShardingInsertOptimizeEngine(shardingRule, shardingTableMetaData, (InsertStatement) sqlStatement, parameters);
+            return new ShardingInsertOptimizeEngine();
         }
         if (sqlStatement instanceof UpdateStatement) {
-            return new ShardingUpdateOptimizeEngine(shardingRule, shardingTableMetaData, (UpdateStatement) sqlStatement, parameters);
+            return new ShardingUpdateOptimizeEngine();
         }
         if (sqlStatement instanceof DeleteStatement) {
-            return new ShardingDeleteOptimizeEngine(shardingRule, shardingTableMetaData, (DeleteStatement) sqlStatement, parameters);
+            return new ShardingDeleteOptimizeEngine();
         }
         if (sqlStatement instanceof DropIndexStatement) {
-            return new ShardingDropIndexOptimizeEngine((DropIndexStatement) sqlStatement, shardingTableMetaData);
+            return new ShardingDropIndexOptimizeEngine();
         }
-        return new TransparentOptimizeEngine(sqlStatement);
+        return new TransparentOptimizeEngine();
     }
 }

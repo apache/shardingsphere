@@ -93,8 +93,8 @@ public final class EncryptInsertOptimizeEngineTest {
     @Test
     public void assertInsertStatementWithValuesWithPlaceHolderWithEncrypt() {
         InsertStatement insertStatement = createInsertStatementWithValuesWithPlaceHolderWithEncrypt();
-        EncryptInsertOptimizeEngine optimizeEngine = new EncryptInsertOptimizeEngine(encryptRule, mock(ShardingTableMetaData.class), insertStatement, parametersWithValues);
-        EncryptInsertOptimizedStatement actual = optimizeEngine.optimize();
+        EncryptInsertOptimizeEngine optimizeEngine = new EncryptInsertOptimizeEngine();
+        EncryptInsertOptimizedStatement actual = optimizeEngine.optimize(encryptRule, mock(ShardingTableMetaData.class), insertStatement, parametersWithValues);
         assertThat(actual.getInsertColumns().getAllColumnNames().size(), is(2));
         assertThat(actual.getUnits().size(), is(1));
         assertThat(actual.getUnits().get(0).getParameters().length, is(2));
@@ -114,8 +114,8 @@ public final class EncryptInsertOptimizeEngineTest {
     @Test
     public void assertInsertStatementWithValuesWithoutPlaceHolderWithQueryEncrypt() {
         InsertStatement insertStatement = createInsertStatementWithValuesWithoutPlaceHolderWithQueryEncrypt();
-        EncryptInsertOptimizeEngine optimizeEngine = new EncryptInsertOptimizeEngine(encryptRule, mock(ShardingTableMetaData.class), insertStatement, parametersWithoutValues);
-        EncryptInsertOptimizedStatement actual = optimizeEngine.optimize();
+        EncryptInsertOptimizeEngine optimizeEngine = new EncryptInsertOptimizeEngine();
+        EncryptInsertOptimizedStatement actual = optimizeEngine.optimize(encryptRule, mock(ShardingTableMetaData.class), insertStatement, parametersWithoutValues);
         assertThat(actual.getInsertColumns().getAllColumnNames().size(), is(4));
         assertThat(actual.getUnits().size(), is(1));
         assertThat(actual.getUnits().get(0).getParameters().length, is(0));
@@ -138,8 +138,8 @@ public final class EncryptInsertOptimizeEngineTest {
     @Test
     public void assertInsertStatementWithSetWithoutPlaceHolderWithEncrypt() {
         InsertStatement insertStatement = createInsertStatementWithSetWithoutPlaceHolderWithEncrypt();
-        EncryptInsertOptimizeEngine optimizeEngine = new EncryptInsertOptimizeEngine(encryptRule, mock(ShardingTableMetaData.class), insertStatement, parametersWithoutValues);
-        EncryptInsertOptimizedStatement actual = optimizeEngine.optimize();
+        EncryptInsertOptimizeEngine optimizeEngine = new EncryptInsertOptimizeEngine();
+        EncryptInsertOptimizedStatement actual = optimizeEngine.optimize(encryptRule, mock(ShardingTableMetaData.class), insertStatement, parametersWithoutValues);
         assertThat(actual.getInsertColumns().getAllColumnNames().size(), is(2));
         assertThat(actual.getUnits().size(), is(1));
         assertThat(actual.getUnits().get(0).getParameters().length, is(0));
@@ -161,8 +161,8 @@ public final class EncryptInsertOptimizeEngineTest {
     @Test
     public void assertInsertStatementWithSetWithPlaceHolderWithQueryEncrypt() {
         InsertStatement insertStatement = createInsertStatementWithSetWithPlaceHolderWithQueryEncrypt();
-        EncryptInsertOptimizeEngine optimizeEngine = new EncryptInsertOptimizeEngine(encryptRule, mock(ShardingTableMetaData.class), insertStatement, parametersWithValues);
-        EncryptInsertOptimizedStatement actual = optimizeEngine.optimize();
+        EncryptInsertOptimizeEngine optimizeEngine = new EncryptInsertOptimizeEngine();
+        EncryptInsertOptimizedStatement actual = optimizeEngine.optimize(encryptRule, mock(ShardingTableMetaData.class), insertStatement, parametersWithValues);
         assertThat(actual.getInsertColumns().getAllColumnNames().size(), is(4));
         assertThat(actual.getUnits().size(), is(1));
         assertThat(actual.getUnits().get(0).getParameters().length, is(4));

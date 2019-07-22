@@ -19,43 +19,40 @@ package org.apache.shardingsphere.core.optimize.sharding.engnie.ddl;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.api.segment.Tables;
 import org.apache.shardingsphere.core.optimize.sharding.engnie.ShardingOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.sharding.statement.ddl.ShardingDropIndexOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.DropIndexStatement;
+import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Drop index optimize engine for sharding.
  *
  * @author panjuan
  */
-@RequiredArgsConstructor
-public final class ShardingDropIndexOptimizeEngine implements ShardingOptimizeEngine {
-    
-    private final DropIndexStatement dropIndexStatement;
-    
-    private final ShardingTableMetaData shardingTableMetaData;
+public final class ShardingDropIndexOptimizeEngine implements ShardingOptimizeEngine<DropIndexStatement> {
     
     @Override
-    public ShardingDropIndexOptimizedStatement optimize() {
-        Tables tables = new Tables(dropIndexStatement);
-        return new ShardingDropIndexOptimizedStatement(dropIndexStatement, tables, getTableNames(tables));
+    public ShardingDropIndexOptimizedStatement optimize(final ShardingRule shardingRule, 
+                                                        final ShardingTableMetaData shardingTableMetaData, final DropIndexStatement sqlStatement, final List<Object> parameters) {
+        Tables tables = new Tables(sqlStatement);
+        return new ShardingDropIndexOptimizedStatement(sqlStatement, tables, getTableNames(shardingTableMetaData, sqlStatement, tables));
     }
     
     // TODO simplify from tables
-    private Collection<String> getTableNames(final Tables tables) {
+    private Collection<String> getTableNames(final ShardingTableMetaData shardingTableMetaData, final DropIndexStatement sqlStatement, final Tables tables) {
         if (!tables.isEmpty()) {
             return Collections.singletonList(tables.getSingleTableName());
         }
         Collection<String> result = new LinkedList<>();
-        for (IndexSegment each : dropIndexStatement.getIndexes()) {
+        for (IndexSegment each : sqlStatement.getIndexes()) {
             Optional<String> tableName = shardingTableMetaData.getLogicTableName(each.getName());
             Preconditions.checkState(tableName.isPresent(), "Cannot find table for index name `%s` from sharding rule.", each.getName());
             result.add(tableName.get());
