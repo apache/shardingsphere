@@ -52,18 +52,16 @@ public final class WhereEncryptColumnTokenGenerator implements CollectionSQLToke
     private Collection<EncryptColumnToken> createEncryptColumnToken(final ConditionOptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final EncryptRule encryptRule) {
         Collection<EncryptColumnToken> result = new LinkedList<>();
         for (EncryptCondition each : optimizedStatement.getEncryptConditions().getConditions()) {
-            // FIXME where SQL may have more than one table, optimizedStatement.getSQLStatement().getTables().getSingleTableName() is incorrect
-            result.add(createWhereEncryptColumnToken(optimizedStatement.getTables().getSingleTableName(), each, parameterBuilder, encryptRule));
+            result.add(createWhereEncryptColumnToken(each, parameterBuilder, encryptRule));
         }
         return result;
     }
     
-    private WhereEncryptColumnToken createWhereEncryptColumnToken(
-            final String tableName, final EncryptCondition encryptCondition, final ParameterBuilder parameterBuilder, final EncryptRule encryptRule) {
-        ColumnNode columnNode = new ColumnNode(tableName, encryptCondition.getColumnName());
+    private WhereEncryptColumnToken createWhereEncryptColumnToken(final EncryptCondition encryptCondition, final ParameterBuilder parameterBuilder, final EncryptRule encryptRule) {
+        ColumnNode columnNode = new ColumnNode(encryptCondition.getTableName(), encryptCondition.getColumnName());
         List<Object> encryptColumnValues = encryptValues(columnNode, encryptCondition.getValues(parameterBuilder.getOriginalParameters()), encryptRule);
         encryptParameters(encryptCondition.getPositionIndexMap(), encryptColumnValues, parameterBuilder);
-        Optional<String> assistedQueryColumnName = encryptRule.getEncryptEngine().getAssistedQueryColumn(tableName, encryptCondition.getColumnName());
+        Optional<String> assistedQueryColumnName = encryptRule.getEncryptEngine().getAssistedQueryColumn(encryptCondition.getTableName(), encryptCondition.getColumnName());
         return new WhereEncryptColumnToken(encryptCondition.getStartIndex(), encryptCondition.getStopIndex(), assistedQueryColumnName.or(encryptCondition.getColumnName()),
                 getPositionValues(encryptCondition.getPositionValueMap().keySet(), encryptColumnValues), encryptCondition.getPositionIndexMap().keySet(), encryptCondition.getOperator());
     }
