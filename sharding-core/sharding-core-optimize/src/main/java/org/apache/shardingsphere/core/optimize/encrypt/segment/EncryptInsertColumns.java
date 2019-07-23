@@ -33,29 +33,50 @@ import java.util.LinkedList;
  * Insert columns for encrypt.
  *
  * @author zhangliang
+ * @author panjuan
  */
 public final class EncryptInsertColumns implements InsertColumns {
     
+    private final InsertStatement insertStatement;
+    
     private final Collection<String> assistedQueryColumnNames;
+    
+    private final Collection<String> plainColumnNames;
     
     @Getter
     private final Collection<String> regularColumnNames;
     
     public EncryptInsertColumns(final EncryptRule encryptRule, final ShardingTableMetaData shardingTableMetaData, final InsertStatement insertStatement) {
-        String tableName = insertStatement.getTable().getTableName();
-        assistedQueryColumnNames = encryptRule.getEncryptEngine().getAssistedQueryColumns(tableName);
-        regularColumnNames = insertStatement.useDefaultColumns() ? getRegularColumnNamesFromMetaData(shardingTableMetaData, tableName) : getColumnNamesFromSQLStatement(insertStatement);
+        this.insertStatement = insertStatement;
+        assistedQueryColumnNames = encryptRule.getEncryptEngine().getAssistedQueryColumns(insertStatement.getTable().getTableName());
+        plainColumnNames = encryptRule.getEncryptEngine().getPlainColumns(insertStatement.getTable().getTableName());
+        regularColumnNames = insertStatement.useDefaultColumns() ? getRegularColumnNamesFromMetaData(shardingTableMetaData, encryptRule) : getColumnNamesFromSQLStatement(insertStatement);
     }
     
-    private Collection<String> getRegularColumnNamesFromMetaData(final ShardingTableMetaData shardingTableMetaData, final String tableName) {
-        Collection<String> allColumnNames = shardingTableMetaData.getAllColumnNames(tableName);
-        Collection<String> result = new LinkedHashSet<>(allColumnNames.size() - assistedQueryColumnNames.size());
+    private Collection<String> getRegularColumnNamesFromMetaData(final ShardingTableMetaData shardingTableMetaData, final EncryptRule encryptRule) {
+        Collection<String> allColumnNames = shardingTableMetaData.getAllColumnNames(insertStatement.getTable().getTableName());
+        Collection<String> result = new LinkedHashSet<>(allColumnNames.size() - getAssistedQueryAndPlainColumnCount());
         for (String each : allColumnNames) {
-            if (!assistedQueryColumnNames.contains(each)) {
+            if (isNotAssistedQueryAndPlainColumns(each)) {
                 result.add(each);
+            }
+            if (isCipherColumn(each, encryptRule)) {
+                result.add(getLogicColumn(each, encryptRule));
             }
         }
         return result;
+    }
+    
+    private boolean isNotAssistedQueryAndPlainColumns(final String each) {
+        return !assistedQueryColumnNames.contains(each) && !plainColumnNames.contains(each);
+    }
+    
+    private boolean isCipherColumn(final String each, final EncryptRule encryptRule) {
+        return encryptRule.getEncryptEngine().getCipherColumns(insertStatement.getTable().getTableName()).contains(each);
+    }
+    
+    private String getLogicColumn(final String each, final EncryptRule encryptRule) {
+        return encryptRule.getEncryptEngine().getLogicColumn(insertStatement.getTable().getTableName(), each);
     }
     
     private Collection<String> getColumnNamesFromSQLStatement(final InsertStatement insertStatement) {
@@ -73,9 +94,14 @@ public final class EncryptInsertColumns implements InsertColumns {
     
     @Override
     public Collection<String> getAllColumnNames() {
-        Collection<String> result = new LinkedHashSet<>(regularColumnNames.size() + assistedQueryColumnNames.size());
+        Collection<String> result = new LinkedHashSet<>(regularColumnNames.size() + getAssistedQueryAndPlainColumnCount());
         result.addAll(regularColumnNames);
         result.addAll(assistedQueryColumnNames);
+        result.addAll(plainColumnNames);
         return result;
+    }
+    
+    private int getAssistedQueryAndPlainColumnCount() {
+        return assistedQueryColumnNames.size() + plainColumnNames.size();
     }
 }
