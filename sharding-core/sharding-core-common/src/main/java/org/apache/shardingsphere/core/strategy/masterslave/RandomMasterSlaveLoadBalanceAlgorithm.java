@@ -23,7 +23,7 @@ import org.apache.shardingsphere.spi.masterslave.MasterSlaveLoadBalanceAlgorithm
 
 import java.util.List;
 import java.util.Properties;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Random slave database load-balance algorithm.
@@ -43,6 +43,6 @@ public final class RandomMasterSlaveLoadBalanceAlgorithm implements MasterSlaveL
     
     @Override
     public String getDataSource(final String name, final String masterDataSourceName, final List<String> slaveDataSourceNames) {
-        return slaveDataSourceNames.get(new Random().nextInt(slaveDataSourceNames.size()));
+        return slaveDataSourceNames.get(ThreadLocalRandom.current().nextInt(slaveDataSourceNames.size()));
     }
 }
