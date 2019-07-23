@@ -73,7 +73,7 @@ public final class SelectItemEngine {
     
     private ShorthandSelectItem createSelectItem(final ShorthandSelectItemSegment selectItemSegment) {
         Optional<TableSegment> owner = selectItemSegment.getOwner();
-        return new ShorthandSelectItem(owner.isPresent() ? owner.get().getName() : null);
+        return new ShorthandSelectItem(owner.isPresent() ? owner.get().getTableName() : null);
     }
     
     private CommonSelectItem createSelectItem(final ColumnSelectItemSegment selectItemSegment) {

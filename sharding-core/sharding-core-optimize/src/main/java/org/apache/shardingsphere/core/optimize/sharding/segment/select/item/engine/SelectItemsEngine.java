@@ -123,7 +123,7 @@ public final class SelectItemsEngine {
     
     private boolean containsItemWithOwnerInShorthandItems(final Tables tables, final Collection<SelectItem> items, final OrderByItemSegment orderItem) {
         return orderItem instanceof ColumnOrderByItemSegment && ((ColumnOrderByItemSegment) orderItem).getColumn().getOwner().isPresent()
-                && findShorthandItem(tables, items, ((ColumnOrderByItemSegment) orderItem).getColumn().getOwner().get().getName()).isPresent();
+                && findShorthandItem(tables, items, ((ColumnOrderByItemSegment) orderItem).getColumn().getOwner().get().getTableName()).isPresent();
     }
     
     private Optional<ShorthandSelectItem> findShorthandItem(final Tables tables, final Collection<SelectItem> items, final String tableNameOrAlias) {

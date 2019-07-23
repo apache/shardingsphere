@@ -26,7 +26,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.ddl.column.alter.DropCol
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map;
 
 /**
@@ -38,7 +38,7 @@ public final class DropColumnDefinitionExtractor implements CollectionSQLSegment
     
     @Override
     public Collection<DropColumnDefinitionSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
-        Collection<DropColumnDefinitionSegment> result = new HashSet<>();
+        Collection<DropColumnDefinitionSegment> result = new LinkedList<>();
         for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.DROP_COLUMN_SPECIFICATION)) {
             result.addAll(extractDropColumnSegments(each));
         }
@@ -46,9 +46,9 @@ public final class DropColumnDefinitionExtractor implements CollectionSQLSegment
     }
     
     private Collection<DropColumnDefinitionSegment> extractDropColumnSegments(final ParserRuleContext dropColumnNode) {
-        Collection<DropColumnDefinitionSegment> result = new HashSet<>();
+        Collection<DropColumnDefinitionSegment> result = new LinkedList<>();
         for (ParseTree each : ExtractorUtils.getAllDescendantNodes(dropColumnNode, RuleName.COLUMN_NAME)) {
-            result.add(new DropColumnDefinitionSegment(SQLUtil.getExactlyValue(each.getText())));
+            result.add(new DropColumnDefinitionSegment(dropColumnNode.getStart().getStartIndex(), dropColumnNode.getStop().getStartIndex(), SQLUtil.getExactlyValue(each.getText())));
         }
         return result;
     }
