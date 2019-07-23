@@ -50,11 +50,11 @@ public final class EncryptTable {
     /**
      * Get sharding encryptor.
      *
-     * @param logicColumnName column name
+     * @param logicColumn column name
      * @return optional of sharding encryptor
      */
-    public Optional<String> getShardingEncryptor(final String logicColumnName) { 
-        return columns.containsKey(logicColumnName) ? Optional.of(columns.get(logicColumnName).getEncryptor()) : Optional.<String>absent();
+    public Optional<String> getShardingEncryptor(final String logicColumn) { 
+        return columns.containsKey(logicColumn) ? Optional.of(columns.get(logicColumn).getEncryptor()) : Optional.<String>absent();
     }
     
     /**
@@ -74,14 +74,14 @@ public final class EncryptTable {
     /**
      * Get assisted query column.
      *
-     * @param logicColumnName column name
+     * @param logicColumn column name
      * @return assisted query column
      */
-    public Optional<String> getAssistedQueryColumn(final String logicColumnName) {
-        if (!columns.containsKey(logicColumnName)) {
+    public Optional<String> getAssistedQueryColumn(final String logicColumn) {
+        if (!columns.containsKey(logicColumn)) {
             return Optional.absent();
         }
-        return columns.get(logicColumnName).getAssistedQueryColumn();
+        return columns.get(logicColumn).getAssistedQueryColumn();
     }
     
     /**
@@ -102,20 +102,20 @@ public final class EncryptTable {
     /**
      * Get plain column.
      * 
-     * @param logicColumnName logic column name
+     * @param logicColumn logic column name
      * @return plain column
      */
-    public Optional<String> getPlainColumn(final String logicColumnName) {
-        return columns.get(logicColumnName).getPlainColumn();
+    public Optional<String> getPlainColumn(final String logicColumn) {
+        return columns.get(logicColumn).getPlainColumn();
     }
     
     /**
      * Get cipher column.
      *
-     * @param logicColumnName logic column name
+     * @param logicColumn logic column name
      * @return cipher column
      */
-    public String getCipherColumn(final String logicColumnName) {
-        return columns.get(logicColumnName).getCipherColumn();
+    public String getCipherColumn(final String logicColumn) {
+        return columns.get(logicColumn).getCipherColumn();
     }
 }
