@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.parse.sql.segment.generic;
 
 import com.google.common.base.Optional;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -40,6 +41,7 @@ public final class TableSegment implements SQLSegment, TableAvailable, OwnerAvai
     
     private final int stopIndex;
     
+    @Getter(AccessLevel.NONE)
     private final String name;
     
     private final QuoteCharacter quoteCharacter;
