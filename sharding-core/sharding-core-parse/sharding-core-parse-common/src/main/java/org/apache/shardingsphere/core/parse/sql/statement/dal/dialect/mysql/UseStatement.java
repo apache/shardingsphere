@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
 
 /**
@@ -29,7 +28,6 @@ import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
  */
 @Getter
 @Setter
-@ToString(callSuper = true)
 public final class UseStatement extends DALStatement {
     
     private String schema;

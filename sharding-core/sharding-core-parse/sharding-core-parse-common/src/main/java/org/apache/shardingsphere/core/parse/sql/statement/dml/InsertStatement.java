@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.parse.sql.statement.dml;
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
@@ -39,7 +38,6 @@ import java.util.LinkedList;
  */
 @Getter
 @Setter
-@ToString(callSuper = true)
 public final class InsertStatement extends DMLStatement implements TableSegmentAvailable {
     
     private TableSegment table;

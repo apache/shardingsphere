@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.parse.sql.statement.ddl;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.shardingsphere.core.parse.sql.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.ddl.column.position.ColumnPositionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
@@ -36,7 +35,6 @@ import java.util.TreeSet;
  */
 @Getter
 @Setter
-@ToString(callSuper = true)
 public final class AlterTableStatement extends DDLStatement implements TableSegmentAvailable {
     
     private TableSegment table;

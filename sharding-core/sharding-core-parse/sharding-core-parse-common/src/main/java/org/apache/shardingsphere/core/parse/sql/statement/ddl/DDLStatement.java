@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.parse.sql.statement.ddl;
 
-import lombok.ToString;
 import org.apache.shardingsphere.core.parse.sql.statement.generic.AbstractSQLStatement;
 
 /**
@@ -25,6 +24,5 @@ import org.apache.shardingsphere.core.parse.sql.statement.generic.AbstractSQLSta
  *
  * @author zhangliang
  */
-@ToString(callSuper = true)
 public class DDLStatement extends AbstractSQLStatement {
 }
