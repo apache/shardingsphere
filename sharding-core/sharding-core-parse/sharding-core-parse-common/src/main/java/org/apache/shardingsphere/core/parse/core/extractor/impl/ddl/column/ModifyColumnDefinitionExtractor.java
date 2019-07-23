@@ -45,7 +45,7 @@ public class ModifyColumnDefinitionExtractor implements CollectionSQLSegmentExtr
             Optional<ColumnDefinitionSegment> columnDefinitionSegment = columnDefinitionExtractor.extract(each, parameterMarkerIndexes);
             if (columnDefinitionSegment.isPresent()) {
                 ModifyColumnDefinitionSegment modifyColumnDefinitionSegment = new ModifyColumnDefinitionSegment(
-                        each.getStart().getStartIndex(), each.getStop().getStopIndex(), null, columnDefinitionSegment.get());
+                        each.getStart().getStartIndex(), each.getStop().getStopIndex(), columnDefinitionSegment.get());
                 postExtractColumnDefinition(each, modifyColumnDefinitionSegment, parameterMarkerIndexes);
                 result.add(modifyColumnDefinitionSegment);
             }
