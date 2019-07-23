@@ -43,6 +43,7 @@ public final class ColumnDefinitionExtractor implements OptionalSQLSegmentExtrac
         Optional<ParserRuleContext> dataTypeNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.DATA_TYPE);
         Optional<String> dataTypeText = dataTypeNode.isPresent() ? Optional.of(dataTypeNode.get().getChild(0).getChild(0).getText()) : Optional.<String>absent();
         boolean isPrimaryKey = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.PRIMARY_KEY).isPresent();
-        return Optional.of(new ColumnDefinitionSegment(columnNameNode.get().getText(), dataTypeText.orNull(), isPrimaryKey));
+        return Optional.of(new ColumnDefinitionSegment(
+                columnNameNode.get().getStart().getStartIndex(), columnNameNode.get().getStop().getStopIndex(), columnNameNode.get().getText(), dataTypeText.orNull(), isPrimaryKey));
     }
 }
