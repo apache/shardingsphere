@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.parse.util;
 
 import org.junit.Test;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -50,6 +51,11 @@ public final class SQLUtilTest {
         assertThat(SQLUtil.getExactlyNumber("10000000000000000000", 16), is((Number) new BigInteger("75557863725914323419136")));
         assertThat(SQLUtil.getExactlyNumber(String.valueOf(Long.MIN_VALUE + 1), 10), is((Number) (Long.MIN_VALUE + 1)));
         assertThat(SQLUtil.getExactlyNumber(String.valueOf(Long.MAX_VALUE - 1), 10), is((Number) (Long.MAX_VALUE - 1)));
+    }
+    
+    @Test
+    public void assertGetExactlyNumberForBigDecimal() {
+        assertThat(SQLUtil.getExactlyNumber("1.1", 10), is((Number) new BigDecimal("1.1")));
     }
     
     @Test
