@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.optimize.sharding.statement.dml;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.core.optimize.api.segment.Tables;
 import org.apache.shardingsphere.core.optimize.api.statement.ConditionOptimizedStatement;
@@ -30,17 +31,16 @@ import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
  *
  * @author zhangliang
  */
+@Getter
 public class ShardingConditionOptimizedStatement implements ShardingOptimizedStatement, ConditionOptimizedStatement {
     
+    @Getter(AccessLevel.NONE)
     private final SQLStatement sqlStatement;
     
-    @Getter
     private final Tables tables;
     
-    @Getter
     private final ShardingConditions shardingConditions;
     
-    @Getter
     private final EncryptConditions encryptConditions;
     
     public ShardingConditionOptimizedStatement(final SQLStatement sqlStatement, final ShardingConditions shardingConditions, final EncryptConditions encryptConditions) {

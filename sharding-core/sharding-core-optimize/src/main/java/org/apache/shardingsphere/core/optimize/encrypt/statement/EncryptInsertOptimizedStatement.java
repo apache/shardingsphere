@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.optimize.encrypt.statement;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
 import org.apache.shardingsphere.core.optimize.api.segment.Tables;
@@ -35,20 +36,18 @@ import java.util.List;
  *
  * @author zhangliang
  */
+@Getter
 public final class EncryptInsertOptimizedStatement implements InsertOptimizedStatement, EncryptOptimizedStatement {
     
+    @Getter(AccessLevel.NONE)
     private final SQLStatement sqlStatement;
     
-    @Getter
     private final Tables tables;
     
-    @Getter
     private final EncryptInsertColumns insertColumns;
     
-    @Getter
     private final Collection<InsertValue> values;
     
-    @Getter
     private final List<InsertOptimizeResultUnit> units = new LinkedList<>();
     
     public EncryptInsertOptimizedStatement(final SQLStatement sqlStatement, final EncryptInsertColumns insertColumns, final Collection<InsertValue> values) {

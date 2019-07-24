@@ -104,15 +104,4 @@ public final class EncryptCondition {
         }
         return result;
     }
-    
-    /**
-     * Judge is same index or not.
-     * 
-     * @param startIndex start index
-     * @param stopIndex stop index
-     * @return is same index or not
-     */
-    public boolean isSameIndex(final int startIndex, final int stopIndex) {
-        return this.startIndex == startIndex && this.stopIndex == stopIndex;
-    }
 }
