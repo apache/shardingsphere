@@ -22,7 +22,7 @@ import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStat
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
-import org.apache.shardingsphere.core.rewrite.token.pojo.InsertQueryAndPlainColumnsToken;
+import org.apache.shardingsphere.core.rewrite.token.pojo.InsertQueryAndPlainNamesToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
 import java.util.Collection;
@@ -44,7 +44,7 @@ public final class InsertQueryAndPlainNamesTokenGenerator implements OptionalSQL
     private String tableName;
     
     @Override
-    public Optional<InsertQueryAndPlainColumnsToken> generateSQLToken(
+    public Optional<InsertQueryAndPlainNamesToken> generateSQLToken(
             final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final EncryptRule encryptRule, final boolean isQueryWithCipherColumn) {
         if (!isNeedToGenerateSQLToken(optimizedStatement)) {
             return Optional.absent();
@@ -65,9 +65,9 @@ public final class InsertQueryAndPlainNamesTokenGenerator implements OptionalSQL
         tableName = insertOptimizedStatement.getTables().getSingleTableName();
     }
     
-    private Optional<InsertQueryAndPlainColumnsToken> createInsertAssistedColumnsToken() {
-        return 0 == encryptRule.getEncryptEngine().getAssistedQueryAndPlainColumnCount(tableName) ? Optional.<InsertQueryAndPlainColumnsToken>absent()
-                : Optional.of(new InsertQueryAndPlainColumnsToken(insertColumnsSegment.getStopIndex(), getAssistedQueryAndPlainColumns(), insertColumnsSegment.getColumns().isEmpty()));
+    private Optional<InsertQueryAndPlainNamesToken> createInsertAssistedColumnsToken() {
+        return 0 == encryptRule.getEncryptEngine().getAssistedQueryAndPlainColumnCount(tableName) ? Optional.<InsertQueryAndPlainNamesToken>absent()
+                : Optional.of(new InsertQueryAndPlainNamesToken(insertColumnsSegment.getStopIndex(), getAssistedQueryAndPlainColumns(), insertColumnsSegment.getColumns().isEmpty()));
     }
     
     private Collection<String> getAssistedQueryAndPlainColumns() {
