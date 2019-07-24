@@ -26,7 +26,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegme
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
-import org.apache.shardingsphere.core.rewrite.token.pojo.InsertSetEncryptValueToken;
+import org.apache.shardingsphere.core.rewrite.token.pojo.InsertSetCipherColumnToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 
@@ -39,7 +39,7 @@ import java.util.LinkedList;
  *
  * @author panjuan
  */
-public final class InsertSetEncryptValueTokenGenerator implements CollectionSQLTokenGenerator<EncryptRule> {
+public final class InsertSetCipherColumnTokenGenerator implements CollectionSQLTokenGenerator<EncryptRule> {
     
     private EncryptRule encryptRule;
     
@@ -48,7 +48,7 @@ public final class InsertSetEncryptValueTokenGenerator implements CollectionSQLT
     private String tableName;
     
     @Override
-    public Collection<InsertSetEncryptValueToken> generateSQLTokens(
+    public Collection<InsertSetCipherColumnToken> generateSQLTokens(
             final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final EncryptRule encryptRule, final boolean isQueryWithCipherColumn) {
         if (!isNeedToGenerateSQLToken(optimizedStatement)) {
             return Collections.emptyList();
@@ -68,11 +68,11 @@ public final class InsertSetEncryptValueTokenGenerator implements CollectionSQLT
         tableName = optimizedStatement.getTables().getSingleTableName();
     }
     
-    private Collection<InsertSetEncryptValueToken> createInsertSetEncryptValueTokens() {
+    private Collection<InsertSetCipherColumnToken> createInsertSetEncryptValueTokens() {
         SetAssignmentsSegment setAssignmentsSegment = insertOptimizedStatement.getSQLStatement().findSQLSegment(SetAssignmentsSegment.class).get();
-        Collection<InsertSetEncryptValueToken> result = new LinkedList<>();
+        Collection<InsertSetCipherColumnToken> result = new LinkedList<>();
         for (AssignmentSegment each : setAssignmentsSegment.getAssignments()) {
-            Optional<InsertSetEncryptValueToken> insertSetEncryptValueToken = createInsertSetEncryptValueToken(each);
+            Optional<InsertSetCipherColumnToken> insertSetEncryptValueToken = createInsertSetEncryptValueToken(each);
             if (insertSetEncryptValueToken.isPresent()) {
                 result.add(insertSetEncryptValueToken.get());
             }
@@ -80,12 +80,12 @@ public final class InsertSetEncryptValueTokenGenerator implements CollectionSQLT
         return result;
     }
     
-    private Optional<InsertSetEncryptValueToken> createInsertSetEncryptValueToken(final AssignmentSegment segment) {
+    private Optional<InsertSetCipherColumnToken> createInsertSetEncryptValueToken(final AssignmentSegment segment) {
         Optional<ShardingEncryptor> shardingEncryptor = encryptRule.getEncryptEngine().getShardingEncryptor(tableName, segment.getColumn().getName());
         if (shardingEncryptor.isPresent()) {
             String cipherColumnName = encryptRule.getEncryptEngine().getCipherColumn(tableName, segment.getColumn().getName());
             ExpressionSegment cipherColumnValue = getCipherColumnValue(segment);
-            return Optional.of(new InsertSetEncryptValueToken(segment.getStartIndex(), segment.getStopIndex(), cipherColumnName, cipherColumnValue));
+            return Optional.of(new InsertSetCipherColumnToken(segment.getStartIndex(), segment.getStopIndex(), cipherColumnName, cipherColumnValue));
         }
         return Optional.absent();
     }

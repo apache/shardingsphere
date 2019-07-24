@@ -29,7 +29,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.Paramete
  * @author panjuan
  */
 @Getter
-public final class InsertSetEncryptValueToken extends SQLToken implements Substitutable {
+public final class InsertSetCipherColumnToken extends SQLToken implements Substitutable {
     
     private final int stopIndex;
     
@@ -37,7 +37,7 @@ public final class InsertSetEncryptValueToken extends SQLToken implements Substi
     
     private final ExpressionSegment cipherColumnValue;
     
-    public InsertSetEncryptValueToken(final int startIndex, final int stopIndex, final String cipherColumnName, final ExpressionSegment cipherColumnValue) {
+    public InsertSetCipherColumnToken(final int startIndex, final int stopIndex, final String cipherColumnName, final ExpressionSegment cipherColumnValue) {
         super(startIndex);
         this.stopIndex = stopIndex;
         this.cipherColumnName = cipherColumnName;
