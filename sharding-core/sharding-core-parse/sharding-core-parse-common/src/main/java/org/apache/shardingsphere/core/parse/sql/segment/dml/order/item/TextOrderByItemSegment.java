@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.parse.sql.segment.dml.order.item;
 
-import org.apache.shardingsphere.core.constant.OrderDirection;
+import org.apache.shardingsphere.core.parse.core.constant.OrderDirection;
 
 /**
  * Order by item segment for text.

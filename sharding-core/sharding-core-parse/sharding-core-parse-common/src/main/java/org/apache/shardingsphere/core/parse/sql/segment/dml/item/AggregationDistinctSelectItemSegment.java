@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.parse.sql.segment.dml.item;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.constant.AggregationType;
+import org.apache.shardingsphere.core.parse.core.constant.AggregationType;
 
 /**
  * Aggregation distinct select item segment.

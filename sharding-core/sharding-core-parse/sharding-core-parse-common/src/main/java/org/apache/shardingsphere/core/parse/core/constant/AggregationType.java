@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.constant;
+package org.apache.shardingsphere.core.parse.core.constant;
 
 /**
  * Aggregation function enum.

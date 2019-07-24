@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.merge.dql.groupby.aggregation;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.constant.AggregationType;
+import org.apache.shardingsphere.core.parse.core.constant.AggregationType;
 
 /**
  * Aggregation unit factory.

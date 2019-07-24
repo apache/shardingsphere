@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.parse.core.extractor.impl.dml.select.groupby;
 
-import org.apache.shardingsphere.core.constant.OrderDirection;
+import org.apache.shardingsphere.core.parse.core.constant.OrderDirection;
 import org.apache.shardingsphere.core.parse.core.extractor.impl.dml.select.orderby.OrderByItemExtractor;
 
 /**

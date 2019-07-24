@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.optimize.sharding.segment.select.item;
 
-import org.apache.shardingsphere.core.constant.AggregationType;
+import org.apache.shardingsphere.core.parse.core.constant.AggregationType;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
