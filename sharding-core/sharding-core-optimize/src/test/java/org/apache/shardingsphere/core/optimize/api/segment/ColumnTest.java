@@ -17,37 +17,30 @@
 
 package org.apache.shardingsphere.core.optimize.api.segment;
 
-import com.google.common.base.Objects;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import org.junit.Test;
 
-/**
- * Column.
- *
- * @author zhangliang
- * @author caohao
- */
-@RequiredArgsConstructor
-@Getter
-@ToString
-public final class Column {
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+public final class ColumnTest {
     
-    private final String name;
-    
-    private final String tableName;
-    
-    @Override
-    public boolean equals(final Object obj) {
-        if (obj instanceof Column) {
-            Column column = (Column) obj;
-            return Objects.equal(name.toUpperCase(), column.getName().toUpperCase()) && Objects.equal(tableName.toUpperCase(), column.getTableName().toUpperCase());
-        }
-        return false;
+    @Test
+    public void assertEqualsForDifferentObjectType() {
+        assertFalse(new Column("col", "tbl").equals(new Object()));
     }
     
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(name.toUpperCase(), tableName.toUpperCase()); 
-    } 
+    @Test
+    public void assertEquals() {
+        assertTrue(new Column("col", "tbl").equals(new Column("COL", "TBL")));
+    }
+    
+    @Test
+    public void assertNotEqualsWhenColumnNameIsDifferent() {
+        assertFalse(new Column("col", "tbl").equals(new Column("col1", "tbl")));
+    }
+    
+    @Test
+    public void assertNotEqualsWhenTableNameIsDifferent() {
+        assertFalse(new Column("col", "tbl").equals(new Column("col", "tbl1")));
+    }
 }
