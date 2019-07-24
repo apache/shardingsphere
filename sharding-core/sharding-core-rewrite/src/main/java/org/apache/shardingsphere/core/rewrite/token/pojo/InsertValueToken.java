@@ -24,6 +24,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralE
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.core.rule.DataNode;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -33,14 +34,14 @@ import java.util.List;
  */
 public final class InsertValueToken extends SQLToken {
     
-    private final List<String> columnNames;
+    private final Collection<String> columnNames;
     
     private final List<ExpressionSegment> columnValues;
     
     @Getter
     private final List<DataNode> dataNodes;
     
-    public InsertValueToken(final List<String> columnNames, final List<ExpressionSegment> columnValues, final List<DataNode> dataNodes) {
+    public InsertValueToken(final Collection<String> columnNames, final List<ExpressionSegment> columnValues, final List<DataNode> dataNodes) {
         super(0);
         this.columnNames = columnNames;
         this.columnValues = columnValues;
