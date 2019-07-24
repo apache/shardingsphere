@@ -37,7 +37,7 @@ import java.util.Map;
  *
  * @author panjuan
  */
-public final class InsertRegularColumnsTokenGenerator implements OptionalSQLTokenGenerator<BaseRule> {
+public final class InsertRegularColumnNamesTokenGenerator implements OptionalSQLTokenGenerator<BaseRule> {
     
     private BaseRule baseRule;
     

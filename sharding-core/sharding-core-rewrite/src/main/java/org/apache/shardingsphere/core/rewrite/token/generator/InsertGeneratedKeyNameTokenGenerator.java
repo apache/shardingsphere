@@ -30,7 +30,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
  *
  * @author panjuan
  */
-public final class InsertGeneratedKeyColumnTokenGenerator implements OptionalSQLTokenGenerator<ShardingRule> {
+public final class InsertGeneratedKeyNameTokenGenerator implements OptionalSQLTokenGenerator<ShardingRule> {
     
     @Override
     public Optional<InsertGeneratedKeyColumnToken> generateSQLToken(
@@ -42,7 +42,8 @@ public final class InsertGeneratedKeyColumnTokenGenerator implements OptionalSQL
         return createInsertGeneratedKeyToken((InsertOptimizedStatement) optimizedStatement, insertColumnsSegment.get(), shardingRule);
     }
     
-    private Optional<InsertGeneratedKeyColumnToken> createInsertGeneratedKeyToken(final InsertOptimizedStatement optimizedStatement, final InsertColumnsSegment segment, final ShardingRule shardingRule) {
+    private Optional<InsertGeneratedKeyColumnToken> createInsertGeneratedKeyToken(
+            final InsertOptimizedStatement optimizedStatement, final InsertColumnsSegment segment, final ShardingRule shardingRule) {
         String tableName = optimizedStatement.getTables().getSingleTableName();
         Optional<String> generatedKeyColumnName = shardingRule.findGenerateKeyColumnName(tableName);
         return generatedKeyColumnName.isPresent() && !optimizedStatement.getInsertColumns().getRegularColumnNames().contains(generatedKeyColumnName.get())

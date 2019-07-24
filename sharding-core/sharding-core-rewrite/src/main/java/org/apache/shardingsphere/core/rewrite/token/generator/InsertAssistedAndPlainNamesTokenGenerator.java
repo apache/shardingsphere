@@ -33,7 +33,7 @@ import java.util.LinkedList;
  *
  * @author panjuan
  */
-public final class InsertAssistedAndPlainColumnsTokenGenerator implements OptionalSQLTokenGenerator<EncryptRule> {
+public final class InsertAssistedAndPlainNamesTokenGenerator implements OptionalSQLTokenGenerator<EncryptRule> {
     
     private EncryptRule encryptRule;
     
