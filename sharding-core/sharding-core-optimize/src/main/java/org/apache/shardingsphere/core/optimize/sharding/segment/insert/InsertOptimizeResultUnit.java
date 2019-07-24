@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.optimize.sharding.segment.insert;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
@@ -38,6 +39,7 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 @Getter
+@ToString(exclude = "dataNodes")
 public final class InsertOptimizeResultUnit {
     
     private final Collection<String> columnNames;

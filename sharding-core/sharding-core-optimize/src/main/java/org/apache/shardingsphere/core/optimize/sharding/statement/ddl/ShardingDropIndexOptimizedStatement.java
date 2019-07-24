@@ -20,6 +20,7 @@ package org.apache.shardingsphere.core.optimize.sharding.statement.ddl;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 import org.apache.shardingsphere.core.optimize.api.segment.Tables;
 import org.apache.shardingsphere.core.optimize.sharding.statement.ShardingOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
@@ -33,6 +34,7 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Getter
+@ToString(exclude = "sqlStatement")
 public final class ShardingDropIndexOptimizedStatement implements ShardingOptimizedStatement {
     
     @Getter(AccessLevel.NONE)

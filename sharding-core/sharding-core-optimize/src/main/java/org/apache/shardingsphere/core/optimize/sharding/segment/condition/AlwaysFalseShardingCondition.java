@@ -17,10 +17,13 @@
 
 package org.apache.shardingsphere.core.optimize.sharding.segment.condition;
 
+import lombok.ToString;
+
 /**
  * Always false sharding condition.
  *
  * @author maxiaoguang
  */
+@ToString
 public final class AlwaysFalseShardingCondition extends ShardingCondition {
 }

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.optimize.encrypt.segment;
 
 import lombok.Getter;
+import lombok.ToString;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.api.segment.InsertColumns;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
@@ -34,6 +35,7 @@ import java.util.LinkedList;
  *
  * @author zhangliang
  */
+@ToString
 public final class EncryptInsertColumns implements InsertColumns {
     
     private final Collection<String> assistedQueryColumnNames;
