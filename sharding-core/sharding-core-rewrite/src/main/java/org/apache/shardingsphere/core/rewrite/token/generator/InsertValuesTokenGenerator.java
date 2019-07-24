@@ -24,14 +24,12 @@ import org.apache.shardingsphere.core.optimize.sharding.segment.insert.InsertOpt
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
-import org.apache.shardingsphere.core.rewrite.token.pojo.InsertValueToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertValuesToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -55,7 +53,7 @@ public final class InsertValuesTokenGenerator implements OptionalSQLTokenGenerat
             return Optional.absent();
         }
         initParameters(encryptRule, optimizedStatement, insertValuesSegments);
-        return Optional.of(new InsertValuesToken(getStartIndex(), getStopIndex(), getInsertValues()));
+        return Optional.of(createInsertValuesToken());
     }
     
     private boolean isNeedToGenerateSQLToken(final OptimizedStatement optimizedStatement, final Collection<InsertValuesSegment> insertValuesSegments) {
@@ -84,12 +82,12 @@ public final class InsertValuesTokenGenerator implements OptionalSQLTokenGenerat
         return result;
     }
     
-    private List<InsertValueToken> getInsertValues() {
-        List<InsertValueToken> insertValueTokens = new LinkedList<>();
+    private InsertValuesToken createInsertValuesToken() {
+        InsertValuesToken result = new InsertValuesToken(getStartIndex(), getStopIndex());
         for (InsertOptimizeResultUnit each : insertOptimizedStatement.getUnits()) {
-            insertValueTokens.add(new InsertValueToken(getActualInsertColumns(), Arrays.asList(each.getValues()), each.getDataNodes()));
+            result.addInsertValueToken(getActualInsertColumns(), Arrays.asList(each.getValues()), each.getDataNodes());
         }
-        return insertValueTokens;
+        return result;
     }
     
     private Collection<String> getActualInsertColumns() {
