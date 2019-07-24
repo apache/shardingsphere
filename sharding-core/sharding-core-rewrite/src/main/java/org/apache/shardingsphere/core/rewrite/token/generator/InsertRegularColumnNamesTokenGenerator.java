@@ -33,7 +33,7 @@ import java.util.LinkedList;
 import java.util.Map;
 
 /**
- * Insert columns token generator.
+ * Insert regular column names token generator.
  *
  * @author panjuan
  */

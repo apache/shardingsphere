@@ -32,7 +32,7 @@ import java.util.LinkedList;
 import java.util.Map;
 
 /**
- * Insert columns token generator.
+ * Insert logic column names token generator.
  *
  * @author panjuan
  */

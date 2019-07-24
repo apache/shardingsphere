@@ -35,7 +35,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 
 /**
- * Insert set encrypt value token generator.
+ * Insert set cipher column token generator.
  *
  * @author panjuan
  */

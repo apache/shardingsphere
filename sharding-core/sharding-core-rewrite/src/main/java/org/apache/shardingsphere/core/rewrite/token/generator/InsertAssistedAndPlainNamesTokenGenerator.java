@@ -29,7 +29,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Insert assisted columns token generator.
+ * Insert assisted and plain names token generator.
  *
  * @author panjuan
  */

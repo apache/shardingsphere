@@ -26,7 +26,7 @@ import org.apache.shardingsphere.core.rewrite.token.pojo.InsertGeneratedKeyColum
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Insert generated key token generator.
+ * Insert generated key name token generator.
  *
  * @author panjuan
  */
