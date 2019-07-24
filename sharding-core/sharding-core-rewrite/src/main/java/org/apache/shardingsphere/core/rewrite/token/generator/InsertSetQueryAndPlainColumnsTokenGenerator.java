@@ -24,7 +24,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.Assignmen
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
-import org.apache.shardingsphere.core.rewrite.token.pojo.QueryAndPlainColumnsToken;
+import org.apache.shardingsphere.core.rewrite.token.pojo.InsertSetQueryAndPlainColumnsToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
 import java.util.ArrayList;
@@ -46,7 +46,7 @@ public final class InsertSetQueryAndPlainColumnsTokenGenerator implements Option
     private String tableName;
     
     @Override
-    public Optional<QueryAndPlainColumnsToken> generateSQLToken(
+    public Optional<InsertSetQueryAndPlainColumnsToken> generateSQLToken(
             final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final EncryptRule encryptRule, final boolean isQueryWithCipherColumn) {
         if (!isNeedToGenerateSQLToken(optimizedStatement)) {
             return Optional.absent();
@@ -66,12 +66,12 @@ public final class InsertSetQueryAndPlainColumnsTokenGenerator implements Option
         tableName = optimizedStatement.getTables().getSingleTableName();
     }
     
-    private Optional<QueryAndPlainColumnsToken> createInsertSetAddItemsToken() {
+    private Optional<InsertSetQueryAndPlainColumnsToken> createInsertSetAddItemsToken() {
         if (0 == encryptRule.getEncryptEngine().getAssistedQueryAndPlainColumnCount(tableName)) {
             return Optional.absent();
         }
         List<String> assistedQueryAndPlainColumnNames = getAssistedQueryAndPlainColumnNames();
-        return Optional.of(new QueryAndPlainColumnsToken(getStartIndex(), assistedQueryAndPlainColumnNames, getAssistedQueryAndPlainColumnValues(assistedQueryAndPlainColumnNames)));
+        return Optional.of(new InsertSetQueryAndPlainColumnsToken(getStartIndex(), assistedQueryAndPlainColumnNames, getAssistedQueryAndPlainColumnValues(assistedQueryAndPlainColumnNames)));
     }
     
     private List<String> getAssistedQueryAndPlainColumnNames() {

@@ -31,13 +31,13 @@ import java.util.List;
  * @author panjuan
  */
 @Getter
-public final class QueryAndPlainColumnsToken extends SQLToken implements Attachable {
+public final class InsertSetQueryAndPlainColumnsToken extends SQLToken implements Attachable {
     
     private final List<String> columnNames;
     
     private final List<ExpressionSegment> columnValues;
     
-    public QueryAndPlainColumnsToken(final int startIndex, final List<String> columnNames, final List<ExpressionSegment> columnValues) {
+    public InsertSetQueryAndPlainColumnsToken(final int startIndex, final List<String> columnNames, final List<ExpressionSegment> columnValues) {
         super(startIndex);
         this.columnNames = columnNames;
         this.columnValues = columnValues;
