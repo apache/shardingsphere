@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.rewrite.token;
 
 import org.apache.shardingsphere.core.rewrite.token.generator.InsertAssistedAndPlainNamesTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.InsertLogicColumnNameTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.token.generator.InsertSetAddAssistedColumnsTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.token.generator.InsertSetQueryAndPlainColumnsTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.InsertSetCipherColumnTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.InsertValuesTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.SQLTokenGenerator;
@@ -45,7 +45,7 @@ public final class EncryptTokenGenerateEngine extends SQLTokenGenerateEngine<Enc
         SQL_TOKEN_GENERATORS.add(new InsertLogicColumnNameTokenGenerator());
         SQL_TOKEN_GENERATORS.add(new InsertAssistedAndPlainNamesTokenGenerator());
         SQL_TOKEN_GENERATORS.add(new InsertSetCipherColumnTokenGenerator());
-        SQL_TOKEN_GENERATORS.add(new InsertSetAddAssistedColumnsTokenGenerator());
+        SQL_TOKEN_GENERATORS.add(new InsertSetQueryAndPlainColumnsTokenGenerator());
         SQL_TOKEN_GENERATORS.add(new InsertValuesTokenGenerator());
     }
     
