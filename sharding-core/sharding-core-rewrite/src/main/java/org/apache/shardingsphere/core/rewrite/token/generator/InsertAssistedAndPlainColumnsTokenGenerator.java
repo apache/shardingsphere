@@ -33,7 +33,7 @@ import java.util.LinkedList;
  *
  * @author panjuan
  */
-public final class InsertAssistedColumnsTokenGenerator implements OptionalSQLTokenGenerator<EncryptRule> {
+public final class InsertAssistedAndPlainColumnsTokenGenerator implements OptionalSQLTokenGenerator<EncryptRule> {
     
     private EncryptRule encryptRule;
     
@@ -66,16 +66,34 @@ public final class InsertAssistedColumnsTokenGenerator implements OptionalSQLTok
     }
     
     private Optional<InsertAssistedColumnsToken> createInsertAssistedColumnsToken() {
-        return encryptRule.getEncryptEngine().getAssistedQueryColumns(tableName).isEmpty() ? Optional.<InsertAssistedColumnsToken>absent()
-                : Optional.of(new InsertAssistedColumnsToken(insertColumnsSegment.getStopIndex(), getQueryAssistedColumns(), insertColumnsSegment.getColumns().isEmpty()));
+        return 0 == encryptRule.getEncryptEngine().getAssistedQueryAndPlainColumnCount(tableName) ? Optional.<InsertAssistedColumnsToken>absent()
+                : Optional.of(new InsertAssistedColumnsToken(insertColumnsSegment.getStopIndex(), getAssistedQueryAndPlainColumns(), insertColumnsSegment.getColumns().isEmpty()));
     }
     
-    private Collection<String> getQueryAssistedColumns() {
+    private Collection<String> getAssistedQueryAndPlainColumns() {
+        Collection<String> result = new LinkedList<>();
+        result.addAll(getAssistedQueryColumns());
+        result.addAll(getPlainColumns());
+        return result;
+    }
+    
+    private Collection<String> getAssistedQueryColumns() {
         Collection<String> result = new LinkedList<>();
         for (String each : insertOptimizedStatement.getInsertColumns().getRegularColumnNames()) {
-            Optional<String> assistedColumnName = encryptRule.getEncryptEngine().getAssistedQueryColumn(tableName, each);
-            if (assistedColumnName.isPresent()) {
-                result.add(assistedColumnName.get());
+            Optional<String> assistedQueryColumn = encryptRule.getEncryptEngine().getAssistedQueryColumn(tableName, each);
+            if (assistedQueryColumn.isPresent()) {
+                result.add(assistedQueryColumn.get());
+            }
+        }
+        return result;
+    }
+    
+    private Collection<String> getPlainColumns() {
+        Collection<String> result = new LinkedList<>();
+        for (String each : insertOptimizedStatement.getInsertColumns().getRegularColumnNames()) {
+            Optional<String> plainColumn = encryptRule.getEncryptEngine().getPlainColumn(tableName, each);
+            if (plainColumn.isPresent()) {
+                result.add(plainColumn.get());
             }
         }
         return result;
