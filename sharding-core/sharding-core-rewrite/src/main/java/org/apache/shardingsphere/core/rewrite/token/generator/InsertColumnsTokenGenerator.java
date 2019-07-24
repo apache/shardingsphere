@@ -47,22 +47,22 @@ public final class InsertColumnsTokenGenerator implements OptionalSQLTokenGenera
     
     @Override
     public Optional<InsertColumnsToken> generateSQLToken(final OptimizedStatement optimizedStatement, 
-                                                         final ParameterBuilder parameterBuilder, final BaseRule rule, final boolean isQueryWithCipherColumn) {
-        if (isNotNeedToGenerateSQLToken(rule, optimizedStatement)) {
+                                                         final ParameterBuilder parameterBuilder, final BaseRule baseRule, final boolean isQueryWithCipherColumn) {
+        if (isNotNeedToGenerateSQLToken(baseRule, optimizedStatement)) {
             return Optional.absent();
         }
-        initParameters((InsertOptimizedStatement) optimizedStatement, rule);
+        initParameters(optimizedStatement, baseRule);
         return createInsertColumnsToken();
     }
     
-    private boolean isNotNeedToGenerateSQLToken(final BaseRule rule, final OptimizedStatement optimizedStatement) {
+    private boolean isNotNeedToGenerateSQLToken(final BaseRule baseRule, final OptimizedStatement optimizedStatement) {
         Optional<InsertColumnsSegment> insertColumnsSegment = optimizedStatement.getSQLStatement().findSQLSegment(InsertColumnsSegment.class);
-        return rule instanceof MasterSlaveRule && !(optimizedStatement instanceof InsertOptimizedStatement && insertColumnsSegment.isPresent());
+        return baseRule instanceof MasterSlaveRule && !(optimizedStatement instanceof InsertOptimizedStatement && insertColumnsSegment.isPresent());
     }
     
-    private void initParameters(final InsertOptimizedStatement optimizedStatement, final BaseRule rule) {
-        baseRule = rule;
-        this.insertOptimizedStatement = optimizedStatement;
+    private void initParameters(final OptimizedStatement optimizedStatement, final BaseRule baseRule) {
+        this.baseRule = baseRule;
+        this.insertOptimizedStatement = (InsertOptimizedStatement) optimizedStatement;
         tableName = insertOptimizedStatement.getTables().getSingleTableName();
     }
     
