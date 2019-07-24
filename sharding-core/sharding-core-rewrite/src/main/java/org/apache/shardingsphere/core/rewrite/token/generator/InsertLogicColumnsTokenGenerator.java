@@ -20,12 +20,11 @@ package org.apache.shardingsphere.core.rewrite.token.generator;
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
-import org.apache.shardingsphere.core.rewrite.token.pojo.InsertColumnsToken;
-import org.apache.shardingsphere.core.rule.BaseRule;
+import org.apache.shardingsphere.core.rewrite.token.pojo.InsertColumnToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
-import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -46,18 +45,18 @@ public final class InsertLogicColumnsTokenGenerator implements CollectionSQLToke
     private String tableName;
     
     @Override
-    public Collection<InsertColumnsToken> generateSQLToken(final OptimizedStatement optimizedStatement, 
-                                                         final ParameterBuilder parameterBuilder, final EncryptRule encryptRule, final boolean isQueryWithCipherColumn) {
+    public Collection<InsertColumnToken> generateSQLTokens(final OptimizedStatement optimizedStatement, 
+                                                           final ParameterBuilder parameterBuilder, final EncryptRule rule, final boolean isQueryWithCipherColumn) {
         if (!isNeedToGenerateSQLToken(optimizedStatement)) {
             return Collections.emptyList();
         }
         initParameters(optimizedStatement, encryptRule);
-        return createInsertColumnsToken();
+        return createInsertColumnTokens();
     }
     
     private boolean isNeedToGenerateSQLToken(final OptimizedStatement optimizedStatement) {
         Optional<InsertColumnsSegment> insertColumnsSegment = optimizedStatement.getSQLStatement().findSQLSegment(InsertColumnsSegment.class);
-        return optimizedStatement instanceof InsertOptimizedStatement && insertColumnsSegment.isPresent() && insertColumnsSegment.get().getColumns().isEmpty();
+        return optimizedStatement instanceof InsertOptimizedStatement && insertColumnsSegment.isPresent() && !insertColumnsSegment.get().getColumns().isEmpty();
     }
     
     private void initParameters(final OptimizedStatement optimizedStatement, final EncryptRule encryptRule) {
@@ -66,42 +65,15 @@ public final class InsertLogicColumnsTokenGenerator implements CollectionSQLToke
         tableName = insertOptimizedStatement.getTables().getSingleTableName();
     }
     
-    private Optional<InsertColumnsToken> createInsertColumnsToken() {
+    private Collection<InsertColumnToken> createInsertColumnTokens() {
         InsertColumnsSegment segment = insertOptimizedStatement.getSQLStatement().findSQLSegment(InsertColumnsSegment.class).get();
-        if (!segment.getColumns().isEmpty()) {
-            return Optional.absent();
-        }
-        InsertColumnsToken result = new InsertColumnsToken(segment.getStopIndex(), getActualInsertColumns(), !isNeedToAppendColumns());
-        return Optional.of(result);
-    }
-    
-    private Collection<String> getActualInsertColumns() {
-        Collection<String> result = new LinkedList<>();
         Map<String, String> logicAndCipherColumns = encryptRule.getEncryptEngine().getLogicAndCipherColumns(tableName);
-        for (String each : insertOptimizedStatement.getInsertColumns().getRegularColumnNames()) {
-            result.add(getCipherColumn(each, logicAndCipherColumns));
+        Collection<InsertColumnToken> result = new LinkedList<>();
+        for (ColumnSegment each : segment.getColumns()) {
+            if (logicAndCipherColumns.keySet().contains(each.getName())) {
+                result.add(new InsertColumnToken(each.getStartIndex(), each.getStopIndex(), logicAndCipherColumns.get(each.getName())));
+            }
         }
         return result;
-    }
-    
-    private String getCipherColumn(final String column, final Map<String, String> logicAndCipherColumns) {
-        return logicAndCipherColumns.keySet().contains(column) ? logicAndCipherColumns.get(column) : column;
-    }
-    
-    private boolean isNeedToAppendColumns() {
-        return encryptRule instanceof ShardingRule ? isNeedToAppendColumns((ShardingRule) encryptRule) : isNeedToAppendAssistedQueryAndPlainColumns((EncryptRule) encryptRule);
-    }
-    
-    private boolean isNeedToAppendColumns(final ShardingRule shardingRule) {
-        return isNeedToAppendGeneratedKey(shardingRule) || isNeedToAppendAssistedQueryAndPlainColumns(shardingRule.getEncryptRule());
-    }
-    
-    private boolean isNeedToAppendGeneratedKey(final ShardingRule shardingRule) {
-        Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(tableName);
-        return generateKeyColumnName.isPresent() && !insertOptimizedStatement.getInsertColumns().getRegularColumnNames().contains(generateKeyColumnName.get());
-    }
-    
-    private boolean isNeedToAppendAssistedQueryAndPlainColumns(final EncryptRule encryptRule) {
-        return encryptRule.getEncryptEngine().getAssistedQueryAndPlainColumnCount(tableName) > 0;
     }
 }
