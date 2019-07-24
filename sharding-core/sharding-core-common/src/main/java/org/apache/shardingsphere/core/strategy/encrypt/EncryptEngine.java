@@ -73,30 +73,6 @@ public final class EncryptEngine {
     }
     
     /**
-     * Get sharding encryptor.
-     * 
-     * @param logicTable logic table name
-     * @param logicColumn column name
-     * @return optional of sharding encryptor
-     */
-    public Optional<ShardingEncryptor> getShardingEncryptor(final String logicTable, final String logicColumn) {
-        if (!tables.containsKey(logicTable)) {
-            return Optional.absent();
-        }
-        Optional<String> encryptor = tables.get(logicTable).getShardingEncryptor(logicColumn);
-        return encryptor.isPresent() ? Optional.of(encryptors.get(encryptor.get())) : Optional.<ShardingEncryptor>absent();
-    }
-    
-    /**
-     * Get encrypt table names.
-     *
-     * @return encrypt table names
-     */
-    public Collection<String> getEncryptTableNames() {
-        return tables.keySet();
-    }
-    
-    /**
      * Get logic column.
      * 
      * @param logicTable logic table
@@ -213,6 +189,16 @@ public final class EncryptEngine {
     }
     
     /**
+     * Get logic and cipher columns.
+     * 
+     * @param logicTable logic table 
+     * @return logic and cipher columns
+     */
+    public Map<String, String> getLogicAndCipherColumns(final String logicTable) {
+        return tables.get(logicTable).getLogicAndCipherColumns();
+    }
+    
+    /**
      * Get encrypt assisted column values.
      * 
      * @param logicTable logic table
@@ -251,5 +237,29 @@ public final class EncryptEngine {
                 return String.valueOf(shardingEncryptor.get().encrypt(input.toString()));
             }
         });
+    }
+    
+    /**
+     * Get sharding encryptor.
+     *
+     * @param logicTable logic table name
+     * @param logicColumn column name
+     * @return optional of sharding encryptor
+     */
+    public Optional<ShardingEncryptor> getShardingEncryptor(final String logicTable, final String logicColumn) {
+        if (!tables.containsKey(logicTable)) {
+            return Optional.absent();
+        }
+        Optional<String> encryptor = tables.get(logicTable).getShardingEncryptor(logicColumn);
+        return encryptor.isPresent() ? Optional.of(encryptors.get(encryptor.get())) : Optional.<ShardingEncryptor>absent();
+    }
+    
+    /**
+     * Get encrypt table names.
+     *
+     * @return encrypt table names
+     */
+    public Collection<String> getEncryptTableNames() {
+        return tables.keySet();
     }
 }

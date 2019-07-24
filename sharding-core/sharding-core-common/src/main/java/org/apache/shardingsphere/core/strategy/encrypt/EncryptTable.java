@@ -50,16 +50,6 @@ public final class EncryptTable {
     }
     
     /**
-     * Get sharding encryptor.
-     *
-     * @param logicColumn column name
-     * @return optional of sharding encryptor
-     */
-    public Optional<String> getShardingEncryptor(final String logicColumn) { 
-        return columns.containsKey(logicColumn) ? Optional.of(columns.get(logicColumn).getEncryptor()) : Optional.<String>absent();
-    }
-    
-    /**
      * Get logic column.
      * 
      * @param cipherColumn cipher column
@@ -178,5 +168,30 @@ public final class EncryptTable {
             }
         }
         return false;
+    }
+    
+    /**
+     * Get sharding encryptor.
+     *
+     * @param logicColumn column name
+     * @return optional of sharding encryptor
+     */
+    public Optional<String> getShardingEncryptor(final String logicColumn) {
+        return columns.containsKey(logicColumn) ? Optional.of(columns.get(logicColumn).getEncryptor()) : Optional.<String>absent();
+    }
+    
+    /**
+     * Get logic and cipher columns.
+     *
+     * @return logic and cipher columns
+     */
+    public Map<String, String> getLogicAndCipherColumns() {
+        return Maps.transformValues(columns, new Function<EncryptColumn, String>() {
+            
+            @Override
+            public String apply(final EncryptColumn input) {
+                return input.getCipherColumn();
+            }
+        });
     }
 }
