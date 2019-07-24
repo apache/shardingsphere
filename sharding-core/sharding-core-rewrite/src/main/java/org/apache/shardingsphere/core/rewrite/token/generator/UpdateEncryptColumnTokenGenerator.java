@@ -35,7 +35,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 
 /**
- * Encrypt column token generator.
+ * Update encrypt column token generator.
  *
  * @author panjuan
  */
