@@ -27,13 +27,13 @@ import lombok.Getter;
  */
 @Getter
 @EqualsAndHashCode(callSuper = true)
-public final class InsertGeneratedKeyToken extends SQLToken implements Attachable {
+public final class InsertGeneratedKeyColumnToken extends SQLToken implements Attachable {
     
     private final String column;
     
     private final boolean isToAppendCloseParenthesis;
     
-    public InsertGeneratedKeyToken(final int startIndex, final String column, final boolean isToAppendCloseParenthesis) {
+    public InsertGeneratedKeyColumnToken(final int startIndex, final String column, final boolean isToAppendCloseParenthesis) {
         super(startIndex);
         this.column = column;
         this.isToAppendCloseParenthesis = isToAppendCloseParenthesis;
