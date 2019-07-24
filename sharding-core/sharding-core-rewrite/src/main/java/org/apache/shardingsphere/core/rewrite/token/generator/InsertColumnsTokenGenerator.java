@@ -71,7 +71,7 @@ public final class InsertColumnsTokenGenerator implements OptionalSQLTokenGenera
         if (!segment.getColumns().isEmpty()) {
             return Optional.absent();
         }
-        InsertColumnsToken result = new InsertColumnsToken(segment.getStopIndex(), getActualInsertColumns(), !isNeededToAppendColumns());
+        InsertColumnsToken result = new InsertColumnsToken(segment.getStopIndex(), getActualInsertColumns(), !isNeedToAppendColumns());
         return Optional.of(result);
     }
     
@@ -92,20 +92,20 @@ public final class InsertColumnsTokenGenerator implements OptionalSQLTokenGenera
         return logicAndCipherColumns.keySet().contains(column) ? logicAndCipherColumns.get(column) : column;
     }
     
-    private boolean isNeededToAppendColumns() {
-        return baseRule instanceof ShardingRule ? isNeededToAppendColumns((ShardingRule) baseRule) : isNeededToAppendEncryptColumns((EncryptRule) baseRule);
+    private boolean isNeedToAppendColumns() {
+        return baseRule instanceof ShardingRule ? isNeedToAppendColumns((ShardingRule) baseRule) : isNeedToAppendAssistedQueryAndPlainColumns((EncryptRule) baseRule);
     }
     
-    private boolean isNeededToAppendColumns(final ShardingRule shardingRule) {
-        return isNeededToAppendGeneratedKey(shardingRule) || isNeededToAppendEncryptColumns(shardingRule.getEncryptRule());
+    private boolean isNeedToAppendColumns(final ShardingRule shardingRule) {
+        return isNeedToAppendGeneratedKey(shardingRule) || isNeedToAppendAssistedQueryAndPlainColumns(shardingRule.getEncryptRule());
     }
     
-    private boolean isNeededToAppendGeneratedKey(final ShardingRule shardingRule) {
+    private boolean isNeedToAppendGeneratedKey(final ShardingRule shardingRule) {
         Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(tableName);
         return generateKeyColumnName.isPresent() && !insertOptimizedStatement.getInsertColumns().getRegularColumnNames().contains(generateKeyColumnName.get());
     }
     
-    private boolean isNeededToAppendEncryptColumns(final EncryptRule encryptRule) {
+    private boolean isNeedToAppendAssistedQueryAndPlainColumns(final EncryptRule encryptRule) {
         return encryptRule.getEncryptEngine().getAssistedQueryAndPlainColumnCount(tableName) > 0;
     }
 }
