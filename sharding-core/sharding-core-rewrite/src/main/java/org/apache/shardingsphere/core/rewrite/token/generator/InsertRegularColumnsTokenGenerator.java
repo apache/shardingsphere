@@ -48,16 +48,17 @@ public final class InsertRegularColumnsTokenGenerator implements OptionalSQLToke
     @Override
     public Optional<InsertColumnsToken> generateSQLToken(final OptimizedStatement optimizedStatement, 
                                                          final ParameterBuilder parameterBuilder, final BaseRule baseRule, final boolean isQueryWithCipherColumn) {
-        if (isNotNeedToGenerateSQLToken(baseRule, optimizedStatement)) {
+        if (!isNeedToGenerateSQLToken(baseRule, optimizedStatement)) {
             return Optional.absent();
         }
         initParameters(optimizedStatement, baseRule);
         return createInsertColumnsToken();
     }
     
-    private boolean isNotNeedToGenerateSQLToken(final BaseRule baseRule, final OptimizedStatement optimizedStatement) {
+    private boolean isNeedToGenerateSQLToken(final BaseRule baseRule, final OptimizedStatement optimizedStatement) {
         Optional<InsertColumnsSegment> insertColumnsSegment = optimizedStatement.getSQLStatement().findSQLSegment(InsertColumnsSegment.class);
-        return baseRule instanceof MasterSlaveRule || !(optimizedStatement instanceof InsertOptimizedStatement && insertColumnsSegment.isPresent());
+        return !(baseRule instanceof MasterSlaveRule) 
+                && optimizedStatement instanceof InsertOptimizedStatement && insertColumnsSegment.isPresent() && insertColumnsSegment.get().getColumns().isEmpty();
     }
     
     private void initParameters(final OptimizedStatement optimizedStatement, final BaseRule baseRule) {
@@ -68,9 +69,6 @@ public final class InsertRegularColumnsTokenGenerator implements OptionalSQLToke
     
     private Optional<InsertColumnsToken> createInsertColumnsToken() {
         InsertColumnsSegment segment = insertOptimizedStatement.getSQLStatement().findSQLSegment(InsertColumnsSegment.class).get();
-        if (!segment.getColumns().isEmpty()) {
-            return Optional.absent();
-        }
         InsertColumnsToken result = new InsertColumnsToken(segment.getStopIndex(), getActualInsertColumns(), !isNeedToAppendColumns());
         return Optional.of(result);
     }

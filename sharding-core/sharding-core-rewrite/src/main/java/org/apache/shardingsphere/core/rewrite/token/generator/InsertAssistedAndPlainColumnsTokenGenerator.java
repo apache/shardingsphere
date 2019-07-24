@@ -46,16 +46,16 @@ public final class InsertAssistedAndPlainColumnsTokenGenerator implements Option
     @Override
     public Optional<InsertAssistedColumnsToken> generateSQLToken(
             final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final EncryptRule encryptRule, final boolean isQueryWithCipherColumn) {
-        if (isNotNeedToGenerateSQLToken(optimizedStatement)) {
+        if (!isNeedToGenerateSQLToken(optimizedStatement)) {
             return Optional.absent();
         }
         initParameters(encryptRule, optimizedStatement);
         return createInsertAssistedColumnsToken();
     }
     
-    private boolean isNotNeedToGenerateSQLToken(final OptimizedStatement optimizedStatement) {
+    private boolean isNeedToGenerateSQLToken(final OptimizedStatement optimizedStatement) {
         Optional<InsertColumnsSegment> insertColumnsSegment = optimizedStatement.getSQLStatement().findSQLSegment(InsertColumnsSegment.class);
-        return !(optimizedStatement instanceof InsertOptimizedStatement && insertColumnsSegment.isPresent());
+        return optimizedStatement instanceof InsertOptimizedStatement && insertColumnsSegment.isPresent();
     }
     
     private void initParameters(final EncryptRule encryptRule, final OptimizedStatement optimizedStatement) {
