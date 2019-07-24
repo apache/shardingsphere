@@ -26,10 +26,7 @@ import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertValueToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertValuesToken;
-import org.apache.shardingsphere.core.rule.BaseRule;
 import org.apache.shardingsphere.core.rule.EncryptRule;
-import org.apache.shardingsphere.core.rule.MasterSlaveRule;
-import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -42,9 +39,9 @@ import java.util.Map;
  *
  * @author panjuan
  */
-public final class InsertValuesTokenGenerator implements OptionalSQLTokenGenerator<BaseRule> {
+public final class InsertValuesTokenGenerator implements OptionalSQLTokenGenerator<EncryptRule> {
     
-    private BaseRule baseRule;
+    private EncryptRule encryptRule;
     
     private InsertOptimizedStatement insertOptimizedStatement;
     
@@ -52,21 +49,21 @@ public final class InsertValuesTokenGenerator implements OptionalSQLTokenGenerat
     
     @Override
     public Optional<InsertValuesToken> generateSQLToken(final OptimizedStatement optimizedStatement, 
-                                                        final ParameterBuilder parameterBuilder, final BaseRule baseRule, final boolean isQueryWithCipherColumn) {
+                                                        final ParameterBuilder parameterBuilder, final EncryptRule encryptRule, final boolean isQueryWithCipherColumn) {
         Collection<InsertValuesSegment> insertValuesSegments = optimizedStatement.getSQLStatement().findSQLSegments(InsertValuesSegment.class);
         if (isNotNeedToGenerateSQLToken(optimizedStatement, insertValuesSegments)) {
             return Optional.absent();
         }
-        initParameters(baseRule, optimizedStatement, insertValuesSegments);
+        initParameters(encryptRule, optimizedStatement, insertValuesSegments);
         return Optional.of(new InsertValuesToken(getStartIndex(), getStopIndex(), getInsertValues()));
     }
     
     private boolean isNotNeedToGenerateSQLToken(final OptimizedStatement optimizedStatement, final Collection<InsertValuesSegment> insertValuesSegments) {
-        return baseRule instanceof MasterSlaveRule || !(optimizedStatement.getSQLStatement() instanceof InsertStatement) || insertValuesSegments.isEmpty();
+        return !(optimizedStatement.getSQLStatement() instanceof InsertStatement) || insertValuesSegments.isEmpty();
     }
     
-    private void initParameters(final BaseRule baseRule, final OptimizedStatement optimizedStatement, final Collection<InsertValuesSegment> insertValuesSegments) {
-        this.baseRule = baseRule;
+    private void initParameters(final EncryptRule encryptRule, final OptimizedStatement optimizedStatement, final Collection<InsertValuesSegment> insertValuesSegments) {
+        this.encryptRule = encryptRule;
         insertOptimizedStatement = (InsertOptimizedStatement) optimizedStatement;
         this.insertValuesSegments = insertValuesSegments;
     }
@@ -97,15 +94,11 @@ public final class InsertValuesTokenGenerator implements OptionalSQLTokenGenerat
     
     private Collection<String> getActualInsertColumns() {
         Collection<String> result = new LinkedList<>();
-        Map<String, String> logicAndCipherColumns = getEncryptRule().getEncryptEngine().getLogicAndCipherColumns(insertOptimizedStatement.getTables().getSingleTableName());
+        Map<String, String> logicAndCipherColumns = encryptRule.getEncryptEngine().getLogicAndCipherColumns(insertOptimizedStatement.getTables().getSingleTableName());
         for (String each : insertOptimizedStatement.getInsertColumns().getRegularColumnNames()) {
             result.add(getCipherColumn(each, logicAndCipherColumns));
         }
         return result;
-    }
-    
-    private EncryptRule getEncryptRule() {
-        return baseRule instanceof ShardingRule ? ((ShardingRule) baseRule).getEncryptRule() : (EncryptRule) baseRule;
     }
     
     private String getCipherColumn(final String column, final Map<String, String> logicAndCipherColumns) {
