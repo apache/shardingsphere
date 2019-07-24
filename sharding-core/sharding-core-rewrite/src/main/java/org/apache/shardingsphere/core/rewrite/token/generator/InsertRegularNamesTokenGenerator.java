@@ -22,7 +22,7 @@ import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStat
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
-import org.apache.shardingsphere.core.rewrite.token.pojo.InsertColumnsToken;
+import org.apache.shardingsphere.core.rewrite.token.pojo.InsertRegularNamesToken;
 import org.apache.shardingsphere.core.rule.BaseRule;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
@@ -46,8 +46,8 @@ public final class InsertRegularNamesTokenGenerator implements OptionalSQLTokenG
     private String tableName;
     
     @Override
-    public Optional<InsertColumnsToken> generateSQLToken(final OptimizedStatement optimizedStatement, 
-                                                         final ParameterBuilder parameterBuilder, final BaseRule baseRule, final boolean isQueryWithCipherColumn) {
+    public Optional<InsertRegularNamesToken> generateSQLToken(final OptimizedStatement optimizedStatement,
+                                                              final ParameterBuilder parameterBuilder, final BaseRule baseRule, final boolean isQueryWithCipherColumn) {
         if (!isNeedToGenerateSQLToken(baseRule, optimizedStatement)) {
             return Optional.absent();
         }
@@ -67,9 +67,9 @@ public final class InsertRegularNamesTokenGenerator implements OptionalSQLTokenG
         tableName = insertOptimizedStatement.getTables().getSingleTableName();
     }
     
-    private Optional<InsertColumnsToken> createInsertColumnsToken() {
+    private Optional<InsertRegularNamesToken> createInsertColumnsToken() {
         InsertColumnsSegment segment = insertOptimizedStatement.getSQLStatement().findSQLSegment(InsertColumnsSegment.class).get();
-        InsertColumnsToken result = new InsertColumnsToken(segment.getStopIndex(), getActualInsertColumns(), !isNeedToAppendColumns());
+        InsertRegularNamesToken result = new InsertRegularNamesToken(segment.getStopIndex(), getActualInsertColumns(), !isNeedToAppendColumns());
         return Optional.of(result);
     }
     
