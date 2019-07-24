@@ -18,9 +18,15 @@
 package org.apache.shardingsphere.core.rewrite.token.pojo;
 
 import lombok.Getter;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.complex.ComplexExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.rule.DataNode;
 
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -37,10 +43,21 @@ public final class InsertValuesToken extends SQLToken implements Substitutable, 
     
     private final List<InsertValueToken> insertValueTokens;
     
-    public InsertValuesToken(final int startIndex, final int stopIndex, final List<InsertValueToken> insertValueTokens) {
+    public InsertValuesToken(final int startIndex, final int stopIndex) {
         super(startIndex);
         this.stopIndex = stopIndex;
-        this.insertValueTokens = insertValueTokens;
+        this.insertValueTokens = new LinkedList<>();
+    }
+    
+    /**
+     * Add insert value token.
+     * 
+     * @param columnNames column names
+     * @param columnValues column values
+     * @param dataNodes data nodtes
+     */
+    public void addInsertValueToken(final Collection<String> columnNames, final List<ExpressionSegment> columnValues, final List<DataNode> dataNodes) {
+        insertValueTokens.add(new InsertValueToken(columnNames, columnValues, dataNodes));
     }
     
     @Override
@@ -69,5 +86,43 @@ public final class InsertValuesToken extends SQLToken implements Substitutable, 
             }
         }
         return false;
+    }
+    
+    private final class InsertValueToken {
+    
+        private final Collection<String> columnNames;
+    
+        private final List<ExpressionSegment> columnValues;
+    
+        @Getter
+        private final List<DataNode> dataNodes;
+    
+        InsertValueToken(final Collection<String> columnNames, final List<ExpressionSegment> columnValues, final List<DataNode> dataNodes) {
+            this.columnNames = columnNames;
+            this.columnValues = columnValues;
+            this.dataNodes = dataNodes;
+        }
+    
+        @Override
+        public String toString() {
+            StringBuilder result = new StringBuilder();
+            result.append("(");
+            for (int i = 0; i < columnNames.size(); i++) {
+                result.append(getColumnValue(i)).append(", ");
+            }
+            result.delete(result.length() - 2, result.length()).append(")");
+            return result.toString();
+        }
+    
+        private String getColumnValue(final int index) {
+            ExpressionSegment columnValue = columnValues.get(index);
+            if (columnValue instanceof ParameterMarkerExpressionSegment) {
+                return "?";
+            } else if (columnValue instanceof LiteralExpressionSegment) {
+                Object literals = ((LiteralExpressionSegment) columnValue).getLiterals();
+                return literals instanceof String ? String.format("'%s'", ((LiteralExpressionSegment) columnValue).getLiterals()) : literals.toString();
+            }
+            return ((ComplexExpressionSegment) columnValue).getText();
+        }
     }
 }
