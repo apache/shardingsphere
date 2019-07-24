@@ -23,7 +23,7 @@ import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
-import org.apache.shardingsphere.core.rewrite.token.pojo.InsertColumnToken;
+import org.apache.shardingsphere.core.rewrite.token.pojo.InsertCipherNameToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
 import java.util.Collection;
@@ -36,7 +36,7 @@ import java.util.Map;
  *
  * @author panjuan
  */
-public final class InsertCipherColumnNameTokenGenerator implements CollectionSQLTokenGenerator<EncryptRule> {
+public final class InsertCipherNameTokenGenerator implements CollectionSQLTokenGenerator<EncryptRule> {
     
     private EncryptRule encryptRule;
     
@@ -45,8 +45,8 @@ public final class InsertCipherColumnNameTokenGenerator implements CollectionSQL
     private String tableName;
     
     @Override
-    public Collection<InsertColumnToken> generateSQLTokens(final OptimizedStatement optimizedStatement, 
-                                                           final ParameterBuilder parameterBuilder, final EncryptRule rule, final boolean isQueryWithCipherColumn) {
+    public Collection<InsertCipherNameToken> generateSQLTokens(final OptimizedStatement optimizedStatement,
+                                                               final ParameterBuilder parameterBuilder, final EncryptRule rule, final boolean isQueryWithCipherColumn) {
         if (!isNeedToGenerateSQLToken(optimizedStatement)) {
             return Collections.emptyList();
         }
@@ -65,13 +65,13 @@ public final class InsertCipherColumnNameTokenGenerator implements CollectionSQL
         tableName = insertOptimizedStatement.getTables().getSingleTableName();
     }
     
-    private Collection<InsertColumnToken> createInsertColumnTokens() {
+    private Collection<InsertCipherNameToken> createInsertColumnTokens() {
         InsertColumnsSegment segment = insertOptimizedStatement.getSQLStatement().findSQLSegment(InsertColumnsSegment.class).get();
         Map<String, String> logicAndCipherColumns = encryptRule.getEncryptEngine().getLogicAndCipherColumns(tableName);
-        Collection<InsertColumnToken> result = new LinkedList<>();
+        Collection<InsertCipherNameToken> result = new LinkedList<>();
         for (ColumnSegment each : segment.getColumns()) {
             if (logicAndCipherColumns.keySet().contains(each.getName())) {
-                result.add(new InsertColumnToken(each.getStartIndex(), each.getStopIndex(), logicAndCipherColumns.get(each.getName())));
+                result.add(new InsertCipherNameToken(each.getStartIndex(), each.getStopIndex(), logicAndCipherColumns.get(each.getName())));
             }
         }
         return result;

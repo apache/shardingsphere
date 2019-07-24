@@ -25,13 +25,13 @@ import lombok.Getter;
  * @author panjuan
  */
 @Getter
-public final class InsertColumnToken extends SQLToken implements Substitutable {
+public final class InsertCipherNameToken extends SQLToken implements Substitutable {
     
     private final int stopIndex;
     
     private final String columnName;
     
-    public InsertColumnToken(final int startIndex, final int stopIndex, final String columnName) {
+    public InsertCipherNameToken(final int startIndex, final int stopIndex, final String columnName) {
         super(startIndex);
         this.stopIndex = stopIndex;
         this.columnName = columnName;
