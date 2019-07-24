@@ -67,9 +67,9 @@ public class EncryptDataSource extends AbstractUnsupportedOperationDataSource im
     
     private final ShardingTableMetaData shardingTableMetaData;
     
-    private final SQLParseEngine parseEngine;
-    
     private final ShardingProperties shardingProperties;
+    
+    private final SQLParseEngine parseEngine;
     
     @Setter
     private PrintWriter logWriter = new PrintWriter(System.out);
