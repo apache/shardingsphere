@@ -35,8 +35,6 @@ import java.util.LinkedHashSet;
  */
 public final class ShardingInsertColumns implements InsertColumns {
     
-    private final InsertStatement insertStatement;
-    
     private final String generateKeyColumnName;
     
     private final Collection<String> assistedQueryColumnNames;
@@ -45,13 +43,12 @@ public final class ShardingInsertColumns implements InsertColumns {
     private final Collection<String> regularColumnNames;
     
     public ShardingInsertColumns(final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData, final InsertStatement insertStatement) {
-        this.insertStatement = insertStatement;
         generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTable().getTableName()).orNull();
         assistedQueryColumnNames = shardingRule.getEncryptRule().getEncryptEngine().getAssistedQueryColumns(insertStatement.getTable().getTableName());
-        regularColumnNames = insertStatement.useDefaultColumns() ? getRegularColumnNamesFromMetaData(shardingTableMetaData) : getRegularColumnNamesFromSQLStatement();
+        regularColumnNames = insertStatement.useDefaultColumns() ? getRegularColumnNamesFromMetaData(shardingTableMetaData, insertStatement) : getRegularColumnNamesFromSQLStatement(insertStatement);
     }
     
-    private Collection<String> getRegularColumnNamesFromMetaData(final ShardingTableMetaData shardingTableMetaData) {
+    private Collection<String> getRegularColumnNamesFromMetaData(final ShardingTableMetaData shardingTableMetaData, final InsertStatement insertStatement) {
         Collection<String> allColumnNames = shardingTableMetaData.getAllColumnNames(insertStatement.getTable().getTableName());
         Collection<String> result = new LinkedHashSet<>(allColumnNames.size() - assistedQueryColumnNames.size());
         for (String each : allColumnNames) {
@@ -59,17 +56,17 @@ public final class ShardingInsertColumns implements InsertColumns {
                 result.add(each);
             }
         }
-        if (isGenerateKeyFromMetaData(allColumnNames)) {
+        if (isGenerateKeyFromMetaData(insertStatement, allColumnNames)) {
             result.remove(generateKeyColumnName);
         }
         return result;
     }
     
-    private boolean isGenerateKeyFromMetaData(final Collection<String> allColumnNames) {
+    private boolean isGenerateKeyFromMetaData(final InsertStatement insertStatement, final Collection<String> allColumnNames) {
         return null != generateKeyColumnName && allColumnNames.size() - assistedQueryColumnNames.size() != insertStatement.getValueSize();
     }
     
-    private Collection<String> getRegularColumnNamesFromSQLStatement() {
+    private Collection<String> getRegularColumnNamesFromSQLStatement(final InsertStatement insertStatement) {
         Collection<String> result = new LinkedHashSet<>(insertStatement.getColumns().size(), 1);
         for (ColumnSegment each : insertStatement.getColumns()) {
             result.add(each.getName());
@@ -79,13 +76,13 @@ public final class ShardingInsertColumns implements InsertColumns {
                 result.add(each.getColumn().getName());
             }
         }
-        if (isGenerateKeyFromSQLStatement()) {
+        if (isGenerateKeyFromSQLStatement(insertStatement)) {
             result.remove(generateKeyColumnName);
         }
         return result;
     }
     
-    private boolean isGenerateKeyFromSQLStatement() {
+    private boolean isGenerateKeyFromSQLStatement(final InsertStatement insertStatement) {
         return null != generateKeyColumnName && insertStatement.getColumns().size() != insertStatement.getValueSize();
     }
     
