@@ -22,7 +22,7 @@ import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStat
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
-import org.apache.shardingsphere.core.rewrite.token.pojo.InsertAssistedAndPlainColumnsToken;
+import org.apache.shardingsphere.core.rewrite.token.pojo.InsertQueryAndPlainColumnsToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
 import java.util.Collection;
@@ -33,7 +33,7 @@ import java.util.LinkedList;
  *
  * @author panjuan
  */
-public final class InsertAssistedAndPlainNamesTokenGenerator implements OptionalSQLTokenGenerator<EncryptRule> {
+public final class InsertQueryAndPlainNamesTokenGenerator implements OptionalSQLTokenGenerator<EncryptRule> {
     
     private EncryptRule encryptRule;
     
@@ -44,7 +44,7 @@ public final class InsertAssistedAndPlainNamesTokenGenerator implements Optional
     private String tableName;
     
     @Override
-    public Optional<InsertAssistedAndPlainColumnsToken> generateSQLToken(
+    public Optional<InsertQueryAndPlainColumnsToken> generateSQLToken(
             final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final EncryptRule encryptRule, final boolean isQueryWithCipherColumn) {
         if (!isNeedToGenerateSQLToken(optimizedStatement)) {
             return Optional.absent();
@@ -65,9 +65,9 @@ public final class InsertAssistedAndPlainNamesTokenGenerator implements Optional
         tableName = insertOptimizedStatement.getTables().getSingleTableName();
     }
     
-    private Optional<InsertAssistedAndPlainColumnsToken> createInsertAssistedColumnsToken() {
-        return 0 == encryptRule.getEncryptEngine().getAssistedQueryAndPlainColumnCount(tableName) ? Optional.<InsertAssistedAndPlainColumnsToken>absent()
-                : Optional.of(new InsertAssistedAndPlainColumnsToken(insertColumnsSegment.getStopIndex(), getAssistedQueryAndPlainColumns(), insertColumnsSegment.getColumns().isEmpty()));
+    private Optional<InsertQueryAndPlainColumnsToken> createInsertAssistedColumnsToken() {
+        return 0 == encryptRule.getEncryptEngine().getAssistedQueryAndPlainColumnCount(tableName) ? Optional.<InsertQueryAndPlainColumnsToken>absent()
+                : Optional.of(new InsertQueryAndPlainColumnsToken(insertColumnsSegment.getStopIndex(), getAssistedQueryAndPlainColumns(), insertColumnsSegment.getColumns().isEmpty()));
     }
     
     private Collection<String> getAssistedQueryAndPlainColumns() {
