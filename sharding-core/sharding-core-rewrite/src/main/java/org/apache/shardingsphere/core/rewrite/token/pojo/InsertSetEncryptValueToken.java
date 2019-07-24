@@ -21,6 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.complex.ComplexExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 
 /**
  * Insert set encrypt value token.
@@ -32,20 +33,29 @@ public final class InsertSetEncryptValueToken extends SQLToken implements Substi
     
     private final int stopIndex;
     
-    private final ExpressionSegment encryptColumnValue;
+    private final String cipherColumnName;
     
-    public InsertSetEncryptValueToken(final int startIndex, final int stopIndex, final ExpressionSegment encryptColumnValue) {
+    private final ExpressionSegment cipherColumnValue;
+    
+    public InsertSetEncryptValueToken(final int startIndex, final int stopIndex, final String cipherColumnName, final ExpressionSegment cipherColumnValue) {
         super(startIndex);
         this.stopIndex = stopIndex;
-        this.encryptColumnValue = encryptColumnValue;
+        this.cipherColumnName = cipherColumnName;
+        this.cipherColumnValue = cipherColumnValue;
     }
     
     @Override
     public String toString() {
-        if (encryptColumnValue instanceof LiteralExpressionSegment) {
-            Object literals = ((LiteralExpressionSegment) encryptColumnValue).getLiterals();
+        return String.format("%s = %s", cipherColumnName, getCipherColumnValue());
+    }
+    
+    private String getCipherColumnValue() {
+        if (cipherColumnValue instanceof ParameterMarkerExpressionSegment) {
+            return "?";
+        } else if (cipherColumnValue instanceof LiteralExpressionSegment) {
+            Object literals = ((LiteralExpressionSegment) cipherColumnValue).getLiterals();
             return literals instanceof String ? String.format("'%s'", literals) : literals.toString();
         }
-        return ((ComplexExpressionSegment) encryptColumnValue).getText();
-    }
+        return ((ComplexExpressionSegment) cipherColumnValue).getText();
+    } 
 }
