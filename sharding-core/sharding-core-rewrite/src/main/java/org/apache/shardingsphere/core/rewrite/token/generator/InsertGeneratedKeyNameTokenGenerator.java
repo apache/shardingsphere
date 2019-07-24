@@ -22,7 +22,7 @@ import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStat
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
-import org.apache.shardingsphere.core.rewrite.token.pojo.InsertGeneratedKeyColumnToken;
+import org.apache.shardingsphere.core.rewrite.token.pojo.InsertGeneratedKeyNameToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
@@ -33,7 +33,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 public final class InsertGeneratedKeyNameTokenGenerator implements OptionalSQLTokenGenerator<ShardingRule> {
     
     @Override
-    public Optional<InsertGeneratedKeyColumnToken> generateSQLToken(
+    public Optional<InsertGeneratedKeyNameToken> generateSQLToken(
             final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final ShardingRule shardingRule, final boolean isQueryWithCipherColumn) {
         Optional<InsertColumnsSegment> insertColumnsSegment = optimizedStatement.getSQLStatement().findSQLSegment(InsertColumnsSegment.class);
         if (!(optimizedStatement instanceof InsertOptimizedStatement && insertColumnsSegment.isPresent())) {
@@ -42,13 +42,13 @@ public final class InsertGeneratedKeyNameTokenGenerator implements OptionalSQLTo
         return createInsertGeneratedKeyToken((InsertOptimizedStatement) optimizedStatement, insertColumnsSegment.get(), shardingRule);
     }
     
-    private Optional<InsertGeneratedKeyColumnToken> createInsertGeneratedKeyToken(
+    private Optional<InsertGeneratedKeyNameToken> createInsertGeneratedKeyToken(
             final InsertOptimizedStatement optimizedStatement, final InsertColumnsSegment segment, final ShardingRule shardingRule) {
         String tableName = optimizedStatement.getTables().getSingleTableName();
         Optional<String> generatedKeyColumnName = shardingRule.findGenerateKeyColumnName(tableName);
         return generatedKeyColumnName.isPresent() && !optimizedStatement.getInsertColumns().getRegularColumnNames().contains(generatedKeyColumnName.get())
-                ? Optional.of(new InsertGeneratedKeyColumnToken(segment.getStopIndex(), generatedKeyColumnName.get(), isToAddCloseParenthesis(tableName, segment, shardingRule)))
-                : Optional.<InsertGeneratedKeyColumnToken>absent();
+                ? Optional.of(new InsertGeneratedKeyNameToken(segment.getStopIndex(), generatedKeyColumnName.get(), isToAddCloseParenthesis(tableName, segment, shardingRule)))
+                : Optional.<InsertGeneratedKeyNameToken>absent();
     }
     
     private boolean isToAddCloseParenthesis(final String tableName, final InsertColumnsSegment segment, final ShardingRule shardingRule) {

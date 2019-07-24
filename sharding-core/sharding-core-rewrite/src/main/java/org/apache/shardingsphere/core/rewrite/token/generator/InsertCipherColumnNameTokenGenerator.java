@@ -36,7 +36,7 @@ import java.util.Map;
  *
  * @author panjuan
  */
-public final class InsertLogicColumnNameTokenGenerator implements CollectionSQLTokenGenerator<EncryptRule> {
+public final class InsertCipherColumnNameTokenGenerator implements CollectionSQLTokenGenerator<EncryptRule> {
     
     private EncryptRule encryptRule;
     
