@@ -27,12 +27,15 @@ import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertValueToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertValuesToken;
 import org.apache.shardingsphere.core.rule.BaseRule;
+import org.apache.shardingsphere.core.rule.EncryptRule;
+import org.apache.shardingsphere.core.rule.MasterSlaveRule;
+import org.apache.shardingsphere.core.rule.ShardingRule;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Insert values token generator.
@@ -41,31 +44,71 @@ import java.util.List;
  */
 public final class InsertValuesTokenGenerator implements OptionalSQLTokenGenerator<BaseRule> {
     
+    private BaseRule baseRule;
+    
+    private InsertOptimizedStatement insertOptimizedStatement;
+    
+    private Collection<InsertValuesSegment> insertValuesSegments;
+    
     @Override
-    public Optional<InsertValuesToken> generateSQLToken(
-            final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final BaseRule baseRule, final boolean isQueryWithCipherColumn) {
+    public Optional<InsertValuesToken> generateSQLToken(final OptimizedStatement optimizedStatement, 
+                                                        final ParameterBuilder parameterBuilder, final BaseRule baseRule, final boolean isQueryWithCipherColumn) {
         Collection<InsertValuesSegment> insertValuesSegments = optimizedStatement.getSQLStatement().findSQLSegments(InsertValuesSegment.class);
-        if (!(optimizedStatement.getSQLStatement() instanceof InsertStatement) || insertValuesSegments.isEmpty()) {
+        if (isNotNeedToGenerateSQLToken(optimizedStatement, insertValuesSegments)) {
             return Optional.absent();
         }
-        return createInsertValuesToken(insertValuesSegments, optimizedStatement);
+        initParameters(baseRule, optimizedStatement, insertValuesSegments);
+        return Optional.of(new InsertValuesToken(getStartIndex(), getStopIndex(), getInsertValues()));
     }
     
-    private Optional<InsertValuesToken> createInsertValuesToken(final Collection<InsertValuesSegment> insertValuesSegments, final OptimizedStatement optimizedStatement) {
-        int startIndex = insertValuesSegments.iterator().next().getStartIndex();
-        int stopIndex = insertValuesSegments.iterator().next().getStopIndex();
+    private boolean isNotNeedToGenerateSQLToken(final OptimizedStatement optimizedStatement, final Collection<InsertValuesSegment> insertValuesSegments) {
+        return baseRule instanceof MasterSlaveRule || !(optimizedStatement.getSQLStatement() instanceof InsertStatement) || insertValuesSegments.isEmpty();
+    }
+    
+    private void initParameters(final BaseRule baseRule, final OptimizedStatement optimizedStatement, final Collection<InsertValuesSegment> insertValuesSegments) {
+        this.baseRule = baseRule;
+        insertOptimizedStatement = (InsertOptimizedStatement) optimizedStatement;
+        this.insertValuesSegments = insertValuesSegments;
+    }
+    
+    private int getStartIndex() {
+        int result = insertValuesSegments.iterator().next().getStartIndex();
         for (InsertValuesSegment each : insertValuesSegments) {
-            startIndex = startIndex > each.getStartIndex() ? each.getStartIndex() : startIndex;
-            stopIndex = stopIndex < each.getStopIndex() ? each.getStopIndex() : stopIndex;
+            result = result > each.getStartIndex() ? each.getStartIndex() : result;
         }
-        return Optional.of(new InsertValuesToken(startIndex, stopIndex, getInsertValues((InsertOptimizedStatement) optimizedStatement)));
+        return result;
     }
     
-    private List<InsertValueToken> getInsertValues(final InsertOptimizedStatement insertOptimizeResult) {
+    private int getStopIndex() {
+        int result = insertValuesSegments.iterator().next().getStopIndex();
+        for (InsertValuesSegment each : insertValuesSegments) {
+            result = result < each.getStopIndex() ? each.getStopIndex() : result;
+        }
+        return result;
+    }
+    
+    private List<InsertValueToken> getInsertValues() {
         List<InsertValueToken> insertValueTokens = new LinkedList<>();
-        for (InsertOptimizeResultUnit each : insertOptimizeResult.getUnits()) {
-            insertValueTokens.add(new InsertValueToken(new ArrayList<>(each.getColumnNames()), Arrays.asList(each.getValues()), each.getDataNodes()));
+        for (InsertOptimizeResultUnit each : insertOptimizedStatement.getUnits()) {
+            insertValueTokens.add(new InsertValueToken(getActualInsertColumns(), Arrays.asList(each.getValues()), each.getDataNodes()));
         }
         return insertValueTokens;
+    }
+    
+    private Collection<String> getActualInsertColumns() {
+        Collection<String> result = new LinkedList<>();
+        Map<String, String> logicAndCipherColumns = getEncryptRule().getEncryptEngine().getLogicAndCipherColumns(insertOptimizedStatement.getTables().getSingleTableName());
+        for (String each : insertOptimizedStatement.getInsertColumns().getRegularColumnNames()) {
+            result.add(getCipherColumn(each, logicAndCipherColumns));
+        }
+        return result;
+    }
+    
+    private EncryptRule getEncryptRule() {
+        return baseRule instanceof ShardingRule ? ((ShardingRule) baseRule).getEncryptRule() : (EncryptRule) baseRule;
+    }
+    
+    private String getCipherColumn(final String column, final Map<String, String> logicAndCipherColumns) {
+        return logicAndCipherColumns.keySet().contains(column) ? logicAndCipherColumns.get(column) : column;
     }
 }
