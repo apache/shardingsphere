@@ -30,7 +30,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
  *
  * @author panjuan
  */
-public final class InsertGeneratedKeyTokenGenerator implements OptionalSQLTokenGenerator<ShardingRule> {
+public final class InsertGeneratedKeyColumnTokenGenerator implements OptionalSQLTokenGenerator<ShardingRule> {
     
     @Override
     public Optional<InsertGeneratedKeyToken> generateSQLToken(
