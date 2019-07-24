@@ -41,9 +41,9 @@ import java.util.LinkedList;
  */
 public final class UpdateEncryptColumnTokenGenerator implements CollectionSQLTokenGenerator<EncryptRule> {
     
-    private ParameterBuilder parameterBuilder;
-    
     private EncryptRule encryptRule;
+    
+    private ParameterBuilder parameterBuilder;
     
     @Override
     public Collection<EncryptColumnToken> generateSQLTokens(
