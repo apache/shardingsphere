@@ -53,33 +53,6 @@ public final class InsertOptimizeResultUnit {
     private final List<DataNode> dataNodes = new LinkedList<>();
     
     /**
-     * Add column value.
-     *
-     * @param expressionSegment expression segment
-     */
-    public void addColumnValue(final ExpressionSegment expressionSegment) {
-        values[getCurrentIndex(values, 0)] = expressionSegment;
-    }
-    
-    /**
-     * Add column parameter.
-     *
-     * @param parameter parameter
-     */
-    public void addColumnParameter(final Object parameter) {
-        parameters[getCurrentIndex(parameters, startIndexOfAppendedParameters)] = parameter;
-    }
-    
-    private int getCurrentIndex(final Object[] array, final int startIndex) {
-        for (int i = startIndex; i < array.length; i++) {
-            if (null == array[i]) {
-                return i;
-            }
-        }
-        throw new ShardingException("Index Out Of Bounds For InsertOptimizeResultUnit.");
-    }
-    
-    /**
      * Set column value.
      *
      * @param columnName column name
@@ -149,5 +122,22 @@ public final class InsertOptimizeResultUnit {
             addColumnValue(new ParameterMarkerExpressionSegment(0, 0, parameters.size() - 1));
             addColumnParameter(insertValue);
         }
+    }
+    
+    private void addColumnValue(final ExpressionSegment expressionSegment) {
+        values[getCurrentIndex(values, 0)] = expressionSegment;
+    }
+    
+    private void addColumnParameter(final Object parameter) {
+        parameters[getCurrentIndex(parameters, startIndexOfAppendedParameters)] = parameter;
+    }
+    
+    private int getCurrentIndex(final Object[] array, final int startIndex) {
+        for (int i = startIndex; i < array.length; i++) {
+            if (null == array[i]) {
+                return i;
+            }
+        }
+        throw new ShardingException("Index Out Of Bounds For InsertOptimizeResultUnit.");
     }
 }
