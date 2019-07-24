@@ -57,7 +57,7 @@ public final class InsertColumnsTokenGenerator implements OptionalSQLTokenGenera
     
     private boolean isNotNeedToGenerateSQLToken(final BaseRule baseRule, final OptimizedStatement optimizedStatement) {
         Optional<InsertColumnsSegment> insertColumnsSegment = optimizedStatement.getSQLStatement().findSQLSegment(InsertColumnsSegment.class);
-        return baseRule instanceof MasterSlaveRule && !(optimizedStatement instanceof InsertOptimizedStatement && insertColumnsSegment.isPresent());
+        return baseRule instanceof MasterSlaveRule || !(optimizedStatement instanceof InsertOptimizedStatement && insertColumnsSegment.isPresent());
     }
     
     private void initParameters(final OptimizedStatement optimizedStatement, final BaseRule baseRule) {
