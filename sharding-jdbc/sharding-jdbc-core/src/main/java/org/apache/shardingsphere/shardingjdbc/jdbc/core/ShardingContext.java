@@ -50,15 +50,15 @@ import java.util.Properties;
 @Getter
 public final class ShardingContext implements AutoCloseable {
     
-    private final DatabaseMetaData cachedDatabaseMetaData;
-    
     private final ShardingRule shardingRule;
+    
+    private final ShardingProperties shardingProperties;
     
     private final DatabaseType databaseType;
     
-    private final ShardingExecuteEngine executeEngine;
+    private final DatabaseMetaData cachedDatabaseMetaData;
     
-    private final ShardingProperties shardingProperties;
+    private final ShardingExecuteEngine executeEngine;
     
     private final ShardingMetaData metaData;
     
@@ -66,9 +66,9 @@ public final class ShardingContext implements AutoCloseable {
     
     public ShardingContext(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType, final Properties props) throws SQLException {
         this.shardingRule = shardingRule;
-        this.cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap);
-        this.databaseType = databaseType;
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
+        this.databaseType = databaseType;
+        this.cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap);
         int executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
         executeEngine = new ShardingExecuteEngine(executorSize);
         ShardingDataSourceMetaData shardingDataSourceMetaData = new ShardingDataSourceMetaData(getDataSourceURLs(dataSourceMap), shardingRule, databaseType);

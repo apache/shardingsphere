@@ -45,23 +45,23 @@ import java.util.logging.Logger;
 @Setter
 public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOperationDataSource implements AutoCloseable {
     
-    private final DatabaseType databaseType;
-    
     private final Map<String, DataSource> dataSourceMap;
     
-    private ShardingTransactionManagerEngine shardingTransactionManagerEngine = new ShardingTransactionManagerEngine();
+    private final DatabaseType databaseType;
+    
+    private final ShardingTransactionManagerEngine shardingTransactionManagerEngine = new ShardingTransactionManagerEngine();
     
     private PrintWriter logWriter = new PrintWriter(System.out);
     
     public AbstractDataSourceAdapter(final Map<String, DataSource> dataSourceMap) throws SQLException {
-        databaseType = getDatabaseType(dataSourceMap.values());
-        shardingTransactionManagerEngine.init(databaseType, dataSourceMap);
         this.dataSourceMap = dataSourceMap;
+        databaseType = createDatabaseType();
+        shardingTransactionManagerEngine.init(databaseType, dataSourceMap);
     }
     
-    protected final DatabaseType getDatabaseType(final Collection<DataSource> dataSources) throws SQLException {
+    private DatabaseType createDatabaseType() throws SQLException {
         DatabaseType result = null;
-        for (DataSource each : dataSources) {
+        for (DataSource each : dataSourceMap.values()) {
             DatabaseType databaseType = getDatabaseType(each);
             Preconditions.checkState(null == result || result == databaseType, String.format("Database type inconsistent with '%s' and '%s'", result, databaseType));
             result = databaseType;
