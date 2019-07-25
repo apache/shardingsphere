@@ -64,8 +64,8 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     
     private ShardingRule getShardingRule() {
         return statement instanceof ShardingPreparedStatement 
-                ? ((ShardingPreparedStatement) statement).getConnection().getShardingContext().getRule() 
-                : ((ShardingStatement) statement).getConnection().getShardingContext().getRule();
+                ? ((ShardingPreparedStatement) statement).getConnection().getRuntimeContext().getRule() 
+                : ((ShardingStatement) statement).getConnection().getRuntimeContext().getRule();
     }
     
     @Override

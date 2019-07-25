@@ -90,8 +90,8 @@ public final class ShardingStatement extends AbstractStatementAdapter {
             clearPrevious();
             shard(sql);
             initStatementExecutor();
-            MergeEngine mergeEngine = MergeEngineFactory.newInstance(connection.getShardingContext().getDatabaseType(), 
-                    connection.getShardingContext().getRule(), routeResult, connection.getShardingContext().getMetaData().getTable(), statementExecutor.executeQuery());
+            MergeEngine mergeEngine = MergeEngineFactory.newInstance(connection.getRuntimeContext().getDatabaseType(), 
+                    connection.getRuntimeContext().getRule(), routeResult, connection.getRuntimeContext().getMetaData().getTable(), statementExecutor.executeQuery());
             result = getResultSet(mergeEngine);
         } finally {
             currentResultSet = null;
@@ -114,11 +114,11 @@ public final class ShardingStatement extends AbstractStatementAdapter {
         for (Statement each : statementExecutor.getStatements()) {
             ResultSet resultSet = each.getResultSet();
             resultSets.add(resultSet);
-            queryResults.add(new StreamQueryResult(resultSet, connection.getShardingContext().getRule()));
+            queryResults.add(new StreamQueryResult(resultSet, connection.getRuntimeContext().getRule()));
         }
         if (routeResult.getOptimizedStatement() instanceof ShardingSelectOptimizedStatement || routeResult.getOptimizedStatement().getSQLStatement() instanceof DALStatement) {
-            MergeEngine mergeEngine = MergeEngineFactory.newInstance(connection.getShardingContext().getDatabaseType(),
-                    connection.getShardingContext().getRule(), routeResult, connection.getShardingContext().getMetaData().getTable(), queryResults);
+            MergeEngine mergeEngine = MergeEngineFactory.newInstance(connection.getRuntimeContext().getDatabaseType(),
+                    connection.getRuntimeContext().getRule(), routeResult, connection.getRuntimeContext().getMetaData().getTable(), queryResults);
             currentResultSet = getCurrentResultSet(resultSets, mergeEngine);
         }
         return currentResultSet;
@@ -250,9 +250,9 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     }
     
     private void shard(final String sql) {
-        ShardingRuntimeContext shardingContext = connection.getShardingContext();
-        SimpleQueryShardingEngine shardingEngine = new SimpleQueryShardingEngine(shardingContext.getRule(), 
-                shardingContext.getShardingProperties(), shardingContext.getMetaData(), shardingContext.getDatabaseType(), shardingContext.getParseEngine());
+        ShardingRuntimeContext runtimeContext = connection.getRuntimeContext();
+        SimpleQueryShardingEngine shardingEngine = new SimpleQueryShardingEngine(runtimeContext.getRule(), 
+                runtimeContext.getShardingProperties(), runtimeContext.getMetaData(), runtimeContext.getDatabaseType(), runtimeContext.getParseEngine());
         routeResult = shardingEngine.shard(sql, Collections.emptyList());
     }
     
@@ -279,7 +279,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     
     @Override
     public boolean isAccumulate() {
-        return !connection.getShardingContext().getRule().isAllBroadcastTables(routeResult.getOptimizedStatement().getTables().getTableNames());
+        return !connection.getRuntimeContext().getRule().isAllBroadcastTables(routeResult.getOptimizedStatement().getTables().getTableNames());
     }
     
     @Override

@@ -84,16 +84,16 @@ public final class ShardingDataSourceFactoryTest {
     
     @SneakyThrows
     private ShardingRule getShardingRule(final DataSource dataSource) {
-        Field field = dataSource.getClass().getDeclaredField("shardingContext");
+        Field field = dataSource.getClass().getDeclaredField("runtimeContext");
         field.setAccessible(true);
         return ((ShardingRuntimeContext) field.get(dataSource)).getRule();
     }
     
     @SneakyThrows
     private Properties getShardingProperties(final DataSource dataSource) {
-        Field shardingContextField = dataSource.getClass().getDeclaredField("shardingContext");
-        shardingContextField.setAccessible(true);
-        ShardingRuntimeContext shardingContext = (ShardingRuntimeContext) shardingContextField.get(dataSource);
-        return shardingContext.getShardingProperties().getProps();
+        Field field = dataSource.getClass().getDeclaredField("runtimeContext");
+        field.setAccessible(true);
+        ShardingRuntimeContext runtimeContext = (ShardingRuntimeContext) field.get(dataSource);
+        return runtimeContext.getShardingProperties().getProps();
     }
 }
