@@ -21,6 +21,7 @@ import org.apache.shardingsphere.api.config.masterslave.LoadBalanceStrategyConfi
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.route.router.masterslave.MasterVisitedManager;
+import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.spi.database.H2DatabaseType;
 import org.apache.shardingsphere.shardingjdbc.api.MasterSlaveDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.fixture.TestDataSource;
@@ -60,8 +61,9 @@ public final class MasterSlaveDataSourceTest {
         Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
         dataSourceMap.put("test_ds_master", masterDataSource);
         dataSourceMap.put("test_ds_slave", slaveDataSource);
-        masterSlaveDataSource = new MasterSlaveDataSource(dataSourceMap, 
-                new MasterSlaveRuleConfiguration("test_ds", "test_ds_master", Collections.singletonList("test_ds_slave"), new LoadBalanceStrategyConfiguration("ROUND_ROBIN")), new Properties());
+        MasterSlaveRule masterSlaveRule = new MasterSlaveRule(
+                new MasterSlaveRuleConfiguration("test_ds", "test_ds_master", Collections.singletonList("test_ds_slave"), new LoadBalanceStrategyConfiguration("ROUND_ROBIN")));
+        masterSlaveDataSource = new MasterSlaveDataSource(dataSourceMap, masterSlaveRule, new Properties());
     }
     
     @Before
