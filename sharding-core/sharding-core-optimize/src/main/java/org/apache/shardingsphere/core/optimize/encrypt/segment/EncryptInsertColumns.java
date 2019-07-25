@@ -45,7 +45,7 @@ public final class EncryptInsertColumns implements InsertColumns {
     private final Collection<String> regularColumnNames;
     
     public EncryptInsertColumns(final EncryptRule encryptRule, final ShardingTableMetaData shardingTableMetaData, final InsertStatement insertStatement) {
-        assistedQueryAndPlainColumnNames = encryptRule.getEncryptEngine().getAssistedQueryAndPlainColumns(insertStatement.getTable().getTableName());
+        assistedQueryAndPlainColumnNames = encryptRule.getAssistedQueryAndPlainColumns(insertStatement.getTable().getTableName());
         regularColumnNames = insertStatement.useDefaultColumns() 
                 ? getRegularColumnNamesFromMetaData(encryptRule, shardingTableMetaData, insertStatement) : getColumnNamesFromSQLStatement(insertStatement);
     }
@@ -70,11 +70,11 @@ public final class EncryptInsertColumns implements InsertColumns {
     }
     
     private boolean isCipherColumn(final EncryptRule encryptRule, final String tableName, final String columnName) {
-        return encryptRule.getEncryptEngine().getCipherColumns(tableName).contains(columnName);
+        return encryptRule.getCipherColumns(tableName).contains(columnName);
     }
     
     private String getLogicColumn(final EncryptRule encryptRule, final String tableName, final String columnName) {
-        return encryptRule.getEncryptEngine().getLogicColumn(tableName, columnName);
+        return encryptRule.getLogicColumn(tableName, columnName);
     }
     
     private Collection<String> getColumnNamesFromSQLStatement(final InsertStatement insertStatement) {

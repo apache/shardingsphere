@@ -66,7 +66,7 @@ public final class InsertQueryAndPlainNamesTokenGenerator implements OptionalSQL
     }
     
     private Optional<InsertQueryAndPlainNamesToken> createInsertAssistedColumnsToken() {
-        return 0 == encryptRule.getEncryptEngine().getAssistedQueryAndPlainColumnCount(tableName) ? Optional.<InsertQueryAndPlainNamesToken>absent()
+        return 0 == encryptRule.getAssistedQueryAndPlainColumnCount(tableName) ? Optional.<InsertQueryAndPlainNamesToken>absent()
                 : Optional.of(new InsertQueryAndPlainNamesToken(insertColumnsSegment.getStopIndex(), getAssistedQueryAndPlainColumns(), insertColumnsSegment.getColumns().isEmpty()));
     }
     
@@ -80,7 +80,7 @@ public final class InsertQueryAndPlainNamesTokenGenerator implements OptionalSQL
     private Collection<String> getAssistedQueryColumns() {
         Collection<String> result = new LinkedList<>();
         for (String each : insertOptimizedStatement.getInsertColumns().getRegularColumnNames()) {
-            Optional<String> assistedQueryColumn = encryptRule.getEncryptEngine().getAssistedQueryColumn(tableName, each);
+            Optional<String> assistedQueryColumn = encryptRule.getAssistedQueryColumn(tableName, each);
             if (assistedQueryColumn.isPresent()) {
                 result.add(assistedQueryColumn.get());
             }
@@ -91,7 +91,7 @@ public final class InsertQueryAndPlainNamesTokenGenerator implements OptionalSQL
     private Collection<String> getPlainColumns() {
         Collection<String> result = new LinkedList<>();
         for (String each : insertOptimizedStatement.getInsertColumns().getRegularColumnNames()) {
-            Optional<String> plainColumn = encryptRule.getEncryptEngine().getPlainColumn(tableName, each);
+            Optional<String> plainColumn = encryptRule.getPlainColumn(tableName, each);
             if (plainColumn.isPresent()) {
                 result.add(plainColumn.get());
             }

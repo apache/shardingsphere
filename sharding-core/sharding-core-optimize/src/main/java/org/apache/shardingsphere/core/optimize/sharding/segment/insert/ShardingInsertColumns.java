@@ -48,7 +48,7 @@ public final class ShardingInsertColumns implements InsertColumns {
     
     public ShardingInsertColumns(final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData, final InsertStatement insertStatement) {
         generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTable().getTableName()).orNull();
-        assistedQueryAndPlainColumnNames = shardingRule.getEncryptRule().getEncryptEngine().getAssistedQueryAndPlainColumns(insertStatement.getTable().getTableName());
+        assistedQueryAndPlainColumnNames = shardingRule.getEncryptRule().getAssistedQueryAndPlainColumns(insertStatement.getTable().getTableName());
         regularColumnNames = insertStatement.useDefaultColumns() 
                 ? getRegularColumnNamesFromMetaData(shardingRule.getEncryptRule(), shardingTableMetaData, insertStatement) : getRegularColumnNamesFromSQLStatement(insertStatement);
     }
@@ -76,11 +76,11 @@ public final class ShardingInsertColumns implements InsertColumns {
     }
     
     private boolean isCipherColumn(final EncryptRule encryptRule, final String tableName, final String columnName) {
-        return encryptRule.getEncryptEngine().getCipherColumns(tableName).contains(columnName);
+        return encryptRule.getCipherColumns(tableName).contains(columnName);
     }
     
     private String getLogicColumn(final EncryptRule encryptRule, final String tableName, final String columnName) {
-        return encryptRule.getEncryptEngine().getLogicColumn(tableName, columnName);
+        return encryptRule.getLogicColumn(tableName, columnName);
     }
     
     private boolean isGenerateKeyFromMetaData(final Collection<String> allColumnNames, final int columnValueSize) {

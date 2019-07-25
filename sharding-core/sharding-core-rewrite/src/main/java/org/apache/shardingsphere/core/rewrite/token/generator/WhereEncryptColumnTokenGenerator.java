@@ -88,16 +88,16 @@ public final class WhereEncryptColumnTokenGenerator implements CollectionSQLToke
     }
     
     private String getEncryptedColumnName(final EncryptCondition encryptCondition) {
-        Optional<String> assistedQueryColumn = encryptRule.getEncryptEngine().getAssistedQueryColumn(encryptCondition.getTableName(), encryptCondition.getColumnName());
+        Optional<String> assistedQueryColumn = encryptRule.getAssistedQueryColumn(encryptCondition.getTableName(), encryptCondition.getColumnName());
         return assistedQueryColumn.isPresent() 
-                ? assistedQueryColumn.get() : encryptRule.getEncryptEngine().getCipherColumn(encryptCondition.getTableName(), encryptCondition.getColumnName());
+                ? assistedQueryColumn.get() : encryptRule.getCipherColumn(encryptCondition.getTableName(), encryptCondition.getColumnName());
     }
     
     private List<Object> getEncryptedColumnValues(final EncryptCondition encryptCondition, final List<Object> originalValues) {
-        Optional<String> assistedQueryColumn = encryptRule.getEncryptEngine().getAssistedQueryColumn(encryptCondition.getTableName(), encryptCondition.getColumnName());
+        Optional<String> assistedQueryColumn = encryptRule.getAssistedQueryColumn(encryptCondition.getTableName(), encryptCondition.getColumnName());
         return assistedQueryColumn.isPresent() 
-                ? encryptRule.getEncryptEngine().getEncryptAssistedColumnValues(encryptCondition.getTableName(), encryptCondition.getColumnName(), originalValues) 
-                : encryptRule.getEncryptEngine().getEncryptColumnValues(encryptCondition.getTableName(), encryptCondition.getColumnName(), originalValues);
+                ? encryptRule.getEncryptAssistedColumnValues(encryptCondition.getTableName(), encryptCondition.getColumnName(), originalValues) 
+                : encryptRule.getEncryptColumnValues(encryptCondition.getTableName(), encryptCondition.getColumnName(), originalValues);
     }
     
     private void encryptParameters(final Map<Integer, Integer> positionIndexes, final List<Object> encryptColumnValues, final ParameterBuilder parameterBuilder) {
@@ -117,7 +117,7 @@ public final class WhereEncryptColumnTokenGenerator implements CollectionSQLToke
     }
     
     private String getPlainColumn(final EncryptCondition encryptCondition, final EncryptRule encryptRule) {
-        Optional<String> result = encryptRule.getEncryptEngine().getPlainColumn(encryptCondition.getTableName(), encryptCondition.getColumnName());
+        Optional<String> result = encryptRule.getPlainColumn(encryptCondition.getTableName(), encryptCondition.getColumnName());
         if (result.isPresent()) {
             return result.get();
         }
