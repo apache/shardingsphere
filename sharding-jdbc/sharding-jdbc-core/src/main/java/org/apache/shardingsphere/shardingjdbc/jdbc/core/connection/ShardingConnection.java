@@ -132,12 +132,8 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     public void setAutoCommit(final boolean autoCommit) throws SQLException {
         if (TransactionType.LOCAL == transactionType) {
             super.setAutoCommit(autoCommit);
-        } else {
-            setAutoCommitForShardingTransaction(autoCommit);
+            return;
         }
-    }
-    
-    private void setAutoCommitForShardingTransaction(final boolean autoCommit) throws SQLException {
         if (autoCommit && !shardingTransactionManager.isInTransaction() || !autoCommit && shardingTransactionManager.isInTransaction()) {
             return;
         }
@@ -147,16 +143,20 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
         }
         if (!autoCommit && !shardingTransactionManager.isInTransaction()) {
             recordMethodInvocation(Connection.class, "setAutoCommit", new Class[]{boolean.class}, new Object[]{true});
-            getForceExecuteTemplate().execute(getCachedConnections().values(), new ForceExecuteCallback<Connection>() {
-                
-                @Override
-                public void execute(final Connection connection) throws SQLException {
-                    connection.close();
-                }
-            });
-            getCachedConnections().clear();
+            closeCachedConnections();
             shardingTransactionManager.begin();
         }
+    }
+    
+    private void closeCachedConnections() throws SQLException {
+        getForceExecuteTemplate().execute(getCachedConnections().values(), new ForceExecuteCallback<Connection>() {
+            
+            @Override
+            public void execute(final Connection connection) throws SQLException {
+                connection.close();
+            }
+        });
+        getCachedConnections().clear();
     }
     
     @Override
