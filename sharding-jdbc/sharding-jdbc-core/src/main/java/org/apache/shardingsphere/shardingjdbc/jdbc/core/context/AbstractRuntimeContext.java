@@ -17,53 +17,47 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.context;
 
+import lombok.Getter;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
+import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.execute.ShardingExecuteEngine;
 import org.apache.shardingsphere.core.parse.SQLParseEngine;
+import org.apache.shardingsphere.core.parse.SQLParseEngineFactory;
 import org.apache.shardingsphere.core.rule.BaseRule;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 
+import java.util.Properties;
+
 /**
- * Runtime context.
+ * Abstract runtime context.
  *
  * @author zhangliang
  * 
  * @param <T> type of rule
  */
-public interface RuntimeContext<T extends BaseRule> extends AutoCloseable {
+@Getter
+public abstract class AbstractRuntimeContext<T extends BaseRule> implements RuntimeContext<T> {
     
-    /**
-     * Get rule.
-     * 
-     * @return rule
-     */
-    T getRule();
+    private final T rule;
     
-    /**
-     * Get properties.
-     *
-     * @return properties
-     */
-    ShardingProperties getShardingProperties();
+    private final ShardingProperties shardingProperties;
     
-    /**
-     * Get database type.
-     * 
-     * @return database type
-     */
-    DatabaseType getDatabaseType();
+    private final DatabaseType databaseType;
     
-    /**
-     * Get execute engine.
-     * 
-     * @return execute engine
-     */
-    ShardingExecuteEngine getExecuteEngine();
+    private final ShardingExecuteEngine executeEngine;
     
-    /**
-     * Get parse engine.
-     * 
-     * @return parse engine
-     */
-    SQLParseEngine getParseEngine();
+    private final SQLParseEngine parseEngine;
+    
+    protected AbstractRuntimeContext(final T rule, final Properties props, final DatabaseType databaseType) {
+        this.rule = rule;
+        shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
+        this.databaseType = databaseType;
+        executeEngine = new ShardingExecuteEngine(shardingProperties.<Integer>getValue(ShardingPropertiesConstant.EXECUTOR_SIZE));
+        parseEngine = SQLParseEngineFactory.getSQLParseEngine(databaseType);
+    }
+    
+    @Override
+    public void close() throws Exception {
+        executeEngine.close();
+    }
 }

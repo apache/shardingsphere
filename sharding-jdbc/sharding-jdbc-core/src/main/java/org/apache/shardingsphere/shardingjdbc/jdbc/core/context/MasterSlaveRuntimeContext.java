@@ -18,9 +18,6 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.context;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
-import org.apache.shardingsphere.core.parse.SQLParseEngine;
-import org.apache.shardingsphere.core.parse.SQLParseEngineFactory;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata.CachedDatabaseMetaData;
 import org.apache.shardingsphere.spi.database.DatabaseType;
@@ -38,30 +35,18 @@ import java.util.Properties;
  * @author zhangliang
  */
 @Getter
-public final class MasterSlaveRuntimeContext implements RuntimeContext {
-    
-    private final MasterSlaveRule rule;
-    
-    private final ShardingProperties shardingProperties;
+public final class MasterSlaveRuntimeContext extends AbstractRuntimeContext<MasterSlaveRule> {
     
     private final DatabaseMetaData cachedDatabaseMetaData;
     
-    private final SQLParseEngine parseEngine;
-    
     public MasterSlaveRuntimeContext(final Map<String, DataSource> dataSourceMap, final MasterSlaveRule rule, final Properties props, final DatabaseType databaseType) throws SQLException {
-        this.rule = rule;
-        shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
+        super(rule, props, databaseType);
         cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap);
-        parseEngine = SQLParseEngineFactory.getSQLParseEngine(databaseType);
     }
     
     private DatabaseMetaData createCachedDatabaseMetaData(final Map<String, DataSource> dataSourceMap) throws SQLException {
         try (Connection connection = dataSourceMap.values().iterator().next().getConnection()) {
             return new CachedDatabaseMetaData(connection.getMetaData(), dataSourceMap, null);
         }
-    }
-    
-    @Override
-    public void close() {
     }
 }
