@@ -19,6 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.core.yaml.swapper.impl.EncryptRuleConfigurationYamlSwapper;
@@ -31,6 +32,7 @@ import org.apache.shardingsphere.shardingjdbc.orchestration.internal.yaml.YamlOr
 import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Properties;
 
 /**
@@ -51,8 +53,9 @@ public final class YamlOrchestrationEncryptDataSourceFactory {
      * @param yamlFile YAML file for encrypt rule configuration with data source
      * @return encrypt data source
      * @throws IOException IO exception
+     * @throws SQLException SQL exception
      */
-    public static DataSource createDataSource(final File yamlFile) throws IOException {
+    public static DataSource createDataSource(final File yamlFile) throws IOException, SQLException {
         YamlOrchestrationEncryptRuleConfiguration config = unmarshal(yamlFile);
         return createDataSource(config.getDataSource(), config.getEncryptRule(), config.getOrchestration(), config.getProps());
     }
@@ -64,8 +67,9 @@ public final class YamlOrchestrationEncryptDataSourceFactory {
      * @param yamlFile YAML file for encrypt rule configuration without data source
      * @return encrypt data source
      * @throws IOException IO exception
+     * @throws SQLException SQL exception
      */
-    public static DataSource createDataSource(final DataSource dataSource, final File yamlFile) throws IOException {
+    public static DataSource createDataSource(final DataSource dataSource, final File yamlFile) throws IOException, SQLException {
         YamlOrchestrationEncryptRuleConfiguration config = unmarshal(yamlFile);
         return createDataSource(dataSource, config.getEncryptRule(), config.getOrchestration(), config.getProps());
     }
@@ -76,8 +80,9 @@ public final class YamlOrchestrationEncryptDataSourceFactory {
      * @param yamlBytes YAML bytes for for encrypt rule configuration with data source
      * @return encrypt data source
      * @throws IOException IO exception
+     * @throws SQLException SQL exception
      */
-    public static DataSource createDataSource(final byte[] yamlBytes) throws IOException {
+    public static DataSource createDataSource(final byte[] yamlBytes) throws IOException, SQLException {
         YamlOrchestrationEncryptRuleConfiguration config = unmarshal(yamlBytes);
         return createDataSource(config.getDataSource(), config.getEncryptRule(), config.getOrchestration(), config.getProps());
     }
@@ -89,18 +94,19 @@ public final class YamlOrchestrationEncryptDataSourceFactory {
      * @param yamlBytes YAML bytes for encrypt rule configuration without data source
      * @return encrypt data source
      * @throws IOException IO exception
+     * @throws SQLException SQL exception
      */
-    public static DataSource createDataSource(final DataSource dataSource, final byte[] yamlBytes) throws IOException {
+    public static DataSource createDataSource(final DataSource dataSource, final byte[] yamlBytes) throws IOException, SQLException {
         YamlOrchestrationEncryptRuleConfiguration config = unmarshal(yamlBytes);
         return createDataSource(dataSource, config.getEncryptRule(), config.getOrchestration(), config.getProps());
     }
     
     private static DataSource createDataSource(final DataSource dataSource, final YamlEncryptRuleConfiguration yamlEncryptRuleConfiguration,
-                                               final YamlOrchestrationConfiguration yamlOrchestrationConfiguration, final Properties properties) {
+                                               final YamlOrchestrationConfiguration yamlOrchestrationConfiguration, final Properties properties) throws SQLException {
         if (null == yamlEncryptRuleConfiguration) {
             return new OrchestrationEncryptDataSource(ORCHESTRATION_SWAPPER.swap(yamlOrchestrationConfiguration));
         } else {
-            EncryptDataSource encryptDataSource = new EncryptDataSource(dataSource, ENCRYPT_RULE_SWAPPER.swap(yamlEncryptRuleConfiguration), properties);
+            EncryptDataSource encryptDataSource = new EncryptDataSource(dataSource, new EncryptRule(ENCRYPT_RULE_SWAPPER.swap(yamlEncryptRuleConfiguration)), properties);
             return new OrchestrationEncryptDataSource(encryptDataSource, ORCHESTRATION_SWAPPER.swap(yamlOrchestrationConfiguration));
         }
     }

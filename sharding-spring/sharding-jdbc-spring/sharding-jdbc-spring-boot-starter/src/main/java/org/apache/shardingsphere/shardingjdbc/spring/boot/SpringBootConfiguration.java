@@ -109,10 +109,11 @@ public class SpringBootConfiguration implements EnvironmentAware {
      * Get encrypt data source bean.
      *
      * @return data source bean
+     * @throws SQLException SQL exception
      */
     @Bean
     @Conditional(EncryptRuleCondition.class)
-    public DataSource encryptDataSource() {
+    public DataSource encryptDataSource() throws SQLException {
         return EncryptDataSourceFactory.createDataSource(dataSourceMap.values().iterator().next(), new EncryptRuleConfigurationYamlSwapper().swap(encryptRule), props.getProps());
     }
     

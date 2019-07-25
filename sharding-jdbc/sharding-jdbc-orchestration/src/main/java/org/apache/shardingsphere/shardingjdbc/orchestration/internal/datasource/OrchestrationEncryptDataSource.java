@@ -26,6 +26,7 @@ import org.apache.shardingsphere.api.config.RuleConfiguration;
 import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
 import org.apache.shardingsphere.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.core.constant.ShardingConstant;
+import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.internal.registry.ShardingOrchestrationFacade;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
@@ -35,12 +36,13 @@ import org.apache.shardingsphere.orchestration.internal.registry.config.service.
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.util.DataSourceConverter;
 
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Orchestration encrypt datasource.
+ * Orchestration encrypt data source.
  *
  * @author yangyi
  */
@@ -51,20 +53,21 @@ public class OrchestrationEncryptDataSource extends AbstractOrchestrationDataSou
     
     private EncryptDataSource dataSource;
     
-    public OrchestrationEncryptDataSource(final OrchestrationConfiguration orchestrationConfig) {
+    public OrchestrationEncryptDataSource(final OrchestrationConfiguration orchestrationConfig) throws SQLException {
         super(new ShardingOrchestrationFacade(orchestrationConfig, Collections.singletonList(ShardingConstant.LOGIC_SCHEMA_NAME)));
         ConfigurationService configService = getShardingOrchestrationFacade().getConfigService();
-        EncryptRuleConfiguration encryptRuleConfiguration = configService.loadEncryptRuleConfiguration(ShardingConstant.LOGIC_SCHEMA_NAME);
-        Preconditions.checkState(!encryptRuleConfiguration.getEncryptors().isEmpty(), "No available encrypt rule configuration to load.");
+        EncryptRuleConfiguration encryptRuleConfig = configService.loadEncryptRuleConfiguration(ShardingConstant.LOGIC_SCHEMA_NAME);
+        Preconditions.checkState(!encryptRuleConfig.getEncryptors().isEmpty(), "No available encrypt rule configuration to load.");
         Map<String, DataSourceConfiguration> dataSourceConfigurations = configService.loadDataSourceConfigurations(ShardingConstant.LOGIC_SCHEMA_NAME);
         checkDataSourceConfiguration(dataSourceConfigurations);
-        dataSource = new EncryptDataSource(DataSourceConverter.getDataSourceMap(dataSourceConfigurations).values().iterator().next(), encryptRuleConfiguration, configService.loadProperties());
+        dataSource = new EncryptDataSource(
+                DataSourceConverter.getDataSourceMap(dataSourceConfigurations).values().iterator().next(), new EncryptRule(encryptRuleConfig), configService.loadProperties());
         initShardingOrchestrationFacade();
     }
     
-    public OrchestrationEncryptDataSource(final EncryptDataSource dataSource, final OrchestrationConfiguration orchestrationConfig) {
+    public OrchestrationEncryptDataSource(final EncryptDataSource dataSource, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
         super(new ShardingOrchestrationFacade(orchestrationConfig, Collections.singletonList(ShardingConstant.LOGIC_SCHEMA_NAME)));
-        this.dataSource = new EncryptDataSource(dataSource.getDataSource(), dataSource.getEncryptRule().getEncryptRuleConfig(), dataSource.getShardingProperties().getProps());
+        this.dataSource = new EncryptDataSource(dataSource.getDataSource(), new EncryptRule(dataSource.getEncryptRule().getEncryptRuleConfig()), dataSource.getShardingProperties().getProps());
         initShardingOrchestrationFacade(
             Collections.singletonMap(ShardingConstant.LOGIC_SCHEMA_NAME, DataSourceConverter.getDataSourceConfigurationMap(Collections.singletonMap(ENCRYPT_DATASOURCE, dataSource.getDataSource()))),
             getRuleConfigurationMap(), dataSource.getShardingProperties().getProps());
@@ -91,8 +94,8 @@ public class OrchestrationEncryptDataSource extends AbstractOrchestrationDataSou
         Map<String, DataSourceConfiguration> dataSourceConfigurations = dataSourceChangedEvent.getDataSourceConfigurations();
         dataSource.close();
         checkDataSourceConfiguration(dataSourceConfigurations);
-        dataSource = new EncryptDataSource(DataSourceConverter.getDataSourceMap(dataSourceConfigurations).values().iterator().next(),
-            dataSource.getEncryptRule().getEncryptRuleConfig(), dataSource.getShardingProperties().getProps());
+        dataSource = new EncryptDataSource(
+                DataSourceConverter.getDataSourceMap(dataSourceConfigurations).values().iterator().next(), dataSource.getEncryptRule(), dataSource.getShardingProperties().getProps());
         getDataSourceConfigurations().clear();
         getDataSourceConfigurations().putAll(dataSourceConfigurations);
     }
@@ -105,7 +108,7 @@ public class OrchestrationEncryptDataSource extends AbstractOrchestrationDataSou
     @Subscribe
     @SneakyThrows
     public final synchronized void renew(final EncryptRuleChangedEvent encryptRuleChangedEvent) {
-        dataSource = new EncryptDataSource(dataSource.getDataSource(), encryptRuleChangedEvent.getEncryptRuleConfiguration(), dataSource.getShardingProperties().getProps());
+        dataSource = new EncryptDataSource(dataSource.getDataSource(), new EncryptRule(encryptRuleChangedEvent.getEncryptRuleConfiguration()), dataSource.getShardingProperties().getProps());
     }
     
     /**
@@ -116,6 +119,6 @@ public class OrchestrationEncryptDataSource extends AbstractOrchestrationDataSou
     @SneakyThrows
     @Subscribe
     public final synchronized void renew(final PropertiesChangedEvent propertiesChangedEvent) {
-        dataSource = new EncryptDataSource(dataSource.getDataSource(), dataSource.getEncryptRule().getEncryptRuleConfig(), propertiesChangedEvent.getProps());
+        dataSource = new EncryptDataSource(dataSource.getDataSource(), dataSource.getEncryptRule(), propertiesChangedEvent.getProps());
     }
 }

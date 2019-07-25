@@ -18,11 +18,13 @@
 package org.apache.shardingsphere.shardingjdbc.orchestration.api;
 
 import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
+import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationEncryptDataSource;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.Properties;
 
 /**
@@ -40,13 +42,14 @@ public final class OrchestrationEncryptDataSourceFactory {
      * @param props properties
      * @param orchestrationConfig orchestration configuration
      * @return orchestration encrypt data source
+     * @throws SQLException SQL exception
      */
     public static DataSource createDataSource(final DataSource dataSource, 
-                                              final EncryptRuleConfiguration encryptRuleConfig, final Properties props, final OrchestrationConfiguration orchestrationConfig) {
+                                              final EncryptRuleConfiguration encryptRuleConfig, final Properties props, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
         if (null == encryptRuleConfig || encryptRuleConfig.getEncryptors().isEmpty()) {
             return createDataSource(orchestrationConfig);
         }
-        return new OrchestrationEncryptDataSource(new EncryptDataSource(dataSource, encryptRuleConfig, props), orchestrationConfig);
+        return new OrchestrationEncryptDataSource(new EncryptDataSource(dataSource, new EncryptRule(encryptRuleConfig), props), orchestrationConfig);
     }
     
     /**
@@ -54,8 +57,9 @@ public final class OrchestrationEncryptDataSourceFactory {
      *
      * @param orchestrationConfig orchestration configuration
      * @return orchestration encrypt data source
+     * @throws SQLException SQL exception
      */
-    public static DataSource createDataSource(final OrchestrationConfiguration orchestrationConfig) {
+    public static DataSource createDataSource(final OrchestrationConfiguration orchestrationConfig) throws SQLException {
         return new OrchestrationEncryptDataSource(orchestrationConfig);
     }
 }

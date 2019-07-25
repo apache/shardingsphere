@@ -21,7 +21,6 @@ import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
@@ -57,32 +56,31 @@ import java.util.logging.Logger;
  * @author panjuan
  */
 @Getter
+@Setter
 public class EncryptDataSource extends AbstractUnsupportedOperationDataSource implements AutoCloseable {
     
     private final DataSource dataSource;
     
-    private final DatabaseType databaseType;
-    
     private final EncryptRule encryptRule;
-    
-    private final ShardingTableMetaData shardingTableMetaData;
     
     private final ShardingProperties shardingProperties;
     
+    private final DatabaseType databaseType;
+    
+    private final ShardingTableMetaData shardingTableMetaData;
+    
     private final SQLParseEngine parseEngine;
     
-    @Setter
     private PrintWriter logWriter = new PrintWriter(System.out);
     
-    @SneakyThrows
-    public EncryptDataSource(final DataSource dataSource, final EncryptRuleConfiguration encryptRuleConfiguration, final Properties props) {
-        ConfigurationLogger.log(encryptRuleConfiguration);
+    public EncryptDataSource(final DataSource dataSource, final EncryptRule encryptRule, final Properties props) throws SQLException {
+        ConfigurationLogger.log(encryptRule.getEncryptRuleConfig());
         ConfigurationLogger.log(props);
         this.dataSource = dataSource;
-        databaseType = getDatabaseType();
-        encryptRule = new EncryptRule(encryptRuleConfiguration);
-        shardingTableMetaData = createEncryptTableMetaData();
+        this.encryptRule = encryptRule;
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
+        databaseType = getDatabaseType();
+        shardingTableMetaData = createEncryptTableMetaData();
         parseEngine = SQLParseEngineFactory.getSQLParseEngine(databaseType);
     }
     

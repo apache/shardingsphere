@@ -26,6 +26,7 @@ import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.
 import org.junit.Test;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -34,19 +35,19 @@ import static org.junit.Assert.assertThat;
 public final class OrchestrationEncryptDataSourceFactoryTest {
     
     @Test
-    public void assertCreateDataSourceWithDataSource() {
+    public void assertCreateDataSourceWithDataSource() throws SQLException {
         DataSource dataSource = OrchestrationEncryptDataSourceFactory.createDataSource(getDataSource(), getEncryptRuleConfiguration(), new Properties(), getOrchestrationConfiguration());
         assertThat(dataSource, instanceOf(OrchestrationEncryptDataSource.class));
     }
     
     @Test
-    public void assertCreateDataSourceWithoutDataSource() {
+    public void assertCreateDataSourceWithoutDataSource() throws SQLException {
         DataSource dataSource = OrchestrationEncryptDataSourceFactory.createDataSource(getOrchestrationConfiguration());
         assertThat(dataSource, instanceOf(OrchestrationEncryptDataSource.class));
     }
     
     @Test
-    public void assertCreateDataSourceWithEmptyRule() {
+    public void assertCreateDataSourceWithEmptyRule() throws SQLException {
         DataSource dataSource = OrchestrationEncryptDataSourceFactory.createDataSource(null, null, null, getOrchestrationConfiguration());
         assertThat(dataSource, instanceOf(OrchestrationEncryptDataSource.class));
     }
