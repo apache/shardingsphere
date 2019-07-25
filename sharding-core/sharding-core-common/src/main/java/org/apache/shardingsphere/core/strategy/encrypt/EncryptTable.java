@@ -71,7 +71,7 @@ public final class EncryptTable {
      * @return plain column
      */
     public Optional<String> getPlainColumn(final String logicColumn) {
-        return columns.get(logicColumn).getPlainColumn();
+        return columns.keySet().contains(logicColumn) ? columns.get(logicColumn).getPlainColumn() : Optional.<String>absent();
     }
     
     /**
@@ -135,10 +135,7 @@ public final class EncryptTable {
      * @return assisted query column
      */
     public Optional<String> getAssistedQueryColumn(final String logicColumn) {
-        if (!columns.containsKey(logicColumn)) {
-            return Optional.absent();
-        }
-        return columns.get(logicColumn).getAssistedQueryColumn();
+        return columns.containsKey(logicColumn) ? columns.get(logicColumn).getAssistedQueryColumn() : Optional.<String>absent();
     }
     
     /**

@@ -91,6 +91,9 @@ public final class EncryptEngine {
      * @return plain column
      */
     public Optional<String> getPlainColumn(final String logicTable, final String logicColumn) {
+        if (!tables.containsKey(logicTable)) {
+            return Optional.absent();
+        }
         return tables.get(logicTable).getPlainColumn(logicColumn);
     }
     
@@ -195,6 +198,9 @@ public final class EncryptEngine {
      * @return logic and cipher columns
      */
     public Map<String, String> getLogicAndCipherColumns(final String logicTable) {
+        if (!tables.containsKey(logicTable)) {
+            return Collections.emptyMap();
+        }
         return tables.get(logicTable).getLogicAndCipherColumns();
     }
     
