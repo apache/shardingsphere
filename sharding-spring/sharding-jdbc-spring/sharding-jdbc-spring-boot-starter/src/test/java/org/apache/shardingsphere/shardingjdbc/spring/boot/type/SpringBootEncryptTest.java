@@ -46,7 +46,7 @@ public class SpringBootEncryptTest {
     
     @Test
     public void assertSqlShow() {
-        assertTrue(((EncryptDataSource) dataSource).getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW));
+        assertTrue(((EncryptDataSource) dataSource).getRuntimeContext().getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW));
     }
     
     @Test
@@ -58,7 +58,7 @@ public class SpringBootEncryptTest {
     
     @Test
     public void assertWithEncryptRule() {
-        EncryptRule encryptRule = ((EncryptDataSource) dataSource).getEncryptRule();
+        EncryptRule encryptRule = ((EncryptDataSource) dataSource).getRuntimeContext().getRule();
         assertThat(encryptRule.getEncryptTableNames().size(), is(1));
         assertTrue(encryptRule.getEncryptEngine().getShardingEncryptor("t_order", "user_id").isPresent());
     }

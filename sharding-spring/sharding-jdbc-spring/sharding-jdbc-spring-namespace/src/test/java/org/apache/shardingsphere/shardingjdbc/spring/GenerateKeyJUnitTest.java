@@ -17,11 +17,14 @@
 
 package org.apache.shardingsphere.shardingjdbc.spring;
 
+import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.rule.TableRule;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.spring.fixture.DecrementKeyGenerator;
 import org.apache.shardingsphere.shardingjdbc.spring.fixture.IncrementKeyGenerator;
 import org.apache.shardingsphere.shardingjdbc.spring.util.FieldValueUtil;
-import org.apache.shardingsphere.core.rule.TableRule;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
+import org.apache.shardingsphere.spi.keygen.ShardingKeyGenerator;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -62,11 +65,11 @@ public class GenerateKeyJUnitTest extends AbstractSpringJUnitTest {
     @SuppressWarnings("unchecked")
     @Test
     public void assertGenerateKeyColumn() {
-        Object shardingContext = FieldValueUtil.getFieldValue(shardingDataSource, "shardingContext", true);
-        assertNotNull(shardingContext);
-        Object shardingRule = FieldValueUtil.getFieldValue(shardingContext, "shardingRule");
+        ShardingRuntimeContext runtimeContext = shardingDataSource.getRuntimeContext();
+        assertNotNull(runtimeContext);
+        ShardingRule shardingRule = runtimeContext.getRule();
         assertNotNull(shardingRule);
-        Object defaultKeyGenerator = FieldValueUtil.getFieldValue(shardingRule, "defaultShardingKeyGenerator");
+        ShardingKeyGenerator defaultKeyGenerator = shardingRule.getDefaultShardingKeyGenerator();
         assertNotNull(defaultKeyGenerator);
         assertTrue(defaultKeyGenerator instanceof IncrementKeyGenerator);
         Object tableRules = FieldValueUtil.getFieldValue(shardingRule, "tableRules");

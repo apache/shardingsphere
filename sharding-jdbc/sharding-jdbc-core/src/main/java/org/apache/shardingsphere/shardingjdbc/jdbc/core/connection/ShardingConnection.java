@@ -47,17 +47,17 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     
     private final Map<String, DataSource> dataSourceMap;
     
-    private final ShardingRuntimeContext shardingContext;
+    private final ShardingRuntimeContext runtimeContext;
     
     private final TransactionType transactionType;
     
     private final ShardingTransactionManager shardingTransactionManager;
     
-    public ShardingConnection(final Map<String, DataSource> dataSourceMap, final ShardingRuntimeContext shardingContext, final TransactionType transactionType) {
+    public ShardingConnection(final Map<String, DataSource> dataSourceMap, final ShardingRuntimeContext runtimeContext, final TransactionType transactionType) {
         this.dataSourceMap = dataSourceMap;
-        this.shardingContext = shardingContext;
+        this.runtimeContext = runtimeContext;
         this.transactionType = transactionType;
-        shardingTransactionManager = shardingContext.getShardingTransactionManagerEngine().getTransactionManager(transactionType);
+        shardingTransactionManager = runtimeContext.getShardingTransactionManagerEngine().getTransactionManager(transactionType);
     }
     
     /**
@@ -80,7 +80,7 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     
     @Override
     public DatabaseMetaData getMetaData() throws SQLException {
-        return getCachedConnections().isEmpty() ? shardingContext.getCachedDatabaseMetaData() : getCachedConnections().values().iterator().next().getMetaData();
+        return getCachedConnections().isEmpty() ? runtimeContext.getCachedDatabaseMetaData() : getCachedConnections().values().iterator().next().getMetaData();
     }
     
     @Override

@@ -107,7 +107,7 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
         ShardingRule shardingRule = getShardingRule("simpleShardingDataSource");
         assertThat(shardingRule.getTableRules().size(), is(1));
         assertThat(shardingRule.getTableRules().iterator().next().getLogicTable(), is("t_order"));
-        TableRule tableRule = shardingRule.getTableRule("t_order");
+        shardingRule.getTableRule("t_order");
     }
     
     @Test
@@ -224,9 +224,9 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
     @Test
     public void assertPropsDataSource() {
         ShardingDataSource shardingDataSource = applicationContext.getBean("propsDataSource", ShardingDataSource.class);
-        ShardingRuntimeContext shardingContext = (ShardingRuntimeContext) FieldValueUtil.getFieldValue(shardingDataSource, "shardingContext", true);
-        assertTrue(shardingContext.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW));
-        ShardingProperties shardingProperties = shardingContext.getShardingProperties();
+        ShardingRuntimeContext runtimeContext = (ShardingRuntimeContext) FieldValueUtil.getFieldValue(shardingDataSource, "runtimeContext", true);
+        assertTrue(runtimeContext.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW));
+        ShardingProperties shardingProperties = runtimeContext.getShardingProperties();
         boolean showSql = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
         assertTrue(showSql);
         int executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
@@ -242,8 +242,8 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
     @Test
     public void assertDefaultActualDataNodes() {
         ShardingDataSource multiTableRulesDataSource = applicationContext.getBean("multiTableRulesDataSource", ShardingDataSource.class);
-        Object shardingContext = FieldValueUtil.getFieldValue(multiTableRulesDataSource, "shardingContext", true);
-        ShardingRule shardingRule = (ShardingRule) FieldValueUtil.getFieldValue(shardingContext, "shardingRule");
+        ShardingRuntimeContext runtimeContext = (ShardingRuntimeContext) FieldValueUtil.getFieldValue(multiTableRulesDataSource, "runtimeContext", true);
+        ShardingRule shardingRule = runtimeContext.getRule();
         assertThat(shardingRule.getTableRules().size(), is(2));
         Iterator<TableRule> tableRules = shardingRule.getTableRules().iterator();
         TableRule orderRule = tableRules.next();
@@ -264,7 +264,7 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
     
     private ShardingRule getShardingRule(final String shardingDataSourceName) {
         ShardingDataSource shardingDataSource = applicationContext.getBean(shardingDataSourceName, ShardingDataSource.class);
-        Object shardingContext = FieldValueUtil.getFieldValue(shardingDataSource, "shardingContext", true);
-        return (ShardingRule) FieldValueUtil.getFieldValue(shardingContext, "shardingRule");
+        ShardingRuntimeContext runtimeContext = (ShardingRuntimeContext) FieldValueUtil.getFieldValue(shardingDataSource, "runtimeContext", true);
+        return runtimeContext.getRule();
     }
 }

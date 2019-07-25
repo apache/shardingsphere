@@ -51,13 +51,13 @@ public final class EncryptPreparedStatementTest extends AbstractEncryptJDBCDatab
     private EncryptConnection encryptConnection;
     
     @Before
-    public void setUp() {
+    public void setUp() throws SQLException {
         encryptConnection = getEncryptDataSource().getConnection();
     }
     
     @Test
     public void assertSqlShow() {
-        assertTrue(encryptConnection.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW));
+        assertTrue(encryptConnection.getRuntimeContext().getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW));
     }
     
     @Test
