@@ -35,17 +35,6 @@ public final class EncryptDataSourceFactory {
     
     /**
      * Create encrypt data source.
-     *
-     * @param dataSource data source
-     * @param encryptRuleConfiguration encrypt rule configuration
-     * @return encrypt data source
-     */
-    public static DataSource createDataSource(final DataSource dataSource, final EncryptRuleConfiguration encryptRuleConfiguration) {
-        return createDataSource(dataSource, encryptRuleConfiguration, new Properties());
-    }
-    
-    /**
-     * Create encrypt data source.
      * 
      * @param dataSource data source
      * @param encryptRuleConfiguration encrypt rule configuration

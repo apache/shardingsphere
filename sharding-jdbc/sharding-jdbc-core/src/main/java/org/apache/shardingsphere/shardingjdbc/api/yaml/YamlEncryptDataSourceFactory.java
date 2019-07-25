@@ -45,7 +45,7 @@ public final class YamlEncryptDataSourceFactory {
     @SneakyThrows
     public static DataSource createDataSource(final File yamlFile) {
         YamlRootEncryptRuleConfiguration config = YamlEngine.unmarshal(yamlFile, YamlRootEncryptRuleConfiguration.class);
-        return EncryptDataSourceFactory.createDataSource(config.getDataSource(), new EncryptRuleConfigurationYamlSwapper().swap(config.getEncryptRule()));
+        return EncryptDataSourceFactory.createDataSource(config.getDataSource(), new EncryptRuleConfigurationYamlSwapper().swap(config.getEncryptRule()), config.getProps());
     }
     
     /**
@@ -57,7 +57,7 @@ public final class YamlEncryptDataSourceFactory {
     @SneakyThrows
     public static DataSource createDataSource(final byte[] yamlBytes) {
         YamlRootEncryptRuleConfiguration config = YamlEngine.unmarshal(yamlBytes, YamlRootEncryptRuleConfiguration.class);
-        return EncryptDataSourceFactory.createDataSource(config.getDataSource(), new EncryptRuleConfigurationYamlSwapper().swap(config.getEncryptRule()));
+        return EncryptDataSourceFactory.createDataSource(config.getDataSource(), new EncryptRuleConfigurationYamlSwapper().swap(config.getEncryptRule()), config.getProps());
     }
     
     /**
@@ -70,7 +70,7 @@ public final class YamlEncryptDataSourceFactory {
     @SneakyThrows
     public static DataSource createDataSource(final DataSource dataSource, final File yamlFile) {
         YamlRootEncryptRuleConfiguration config = YamlEngine.unmarshal(yamlFile, YamlRootEncryptRuleConfiguration.class);
-        return EncryptDataSourceFactory.createDataSource(dataSource, new EncryptRuleConfigurationYamlSwapper().swap(config.getEncryptRule()));
+        return EncryptDataSourceFactory.createDataSource(dataSource, new EncryptRuleConfigurationYamlSwapper().swap(config.getEncryptRule()), config.getProps());
     
     }
     
@@ -84,6 +84,6 @@ public final class YamlEncryptDataSourceFactory {
     @SneakyThrows
     public static DataSource createDataSource(final DataSource dataSource, final byte[] yamlBytes) {
         YamlRootEncryptRuleConfiguration config = YamlEngine.unmarshal(yamlBytes, YamlRootEncryptRuleConfiguration.class);
-        return EncryptDataSourceFactory.createDataSource(dataSource, new EncryptRuleConfigurationYamlSwapper().swap(config.getEncryptRule()));
+        return EncryptDataSourceFactory.createDataSource(dataSource, new EncryptRuleConfigurationYamlSwapper().swap(config.getEncryptRule()), config.getProps());
     }
 }
