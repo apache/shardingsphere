@@ -50,7 +50,7 @@ public final class InsertCipherNameTokenGenerator implements CollectionSQLTokenG
         if (!isNeedToGenerateSQLToken(optimizedStatement)) {
             return Collections.emptyList();
         }
-        initParameters(optimizedStatement, encryptRule);
+        initParameters(optimizedStatement, rule);
         return createInsertColumnTokens();
     }
     
