@@ -44,11 +44,11 @@ truncateTable
     ;
 
 createDatabase
-    : CREATE (DATABASE | SCHEMA) (IF NOT EXISTS)? schemaName createDatabaseSpecificationClause_?
+    : CREATE (DATABASE | SCHEMA) (IF NOT EXISTS)? schemaName createDatabaseSpecificationClause_
     ;
 
 alterDatabase
-    : ALTER (DATABASE | SCHEMA) schemaName createDatabaseSpecificationClause_?
+    : ALTER (DATABASE | SCHEMA) schemaName createDatabaseSpecificationClause_
     ;
 
 dropDatabse
@@ -68,13 +68,13 @@ createDefinitionClause_
     ;
 
 createDatabaseSpecificationClause_
-    : createDatabaseSpecification*
+    : createDatabaseSpecification_*
     ;
 
-createDatabaseSpecification
-    : DEFAULT? (CHARACTER SET | CHARSET) '='? characterSetName_
-    | DEFAULT? COLLATE '='? collationName_
-    | DEFAULT ENCRYPTION '=' ('Y' | 'N')
+createDatabaseSpecification_
+    : DEFAULT? (CHARACTER SET | CHARSET) EQ_? characterSetName_
+    | DEFAULT? COLLATE EQ_? collationName_
+    | DEFAULT ENCRYPTION EQ_ ('Y' | 'N')
     ;
 
 createDefinitions_
