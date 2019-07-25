@@ -61,11 +61,11 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     }
     
     /**
-     * Whether execute SQL serial or not.
+     * Whether hold transaction or not.
      *
      * @return true or false
      */
-    public boolean isSerialExecute() {
+    public boolean isHoldTransaction() {
         return (TransactionType.LOCAL == transactionType && !getAutoCommit()) || (TransactionType.XA == transactionType && isInShardingTransaction());
     }
     
