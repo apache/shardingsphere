@@ -73,96 +73,135 @@ public final class EncryptEngine {
     }
     
     /**
-     * Get sharding encryptor.
+     * Get logic column.
      * 
-     * @param logicTableName logic table name
-     * @param logicColumnName column name
-     * @return optional of sharding encryptor
+     * @param logicTable logic table
+     * @param cipherColumn cipher column
+     * @return logic column
      */
-    public Optional<ShardingEncryptor> getShardingEncryptor(final String logicTableName, final String logicColumnName) {
-        if (!tables.containsKey(logicTableName)) {
-            return Optional.absent();
-        }
-        Optional<String> encryptor = tables.get(logicTableName).getShardingEncryptor(logicColumnName);
-        return encryptor.isPresent() ? Optional.of(encryptors.get(encryptor.get())) : Optional.<ShardingEncryptor>absent();
-    }
-    
-    /**
-     * Is has sharding query assisted encryptor or not.
-     * 
-     * @param logicTableName logic table name
-     * @return has sharding query assisted encryptor or not
-     */
-    public boolean isHasShardingQueryAssistedEncryptor(final String logicTableName) {
-        return tables.containsKey(logicTableName) && tables.get(logicTableName).isHasShardingQueryAssistedEncryptor();
-    }
-    
-    /**
-     * Get encrypt table names.
-     *
-     * @return encrypt table names
-     */
-    public Collection<String> getEncryptTableNames() {
-        return tables.keySet();
+    public String getLogicColumn(final String logicTable, final String cipherColumn) {
+        return tables.get(logicTable).getLogicColumn(cipherColumn);
     }
     
     /**
      * Get plain column.
      *
-     * @param logicTableName logic table name
-     * @param logicColumnName logic column name
+     * @param logicTable logic table name
+     * @param logicColumn logic column name
      * @return plain column
      */
-    public Optional<String> getPlainColumn(final String logicTableName, final String logicColumnName) {
-        return tables.get(logicTableName).getPlainColumn(logicColumnName);
+    public Optional<String> getPlainColumn(final String logicTable, final String logicColumn) {
+        if (!tables.containsKey(logicTable)) {
+            return Optional.absent();
+        }
+        return tables.get(logicTable).getPlainColumn(logicColumn);
+    }
+    
+    /**
+     * Get plain columns.
+     *
+     * @param logicTable logic table name
+     * @return plain columns
+     */
+    public Collection<String> getPlainColumns(final String logicTable) {
+        if (!tables.containsKey(logicTable)) {
+            return Collections.emptyList();
+        }
+        return tables.get(logicTable).getPlainColumns();
+    }
+    
+    /**
+     * Is has plain column or not.
+     *
+     * @param logicTable logic table name
+     * @return has plain column or not
+     */
+    public boolean isHasPlainColumn(final String logicTable) {
+        return tables.containsKey(logicTable) && tables.get(logicTable).isHasPlainColumn();
     }
     
     /**
      * Get cipher column.
      * 
-     * @param logicTableName logic table name
-     * @param logicColumnName logic column name
+     * @param logicTable logic table name
+     * @param logicColumn logic column name
      * @return cipher column
      */
-    public String getCipherColumn(final String logicTableName, final String logicColumnName) {
-        return tables.get(logicTableName).getCipherColumn(logicColumnName);
+    public String getCipherColumn(final String logicTable, final String logicColumn) {
+        return tables.get(logicTable).getCipherColumn(logicColumn);
+    }
+    
+    /**
+     * Get cipher columns.
+     *
+     * @param logicTable logic table name
+     * @return cipher columns
+     */
+    public Collection<String> getCipherColumns(final String logicTable) {
+        if (!tables.containsKey(logicTable)) {
+            return Collections.emptyList();
+        }
+        return tables.get(logicTable).getCipherColumns();
     }
     
     /**
      * Get assisted query column.
      * 
-     * @param logicTableName logic table name
-     * @param logicColumnName column name
+     * @param logicTable logic table name
+     * @param logicColumn column name
      * @return assisted query column
      */
-    public Optional<String> getAssistedQueryColumn(final String logicTableName, final String logicColumnName) {
-        if (!tables.containsKey(logicTableName)) {
+    public Optional<String> getAssistedQueryColumn(final String logicTable, final String logicColumn) {
+        if (!tables.containsKey(logicTable)) {
             return Optional.absent();
         }
-        return tables.get(logicTableName).getAssistedQueryColumn(logicColumnName);
+        return tables.get(logicTable).getAssistedQueryColumn(logicColumn);
     }
     
     /**
      * Get assisted query columns.
      *
-     * @param logicTableName logic table name
+     * @param logicTable logic table name
      * @return assisted query columns
      */
-    public Collection<String> getAssistedQueryColumns(final String logicTableName) {
-        if (!tables.containsKey(logicTableName)) {
+    public Collection<String> getAssistedQueryColumns(final String logicTable) {
+        if (!tables.containsKey(logicTable)) {
             return Collections.emptyList();
         }
-        return tables.get(logicTableName).getAssistedQueryColumns();
+        return tables.get(logicTable).getAssistedQueryColumns();
     }
     
     /**
-     * Get assisted query column count.
-     * 
-     * @param logicTableName logic table name
-     * @return assisted query column count
+     * Is has query assisted column or not.
+     *
+     * @param logicTable logic table name
+     * @return has query assisted column or not
      */
-    public Integer getAssistedQueryColumnCount(final String logicTableName) {
-        return getAssistedQueryColumns(logicTableName).size();
+    public boolean isHasQueryAssistedColumn(final String logicTable) {
+        return tables.containsKey(logicTable) && tables.get(logicTable).isHasQueryAssistedColumn();
+    }
+    
+    /**
+     * Get assisted query and plain column count.
+     * 
+     * @param logicTable logic table name
+     * @return assisted query and plain column count
+     */
+    public Integer getAssistedQueryAndPlainColumnCount(final String logicTable) {
+        return getAssistedQueryColumns(logicTable).size() + getPlainColumns(logicTable).size();
+    }
+    
+    /**
+     * Get logic and cipher columns.
+     * 
+     * @param logicTable logic table 
+     * @return logic and cipher columns
+     */
+    public Map<String, String> getLogicAndCipherColumns(final String logicTable) {
+        if (!tables.containsKey(logicTable)) {
+            return Collections.emptyMap();
+        }
+        return tables.get(logicTable).getLogicAndCipherColumns();
     }
     
     /**
@@ -204,5 +243,29 @@ public final class EncryptEngine {
                 return String.valueOf(shardingEncryptor.get().encrypt(input.toString()));
             }
         });
+    }
+    
+    /**
+     * Get sharding encryptor.
+     *
+     * @param logicTable logic table name
+     * @param logicColumn column name
+     * @return optional of sharding encryptor
+     */
+    public Optional<ShardingEncryptor> getShardingEncryptor(final String logicTable, final String logicColumn) {
+        if (!tables.containsKey(logicTable)) {
+            return Optional.absent();
+        }
+        Optional<String> encryptor = tables.get(logicTable).getShardingEncryptor(logicColumn);
+        return encryptor.isPresent() ? Optional.of(encryptors.get(encryptor.get())) : Optional.<ShardingEncryptor>absent();
+    }
+    
+    /**
+     * Get encrypt table names.
+     *
+     * @return encrypt table names
+     */
+    public Collection<String> getEncryptTableNames() {
+        return tables.keySet();
     }
 }

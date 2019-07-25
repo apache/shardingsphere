@@ -961,7 +961,7 @@ public final class ShardingSQLRewriteEngineTest {
         insertStatement.getColumns().add(new ColumnSegment(0, 0, "name"));
         ColumnSegment columnSegment = new ColumnSegment(26, 29, "name");
         LiteralExpressionSegment expressionSegment = new LiteralExpressionSegment(33, 34, 10);
-        insertStatement.getAllSQLSegments().add(new SetAssignmentsSegment(22, 34, Collections.singleton(new AssignmentSegment(22, 34, columnSegment, expressionSegment))));
+        insertStatement.getAllSQLSegments().add(new SetAssignmentsSegment(26, 34, Collections.singleton(new AssignmentSegment(26, 34, columnSegment, expressionSegment))));
         insertStatement.getAllSQLSegments().add(new TableSegment(12, 20, "`table_w`"));
         insertStatement.setTable(new TableSegment(0, 0, "table_w"));
         ShardingInsertColumns insertColumns = mock(ShardingInsertColumns.class);

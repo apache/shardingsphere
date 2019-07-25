@@ -43,12 +43,15 @@ public final class EncryptInsertOptimizeEngine implements EncryptOptimizeEngine<
         InsertValueEngine insertValueEngine = new InsertValueEngine();
         EncryptInsertOptimizedStatement result = new EncryptInsertOptimizedStatement(
                 sqlStatement, new EncryptInsertColumns(encryptRule, shardingTableMetaData, sqlStatement), insertValueEngine.createInsertValues(sqlStatement));
-        int derivedColumnsCount = encryptRule.getEncryptEngine().getAssistedQueryColumnCount(sqlStatement.getTable().getTableName());
+        int derivedColumnsCount = encryptRule.getEncryptEngine().getAssistedQueryAndPlainColumnCount(sqlStatement.getTable().getTableName());
         int parametersCount = 0;
         for (InsertValue each : result.getValues()) {
             InsertOptimizeResultUnit unit = result.addUnit(each.getValues(derivedColumnsCount), each.getParameters(parameters, parametersCount, derivedColumnsCount), each.getParametersCount());
-            if (encryptRule.getEncryptEngine().isHasShardingQueryAssistedEncryptor(sqlStatement.getTable().getTableName())) {
+            if (encryptRule.getEncryptEngine().isHasQueryAssistedColumn(sqlStatement.getTable().getTableName())) {
                 fillAssistedQueryUnit(encryptRule, parameters, sqlStatement.getTable().getTableName(), result.getInsertColumns().getRegularColumnNames(), unit);
+            }
+            if (encryptRule.getEncryptEngine().isHasPlainColumn(sqlStatement.getTable().getTableName())) {
+                fillPlainUnit(encryptRule, parameters, sqlStatement.getTable().getTableName(), result.getInsertColumns().getRegularColumnNames(), unit);
             }
             parametersCount += each.getParametersCount();
         }
@@ -59,6 +62,15 @@ public final class EncryptInsertOptimizeEngine implements EncryptOptimizeEngine<
                                        final String tableName, final Collection<String> columnNames, final InsertOptimizeResultUnit unit) {
         for (String each : columnNames) {
             if (encryptRule.getEncryptEngine().getAssistedQueryColumn(tableName, each).isPresent()) {
+                unit.addInsertValue((Comparable<?>) unit.getColumnValue(each), parameters);
+            }
+        }
+    }
+    
+    private void fillPlainUnit(final EncryptRule encryptRule, final List<Object> parameters,
+                                       final String tableName, final Collection<String> columnNames, final InsertOptimizeResultUnit unit) {
+        for (String each : columnNames) {
+            if (encryptRule.getEncryptEngine().getPlainColumn(tableName, each).isPresent()) {
                 unit.addInsertValue((Comparable<?>) unit.getColumnValue(each), parameters);
             }
         }

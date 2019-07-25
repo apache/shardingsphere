@@ -67,7 +67,7 @@ public class SpringBootShardingTest {
         assertThat((Integer) shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE), is(100));
         EncryptEngine encryptEngine = shardingContext.getShardingRule().getEncryptRule().getEncryptEngine();
         assertThat(encryptEngine.getEncryptTableNames().iterator().next(), is("t_order"));
-        assertThat(encryptEngine.getAssistedQueryColumnCount("t_order"), is(0));
+        assertThat(encryptEngine.getAssistedQueryAndPlainColumnCount("t_order"), is(0));
         assertThat(encryptEngine.getShardingEncryptor("t_order", "pwd2").get(), instanceOf(TestShardingEncryptor.class));
     }
     

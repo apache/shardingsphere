@@ -22,39 +22,33 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegme
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.complex.ComplexExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
-import org.apache.shardingsphere.core.rule.DataNode;
 
 import java.util.List;
 
 /**
- * Insert value placeholder for rewrite.
+ * Insert set add item token.
  *
  * @author panjuan
  */
-public final class InsertValueToken extends SQLToken {
+@Getter
+public final class InsertSetQueryAndPlainColumnsToken extends SQLToken implements Attachable {
     
     private final List<String> columnNames;
     
     private final List<ExpressionSegment> columnValues;
     
-    @Getter
-    private final List<DataNode> dataNodes;
-    
-    public InsertValueToken(final List<String> columnNames, final List<ExpressionSegment> columnValues, final List<DataNode> dataNodes) {
-        super(0);
+    public InsertSetQueryAndPlainColumnsToken(final int startIndex, final List<String> columnNames, final List<ExpressionSegment> columnValues) {
+        super(startIndex);
         this.columnNames = columnNames;
         this.columnValues = columnValues;
-        this.dataNodes = dataNodes;
     }
     
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
-        result.append("(");
         for (int i = 0; i < columnNames.size(); i++) {
-            result.append(getColumnValue(i)).append(", ");
+            result.append(String.format(", %s = %s", columnNames.get(i), getColumnValue(i)));
         }
-        result.delete(result.length() - 2, result.length()).append(")");
         return result.toString();
     }
     
@@ -64,7 +58,7 @@ public final class InsertValueToken extends SQLToken {
             return "?";
         } else if (columnValue instanceof LiteralExpressionSegment) {
             Object literals = ((LiteralExpressionSegment) columnValue).getLiterals();
-            return literals instanceof String ? String.format("'%s'", ((LiteralExpressionSegment) columnValue).getLiterals()) : literals.toString();
+            return literals instanceof String ? String.format("'%s'", literals) : literals.toString();
         }
         return ((ComplexExpressionSegment) columnValue).getText();
     }

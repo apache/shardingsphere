@@ -34,30 +34,50 @@ import java.util.LinkedList;
  * Insert columns for encrypt.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @ToString
 public final class EncryptInsertColumns implements InsertColumns {
     
     private final Collection<String> assistedQueryColumnNames;
     
+    private final Collection<String> plainColumnNames;
+    
     @Getter
     private final Collection<String> regularColumnNames;
     
     public EncryptInsertColumns(final EncryptRule encryptRule, final ShardingTableMetaData shardingTableMetaData, final InsertStatement insertStatement) {
-        String tableName = insertStatement.getTable().getTableName();
-        assistedQueryColumnNames = encryptRule.getEncryptEngine().getAssistedQueryColumns(tableName);
-        regularColumnNames = insertStatement.useDefaultColumns() ? getRegularColumnNamesFromMetaData(shardingTableMetaData, tableName) : getColumnNamesFromSQLStatement(insertStatement);
+        assistedQueryColumnNames = encryptRule.getEncryptEngine().getAssistedQueryColumns(insertStatement.getTable().getTableName());
+        plainColumnNames = encryptRule.getEncryptEngine().getPlainColumns(insertStatement.getTable().getTableName());
+        regularColumnNames = insertStatement.useDefaultColumns() 
+                ? getRegularColumnNamesFromMetaData(encryptRule, shardingTableMetaData, insertStatement) : getColumnNamesFromSQLStatement(insertStatement);
     }
     
-    private Collection<String> getRegularColumnNamesFromMetaData(final ShardingTableMetaData shardingTableMetaData, final String tableName) {
-        Collection<String> allColumnNames = shardingTableMetaData.getAllColumnNames(tableName);
-        Collection<String> result = new LinkedHashSet<>(allColumnNames.size() - assistedQueryColumnNames.size());
+    private Collection<String> getRegularColumnNamesFromMetaData(final EncryptRule encryptRule, final ShardingTableMetaData shardingTableMetaData, final InsertStatement insertStatement) {
+        Collection<String> allColumnNames = shardingTableMetaData.getAllColumnNames(insertStatement.getTable().getTableName());
+        Collection<String> result = new LinkedHashSet<>(allColumnNames.size() - getAssistedQueryAndPlainColumnCount());
+        String tableName = insertStatement.getTable().getTableName();
         for (String each : allColumnNames) {
-            if (!assistedQueryColumnNames.contains(each)) {
+            if (!isAssistedQueryAndPlainColumns(each)) {
                 result.add(each);
+            }
+            if (isCipherColumn(encryptRule, tableName, each)) {
+                result.add(getLogicColumn(encryptRule, tableName, each));
             }
         }
         return result;
+    }
+    
+    private boolean isAssistedQueryAndPlainColumns(final String each) {
+        return assistedQueryColumnNames.contains(each) || plainColumnNames.contains(each);
+    }
+    
+    private boolean isCipherColumn(final EncryptRule encryptRule, final String tableName, final String columnName) {
+        return encryptRule.getEncryptEngine().getCipherColumns(tableName).contains(columnName);
+    }
+    
+    private String getLogicColumn(final EncryptRule encryptRule, final String tableName, final String columnName) {
+        return encryptRule.getEncryptEngine().getLogicColumn(tableName, columnName);
     }
     
     private Collection<String> getColumnNamesFromSQLStatement(final InsertStatement insertStatement) {
@@ -75,9 +95,14 @@ public final class EncryptInsertColumns implements InsertColumns {
     
     @Override
     public Collection<String> getAllColumnNames() {
-        Collection<String> result = new LinkedHashSet<>(regularColumnNames.size() + assistedQueryColumnNames.size());
+        Collection<String> result = new LinkedHashSet<>(regularColumnNames.size() + getAssistedQueryAndPlainColumnCount());
         result.addAll(regularColumnNames);
         result.addAll(assistedQueryColumnNames);
+        result.addAll(plainColumnNames);
         return result;
+    }
+    
+    private int getAssistedQueryAndPlainColumnCount() {
+        return assistedQueryColumnNames.size() + plainColumnNames.size();
     }
 }

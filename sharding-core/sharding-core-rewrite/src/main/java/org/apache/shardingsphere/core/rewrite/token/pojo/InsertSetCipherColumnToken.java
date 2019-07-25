@@ -23,43 +23,39 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.complex.Complex
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 
-import java.util.List;
-
 /**
- * Insert set add item token.
+ * Insert set encrypt value token.
  *
  * @author panjuan
  */
 @Getter
-public final class InsertSetAddAssistedColumnsToken extends SQLToken implements Attachable {
+public final class InsertSetCipherColumnToken extends SQLToken implements Substitutable {
     
-    private final List<String> columnNames;
+    private final int stopIndex;
     
-    private final List<ExpressionSegment> columnValues;
+    private final String cipherColumnName;
     
-    public InsertSetAddAssistedColumnsToken(final int startIndex, final List<String> columnNames, final List<ExpressionSegment> columnValues) {
+    private final ExpressionSegment cipherColumnValue;
+    
+    public InsertSetCipherColumnToken(final int startIndex, final int stopIndex, final String cipherColumnName, final ExpressionSegment cipherColumnValue) {
         super(startIndex);
-        this.columnNames = columnNames;
-        this.columnValues = columnValues;
+        this.stopIndex = stopIndex;
+        this.cipherColumnName = cipherColumnName;
+        this.cipherColumnValue = cipherColumnValue;
     }
     
     @Override
     public String toString() {
-        StringBuilder result = new StringBuilder();
-        for (int i = 0; i < columnNames.size(); i++) {
-            result.append(String.format(", %s = %s", columnNames.get(i), getColumnValue(i)));
-        }
-        return result.toString();
+        return String.format("%s = %s", cipherColumnName, getCipherColumnValue());
     }
     
-    private String getColumnValue(final int index) {
-        ExpressionSegment columnValue = columnValues.get(index);
-        if (columnValue instanceof ParameterMarkerExpressionSegment) {
+    private String getCipherColumnValue() {
+        if (cipherColumnValue instanceof ParameterMarkerExpressionSegment) {
             return "?";
-        } else if (columnValue instanceof LiteralExpressionSegment) {
-            Object literals = ((LiteralExpressionSegment) columnValue).getLiterals();
+        } else if (cipherColumnValue instanceof LiteralExpressionSegment) {
+            Object literals = ((LiteralExpressionSegment) cipherColumnValue).getLiterals();
             return literals instanceof String ? String.format("'%s'", literals) : literals.toString();
         }
-        return ((ComplexExpressionSegment) columnValue).getText();
-    }
+        return ((ComplexExpressionSegment) cipherColumnValue).getText();
+    } 
 }
