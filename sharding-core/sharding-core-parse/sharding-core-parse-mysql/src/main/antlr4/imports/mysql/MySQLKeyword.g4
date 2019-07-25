@@ -35,6 +35,10 @@ DATABASES
     : D A T A B A S E S
     ;
 
+DATABASE
+    : D A T A B A S E
+    ;
+
 SCHEMAS
     : S C H E M A S
     ;

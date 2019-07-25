@@ -137,6 +137,10 @@ characterSetName_
     : IDENTIFIER_
     ;
 
+collationName_
+   : IDENTIFIER_
+   ;
+
 expr
     : expr logicalOperator expr
     | expr XOR expr
