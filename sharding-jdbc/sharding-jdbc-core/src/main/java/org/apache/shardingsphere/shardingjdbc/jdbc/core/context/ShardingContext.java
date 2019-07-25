@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.jdbc.core;
+package org.apache.shardingsphere.shardingjdbc.jdbc.core.context;
 
 import lombok.Getter;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
@@ -49,7 +49,7 @@ import java.util.Properties;
  * @author panjuan
  */
 @Getter
-public final class ShardingContext implements AutoCloseable {
+public final class ShardingContext implements RuntimeContext {
     
     private final ShardingRule shardingRule;
     
