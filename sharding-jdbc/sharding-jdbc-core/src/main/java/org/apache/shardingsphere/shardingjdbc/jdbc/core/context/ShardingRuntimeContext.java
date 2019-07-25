@@ -68,7 +68,7 @@ public final class ShardingRuntimeContext implements RuntimeContext {
     
     private final ShardingTransactionManagerEngine shardingTransactionManagerEngine;
     
-    public ShardingRuntimeContext(final Map<String, DataSource> dataSourceMap, final ShardingRule rule, final DatabaseType databaseType, final Properties props) throws SQLException {
+    public ShardingRuntimeContext(final Map<String, DataSource> dataSourceMap, final ShardingRule rule, final Properties props, final DatabaseType databaseType) throws SQLException {
         this.rule = rule;
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
         this.databaseType = databaseType;

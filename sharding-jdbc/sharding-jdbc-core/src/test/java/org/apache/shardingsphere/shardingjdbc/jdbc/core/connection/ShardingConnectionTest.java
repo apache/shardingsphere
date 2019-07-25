@@ -58,7 +58,7 @@ public final class ShardingConnectionTest {
     
     private ShardingConnection connection;
     
-    private ShardingRuntimeContext shardingContext;
+    private ShardingRuntimeContext runtimeContext;
     
     private Map<String, DataSource> dataSourceMap;
     
@@ -77,14 +77,14 @@ public final class ShardingConnectionTest {
     
     @Before
     public void setUp() {
-        shardingContext = mock(ShardingRuntimeContext.class);
-        when(shardingContext.getDatabaseType()).thenReturn(DatabaseTypes.getActualDatabaseType("H2"));
-        when(shardingContext.getShardingTransactionManagerEngine()).thenReturn(new ShardingTransactionManagerEngine());
+        runtimeContext = mock(ShardingRuntimeContext.class);
+        when(runtimeContext.getDatabaseType()).thenReturn(DatabaseTypes.getActualDatabaseType("H2"));
+        when(runtimeContext.getShardingTransactionManagerEngine()).thenReturn(new ShardingTransactionManagerEngine());
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(new TableRuleConfiguration("test"));
         dataSourceMap = new HashMap<>(1, 1);
         dataSourceMap.put(DS_NAME, masterSlaveDataSource);
-        connection = new ShardingConnection(dataSourceMap, shardingContext, TransactionType.LOCAL);
+        connection = new ShardingConnection(dataSourceMap, runtimeContext, TransactionType.LOCAL);
     }
     
     @After
@@ -110,7 +110,7 @@ public final class ShardingConnectionTest {
     
     @Test
     public void assertXATransactionOperation() throws SQLException {
-        connection = new ShardingConnection(dataSourceMap, shardingContext, TransactionType.XA);
+        connection = new ShardingConnection(dataSourceMap, runtimeContext, TransactionType.XA);
         connection.setAutoCommit(false);
         assertTrue(XAShardingTransactionManagerFixture.getInvocations().contains(TransactionOperationType.BEGIN));
         connection.commit();
@@ -121,7 +121,7 @@ public final class ShardingConnectionTest {
     
     @Test
     public void assertBASETransactionOperation() throws SQLException {
-        connection = new ShardingConnection(dataSourceMap, shardingContext, TransactionType.BASE);
+        connection = new ShardingConnection(dataSourceMap, runtimeContext, TransactionType.BASE);
         connection.setAutoCommit(false);
         assertTrue(BASEShardingTransactionManagerFixture.getInvocations().contains(TransactionOperationType.BEGIN));
         connection.commit();

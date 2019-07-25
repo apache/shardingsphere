@@ -97,7 +97,7 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
             SQLUnit sqlUnit = getSQLUnit(sql);
             preparedStatement = preparedStatementGenerator.createPreparedStatement(sqlUnit.getSql());
             replaySetParameter(preparedStatement, sqlUnit.getParameters());
-            this.resultSet = new EncryptResultSet(this, preparedStatement.executeQuery(), preparedStatementGenerator.connection.getEncryptRule());
+            this.resultSet = new EncryptResultSet(this, preparedStatement.executeQuery(), preparedStatementGenerator.connection.getRuntimeContext().getRule());
             return resultSet;
         } finally {
             clearParameters();
@@ -136,7 +136,7 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
     }
     
     private EncryptResultSet createEncryptResultSet(final PreparedStatement preparedStatement) throws SQLException {
-        return null == preparedStatement.getResultSet() ? null : new EncryptResultSet(this, preparedStatement.getResultSet(), preparedStatementGenerator.connection.getEncryptRule());
+        return null == preparedStatement.getResultSet() ? null : new EncryptResultSet(this, preparedStatement.getResultSet(), preparedStatementGenerator.connection.getRuntimeContext().getRule());
     }
     
     @Override
@@ -148,13 +148,13 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
     @SuppressWarnings("unchecked")
     private SQLUnit getSQLUnit(final String sql) {
         EncryptConnection connection = preparedStatementGenerator.connection;
-        SQLStatement sqlStatement = connection.getParseEngine().parse(sql, true);
+        SQLStatement sqlStatement = connection.getRuntimeContext().getParseEngine().parse(sql, true);
         OptimizedStatement optimizedStatement = EncryptOptimizeEngineFactory.newInstance(
-                sqlStatement).optimize(connection.getEncryptRule(), connection.getShardingTableMetaData(), sql, getParameters(), sqlStatement);
-        SQLRewriteEngine encryptSQLRewriteEngine = new SQLRewriteEngine(connection.getEncryptRule(), 
-                optimizedStatement, sql, getParameters(), connection.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN));
+                sqlStatement).optimize(connection.getRuntimeContext().getRule(), connection.getRuntimeContext().getMetaData(), sql, getParameters(), sqlStatement);
+        SQLRewriteEngine encryptSQLRewriteEngine = new SQLRewriteEngine(connection.getRuntimeContext().getRule(), 
+                optimizedStatement, sql, getParameters(), connection.getRuntimeContext().getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN));
         SQLUnit result = encryptSQLRewriteEngine.generateSQL();
-        boolean showSQL = connection.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW);
+        boolean showSQL = connection.getRuntimeContext().getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW);
         if (showSQL) {
             SQLLogger.logSQL(result.getSql());
         }

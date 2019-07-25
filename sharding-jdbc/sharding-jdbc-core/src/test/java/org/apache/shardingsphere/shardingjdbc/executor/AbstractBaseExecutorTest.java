@@ -65,19 +65,19 @@ public abstract class AbstractBaseExecutorTest {
     }
     
     private void setConnection() throws SQLException {
-        ShardingRuntimeContext shardingContext = mock(ShardingRuntimeContext.class);
-        when(shardingContext.getExecuteEngine()).thenReturn(executeEngine);
-        when(shardingContext.getShardingProperties()).thenReturn(getShardingProperties());
-        when(shardingContext.getDatabaseType()).thenReturn(DatabaseTypes.getActualDatabaseType("H2"));
+        ShardingRuntimeContext runtimeContext = mock(ShardingRuntimeContext.class);
+        when(runtimeContext.getExecuteEngine()).thenReturn(executeEngine);
+        when(runtimeContext.getShardingProperties()).thenReturn(getShardingProperties());
+        when(runtimeContext.getDatabaseType()).thenReturn(DatabaseTypes.getActualDatabaseType("H2"));
         ShardingRule shardingRule = getShardingRule();
-        when(shardingContext.getRule()).thenReturn(shardingRule);
-        when(shardingContext.getShardingTransactionManagerEngine()).thenReturn(new ShardingTransactionManagerEngine());
+        when(runtimeContext.getRule()).thenReturn(shardingRule);
+        when(runtimeContext.getShardingTransactionManagerEngine()).thenReturn(new ShardingTransactionManagerEngine());
         DataSource dataSource = mock(DataSource.class);
         when(dataSource.getConnection()).thenReturn(mock(Connection.class));
         Map<String, DataSource> dataSourceSourceMap = new LinkedHashMap<>();
         dataSourceSourceMap.put("ds_0", dataSource);
         dataSourceSourceMap.put("ds_1", dataSource);
-        connection = new ShardingConnection(dataSourceSourceMap, shardingContext, TransactionType.LOCAL);
+        connection = new ShardingConnection(dataSourceSourceMap, runtimeContext, TransactionType.LOCAL);
     }
     
     private ShardingRule getShardingRule() {

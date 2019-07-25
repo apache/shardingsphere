@@ -49,7 +49,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
         ConfigurationLogger.log(shardingRule.getShardingRuleConfig());
         ConfigurationLogger.log(props);
         checkDataSourceType(dataSourceMap);
-        runtimeContext = new ShardingRuntimeContext(dataSourceMap, shardingRule, getDatabaseType(), props);
+        runtimeContext = new ShardingRuntimeContext(dataSourceMap, shardingRule, props, getDatabaseType());
     }
     
     private void checkDataSourceType(final Map<String, DataSource> dataSourceMap) {
