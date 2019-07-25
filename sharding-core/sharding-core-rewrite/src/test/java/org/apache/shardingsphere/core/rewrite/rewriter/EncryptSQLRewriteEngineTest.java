@@ -140,7 +140,7 @@ public final class EncryptSQLRewriteEngineTest {
     }
     
     @Test
-    public void assertSelectWithPlaceholderWithQueryPlainQueryEncrypt() {
+    public void assertSelectWithPlaceholderWithQueryPlainEncrypt() {
         String sql = "SELECT * FROM t_plain_query WHERE col3 = ? or col4 = ?";
         SQLUnit actual = getSQLUnit(sql, parametersOfEqual, false);
         assertThat(actual.getSql(), is("SELECT * FROM t_plain_query WHERE plain1 = ? or plain2 = ?"));
@@ -182,10 +182,26 @@ public final class EncryptSQLRewriteEngineTest {
     }
     
     @Test
+    public void assertDeleteWithoutPlaceholderWithQueryPlainEncrypt() {
+        String sql = "DELETE FROM t_plain_query WHERE col3 = 1 or col4 IN (2,3,4)";
+        SQLUnit actual = getSQLUnit(sql, Collections.emptyList(), true);
+        assertThat(actual.getSql(), is("DELETE FROM t_plain_query WHERE query1 = 'assistedEncryptValue' or query2 IN ('assistedEncryptValue', 'assistedEncryptValue', 'assistedEncryptValue')"));
+        assertThat(actual.getParameters().size(), is(0));
+    }
+    
+    @Test
     public void assertUpdateWithoutPlaceholderWithEncrypt() {
         String sql = "UPDATE t_encrypt set col1 = 3 where col2 = 2";
         SQLUnit actual = getSQLUnit(sql, Collections.emptyList(), true);
         assertThat(actual.getSql(), is("UPDATE t_encrypt set col1 = 'encryptValue' where col2 = 'encryptValue'"));
+        assertThat(actual.getParameters().size(), is(0));
+    }
+    
+    @Test
+    public void assertUpdateWithoutPlaceholderWithPlainEncrypt() {
+        String sql = "UPDATE t_plain_encrypt set col3 = 3 where col4 = 2";
+        SQLUnit actual = getSQLUnit(sql, Collections.emptyList(), false);
+        assertThat(actual.getSql(), is("UPDATE t_plain_encrypt set plain1 = 3, col1 = 'encryptValue' where plain2 = '2'"));
         assertThat(actual.getParameters().size(), is(0));
     }
     
@@ -198,6 +214,18 @@ public final class EncryptSQLRewriteEngineTest {
         assertThat(actual.getParameters().get(0), is((Object) "encryptValue"));
         assertThat(actual.getParameters().get(1), is((Object) "assistedEncryptValue"));
         assertThat(actual.getParameters().get(2), is((Object) "assistedEncryptValue"));
+    }
+    
+    @Test
+    public void assertUpdateWithPlaceholderWithQueryPlainEncrypt() {
+        String sql = "UPDATE t_plain_query set col3 = ? where col4 = ?";
+        SQLUnit actual = getSQLUnit(sql, parametersOfEqual, true);
+        assertThat(actual.getSql(), is("UPDATE t_plain_query set plain1 = ?, col1 = ?, query1 = ? where query2 = ?"));
+        assertThat(actual.getParameters().size(), is(4));
+        assertThat(actual.getParameters().get(0), is((Object) 1));
+        assertThat(actual.getParameters().get(1), is((Object) "encryptValue"));
+        assertThat(actual.getParameters().get(2), is((Object) "assistedEncryptValue"));
+        assertThat(actual.getParameters().get(3), is((Object) "assistedEncryptValue"));
     }
     
     @Test
