@@ -41,24 +41,21 @@ public final class ShardingInsertColumns implements InsertColumns {
     
     private final String generateKeyColumnName;
     
-    private final Collection<String> assistedQueryColumnNames;
-    
-    private final Collection<String> plainColumnNames;
+    private final Collection<String> assistedQueryAndPlainColumnNames;
     
     @Getter
     private final Collection<String> regularColumnNames;
     
     public ShardingInsertColumns(final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData, final InsertStatement insertStatement) {
         generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTable().getTableName()).orNull();
-        assistedQueryColumnNames = shardingRule.getEncryptRule().getEncryptEngine().getAssistedQueryColumns(insertStatement.getTable().getTableName());
-        plainColumnNames = shardingRule.getEncryptRule().getEncryptEngine().getPlainColumns(insertStatement.getTable().getTableName());
+        assistedQueryAndPlainColumnNames = shardingRule.getEncryptRule().getEncryptEngine().getAssistedQueryAndPlainColumns(insertStatement.getTable().getTableName());
         regularColumnNames = insertStatement.useDefaultColumns() 
                 ? getRegularColumnNamesFromMetaData(shardingRule.getEncryptRule(), shardingTableMetaData, insertStatement) : getRegularColumnNamesFromSQLStatement(insertStatement);
     }
     
     private Collection<String> getRegularColumnNamesFromMetaData(final EncryptRule encryptRule, final ShardingTableMetaData shardingTableMetaData, final InsertStatement insertStatement) {
         Collection<String> allColumnNames = shardingTableMetaData.getAllColumnNames(insertStatement.getTable().getTableName());
-        Collection<String> result = new LinkedHashSet<>(allColumnNames.size() - getAssistedQueryAndPlainColumnCount());
+        Collection<String> result = new LinkedHashSet<>(allColumnNames.size() - assistedQueryAndPlainColumnNames.size());
         String tableName = insertStatement.getTable().getTableName();
         for (String each : allColumnNames) {
             if (!isAssistedQueryAndPlainColumns(each)) {
@@ -75,7 +72,7 @@ public final class ShardingInsertColumns implements InsertColumns {
     }
     
     private boolean isAssistedQueryAndPlainColumns(final String columnName) {
-        return assistedQueryColumnNames.contains(columnName) || plainColumnNames.contains(columnName);
+        return assistedQueryAndPlainColumnNames.contains(columnName);
     }
     
     private boolean isCipherColumn(final EncryptRule encryptRule, final String tableName, final String columnName) {
@@ -87,7 +84,7 @@ public final class ShardingInsertColumns implements InsertColumns {
     }
     
     private boolean isGenerateKeyFromMetaData(final Collection<String> allColumnNames, final int columnValueSize) {
-        return null != generateKeyColumnName && allColumnNames.size() - getAssistedQueryAndPlainColumnCount() != columnValueSize;
+        return null != generateKeyColumnName && allColumnNames.size() - assistedQueryAndPlainColumnNames.size() != columnValueSize;
     }
     
     private Collection<String> getRegularColumnNamesFromSQLStatement(final InsertStatement insertStatement) {
@@ -112,17 +109,12 @@ public final class ShardingInsertColumns implements InsertColumns {
     
     @Override
     public Collection<String> getAllColumnNames() {
-        Collection<String> result = new LinkedHashSet<>(regularColumnNames.size() + getAssistedQueryAndPlainColumnCount() + 1);
+        Collection<String> result = new LinkedHashSet<>(regularColumnNames.size() + assistedQueryAndPlainColumnNames.size() + 1);
         result.addAll(regularColumnNames);
         if (null != generateKeyColumnName && !regularColumnNames.contains(generateKeyColumnName)) {
             result.add(generateKeyColumnName);
         }
-        result.addAll(assistedQueryColumnNames);
-        result.addAll(plainColumnNames);
+        result.addAll(assistedQueryAndPlainColumnNames);
         return result;
-    }
-    
-    private int getAssistedQueryAndPlainColumnCount() {
-        return assistedQueryColumnNames.size() + plainColumnNames.size();
     }
 }
