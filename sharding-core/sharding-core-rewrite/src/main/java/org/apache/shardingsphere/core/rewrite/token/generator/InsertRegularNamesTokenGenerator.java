@@ -75,7 +75,7 @@ public final class InsertRegularNamesTokenGenerator implements OptionalSQLTokenG
     
     private Collection<String> getActualInsertColumns() {
         Collection<String> result = new LinkedList<>();
-        Map<String, String> logicAndCipherColumns = getEncryptRule().getEncryptEngine().getLogicAndCipherColumns(tableName);
+        Map<String, String> logicAndCipherColumns = getEncryptRule().getLogicAndCipherColumns(tableName);
         for (String each : insertOptimizedStatement.getInsertColumns().getRegularColumnNames()) {
             result.add(getCipherColumn(each, logicAndCipherColumns));
         }
@@ -104,6 +104,6 @@ public final class InsertRegularNamesTokenGenerator implements OptionalSQLTokenG
     }
     
     private boolean isNeedToAppendAssistedQueryAndPlainColumns(final EncryptRule encryptRule) {
-        return encryptRule.getEncryptEngine().getAssistedQueryAndPlainColumnCount(tableName) > 0;
+        return encryptRule.getAssistedQueryAndPlainColumnCount(tableName) > 0;
     }
 }
