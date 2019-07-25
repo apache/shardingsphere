@@ -25,7 +25,6 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.Paramete
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.rule.DataNode;
 
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -52,12 +51,11 @@ public final class InsertValuesToken extends SQLToken implements Substitutable, 
     /**
      * Add insert value token.
      * 
-     * @param columnNames column names
      * @param columnValues column values
      * @param dataNodes data nodtes
      */
-    public void addInsertValueToken(final Collection<String> columnNames, final List<ExpressionSegment> columnValues, final List<DataNode> dataNodes) {
-        insertValueTokens.add(new InsertValueToken(columnNames, columnValues, dataNodes));
+    public void addInsertValueToken(final List<ExpressionSegment> columnValues, final List<DataNode> dataNodes) {
+        insertValueTokens.add(new InsertValueToken(columnValues, dataNodes));
     }
     
     @Override
@@ -90,15 +88,12 @@ public final class InsertValuesToken extends SQLToken implements Substitutable, 
     
     private final class InsertValueToken {
     
-        private final Collection<String> columnNames;
-    
         private final List<ExpressionSegment> columnValues;
     
         @Getter
         private final List<DataNode> dataNodes;
     
-        InsertValueToken(final Collection<String> columnNames, final List<ExpressionSegment> columnValues, final List<DataNode> dataNodes) {
-            this.columnNames = columnNames;
+        InsertValueToken(final List<ExpressionSegment> columnValues, final List<DataNode> dataNodes) {
             this.columnValues = columnValues;
             this.dataNodes = dataNodes;
         }
@@ -107,7 +102,7 @@ public final class InsertValuesToken extends SQLToken implements Substitutable, 
         public String toString() {
             StringBuilder result = new StringBuilder();
             result.append("(");
-            for (int i = 0; i < columnNames.size(); i++) {
+            for (int i = 0; i < columnValues.size(); i++) {
                 result.append(getColumnValue(i)).append(", ");
             }
             result.delete(result.length() - 2, result.length()).append(")");
