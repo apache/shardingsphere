@@ -90,8 +90,8 @@ public final class ShardingRuntimeContext extends AbstractRuntimeContext<Shardin
     
     private TableMetaDataInitializer getTableMetaDataInitializer(final Map<String, DataSource> dataSourceMap, final ShardingDataSourceMetaData shardingDataSourceMetaData) {
         return new TableMetaDataInitializer(shardingDataSourceMetaData, getExecuteEngine(), new JDBCTableMetaDataConnectionManager(dataSourceMap),
-                getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY),
-                getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.CHECK_TABLE_METADATA_ENABLED));
+                this.getProps().<Integer>getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY),
+                this.getProps().<Boolean>getValue(ShardingPropertiesConstant.CHECK_TABLE_METADATA_ENABLED));
     }
     
     @Override

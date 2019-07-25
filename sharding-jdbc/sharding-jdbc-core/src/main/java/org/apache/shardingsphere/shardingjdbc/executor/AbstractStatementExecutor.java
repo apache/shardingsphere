@@ -102,7 +102,7 @@ public class AbstractStatementExecutor {
         this.resultSetConcurrency = resultSetConcurrency;
         this.resultSetHoldability = resultSetHoldability;
         this.connection = shardingConnection;
-        int maxConnectionsSizePerQuery = connection.getRuntimeContext().getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY);
+        int maxConnectionsSizePerQuery = connection.getRuntimeContext().getProps().<Integer>getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY);
         ShardingExecuteEngine executeEngine = connection.getRuntimeContext().getExecuteEngine();
         sqlExecutePrepareTemplate = new SQLExecutePrepareTemplate(maxConnectionsSizePerQuery);
         sqlExecuteTemplate = new SQLExecuteTemplate(executeEngine, connection.isHoldTransaction());
@@ -222,7 +222,7 @@ public class AbstractStatementExecutor {
     }
     
     private TableMetaDataInitializer getTableMetaDataInitializer() {
-        ShardingProperties shardingProperties = connection.getRuntimeContext().getShardingProperties();
+        ShardingProperties shardingProperties = connection.getRuntimeContext().getProps();
         return new TableMetaDataInitializer(connection.getRuntimeContext().getMetaData().getDataSource(), 
                 connection.getRuntimeContext().getExecuteEngine(), new JDBCTableMetaDataConnectionManager(connection.getDataSourceMap()),
                 shardingProperties.<Integer>getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY),

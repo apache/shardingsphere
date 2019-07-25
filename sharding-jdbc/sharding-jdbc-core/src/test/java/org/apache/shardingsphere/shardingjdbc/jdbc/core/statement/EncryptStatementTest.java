@@ -56,7 +56,7 @@ public final class EncryptStatementTest extends AbstractEncryptJDBCDatabaseAndTa
     
     @Test
     public void assertSqlShow() {
-        assertTrue(encryptConnection.getRuntimeContext().getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW));
+        assertTrue(encryptConnection.getRuntimeContext().getProps().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW));
     }
     
     @Test

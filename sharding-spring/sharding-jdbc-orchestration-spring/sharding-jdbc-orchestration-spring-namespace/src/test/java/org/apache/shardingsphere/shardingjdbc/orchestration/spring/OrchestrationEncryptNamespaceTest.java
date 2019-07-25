@@ -79,6 +79,6 @@ public class OrchestrationEncryptNamespaceTest extends AbstractJUnit4SpringConte
     private ShardingProperties getShardingProperties(final String encryptDatasourceName) {
         OrchestrationSpringEncryptDataSource encryptDataSource = applicationContext.getBean(encryptDatasourceName, OrchestrationSpringEncryptDataSource.class);
         EncryptDataSource dataSource = (EncryptDataSource) FieldValueUtil.getFieldValue(encryptDataSource, "dataSource", true);
-        return dataSource.getRuntimeContext().getShardingProperties();
+        return dataSource.getRuntimeContext().getProps();
     }
 }

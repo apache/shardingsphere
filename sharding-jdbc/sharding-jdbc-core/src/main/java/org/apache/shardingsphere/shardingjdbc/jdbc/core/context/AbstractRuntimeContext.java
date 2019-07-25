@@ -40,7 +40,7 @@ public abstract class AbstractRuntimeContext<T extends BaseRule> implements Runt
     
     private final T rule;
     
-    private final ShardingProperties shardingProperties;
+    private final ShardingProperties props;
     
     private final DatabaseType databaseType;
     
@@ -50,9 +50,9 @@ public abstract class AbstractRuntimeContext<T extends BaseRule> implements Runt
     
     protected AbstractRuntimeContext(final T rule, final Properties props, final DatabaseType databaseType) {
         this.rule = rule;
-        shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
+        this.props = new ShardingProperties(null == props ? new Properties() : props);
         this.databaseType = databaseType;
-        executeEngine = new ShardingExecuteEngine(shardingProperties.<Integer>getValue(ShardingPropertiesConstant.EXECUTOR_SIZE));
+        executeEngine = new ShardingExecuteEngine(this.props.<Integer>getValue(ShardingPropertiesConstant.EXECUTOR_SIZE));
         parseEngine = SQLParseEngineFactory.getSQLParseEngine(databaseType);
     }
     

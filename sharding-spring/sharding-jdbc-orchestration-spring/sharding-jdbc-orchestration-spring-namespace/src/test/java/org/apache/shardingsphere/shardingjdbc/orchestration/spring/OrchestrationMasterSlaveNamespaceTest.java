@@ -92,6 +92,6 @@ public class OrchestrationMasterSlaveNamespaceTest extends AbstractJUnit4SpringC
     private ShardingProperties getShardingProperties(final String masterSlaveDataSourceName) {
         OrchestrationSpringMasterSlaveDataSource masterSlaveDataSource = applicationContext.getBean(masterSlaveDataSourceName, OrchestrationSpringMasterSlaveDataSource.class);
         MasterSlaveDataSource dataSource = (MasterSlaveDataSource) FieldValueUtil.getFieldValue(masterSlaveDataSource, "dataSource", true);
-        return dataSource.getRuntimeContext().getShardingProperties();
+        return dataSource.getRuntimeContext().getProps();
     }
 }

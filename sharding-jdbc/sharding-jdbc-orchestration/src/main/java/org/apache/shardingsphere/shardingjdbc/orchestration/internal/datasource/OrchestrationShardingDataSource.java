@@ -68,9 +68,9 @@ public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSo
     public OrchestrationShardingDataSource(final ShardingDataSource shardingDataSource, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
         super(new ShardingOrchestrationFacade(orchestrationConfig, Collections.singletonList(ShardingConstant.LOGIC_SCHEMA_NAME)));
         dataSource = new ShardingDataSource(shardingDataSource.getDataSourceMap(), new OrchestrationShardingRule(shardingDataSource.getRuntimeContext().getRule().getShardingRuleConfig(),
-                shardingDataSource.getDataSourceMap().keySet()), shardingDataSource.getRuntimeContext().getShardingProperties().getProps());
+                shardingDataSource.getDataSourceMap().keySet()), shardingDataSource.getRuntimeContext().getProps().getProps());
         initShardingOrchestrationFacade(Collections.singletonMap(ShardingConstant.LOGIC_SCHEMA_NAME, DataSourceConverter.getDataSourceConfigurationMap(dataSource.getDataSourceMap())),
-                getRuleConfigurationMap(), dataSource.getRuntimeContext().getShardingProperties().getProps());
+                getRuleConfigurationMap(), dataSource.getRuntimeContext().getProps().getProps());
     }
     
     private Map<String, RuleConfiguration> getRuleConfigurationMap() {
@@ -88,7 +88,7 @@ public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSo
     @SneakyThrows
     public final synchronized void renew(final ShardingRuleChangedEvent shardingRuleChangedEvent) {
         dataSource = new ShardingDataSource(dataSource.getDataSourceMap(), new OrchestrationShardingRule(shardingRuleChangedEvent.getShardingRuleConfiguration(),
-                dataSource.getDataSourceMap().keySet()), dataSource.getRuntimeContext().getShardingProperties().getProps());
+                dataSource.getDataSourceMap().keySet()), dataSource.getRuntimeContext().getProps().getProps());
     }
     
     /**
@@ -103,7 +103,7 @@ public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSo
         dataSource.close(getDeletedDataSources(dataSourceConfigurations));
         dataSource.close(getModifiedDataSources(dataSourceConfigurations).keySet());
         dataSource = new ShardingDataSource(getChangedDataSources(dataSource.getDataSourceMap(), dataSourceConfigurations), 
-                dataSource.getRuntimeContext().getRule(), dataSource.getRuntimeContext().getShardingProperties().getProps());
+                dataSource.getRuntimeContext().getRule(), dataSource.getRuntimeContext().getProps().getProps());
         getDataSourceConfigurations().clear();
         getDataSourceConfigurations().putAll(dataSourceConfigurations);
     }

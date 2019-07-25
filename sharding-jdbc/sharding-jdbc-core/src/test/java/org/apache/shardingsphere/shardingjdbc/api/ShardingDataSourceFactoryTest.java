@@ -94,6 +94,6 @@ public final class ShardingDataSourceFactoryTest {
         Field field = dataSource.getClass().getDeclaredField("runtimeContext");
         field.setAccessible(true);
         ShardingRuntimeContext runtimeContext = (ShardingRuntimeContext) field.get(dataSource);
-        return runtimeContext.getShardingProperties().getProps();
+        return runtimeContext.getProps().getProps();
     }
 }

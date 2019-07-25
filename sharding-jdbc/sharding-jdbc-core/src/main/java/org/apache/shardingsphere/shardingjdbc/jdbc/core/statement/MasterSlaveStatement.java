@@ -65,7 +65,7 @@ public final class MasterSlaveStatement extends AbstractStatementAdapter {
         super(Statement.class);
         this.connection = connection;
         masterSlaveRouter = new MasterSlaveRouter(connection.getRuntimeContext().getRule(), connection.getRuntimeContext().getParseEngine(),
-                connection.getRuntimeContext().getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW));
+                connection.getRuntimeContext().getProps().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW));
         this.resultSetType = resultSetType;
         this.resultSetConcurrency = resultSetConcurrency;
         this.resultSetHoldability = resultSetHoldability;

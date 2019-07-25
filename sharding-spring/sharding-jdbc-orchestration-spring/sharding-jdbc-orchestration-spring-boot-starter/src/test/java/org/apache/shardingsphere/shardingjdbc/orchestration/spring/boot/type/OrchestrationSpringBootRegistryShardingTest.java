@@ -128,8 +128,8 @@ public class OrchestrationSpringBootRegistryShardingTest {
         for (DataSource each : shardingDataSource.getDataSourceMap().values()) {
             assertThat(((BasicDataSource) each).getMaxTotal(), is(16));
         }
-        assertTrue(runtimeContext.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW));
-        ShardingProperties shardingProperties = runtimeContext.getShardingProperties();
+        assertTrue(runtimeContext.getProps().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW));
+        ShardingProperties shardingProperties = runtimeContext.getProps();
         assertTrue((Boolean) shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW));
         assertThat((Integer) shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE), is(100));
     }

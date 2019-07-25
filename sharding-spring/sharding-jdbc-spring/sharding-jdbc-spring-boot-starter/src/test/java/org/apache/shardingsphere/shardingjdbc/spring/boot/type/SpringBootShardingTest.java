@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shardingjdbc.spring.boot.type;
 
+import com.google.common.base.Optional;
 import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
@@ -29,6 +30,7 @@ import org.apache.shardingsphere.core.strategy.route.inline.InlineShardingStrate
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.fixture.TestShardingEncryptor;
+import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -61,14 +63,16 @@ public class SpringBootShardingTest {
         for (DataSource each : ((ShardingDataSource) dataSource).getDataSourceMap().values()) {
             assertThat(((BasicDataSource) each).getMaxTotal(), is(100));
         }
-        assertTrue(runtimeContext.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW));
-        ShardingProperties shardingProperties = runtimeContext.getShardingProperties();
+        assertTrue(runtimeContext.getProps().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW));
+        ShardingProperties shardingProperties = runtimeContext.getProps();
         assertTrue((Boolean) shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW));
         assertThat((Integer) shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE), is(100));
         EncryptRule encryptRule = runtimeContext.getRule().getEncryptRule();
         assertThat(encryptRule.getEncryptTableNames().iterator().next(), is("t_order"));
         assertThat(encryptRule.getAssistedQueryAndPlainColumnCount("t_order"), is(0));
-        assertThat(encryptRule.getShardingEncryptor("t_order", "pwd2").get(), instanceOf(TestShardingEncryptor.class));
+        Optional<ShardingEncryptor> shardingEncryptor = encryptRule.getShardingEncryptor("t_order", "pwd2");
+        assertTrue(shardingEncryptor.isPresent());
+        assertThat(shardingEncryptor.get(), instanceOf(TestShardingEncryptor.class));
     }
     
     @Test

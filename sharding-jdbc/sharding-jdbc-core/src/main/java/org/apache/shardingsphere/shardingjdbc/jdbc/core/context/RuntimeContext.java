@@ -44,7 +44,7 @@ public interface RuntimeContext<T extends BaseRule> extends AutoCloseable {
      *
      * @return properties
      */
-    ShardingProperties getShardingProperties();
+    ShardingProperties getProps();
     
     /**
      * Get database type.
