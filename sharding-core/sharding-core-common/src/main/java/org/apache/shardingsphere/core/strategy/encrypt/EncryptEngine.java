@@ -32,6 +32,7 @@ import org.apache.shardingsphere.spi.encrypt.ShardingQueryAssistedEncryptor;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -97,13 +98,7 @@ public final class EncryptEngine {
         return tables.get(logicTable).getPlainColumn(logicColumn);
     }
     
-    /**
-     * Get plain columns.
-     *
-     * @param logicTable logic table name
-     * @return plain columns
-     */
-    public Collection<String> getPlainColumns(final String logicTable) {
+    private Collection<String> getPlainColumns(final String logicTable) {
         if (!tables.containsKey(logicTable)) {
             return Collections.emptyList();
         }
@@ -158,13 +153,7 @@ public final class EncryptEngine {
         return tables.get(logicTable).getAssistedQueryColumn(logicColumn);
     }
     
-    /**
-     * Get assisted query columns.
-     *
-     * @param logicTable logic table name
-     * @return assisted query columns
-     */
-    public Collection<String> getAssistedQueryColumns(final String logicTable) {
+    private Collection<String> getAssistedQueryColumns(final String logicTable) {
         if (!tables.containsKey(logicTable)) {
             return Collections.emptyList();
         }
@@ -179,6 +168,19 @@ public final class EncryptEngine {
      */
     public boolean isHasQueryAssistedColumn(final String logicTable) {
         return tables.containsKey(logicTable) && tables.get(logicTable).isHasQueryAssistedColumn();
+    }
+    
+    /**
+     * Get assisted query and plain columns.
+     *
+     * @param logicTable logic table name
+     * @return assisted query and plain columns
+     */
+    public Collection<String> getAssistedQueryAndPlainColumns(final String logicTable) {
+        Collection<String> result = new LinkedList<>();
+        result.addAll(getAssistedQueryColumns(logicTable));
+        result.addAll(getPlainColumns(logicTable));
+        return result;
     }
     
     /**
