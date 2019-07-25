@@ -36,7 +36,6 @@ import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.core.strategy.encrypt.EncryptEngine;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RangeRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
@@ -75,9 +74,7 @@ public final class ShardingSelectOptimizeEngineTest {
     public void setUp() {
         when(shardingRule.isShardingColumn("column", "tbl")).thenReturn(true);
         EncryptRule encryptRule = mock(EncryptRule.class);
-        EncryptEngine encryptEngine = mock(EncryptEngine.class);
-        when(encryptEngine.getShardingEncryptor("tbl", "column")).thenReturn(Optional.<ShardingEncryptor>absent());
-        when(encryptRule.getEncryptEngine()).thenReturn(encryptEngine);
+        when(encryptRule.getShardingEncryptor("tbl", "column")).thenReturn(Optional.<ShardingEncryptor>absent());
         when(shardingRule.getEncryptRule()).thenReturn(encryptRule);
         selectStatement = new SelectStatement();
         selectStatement.getAllSQLSegments().add(new TableSegment(0, 0, "tbl"));
