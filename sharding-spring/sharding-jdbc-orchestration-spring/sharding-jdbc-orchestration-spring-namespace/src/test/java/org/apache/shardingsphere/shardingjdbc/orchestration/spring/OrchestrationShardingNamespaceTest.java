@@ -25,7 +25,6 @@ import org.apache.shardingsphere.core.rule.BindingTableRule;
 import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.datasource.OrchestrationSpringShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.fixture.IncrementKeyGenerator;
@@ -152,9 +151,8 @@ public class OrchestrationShardingNamespaceTest extends AbstractJUnit4SpringCont
     public void assertPropsDataSource() {
         OrchestrationSpringShardingDataSource shardingDataSource = applicationContext.getBean("propsDataSourceOrchestration", OrchestrationSpringShardingDataSource.class);
         ShardingDataSource dataSource = (ShardingDataSource) FieldValueUtil.getFieldValue(shardingDataSource, "dataSource", true);
-        ShardingRuntimeContext shardingContext = (ShardingRuntimeContext) FieldValueUtil.getFieldValue(dataSource, "shardingContext", false);
-        assertTrue(shardingContext.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW));
-        ShardingProperties shardingProperties = shardingContext.getShardingProperties();
+        ShardingProperties shardingProperties = dataSource.getRuntimeContext().getShardingProperties();
+        assertTrue(shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW));
         boolean showSql = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
         assertTrue(showSql);
         int executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
@@ -171,8 +169,7 @@ public class OrchestrationShardingNamespaceTest extends AbstractJUnit4SpringCont
     public void assertDefaultActualDataNodes() {
         OrchestrationSpringShardingDataSource multiTableRulesDataSource = applicationContext.getBean("multiTableRulesDataSourceOrchestration", OrchestrationSpringShardingDataSource.class);
         ShardingDataSource dataSource = (ShardingDataSource) FieldValueUtil.getFieldValue(multiTableRulesDataSource, "dataSource", true);
-        Object shardingContext = FieldValueUtil.getFieldValue(dataSource, "shardingContext", false);
-        ShardingRule shardingRule = (ShardingRule) FieldValueUtil.getFieldValue(shardingContext, "shardingRule");
+        ShardingRule shardingRule = dataSource.getRuntimeContext().getRule();
         assertThat(shardingRule.getTableRules().size(), is(2));
         Iterator<TableRule> tableRules = shardingRule.getTableRules().iterator();
         TableRule orderRule = tableRules.next();
@@ -195,7 +192,6 @@ public class OrchestrationShardingNamespaceTest extends AbstractJUnit4SpringCont
     private ShardingRule getShardingRule(final String shardingDataSourceName) {
         OrchestrationSpringShardingDataSource shardingDataSource = applicationContext.getBean(shardingDataSourceName, OrchestrationSpringShardingDataSource.class);
         ShardingDataSource dataSource = (ShardingDataSource) FieldValueUtil.getFieldValue(shardingDataSource, "dataSource", true);
-        Object shardingContext = FieldValueUtil.getFieldValue(dataSource, "shardingContext", false);
-        return (ShardingRule) FieldValueUtil.getFieldValue(shardingContext, "shardingRule");
+        return dataSource.getRuntimeContext().getRule();
     }
 }

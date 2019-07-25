@@ -22,7 +22,6 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.merge.MergedResult;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.core.strategy.encrypt.EncryptEngine;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingStatement;
@@ -82,16 +81,14 @@ public final class ShardingResultSetTest {
     
     private ShardingStatement getShardingStatement() {
         ShardingConnection shardingConnection = mock(ShardingConnection.class);
-        ShardingRuntimeContext shardingContext = mock(ShardingRuntimeContext.class);
+        ShardingRuntimeContext runtimeContext = mock(ShardingRuntimeContext.class);
         ShardingRule shardingRule = mock(ShardingRule.class);
         when(shardingRule.getLogicTableNames(anyString())).thenReturn(Collections.singletonList("test"));
-        EncryptEngine encryptEngine = mock(EncryptEngine.class);
         EncryptRule encryptRule = mock(EncryptRule.class);
-        when(encryptRule.getEncryptEngine()).thenReturn(encryptEngine);
-        when(encryptEngine.getShardingEncryptor(anyString(), anyString())).thenReturn(Optional.<ShardingEncryptor>absent());
+        when(encryptRule.getShardingEncryptor(anyString(), anyString())).thenReturn(Optional.<ShardingEncryptor>absent());
         when(shardingRule.getEncryptRule()).thenReturn(encryptRule);
-        when(shardingContext.getRule()).thenReturn(shardingRule);
-        when(shardingConnection.getShardingContext()).thenReturn(shardingContext);
+        when(runtimeContext.getRule()).thenReturn(shardingRule);
+        when(shardingConnection.getRuntimeContext()).thenReturn(runtimeContext);
         ShardingStatement statement = mock(ShardingStatement.class);
         when(statement.getConnection()).thenReturn(shardingConnection);
         return statement;

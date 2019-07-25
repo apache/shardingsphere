@@ -67,7 +67,7 @@ public final class InsertCipherNameTokenGenerator implements CollectionSQLTokenG
     
     private Collection<InsertCipherNameToken> createInsertColumnTokens() {
         InsertColumnsSegment segment = insertOptimizedStatement.getSQLStatement().findSQLSegment(InsertColumnsSegment.class).get();
-        Map<String, String> logicAndCipherColumns = encryptRule.getEncryptEngine().getLogicAndCipherColumns(tableName);
+        Map<String, String> logicAndCipherColumns = encryptRule.getLogicAndCipherColumns(tableName);
         Collection<InsertCipherNameToken> result = new LinkedList<>();
         for (ColumnSegment each : segment.getColumns()) {
             if (logicAndCipherColumns.keySet().contains(each.getName())) {

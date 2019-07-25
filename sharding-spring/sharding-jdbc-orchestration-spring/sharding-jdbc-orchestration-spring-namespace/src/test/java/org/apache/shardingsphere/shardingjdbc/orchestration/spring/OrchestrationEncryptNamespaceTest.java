@@ -55,7 +55,7 @@ public class OrchestrationEncryptNamespaceTest extends AbstractJUnit4SpringConte
     private EncryptRule getEncryptRule() {
         OrchestrationSpringEncryptDataSource encryptDataSource = (OrchestrationSpringEncryptDataSource) applicationContext.getBean("encryptDataSourceOrchestration");
         EncryptDataSource dataSource = (EncryptDataSource) FieldValueUtil.getFieldValue(encryptDataSource, "dataSource", true);
-        return dataSource.getEncryptRule();
+        return dataSource.getRuntimeContext().getRule();
     }
     
     private void assertEncryptRule(final EncryptRule encryptRule) {
@@ -79,6 +79,6 @@ public class OrchestrationEncryptNamespaceTest extends AbstractJUnit4SpringConte
     private ShardingProperties getShardingProperties(final String encryptDatasourceName) {
         OrchestrationSpringEncryptDataSource encryptDataSource = applicationContext.getBean(encryptDatasourceName, OrchestrationSpringEncryptDataSource.class);
         EncryptDataSource dataSource = (EncryptDataSource) FieldValueUtil.getFieldValue(encryptDataSource, "dataSource", true);
-        return dataSource.getShardingProperties();
+        return dataSource.getRuntimeContext().getShardingProperties();
     }
 }

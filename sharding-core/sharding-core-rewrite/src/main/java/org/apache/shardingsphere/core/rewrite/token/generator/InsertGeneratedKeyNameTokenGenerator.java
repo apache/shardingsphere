@@ -52,7 +52,7 @@ public final class InsertGeneratedKeyNameTokenGenerator implements OptionalSQLTo
     }
     
     private boolean isToAddCloseParenthesis(final String tableName, final InsertColumnsSegment segment, final ShardingRule shardingRule) {
-        return segment.getColumns().isEmpty() && 0 == shardingRule.getEncryptRule().getEncryptEngine().getAssistedQueryAndPlainColumnCount(tableName);
+        return segment.getColumns().isEmpty() && 0 == shardingRule.getEncryptRule().getAssistedQueryAndPlainColumnCount(tableName);
     }
     
 }
