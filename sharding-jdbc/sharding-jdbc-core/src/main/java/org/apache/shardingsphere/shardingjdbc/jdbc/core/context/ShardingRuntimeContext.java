@@ -43,15 +43,16 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 /**
- * Sharding runtime context.
+ * Runtime context for sharding.
  * 
  * @author gaohongtao
  * @author panjuan
+ * @author zhangliang
  */
 @Getter
-public final class ShardingContext implements RuntimeContext {
+public final class ShardingRuntimeContext implements RuntimeContext {
     
-    private final ShardingRule shardingRule;
+    private final ShardingRule rule;
     
     private final ShardingProperties shardingProperties;
     
@@ -67,13 +68,13 @@ public final class ShardingContext implements RuntimeContext {
     
     private final ShardingTransactionManagerEngine shardingTransactionManagerEngine;
     
-    public ShardingContext(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType, final Properties props) throws SQLException {
-        this.shardingRule = shardingRule;
+    public ShardingRuntimeContext(final Map<String, DataSource> dataSourceMap, final ShardingRule rule, final DatabaseType databaseType, final Properties props) throws SQLException {
+        this.rule = rule;
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
         this.databaseType = databaseType;
         cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap);
         executeEngine = new ShardingExecuteEngine(shardingProperties.<Integer>getValue(ShardingPropertiesConstant.EXECUTOR_SIZE));
-        metaData = createShardingMetaData(dataSourceMap, shardingRule, databaseType);
+        metaData = createShardingMetaData(dataSourceMap, rule, databaseType);
         parseEngine = SQLParseEngineFactory.getSQLParseEngine(databaseType);
         shardingTransactionManagerEngine = new ShardingTransactionManagerEngine();
         shardingTransactionManagerEngine.init(databaseType, dataSourceMap);
@@ -81,7 +82,7 @@ public final class ShardingContext implements RuntimeContext {
     
     private DatabaseMetaData createCachedDatabaseMetaData(final Map<String, DataSource> dataSourceMap) throws SQLException {
         try (Connection connection = dataSourceMap.values().iterator().next().getConnection()) {
-            return new CachedDatabaseMetaData(connection.getMetaData(), dataSourceMap, shardingRule);
+            return new CachedDatabaseMetaData(connection.getMetaData(), dataSourceMap, rule);
         }
     }
     
