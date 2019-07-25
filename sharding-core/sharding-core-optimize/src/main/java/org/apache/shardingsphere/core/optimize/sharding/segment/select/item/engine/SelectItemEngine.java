@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.core.optimize.sharding.segment.select.item.engine;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.constant.AggregationType;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.AggregationSelectItem;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.CommonSelectItem;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.DerivedColumn;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.SelectItem;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.ShorthandSelectItem;
+import org.apache.shardingsphere.core.parse.core.constant.AggregationType;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.AggregationDistinctSelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.AggregationSelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.ColumnSelectItemSegment;
@@ -73,7 +73,7 @@ public final class SelectItemEngine {
     
     private ShorthandSelectItem createSelectItem(final ShorthandSelectItemSegment selectItemSegment) {
         Optional<TableSegment> owner = selectItemSegment.getOwner();
-        return new ShorthandSelectItem(owner.isPresent() ? owner.get().getName() : null);
+        return new ShorthandSelectItem(owner.isPresent() ? owner.get().getTableName() : null);
     }
     
     private CommonSelectItem createSelectItem(final ColumnSelectItemSegment selectItemSegment) {

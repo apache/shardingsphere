@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.parse.core.extractor.impl.dml.select.item
 import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
-import org.apache.shardingsphere.core.constant.AggregationType;
+import org.apache.shardingsphere.core.parse.core.constant.AggregationType;
 import org.apache.shardingsphere.core.parse.core.extractor.api.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.core.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.core.extractor.util.RuleName;

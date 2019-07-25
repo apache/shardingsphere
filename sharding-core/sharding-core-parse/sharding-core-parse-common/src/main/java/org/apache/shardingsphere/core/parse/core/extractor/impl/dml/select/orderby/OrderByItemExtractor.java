@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.parse.core.extractor.impl.dml.select.orde
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.apache.shardingsphere.core.constant.OrderDirection;
+import org.apache.shardingsphere.core.parse.core.constant.OrderDirection;
 import org.apache.shardingsphere.core.parse.core.extractor.api.CollectionSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.core.extractor.impl.common.column.ColumnExtractor;
 import org.apache.shardingsphere.core.parse.core.extractor.util.ExtractorUtils;

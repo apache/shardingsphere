@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.optimize.sharding.segment.select.item;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.constant.AggregationType;
+import org.apache.shardingsphere.core.parse.core.constant.AggregationType;
 
 /**
  * Aggregation distinct select item.

@@ -33,8 +33,8 @@ public final class OrchestrationMasterSlaveRule extends MasterSlaveRule {
     
     private final Collection<String> disabledDataSourceNames = new HashSet<>();
     
-    public OrchestrationMasterSlaveRule(final MasterSlaveRuleConfiguration config) {
-        super(config);
+    public OrchestrationMasterSlaveRule(final MasterSlaveRuleConfiguration masterSlaveRuleConfig) {
+        super(masterSlaveRuleConfig);
     }
     
     /**

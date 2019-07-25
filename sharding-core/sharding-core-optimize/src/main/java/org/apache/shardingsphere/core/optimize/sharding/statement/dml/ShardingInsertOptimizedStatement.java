@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.optimize.sharding.statement.dml;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
+import lombok.ToString;
 import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
 import org.apache.shardingsphere.core.optimize.api.segment.Tables;
 import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
@@ -43,6 +44,7 @@ import java.util.List;
  * @author zhangliang
  */
 @Getter
+@ToString(callSuper = true)
 public final class ShardingInsertOptimizedStatement extends ShardingConditionOptimizedStatement implements InsertOptimizedStatement {
     
     private final Tables tables;
@@ -63,21 +65,29 @@ public final class ShardingInsertOptimizedStatement extends ShardingConditionOpt
         this.values = values;
         this.generatedKey = generatedKey;
     }
-    
+
     /**
-     * Add insert optimize result uint.
+     * Create insert optimize unit.
      *
      * @param insertValues insert values
      * @param parameters SQL parameters
      * @param startIndexOfAppendedParameters start index of appended parameters
      * @return insert optimize result unit
      */
-    public InsertOptimizeResultUnit addUnit(final ExpressionSegment[] insertValues, final Object[] parameters, final int startIndexOfAppendedParameters) {
+    public InsertOptimizeResultUnit createUnit(final ExpressionSegment[] insertValues, final Object[] parameters, final int startIndexOfAppendedParameters) {
         InsertOptimizeResultUnit result = new InsertOptimizeResultUnit(insertColumns.getAllColumnNames(), insertValues, parameters, startIndexOfAppendedParameters);
-        units.add(result);
         return result;
     }
-    
+
+    /**
+     * Add insert optimize result unit into units.
+     *
+     * @param  insertOptimizeResultUnit one insertOptimizeResultUnit object
+     */
+    public void addUnit(final InsertOptimizeResultUnit insertOptimizeResultUnit) {
+        units.add(insertOptimizeResultUnit);
+    }
+
     /**
      * Get generated key.
      *

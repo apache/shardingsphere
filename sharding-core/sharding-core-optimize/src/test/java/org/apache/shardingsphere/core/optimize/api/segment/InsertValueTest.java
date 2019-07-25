@@ -15,19 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.segment.ddl.table;
+package org.apache.shardingsphere.core.optimize.api.segment;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.junit.Test;
 
-@RequiredArgsConstructor
-@Getter
-public final class RenameTableSegment implements SQLSegment {
+import java.util.Arrays;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class InsertValueTest {
     
-    private final int startIndex;
-    
-    private final int stopIndex;
-    
-    private final String newTableName;
+    @Test
+    public void assertGetParametersCount() {
+        InsertValue actual = new InsertValue(Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(0, 0, 1), new ParameterMarkerExpressionSegment(0, 0, 1)));
+        assertThat(actual.getParametersCount(), is(1));
+    }
 }

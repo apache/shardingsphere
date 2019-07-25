@@ -15,14 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.constant;
+package org.apache.shardingsphere.core.parse.sql.segment.dml.column;
 
-/**
- * Aggregation function enum.
- *
- * @author zhangliang
- */
-public enum AggregationType {
+import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
+import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class ColumnSegmentTest {
     
-    MAX, MIN, SUM, COUNT, AVG
+    @Test
+    public void assertGetQualifiedNameWithoutOwner() {
+        ColumnSegment actual = new ColumnSegment(0, 0, "col");
+        assertThat(actual.getQualifiedName(), is("col"));
+    }
+    
+    @Test
+    public void assertGetQualifiedNameWithOwner() {
+        ColumnSegment actual = new ColumnSegment(0, 0, "col");
+        actual.setOwner(new TableSegment(0, 0, "tbl"));
+        assertThat(actual.getQualifiedName(), is("tbl.col"));
+    }
 }

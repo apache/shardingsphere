@@ -44,10 +44,6 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
     
     private final ShardingContext shardingContext;
     
-    public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule) throws SQLException {
-        this(dataSourceMap, shardingRule, new Properties());
-    }
-    
     public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final Properties props) throws SQLException {
         super(dataSourceMap);
         ConfigurationLogger.log(shardingRule.getShardingRuleConfig());
@@ -64,7 +60,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
     
     @Override
     public final ShardingConnection getConnection() {
-        return new ShardingConnection(getDataSourceMap(), shardingContext, getShardingTransactionManagerEngine(), TransactionTypeHolder.get());
+        return new ShardingConnection(getDataSourceMap(), shardingContext, TransactionTypeHolder.get());
     }
     
     @Override

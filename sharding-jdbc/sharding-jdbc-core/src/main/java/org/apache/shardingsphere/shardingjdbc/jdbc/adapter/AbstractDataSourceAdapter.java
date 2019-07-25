@@ -23,7 +23,6 @@ import lombok.Setter;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
 import org.apache.shardingsphere.spi.database.DatabaseType;
-import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
@@ -45,31 +44,28 @@ import java.util.logging.Logger;
 @Setter
 public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOperationDataSource implements AutoCloseable {
     
-    private final DatabaseType databaseType;
-    
     private final Map<String, DataSource> dataSourceMap;
     
-    private ShardingTransactionManagerEngine shardingTransactionManagerEngine = new ShardingTransactionManagerEngine();
+    private final DatabaseType databaseType;
     
     private PrintWriter logWriter = new PrintWriter(System.out);
     
     public AbstractDataSourceAdapter(final Map<String, DataSource> dataSourceMap) throws SQLException {
-        databaseType = getDatabaseType(dataSourceMap.values());
-        shardingTransactionManagerEngine.init(databaseType, dataSourceMap);
         this.dataSourceMap = dataSourceMap;
+        databaseType = createDatabaseType();
     }
     
-    protected final DatabaseType getDatabaseType(final Collection<DataSource> dataSources) throws SQLException {
+    private DatabaseType createDatabaseType() throws SQLException {
         DatabaseType result = null;
-        for (DataSource each : dataSources) {
-            DatabaseType databaseType = getDatabaseType(each);
+        for (DataSource each : dataSourceMap.values()) {
+            DatabaseType databaseType = createDatabaseType(each);
             Preconditions.checkState(null == result || result == databaseType, String.format("Database type inconsistent with '%s' and '%s'", result, databaseType));
             result = databaseType;
         }
         return result;
     }
     
-    private DatabaseType getDatabaseType(final DataSource dataSource) throws SQLException {
+    private DatabaseType createDatabaseType(final DataSource dataSource) throws SQLException {
         if (dataSource instanceof AbstractDataSourceAdapter) {
             return ((AbstractDataSourceAdapter) dataSource).databaseType;
         }
@@ -103,7 +99,6 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
         for (String each : dataSourceNames) {
             close(dataSourceMap.get(each));
         }
-        shardingTransactionManagerEngine.close();
     }
     
     private void close(final DataSource dataSource) {

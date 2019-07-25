@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.parse.sql.statement.generic;
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
@@ -33,7 +32,6 @@ import java.util.LinkedList;
  * @author zhangliang
  * @author panjuan
  */
-@ToString
 public abstract class AbstractSQLStatement implements SQLStatement {
     
     private final Collection<SQLSegment> sqlSegments = new LinkedList<>();

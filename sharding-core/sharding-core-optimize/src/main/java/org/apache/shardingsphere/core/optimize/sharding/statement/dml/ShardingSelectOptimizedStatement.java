@@ -21,6 +21,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.apache.shardingsphere.core.optimize.api.segment.Tables;
 import org.apache.shardingsphere.core.optimize.encrypt.segment.condition.EncryptCondition;
 import org.apache.shardingsphere.core.optimize.encrypt.segment.condition.EncryptConditions;
@@ -51,6 +52,7 @@ import java.util.Map;
  */
 @Getter
 @Setter
+@ToString
 public final class ShardingSelectOptimizedStatement extends ShardingConditionOptimizedStatement {
     
     private final Tables tables;

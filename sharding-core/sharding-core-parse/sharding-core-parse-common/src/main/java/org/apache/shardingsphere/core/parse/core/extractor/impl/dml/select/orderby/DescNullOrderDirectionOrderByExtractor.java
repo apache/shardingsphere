@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.parse.core.extractor.impl.dml.select.orderby;
 
-import org.apache.shardingsphere.core.constant.OrderDirection;
+import org.apache.shardingsphere.core.parse.core.constant.OrderDirection;
 
 /**
  * Order by extractor for DESC null order direction.

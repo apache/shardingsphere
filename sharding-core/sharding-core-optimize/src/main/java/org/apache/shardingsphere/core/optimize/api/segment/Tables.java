@@ -150,7 +150,7 @@ public final class Tables {
             return Optional.of(getSingleTableName());
         }
         if (columnSegment.getOwner().isPresent()) {
-            Optional<Table> table = find(columnSegment.getOwner().get().getName());
+            Optional<Table> table = find(columnSegment.getOwner().get().getTableName());
             return table.isPresent() ? Optional.of(table.get().getName()) : Optional.<String>absent();
         }
         return findTableNameFromMetaData(columnSegment.getName(), shardingTableMetaData);

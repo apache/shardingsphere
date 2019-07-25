@@ -26,6 +26,7 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.MasterSlavePre
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.MasterSlaveStatement;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -47,6 +48,11 @@ public final class MasterSlaveConnection extends AbstractConnectionAdapter {
     private final Map<String, DataSource> dataSourceMap;
     
     private final SQLParseEngine parseEngine;
+    
+    @Override
+    protected Connection createConnection(final String dataSourceName, final DataSource dataSource) throws SQLException {
+        return dataSource.getConnection();
+    }
     
     @Override
     public DatabaseMetaData getMetaData() throws SQLException {

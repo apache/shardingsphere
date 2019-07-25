@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.parse.sql.statement.dml;
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.OrderBySegment;
@@ -40,7 +39,6 @@ import java.util.LinkedList;
  */
 @Getter
 @Setter
-@ToString(callSuper = true, exclude = "parentStatement")
 public final class SelectStatement extends DMLStatement implements TableSegmentsAvailable, WhereSegmentAvailable {
     
     private final Collection<TableSegment> tables = new LinkedList<>();

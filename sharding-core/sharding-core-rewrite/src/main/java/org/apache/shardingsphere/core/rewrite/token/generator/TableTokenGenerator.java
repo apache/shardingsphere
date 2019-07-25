@@ -88,7 +88,7 @@ public final class TableTokenGenerator implements CollectionSQLTokenGenerator<Ba
             return Optional.absent();
         }
         if (isToGenerateTableToken(optimizedStatement, baseRule, owner.get())) {
-            return Optional.of(new TableToken(owner.get().getStartIndex(), owner.get().getStopIndex(), owner.get().getName(), owner.get().getQuoteCharacter()));
+            return Optional.of(new TableToken(owner.get().getStartIndex(), owner.get().getStopIndex(), owner.get().getTableName(), owner.get().getQuoteCharacter()));
         }
         return Optional.absent();
     }
@@ -102,7 +102,7 @@ public final class TableTokenGenerator implements CollectionSQLTokenGenerator<Ba
     
     private boolean isToGenerateTableToken(final OptimizedStatement optimizedStatement, final BaseRule baseRule, final TableSegment tableSegment) {
         if (baseRule instanceof ShardingRule) {
-            Optional<Table> table = optimizedStatement.getTables().find(tableSegment.getName());
+            Optional<Table> table = optimizedStatement.getTables().find(tableSegment.getTableName());
             return table.isPresent() && !table.get().getAlias().isPresent() && ((ShardingRule) baseRule).findTableRule(table.get().getName()).isPresent(); 
         }
         return baseRule instanceof MasterSlaveRule;

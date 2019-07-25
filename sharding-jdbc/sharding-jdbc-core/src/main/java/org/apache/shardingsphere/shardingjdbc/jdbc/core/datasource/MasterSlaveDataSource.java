@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource;
 
 import lombok.Getter;
-import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.parse.SQLParseEngineFactory;
@@ -45,31 +44,21 @@ import java.util.Properties;
 @Getter
 public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     
-    private final DatabaseMetaData cachedDatabaseMetaData;
-    
     private final MasterSlaveRule masterSlaveRule;
-    
-    private final SQLParseEngine parseEngine;
     
     private final ShardingProperties shardingProperties;
     
-    public MasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final Properties props) throws SQLException {
-        super(dataSourceMap);
-        ConfigurationLogger.log(masterSlaveRuleConfig);
-        ConfigurationLogger.log(props);
-        cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap);
-        this.masterSlaveRule = new MasterSlaveRule(masterSlaveRuleConfig);
-        parseEngine = SQLParseEngineFactory.getSQLParseEngine(getDatabaseType());
-        shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
-    }
+    private final DatabaseMetaData cachedDatabaseMetaData;
+    
+    private final SQLParseEngine parseEngine;
     
     public MasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRule masterSlaveRule, final Properties props) throws SQLException {
         super(dataSourceMap);
         ConfigurationLogger.log(masterSlaveRule.getMasterSlaveRuleConfiguration());
         ConfigurationLogger.log(props);
-        cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap);
         this.masterSlaveRule = masterSlaveRule;
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
+        cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap);
         parseEngine = SQLParseEngineFactory.getSQLParseEngine(getDatabaseType());
     }
     
