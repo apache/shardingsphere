@@ -29,13 +29,13 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.Paramete
  * @author panjuan
  */
 @Getter
-public final class InsertSetAddGeneratedKeyToken extends SQLToken implements Attachable {
+public final class InsertSetGeneratedKeyColumnToken extends SQLToken implements Attachable {
     
     private final String columnName;
     
     private final ExpressionSegment columnValue;
     
-    public InsertSetAddGeneratedKeyToken(final int startIndex, final String columnName, final ExpressionSegment columnValue) {
+    public InsertSetGeneratedKeyColumnToken(final int startIndex, final String columnName, final ExpressionSegment columnValue) {
         super(startIndex);
         this.columnName = columnName;
         this.columnValue = columnValue;

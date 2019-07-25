@@ -18,34 +18,27 @@
 package org.apache.shardingsphere.core.rewrite.token.pojo;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.complex.ComplexExpressionSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 
 /**
- * Insert set encrypt value token.
+ * Insert column token.
  *
  * @author panjuan
  */
 @Getter
-public final class InsertSetEncryptValueToken extends SQLToken implements Substitutable {
+public final class InsertCipherNameToken extends SQLToken implements Substitutable {
     
     private final int stopIndex;
     
-    private final ExpressionSegment encryptColumnValue;
+    private final String columnName;
     
-    public InsertSetEncryptValueToken(final int startIndex, final int stopIndex, final ExpressionSegment encryptColumnValue) {
+    public InsertCipherNameToken(final int startIndex, final int stopIndex, final String columnName) {
         super(startIndex);
         this.stopIndex = stopIndex;
-        this.encryptColumnValue = encryptColumnValue;
+        this.columnName = columnName;
     }
     
     @Override
     public String toString() {
-        if (encryptColumnValue instanceof LiteralExpressionSegment) {
-            Object literals = ((LiteralExpressionSegment) encryptColumnValue).getLiterals();
-            return literals instanceof String ? String.format("'%s'", literals) : literals.toString();
-        }
-        return ((ComplexExpressionSegment) encryptColumnValue).getText();
+        return columnName;
     }
 }

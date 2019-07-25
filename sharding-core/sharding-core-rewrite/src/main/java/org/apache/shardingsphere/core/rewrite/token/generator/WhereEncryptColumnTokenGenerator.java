@@ -42,9 +42,9 @@ import java.util.Map.Entry;
  */
 public final class WhereEncryptColumnTokenGenerator implements CollectionSQLTokenGenerator<EncryptRule> {
     
-    private ParameterBuilder parameterBuilder;
-    
     private EncryptRule encryptRule;
+    
+    private ParameterBuilder parameterBuilder;
     
     private boolean isQueryWithCipherColumn;
     

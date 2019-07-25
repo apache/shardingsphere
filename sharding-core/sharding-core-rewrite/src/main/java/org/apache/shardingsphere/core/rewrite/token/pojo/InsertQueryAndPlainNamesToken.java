@@ -17,36 +17,39 @@
 
 package org.apache.shardingsphere.core.rewrite.token.pojo;
 
+import com.google.common.base.Joiner;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
+import java.util.Collection;
+
 /**
- * Insert generated key columns token.
+ * Insert assisted columns token.
  *
  * @author panjuan
  */
 @Getter
 @EqualsAndHashCode(callSuper = true)
-public final class InsertGeneratedKeyToken extends SQLToken implements Attachable {
+public final class InsertQueryAndPlainNamesToken extends SQLToken implements Attachable {
     
-    private final String column;
+    private final Collection<String> columns;
     
-    private final boolean isToAppendCloseParenthesis;
+    private final boolean isToAddCloseParenthesis;
     
-    public InsertGeneratedKeyToken(final int startIndex, final String column, final boolean isToAppendCloseParenthesis) {
+    public InsertQueryAndPlainNamesToken(final int startIndex, final Collection<String> columns, final boolean isToAddCloseParenthesis) {
         super(startIndex);
-        this.column = column;
-        this.isToAppendCloseParenthesis = isToAppendCloseParenthesis;
+        this.columns = columns;
+        this.isToAddCloseParenthesis = isToAddCloseParenthesis;
     }
     
     @Override
     public String toString() {
-        if (null == column) {
+        if (columns.isEmpty()) {
             return "";
         }
-        if (isToAppendCloseParenthesis) {
-            return String.format(", %s)", column);
+        if (isToAddCloseParenthesis) {
+            return String.format(", %s)", Joiner.on(", ").join(columns));
         }
-        return String.format(", %s", column);
+        return String.format(", %s", Joiner.on(", ").join(columns));
     }
 }

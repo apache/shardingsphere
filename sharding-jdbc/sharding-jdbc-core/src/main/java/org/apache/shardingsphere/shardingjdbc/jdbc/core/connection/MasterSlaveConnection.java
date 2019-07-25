@@ -19,9 +19,8 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.connection;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractConnectionAdapter;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.MasterSlaveRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.MasterSlavePreparedStatement;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.MasterSlaveStatement;
 
@@ -43,11 +42,9 @@ import java.util.Map;
 @Getter
 public final class MasterSlaveConnection extends AbstractConnectionAdapter {
     
-    private final MasterSlaveDataSource masterSlaveDataSource;
-    
     private final Map<String, DataSource> dataSourceMap;
     
-    private final SQLParseEngine parseEngine;
+    private final MasterSlaveRuntimeContext runtimeContext;
     
     @Override
     protected Connection createConnection(final String dataSourceName, final DataSource dataSource) throws SQLException {
@@ -56,7 +53,7 @@ public final class MasterSlaveConnection extends AbstractConnectionAdapter {
     
     @Override
     public DatabaseMetaData getMetaData() throws SQLException {
-        return getCachedConnections().isEmpty() ? masterSlaveDataSource.getCachedDatabaseMetaData() : getCachedConnections().values().iterator().next().getMetaData();
+        return getCachedConnections().isEmpty() ? runtimeContext.getCachedDatabaseMetaData() : getCachedConnections().values().iterator().next().getMetaData();
     }
     
     @Override

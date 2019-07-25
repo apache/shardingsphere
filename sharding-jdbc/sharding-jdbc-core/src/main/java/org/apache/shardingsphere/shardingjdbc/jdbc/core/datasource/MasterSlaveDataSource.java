@@ -18,18 +18,13 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
-import org.apache.shardingsphere.core.parse.SQLParseEngine;
-import org.apache.shardingsphere.core.parse.SQLParseEngineFactory;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.util.ConfigurationLogger;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.MasterSlaveConnection;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata.CachedDatabaseMetaData;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.MasterSlaveRuntimeContext;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.Properties;
@@ -44,32 +39,17 @@ import java.util.Properties;
 @Getter
 public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     
-    private final MasterSlaveRule masterSlaveRule;
-    
-    private final ShardingProperties shardingProperties;
-    
-    private final DatabaseMetaData cachedDatabaseMetaData;
-    
-    private final SQLParseEngine parseEngine;
+    private final MasterSlaveRuntimeContext runtimeContext;
     
     public MasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRule masterSlaveRule, final Properties props) throws SQLException {
         super(dataSourceMap);
         ConfigurationLogger.log(masterSlaveRule.getMasterSlaveRuleConfiguration());
         ConfigurationLogger.log(props);
-        this.masterSlaveRule = masterSlaveRule;
-        shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
-        cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap);
-        parseEngine = SQLParseEngineFactory.getSQLParseEngine(getDatabaseType());
-    }
-    
-    private DatabaseMetaData createCachedDatabaseMetaData(final Map<String, DataSource> dataSourceMap) throws SQLException {
-        try (Connection connection = dataSourceMap.values().iterator().next().getConnection()) {
-            return new CachedDatabaseMetaData(connection.getMetaData(), dataSourceMap, null);
-        }
+        runtimeContext = new MasterSlaveRuntimeContext(dataSourceMap, masterSlaveRule, props, getDatabaseType());
     }
     
     @Override
     public final MasterSlaveConnection getConnection() {
-        return new MasterSlaveConnection(this, getDataSourceMap(), parseEngine);
+        return new MasterSlaveConnection(getDataSourceMap(), runtimeContext);
     }
 }

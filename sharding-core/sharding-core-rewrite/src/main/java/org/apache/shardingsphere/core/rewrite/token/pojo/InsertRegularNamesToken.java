@@ -30,13 +30,13 @@ import java.util.Collection;
  */
 @Getter
 @EqualsAndHashCode(callSuper = true)
-public final class InsertColumnsToken extends SQLToken implements Attachable {
+public final class InsertRegularNamesToken extends SQLToken implements Attachable {
     
     private final Collection<String> columns;
     
     private boolean isToAppendCloseParenthesis;
     
-    public InsertColumnsToken(final int startIndex, final Collection<String> columns, final boolean isToAppendCloseParenthesis) {
+    public InsertRegularNamesToken(final int startIndex, final Collection<String> columns, final boolean isToAppendCloseParenthesis) {
         super(startIndex);
         this.columns = columns;
         this.isToAppendCloseParenthesis = isToAppendCloseParenthesis;

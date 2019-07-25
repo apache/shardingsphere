@@ -21,7 +21,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
@@ -86,14 +86,14 @@ public final class ShardingDataSourceFactoryTest {
     private ShardingRule getShardingRule(final DataSource dataSource) {
         Field field = dataSource.getClass().getDeclaredField("shardingContext");
         field.setAccessible(true);
-        return ((ShardingContext) field.get(dataSource)).getShardingRule();
+        return ((ShardingRuntimeContext) field.get(dataSource)).getRule();
     }
     
     @SneakyThrows
     private Properties getShardingProperties(final DataSource dataSource) {
         Field shardingContextField = dataSource.getClass().getDeclaredField("shardingContext");
         shardingContextField.setAccessible(true);
-        ShardingContext shardingContext = (ShardingContext) shardingContextField.get(dataSource);
+        ShardingRuntimeContext shardingContext = (ShardingRuntimeContext) shardingContextField.get(dataSource);
         return shardingContext.getShardingProperties().getProps();
     }
 }

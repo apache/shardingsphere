@@ -15,9 +15,12 @@
  * limitations under the License.
  */
 
-DELETE FROM t_encrypt;
-DELETE FROM t_query_encrypt;
-INSERT INTO t_encrypt VALUES(1, 'encryptValue');
-INSERT INTO t_encrypt VALUES(5, 'encryptValue');
-INSERT INTO t_query_encrypt VALUES(1, 'encryptValue');
-INSERT INTO t_query_encrypt VALUES(5, 'encryptValue');
+package org.apache.shardingsphere.shardingjdbc.jdbc.core.context;
+
+/**
+ * Runtime context.
+ *
+ * @author zhangliang
+ */
+public interface RuntimeContext extends AutoCloseable {
+}

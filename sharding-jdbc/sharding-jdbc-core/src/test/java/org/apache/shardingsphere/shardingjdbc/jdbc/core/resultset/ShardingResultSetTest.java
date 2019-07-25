@@ -23,8 +23,8 @@ import org.apache.shardingsphere.core.merge.MergedResult;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.strategy.encrypt.EncryptEngine;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingStatement;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 import org.junit.Before;
@@ -82,7 +82,7 @@ public final class ShardingResultSetTest {
     
     private ShardingStatement getShardingStatement() {
         ShardingConnection shardingConnection = mock(ShardingConnection.class);
-        ShardingContext shardingContext = mock(ShardingContext.class);
+        ShardingRuntimeContext shardingContext = mock(ShardingRuntimeContext.class);
         ShardingRule shardingRule = mock(ShardingRule.class);
         when(shardingRule.getLogicTableNames(anyString())).thenReturn(Collections.singletonList("test"));
         EncryptEngine encryptEngine = mock(EncryptEngine.class);
@@ -90,7 +90,7 @@ public final class ShardingResultSetTest {
         when(encryptRule.getEncryptEngine()).thenReturn(encryptEngine);
         when(encryptEngine.getShardingEncryptor(anyString(), anyString())).thenReturn(Optional.<ShardingEncryptor>absent());
         when(shardingRule.getEncryptRule()).thenReturn(encryptRule);
-        when(shardingContext.getShardingRule()).thenReturn(shardingRule);
+        when(shardingContext.getRule()).thenReturn(shardingRule);
         when(shardingConnection.getShardingContext()).thenReturn(shardingContext);
         ShardingStatement statement = mock(ShardingStatement.class);
         when(statement.getConnection()).thenReturn(shardingConnection);

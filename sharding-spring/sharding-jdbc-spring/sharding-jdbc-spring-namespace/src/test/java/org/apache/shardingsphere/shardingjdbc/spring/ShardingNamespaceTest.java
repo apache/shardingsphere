@@ -30,7 +30,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.core.strategy.masterslave.RandomMasterSlaveLoadBalanceAlgorithm;
 import org.apache.shardingsphere.core.strategy.masterslave.RoundRobinMasterSlaveLoadBalanceAlgorithm;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.spring.algorithm.DefaultComplexKeysShardingAlgorithm;
 import org.apache.shardingsphere.shardingjdbc.spring.algorithm.DefaultHintShardingAlgorithm;
@@ -224,7 +224,7 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
     @Test
     public void assertPropsDataSource() {
         ShardingDataSource shardingDataSource = applicationContext.getBean("propsDataSource", ShardingDataSource.class);
-        ShardingContext shardingContext = (ShardingContext) FieldValueUtil.getFieldValue(shardingDataSource, "shardingContext", true);
+        ShardingRuntimeContext shardingContext = (ShardingRuntimeContext) FieldValueUtil.getFieldValue(shardingDataSource, "shardingContext", true);
         assertTrue(shardingContext.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW));
         ShardingProperties shardingProperties = shardingContext.getShardingProperties();
         boolean showSql = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);

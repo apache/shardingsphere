@@ -22,8 +22,8 @@ import lombok.Getter;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.util.ConfigurationLogger;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 
 import javax.sql.DataSource;
@@ -42,14 +42,14 @@ import java.util.Properties;
 @Getter
 public class ShardingDataSource extends AbstractDataSourceAdapter {
     
-    private final ShardingContext shardingContext;
+    private final ShardingRuntimeContext runtimeContext;
     
     public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final Properties props) throws SQLException {
         super(dataSourceMap);
         ConfigurationLogger.log(shardingRule.getShardingRuleConfig());
         ConfigurationLogger.log(props);
         checkDataSourceType(dataSourceMap);
-        shardingContext = new ShardingContext(getDataSourceMap(), shardingRule, getDatabaseType(), props);
+        runtimeContext = new ShardingRuntimeContext(dataSourceMap, shardingRule, getDatabaseType(), props);
     }
     
     private void checkDataSourceType(final Map<String, DataSource> dataSourceMap) {
@@ -60,18 +60,18 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
     
     @Override
     public final ShardingConnection getConnection() {
-        return new ShardingConnection(getDataSourceMap(), shardingContext, TransactionTypeHolder.get());
+        return new ShardingConnection(getDataSourceMap(), runtimeContext, TransactionTypeHolder.get());
     }
     
     @Override
     public final void close() throws Exception {
         super.close();
-        shardingContext.close();
+        runtimeContext.close();
     }
     
     @Override
     public final void close(final Collection<String> dataSourceNames) throws Exception {
         super.close(dataSourceNames);
-        shardingContext.close();
+        runtimeContext.close();
     }
 }

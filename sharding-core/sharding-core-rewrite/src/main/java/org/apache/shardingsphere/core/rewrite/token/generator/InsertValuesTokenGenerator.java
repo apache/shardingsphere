@@ -24,48 +24,64 @@ import org.apache.shardingsphere.core.optimize.sharding.segment.insert.InsertOpt
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
-import org.apache.shardingsphere.core.rewrite.token.pojo.InsertValueToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertValuesToken;
-import org.apache.shardingsphere.core.rule.BaseRule;
+import org.apache.shardingsphere.core.rule.EncryptRule;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Insert values token generator.
  *
  * @author panjuan
  */
-public final class InsertValuesTokenGenerator implements OptionalSQLTokenGenerator<BaseRule> {
+public final class InsertValuesTokenGenerator implements OptionalSQLTokenGenerator<EncryptRule> {
+    
+    private InsertOptimizedStatement insertOptimizedStatement;
+    
+    private Collection<InsertValuesSegment> insertValuesSegments;
     
     @Override
-    public Optional<InsertValuesToken> generateSQLToken(
-            final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final BaseRule baseRule, final boolean isQueryWithCipherColumn) {
+    public Optional<InsertValuesToken> generateSQLToken(final OptimizedStatement optimizedStatement, 
+                                                        final ParameterBuilder parameterBuilder, final EncryptRule encryptRule, final boolean isQueryWithCipherColumn) {
         Collection<InsertValuesSegment> insertValuesSegments = optimizedStatement.getSQLStatement().findSQLSegments(InsertValuesSegment.class);
-        if (!(optimizedStatement.getSQLStatement() instanceof InsertStatement) || insertValuesSegments.isEmpty()) {
+        if (!isNeedToGenerateSQLToken(optimizedStatement, insertValuesSegments)) {
             return Optional.absent();
         }
-        return createInsertValuesToken(insertValuesSegments, optimizedStatement);
+        initParameters(optimizedStatement, insertValuesSegments);
+        return Optional.of(createInsertValuesToken());
     }
     
-    private Optional<InsertValuesToken> createInsertValuesToken(final Collection<InsertValuesSegment> insertValuesSegments, final OptimizedStatement optimizedStatement) {
-        int startIndex = insertValuesSegments.iterator().next().getStartIndex();
-        int stopIndex = insertValuesSegments.iterator().next().getStopIndex();
+    private boolean isNeedToGenerateSQLToken(final OptimizedStatement optimizedStatement, final Collection<InsertValuesSegment> insertValuesSegments) {
+        return optimizedStatement.getSQLStatement() instanceof InsertStatement && !insertValuesSegments.isEmpty();
+    }
+    
+    private void initParameters(final OptimizedStatement optimizedStatement, final Collection<InsertValuesSegment> insertValuesSegments) {
+        insertOptimizedStatement = (InsertOptimizedStatement) optimizedStatement;
+        this.insertValuesSegments = insertValuesSegments;
+    }
+    
+    private int getStartIndex() {
+        int result = insertValuesSegments.iterator().next().getStartIndex();
         for (InsertValuesSegment each : insertValuesSegments) {
-            startIndex = startIndex > each.getStartIndex() ? each.getStartIndex() : startIndex;
-            stopIndex = stopIndex < each.getStopIndex() ? each.getStopIndex() : stopIndex;
+            result = result > each.getStartIndex() ? each.getStartIndex() : result;
         }
-        return Optional.of(new InsertValuesToken(startIndex, stopIndex, getInsertValues((InsertOptimizedStatement) optimizedStatement)));
+        return result;
     }
     
-    private List<InsertValueToken> getInsertValues(final InsertOptimizedStatement insertOptimizeResult) {
-        List<InsertValueToken> insertValueTokens = new LinkedList<>();
-        for (InsertOptimizeResultUnit each : insertOptimizeResult.getUnits()) {
-            insertValueTokens.add(new InsertValueToken(new ArrayList<>(each.getColumnNames()), Arrays.asList(each.getValues()), each.getDataNodes()));
+    private int getStopIndex() {
+        int result = insertValuesSegments.iterator().next().getStopIndex();
+        for (InsertValuesSegment each : insertValuesSegments) {
+            result = result < each.getStopIndex() ? each.getStopIndex() : result;
         }
-        return insertValueTokens;
+        return result;
+    }
+    
+    private InsertValuesToken createInsertValuesToken() {
+        InsertValuesToken result = new InsertValuesToken(getStartIndex(), getStopIndex());
+        for (InsertOptimizeResultUnit each : insertOptimizedStatement.getUnits()) {
+            result.addInsertValueToken(Arrays.asList(each.getValues()), each.getDataNodes());
+        }
+        return result;
     }
 }

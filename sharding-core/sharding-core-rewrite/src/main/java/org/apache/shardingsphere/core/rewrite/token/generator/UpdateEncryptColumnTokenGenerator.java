@@ -35,15 +35,15 @@ import java.util.Collections;
 import java.util.LinkedList;
 
 /**
- * Encrypt column token generator.
+ * Update encrypt column token generator.
  *
  * @author panjuan
  */
 public final class UpdateEncryptColumnTokenGenerator implements CollectionSQLTokenGenerator<EncryptRule> {
     
-    private ParameterBuilder parameterBuilder;
-    
     private EncryptRule encryptRule;
+    
+    private ParameterBuilder parameterBuilder;
     
     @Override
     public Collection<EncryptColumnToken> generateSQLTokens(
