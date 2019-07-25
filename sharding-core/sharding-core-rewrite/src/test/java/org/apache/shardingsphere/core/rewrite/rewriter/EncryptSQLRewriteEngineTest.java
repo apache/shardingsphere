@@ -161,6 +161,19 @@ public final class EncryptSQLRewriteEngineTest {
     }
     
     @Test
+    public void assertDeleteWithPlaceholderWithPlainEncrypt() {
+        String sql = "DELETE FROM t_plain_encrypt WHERE col3 in (?, ?) or col4 in (?, ?)";
+        SQLUnit actual = getSQLUnit(sql, parametersOfIn, false);
+        assertThat(actual.getSql(), is("DELETE FROM t_plain_encrypt WHERE plain1 IN (?, ?) or plain2 IN (?, ?)"));
+        assertThat(actual.getParameters().size(), is(4));
+        assertThat(actual.getParameters().get(0), is((Object) 1));
+        assertThat(actual.getParameters().get(1), is((Object) 2));
+        assertThat(actual.getParameters().get(2), is((Object) 3));
+        assertThat(actual.getParameters().get(3), is((Object) 4));
+        
+    }
+    
+    @Test
     public void assertDeleteWithoutPlaceholderWithQueryEncrypt() {
         String sql = "DELETE FROM t_query_encrypt WHERE col1 = 1 and col2 = 2";
         SQLUnit actual = getSQLUnit(sql, Collections.emptyList(), true);
