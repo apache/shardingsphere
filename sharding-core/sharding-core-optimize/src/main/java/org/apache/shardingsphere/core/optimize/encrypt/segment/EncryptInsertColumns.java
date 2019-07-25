@@ -39,8 +39,6 @@ import java.util.LinkedList;
 @ToString
 public final class EncryptInsertColumns implements InsertColumns {
     
-    private final InsertStatement insertStatement;
-    
     private final Collection<String> assistedQueryColumnNames;
     
     private final Collection<String> plainColumnNames;
@@ -49,36 +47,37 @@ public final class EncryptInsertColumns implements InsertColumns {
     private final Collection<String> regularColumnNames;
     
     public EncryptInsertColumns(final EncryptRule encryptRule, final ShardingTableMetaData shardingTableMetaData, final InsertStatement insertStatement) {
-        this.insertStatement = insertStatement;
         assistedQueryColumnNames = encryptRule.getEncryptEngine().getAssistedQueryColumns(insertStatement.getTable().getTableName());
         plainColumnNames = encryptRule.getEncryptEngine().getPlainColumns(insertStatement.getTable().getTableName());
-        regularColumnNames = insertStatement.useDefaultColumns() ? getRegularColumnNamesFromMetaData(shardingTableMetaData, encryptRule) : getColumnNamesFromSQLStatement(insertStatement);
+        regularColumnNames = insertStatement.useDefaultColumns() 
+                ? getRegularColumnNamesFromMetaData(encryptRule, shardingTableMetaData, insertStatement) : getColumnNamesFromSQLStatement(insertStatement);
     }
     
-    private Collection<String> getRegularColumnNamesFromMetaData(final ShardingTableMetaData shardingTableMetaData, final EncryptRule encryptRule) {
+    private Collection<String> getRegularColumnNamesFromMetaData(final EncryptRule encryptRule, final ShardingTableMetaData shardingTableMetaData, final InsertStatement insertStatement) {
         Collection<String> allColumnNames = shardingTableMetaData.getAllColumnNames(insertStatement.getTable().getTableName());
         Collection<String> result = new LinkedHashSet<>(allColumnNames.size() - getAssistedQueryAndPlainColumnCount());
+        String tableName = insertStatement.getTable().getTableName();
         for (String each : allColumnNames) {
-            if (isNotAssistedQueryAndPlainColumns(each)) {
+            if (!isAssistedQueryAndPlainColumns(each)) {
                 result.add(each);
             }
-            if (isCipherColumn(each, encryptRule)) {
-                result.add(getLogicColumn(each, encryptRule));
+            if (isCipherColumn(encryptRule, tableName, each)) {
+                result.add(getLogicColumn(encryptRule, tableName, each));
             }
         }
         return result;
     }
     
-    private boolean isNotAssistedQueryAndPlainColumns(final String each) {
-        return !assistedQueryColumnNames.contains(each) && !plainColumnNames.contains(each);
+    private boolean isAssistedQueryAndPlainColumns(final String each) {
+        return assistedQueryColumnNames.contains(each) || plainColumnNames.contains(each);
     }
     
-    private boolean isCipherColumn(final String each, final EncryptRule encryptRule) {
-        return encryptRule.getEncryptEngine().getCipherColumns(insertStatement.getTable().getTableName()).contains(each);
+    private boolean isCipherColumn(final EncryptRule encryptRule, final String tableName, final String columnName) {
+        return encryptRule.getEncryptEngine().getCipherColumns(tableName).contains(columnName);
     }
     
-    private String getLogicColumn(final String each, final EncryptRule encryptRule) {
-        return encryptRule.getEncryptEngine().getLogicColumn(insertStatement.getTable().getTableName(), each);
+    private String getLogicColumn(final EncryptRule encryptRule, final String tableName, final String columnName) {
+        return encryptRule.getEncryptEngine().getLogicColumn(tableName, columnName);
     }
     
     private Collection<String> getColumnNamesFromSQLStatement(final InsertStatement insertStatement) {

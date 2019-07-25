@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.optimize.sharding.segment.insert;
 
 import lombok.Getter;
+import lombok.ToString;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.api.segment.InsertColumns;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
@@ -35,9 +36,8 @@ import java.util.LinkedHashSet;
  * @author zhangliang
  * @author panjuan
  */
+@ToString
 public final class ShardingInsertColumns implements InsertColumns {
-    
-    private final InsertStatement insertStatement;
     
     private final String generateKeyColumnName;
     
@@ -49,47 +49,48 @@ public final class ShardingInsertColumns implements InsertColumns {
     private final Collection<String> regularColumnNames;
     
     public ShardingInsertColumns(final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData, final InsertStatement insertStatement) {
-        this.insertStatement = insertStatement;
         generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTable().getTableName()).orNull();
         assistedQueryColumnNames = shardingRule.getEncryptRule().getEncryptEngine().getAssistedQueryColumns(insertStatement.getTable().getTableName());
         plainColumnNames = shardingRule.getEncryptRule().getEncryptEngine().getPlainColumns(insertStatement.getTable().getTableName());
-        regularColumnNames = insertStatement.useDefaultColumns() ? getRegularColumnNamesFromMetaData(shardingTableMetaData, shardingRule.getEncryptRule()) : getRegularColumnNamesFromSQLStatement();
+        regularColumnNames = insertStatement.useDefaultColumns() 
+                ? getRegularColumnNamesFromMetaData(shardingRule.getEncryptRule(), shardingTableMetaData, insertStatement) : getRegularColumnNamesFromSQLStatement(insertStatement);
     }
     
-    private Collection<String> getRegularColumnNamesFromMetaData(final ShardingTableMetaData shardingTableMetaData, final EncryptRule encryptRule) {
+    private Collection<String> getRegularColumnNamesFromMetaData(final EncryptRule encryptRule, final ShardingTableMetaData shardingTableMetaData, final InsertStatement insertStatement) {
         Collection<String> allColumnNames = shardingTableMetaData.getAllColumnNames(insertStatement.getTable().getTableName());
         Collection<String> result = new LinkedHashSet<>(allColumnNames.size() - getAssistedQueryAndPlainColumnCount());
+        String tableName = insertStatement.getTable().getTableName();
         for (String each : allColumnNames) {
-            if (isNotAssistedQueryAndPlainColumns(each)) {
+            if (!isAssistedQueryAndPlainColumns(each)) {
                 result.add(each);
             }
-            if (isCipherColumn(each, encryptRule)) {
-                result.add(getLogicColumn(each, encryptRule));
+            if (isCipherColumn(encryptRule, tableName, each)) {
+                result.add(getLogicColumn(encryptRule, tableName, each));
             }
         }
-        if (isGenerateKeyFromMetaData(allColumnNames)) {
+        if (isGenerateKeyFromMetaData(allColumnNames, insertStatement.getValueSize())) {
             result.remove(generateKeyColumnName);
         }
         return result;
     }
     
-    private boolean isNotAssistedQueryAndPlainColumns(final String each) {
-        return !assistedQueryColumnNames.contains(each) && !plainColumnNames.contains(each);
+    private boolean isAssistedQueryAndPlainColumns(final String columnName) {
+        return assistedQueryColumnNames.contains(columnName) || plainColumnNames.contains(columnName);
     }
     
-    private boolean isCipherColumn(final String each, final EncryptRule encryptRule) {
-        return encryptRule.getEncryptEngine().getCipherColumns(insertStatement.getTable().getTableName()).contains(each);
+    private boolean isCipherColumn(final EncryptRule encryptRule, final String tableName, final String columnName) {
+        return encryptRule.getEncryptEngine().getCipherColumns(tableName).contains(columnName);
     }
     
-    private String getLogicColumn(final String each, final EncryptRule encryptRule) {
-        return encryptRule.getEncryptEngine().getLogicColumn(insertStatement.getTable().getTableName(), each);
+    private String getLogicColumn(final EncryptRule encryptRule, final String tableName, final String columnName) {
+        return encryptRule.getEncryptEngine().getLogicColumn(tableName, columnName);
     }
     
-    private boolean isGenerateKeyFromMetaData(final Collection<String> allColumnNames) {
-        return null != generateKeyColumnName && allColumnNames.size() - getAssistedQueryAndPlainColumnCount() != insertStatement.getValueSize();
+    private boolean isGenerateKeyFromMetaData(final Collection<String> allColumnNames, final int columnValueSize) {
+        return null != generateKeyColumnName && allColumnNames.size() - getAssistedQueryAndPlainColumnCount() != columnValueSize;
     }
     
-    private Collection<String> getRegularColumnNamesFromSQLStatement() {
+    private Collection<String> getRegularColumnNamesFromSQLStatement(final InsertStatement insertStatement) {
         Collection<String> result = new LinkedHashSet<>(insertStatement.getColumns().size(), 1);
         for (ColumnSegment each : insertStatement.getColumns()) {
             result.add(each.getName());
@@ -99,13 +100,13 @@ public final class ShardingInsertColumns implements InsertColumns {
                 result.add(each.getColumn().getName());
             }
         }
-        if (isGenerateKeyFromSQLStatement()) {
+        if (isGenerateKeyFromSQLStatement(insertStatement)) {
             result.remove(generateKeyColumnName);
         }
         return result;
     }
     
-    private boolean isGenerateKeyFromSQLStatement() {
+    private boolean isGenerateKeyFromSQLStatement(final InsertStatement insertStatement) {
         return null != generateKeyColumnName && insertStatement.getColumns().size() != insertStatement.getValueSize();
     }
     
