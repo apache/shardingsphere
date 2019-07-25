@@ -37,8 +37,6 @@ import java.util.Collection;
  */
 public final class InsertValuesTokenGenerator implements OptionalSQLTokenGenerator<EncryptRule> {
     
-    private EncryptRule encryptRule;
-    
     private InsertOptimizedStatement insertOptimizedStatement;
     
     private Collection<InsertValuesSegment> insertValuesSegments;
@@ -50,7 +48,7 @@ public final class InsertValuesTokenGenerator implements OptionalSQLTokenGenerat
         if (!isNeedToGenerateSQLToken(optimizedStatement, insertValuesSegments)) {
             return Optional.absent();
         }
-        initParameters(encryptRule, optimizedStatement, insertValuesSegments);
+        initParameters(optimizedStatement, insertValuesSegments);
         return Optional.of(createInsertValuesToken());
     }
     
@@ -58,8 +56,7 @@ public final class InsertValuesTokenGenerator implements OptionalSQLTokenGenerat
         return optimizedStatement.getSQLStatement() instanceof InsertStatement && !insertValuesSegments.isEmpty();
     }
     
-    private void initParameters(final EncryptRule encryptRule, final OptimizedStatement optimizedStatement, final Collection<InsertValuesSegment> insertValuesSegments) {
-        this.encryptRule = encryptRule;
+    private void initParameters(final OptimizedStatement optimizedStatement, final Collection<InsertValuesSegment> insertValuesSegments) {
         insertOptimizedStatement = (InsertOptimizedStatement) optimizedStatement;
         this.insertValuesSegments = insertValuesSegments;
     }
