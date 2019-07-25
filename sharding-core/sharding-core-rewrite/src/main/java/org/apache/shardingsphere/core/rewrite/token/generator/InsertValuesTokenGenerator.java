@@ -29,8 +29,6 @@ import org.apache.shardingsphere.core.rule.EncryptRule;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Map;
 
 /**
  * Insert values token generator.
@@ -85,21 +83,8 @@ public final class InsertValuesTokenGenerator implements OptionalSQLTokenGenerat
     private InsertValuesToken createInsertValuesToken() {
         InsertValuesToken result = new InsertValuesToken(getStartIndex(), getStopIndex());
         for (InsertOptimizeResultUnit each : insertOptimizedStatement.getUnits()) {
-            result.addInsertValueToken(getActualInsertColumns(), Arrays.asList(each.getValues()), each.getDataNodes());
+            result.addInsertValueToken(Arrays.asList(each.getValues()), each.getDataNodes());
         }
         return result;
-    }
-    
-    private Collection<String> getActualInsertColumns() {
-        Collection<String> result = new LinkedList<>();
-        Map<String, String> logicAndCipherColumns = encryptRule.getEncryptEngine().getLogicAndCipherColumns(insertOptimizedStatement.getTables().getSingleTableName());
-        for (String each : insertOptimizedStatement.getInsertColumns().getRegularColumnNames()) {
-            result.add(getCipherColumn(each, logicAndCipherColumns));
-        }
-        return result;
-    }
-    
-    private String getCipherColumn(final String column, final Map<String, String> logicAndCipherColumns) {
-        return logicAndCipherColumns.keySet().contains(column) ? logicAndCipherColumns.get(column) : column;
     }
 }
