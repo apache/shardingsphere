@@ -22,7 +22,6 @@ import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.strategy.masterslave.RandomMasterSlaveLoadBalanceAlgorithm;
 import org.apache.shardingsphere.core.strategy.masterslave.RoundRobinMasterSlaveLoadBalanceAlgorithm;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
-import org.apache.shardingsphere.shardingjdbc.spring.util.FieldValueUtil;
 import org.apache.shardingsphere.spi.masterslave.MasterSlaveLoadBalanceAlgorithm;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
@@ -61,6 +60,6 @@ public class MasterSlaveNamespaceTest extends AbstractJUnit4SpringContextTests {
     
     private MasterSlaveRule getMasterSlaveRule(final String masterSlaveDataSourceName) {
         MasterSlaveDataSource masterSlaveDataSource = applicationContext.getBean(masterSlaveDataSourceName, MasterSlaveDataSource.class);
-        return (MasterSlaveRule) FieldValueUtil.getFieldValue(masterSlaveDataSource, "masterSlaveRule", true);
+        return masterSlaveDataSource.getRuntimeContext().getRule();
     }
 }

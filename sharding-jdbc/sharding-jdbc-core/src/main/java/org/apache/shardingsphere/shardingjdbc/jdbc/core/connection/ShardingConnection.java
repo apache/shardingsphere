@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.connection;
 import lombok.Getter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractConnectionAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteCallback;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingContext;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingPreparedStatement;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingStatement;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -47,13 +47,13 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     
     private final Map<String, DataSource> dataSourceMap;
     
-    private final ShardingContext shardingContext;
+    private final ShardingRuntimeContext shardingContext;
     
     private final TransactionType transactionType;
     
     private final ShardingTransactionManager shardingTransactionManager;
     
-    public ShardingConnection(final Map<String, DataSource> dataSourceMap, final ShardingContext shardingContext, final TransactionType transactionType) {
+    public ShardingConnection(final Map<String, DataSource> dataSourceMap, final ShardingRuntimeContext shardingContext, final TransactionType transactionType) {
         this.dataSourceMap = dataSourceMap;
         this.shardingContext = shardingContext;
         this.transactionType = transactionType;
