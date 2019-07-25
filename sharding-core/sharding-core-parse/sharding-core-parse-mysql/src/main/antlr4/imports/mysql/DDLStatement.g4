@@ -44,11 +44,11 @@ truncateTable
     ;
 
 createDatabase
-    : CREATE (DATABASE | SCHEMA) (IF NOT EXISTS)? schemaName createDatabaseSpecificationClause_
+    : CREATE (DATABASE | SCHEMA) (IF NOT EXISTS)? schemaName createDatabaseSpecification_*
     ;
 
 alterDatabase
-    : ALTER (DATABASE | SCHEMA) schemaName createDatabaseSpecificationClause_
+    : ALTER (DATABASE | SCHEMA) schemaName createDatabaseSpecification_*
     ;
 
 dropDatabse
@@ -65,10 +65,6 @@ tableNotExistClause_
 
 createDefinitionClause_
     : LP_ createDefinitions_ RP_
-    ;
-
-createDatabaseSpecificationClause_
-    : createDatabaseSpecification_*
     ;
 
 createDatabaseSpecification_
