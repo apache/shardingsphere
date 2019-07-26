@@ -68,10 +68,10 @@ public class OrchestrationEncryptDataSource extends AbstractOrchestrationDataSou
     public OrchestrationEncryptDataSource(final EncryptDataSource dataSource, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
         super(new ShardingOrchestrationFacade(orchestrationConfig, Collections.singletonList(ShardingConstant.LOGIC_SCHEMA_NAME)));
         this.dataSource = new EncryptDataSource(
-                dataSource.getDataSource(), new EncryptRule(dataSource.getRuntimeContext().getRule().getEncryptRuleConfig()), dataSource.getRuntimeContext().getShardingProperties().getProps());
+                dataSource.getDataSource(), new EncryptRule(dataSource.getRuntimeContext().getRule().getEncryptRuleConfig()), dataSource.getRuntimeContext().getProps().getProps());
         initShardingOrchestrationFacade(
             Collections.singletonMap(ShardingConstant.LOGIC_SCHEMA_NAME, DataSourceConverter.getDataSourceConfigurationMap(Collections.singletonMap(ENCRYPT_DATASOURCE, dataSource.getDataSource()))),
-            getRuleConfigurationMap(), dataSource.getRuntimeContext().getShardingProperties().getProps());
+            getRuleConfigurationMap(), dataSource.getRuntimeContext().getProps().getProps());
     }
     
     private void checkDataSourceConfiguration(final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
@@ -96,7 +96,7 @@ public class OrchestrationEncryptDataSource extends AbstractOrchestrationDataSou
         dataSource.close();
         checkDataSourceConfiguration(dataSourceConfigurations);
         dataSource = new EncryptDataSource(DataSourceConverter.getDataSourceMap(
-                dataSourceConfigurations).values().iterator().next(), dataSource.getRuntimeContext().getRule(), dataSource.getRuntimeContext().getShardingProperties().getProps());
+                dataSourceConfigurations).values().iterator().next(), dataSource.getRuntimeContext().getRule(), dataSource.getRuntimeContext().getProps().getProps());
         getDataSourceConfigurations().clear();
         getDataSourceConfigurations().putAll(dataSourceConfigurations);
     }
@@ -110,7 +110,7 @@ public class OrchestrationEncryptDataSource extends AbstractOrchestrationDataSou
     @SneakyThrows
     public final synchronized void renew(final EncryptRuleChangedEvent encryptRuleChangedEvent) {
         dataSource = new EncryptDataSource(
-                dataSource.getDataSource(), new EncryptRule(encryptRuleChangedEvent.getEncryptRuleConfiguration()), dataSource.getRuntimeContext().getShardingProperties().getProps());
+                dataSource.getDataSource(), new EncryptRule(encryptRuleChangedEvent.getEncryptRuleConfiguration()), dataSource.getRuntimeContext().getProps().getProps());
     }
     
     /**

@@ -46,7 +46,7 @@ public class SpringBootEncryptTest {
     
     @Test
     public void assertSqlShow() {
-        assertTrue(((EncryptDataSource) dataSource).getRuntimeContext().getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW));
+        assertTrue(((EncryptDataSource) dataSource).getRuntimeContext().getProps().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW));
     }
     
     @Test

@@ -387,10 +387,6 @@ RULE
     : R U L E
     ;
 
-SCHEMA
-    : S C H E M A
-    ;
-
 SECURITY
     : S E C U R I T Y
     ;

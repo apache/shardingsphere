@@ -55,6 +55,10 @@ TRUNCATE
     : T R U N C A T E
     ;
 
+SCHEMA
+    : S C H E M A
+    ;
+
 GRANT
     : G R A N T
     ;

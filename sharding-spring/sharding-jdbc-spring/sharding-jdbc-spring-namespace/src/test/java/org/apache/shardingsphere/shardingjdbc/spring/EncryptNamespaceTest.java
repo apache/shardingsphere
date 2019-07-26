@@ -46,6 +46,6 @@ public class EncryptNamespaceTest extends AbstractJUnit4SpringContextTests {
     
     private ShardingProperties getShardingProperties() {
         EncryptDataSource encryptDataSource = applicationContext.getBean("encryptDataSource", EncryptDataSource.class);
-        return encryptDataSource.getRuntimeContext().getShardingProperties();
+        return encryptDataSource.getRuntimeContext().getProps();
     }
 }

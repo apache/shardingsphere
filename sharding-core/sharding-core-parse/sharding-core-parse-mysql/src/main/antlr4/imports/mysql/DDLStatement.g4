@@ -43,6 +43,18 @@ truncateTable
     : TRUNCATE TABLE? tableName
     ;
 
+createDatabase
+    : CREATE (DATABASE | SCHEMA) (IF NOT EXISTS)? schemaName createDatabaseSpecification_*
+    ;
+
+alterDatabase
+    : ALTER (DATABASE | SCHEMA) schemaName createDatabaseSpecification_*
+    ;
+
+dropDatabse
+    : DROP (DATABASE | SCHEMA) (IF EXISTS)? schemaName
+    ;
+
 createTableSpecification_
     : TEMPORARY
     ;
@@ -53,6 +65,12 @@ tableNotExistClause_
 
 createDefinitionClause_
     : LP_ createDefinitions_ RP_
+    ;
+
+createDatabaseSpecification_
+    : DEFAULT? (CHARACTER SET | CHARSET) EQ_? characterSetName_
+    | DEFAULT? COLLATE EQ_? collationName_
+    | DEFAULT ENCRYPTION EQ_ ('Y' | 'N')
     ;
 
 createDefinitions_

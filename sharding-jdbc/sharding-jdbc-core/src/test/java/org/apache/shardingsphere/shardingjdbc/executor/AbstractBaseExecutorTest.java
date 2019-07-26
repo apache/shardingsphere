@@ -67,7 +67,7 @@ public abstract class AbstractBaseExecutorTest {
     private void setConnection() throws SQLException {
         ShardingRuntimeContext runtimeContext = mock(ShardingRuntimeContext.class);
         when(runtimeContext.getExecuteEngine()).thenReturn(executeEngine);
-        when(runtimeContext.getShardingProperties()).thenReturn(getShardingProperties());
+        when(runtimeContext.getProps()).thenReturn(getShardingProperties());
         when(runtimeContext.getDatabaseType()).thenReturn(DatabaseTypes.getActualDatabaseType("H2"));
         ShardingRule shardingRule = getShardingRule();
         when(runtimeContext.getRule()).thenReturn(shardingRule);

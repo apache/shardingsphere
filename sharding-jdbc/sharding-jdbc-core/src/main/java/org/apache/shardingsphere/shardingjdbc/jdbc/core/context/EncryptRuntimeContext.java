@@ -19,12 +19,9 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.context;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
-import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
-import org.apache.shardingsphere.core.parse.SQLParseEngine;
-import org.apache.shardingsphere.core.parse.SQLParseEngineFactory;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 
@@ -47,24 +44,13 @@ import java.util.Set;
  * @author zhangliang
  */
 @Getter
-public final class EncryptRuntimeContext implements RuntimeContext {
-    
-    private final EncryptRule rule;
-    
-    private final ShardingProperties shardingProperties;
-    
-    private final DatabaseType databaseType;
+public final class EncryptRuntimeContext extends AbstractRuntimeContext<EncryptRule> {
     
     private final ShardingTableMetaData metaData;
     
-    private final SQLParseEngine parseEngine;
-    
     public EncryptRuntimeContext(final DataSource dataSource, final EncryptRule rule, final Properties props, final DatabaseType databaseType) throws SQLException {
-        this.rule = rule;
-        shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
-        this.databaseType = databaseType;
+        super(rule, props, databaseType);
         metaData = createEncryptTableMetaData(dataSource, rule);
-        parseEngine = SQLParseEngineFactory.getSQLParseEngine(databaseType);
     }
     
     private ShardingTableMetaData createEncryptTableMetaData(final DataSource dataSource, final EncryptRule encryptRule) throws SQLException {
@@ -127,9 +113,5 @@ public final class EncryptRuntimeContext implements RuntimeContext {
             return Optional.of(actualIndexName.replace(indexNameSuffix, ""));
         }
         return Optional.absent();
-    }
-    
-    @Override
-    public void close() {
     }
 }
