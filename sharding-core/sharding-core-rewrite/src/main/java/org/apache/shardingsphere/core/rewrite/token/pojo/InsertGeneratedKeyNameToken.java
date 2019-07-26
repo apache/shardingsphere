@@ -21,7 +21,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 /**
- * Insert generated key columns token.
+ * Insert generated key name token.
  *
  * @author panjuan
  */
