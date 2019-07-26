@@ -1046,10 +1046,11 @@ public final class ShardingSQLRewriteEngineTest {
         assertThat(getParameterBuilder(rewriteEngine).getParameters().get(0), is((Object) "encryptValue"));
         assertThat(getParameterBuilder(rewriteEngine).getParameters().get(1), is((Object) "encryptValue"));
     }
+    
     @Test
     public void assertRewriteSelectInWithShardingEncryptorWithParameterWithPlain() {
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(
-                createSQLRouteResultForSelectInWithShardingEncryptorWithParameter(), "SELECT id FROM table_z WHERE id in (?, ?) or id = 3", Arrays.<Object>asList(1, 2));
+                createSQLRouteResultForSelectInWithShardingEncryptorWithParameter(), "SELECT id FROM table_z WHERE id in (?, ?) or id = 3", Arrays.<Object>asList(1, 2), false);
         assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(), is("SELECT id FROM table_z WHERE plain IN (?, ?) or plain = '3'"));
         assertThat(getParameterBuilder(rewriteEngine).getParameters().get(0), is((Object) 1));
         assertThat(getParameterBuilder(rewriteEngine).getParameters().get(1), is((Object) 2));
