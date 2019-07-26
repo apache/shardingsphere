@@ -53,6 +53,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegme
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.AggregationDistinctSelectItemSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.item.ColumnSelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
@@ -888,18 +889,21 @@ public final class ShardingSQLRewriteEngineTest {
     @Test
     public void assertRewriteSelectInWithShardingEncryptorWithCipher() {
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(createSQLRouteResultForSelectInWithShardingEncryptor(), "SELECT id FROM table_z WHERE id in (3,5)", Collections.emptyList());
-        assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(), is("SELECT id FROM table_z WHERE cipher IN ('encryptValue', 'encryptValue')"));
+        assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(), is("SELECT cipher FROM table_z WHERE cipher IN ('encryptValue', 'encryptValue')"));
     }
     
     @Test
     public void assertRewriteSelectInWithShardingEncryptorWithPlain() {
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(createSQLRouteResultForSelectInWithShardingEncryptor(), "SELECT id FROM table_z WHERE id in (3,5)", Collections.emptyList(), false);
-        assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(), is("SELECT id FROM table_z WHERE plain IN ('3', '5')"));
+        assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(), is("SELECT cipher FROM table_z WHERE plain IN ('3', '5')"));
     }
     
     private SQLRouteResult createSQLRouteResultForSelectInWithShardingEncryptor() {
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.getAllSQLSegments().add(new TableSegment(15, 21, "table_z"));
+        SelectItemsSegment selectItemsSegment = new SelectItemsSegment(7, 8, false);
+        selectItemsSegment.getSelectItems().add(new ColumnSelectItemSegment("id", new ColumnSegment(7, 8, "id")));
+        selectStatement.getAllSQLSegments().add(selectItemsSegment);
         List<ExpressionSegment> expressionSegments = new LinkedList<>();
         expressionSegments.add(new LiteralExpressionSegment(0, 0, 3));
         expressionSegments.add(new LiteralExpressionSegment(0, 0, 5));
@@ -915,19 +919,22 @@ public final class ShardingSQLRewriteEngineTest {
     @Test
     public void assertRewriteSelectInWithQueryAssistedShardingEncryptorWithQuery() {
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(
-                createSQLRouteResultForSelectInWithQueryAssistedShardingEncryptor(), "SELECT id FROM table_k WHERE id in (3,5)", Collections.emptyList());
+                createSQLRouteResultForSelectInWithQueryAssistedShardingEncryptor(), "SELECT id, name FROM table_k WHERE id in (3,5)", Collections.emptyList());
         assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(),
-                is("SELECT id FROM table_k WHERE query IN ('assistedEncryptValue', 'assistedEncryptValue')"));
+                is("SELECT cipher, name FROM table_k WHERE query IN ('assistedEncryptValue', 'assistedEncryptValue')"));
     }
     
     private SQLRouteResult createSQLRouteResultForSelectInWithQueryAssistedShardingEncryptor() {
         SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getAllSQLSegments().add(new TableSegment(15, 21, "table_k"));
+        selectStatement.getAllSQLSegments().add(new TableSegment(21, 27, "table_k"));
+        SelectItemsSegment selectItemsSegment = new SelectItemsSegment(7, 14, false);
+        selectItemsSegment.getSelectItems().add(new ColumnSelectItemSegment("id", new ColumnSegment(7, 8, "id")));
+        selectStatement.getAllSQLSegments().add(selectItemsSegment);
         List<ExpressionSegment> expressionSegments = new LinkedList<>();
         expressionSegments.add(new LiteralExpressionSegment(0, 0, 3));
         expressionSegments.add(new LiteralExpressionSegment(0, 0, 5));
         List<EncryptCondition> encryptConditions = new LinkedList<>();
-        encryptConditions.add(new EncryptCondition("id", "table_k", 29, 39, expressionSegments));
+        encryptConditions.add(new EncryptCondition("id", "table_k", 35, 45, expressionSegments));
         SQLRouteResult result = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), encryptConditions,
                 new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
                 new SelectItems(Collections.<SelectItem>emptyList(), false, 0), new Pagination(null, null, Collections.emptyList())));
@@ -1014,7 +1021,7 @@ public final class ShardingSQLRewriteEngineTest {
     public void assertRewriteSelectEqualWithShardingEncryptorWithCipher() {
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(
                 createSQLRouteResultForSelectEqualWithShardingEncryptor(), "SELECT id FROM table_z WHERE id=? AND name=?", Arrays.<Object>asList(1, "x"));
-        assertThat(rewriteEngine.generateSQL().getSql(), is("SELECT id FROM table_z WHERE cipher = ? AND name=?"));
+        assertThat(rewriteEngine.generateSQL().getSql(), is("SELECT cipher FROM table_z WHERE cipher = ? AND name=?"));
         assertThat(getParameterBuilder(rewriteEngine).getParameters().get(0), is((Object) "encryptValue"));
     }
     
@@ -1022,13 +1029,16 @@ public final class ShardingSQLRewriteEngineTest {
     public void assertRewriteSelectEqualWithShardingEncryptorWithPlain() {
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(
                 createSQLRouteResultForSelectEqualWithShardingEncryptor(), "SELECT id FROM table_z WHERE id=? AND name=?", Arrays.<Object>asList(1, "x"), false);
-        assertThat(rewriteEngine.generateSQL().getSql(), is("SELECT id FROM table_z WHERE plain = ? AND name=?"));
+        assertThat(rewriteEngine.generateSQL().getSql(), is("SELECT cipher FROM table_z WHERE plain = ? AND name=?"));
         assertThat(getParameterBuilder(rewriteEngine).getParameters().get(0), is((Object) 1));
     }
     
     private SQLRouteResult createSQLRouteResultForSelectEqualWithShardingEncryptor() {
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.getAllSQLSegments().add(new TableSegment(15, 21, "table_z"));
+        SelectItemsSegment selectItemsSegment = new SelectItemsSegment(7, 8, false);
+        selectItemsSegment.getSelectItems().add(new ColumnSelectItemSegment("id", new ColumnSegment(7, 8, "id")));
+        selectStatement.getAllSQLSegments().add(selectItemsSegment);
         List<EncryptCondition> encryptConditions = new LinkedList<>();
         encryptConditions.add(new EncryptCondition("id", "table_z", 29, 32, new ParameterMarkerExpressionSegment(0, 0, 0)));
         SQLRouteResult result = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), encryptConditions,
@@ -1042,7 +1052,7 @@ public final class ShardingSQLRewriteEngineTest {
     public void assertRewriteSelectInWithShardingEncryptorWithParameterWithCipher() {
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(
                 createSQLRouteResultForSelectInWithShardingEncryptorWithParameter(), "SELECT id FROM table_z WHERE id in (?, ?) or id = 3", Arrays.<Object>asList(1, 2));
-        assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(), is("SELECT id FROM table_z WHERE cipher IN (?, ?) or cipher = 'encryptValue'"));
+        assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(), is("SELECT cipher FROM table_z WHERE cipher IN (?, ?) or cipher = 'encryptValue'"));
         assertThat(getParameterBuilder(rewriteEngine).getParameters().get(0), is((Object) "encryptValue"));
         assertThat(getParameterBuilder(rewriteEngine).getParameters().get(1), is((Object) "encryptValue"));
     }
@@ -1051,7 +1061,7 @@ public final class ShardingSQLRewriteEngineTest {
     public void assertRewriteSelectInWithShardingEncryptorWithParameterWithPlain() {
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(
                 createSQLRouteResultForSelectInWithShardingEncryptorWithParameter(), "SELECT id FROM table_z WHERE id in (?, ?) or id = 3", Arrays.<Object>asList(1, 2), false);
-        assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(), is("SELECT id FROM table_z WHERE plain IN (?, ?) or plain = '3'"));
+        assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(), is("SELECT cipher FROM table_z WHERE plain IN (?, ?) or plain = '3'"));
         assertThat(getParameterBuilder(rewriteEngine).getParameters().get(0), is((Object) 1));
         assertThat(getParameterBuilder(rewriteEngine).getParameters().get(1), is((Object) 2));
     }
@@ -1059,6 +1069,9 @@ public final class ShardingSQLRewriteEngineTest {
     private SQLRouteResult createSQLRouteResultForSelectInWithShardingEncryptorWithParameter() {
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.getAllSQLSegments().add(new TableSegment(15, 21, "table_z"));
+        SelectItemsSegment selectItemsSegment = new SelectItemsSegment(7, 8, false);
+        selectItemsSegment.getSelectItems().add(new ColumnSelectItemSegment("id", new ColumnSegment(7, 8, "id")));
+        selectStatement.getAllSQLSegments().add(selectItemsSegment);
         List<ExpressionSegment> expressionSegments = new LinkedList<>();
         expressionSegments.add(new ParameterMarkerExpressionSegment(0, 0, 0));
         expressionSegments.add(new ParameterMarkerExpressionSegment(0, 0, 1));
@@ -1075,16 +1088,21 @@ public final class ShardingSQLRewriteEngineTest {
     @Test
     public void assertRewriteSelectEqualWithQueryAssistedShardingEncryptor() {
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(
-                createSQLRouteResultForSelectEqualWithQueryAssistedShardingEncryptor(), "SELECT id FROM table_k WHERE id=? AND name=?", Arrays.<Object>asList(1, "k"));
-        assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(), is("SELECT id FROM table_k WHERE query = ? AND name=?"));
+                createSQLRouteResultForSelectEqualWithQueryAssistedShardingEncryptor(), "SELECT id as alias FROM table_k WHERE id=? AND name=?", Arrays.<Object>asList(1, "k"));
+        assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(), is("SELECT cipher AS alias FROM table_k WHERE query = ? AND name=?"));
         assertThat(getParameterBuilder(rewriteEngine).getParameters().get(0), is((Object) "assistedEncryptValue"));
     }
     
     private SQLRouteResult createSQLRouteResultForSelectEqualWithQueryAssistedShardingEncryptor() {
         SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getAllSQLSegments().add(new TableSegment(15, 21, "table_k"));
+        selectStatement.getAllSQLSegments().add(new TableSegment(24, 30, "table_k"));
+        SelectItemsSegment selectItemsSegment = new SelectItemsSegment(7, 17, false);
+        ColumnSelectItemSegment columnSelectItemSegment = new ColumnSelectItemSegment("id", new ColumnSegment(7, 17, "id"));
+        columnSelectItemSegment.setAlias("alias");
+        selectItemsSegment.getSelectItems().add(columnSelectItemSegment);
+        selectStatement.getAllSQLSegments().add(selectItemsSegment);
         List<EncryptCondition> encryptConditions = new LinkedList<>();
-        encryptConditions.add(new EncryptCondition("id", "table_k", 29, 32, new ParameterMarkerExpressionSegment(0, 0, 0)));
+        encryptConditions.add(new EncryptCondition("id", "table_k", 38, 41, new ParameterMarkerExpressionSegment(0, 0, 0)));
         SQLRouteResult result = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), encryptConditions,
                 new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
                 new SelectItems(Collections.<SelectItem>emptyList(), false, 0), new Pagination(null, null, Collections.emptyList())));
