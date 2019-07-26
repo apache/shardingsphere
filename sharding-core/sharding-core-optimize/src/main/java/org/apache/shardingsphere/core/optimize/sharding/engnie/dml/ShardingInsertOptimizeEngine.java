@@ -34,6 +34,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.column.OnDuplicateKe
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -66,16 +67,17 @@ public final class ShardingInsertOptimizeEngine implements ShardingOptimizeEngin
         int derivedColumnsCount = getDerivedColumnsCount(shardingRule, tableName, isGeneratedValue);
         int parametersCount = 0;
         for (InsertValue each : result.getValues()) {
-            InsertOptimizeResultUnit unit = result.createUnit(each.getValues(derivedColumnsCount), each.getParameters(parameters, parametersCount, derivedColumnsCount), each.getParametersCount());
+            Object[] currentParameters = each.getParameters(parameters, parametersCount, derivedColumnsCount);
+            InsertOptimizeResultUnit unit = result.createUnit(each.getValues(derivedColumnsCount), currentParameters, each.getParametersCount());
             result.addUnit(unit);
             if (isGeneratedValue) {
-                unit.addInsertValue(generatedValues.next(), parameters);
+                unit.addInsertValue(generatedValues.next(), Arrays.asList(currentParameters));
             }
             if (shardingRule.getEncryptRule().isHasQueryAssistedColumn(tableName)) {
-                fillAssistedQueryUnit(shardingRule, tableName, insertColumns.getRegularColumnNames(), unit, parameters);
+                fillAssistedQueryUnit(shardingRule, tableName, insertColumns.getRegularColumnNames(), unit, Arrays.asList(currentParameters));
             }
             if (shardingRule.getEncryptRule().isHasPlainColumn(tableName)) {
-                fillPlainUnit(shardingRule, tableName, insertColumns.getRegularColumnNames(), unit, parameters);
+                fillPlainUnit(shardingRule, tableName, insertColumns.getRegularColumnNames(), unit, Arrays.asList(currentParameters));
             }
             parametersCount += each.getParametersCount();
         }
