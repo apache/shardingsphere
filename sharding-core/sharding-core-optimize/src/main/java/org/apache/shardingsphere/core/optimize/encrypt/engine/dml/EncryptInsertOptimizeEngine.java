@@ -27,6 +27,7 @@ import org.apache.shardingsphere.core.optimize.sharding.segment.insert.value.Ins
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -46,12 +47,13 @@ public final class EncryptInsertOptimizeEngine implements EncryptOptimizeEngine<
         int derivedColumnsCount = encryptRule.getAssistedQueryAndPlainColumnCount(sqlStatement.getTable().getTableName());
         int parametersCount = 0;
         for (InsertValue each : result.getValues()) {
-            InsertOptimizeResultUnit unit = result.addUnit(each.getValues(derivedColumnsCount), each.getParameters(parameters, parametersCount, derivedColumnsCount), each.getParametersCount());
+            Object[] currentParameters = each.getParameters(parameters, parametersCount, derivedColumnsCount);
+            InsertOptimizeResultUnit unit = result.addUnit(each.getValues(derivedColumnsCount), currentParameters, each.getParametersCount());
             if (encryptRule.isHasQueryAssistedColumn(sqlStatement.getTable().getTableName())) {
-                fillAssistedQueryUnit(encryptRule, parameters, sqlStatement.getTable().getTableName(), result.getInsertColumns().getRegularColumnNames(), unit);
+                fillAssistedQueryUnit(encryptRule, Arrays.asList(currentParameters), sqlStatement.getTable().getTableName(), result.getInsertColumns().getRegularColumnNames(), unit);
             }
             if (encryptRule.isHasPlainColumn(sqlStatement.getTable().getTableName())) {
-                fillPlainUnit(encryptRule, parameters, sqlStatement.getTable().getTableName(), result.getInsertColumns().getRegularColumnNames(), unit);
+                fillPlainUnit(encryptRule, Arrays.asList(currentParameters), sqlStatement.getTable().getTableName(), result.getInsertColumns().getRegularColumnNames(), unit);
             }
             parametersCount += each.getParametersCount();
         }
