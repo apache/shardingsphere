@@ -18,10 +18,6 @@
 package org.apache.shardingsphere.core.rewrite.token.pojo;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.complex.ComplexExpressionSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 
 /**
  * Insert cipher column token.
@@ -33,29 +29,16 @@ public final class SelectCipherColumnToken extends SQLToken implements Substitut
     
     private final int stopIndex;
     
-    private final String cipherColumnName;
+    private final String columnName;
     
-    private final ExpressionSegment cipherColumnValue;
-    
-    public SelectCipherColumnToken(final int startIndex, final int stopIndex, final String cipherColumnName, final ExpressionSegment cipherColumnValue) {
+    public SelectCipherColumnToken(final int startIndex, final int stopIndex, final String columnName) {
         super(startIndex);
         this.stopIndex = stopIndex;
-        this.cipherColumnName = cipherColumnName;
-        this.cipherColumnValue = cipherColumnValue;
+        this.columnName = columnName;
     }
     
     @Override
     public String toString() {
-        return String.format("%s = %s", cipherColumnName, getCipherColumnValue());
+        return columnName;
     }
-    
-    private String getCipherColumnValue() {
-        if (cipherColumnValue instanceof ParameterMarkerExpressionSegment) {
-            return "?";
-        } else if (cipherColumnValue instanceof LiteralExpressionSegment) {
-            Object literals = ((LiteralExpressionSegment) cipherColumnValue).getLiterals();
-            return literals instanceof String ? String.format("'%s'", literals) : literals.toString();
-        }
-        return ((ComplexExpressionSegment) cipherColumnValue).getText();
-    } 
 }
