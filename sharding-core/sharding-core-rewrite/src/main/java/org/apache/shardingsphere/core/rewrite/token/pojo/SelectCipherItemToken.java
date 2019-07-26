@@ -20,25 +20,25 @@ package org.apache.shardingsphere.core.rewrite.token.pojo;
 import lombok.Getter;
 
 /**
- * Insert cipher column token.
+ * Insert cipher item token.
  *
  * @author panjuan
  */
 @Getter
-public final class SelectCipherColumnToken extends SQLToken implements Substitutable {
+public final class SelectCipherItemToken extends SQLToken implements Substitutable {
     
     private final int stopIndex;
     
-    private final String columnName;
+    private final String selectItemName;
     
-    public SelectCipherColumnToken(final int startIndex, final int stopIndex, final String columnName) {
+    public SelectCipherItemToken(final int startIndex, final int stopIndex, final String selectItemName) {
         super(startIndex);
         this.stopIndex = stopIndex;
-        this.columnName = columnName;
+        this.selectItemName = selectItemName;
     }
     
     @Override
     public String toString() {
-        return columnName;
+        return selectItemName;
     }
 }
