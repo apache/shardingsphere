@@ -52,25 +52,25 @@ public final class EncryptRule implements BaseRule {
     
     private final Map<String, EncryptTable> tables = new LinkedHashMap<>();
     
-    private EncryptRuleConfiguration encryptRuleConfig;
+    private EncryptRuleConfiguration ruleConfiguration;
     
     public EncryptRule() {
-        encryptRuleConfig = new EncryptRuleConfiguration();
+        ruleConfiguration = new EncryptRuleConfiguration();
     }
     
     public EncryptRule(final EncryptRuleConfiguration encryptRuleConfiguration) {
-        this.encryptRuleConfig = encryptRuleConfiguration;
+        this.ruleConfiguration = encryptRuleConfiguration;
         Preconditions.checkArgument(isValidEncryptRuleConfig(), "Invalid encrypt column configurations in EncryptTableRuleConfigurations.");
         initEncryptors(encryptRuleConfiguration.getEncryptors());
         initTables(encryptRuleConfiguration.getTables());
     }
     
     private boolean isValidEncryptRuleConfig() {
-        return (encryptRuleConfig.getEncryptors().isEmpty() && encryptRuleConfig.getTables().isEmpty()) || isValidEncryptTableConfig();
+        return (ruleConfiguration.getEncryptors().isEmpty() && ruleConfiguration.getTables().isEmpty()) || isValidEncryptTableConfig();
     }
     
     private boolean isValidEncryptTableConfig() {
-        for (EncryptTableRuleConfiguration table : encryptRuleConfig.getTables().values()) {
+        for (EncryptTableRuleConfiguration table : ruleConfiguration.getTables().values()) {
             for (EncryptColumnRuleConfiguration column : table.getColumns().values()) {
                 if (!isValidColumnConfig(column)) {
                     return false;
@@ -81,7 +81,7 @@ public final class EncryptRule implements BaseRule {
     }
     
     private boolean isValidColumnConfig(final EncryptColumnRuleConfiguration column) {
-        return !Strings.isNullOrEmpty(column.getEncryptor()) && !Strings.isNullOrEmpty(column.getCipherColumn()) && encryptRuleConfig.getEncryptors().keySet().contains(column.getEncryptor());
+        return !Strings.isNullOrEmpty(column.getEncryptor()) && !Strings.isNullOrEmpty(column.getCipherColumn()) && ruleConfiguration.getEncryptors().keySet().contains(column.getEncryptor());
     }
     
     private void initEncryptors(final Map<String, EncryptorRuleConfiguration> encryptors) {

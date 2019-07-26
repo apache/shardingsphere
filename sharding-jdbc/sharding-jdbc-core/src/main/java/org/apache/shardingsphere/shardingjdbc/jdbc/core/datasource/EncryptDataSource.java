@@ -51,7 +51,7 @@ public class EncryptDataSource extends AbstractUnsupportedOperationDataSource im
     private PrintWriter logWriter = new PrintWriter(System.out);
     
     public EncryptDataSource(final DataSource dataSource, final EncryptRule encryptRule, final Properties props) throws SQLException {
-        ConfigurationLogger.log(encryptRule.getEncryptRuleConfig());
+        ConfigurationLogger.log(encryptRule.getRuleConfiguration());
         ConfigurationLogger.log(props);
         this.dataSource = dataSource;
         runtimeContext = new EncryptRuntimeContext(dataSource, encryptRule, props, getDatabaseType());

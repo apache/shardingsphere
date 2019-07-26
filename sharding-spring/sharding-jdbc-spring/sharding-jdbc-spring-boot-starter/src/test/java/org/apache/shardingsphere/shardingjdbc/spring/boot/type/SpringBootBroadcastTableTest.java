@@ -52,6 +52,6 @@ public class SpringBootBroadcastTableTest {
         ShardingRule shardingRule = shardingDataSource.getRuntimeContext().getRule();
         assertThat(shardingRule.getBroadcastTables(), CoreMatchers.<Collection<String>>is(Collections.singletonList("t_config")));
         assertThat(shardingRule.getShardingDataSourceNames().getDataSourceNames().size(), is(3));
-        assertThat(shardingRule.getShardingRuleConfig().getDefaultDataSourceName(), is("ds"));
+        assertThat(shardingRule.getRuleConfiguration().getDefaultDataSourceName(), is("ds"));
     }
 }
