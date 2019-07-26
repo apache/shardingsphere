@@ -21,7 +21,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.rule.EncryptRule;
-import org.apache.shardingsphere.core.util.ConfigurationLogger;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.EncryptRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
@@ -51,8 +50,6 @@ public class EncryptDataSource extends AbstractUnsupportedOperationDataSource im
     private PrintWriter logWriter = new PrintWriter(System.out);
     
     public EncryptDataSource(final DataSource dataSource, final EncryptRule encryptRule, final Properties props) throws SQLException {
-        ConfigurationLogger.log(encryptRule.getRuleConfiguration());
-        ConfigurationLogger.log(props);
         this.dataSource = dataSource;
         runtimeContext = new EncryptRuntimeContext(dataSource, encryptRule, props, getDatabaseType());
     }

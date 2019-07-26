@@ -24,6 +24,7 @@ import org.apache.shardingsphere.core.execute.ShardingExecuteEngine;
 import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.parse.SQLParseEngineFactory;
 import org.apache.shardingsphere.core.rule.BaseRule;
+import org.apache.shardingsphere.core.util.ConfigurationLogger;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 
 import java.util.Properties;
@@ -54,6 +55,8 @@ public abstract class AbstractRuntimeContext<T extends BaseRule> implements Runt
         this.databaseType = databaseType;
         executeEngine = new ShardingExecuteEngine(this.props.<Integer>getValue(ShardingPropertiesConstant.EXECUTOR_SIZE));
         parseEngine = SQLParseEngineFactory.getSQLParseEngine(databaseType);
+        ConfigurationLogger.log(rule.getRuleConfiguration());
+        ConfigurationLogger.log(props);
     }
     
     @Override
