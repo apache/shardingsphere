@@ -69,7 +69,7 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
     public OrchestrationMasterSlaveDataSource(final MasterSlaveDataSource masterSlaveDataSource, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
         super(new ShardingOrchestrationFacade(orchestrationConfig, Collections.singletonList(ShardingConstant.LOGIC_SCHEMA_NAME)));
         dataSource = new MasterSlaveDataSource(masterSlaveDataSource.getDataSourceMap(),
-                new OrchestrationMasterSlaveRule(masterSlaveDataSource.getRuntimeContext().getRule().getMasterSlaveRuleConfiguration()), 
+                new OrchestrationMasterSlaveRule(masterSlaveDataSource.getRuntimeContext().getRule().getRuleConfiguration()), 
                 masterSlaveDataSource.getRuntimeContext().getProps().getProps());
         initShardingOrchestrationFacade(Collections.singletonMap(ShardingConstant.LOGIC_SCHEMA_NAME, DataSourceConverter.getDataSourceConfigurationMap(dataSource.getDataSourceMap())),
                 getRuleConfigurationMap(), dataSource.getRuntimeContext().getProps().getProps());

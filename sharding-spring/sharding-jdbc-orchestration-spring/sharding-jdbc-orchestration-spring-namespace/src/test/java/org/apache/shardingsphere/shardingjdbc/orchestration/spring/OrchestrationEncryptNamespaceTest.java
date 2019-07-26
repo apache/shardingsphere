@@ -59,8 +59,8 @@ public class OrchestrationEncryptNamespaceTest extends AbstractJUnit4SpringConte
     }
     
     private void assertEncryptRule(final EncryptRule encryptRule) {
-        assertNotNull(encryptRule.getEncryptRuleConfig());
-        EncryptRuleConfiguration ruleConfiguration = encryptRule.getEncryptRuleConfig();
+        assertNotNull(encryptRule.getRuleConfiguration());
+        EncryptRuleConfiguration ruleConfiguration = encryptRule.getRuleConfiguration();
         assertThat(ruleConfiguration.getEncryptors().size(), is(2));
         EncryptorRuleConfiguration encryptorRule = ruleConfiguration.getEncryptors().get("encryptor_md5");
         assertNotNull(encryptorRule);
