@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.rewrite.token.pojo;
 
+import com.google.common.base.Strings;
 import lombok.Getter;
 
 /**
@@ -31,14 +32,17 @@ public final class SelectCipherItemToken extends SQLToken implements Substitutab
     
     private final String selectItemName;
     
-    public SelectCipherItemToken(final int startIndex, final int stopIndex, final String selectItemName) {
+    private final String alias;
+    
+    public SelectCipherItemToken(final int startIndex, final int stopIndex, final String selectItemName, final String alias) {
         super(startIndex);
         this.stopIndex = stopIndex;
         this.selectItemName = selectItemName;
+        this.alias = alias;
     }
     
     @Override
     public String toString() {
-        return selectItemName;
+        return Strings.isNullOrEmpty(alias) ? selectItemName : String.format("%s AS %s", selectItemName, alias);
     }
 }
