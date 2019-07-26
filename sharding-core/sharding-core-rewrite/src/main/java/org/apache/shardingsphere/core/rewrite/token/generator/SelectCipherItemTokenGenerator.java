@@ -42,8 +42,6 @@ public final class SelectCipherItemTokenGenerator implements CollectionSQLTokenG
     
     private OptimizedStatement optimizedStatement;
     
-    private String tableName;
-    
     @Override
     public Collection<SelectCipherItemToken> generateSQLTokens(final OptimizedStatement optimizedStatement, 
                                                                final ParameterBuilder parameterBuilder, final EncryptRule rule, final boolean isQueryWithCipherColumn) {
@@ -55,26 +53,30 @@ public final class SelectCipherItemTokenGenerator implements CollectionSQLTokenG
     }
     
     private boolean isNeedToGenerateSQLToken(final OptimizedStatement optimizedStatement) {
-        if (!(optimizedStatement.getSQLStatement() instanceof SelectStatement)) {
+        if (!isSelectStatementWithTable(optimizedStatement)) {
             return false;
         }
         Optional<SelectItemsSegment> selectItemsSegment = optimizedStatement.getSQLStatement().findSQLSegment(SelectItemsSegment.class);
         return selectItemsSegment.isPresent() && !selectItemsSegment.get().getSelectItems().isEmpty();
     }
     
+    private boolean isSelectStatementWithTable(final OptimizedStatement optimizedStatement) {
+        return optimizedStatement.getSQLStatement() instanceof SelectStatement && !optimizedStatement.getTables().isEmpty();
+    }
+    
     private void initParameters(final EncryptRule rule, final OptimizedStatement optimizedStatement) {
         encryptRule = rule;
         this.optimizedStatement = optimizedStatement;
-        tableName = optimizedStatement.getTables().getSingleTableName();
     }
     
     private Collection<SelectCipherItemToken> createSelectCipherItemTokens() {
         Collection<SelectCipherItemToken> result = new LinkedList<>();
         SelectItemsSegment selectItemsSegment = optimizedStatement.getSQLStatement().findSQLSegment(SelectItemsSegment.class).get();
+        String tableName = optimizedStatement.getTables().getSingleTableName();
         Collection<String> logicColumns = encryptRule.getLogicColumns(tableName);
         for (SelectItemSegment each : selectItemsSegment.getSelectItems()) {
             if (isLogicColumn(each, logicColumns)) {
-                result.add(createSelectCipherItemToken(each));
+                result.add(createSelectCipherItemToken(each, tableName));
             }
         }
         return result;
@@ -84,7 +86,7 @@ public final class SelectCipherItemTokenGenerator implements CollectionSQLTokenG
         return each instanceof ColumnSelectItemSegment && logicColumns.contains(((ColumnSelectItemSegment) each).getName());
     }
     
-    private SelectCipherItemToken createSelectCipherItemToken(final SelectItemSegment each) {
+    private SelectCipherItemToken createSelectCipherItemToken(final SelectItemSegment each, final String tableName) {
         return new SelectCipherItemToken(each.getStartIndex(),
                 each.getStopIndex(), encryptRule.getCipherColumn(tableName, ((ColumnSelectItemSegment) each).getName()));
     }
