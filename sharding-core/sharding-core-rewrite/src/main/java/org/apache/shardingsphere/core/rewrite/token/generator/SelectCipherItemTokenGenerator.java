@@ -19,10 +19,10 @@ package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.ColumnSelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemsSegment;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SelectCipherItemToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
@@ -55,7 +55,7 @@ public final class SelectCipherItemTokenGenerator implements CollectionSQLTokenG
     }
     
     private boolean isNeedToGenerateSQLToken(final OptimizedStatement optimizedStatement) {
-        if (!(optimizedStatement instanceof ShardingSelectOptimizedStatement)) {
+        if (!(optimizedStatement.getSQLStatement() instanceof SelectStatement)) {
             return false;
         }
         Optional<SelectItemsSegment> selectItemsSegment = optimizedStatement.getSQLStatement().findSQLSegment(SelectItemsSegment.class);
@@ -86,11 +86,6 @@ public final class SelectCipherItemTokenGenerator implements CollectionSQLTokenG
     
     private SelectCipherItemToken createSelectCipherItemToken(final SelectItemSegment each) {
         return new SelectCipherItemToken(each.getStartIndex(),
-                each.getStopIndex(), encryptRule.getCipherColumn(tableName, ((ColumnSelectItemSegment) each).getName()), getColumnAlias(each));
-    }
-    
-    private String getColumnAlias(final SelectItemSegment selectItemSegment) {
-        Optional<String> alias = ((ColumnSelectItemSegment) selectItemSegment).getAlias();
-        return alias.isPresent() ? alias.get() : "";
+                each.getStopIndex(), encryptRule.getCipherColumn(tableName, ((ColumnSelectItemSegment) each).getName()));
     }
 }
