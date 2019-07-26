@@ -65,6 +65,15 @@ public final class EncryptTable {
     }
     
     /**
+     * Get logic columns.
+     *
+     * @return logic column
+     */
+    public Collection<String> getLogicColumns() {
+        return columns.keySet();        
+    }
+    
+    /**
      * Get plain column.
      * 
      * @param logicColumn logic column name
