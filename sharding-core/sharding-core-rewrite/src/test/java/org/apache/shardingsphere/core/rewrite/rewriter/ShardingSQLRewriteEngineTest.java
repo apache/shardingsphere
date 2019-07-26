@@ -167,8 +167,8 @@ public final class ShardingSQLRewriteEngineTest {
     private SQLRouteResult createRouteResultForOrderByAndGroupByDerivedColumns() {
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.getAllSQLSegments().add(new TableSegment(18, 24, "table_x"));
-        DerivedCommonSelectItem selectItem1 = new DerivedCommonSelectItem("x.id", "GROUP_BY_DERIVED_0");
-        DerivedCommonSelectItem selectItem2 = new DerivedCommonSelectItem("x.name", "ORDER_BY_DERIVED_0");
+        DerivedCommonSelectItem selectItem1 = new DerivedCommonSelectItem("x.id", "GROUP_BY_DERIVED_0", "id");
+        DerivedCommonSelectItem selectItem2 = new DerivedCommonSelectItem("x.name", "ORDER_BY_DERIVED_0", "name");
         SelectItems selectItems = new SelectItems(Arrays.<SelectItem>asList(selectItem1, selectItem2), false, 11);
         SQLRouteResult result = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), Collections.<EncryptCondition>emptyList(),
                 new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),

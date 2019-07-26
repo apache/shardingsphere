@@ -29,7 +29,7 @@ import lombok.ToString;
 @ToString(callSuper = true)
 public final class DerivedCommonSelectItem extends CommonSelectItem {
     
-    public DerivedCommonSelectItem(final String expression, final String alias) {
-        super(expression, alias);
+    public DerivedCommonSelectItem(final String expression, final String alias, final String columnLabel) {
+        super(expression, alias, columnLabel);
     }
 }

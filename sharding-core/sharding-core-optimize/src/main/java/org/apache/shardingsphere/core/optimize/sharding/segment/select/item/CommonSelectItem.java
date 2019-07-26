@@ -37,6 +37,8 @@ public class CommonSelectItem implements SelectItem {
     private final String expression;
     
     private final String alias;
+
+    private final String columnLabel;
     
     @Override
     public final Optional<String> getAlias() {

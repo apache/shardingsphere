@@ -115,7 +115,7 @@ public final class SelectItems {
         for (SelectItem each : items) {
             // TODO read * from metadata
             if (!(each instanceof ShorthandSelectItem)) {
-                result.add(each.getAlias().or(each.getExpression()));
+                result.add(each.getAlias().or(each.getColumnLabel()));
             }
         }
         return result;

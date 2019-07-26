@@ -97,7 +97,8 @@ public final class SelectItemsEngine {
         int derivedColumnOffset = 0;
         for (OrderByItem each : orderItems) {
             if (!containsItem(tables, selectItems, each.getSegment())) {
-                result.add(new DerivedCommonSelectItem(((TextOrderByItemSegment) each.getSegment()).getText(), derivedColumn.getDerivedColumnAlias(derivedColumnOffset++)));
+                String text = ((TextOrderByItemSegment) each.getSegment()).getText();
+                result.add(new DerivedCommonSelectItem(text, derivedColumn.getDerivedColumnAlias(derivedColumnOffset++), text));
             }
         }
         return result;
