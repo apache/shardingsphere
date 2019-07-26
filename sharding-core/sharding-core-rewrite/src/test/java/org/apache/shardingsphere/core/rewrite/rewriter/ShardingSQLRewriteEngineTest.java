@@ -1089,15 +1089,15 @@ public final class ShardingSQLRewriteEngineTest {
     public void assertRewriteSelectEqualWithQueryAssistedShardingEncryptor() {
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(
                 createSQLRouteResultForSelectEqualWithQueryAssistedShardingEncryptor(), "SELECT id as alias FROM table_k WHERE id=? AND name=?", Arrays.<Object>asList(1, "k"));
-        assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(), is("SELECT cipher AS alias FROM table_k WHERE query = ? AND name=?"));
+        assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(), is("SELECT cipher as alias FROM table_k WHERE query = ? AND name=?"));
         assertThat(getParameterBuilder(rewriteEngine).getParameters().get(0), is((Object) "assistedEncryptValue"));
     }
     
     private SQLRouteResult createSQLRouteResultForSelectEqualWithQueryAssistedShardingEncryptor() {
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.getAllSQLSegments().add(new TableSegment(24, 30, "table_k"));
-        SelectItemsSegment selectItemsSegment = new SelectItemsSegment(7, 17, false);
-        ColumnSelectItemSegment columnSelectItemSegment = new ColumnSelectItemSegment("id", new ColumnSegment(7, 17, "id"));
+        SelectItemsSegment selectItemsSegment = new SelectItemsSegment(7, 8, false);
+        ColumnSelectItemSegment columnSelectItemSegment = new ColumnSelectItemSegment("id", new ColumnSegment(7, 8, "id"));
         columnSelectItemSegment.setAlias("alias");
         selectItemsSegment.getSelectItems().add(columnSelectItemSegment);
         selectStatement.getAllSQLSegments().add(selectItemsSegment);
