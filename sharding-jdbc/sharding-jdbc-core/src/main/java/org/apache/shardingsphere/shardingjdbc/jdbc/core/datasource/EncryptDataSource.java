@@ -18,15 +18,12 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.EncryptRuntimeContext;
-import org.apache.shardingsphere.spi.database.DatabaseType;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
 
@@ -42,13 +39,7 @@ public class EncryptDataSource extends AbstractDataSourceAdapter {
     
     public EncryptDataSource(final DataSource dataSource, final EncryptRule encryptRule, final Properties props) throws SQLException {
         super(dataSource);
-        runtimeContext = new EncryptRuntimeContext(dataSource, encryptRule, props, createDatabaseType());
-    }
-    
-    private DatabaseType createDatabaseType() throws SQLException {
-        try (Connection connection = getDataSource().getConnection()) {
-            return DatabaseTypes.getDatabaseTypeByURL(connection.getMetaData().getURL());
-        }
+        runtimeContext = new EncryptRuntimeContext(dataSource, encryptRule, props, getDatabaseType());
     }
     
     @Override
