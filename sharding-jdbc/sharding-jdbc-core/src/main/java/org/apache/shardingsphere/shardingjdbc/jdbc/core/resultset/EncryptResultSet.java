@@ -20,6 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.execute.sql.execute.result.StreamQueryResult;
 import org.apache.shardingsphere.core.merge.dql.iterator.IteratorStreamMergedResult;
+import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationResultSet;
 
@@ -48,13 +49,19 @@ import java.util.Collections;
  */
 public final class EncryptResultSet extends AbstractUnsupportedOperationResultSet {
     
+    private final EncryptRule encryptRule;
+    
+    private final OptimizedStatement optimizedStatement;
+    
     private final Statement encryptStatement;
     
     private ResultSet originalResultSet;
     
     private IteratorStreamMergedResult resultSet;
     
-    public EncryptResultSet(final Statement encryptStatement, final ResultSet resultSet, final EncryptRule encryptRule) {
+    public EncryptResultSet(final EncryptRule encryptRule, final OptimizedStatement optimizedStatement, final Statement encryptStatement, final ResultSet resultSet) {
+        this.encryptRule = encryptRule;
+        this.optimizedStatement = optimizedStatement;
         this.encryptStatement = encryptStatement;
         originalResultSet = resultSet;
         QueryResult queryResult = new StreamQueryResult(resultSet, encryptRule);
@@ -337,7 +344,7 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     @Override
     public ResultSetMetaData getMetaData() throws SQLException {
-        return originalResultSet.getMetaData();
+        return new EncryptResultSetMetaData(originalResultSet.getMetaData(), encryptRule, optimizedStatement);
     }
     
     @Override
