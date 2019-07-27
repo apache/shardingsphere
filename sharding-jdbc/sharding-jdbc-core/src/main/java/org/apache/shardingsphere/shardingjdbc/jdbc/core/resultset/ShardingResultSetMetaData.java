@@ -19,12 +19,15 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.ShardingConstant;
+import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.DerivedColumn;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.WrapperAdapter;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Sharding result set meta data.
@@ -38,13 +41,29 @@ public final class ShardingResultSetMetaData extends WrapperAdapter implements R
     
     private final ShardingRule shardingRule;
     
+    private final OptimizedStatement optimizedStatement;
+    
     @Override
     public int getColumnCount() throws SQLException {
+        return resultSetMetaData.getColumnCount() - getDerivedColumnCount();
+    }
+    
+    private int getDerivedColumnCount() throws SQLException {
         int result = 0;
+        Collection<String> assistedQueryColumns = getAssistedQueryColumns();
         for (int columnIndex = 1; columnIndex <= resultSetMetaData.getColumnCount(); columnIndex++) {
-            if (!DerivedColumn.isDerivedColumn(resultSetMetaData.getColumnLabel(columnIndex))) {
+            String columnLabel = resultSetMetaData.getColumnLabel(columnIndex);
+            if (DerivedColumn.isDerivedColumn(columnLabel) || assistedQueryColumns.contains(columnLabel)) {
                 result++;
             }
+        }
+        return result;
+    }
+    
+    private Collection<String> getAssistedQueryColumns() {
+        Collection<String> result = new LinkedList<>();
+        for (String each : optimizedStatement.getTables().getTableNames()) {
+            result.addAll(shardingRule.getEncryptRule().getAssistedQueryColumns(each));
         }
         return result;
     }
