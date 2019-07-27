@@ -66,7 +66,7 @@ public final class ShardingResultSetTest {
     @Before
     public void setUp() {
         mergeResultSet = mock(MergedResult.class);
-        shardingResultSet = new ShardingResultSet(getResultSets(), mergeResultSet, getShardingStatement());
+        shardingResultSet = new ShardingResultSet(getResultSets(), mergeResultSet, getShardingStatement(), null);
     }
     
     @SneakyThrows
