@@ -86,11 +86,15 @@ public final class EncryptStatement extends AbstractUnsupportedOperationStatemen
         SQLRewriteEngine encryptSQLRewriteEngine = new SQLRewriteEngine(connection.getRuntimeContext().getRule(), 
                 optimizedStatement, sql, Collections.emptyList(), connection.getRuntimeContext().getProps().<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN));
         String result = encryptSQLRewriteEngine.generateSQL().getSql();
+        showSQL(result);
+        return result;
+    }
+    
+    private void showSQL(final String sql) {
         boolean showSQL = connection.getRuntimeContext().getProps().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW);
         if (showSQL) {
-            SQLLogger.logSQL(result);
+            SQLLogger.logSQL(sql);
         }
-        return result;
     }
     
     @Override
