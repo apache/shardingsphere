@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.ShardingConstant;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.DerivedColumn;
@@ -27,14 +26,17 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.WrapperAdapter;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Sharding result set meta data.
  * 
  * @author zhangliang
+ * @author panjuan
  */
-@RequiredArgsConstructor
 public final class ShardingResultSetMetaData extends WrapperAdapter implements ResultSetMetaData {
     
     private final ResultSetMetaData resultSetMetaData;
@@ -42,6 +44,23 @@ public final class ShardingResultSetMetaData extends WrapperAdapter implements R
     private final ShardingRule shardingRule;
     
     private final OptimizedStatement optimizedStatement;
+    
+    private final Map<String, String> logicAndActualColumns;
+    
+    public ShardingResultSetMetaData(final ResultSetMetaData resultSetMetaData, final ShardingRule shardingRule, final OptimizedStatement optimizedStatement) {
+        this.resultSetMetaData = resultSetMetaData;
+        this.shardingRule = shardingRule;
+        this.optimizedStatement = optimizedStatement;
+        logicAndActualColumns = createLogicAndActualColumns();
+    }
+    
+    private Map<String, String> createLogicAndActualColumns() {
+        Map<String, String> result = new LinkedHashMap<>();
+        for (String each : optimizedStatement.getTables().getTableNames()) {
+            result.putAll(shardingRule.getEncryptRule().getLogicAndCipherColumns(each));
+        }
+        return result;
+    }
     
     @Override
     public int getColumnCount() throws SQLException {
@@ -105,12 +124,23 @@ public final class ShardingResultSetMetaData extends WrapperAdapter implements R
     
     @Override
     public String getColumnLabel(final int column) throws SQLException {
-        return resultSetMetaData.getColumnLabel(column);
+        String result = resultSetMetaData.getColumnLabel(column);
+        return logicAndActualColumns.values().contains(result) ? getLogicColumn(result) : result;
     }
     
     @Override
     public String getColumnName(final int column) throws SQLException {
-        return resultSetMetaData.getColumnName(column);
+        String result = resultSetMetaData.getColumnName(column);
+        return logicAndActualColumns.values().contains(result) ? getLogicColumn(result) : result;
+    }
+    
+    private String getLogicColumn(final String actualColumn) throws SQLException {
+        for (Entry<String, String> entry : logicAndActualColumns.entrySet()) {
+            if (entry.getValue().contains(actualColumn)) {
+                return entry.getKey();
+            }
+        }
+        throw new SQLException(String.format("Can not get logic column by %s.", actualColumn));
     }
     
     @Override
