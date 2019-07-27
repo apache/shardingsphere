@@ -65,6 +65,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     
     private boolean returnGeneratedKeys;
     
+    @Getter
     private SQLRouteResult routeResult;
     
     private ResultSet currentResultSet;

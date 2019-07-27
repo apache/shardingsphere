@@ -71,6 +71,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     
     private final BatchPreparedStatementExecutor batchPreparedStatementExecutor;
     
+    @Getter
     private SQLRouteResult routeResult;
     
     private ResultSet currentResultSet;
