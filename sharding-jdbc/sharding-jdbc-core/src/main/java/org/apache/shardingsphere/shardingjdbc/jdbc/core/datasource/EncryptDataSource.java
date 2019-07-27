@@ -18,21 +18,17 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.rule.EncryptRule;
+import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.EncryptRuntimeContext;
-import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 
 import javax.sql.DataSource;
-import java.io.PrintWriter;
-import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
-import java.util.logging.Logger;
 
 /**
  * Encrypt data source.
@@ -40,48 +36,32 @@ import java.util.logging.Logger;
  * @author panjuan
  */
 @Getter
-@Setter
-public class EncryptDataSource extends AbstractUnsupportedOperationDataSource implements AutoCloseable {
-    
-    private final DataSource dataSource;
+public class EncryptDataSource extends AbstractDataSourceAdapter {
     
     private final EncryptRuntimeContext runtimeContext;
     
-    private PrintWriter logWriter = new PrintWriter(System.out);
-    
     public EncryptDataSource(final DataSource dataSource, final EncryptRule encryptRule, final Properties props) throws SQLException {
-        this.dataSource = dataSource;
-        runtimeContext = new EncryptRuntimeContext(dataSource, encryptRule, props, getDatabaseType());
+        super(dataSource);
+        runtimeContext = new EncryptRuntimeContext(dataSource, encryptRule, props, createDatabaseType());
     }
     
-    private DatabaseType getDatabaseType() throws SQLException {
-        try (Connection connection = dataSource.getConnection()) {
+    private DatabaseType createDatabaseType() throws SQLException {
+        try (Connection connection = getDataSource().getConnection()) {
             return DatabaseTypes.getDatabaseTypeByURL(connection.getMetaData().getURL());
         }
     }
     
     @Override
-    public EncryptConnection getConnection() throws SQLException {
-        return new EncryptConnection(dataSource.getConnection(), runtimeContext);
+    public final EncryptConnection getConnection() throws SQLException {
+        return new EncryptConnection(getDataSource().getConnection(), runtimeContext);
     }
     
-    @Override
-    public Connection getConnection(final String username, final String password) throws SQLException {
-        return getConnection();
-    }
-    
-    @Override
-    public Logger getParentLogger() {
-        return Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
-    }
-    
-    @Override
-    public void close() {
-        try {
-            Method method = dataSource.getClass().getDeclaredMethod("close");
-            method.setAccessible(true);
-            method.invoke(dataSource);
-        } catch (final ReflectiveOperationException ignored) {
-        }
+    /**
+     * Get data source.
+     *
+     * @return data source
+     */
+    public DataSource getDataSource() {
+        return getDataSourceMap().values().iterator().next();
     }
 }
