@@ -19,6 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.adapter;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
+import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteCallback;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteTemplate;
@@ -59,13 +60,19 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     
     @Override
     public final ResultSetMetaData getMetaData() throws SQLException {
-        return new ShardingResultSetMetaData(resultSets.get(0).getMetaData(), getShardingRule());
+        return new ShardingResultSetMetaData(resultSets.get(0).getMetaData(), getShardingRule(), getOptimizedStatement());
     }
     
     private ShardingRule getShardingRule() {
         return statement instanceof ShardingPreparedStatement 
                 ? ((ShardingPreparedStatement) statement).getConnection().getRuntimeContext().getRule() 
                 : ((ShardingStatement) statement).getConnection().getRuntimeContext().getRule();
+    }
+    
+    private OptimizedStatement getOptimizedStatement() {
+        return statement instanceof ShardingPreparedStatement
+                ? ((ShardingPreparedStatement) statement).getRouteResult().getOptimizedStatement()
+                : ((ShardingStatement) statement).getRouteResult().getOptimizedStatement();
     }
     
     @Override
