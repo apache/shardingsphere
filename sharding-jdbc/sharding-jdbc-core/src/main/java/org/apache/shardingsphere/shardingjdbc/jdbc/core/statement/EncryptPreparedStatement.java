@@ -45,15 +45,17 @@ import java.util.LinkedList;
  */
 public final class EncryptPreparedStatement extends AbstractShardingPreparedStatementAdapter {
     
-    private final String sql;
-    
     private final EncryptPreparedStatementGenerator preparedStatementGenerator;
-    
-    private final Collection<SQLUnit> sqlUnits = new LinkedList<>();
     
     private PreparedStatement preparedStatement;
     
+    private OptimizedStatement optimizedStatement;
+    
     private EncryptResultSet resultSet;
+    
+    private final String sql;
+    
+    private final Collection<SQLUnit> sqlUnits = new LinkedList<>();
     
     @SneakyThrows
     public EncryptPreparedStatement(final EncryptConnection connection, final String sql) {
@@ -149,7 +151,7 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
     private SQLUnit getSQLUnit(final String sql) {
         EncryptConnection connection = preparedStatementGenerator.connection;
         SQLStatement sqlStatement = connection.getRuntimeContext().getParseEngine().parse(sql, true);
-        OptimizedStatement optimizedStatement = EncryptOptimizeEngineFactory.newInstance(
+        optimizedStatement = EncryptOptimizeEngineFactory.newInstance(
                 sqlStatement).optimize(connection.getRuntimeContext().getRule(), connection.getRuntimeContext().getMetaData(), sql, getParameters(), sqlStatement);
         SQLRewriteEngine encryptSQLRewriteEngine = new SQLRewriteEngine(connection.getRuntimeContext().getRule(), 
                 optimizedStatement, sql, getParameters(), connection.getRuntimeContext().getProps().<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN));
