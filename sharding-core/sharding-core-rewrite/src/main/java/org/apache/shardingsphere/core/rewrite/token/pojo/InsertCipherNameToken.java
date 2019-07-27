@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.rewrite.token.pojo;
 import lombok.Getter;
 
 /**
- * Insert column token.
+ * Insert cipher name token.
  *
  * @author panjuan
  */

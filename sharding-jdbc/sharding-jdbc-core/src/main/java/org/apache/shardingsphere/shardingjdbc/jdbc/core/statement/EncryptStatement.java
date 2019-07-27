@@ -42,9 +42,11 @@ import java.util.Collections;
  */
 public final class EncryptStatement extends AbstractUnsupportedOperationStatement {
     
+    private final EncryptConnection connection;
+    
     private final Statement statement;
     
-    private final EncryptConnection connection;
+    private OptimizedStatement optimizedStatement;
     
     private EncryptResultSet resultSet;
     
@@ -69,7 +71,7 @@ public final class EncryptStatement extends AbstractUnsupportedOperationStatemen
     @Override
     public ResultSet executeQuery(final String sql) throws SQLException {
         ResultSet resultSet = statement.executeQuery(getRewriteSQL(sql));
-        this.resultSet = new EncryptResultSet(this, resultSet, connection.getRuntimeContext().getRule());
+        this.resultSet = new EncryptResultSet(connection.getRuntimeContext().getRule(), optimizedStatement, this, resultSet);
         return this.resultSet;
     }
     
@@ -81,16 +83,20 @@ public final class EncryptStatement extends AbstractUnsupportedOperationStatemen
     @SuppressWarnings("unchecked")
     private String getRewriteSQL(final String sql) {
         SQLStatement sqlStatement = connection.getRuntimeContext().getParseEngine().parse(sql, false);
-        OptimizedStatement optimizedStatement = EncryptOptimizeEngineFactory.newInstance(
+        optimizedStatement = EncryptOptimizeEngineFactory.newInstance(
                 sqlStatement).optimize(connection.getRuntimeContext().getRule(), connection.getRuntimeContext().getMetaData(), sql, Collections.emptyList(), sqlStatement);
         SQLRewriteEngine encryptSQLRewriteEngine = new SQLRewriteEngine(connection.getRuntimeContext().getRule(), 
                 optimizedStatement, sql, Collections.emptyList(), connection.getRuntimeContext().getProps().<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN));
         String result = encryptSQLRewriteEngine.generateSQL().getSql();
+        showSQL(result);
+        return result;
+    }
+    
+    private void showSQL(final String sql) {
         boolean showSQL = connection.getRuntimeContext().getProps().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW);
         if (showSQL) {
-            SQLLogger.logSQL(result);
+            SQLLogger.logSQL(sql);
         }
-        return result;
     }
     
     @Override
@@ -142,7 +148,7 @@ public final class EncryptStatement extends AbstractUnsupportedOperationStatemen
     }
     
     private EncryptResultSet createEncryptResultSet(final Statement statement) throws SQLException {
-        return null == statement.getResultSet() ? null : new EncryptResultSet(this, statement.getResultSet(), connection.getRuntimeContext().getRule());
+        return null == statement.getResultSet() ? null : new EncryptResultSet(connection.getRuntimeContext().getRule(), optimizedStatement, this, statement.getResultSet());
     }
     
     @Override

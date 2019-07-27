@@ -20,6 +20,9 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 import com.google.common.base.Optional;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.merge.MergedResult;
+import org.apache.shardingsphere.core.optimize.api.segment.Tables;
+import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
@@ -66,7 +69,17 @@ public final class ShardingResultSetTest {
     @Before
     public void setUp() {
         mergeResultSet = mock(MergedResult.class);
-        shardingResultSet = new ShardingResultSet(getResultSets(), mergeResultSet, getShardingStatement());
+        shardingResultSet = new ShardingResultSet(getResultSets(), mergeResultSet, getShardingStatement(), createSQLRouteResult());
+    }
+    
+    private SQLRouteResult createSQLRouteResult() {
+        SQLRouteResult result = mock(SQLRouteResult.class);
+        OptimizedStatement optimizedStatement = mock(OptimizedStatement.class);
+        Tables tables = mock(Tables.class);
+        when(tables.getTableNames()).thenReturn(Collections.<String>emptyList());
+        when(optimizedStatement.getTables()).thenReturn(tables);
+        when(result.getOptimizedStatement()).thenReturn(optimizedStatement);
+        return result;
     }
     
     @SneakyThrows

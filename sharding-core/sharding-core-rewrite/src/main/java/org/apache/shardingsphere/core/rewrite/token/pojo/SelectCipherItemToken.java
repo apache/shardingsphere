@@ -17,36 +17,28 @@
 
 package org.apache.shardingsphere.core.rewrite.token.pojo;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 /**
- * Insert generated key name token.
+ * Insert cipher item token.
  *
  * @author panjuan
  */
 @Getter
-@EqualsAndHashCode(callSuper = true)
-public final class InsertGeneratedKeyNameToken extends SQLToken implements Attachable {
+public final class SelectCipherItemToken extends SQLToken implements Substitutable {
     
-    private final String column;
+    private final int stopIndex;
     
-    private final boolean isToAppendCloseParenthesis;
+    private final String selectItemName;
     
-    public InsertGeneratedKeyNameToken(final int startIndex, final String column, final boolean isToAppendCloseParenthesis) {
+    public SelectCipherItemToken(final int startIndex, final int stopIndex, final String selectItemName) {
         super(startIndex);
-        this.column = column;
-        this.isToAppendCloseParenthesis = isToAppendCloseParenthesis;
+        this.stopIndex = stopIndex;
+        this.selectItemName = selectItemName;
     }
     
     @Override
     public String toString() {
-        if (null == column) {
-            return "";
-        }
-        if (isToAppendCloseParenthesis) {
-            return String.format(", %s)", column);
-        }
-        return String.format(", %s", column);
+        return selectItemName;
     }
 }

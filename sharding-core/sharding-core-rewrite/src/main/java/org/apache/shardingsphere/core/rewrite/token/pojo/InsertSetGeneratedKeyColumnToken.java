@@ -24,7 +24,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralE
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 
 /**
- * Insert set add generated key token.
+ * Insert set generated key column token.
  *
  * @author panjuan
  */
