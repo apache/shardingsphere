@@ -37,40 +37,40 @@ import java.util.TreeMap;
  */
 public final class QueryResultMetaData {
     
-    private final Map<String, Integer> columnLabelAndIndexes;
-    
     private final ResultSetMetaData resultSetMetaData;
     
     private final ShardingRule shardingRule;
     
     private final EncryptRule encryptRule;
     
+    private final Map<String, Integer> columnLabelAndIndexes;
+    
     @SneakyThrows
     public QueryResultMetaData(final ResultSetMetaData resultSetMetaData, final ShardingRule shardingRule) {
-        columnLabelAndIndexes = getColumnLabelAndIndexMap(resultSetMetaData);
         this.resultSetMetaData = resultSetMetaData;
         this.shardingRule = shardingRule;
         this.encryptRule = shardingRule.getEncryptRule();
+        columnLabelAndIndexes = getColumnLabelAndIndexMap();
     }
     
     @SneakyThrows
     public QueryResultMetaData(final ResultSetMetaData resultSetMetaData, final EncryptRule encryptRule) {
-        columnLabelAndIndexes = getColumnLabelAndIndexMap(resultSetMetaData);
         this.resultSetMetaData = resultSetMetaData;
         this.shardingRule = null;
         this.encryptRule = encryptRule;
+        columnLabelAndIndexes = getColumnLabelAndIndexMap();
     }
     
     @SneakyThrows
     public QueryResultMetaData(final ResultSetMetaData resultSetMetaData) {
-        columnLabelAndIndexes = getColumnLabelAndIndexMap(resultSetMetaData);
         this.resultSetMetaData = resultSetMetaData;
         this.shardingRule = null;
         this.encryptRule = new EncryptRule();
+        columnLabelAndIndexes = getColumnLabelAndIndexMap();
     }
     
     @SneakyThrows
-    private Map<String, Integer> getColumnLabelAndIndexMap(final ResultSetMetaData resultSetMetaData) {
+    private Map<String, Integer> getColumnLabelAndIndexMap() {
         Map<String, Integer> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         for (int columnIndex = resultSetMetaData.getColumnCount(); columnIndex > 0; columnIndex--) {
             result.put(resultSetMetaData.getColumnLabel(columnIndex), columnIndex);
