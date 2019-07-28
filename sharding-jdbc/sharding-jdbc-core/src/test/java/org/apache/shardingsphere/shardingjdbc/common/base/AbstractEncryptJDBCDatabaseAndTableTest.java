@@ -19,6 +19,8 @@ package org.apache.shardingsphere.shardingjdbc.common.base;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Maps;
+import lombok.AccessLevel;
+import lombok.Getter;
 import org.apache.shardingsphere.api.config.encrypt.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.encrypt.EncryptTableRuleConfiguration;
@@ -42,19 +44,29 @@ import java.util.Properties;
 
 public abstract class AbstractEncryptJDBCDatabaseAndTableTest extends AbstractSQLTest {
     
+    @Getter(AccessLevel.PROTECTED)
     private static EncryptDataSource encryptDataSource;
+    
+    @Getter(AccessLevel.PROTECTED)
+    private static EncryptDataSource encryptDataSourceWithProps;
     
     private static final List<String> ENCRYPT_DB_NAMES = Collections.singletonList("encrypt");
     
     @BeforeClass
     public static void initEncryptDataSource() throws SQLException {
-        if (null != encryptDataSource) {
+        if (null != encryptDataSource && null != encryptDataSourceWithProps) {
             return;
         }
         Map<String, DataSource> dataSources = getDataSources();
-        Properties props = new Properties();
-        props.put(ShardingPropertiesConstant.SQL_SHOW.getKey(), true);
-        encryptDataSource = new EncryptDataSource(dataSources.values().iterator().next(), new EncryptRule(createEncryptRuleConfiguration()), props);
+        encryptDataSource = new EncryptDataSource(dataSources.values().iterator().next(), new EncryptRule(createEncryptRuleConfiguration()), new Properties());
+        encryptDataSourceWithProps = new EncryptDataSource(dataSources.values().iterator().next(), new EncryptRule(createEncryptRuleConfiguration()), createProperties());
+    }
+    
+    private static Properties createProperties() {
+        Properties result = new Properties();
+        result.put(ShardingPropertiesConstant.SQL_SHOW.getKey(), true);
+        result.put(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN, false);
+        return result;
     }
     
     private static Map<String, DataSource> getDataSources() {
@@ -91,10 +103,6 @@ public abstract class AbstractEncryptJDBCDatabaseAndTableTest extends AbstractSQ
         } catch (final SQLException ex) {
             ex.printStackTrace();
         }
-    }
-
-    protected final EncryptDataSource getEncryptDataSource() {
-        return encryptDataSource;
     }
     
     @AfterClass

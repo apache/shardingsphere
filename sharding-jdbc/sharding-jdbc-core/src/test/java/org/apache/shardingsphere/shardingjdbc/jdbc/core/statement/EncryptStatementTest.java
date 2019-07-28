@@ -48,18 +48,23 @@ public final class EncryptStatementTest extends AbstractEncryptJDBCDatabaseAndTa
     
     private static final String SELECT_SQL_WITH_STAR = "select * from t_encrypt where pwd = 'a'";
     
+    private static final String SELECT_SQL_WITH_PLAIN = "select id, pwd from t_encrypt where pwd = 'plainValue'";
+    
     private static final String SELECT_SQL_TO_ASSERT = "select id, cipher_pwd, plain_pwd from t_encrypt";
     
     private EncryptConnection encryptConnection;
     
+    private EncryptConnection encryptConnectionWithProps;
+    
     @Before
     public void setUp() throws SQLException {
         encryptConnection = getEncryptDataSource().getConnection();
+        encryptConnectionWithProps = getEncryptDataSourceWithProps().getConnection();
     }
     
     @Test
     public void assertSqlShow() {
-        assertTrue(encryptConnection.getRuntimeContext().getProps().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW));
+        assertTrue(encryptConnectionWithProps.getRuntimeContext().getProps().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW));
     }
     
     @Test
