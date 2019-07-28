@@ -44,7 +44,7 @@ public final class EncryptPreparedStatementTest extends AbstractEncryptJDBCDatab
     
     private static final String SELECT_SQL = "select * from t_query_encrypt where pwd = ? ";
     
-    private static final String SELECT_ALL_SQL = "select id, pwd, assist_pwd from t_query_encrypt";
+    private static final String SELECT_ALL_SQL = "select id, cipher_pwd, assist_pwd from t_query_encrypt";
     
     @Test
     public void assertSqlShow() throws SQLException {
@@ -141,7 +141,7 @@ public final class EncryptPreparedStatementTest extends AbstractEncryptJDBCDatab
             int count = 1;
             while (resultSet.next()) {
                 if (id == count) {
-                    assertThat(pwd, is(resultSet.getObject("pwd")));
+                    assertThat(pwd, is(resultSet.getObject("cipher_pwd")));
                     assertThat(assistPwd, is(resultSet.getObject("assist_pwd")));
                 }
                 count += 1;
