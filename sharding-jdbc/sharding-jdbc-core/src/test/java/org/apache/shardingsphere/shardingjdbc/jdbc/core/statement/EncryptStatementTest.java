@@ -26,6 +26,8 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -128,6 +130,21 @@ public final class EncryptStatementTest extends AbstractEncryptJDBCDatabaseAndTa
                 assertThat(metaData.getColumnLabel(2), is("pwd"));
                 assertThat(metaData.getColumnLabel(3), is("plain_pwd"));
             }
+        }
+    }
+    
+    @Test
+    public void assertSelectWithPlainColumn() throws SQLException {
+        try (Statement statement = getEncryptConnectionWithProps().createStatement()) {
+            ResultSet resultSet = statement.executeQuery(SELECT_SQL_WITH_PLAIN);
+            int count = 1;
+            List<Object> ids = Arrays.asList((Object) 1, 5);
+            while (resultSet.next()) {
+                assertThat(resultSet.getObject("id"), is(ids.get(count - 1)));
+                assertThat(resultSet.getObject("pwd"), is((Object) "decryptValue"));
+                count += 1;
+            }
+            assertThat(count - 1, is(ids.size()));
         }
     }
     
