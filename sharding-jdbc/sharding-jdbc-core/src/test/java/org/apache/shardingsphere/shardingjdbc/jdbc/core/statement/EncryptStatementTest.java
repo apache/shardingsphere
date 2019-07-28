@@ -43,9 +43,9 @@ public final class EncryptStatementTest extends AbstractEncryptJDBCDatabaseAndTa
     
     private static final String UPDATE_SQL = "update t_encrypt set pwd ='f' where pwd = 'a'";
     
-    private static final String SELECT_SQL = "select id, pwd from t_encrypt where pwd = 'a' ";
+    private static final String SELECT_SQL = "select id, pwd from t_encrypt where pwd = 'a'";
     
-    private static final String SELECT_SQL_TO_ASSERT = "select id, cipher_pwd from t_encrypt";
+    private static final String SELECT_SQL_TO_ASSERT = "select id, cipher_pwd, plain_pwd from t_encrypt";
     
     private EncryptConnection encryptConnection;
     
@@ -64,7 +64,7 @@ public final class EncryptStatementTest extends AbstractEncryptJDBCDatabaseAndTa
         try (Statement statement = encryptConnection.createStatement()) {
             statement.execute(INSERT_SQL);
         }
-        assertResultSet(3, 2, "encryptValue");
+        assertResultSet(3, 2, "encryptValue", "b");
     }
     
     @Test
@@ -76,7 +76,7 @@ public final class EncryptStatementTest extends AbstractEncryptJDBCDatabaseAndTa
             assertThat(resultSet.getInt(1), is(6));
             assertFalse(resultSet.next());
         }
-        assertResultSet(3, 2, "encryptValue");
+        assertResultSet(3, 6, "encryptValue", "b");
     }
     
     @Test
@@ -84,7 +84,7 @@ public final class EncryptStatementTest extends AbstractEncryptJDBCDatabaseAndTa
         try (Statement statement = encryptConnection.createStatement()) {
             statement.execute(DELETE_SQL);
         }
-        assertResultSet(1, 5, "encryptValue");
+        assertResultSet(1, 5, "encryptValue", "b");
     }
     
     @Test
@@ -94,7 +94,7 @@ public final class EncryptStatementTest extends AbstractEncryptJDBCDatabaseAndTa
             result = statement.executeUpdate(UPDATE_SQL);
         }
         assertThat(result, is(2));
-        assertResultSet(2, 1, "encryptValue");
+        assertResultSet(2, 1, "encryptValue", "f");
     }
     
     @Test
@@ -122,14 +122,15 @@ public final class EncryptStatementTest extends AbstractEncryptJDBCDatabaseAndTa
         }
     }
     
-    private void assertResultSet(final int resultSetCount, final int id, final Object pwd) throws SQLException {
+    private void assertResultSet(final int resultSetCount, final int id, final Object pwd, final Object plain) throws SQLException {
         try (Connection conn = getDatabaseTypeMap().values().iterator().next().values().iterator().next().getConnection();
              Statement stmt = conn.createStatement()) {
             ResultSet resultSet = stmt.executeQuery(SELECT_SQL_TO_ASSERT);
             int count = 1;
             while (resultSet.next()) {
                 if (id == count) {
-                    assertThat(pwd, is(resultSet.getObject("cipher_pwd")));
+                    assertThat(resultSet.getObject("cipher_pwd"), is(pwd));
+                    assertThat(resultSet.getObject("plain_pwd"), is(plain));
                 }
                 count += 1;
             }
