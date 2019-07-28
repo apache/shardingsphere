@@ -25,6 +25,7 @@ import org.junit.Test;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -44,6 +45,8 @@ public final class EncryptStatementTest extends AbstractEncryptJDBCDatabaseAndTa
     private static final String UPDATE_SQL = "update t_encrypt set pwd ='f' where pwd = 'a'";
     
     private static final String SELECT_SQL = "select id, pwd from t_encrypt where pwd = 'a'";
+    
+    private static final String SELECT_SQL_WITH_STAR = "select * from t_encrypt where pwd = 'a'";
     
     private static final String SELECT_SQL_TO_ASSERT = "select id, cipher_pwd, plain_pwd from t_encrypt";
     
@@ -119,6 +122,19 @@ public final class EncryptStatementTest extends AbstractEncryptJDBCDatabaseAndTa
             assertThat(statement.getResultSetType(), is(ResultSet.TYPE_FORWARD_ONLY));
             assertThat(statement.getResultSetConcurrency(), is(ResultSet.CONCUR_READ_ONLY));
             assertThat(statement.getResultSetHoldability(), is(ResultSet.HOLD_CURSORS_OVER_COMMIT));
+        }
+    }
+    
+    @Test
+    public void assertSelectWithStar() throws SQLException {
+        try (Statement statement = encryptConnection.createStatement()) {
+            ResultSetMetaData metaData = statement.executeQuery(SELECT_SQL_WITH_STAR).getMetaData();
+            assertThat(metaData.getColumnCount(), is(3));
+            for (int i = 0; i < metaData.getColumnCount(); i++) {
+                assertThat(metaData.getColumnLabel(1), is("id"));
+                assertThat(metaData.getColumnLabel(2), is("pwd"));
+                assertThat(metaData.getColumnLabel(3), is("plain_pwd"));
+            }
         }
     }
     
