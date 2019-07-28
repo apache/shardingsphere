@@ -77,11 +77,12 @@ public final class SelectItemEngine {
     }
     
     private CommonSelectItem createSelectItem(final ColumnSelectItemSegment selectItemSegment) {
-        return new CommonSelectItem(selectItemSegment.getQualifiedName(), selectItemSegment.getAlias().orNull(), selectItemSegment.getName());
+        String owner = selectItemSegment.getOwner().isPresent() ? selectItemSegment.getOwner().get().getTableName() : null;
+        return new CommonSelectItem(owner, selectItemSegment.getName(), selectItemSegment.getAlias().orNull());
     }
     
     private CommonSelectItem createSelectItem(final ExpressionSelectItemSegment selectItemSegment) {
-        return new CommonSelectItem(selectItemSegment.getText(), selectItemSegment.getAlias().orNull(), selectItemSegment.getText());
+        return new CommonSelectItem(null, selectItemSegment.getText(), selectItemSegment.getAlias().orNull());
     }
     
     private AggregationDistinctSelectItem createSelectItem(final String sql, final AggregationDistinctSelectItemSegment selectItemSegment) {

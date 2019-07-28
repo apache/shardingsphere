@@ -33,13 +33,23 @@ import lombok.ToString;
 @EqualsAndHashCode
 @ToString
 public class CommonSelectItem implements SelectItem {
-    
-    private final String expression;
-    
+
+    private final String owner;
+
+    private final String name;
+
     private final String alias;
 
-    private final String columnLabel;
-    
+    @Override
+    public final String getExpression() {
+        return null == owner ? name : owner + "." + name;
+    }
+
+    @Override
+    public final String getColumnLabel() {
+        return getAlias().or(name);
+    }
+
     @Override
     public final Optional<String> getAlias() {
         return Optional.fromNullable(alias);

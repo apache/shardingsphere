@@ -138,19 +138,19 @@ public class SelectItemsTest {
     }
 
     private CommonSelectItem getCommonSelectItem() {
-        return new CommonSelectItem("table.column", null, "column");
+        return new CommonSelectItem("table", "name", null);
     }
 
     private CommonSelectItem getCommonSelectItemWithAlias() {
-        return new CommonSelectItem("table.column", "c", "column");
+        return new CommonSelectItem("table", "name", "n");
     }
 
     private DerivedCommonSelectItem getDerivedCommonSelectItem() {
-        return new DerivedCommonSelectItem("table.column", null, "column");
+        return new DerivedCommonSelectItem("owner", "name", null);
     }
 
     private DerivedCommonSelectItem getDerivedCommonSelectItemWithAlias() {
-        return new DerivedCommonSelectItem("table.column", "c", "column");
+        return new DerivedCommonSelectItem("owner", "name", "n");
     }
 
     private AggregationSelectItem getAggregationSelectItem() {
