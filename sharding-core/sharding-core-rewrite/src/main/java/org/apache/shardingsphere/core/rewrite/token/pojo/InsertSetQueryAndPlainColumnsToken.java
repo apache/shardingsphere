@@ -26,7 +26,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.Paramete
 import java.util.List;
 
 /**
- * Insert set add item token.
+ * Insert set query and plain columns token.
  *
  * @author panjuan
  */

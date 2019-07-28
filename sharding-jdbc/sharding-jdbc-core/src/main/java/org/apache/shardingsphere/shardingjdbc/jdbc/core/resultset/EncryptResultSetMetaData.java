@@ -19,8 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
 import org.apache.shardingsphere.core.constant.ShardingConstant;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
-import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.DerivedColumn;
-import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.WrapperAdapter;
 
 import java.sql.ResultSetMetaData;
@@ -32,24 +31,23 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Sharding result set meta data.
+ * Encrypt result set meta data.
  * 
- * @author zhangliang
  * @author panjuan
  */
-public final class ShardingResultSetMetaData extends WrapperAdapter implements ResultSetMetaData {
+public final class EncryptResultSetMetaData extends WrapperAdapter implements ResultSetMetaData {
     
     private final ResultSetMetaData resultSetMetaData;
     
-    private final ShardingRule shardingRule;
+    private final EncryptRule encryptRule;
     
     private final OptimizedStatement optimizedStatement;
     
     private final Map<String, String> logicAndActualColumns;
     
-    public ShardingResultSetMetaData(final ResultSetMetaData resultSetMetaData, final ShardingRule shardingRule, final OptimizedStatement optimizedStatement) {
+    public EncryptResultSetMetaData(final ResultSetMetaData resultSetMetaData, final EncryptRule encryptRule, final OptimizedStatement optimizedStatement) {
         this.resultSetMetaData = resultSetMetaData;
-        this.shardingRule = shardingRule;
+        this.encryptRule = encryptRule;
         this.optimizedStatement = optimizedStatement;
         logicAndActualColumns = createLogicAndActualColumns();
     }
@@ -57,7 +55,7 @@ public final class ShardingResultSetMetaData extends WrapperAdapter implements R
     private Map<String, String> createLogicAndActualColumns() {
         Map<String, String> result = new LinkedHashMap<>();
         for (String each : optimizedStatement.getTables().getTableNames()) {
-            result.putAll(shardingRule.getEncryptRule().getLogicAndCipherColumns(each));
+            result.putAll(encryptRule.getLogicAndCipherColumns(each));
         }
         return result;
     }
@@ -72,7 +70,7 @@ public final class ShardingResultSetMetaData extends WrapperAdapter implements R
         Collection<String> assistedQueryColumns = getAssistedQueryColumns();
         for (int columnIndex = 1; columnIndex <= resultSetMetaData.getColumnCount(); columnIndex++) {
             String columnLabel = resultSetMetaData.getColumnLabel(columnIndex);
-            if (DerivedColumn.isDerivedColumn(columnLabel) || assistedQueryColumns.contains(columnLabel)) {
+            if (assistedQueryColumns.contains(columnLabel)) {
                 result++;
             }
         }
@@ -82,7 +80,7 @@ public final class ShardingResultSetMetaData extends WrapperAdapter implements R
     private Collection<String> getAssistedQueryColumns() {
         Collection<String> result = new LinkedList<>();
         for (String each : optimizedStatement.getTables().getTableNames()) {
-            result.addAll(shardingRule.getEncryptRule().getAssistedQueryColumns(each));
+            result.addAll(encryptRule.getAssistedQueryColumns(each));
         }
         return result;
     }
@@ -160,8 +158,7 @@ public final class ShardingResultSetMetaData extends WrapperAdapter implements R
     
     @Override
     public String getTableName(final int column) throws SQLException {
-        String actualTableName = resultSetMetaData.getTableName(column);
-        return shardingRule.getLogicTableNames(actualTableName).isEmpty() ? actualTableName : shardingRule.getLogicTableNames(actualTableName).iterator().next();
+        return resultSetMetaData.getTableName(column);
     }
     
     @Override

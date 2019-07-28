@@ -24,7 +24,7 @@ import lombok.Getter;
 import java.util.Collection;
 
 /**
- * Insert assisted columns token.
+ * Insert query and plain names token.
  *
  * @author panjuan
  */

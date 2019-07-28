@@ -128,10 +128,30 @@ public final class EncryptSQLRewriteEngineTest {
     }
     
     @Test
+    public void assertSelectWithoutPlaceholderWithPlainEncryptWithLogicColumn() {
+        String sql = "SELECT col3, col4 FROM t_plain_encrypt WHERE col3 = 1 or col4 = 2";
+        SQLUnit actual = getSQLUnit(sql, Collections.emptyList(), true);
+        assertThat(actual.getSql(), is("SELECT col1, col2 FROM t_plain_encrypt WHERE col1 = 'encryptValue' or col2 = 'encryptValue'"));
+        assertThat(actual.getParameters().size(), is(0));
+    }
+    
+    @Test
     public void assertSelectWithPlaceholderWithQueryEncrypt() {
         String sql = "SELECT * FROM t_plain_query WHERE col3 in (?, ?) and col4 in (?, ?)";
         SQLUnit actual = getSQLUnit(sql, parametersOfIn, true);
         assertThat(actual.getSql(), is("SELECT * FROM t_plain_query WHERE query1 IN (?, ?) and query2 IN (?, ?)"));
+        assertThat(actual.getParameters().size(), is(4));
+        assertThat(actual.getParameters().get(0), is((Object) "assistedEncryptValue"));
+        assertThat(actual.getParameters().get(1), is((Object) "assistedEncryptValue"));
+        assertThat(actual.getParameters().get(2), is((Object) "assistedEncryptValue"));
+        assertThat(actual.getParameters().get(2), is((Object) "assistedEncryptValue"));
+    }
+    
+    @Test
+    public void assertSelectWithPlaceholderWithQueryEncryptWithLogicColumn() {
+        String sql = "SELECT col3 as alias FROM t_plain_query WHERE col3 in (?, ?) and col4 in (?, ?)";
+        SQLUnit actual = getSQLUnit(sql, parametersOfIn, true);
+        assertThat(actual.getSql(), is("SELECT col1 as alias FROM t_plain_query WHERE query1 IN (?, ?) and query2 IN (?, ?)"));
         assertThat(actual.getParameters().size(), is(4));
         assertThat(actual.getParameters().get(0), is((Object) "assistedEncryptValue"));
         assertThat(actual.getParameters().get(1), is((Object) "assistedEncryptValue"));
