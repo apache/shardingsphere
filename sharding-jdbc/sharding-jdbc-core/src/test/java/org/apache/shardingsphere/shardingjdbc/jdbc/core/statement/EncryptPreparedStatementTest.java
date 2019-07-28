@@ -24,6 +24,7 @@ import org.junit.Test;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -120,6 +121,19 @@ public final class EncryptPreparedStatementTest extends AbstractEncryptJDBCDatab
             assertTrue(resultSet.next());
             assertThat(resultSet.getInt(1), is(5));
             assertThat(resultSet.getString(2), is("decryptValue"));
+        }
+    }
+    
+    @Test
+    public void assertSelectWithMetaData() throws SQLException {
+        try (PreparedStatement statement = getEncryptConnection().prepareStatement(SELECT_SQL)) {
+            statement.setObject(1, 'a');
+            ResultSetMetaData metaData = statement.executeQuery().getMetaData();
+            assertThat(metaData.getColumnCount(), is(2));
+            for (int i = 0; i < metaData.getColumnCount(); i++) {
+                assertThat(metaData.getColumnLabel(1), is("id"));
+                assertThat(metaData.getColumnLabel(2), is("pwd"));
+            }
         }
     }
     

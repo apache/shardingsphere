@@ -121,7 +121,7 @@ public final class EncryptStatementTest extends AbstractEncryptJDBCDatabaseAndTa
     }
     
     @Test
-    public void assertSelectWithStar() throws SQLException {
+    public void assertSelectWithMetaData() throws SQLException {
         try (Statement statement = getEncryptConnection().createStatement()) {
             ResultSetMetaData metaData = statement.executeQuery(SELECT_SQL_WITH_STAR).getMetaData();
             assertThat(metaData.getColumnCount(), is(3));
