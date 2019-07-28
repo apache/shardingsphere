@@ -30,6 +30,7 @@ import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -52,6 +53,12 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
     
     public AbstractDataSourceAdapter(final Map<String, DataSource> dataSourceMap) throws SQLException {
         this.dataSourceMap = dataSourceMap;
+        databaseType = createDatabaseType();
+    }
+    
+    public AbstractDataSourceAdapter(final DataSource dataSource) throws SQLException {
+        dataSourceMap = new HashMap<>(1, 1);
+        dataSourceMap.put("unique", dataSource);
         databaseType = createDatabaseType();
     }
     
