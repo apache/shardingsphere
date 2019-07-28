@@ -19,8 +19,6 @@ package org.apache.shardingsphere.shardingjdbc.common.base;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Maps;
-import lombok.AccessLevel;
-import lombok.Getter;
 import org.apache.shardingsphere.api.config.encrypt.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.encrypt.EncryptTableRuleConfiguration;
@@ -44,10 +42,8 @@ import java.util.Properties;
 
 public abstract class AbstractEncryptJDBCDatabaseAndTableTest extends AbstractSQLTest {
     
-    @Getter(AccessLevel.PROTECTED)
     private static EncryptDataSource encryptDataSource;
     
-    @Getter(AccessLevel.PROTECTED)
     private static EncryptDataSource encryptDataSourceWithProps;
     
     private static final List<String> ENCRYPT_DB_NAMES = Collections.singletonList("encrypt");
@@ -103,6 +99,14 @@ public abstract class AbstractEncryptJDBCDatabaseAndTableTest extends AbstractSQ
         } catch (final SQLException ex) {
             ex.printStackTrace();
         }
+    }
+    
+    protected final EncryptConnection getEncryptConnection() throws SQLException {
+        return encryptDataSource.getConnection();
+    }
+    
+    protected final EncryptConnection getEncryptConnectionWithProps() throws SQLException {
+        return encryptDataSourceWithProps.getConnection();
     }
     
     @AfterClass

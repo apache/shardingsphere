@@ -19,8 +19,6 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.shardingjdbc.common.base.AbstractEncryptJDBCDatabaseAndTableTest;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -52,24 +50,14 @@ public final class EncryptStatementTest extends AbstractEncryptJDBCDatabaseAndTa
     
     private static final String SELECT_SQL_TO_ASSERT = "select id, cipher_pwd, plain_pwd from t_encrypt";
     
-    private EncryptConnection encryptConnection;
-    
-    private EncryptConnection encryptConnectionWithProps;
-    
-    @Before
-    public void setUp() throws SQLException {
-        encryptConnection = getEncryptDataSource().getConnection();
-        encryptConnectionWithProps = getEncryptDataSourceWithProps().getConnection();
-    }
-    
     @Test
-    public void assertSqlShow() {
-        assertTrue(encryptConnectionWithProps.getRuntimeContext().getProps().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW));
+    public void assertSqlShow() throws SQLException {
+        assertTrue(getEncryptConnectionWithProps().getRuntimeContext().getProps().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW));
     }
     
     @Test
     public void assertInsertWithExecute() throws SQLException {
-        try (Statement statement = encryptConnection.createStatement()) {
+        try (Statement statement = getEncryptConnection().createStatement()) {
             statement.execute(INSERT_SQL);
         }
         assertResultSet(3, 2, "encryptValue", "b");
@@ -77,7 +65,7 @@ public final class EncryptStatementTest extends AbstractEncryptJDBCDatabaseAndTa
     
     @Test
     public void assertInsertWithExecuteWithGeneratedKey() throws SQLException {
-        try (Statement statement = encryptConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
+        try (Statement statement = getEncryptConnection().createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
             statement.execute(INSERT_GENERATED_KEY_SQL, Statement.RETURN_GENERATED_KEYS);
             ResultSet resultSet = statement.getGeneratedKeys();
             assertTrue(resultSet.next());
@@ -89,7 +77,7 @@ public final class EncryptStatementTest extends AbstractEncryptJDBCDatabaseAndTa
     
     @Test
     public void assertDeleteWithExecute() throws SQLException {
-        try (Statement statement = encryptConnection.createStatement()) {
+        try (Statement statement = getEncryptConnection().createStatement()) {
             statement.execute(DELETE_SQL);
         }
         assertResultSet(1, 5, "encryptValue", "b");
@@ -98,7 +86,7 @@ public final class EncryptStatementTest extends AbstractEncryptJDBCDatabaseAndTa
     @Test
     public void assertUpdateWithExecuteUpdate() throws SQLException {
         int result;
-        try (Statement statement = encryptConnection.createStatement()) {
+        try (Statement statement = getEncryptConnection().createStatement()) {
             result = statement.executeUpdate(UPDATE_SQL);
         }
         assertThat(result, is(2));
@@ -107,7 +95,7 @@ public final class EncryptStatementTest extends AbstractEncryptJDBCDatabaseAndTa
     
     @Test
     public void assertSelectWithExecuteQuery() throws SQLException {
-        try (Statement statement = encryptConnection.createStatement()) {
+        try (Statement statement = getEncryptConnection().createStatement()) {
             ResultSet resultSet = statement.executeQuery(SELECT_SQL);
             assertTrue(resultSet.next());
             assertThat(resultSet.getInt(1), is(1));
@@ -120,7 +108,7 @@ public final class EncryptStatementTest extends AbstractEncryptJDBCDatabaseAndTa
     
     @Test
     public void assertSelectWithExecuteWithProperties() throws SQLException {
-        try (Statement statement = encryptConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT)) {
+        try (Statement statement = getEncryptConnection().createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT)) {
             int[] columnIndexes = {1, 2};
             Boolean result = statement.execute(SELECT_SQL, columnIndexes);
             assertTrue(result);
@@ -132,7 +120,7 @@ public final class EncryptStatementTest extends AbstractEncryptJDBCDatabaseAndTa
     
     @Test
     public void assertSelectWithStar() throws SQLException {
-        try (Statement statement = encryptConnection.createStatement()) {
+        try (Statement statement = getEncryptConnection().createStatement()) {
             ResultSetMetaData metaData = statement.executeQuery(SELECT_SQL_WITH_STAR).getMetaData();
             assertThat(metaData.getColumnCount(), is(3));
             for (int i = 0; i < metaData.getColumnCount(); i++) {
