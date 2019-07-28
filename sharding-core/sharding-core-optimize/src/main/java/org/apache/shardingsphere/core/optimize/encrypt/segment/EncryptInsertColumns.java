@@ -55,11 +55,12 @@ public final class EncryptInsertColumns implements InsertColumns {
         Collection<String> result = new LinkedHashSet<>(allColumnNames.size() - assistedQueryAndPlainColumnNames.size());
         String tableName = insertStatement.getTable().getTableName();
         for (String each : allColumnNames) {
-            if (!isAssistedQueryAndPlainColumns(each)) {
-                result.add(each);
-            }
             if (isCipherColumn(encryptRule, tableName, each)) {
                 result.add(getLogicColumn(encryptRule, tableName, each));
+                continue;
+            }
+            if (!isAssistedQueryAndPlainColumns(each)) {
+                result.add(each);
             }
         }
         return result;
