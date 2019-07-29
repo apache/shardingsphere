@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.optimize.sharding.segment.select.item.eng
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.AggregationSelectItem;
-import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.CommonSelectItem;
+import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.ColumnSelectItem;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.DerivedColumn;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.ExpressionSelectItem;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.SelectItem;
@@ -77,9 +77,9 @@ public final class SelectItemEngine {
         return new ShorthandSelectItem(owner.isPresent() ? owner.get().getTableName() : null);
     }
     
-    private CommonSelectItem createSelectItem(final ColumnSelectItemSegment selectItemSegment) {
+    private ColumnSelectItem createSelectItem(final ColumnSelectItemSegment selectItemSegment) {
         String owner = selectItemSegment.getOwner().isPresent() ? selectItemSegment.getOwner().get().getTableName() : null;
-        return new CommonSelectItem(owner, selectItemSegment.getName(), selectItemSegment.getAlias().orNull());
+        return new ColumnSelectItem(owner, selectItemSegment.getName(), selectItemSegment.getAlias().orNull());
     }
     
     private ExpressionSelectItem createSelectItem(final ExpressionSelectItemSegment selectItemSegment) {

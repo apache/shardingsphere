@@ -32,19 +32,19 @@ import lombok.ToString;
 @Getter
 @EqualsAndHashCode
 @ToString
-public class ExpressionSelectItem implements SelectItem {
+public final class ExpressionSelectItem implements SelectItem {
 
     private final String expression;
 
     private final String alias;
 
     @Override
-    public final Optional<String> getAlias() {
+    public Optional<String> getAlias() {
         return Optional.fromNullable(alias);
     }
 
     @Override
-    public final String getColumnLabel() {
+    public String getColumnLabel() {
         return getAlias().or(getExpression());
     }
 }

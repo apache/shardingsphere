@@ -33,7 +33,7 @@ import lombok.ToString;
 @Getter
 @EqualsAndHashCode
 @ToString
-public class DerivedSelectItem implements SelectItem {
+public final class DerivedSelectItem implements SelectItem {
 
     private final String expression;
 

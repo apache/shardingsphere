@@ -38,7 +38,7 @@ public class SelectItemsTest {
 
     @Test
     public void assertUnqualifiedShorthandItemWithWrongSelectItem() {
-        SelectItems selectItems = new SelectItems(0, 0,true, Collections.singleton((SelectItem) getCommonSelectItem()));
+        SelectItems selectItems = new SelectItems(0, 0,true, Collections.singleton((SelectItem) getColumnSelectItem()));
         assertFalse(selectItems.isUnqualifiedShorthandItem());
     }
 
@@ -63,7 +63,7 @@ public class SelectItemsTest {
 
     @Test
     public void assertFindAlias() {
-        SelectItem selectItem = getCommonSelectItemWithAlias();
+        SelectItem selectItem = getColumnSelectItemWithAlias();
         SelectItems selectItems = new SelectItems(0, 0,true, Collections.singleton(selectItem));
         assertTrue(selectItems.findAlias(selectItem.getExpression()).isPresent());
     }
@@ -71,7 +71,7 @@ public class SelectItemsTest {
     @Test
     public void assertGetAggregationSelectItems() {
         SelectItem aggregationSelectItem = getAggregationSelectItem();
-        List<AggregationSelectItem> items = new SelectItems(0, 0,true, Arrays.asList(aggregationSelectItem, getCommonSelectItem())).getAggregationSelectItems();
+        List<AggregationSelectItem> items = new SelectItems(0, 0,true, Arrays.asList(aggregationSelectItem, getColumnSelectItem())).getAggregationSelectItems();
         assertTrue(items.contains(aggregationSelectItem));
         assertEquals(items.size(), 1);
     }
@@ -79,7 +79,7 @@ public class SelectItemsTest {
     @Test
     public void assertGetAggregationDistinctSelectItems() {
         SelectItem aggregationDistinctSelectItem = getAggregationDistinctSelectItem();
-        List<AggregationDistinctSelectItem> items = new SelectItems(0, 0,true, Arrays.asList(aggregationDistinctSelectItem, getCommonSelectItem())).getAggregationDistinctSelectItems();
+        List<AggregationDistinctSelectItem> items = new SelectItems(0, 0,true, Arrays.asList(aggregationDistinctSelectItem, getColumnSelectItem())).getAggregationDistinctSelectItems();
         assertTrue(items.contains(aggregationDistinctSelectItem));
         assertEquals(items.size(), 1);
     }
@@ -93,14 +93,14 @@ public class SelectItemsTest {
 
     @Test
     public void assertGetColumnLabelsWithCommonSelectItem() {
-        SelectItem selectItem = getCommonSelectItem();
+        SelectItem selectItem = getColumnSelectItem();
         List<String> columnLabels = new SelectItems(0, 0,true, Collections.singletonList(selectItem)).getColumnLabels();
         assertTrue(columnLabels.contains(selectItem.getColumnLabel()));
     }
 
     @Test
     public void assertGetColumnLabelsWithCommonSelectItemAlias() {
-        SelectItem selectItem = getCommonSelectItemWithAlias();
+        SelectItem selectItem = getColumnSelectItemWithAlias();
         List<String> columnLabels = new SelectItems(0, 0,true, Collections.singletonList(selectItem)).getColumnLabels();
         assertTrue(columnLabels.contains(selectItem.getAlias().or("")));
     }
@@ -151,12 +151,12 @@ public class SelectItemsTest {
         return new ShorthandSelectItem("table");
     }
 
-    private CommonSelectItem getCommonSelectItem() {
-        return new CommonSelectItem("table", "name", null);
+    private ColumnSelectItem getColumnSelectItem() {
+        return new ColumnSelectItem("table", "name", null);
     }
 
-    private CommonSelectItem getCommonSelectItemWithAlias() {
-        return new CommonSelectItem("table", "name", "n");
+    private ColumnSelectItem getColumnSelectItemWithAlias() {
+        return new ColumnSelectItem("table", "name", "n");
     }
 
     private ExpressionSelectItem getExpressionSelectItem() {

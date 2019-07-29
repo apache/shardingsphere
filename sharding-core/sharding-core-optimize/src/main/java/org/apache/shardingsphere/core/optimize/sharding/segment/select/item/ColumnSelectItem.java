@@ -33,7 +33,7 @@ import lombok.ToString;
 @Getter
 @EqualsAndHashCode
 @ToString
-public class CommonSelectItem implements SelectItem {
+public final class ColumnSelectItem implements SelectItem {
 
     private final String owner;
 
