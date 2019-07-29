@@ -46,7 +46,12 @@ public final class ShorthandSelectItem implements SelectItem {
     public Optional<String> getAlias() {
         return Optional.absent();
     }
-    
+
+    @Override
+    public String getColumnLabel() {
+        return getAlias().or("*");
+    }
+
     /**
      * Get owner.
      * 
