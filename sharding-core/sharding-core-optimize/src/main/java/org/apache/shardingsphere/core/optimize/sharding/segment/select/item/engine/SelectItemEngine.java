@@ -22,6 +22,7 @@ import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.Aggr
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.AggregationSelectItem;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.CommonSelectItem;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.DerivedColumn;
+import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.ExpressionSelectItem;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.SelectItem;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.ShorthandSelectItem;
 import org.apache.shardingsphere.core.parse.core.constant.AggregationType;
@@ -81,8 +82,8 @@ public final class SelectItemEngine {
         return new CommonSelectItem(owner, selectItemSegment.getName(), selectItemSegment.getAlias().orNull());
     }
     
-    private CommonSelectItem createSelectItem(final ExpressionSelectItemSegment selectItemSegment) {
-        return new CommonSelectItem(null, selectItemSegment.getText(), selectItemSegment.getAlias().orNull());
+    private ExpressionSelectItem createSelectItem(final ExpressionSelectItemSegment selectItemSegment) {
+        return new ExpressionSelectItem(selectItemSegment.getText(), selectItemSegment.getAlias().orNull());
     }
     
     private AggregationDistinctSelectItem createSelectItem(final String sql, final AggregationDistinctSelectItemSegment selectItemSegment) {

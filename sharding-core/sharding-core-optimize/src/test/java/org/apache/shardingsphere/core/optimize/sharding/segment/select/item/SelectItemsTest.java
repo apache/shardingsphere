@@ -106,15 +106,29 @@ public class SelectItemsTest {
     }
 
     @Test
-    public void assertGetColumnLabelsWithDerivedCommonSelectItem() {
-        SelectItem selectItem = getDerivedCommonSelectItem();
+    public void assertGetColumnLabelsWithExpressionSelectItem() {
+        SelectItem selectItem = getExpressionSelectItem();
         List<String> columnLabels = new SelectItems(Collections.singletonList(selectItem), true, 1).getColumnLabels();
         assertTrue(columnLabels.contains(selectItem.getColumnLabel()));
     }
 
     @Test
-    public void assertGetColumnLabelsWithDerivedCommonSelectItemAlias() {
-        SelectItem selectItem = getDerivedCommonSelectItemWithAlias();
+    public void assertGetColumnLabelsWithExpressionSelectItemAlias() {
+        SelectItem selectItem = getExpressionSelectItemWithAlias();
+        List<String> columnLabels = new SelectItems(Collections.singletonList(selectItem), true, 1).getColumnLabels();
+        assertTrue(columnLabels.contains(selectItem.getAlias().or("")));
+    }
+
+    @Test
+    public void assertGetColumnLabelsWithDerivedSelectItem() {
+        SelectItem selectItem = getDerivedSelectItem();
+        List<String> columnLabels = new SelectItems(Collections.singletonList(selectItem), true, 1).getColumnLabels();
+        assertTrue(columnLabels.contains(selectItem.getColumnLabel()));
+    }
+
+    @Test
+    public void assertGetColumnLabelsWithDerivedSelectItemAlias() {
+        SelectItem selectItem = getDerivedSelectItemWithAlias();
         List<String> columnLabels = new SelectItems(Collections.singletonList(selectItem), true, 1).getColumnLabels();
         assertTrue(columnLabels.contains(selectItem.getAlias().or("")));
     }
@@ -145,12 +159,20 @@ public class SelectItemsTest {
         return new CommonSelectItem("table", "name", "n");
     }
 
-    private DerivedCommonSelectItem getDerivedCommonSelectItem() {
-        return new DerivedCommonSelectItem("owner", "name", null);
+    private ExpressionSelectItem getExpressionSelectItem() {
+        return new ExpressionSelectItem("table.name", null);
     }
 
-    private DerivedCommonSelectItem getDerivedCommonSelectItemWithAlias() {
-        return new DerivedCommonSelectItem("owner", "name", "n");
+    private ExpressionSelectItem getExpressionSelectItemWithAlias() {
+        return new ExpressionSelectItem("table.name", "n");
+    }
+
+    private DerivedSelectItem getDerivedSelectItem() {
+        return new DerivedSelectItem("table.name", null);
+    }
+
+    private DerivedSelectItem getDerivedSelectItemWithAlias() {
+        return new DerivedSelectItem("table.name", "n");
     }
 
     private AggregationSelectItem getAggregationSelectItem() {

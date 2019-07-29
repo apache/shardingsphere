@@ -29,7 +29,7 @@ import org.apache.shardingsphere.core.optimize.sharding.segment.insert.InsertOpt
 import org.apache.shardingsphere.core.optimize.sharding.segment.insert.ShardingInsertColumns;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.groupby.GroupBy;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.AggregationSelectItem;
-import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.DerivedCommonSelectItem;
+import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.DerivedSelectItem;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.SelectItem;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.SelectItems;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.orderby.OrderBy;
@@ -168,8 +168,8 @@ public final class ShardingSQLRewriteEngineTest {
     private SQLRouteResult createRouteResultForOrderByAndGroupByDerivedColumns() {
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.getAllSQLSegments().add(new TableSegment(18, 24, "table_x"));
-        DerivedCommonSelectItem selectItem1 = new DerivedCommonSelectItem("x", "id", "GROUP_BY_DERIVED_0");
-        DerivedCommonSelectItem selectItem2 = new DerivedCommonSelectItem("x", "name", "ORDER_BY_DERIVED_0");
+        DerivedSelectItem selectItem1 = new DerivedSelectItem("x.id", "GROUP_BY_DERIVED_0");
+        DerivedSelectItem selectItem2 = new DerivedSelectItem("x.name", "ORDER_BY_DERIVED_0");
         SelectItems selectItems = new SelectItems(Arrays.<SelectItem>asList(selectItem1, selectItem2), false, 11);
         SQLRouteResult result = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), Collections.<EncryptCondition>emptyList(),
                 new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),

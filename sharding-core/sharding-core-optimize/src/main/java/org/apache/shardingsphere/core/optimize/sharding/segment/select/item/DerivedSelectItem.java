@@ -18,46 +18,34 @@
 package org.apache.shardingsphere.core.optimize.sharding.segment.select.item;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Strings;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 /**
- * Shorthand select item.
+ * Derived common select item.
  *
  * @author zhangliang
+ * @author sunbufu
  */
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
 @ToString
-public final class ShorthandSelectItem implements SelectItem {
-    
-    private final String owner;
-    
+public class DerivedSelectItem implements SelectItem {
+
+    private final String expression;
+
+    private final String alias;
+
     @Override
-    public String getExpression() {
-        return Strings.isNullOrEmpty(owner) ? "*" : owner + ".*";
-    }
-    
-    @Override
-    public Optional<String> getAlias() {
-        return Optional.absent();
+    public final Optional<String> getAlias() {
+        return Optional.fromNullable(alias);
     }
 
     @Override
-    public String getColumnLabel() {
-        return getAlias().or("*");
-    }
-
-    /**
-     * Get owner.
-     * 
-     * @return owner
-     */
-    public Optional<String> getOwner() {
-        return Optional.fromNullable(owner);
+    public final String getColumnLabel() {
+        return getAlias().or(getExpression());
     }
 }

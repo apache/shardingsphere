@@ -25,7 +25,7 @@ import org.apache.shardingsphere.core.optimize.api.segment.Table;
 import org.apache.shardingsphere.core.optimize.api.segment.Tables;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.groupby.GroupBy;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.DerivedColumn;
-import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.DerivedCommonSelectItem;
+import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.DerivedSelectItem;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.SelectItem;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.SelectItems;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.ShorthandSelectItem;
@@ -97,7 +97,7 @@ public final class SelectItemsEngine {
         int derivedColumnOffset = 0;
         for (OrderByItem each : orderItems) {
             if (!containsItem(tables, selectItems, each.getSegment())) {
-                result.add(new DerivedCommonSelectItem(null, derivedColumn.getDerivedColumnAlias(derivedColumnOffset++), ((TextOrderByItemSegment) each.getSegment()).getText()));
+                result.add(new DerivedSelectItem(((TextOrderByItemSegment) each.getSegment()).getText(), derivedColumn.getDerivedColumnAlias(derivedColumnOffset++)));
             }
         }
         return result;
