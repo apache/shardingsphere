@@ -26,6 +26,7 @@ import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.Deri
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
+import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.ConnectionStatus;
@@ -37,6 +38,7 @@ import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
+import org.apache.shardingsphere.shardingproxy.backend.schema.EncryptSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSchema;
@@ -45,6 +47,7 @@ import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -113,22 +116,65 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         if (mergedResult instanceof ShowTablesMergedResult) {
             ((ShowTablesMergedResult) mergedResult).resetColumnLabel(logicSchema.getName());
         }
-        return getQueryHeaderResponseWithoutDerivedColumns(((QueryResponse) response).getQueryHeaders());
+        handleColumnsForQueryHeader(routeResult);
+        return response;
     }
     
     private boolean isAllBroadcastTables(final OptimizedStatement optimizedStatement) {
         return logicSchema instanceof ShardingSchema && logicSchema.getShardingRule().isAllBroadcastTables(optimizedStatement.getTables().getTableNames());
     }
     
-    private QueryResponse getQueryHeaderResponseWithoutDerivedColumns(final List<QueryHeader> queryHeaders) {
-        List<QueryHeader> derivedColumnQueryHeaders = new LinkedList<>();
+    private void handleColumnsForQueryHeader(final SQLRouteResult routeResult) {
+        removeDerivedColumns();
+        removeAssistedQueryColumns(routeResult);
+        setLogicColumns(routeResult);
+    } 
+    
+    private void removeDerivedColumns() {
+        List<QueryHeader> toRemove = new LinkedList<>();
+        List<QueryHeader> queryHeaders = ((QueryResponse) response).getQueryHeaders();
         for (QueryHeader each : queryHeaders) {
             if (DerivedColumn.isDerivedColumn(each.getColumnLabel())) {
-                derivedColumnQueryHeaders.add(each);
+                toRemove.add(each);
             }
         }
-        queryHeaders.removeAll(derivedColumnQueryHeaders);
-        return new QueryResponse(queryHeaders);
+        queryHeaders.removeAll(toRemove);
+    }
+    
+    private void removeAssistedQueryColumns(final SQLRouteResult routeResult) {
+        List<QueryHeader> toRemove = new LinkedList<>();
+        List<QueryHeader> queryHeaders = ((QueryResponse) response).getQueryHeaders();
+        Collection<String> assistedQueryColumns = getAssistedQueryColumns(routeResult);
+        for (QueryHeader each : queryHeaders) {
+            if (assistedQueryColumns.contains(each.getColumnName())) {
+                toRemove.add(each);
+            }
+        }
+        queryHeaders.removeAll(toRemove);
+    }
+    
+    private Collection<String> getAssistedQueryColumns(final SQLRouteResult routeResult) {
+        Collection<String> result = new LinkedList<>();
+        EncryptRule encryptRule = getEncryptRule();
+        for (String each : routeResult.getOptimizedStatement().getTables().getTableNames()) {
+            result.addAll(encryptRule.getAssistedQueryColumns(each));
+        }
+        return result;
+    }
+    
+    private EncryptRule getEncryptRule() {
+        return logicSchema instanceof EncryptSchema ? ((EncryptSchema) logicSchema).getEncryptRule() : logicSchema.getShardingRule().getEncryptRule();
+    }
+    
+    private void setLogicColumns(final SQLRouteResult routeResult) {
+        List<QueryHeader> queryHeaders = ((QueryResponse) response).getQueryHeaders();
+        EncryptRule encryptRule = getEncryptRule();
+        for (QueryHeader each : queryHeaders) {
+            String tableName = routeResult.getOptimizedStatement().getTables().getSingleTableName();
+            if (encryptRule.isCipherColumn(tableName, each.getColumnName())) {
+                each.setColumnLabelAndName(encryptRule.getLogicColumn(tableName, each.getColumnName()));
+            }
+        }
     }
     
     @Override
