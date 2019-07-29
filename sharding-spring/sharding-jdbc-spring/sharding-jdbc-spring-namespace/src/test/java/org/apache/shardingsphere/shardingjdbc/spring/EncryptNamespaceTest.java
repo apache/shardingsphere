@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shardingjdbc.spring;
 
+import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.rule.EncryptRule;
@@ -26,6 +27,8 @@ import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @ContextConfiguration(locations = "classpath:META-INF/rdb/encryptNamespace.xml")
@@ -35,8 +38,11 @@ public class EncryptNamespaceTest extends AbstractJUnit4SpringContextTests {
     public void assertEncryptDataSource() {
         EncryptRule encryptRule = getEncryptRuleRule();
         assertTrue(encryptRule.getShardingEncryptor("t_order", "user_id").isPresent());
+        assertThat(encryptRule.getCipherColumn("t_order", "user_id"), is("user_encrypt"));
         assertTrue(encryptRule.getShardingEncryptor("t_order", "user_id").get() instanceof AESShardingEncryptor);
+        assertThat(encryptRule.getPlainColumn("t_order", "order_id"), is(Optional.of("order_decrypt")));
         assertTrue(getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW));
+        assertTrue(getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN));
     }
     
     private EncryptRule getEncryptRuleRule() {
