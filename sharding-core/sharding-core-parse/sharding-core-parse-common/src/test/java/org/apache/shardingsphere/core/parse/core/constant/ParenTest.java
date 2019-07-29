@@ -26,43 +26,43 @@ public final class ParenTest {
     
     @Test
     public void assertIsLeftParenForParentheses() {
-        assertTrue(Paren.isLeftParen("("));
+        assertTrue(Paren.isLeftParen('('));
     }
     
     @Test
     public void assertIsLeftParenForBracket() {
-        assertTrue(Paren.isLeftParen("["));
+        assertTrue(Paren.isLeftParen('['));
     }
     
     @Test
     public void assertIsLeftParenForBraces() {
-        assertTrue(Paren.isLeftParen("{"));
+        assertTrue(Paren.isLeftParen('{'));
     }
     
     @Test
     public void assertIsNotLeftParen() {
-        assertFalse(Paren.isLeftParen(")"));
-        assertFalse(Paren.isLeftParen("]"));
-        assertFalse(Paren.isLeftParen("}"));
+        assertFalse(Paren.isLeftParen(')'));
+        assertFalse(Paren.isLeftParen(']'));
+        assertFalse(Paren.isLeftParen('}'));
     }
     
     @Test
     public void assertMatchForParentheses() {
-        assertTrue(Paren.match("(", ")"));
+        assertTrue(Paren.match('(', ')'));
     }
     
     @Test
     public void assertMatchForBracket() {
-        assertTrue(Paren.match("[", "]"));
+        assertTrue(Paren.match('[', ']'));
     }
     
     @Test
     public void assertMatchForBraces() {
-        assertTrue(Paren.match("{", "}"));
+        assertTrue(Paren.match('{', '}'));
     }
     
     @Test
     public void assertNotMatch() {
-        assertFalse(Paren.match("{", "]"));
+        assertFalse(Paren.match('{', ']'));
     }
 }

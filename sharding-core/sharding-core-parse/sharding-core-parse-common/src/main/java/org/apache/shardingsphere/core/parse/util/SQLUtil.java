@@ -18,8 +18,10 @@
 package org.apache.shardingsphere.core.parse.util;
 
 import com.google.common.base.CharMatcher;
+import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import org.apache.shardingsphere.core.parse.core.constant.Paren;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -74,12 +76,25 @@ public final class SQLUtil {
     /**
      * Get exactly SQL expression.
      *
-     * <p>remove space for SQL expression</p>
+     * <p>remove space for SQL expression and outside parentheses</p>
      *
      * @param value SQL expression
      * @return exactly SQL expression
      */
     public static String getExactlyExpression(final String value) {
-        return null == value ? null : CharMatcher.anyOf(" ").removeFrom(value);
+        return Strings.isNullOrEmpty(value) ? value : CharMatcher.anyOf(" ").removeFrom(removeOutsideParentheses(value));
+    }
+    
+    private static String removeOutsideParentheses(final String value) {
+        int parenthesesOffset = 0;
+        while (value.charAt(parenthesesOffset) == Paren.PARENTHESES.getLeftParen()) {
+            parenthesesOffset++;
+        }
+        if (0 != parenthesesOffset) {
+            String result = value.substring(parenthesesOffset, value.length());
+            result = result.substring(0, result.length() - parenthesesOffset);
+            return result;
+        }
+        return value;
     }
 }

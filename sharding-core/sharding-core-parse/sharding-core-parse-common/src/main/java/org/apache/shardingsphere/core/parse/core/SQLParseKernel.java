@@ -47,6 +47,9 @@ public final class SQLParseKernel {
     
     public SQLParseKernel(final ParseRuleRegistry parseRuleRegistry, final DatabaseType databaseType, final String sql) {
         DatabaseType trunkDatabaseType = DatabaseTypes.getTrunkDatabaseType(databaseType.getName());
+        if (sql.equals("SELECT DISTINCT(item_id) FROM t_order_item ORDER BY item_id")) {
+            System.out.println("-----------------" + sql);
+        }
         parserEngine = new SQLParserEngine(parseRuleRegistry, trunkDatabaseType, sql);
         extractorEngine = new SQLSegmentsExtractorEngine();
         fillerEngine = new SQLStatementFillerEngine(parseRuleRegistry, trunkDatabaseType);
