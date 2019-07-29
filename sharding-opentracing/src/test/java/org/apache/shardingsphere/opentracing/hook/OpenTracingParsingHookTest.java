@@ -49,7 +49,7 @@ public final class OpenTracingParsingHookTest extends BaseOpenTracingHookTest {
         parsingHook.start("SELECT * FROM XXX;");
         parsingHook.finishSuccess(mock(SQLStatement.class));
         MockSpan actual = getActualSpan();
-        assertThat(actual.operationName(), is("/Sharding-Sphere/parseSQL/"));
+        assertThat(actual.operationName(), is("/ShardingSphere/parseSQL/"));
         Map<String, Object> actualTags = actual.tags();
         assertThat(actualTags.get(Tags.COMPONENT.getKey()), CoreMatchers.<Object>is(ShardingTags.COMPONENT_NAME));
         assertThat(actualTags.get(Tags.SPAN_KIND.getKey()), CoreMatchers.<Object>is(Tags.SPAN_KIND_CLIENT));
@@ -61,7 +61,7 @@ public final class OpenTracingParsingHookTest extends BaseOpenTracingHookTest {
         parsingHook.start("SELECT * FROM XXX;");
         parsingHook.finishFailure(new ShardingException("parse SQL error"));
         MockSpan actual = getActualSpan();
-        assertThat(actual.operationName(), is("/Sharding-Sphere/parseSQL/"));
+        assertThat(actual.operationName(), is("/ShardingSphere/parseSQL/"));
         Map<String, Object> actualTags = actual.tags();
         assertThat(actualTags.get(Tags.COMPONENT.getKey()), CoreMatchers.<Object>is(ShardingTags.COMPONENT_NAME));
         assertThat(actualTags.get(Tags.SPAN_KIND.getKey()), CoreMatchers.<Object>is(Tags.SPAN_KIND_CLIENT));
