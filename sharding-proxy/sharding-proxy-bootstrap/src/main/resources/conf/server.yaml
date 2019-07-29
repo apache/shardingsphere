@@ -48,4 +48,4 @@
 #  proxy.transaction.type: LOCAL
 #  proxy.opentracing.enabled: false
 #  query.with.cipher.column: true
-#  sql.show: true
+#  sql.show: false
