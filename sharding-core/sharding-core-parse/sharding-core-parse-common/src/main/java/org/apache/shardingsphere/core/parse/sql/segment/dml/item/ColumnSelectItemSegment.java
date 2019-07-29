@@ -37,7 +37,7 @@ public final class ColumnSelectItemSegment extends ColumnSegment implements Sele
     
     public ColumnSelectItemSegment(final String text, final ColumnSegment columnSegment) {
         super(columnSegment.getStartIndex(), columnSegment.getStopIndex(), columnSegment.getName());
-        this.text = text;
+        this.text = SQLUtil.getExpressionWithoutOutsideParentheses(text);
         if (columnSegment.getOwner().isPresent()) {
             setOwner(columnSegment.getOwner().get());
         }

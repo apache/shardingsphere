@@ -76,25 +76,31 @@ public final class SQLUtil {
     /**
      * Get exactly SQL expression.
      *
-     * <p>remove space for SQL expression and outside parentheses</p>
+     * <p>remove space for SQL expression</p>
      *
      * @param value SQL expression
      * @return exactly SQL expression
      */
     public static String getExactlyExpression(final String value) {
-        return Strings.isNullOrEmpty(value) ? value : CharMatcher.anyOf(" ").removeFrom(removeOutsideParentheses(value));
+        return Strings.isNullOrEmpty(value) ? value : CharMatcher.anyOf(" ").removeFrom(value);
     }
     
-    private static String removeOutsideParentheses(final String value) {
-        int parenthesesOffset = 0;
-        while (value.charAt(parenthesesOffset) == Paren.PARENTHESES.getLeftParen()) {
-            parenthesesOffset++;
+    /**
+     * Get exactly SQL expression without outside parentheses.
+     * 
+     * @param value SQL expression
+     * @return exactly SQL expression
+     */
+    public static String getExpressionWithoutOutsideParentheses(final String value) {
+        int parenthesesOffset = getParenthesesOffset(value);
+        return 0 == parenthesesOffset ? value : value.substring(parenthesesOffset, value.length() - parenthesesOffset);
+    }
+    
+    private static int getParenthesesOffset(final String value) {
+        int result = 0;
+        while (Paren.PARENTHESES.getLeftParen() == value.charAt(result)) {
+            result++;
         }
-        if (0 != parenthesesOffset) {
-            String result = value.substring(parenthesesOffset, value.length());
-            result = result.substring(0, result.length() - parenthesesOffset);
-            return result;
-        }
-        return value;
+        return result;
     }
 }

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.parse.sql.segment.dml.item;
 
 import lombok.Getter;
 import org.apache.shardingsphere.core.parse.core.constant.AggregationType;
+import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 /**
  * Aggregation distinct select item segment.
@@ -33,6 +34,6 @@ public final class AggregationDistinctSelectItemSegment extends AggregationSelec
     public AggregationDistinctSelectItemSegment(final int startIndex, final int stopIndex, 
                                                 final String text, final AggregationType type, final int innerExpressionStartIndex, final String distinctExpression) {
         super(startIndex, stopIndex, text, type, innerExpressionStartIndex);
-        this.distinctExpression = distinctExpression;
+        this.distinctExpression = SQLUtil.getExpressionWithoutOutsideParentheses(distinctExpression);
     }
 }

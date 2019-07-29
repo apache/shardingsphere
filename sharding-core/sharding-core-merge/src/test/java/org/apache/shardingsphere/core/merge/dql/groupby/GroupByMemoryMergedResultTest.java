@@ -85,7 +85,7 @@ public final class GroupByMemoryMergedResultTest {
         AggregationSelectItem derivedAggregationSelectItem2 = new AggregationSelectItem(AggregationType.SUM, "(num)", "AVG_DERIVED_SUM_0");
         aggregationSelectItem2.setIndex(5);
         aggregationSelectItem2.getDerivedAggregationItems().add(derivedAggregationSelectItem2);
-        SelectItems selectItems = new SelectItems(Arrays.<SelectItem>asList(aggregationSelectItem1, aggregationSelectItem2), false, 0);
+        SelectItems selectItems = new SelectItems(0, 0, false, Arrays.<SelectItem>asList(aggregationSelectItem1, aggregationSelectItem2));
         OptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(
                 new SelectStatement(), Collections.<ShardingCondition>emptyList(), Collections.<EncryptCondition>emptyList(), 
                 new GroupBy(Collections.singletonList(createOrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, OrderDirection.ASC))), 0),

@@ -89,7 +89,8 @@ public final class SelectItemEngine {
     private AggregationDistinctSelectItem createSelectItem(final String sql, final AggregationDistinctSelectItemSegment selectItemSegment) {
         String innerExpression = sql.substring(selectItemSegment.getInnerExpressionStartIndex(), selectItemSegment.getStopIndex() + 1);
         String alias = selectItemSegment.getAlias().or(DerivedColumn.AGGREGATION_DISTINCT_DERIVED.getDerivedColumnAlias(aggregationDistinctDerivedColumnCount++));
-        AggregationDistinctSelectItem result = new AggregationDistinctSelectItem(selectItemSegment.getType(), innerExpression, alias, selectItemSegment.getDistinctExpression());
+        AggregationDistinctSelectItem result = new AggregationDistinctSelectItem(
+                selectItemSegment.getStartIndex(), selectItemSegment.getStopIndex(), selectItemSegment.getType(), innerExpression, alias, selectItemSegment.getDistinctExpression());
         if (AggregationType.AVG == result.getType()) {
             appendAverageDistinctDerivedItem(result);
         }
@@ -110,9 +111,9 @@ public final class SelectItemEngine {
         String innerExpression = averageDistinctSelectItem.getInnerExpression();
         String distinctInnerExpression = averageDistinctSelectItem.getDistinctInnerExpression();
         String countAlias = DerivedColumn.AVG_COUNT_ALIAS.getDerivedColumnAlias(aggregationAverageDerivedColumnCount);
-        AggregationDistinctSelectItem countDistinctSelectItem = new AggregationDistinctSelectItem(AggregationType.COUNT, innerExpression, countAlias, distinctInnerExpression);
+        AggregationDistinctSelectItem countDistinctSelectItem = new AggregationDistinctSelectItem(0, 0, AggregationType.COUNT, innerExpression, countAlias, distinctInnerExpression);
         String sumAlias = DerivedColumn.AVG_SUM_ALIAS.getDerivedColumnAlias(aggregationAverageDerivedColumnCount);
-        AggregationDistinctSelectItem sumDistinctSelectItem = new AggregationDistinctSelectItem(AggregationType.SUM, innerExpression, sumAlias, distinctInnerExpression);
+        AggregationDistinctSelectItem sumDistinctSelectItem = new AggregationDistinctSelectItem(0, 0, AggregationType.SUM, innerExpression, sumAlias, distinctInnerExpression);
         averageDistinctSelectItem.getDerivedAggregationItems().add(countDistinctSelectItem);
         averageDistinctSelectItem.getDerivedAggregationItems().add(sumDistinctSelectItem);
         aggregationAverageDerivedColumnCount++;

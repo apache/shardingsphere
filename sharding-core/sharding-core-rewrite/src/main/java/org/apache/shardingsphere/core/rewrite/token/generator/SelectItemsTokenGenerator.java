@@ -49,7 +49,7 @@ public final class SelectItemsTokenGenerator implements OptionalSQLTokenGenerato
         }
         Collection<String> derivedItemTexts = getDerivedItemTexts((ShardingSelectOptimizedStatement) optimizedStatement);
         return derivedItemTexts.isEmpty() ? Optional.<SelectItemsToken>absent()
-                : Optional.of(new SelectItemsToken(((ShardingSelectOptimizedStatement) optimizedStatement).getSelectItems().getSelectListStopIndex() + 1 + " ".length(), derivedItemTexts));
+                : Optional.of(new SelectItemsToken(((ShardingSelectOptimizedStatement) optimizedStatement).getSelectItems().getStopIndex() + 1 + " ".length(), derivedItemTexts));
     }
     
     private Collection<String> getDerivedItemTexts(final ShardingSelectOptimizedStatement optimizedStatement) {
