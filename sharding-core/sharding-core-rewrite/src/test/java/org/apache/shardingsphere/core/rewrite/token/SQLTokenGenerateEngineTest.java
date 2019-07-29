@@ -57,7 +57,7 @@ public final class SQLTokenGenerateEngineTest {
     @Before
     public void setUp() {
         SelectStatement selectStatement = new SelectStatement();
-        SelectItems selectItems = new SelectItems(Collections.<SelectItem>singletonList(new AggregationDistinctSelectItem(1, 2, AggregationType.COUNT, "(DISTINCT id)", "c", "id")), false, 1, 0);
+        SelectItems selectItems = new SelectItems(1, 20, false, Collections.<SelectItem>singletonList(new AggregationDistinctSelectItem(1, 2, AggregationType.COUNT, "(DISTINCT id)", "c", "id")));
         optimizedStatement = new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), Collections.<EncryptCondition>emptyList(), 
                 new GroupBy(Collections.<OrderByItem>emptyList(), 1), new OrderBy(Collections.<OrderByItem>emptyList(), false), selectItems, new Pagination(null, null, Collections.emptyList()));
     }

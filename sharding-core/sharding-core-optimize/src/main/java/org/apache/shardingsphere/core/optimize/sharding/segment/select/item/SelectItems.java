@@ -39,13 +39,13 @@ import java.util.List;
 @ToString
 public final class SelectItems {
     
-    private final Collection<SelectItem> items;
-    
-    private final boolean distinctRow;
-    
     private final int startIndex;
     
     private final int stopIndex;
+    
+    private final boolean distinctRow;
+    
+    private final Collection<SelectItem> items;
     
     /**
      * Judge is unqualified shorthand item or not.
