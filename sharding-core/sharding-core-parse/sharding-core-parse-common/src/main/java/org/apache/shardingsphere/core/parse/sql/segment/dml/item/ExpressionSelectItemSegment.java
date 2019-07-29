@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.parse.sql.segment.dml.item;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.sql.segment.generic.AliasAvailable;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
@@ -28,7 +27,6 @@ import org.apache.shardingsphere.core.parse.util.SQLUtil;
  * 
  * @author zhangliang
  */
-@RequiredArgsConstructor
 @Getter
 public final class ExpressionSelectItemSegment implements SelectItemSegment, AliasAvailable {
     
@@ -39,6 +37,12 @@ public final class ExpressionSelectItemSegment implements SelectItemSegment, Ali
     private final String text;
     
     private String alias;
+    
+    public ExpressionSelectItemSegment(final int startIndex, final int stopIndex, final String text) {
+        this.startIndex = startIndex;
+        this.stopIndex = stopIndex;
+        this.text = SQLUtil.getExpressionWithoutOutsideParentheses(text);
+    }
     
     @Override
     public Optional<String> getAlias() {

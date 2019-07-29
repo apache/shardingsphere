@@ -40,8 +40,8 @@ public class AggregationDistinctQueryMetaDataTest {
     @Before
     public void setUp() {
         Collection<AggregationDistinctSelectItem> aggregationDistinctSelectItems = new LinkedList<>();
-        AggregationDistinctSelectItem distinctCountSelectItem = new AggregationDistinctSelectItem(AggregationType.COUNT, "(DISTINCT order_id)", "c", "order_id");
-        AggregationDistinctSelectItem distinctAvgSelectItem = new AggregationDistinctSelectItem(AggregationType.AVG, "(DISTINCT order_id)", "a", "order_id");
+        AggregationDistinctSelectItem distinctCountSelectItem = new AggregationDistinctSelectItem(0, 0, AggregationType.COUNT, "(DISTINCT order_id)", "c", "order_id");
+        AggregationDistinctSelectItem distinctAvgSelectItem = new AggregationDistinctSelectItem(0, 0, AggregationType.AVG, "(DISTINCT order_id)", "a", "order_id");
         distinctAvgSelectItem.getDerivedAggregationItems().add(new AggregationSelectItem(AggregationType.COUNT, "(DISTINCT order_id)", "AVG_DERIVED_COUNT_0"));
         distinctAvgSelectItem.getDerivedAggregationItems().add(new AggregationSelectItem(AggregationType.SUM, "(DISTINCT order_id)", "AVG_DERIVED_SUM_0"));
         aggregationDistinctSelectItems.add(distinctCountSelectItem);

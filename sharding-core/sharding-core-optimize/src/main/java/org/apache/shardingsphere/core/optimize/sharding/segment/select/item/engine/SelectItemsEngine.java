@@ -66,7 +66,7 @@ public final class SelectItemsEngine {
     public SelectItems createSelectItems(final String sql, final SelectStatement selectStatement, final GroupBy groupBy, final OrderBy orderBy) {
         SelectItemsSegment selectItemsSegment = selectStatement.getSelectItems();
         Collection<SelectItem> items = getSelectItemList(sql, selectItemsSegment);
-        SelectItems result = new SelectItems(items, selectItemsSegment.isDistinctRow(), selectItemsSegment.getStopIndex());
+        SelectItems result = new SelectItems(selectItemsSegment.getStartIndex(), selectItemsSegment.getStopIndex(), selectItemsSegment.isDistinctRow(), items);
         Tables tables = new Tables(selectStatement);
         result.getItems().addAll(getDerivedGroupByColumns(tables, items, groupBy));
         result.getItems().addAll(getDerivedOrderByColumns(tables, items, orderBy));
