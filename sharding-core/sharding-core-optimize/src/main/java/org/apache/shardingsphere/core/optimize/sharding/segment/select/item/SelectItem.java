@@ -39,4 +39,11 @@ public interface SelectItem {
      * @return alias
      */
     Optional<String> getAlias();
+
+    /**
+     * Get columnLabel.
+     *
+     * @return columnLabel
+     */
+    String getColumnLabel();
 }
