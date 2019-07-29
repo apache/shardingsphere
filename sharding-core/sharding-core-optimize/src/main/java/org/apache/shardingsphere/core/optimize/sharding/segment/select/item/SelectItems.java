@@ -43,7 +43,9 @@ public final class SelectItems {
     
     private final boolean distinctRow;
     
-    private final int selectListStopIndex;
+    private final int startIndex;
+    
+    private final int stopIndex;
     
     /**
      * Judge is unqualified shorthand item or not.

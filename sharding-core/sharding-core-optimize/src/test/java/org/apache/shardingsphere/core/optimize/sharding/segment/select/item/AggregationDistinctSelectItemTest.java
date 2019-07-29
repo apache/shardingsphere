@@ -25,7 +25,7 @@ import static org.junit.Assert.assertThat;
 
 public final class AggregationDistinctSelectItemTest {
     
-    private final AggregationDistinctSelectItem aggregationDistinctSelectItem = new AggregationDistinctSelectItem(AggregationType.COUNT, "(DISTINCT order_id)", "c", "order_id");
+    private final AggregationDistinctSelectItem aggregationDistinctSelectItem = new AggregationDistinctSelectItem(0, 0, AggregationType.COUNT, "(DISTINCT order_id)", "c", "order_id");
     
     @Test
     public void assertGetDistinctColumnLabel() {

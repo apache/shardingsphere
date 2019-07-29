@@ -73,10 +73,10 @@ public class AggregationDistinctQueryResultTest {
     
     private List<AggregationDistinctSelectItem> getAggregationDistinctSelectItems() {
         List<AggregationDistinctSelectItem> result = new LinkedList<>();
-        AggregationDistinctSelectItem distinctCountSelectItem = new AggregationDistinctSelectItem(AggregationType.COUNT, "(DISTINCT order_id)", "c", "order_id");
-        AggregationDistinctSelectItem distinctAvgSelectItem = new AggregationDistinctSelectItem(AggregationType.AVG, "(DISTINCT order_id)", "a", "order_id");
-        distinctAvgSelectItem.getDerivedAggregationItems().add(new AggregationDistinctSelectItem(AggregationType.COUNT, "(DISTINCT order_id)", "AVG_DERIVED_COUNT_0", "order_id"));
-        distinctAvgSelectItem.getDerivedAggregationItems().add(new AggregationDistinctSelectItem(AggregationType.SUM, "(DISTINCT order_id)", "AVG_DERIVED_SUM_0", "order_id"));
+        AggregationDistinctSelectItem distinctCountSelectItem = new AggregationDistinctSelectItem(0, 0, AggregationType.COUNT, "(DISTINCT order_id)", "c", "order_id");
+        AggregationDistinctSelectItem distinctAvgSelectItem = new AggregationDistinctSelectItem(0, 0, AggregationType.AVG, "(DISTINCT order_id)", "a", "order_id");
+        distinctAvgSelectItem.getDerivedAggregationItems().add(new AggregationDistinctSelectItem(0, 0, AggregationType.COUNT, "(DISTINCT order_id)", "AVG_DERIVED_COUNT_0", "order_id"));
+        distinctAvgSelectItem.getDerivedAggregationItems().add(new AggregationDistinctSelectItem(0, 0, AggregationType.SUM, "(DISTINCT order_id)", "AVG_DERIVED_SUM_0", "order_id"));
         result.add(distinctCountSelectItem);
         result.add(distinctAvgSelectItem);
         return result;

@@ -82,6 +82,11 @@ public final class SQLUtilTest {
     
     @Test
     public void assertGetExactlyExpression() {
-        assertThat(SQLUtil.getExactlyExpression("((a + b*c))"), is("a+b*c"));
+        assertThat(SQLUtil.getExactlyExpression("((a + b*c))"), is("((a+b*c))"));
+    }
+    
+    @Test
+    public void assertGetExpressionWithoutOutsideParentheses() {
+        assertThat(SQLUtil.getExpressionWithoutOutsideParentheses("((a + b*c))"), is("a + b*c"));
     }
 }
