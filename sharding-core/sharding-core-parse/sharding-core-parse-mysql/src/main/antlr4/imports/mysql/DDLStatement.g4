@@ -55,6 +55,39 @@ dropDatabse
     : DROP (DATABASE | SCHEMA) (IF EXISTS)? schemaName
     ;
 
+alterInstance
+    : ALTER INSTANCE instanceAction
+    
+    ;
+
+instanceAction
+    : ROTATE 'INNODB' MASTER KEY
+    | ROTATE BINLOG MASTER KEY
+    | RELOAD 'TLS' (NO ROLLBACK ON ERROR)?
+    ;
+
+createEvent
+    : CREATE ownerStatement? EVENT (IF NOT EXISTS)? eventName
+      ON SCHEDULE scheduleExpression_
+      (ON COMPLETION NOT? PRESERVE)? (ENABLE | DISABLE | DISABLE ON SLAVE)?
+      (COMMENT STRING_)?
+      DO routineBody
+    ;
+
+alterEvent
+    : ALTER ownerStatement?
+      EVENT eventName
+      (ON SCHEDULE scheduleExpression_)?
+      (ON COMPLETION NOT? PRESERVE)?
+      (RENAME TO eventName)? (ENABLE | DISABLE | DISABLE ON SLAVE)?
+      (COMMENT STRING_)?
+      (DO routineBody)?
+    ;
+
+dropEvent
+    :  DROP EVENT (IF EXISTS)? eventName
+    ;
+
 createTableSpecification_
     : TEMPORARY
     ;
@@ -335,4 +368,32 @@ tableExistClause_
 
 dropIndexSpecification_
     : ONLINE | OFFLINE
+    ;
+
+ownerStatement
+    : DEFINER EQ_ (userName | CURRENT_USER ( '(' ')')?)
+    ;
+
+scheduleExpression_
+    : AT_ timestampValue (PLUS_ intervalExpression_)*
+    | EVERY intervalExpression_
+        (
+          STARTS timestampValue
+          (PLUS_ intervalExpression_)*
+        )?
+        (
+          ENDS timestampValue
+          (PLUS_ intervalExpression_)*
+        )?     
+    ;
+
+timestampValue
+    : CURRENT_TIMESTAMP
+    | stringLiterals
+    | numberLiterals
+    | expr
+    ;
+
+routineBody
+    :  'not support'
     ;

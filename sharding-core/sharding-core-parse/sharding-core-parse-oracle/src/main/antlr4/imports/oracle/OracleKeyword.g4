@@ -335,10 +335,6 @@ ONLY
     : O N L Y
     ;
 
-PRESERVE
-    : P R E S E R V E
-    ;
-
 PRIOR
     : P R I O R
     ;
