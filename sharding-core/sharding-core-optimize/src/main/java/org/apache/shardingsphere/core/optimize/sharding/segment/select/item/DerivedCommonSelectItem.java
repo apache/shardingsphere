@@ -24,6 +24,7 @@ import lombok.ToString;
  * Derived common select item.
  *
  * @author zhangliang
+ * @author sunbufu
  */
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
