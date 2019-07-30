@@ -297,32 +297,32 @@ The implementation class of `ShardingStrategyConfiguration`, used to configure n
 
 #### EncryptRuleConfiguration
 
-| *Name*              | *DataType*                                  | *Explanation*                                                                          |
+| *Name*              | *DataType*                                  | *Explanation*                                                                  |
 | ------------------- | ------------------------------------------- | ------------------------------------------------------------------------------ |
-| encryptors          | Map<String, EncryptorRuleConfiguration>     | 加解密器配置列表，可自定义或选择内置类型：MD5/AES                                    |
-| tables              | Map<String, EncryptTableRuleConfiguration>  | 加密表配置列表                      |
+| encryptors          | Map<String, EncryptorRuleConfiguration>     | Encryptor names and encryptors                                                 |
+| tables              | Map<String, EncryptTableRuleConfiguration>  | Encrypt table names and encrypt tables                                         |
 
 #### EncryptorRuleConfiguration
 
-| *Name*              | *DataType*                   | *Explanation*                                                                          |
-| ------------------- | ---------------------------- | ------------------------------------------------------------------------------ |
-| type                | String                       | 加解密器类型，可自定义或选择内置类型：MD5/AES                                       |
-| properties          | Properties                   | 属性配置, 注意：使用AES加密器，需要配置AES加密器的KEY属性：aes.key.value              | 
+| *Name*              | *DataType*                   | *Explanation*                                                                               |
+| ------------------- | ---------------------------- | ------------------------------------------------------------------------------------------- |
+| type                | String                       | Type of encryptor，use user-defined ones or built-in ones, e.g. MD5/AES                      |
+| properties          | Properties                   | Properties, Notice: when use AES encryptor, `aes.key.value` for AES encryptor need to be set | 
 
 #### EncryptTableRuleConfiguration
 
-| *Name*              | *DataType*                                   | *Explanation*                           |
-| ------------------- | -------------------------------------------- | --------------------------------- |
-| tables              | Map<String, EncryptColumnRuleConfiguration>  | 加密列配置列表                      |
+| *Name*              | *DataType*                                   | *Explanation*                              |
+| ------------------- | -------------------------------------------- | ------------------------------------------ |
+| tables              | Map<String, EncryptColumnRuleConfiguration>  | Encrypt column names and encrypt column    |
 
 #### EncryptColumnRuleConfiguration
 
-| *Name*              | *DataType*                   | *Explanation*                                                                          |
-| ------------------- | ---------------------------- |  ------------------------------------------------------------------------------ |
-| plainColumn         | String                       | 存储明文的字段                                                                   |
-| cipherColumn        | String                       | 存储密文的字段                                                                   |
-| assistedQueryColumn | String                       | 辅助查询字段，针对ShardingQueryAssistedEncryptor类型的加解密器进行辅助查询            |
-| encryptor           | String                       | 加解密器名字                                                                      | 
+| *Name*              | *DataType*                   | *Explanation*                                                                                         |
+| ------------------- | ---------------------------- |  ---------------------------------------------------------------------------------------------------- |
+| plainColumn         | String                       | Plain column name                                                                                     |
+| cipherColumn        | String                       | Cipher column name                                                                                    |
+| assistedQueryColumn | String                       | AssistedColumns for query，when use ShardingQueryAssistedEncryptor, it can help query encrypted data  |
+| encryptor           | String                       | Encryptor name                                                                                        | 
 
 #### ShardingPropertiesConstant
 
@@ -378,19 +378,19 @@ Property configuration items, can be of the following properties.
 
 #### EncryptRuleConfiguration
 
-| *Name*              | *DataType*                                  | *Explanation*                                                                    |
-| ------------------- | ------------------------------------------- | ------------------------------------------------------------------------------ |
-| encryptors          | Map<String, EncryptorRuleConfiguration>     | 加解密器配置列表，可自定义或选择内置类型：MD5/AES                                    |
-| tables              | Map<String, EncryptTableRuleConfiguration>  | 加密表配置列表                      |
+| *Name*              | *DataType*                                  | *Explanation*                                               |
+| ------------------- | ------------------------------------------- | ----------------------------------------------------------- |
+| encryptors          | Map<String, EncryptorRuleConfiguration>     | Encryptor names and encryptors                              |
+| tables              | Map<String, EncryptTableRuleConfiguration>  | Encrypt table names and encrypt tables                      |
 
 #### PropertiesConstant
 
-属性配置项，可以为以下属性。
+Property configuration items, can be of the following properties.
 
-| *Name*                            | *DataType*| *Explanation*                                    |
-| ----------------------------------| --------- | -------------------------------------------------|
-| sql.show (?)                      | boolean   | 是否开启SQL显示，默认值: false                      |
-| query.with.cipher.column (?)      | boolean   | 当存在明文列时，是否使用密文列查询，默认值: true       |
+| *Name*                            | *DataType*| *Explanation*                                                                        |
+| ----------------------------------| --------- | ------------------------------------------------------------------------------------ |
+| sql.show (?)                      | boolean   | Print SQL parse and rewrite log or not, default value: false                         |
+| query.with.cipher.column (?)      | boolean   | When there is a plainColumn, use cipherColumn or not to query, default value: true   |
 
 ### Orchestration
 

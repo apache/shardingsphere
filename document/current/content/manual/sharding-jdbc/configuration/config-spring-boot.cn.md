@@ -87,9 +87,15 @@ spring.shardingsphere.datasource.ds.username=root
 spring.shardingsphere.datasource.ds.password=
 spring.shardingsphere.datasource.ds.max-total=100
 
-spring.shardingsphere.encrypt.encryptors.order_encrypt.type=aes
-spring.shardingsphere.encrypt.encryptors.order_encrypt.qualifiedColumns=t_order.user_id
-spring.shardingsphere.encrypt.encryptors.order_encrypt.props.aes.key.value=123456
+spring.shardingsphere.encrypt.encryptors.encryptor_aes.type=aes
+spring.shardingsphere.encrypt.encryptors.encryptor_aes.props.aes.key.value=123456
+spring.shardingsphere.encrypt.tables.t_order.columns.user_id.plainColumn=user_decrypt
+spring.shardingsphere.encrypt.tables.t_order.columns.user_id.cipherColumn=user_encrypt
+spring.shardingsphere.encrypt.tables.t_order.columns.user_id.assistedQueryColumn=user_assisted
+spring.shardingsphere.encrypt.tables.t_order.columns.user_id.encryptor=encryptor_aes
+
+spring.shardingsphere.props.sql.show=true
+spring.shardingsphere.props.query.with.cipher.comlum=true
 ```
 
 ### 数据分片 + 读写分离
@@ -183,9 +189,12 @@ spring.shardingsphere.sharding.tables.t_order_item.table-strategy.inline.shardin
 spring.shardingsphere.sharding.tables.t_order_item.table-strategy.inline.algorithm-expression=t_order_item_$->{order_id % 2}
 spring.shardingsphere.sharding.tables.t_order_item.key-generator.column=order_item_id
 spring.shardingsphere.sharding.tables.t_order_item.key-generator.type=SNOWFLAKE
-spring.shardingsphere.sharding.encryptRule.encryptors.order_encryptor.qualifiedColumns=t_order.order_id
-spring.shardingsphere.sharding.encryptRule.encryptors.order_encryptor.type=AES
-spring.shardingsphere.sharding.encryptRule.encryptors.order_encryptor.props.aes.key.value=123456
+spring.shardingsphere.encrypt.encryptors.encryptor_aes.type=aes
+spring.shardingsphere.encrypt.encryptors.encryptor_aes.props.aes.key.value=123456
+spring.shardingsphere.encrypt.tables.t_order.columns.user_id.plainColumn=user_decrypt
+spring.shardingsphere.encrypt.tables.t_order.columns.user_id.cipherColumn=user_encrypt
+spring.shardingsphere.encrypt.tables.t_order.columns.user_id.assistedQueryColumn=user_assisted
+spring.shardingsphere.encrypt.tables.t_order.columns.user_id.encryptor=encryptor_aes
 ```
 
 ### 治理
@@ -343,10 +352,14 @@ spring.shardingsphere.props.check.table.metadata.enabled= #是否在启动时检
 
 ### 数据脱敏
 ```properties
-spring.shardingsphere.sharding.encryptRule.encryptors.<encryptor-name>.type= #加解密器类型，可自定义或选择内置类型：MD5/AES 
-spring.shardingsphere.sharding.encryptRule.encryptors.<encryptor-name>.qualifiedColumns= #加解密字段，格式为：表名.列名，例如：tb.col1。多个列，请用逗号分隔
-spring.shardingsphere.sharding.encryptRule.encryptors.<encryptor-name>.assistedQueryColumns= #辅助查询字段，针对ShardingQueryAssistedEncryptor类型的加解密器进行辅助查询
-spring.shardingsphere.sharding.encryptRule.encryptors.<encryptor-name>.props.<property-name>= #属性配置, 注意：使用AES加密器，需要配置AES加密器的KEY属性：aes.key.value
+#省略数据源配置，与数据分片一致
+
+spring.shardingsphere.encrypt.encryptors.<encryptor-name>.type= #加解密器类型，可自定义或选择内置类型：MD5/AES 
+spring.shardingsphere.encrypt.encryptors.<encryptor-name>.props.<property-name>= #属性配置, 注意：使用AES加密器，需要配置AES加密器的KEY属性：aes.key.value
+spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.plainColumn= #存储明文的字段
+spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.cipherColumn= #存储密文的字段
+spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.assistedQueryColumn= #辅助查询字段，针对ShardingQueryAssistedEncryptor类型的加解密器进行辅助查询
+spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.encryptor= #加密器名字
 ```
 ### 治理
 
