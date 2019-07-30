@@ -20,7 +20,7 @@
 # If you want to configure orchestration, authorization and proxy properties, please refer to this file.
 # 
 ######################################################################################################
-
+#
 #orchestration:
 #  name: orchestration_ds
 #  overwrite: true
@@ -34,7 +34,7 @@
 #    root:
 #      password: root
 #    sharding:
-#      password: sharding
+#      password: sharding 
 #      authorizedSchemas: sharding_db
 #
 #props:
@@ -47,4 +47,5 @@
 #    # BASE: Proxy will run with B.A.S.E transaction.
 #  proxy.transaction.type: LOCAL
 #  proxy.opentracing.enabled: false
+#  query.with.cipher.column: true
 #  sql.show: false

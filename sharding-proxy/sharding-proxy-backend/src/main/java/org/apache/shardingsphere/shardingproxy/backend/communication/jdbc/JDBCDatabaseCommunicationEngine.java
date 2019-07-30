@@ -106,28 +106,40 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     
     private BackendResponse merge(final SQLRouteResult routeResult) throws SQLException {
         if (response instanceof UpdateResponse) {
-            if (!isAllBroadcastTables(routeResult.getOptimizedStatement())) {
-                ((UpdateResponse) response).mergeUpdateCount();
-            }
+            mergeUpdateCount(routeResult);
             return response;
         }
-        mergedResult = MergeEngineFactory.newInstance(databaseType, 
-                logicSchema.getShardingRule(), routeResult, logicSchema.getMetaData().getTable(), ((QueryResponse) response).getQueryResults()).merge();
-        if (mergedResult instanceof ShowTablesMergedResult) {
-            ((ShowTablesMergedResult) mergedResult).resetColumnLabel(logicSchema.getName());
-        }
+        setMergedResult(routeResult);
+        resetColumnLabelForShowTablesMergedResult();
         handleColumnsForQueryHeader(routeResult);
         return response;
+    }
+    
+    private void mergeUpdateCount(final SQLRouteResult routeResult) {
+        if (!isAllBroadcastTables(routeResult.getOptimizedStatement())) {
+            ((UpdateResponse) response).mergeUpdateCount();
+        }
     }
     
     private boolean isAllBroadcastTables(final OptimizedStatement optimizedStatement) {
         return logicSchema instanceof ShardingSchema && logicSchema.getShardingRule().isAllBroadcastTables(optimizedStatement.getTables().getTableNames());
     }
     
+    private void setMergedResult(final SQLRouteResult routeResult) throws SQLException {
+        mergedResult = MergeEngineFactory.newInstance(databaseType,
+                logicSchema.getShardingRule(), routeResult, logicSchema.getMetaData().getTable(), ((QueryResponse) response).getQueryResults()).merge();
+    }
+    
+    private void resetColumnLabelForShowTablesMergedResult() {
+        if (mergedResult instanceof ShowTablesMergedResult) {
+            ((ShowTablesMergedResult) mergedResult).resetColumnLabel(logicSchema.getName());
+        }
+    }
+    
     private void handleColumnsForQueryHeader(final SQLRouteResult routeResult) {
         removeDerivedColumns();
         removeAssistedQueryColumns(routeResult);
-        setLogicColumns(routeResult);
+        setLogicColumns();
     } 
     
     private void removeDerivedColumns() {
@@ -166,13 +178,12 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         return logicSchema instanceof EncryptSchema ? ((EncryptSchema) logicSchema).getEncryptRule() : logicSchema.getShardingRule().getEncryptRule();
     }
     
-    private void setLogicColumns(final SQLRouteResult routeResult) {
+    private void setLogicColumns() {
         List<QueryHeader> queryHeaders = ((QueryResponse) response).getQueryHeaders();
         EncryptRule encryptRule = getEncryptRule();
         for (QueryHeader each : queryHeaders) {
-            String tableName = routeResult.getOptimizedStatement().getTables().getSingleTableName();
-            if (encryptRule.isCipherColumn(tableName, each.getColumnName())) {
-                each.setColumnLabelAndName(encryptRule.getLogicColumn(tableName, each.getColumnName()));
+            if (encryptRule.isCipherColumn(each.getTable(), each.getColumnName())) {
+                each.setColumnLabelAndName(encryptRule.getLogicColumn(each.getTable(), each.getColumnName()));
             }
         }
     }
