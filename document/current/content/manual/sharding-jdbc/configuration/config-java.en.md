@@ -73,15 +73,18 @@ weight = 1
 
 ```java
     DataSource getEncryptDataSource() throws SQLException {
-        return EncryptDataSourceFactory.createDataSource(DataSourceUtil.createDataSource("demo_ds"), getOrderEncryptRuleConfiguration());
+        return EncryptDataSourceFactory.createDataSource(DataSourceUtil.createDataSource("demo_ds"), getEncryptRuleConfiguration(), new Properties());
     }
 
-    private static EncryptRuleConfiguration getOrderEncryptRuleConfiguration() {
-        EncryptRuleConfiguration encryptRuleConfiguration = new EncryptRuleConfiguration();
-        Properties properties = new Properties();
-        properties.setProperty("aes.key.value", "123456");
-        EncryptorRuleConfiguration encryptorRuleConfiguration = new EncryptorRuleConfiguration("AES", "t_order.order_id", properties);
-        encryptRuleConfiguration.getEncryptorRuleConfigs().put("user_encryptor", encryptorRuleConfiguration);
+    private static EncryptRuleConfiguration getEncryptRuleConfiguration() {
+        Properties props = new Properties();
+        props.setProperty("aes.key.value", "123456");
+        EncryptorRuleConfiguration encryptorConfig = new EncryptorRuleConfiguration("AES", props);
+        EncryptColumnRuleConfiguration columnConfig = new EncryptColumnRuleConfiguration("plain_pwd", "cipher_pwd", "", "aes");
+        EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration(Collections.singletonMap("pwd", columnConfig));
+        EncryptRuleConfiguration encryptRuleConfig = new EncryptRuleConfiguration();
+        encryptRuleConfig.getEncryptors().put("aes", encryptorConfig);
+        encryptRuleConfig.getTables().put("t_encrypt", tableConfig);
     }
 ```
 
@@ -149,7 +152,7 @@ weight = 1
             shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
             shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "demo_ds_${user_id % 2}"));
             shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new PreciseModuloShardingTableAlgorithm()));
-            shardingRuleConfig.setEncryptRuleConfig(getOrderEncryptRuleConfiguration());
+            shardingRuleConfig.setEncryptRuleConfig(getEncryptRuleConfiguration());
             return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new Properties());
         }
         
@@ -165,12 +168,15 @@ weight = 1
             return result;
         }
         
-        private static EncryptRuleConfiguration getOrderEncryptRuleConfiguration() {
-            EncryptRuleConfiguration encryptRuleConfiguration = new EncryptRuleConfiguration();
-            Properties properties = new Properties();
-            properties.setProperty("aes.key.value", "123456");
-            EncryptorRuleConfiguration encryptorRuleConfiguration = new EncryptorRuleConfiguration("AES", "t_order.order_id", properties);
-            encryptRuleConfiguration.getEncryptorRuleConfigs().put("user_encryptor", encryptorRuleConfiguration);
+        private static EncryptRuleConfiguration getEncryptRuleConfiguration() {
+            Properties props = new Properties();
+            props.setProperty("aes.key.value", "123456");
+            EncryptorRuleConfiguration encryptorConfig = new EncryptorRuleConfiguration("AES", props);
+            EncryptColumnRuleConfiguration columnConfig = new EncryptColumnRuleConfiguration("plain_order", "cipher_order", "", "aes");
+            EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration(Collections.singletonMap("order_id", columnConfig));
+            EncryptRuleConfiguration encryptRuleConfig = new EncryptRuleConfiguration();
+            encryptRuleConfig.getEncryptors().put("aes", encryptorConfig);
+            encryptRuleConfig.getTables().put("t_order", tableConfig);
         }
         
         private static Map<String, DataSource> createDataSourceMap() {
@@ -289,15 +295,34 @@ The implementation class of `ShardingStrategyConfiguration`, used to configure n
 | type              | String                       | Type of key generator，use user-defined ones or built-in ones, e.g. SNOWFLAKE, UUID         |
 | props             | Properties                   | Properties, Notice: when use SNOWFLAKE, `worker.id` and `max.tolerate.time.difference.milliseconds` for `SNOWFLAKE` need to be set|
 
+#### EncryptRuleConfiguration
+
+| *Name*              | *DataType*                                  | *Explanation*                                                                          |
+| ------------------- | ------------------------------------------- | ------------------------------------------------------------------------------ |
+| encryptors          | Map<String, EncryptorRuleConfiguration>     | 加解密器配置列表，可自定义或选择内置类型：MD5/AES                                    |
+| tables              | Map<String, EncryptTableRuleConfiguration>  | 加密表配置列表                      |
+
 #### EncryptorRuleConfiguration
 
-| *Name*              | *DataType*                   | *Description*                                                                                        |
-| -----------------   | ---------------------------- | ---------------------------------------------------------------------------------------------------- |
-| type                | String                       | Type of encryptor，use user-defined ones or built-in ones, e.g. MD5/AES                               |
-| qualifiedColumns    | String                       | Column names to be encrypted, the format is `tableName`.`columnName`, e.g. tb.col1. When configuring multiple column names, separate them with commas|
-| assistedQueryColumns| String                       | AssistedColumns for query，when use ShardingQueryAssistedEncryptor, it can help query encrypted data  |
-| props               | Properties                   | Properties, Notice: when use AES encryptor, `aes.key.value` for AES encryptor need to be set          |
+| *Name*              | *DataType*                   | *Explanation*                                                                          |
+| ------------------- | ---------------------------- | ------------------------------------------------------------------------------ |
+| type                | String                       | 加解密器类型，可自定义或选择内置类型：MD5/AES                                       |
+| properties          | Properties                   | 属性配置, 注意：使用AES加密器，需要配置AES加密器的KEY属性：aes.key.value              | 
 
+#### EncryptTableRuleConfiguration
+
+| *Name*              | *DataType*                                   | *Explanation*                           |
+| ------------------- | -------------------------------------------- | --------------------------------- |
+| tables              | Map<String, EncryptColumnRuleConfiguration>  | 加密列配置列表                      |
+
+#### EncryptColumnRuleConfiguration
+
+| *Name*              | *DataType*                   | *Explanation*                                                                          |
+| ------------------- | ---------------------------- |  ------------------------------------------------------------------------------ |
+| plainColumn         | String                       | 存储明文的字段                                                                   |
+| cipherColumn        | String                       | 存储密文的字段                                                                   |
+| assistedQueryColumn | String                       | 辅助查询字段，针对ShardingQueryAssistedEncryptor类型的加解密器进行辅助查询            |
+| encryptor           | String                       | 加解密器名字                                                                      | 
 
 #### ShardingPropertiesConstant
 
@@ -308,7 +333,8 @@ Property configuration items, can be of the following properties.
 | sql.show (?)                       | boolean    | Show SQL or not, default value: false                        |
 | executor.size (?)                  | int        | Work thread number, default value: CPU core number           |
 | max.connections.size.per.query (?) | int        | The maximum connection number allocated by each query of each physical database. default value: 1 |
-| check.table.metadata.enabled (?)   | boolean    | Check meta-data consistency or not in initialization, default value: false |
+| check.table.metadata.enabled (?)   | boolean    | Check meta-data consistency or not in initialization, default value: false                        |
+| query.with.cipher.column (?)       | boolean    | When there is a plainColumn, use cipherColumn or not to query, default value: true                |
 
 ### Read-Write Split
 
@@ -352,9 +378,19 @@ Property configuration items, can be of the following properties.
 
 #### EncryptRuleConfiguration
 
-| *Name*                   | *DataType*                      | *Explanation*    |
-| ------------------------ | ------------------------------- | ---------------- |
-| encryptorRuleConfigs     | Map\<String, EncryptorRuleConfiguration\> | Map of encryptor names and configurations，encryptor Same as `EncryptorRuleConfiguration` |
+| *Name*              | *DataType*                                  | *Explanation*                                                                    |
+| ------------------- | ------------------------------------------- | ------------------------------------------------------------------------------ |
+| encryptors          | Map<String, EncryptorRuleConfiguration>     | 加解密器配置列表，可自定义或选择内置类型：MD5/AES                                    |
+| tables              | Map<String, EncryptTableRuleConfiguration>  | 加密表配置列表                      |
+
+#### PropertiesConstant
+
+属性配置项，可以为以下属性。
+
+| *Name*                            | *DataType*| *Explanation*                                    |
+| ----------------------------------| --------- | -------------------------------------------------|
+| sql.show (?)                      | boolean   | 是否开启SQL显示，默认值: false                      |
+| query.with.cipher.column (?)      | boolean   | 当存在明文列时，是否使用密文列查询，默认值: true       |
 
 ### Orchestration
 
