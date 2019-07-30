@@ -107,6 +107,40 @@ masterSlaveRule:
     - ds_slave1
 ```
 
+### Data Masking
+
+```yaml
+schemaName: encrypt_db
+
+dataSource:
+  url: jdbc:mysql://127.0.0.1:3306/demo_ds?serverTimezone=UTC&useSSL=false
+  username: root
+  password:
+  connectionTimeoutMilliseconds: 30000
+  idleTimeoutMilliseconds: 60000
+  maxLifetimeMilliseconds: 1800000
+  maxPoolSize: 50
+
+encryptRule:    
+  encryptors:
+    encryptor_aes:
+      type: aes
+      props:
+        aes.key.value: 123456abc
+    encryptor_md5:
+      type: md5
+  tables:
+    t_encrypt:
+      columns:
+        user_id:
+          plainColumn: user_plain
+          cipherColumn: user_cipher
+          encryptor: encryptor_aes
+        order_id:
+          cipherColumn: order_cipher
+          encryptor: encryptor_md5
+```
+
 ### Data Sharding + Read-Write Split
 
 ```yaml
@@ -271,13 +305,19 @@ shardingRule:
   defaultTableStrategy:
     none:
     
-  encryptRule:
+  encryptRule:    
     encryptors:
-      order_encryptor:
-        type: AES
-        qualifiedColumns: t_order.order_id
+      encryptor_aes:
+        type: aes
         props:
-          aes.key.value: 123456  
+          aes.key.value: 123456abc
+    tables:
+      t_order:
+        columns:
+          order_id:
+            plainColumn: order_plain
+            cipherColumn: order_cipher
+            encryptor: encryptor_aes 
 ```
 
 ## Overall Configuration Instance
@@ -351,14 +391,20 @@ masterSlaveRule: #Omit data source configurations; keep it consistent with Shard
 ```yaml
 dataSource: #Ignore data sources configuration
 
-encryptRule:
+encryptRule:    
   encryptors:
-    encryptor_name: #Encryptor name
-      type: #Type of encryptor，use user-defined ones or built-in ones, e.g. MD5/AES
-      qualifiedColumns: #Column names to be encrypted, the format is `tableName`.`columnName`, e.g. tb.col1. When configuring multiple column names, separate them with commas
-      assistedQueryColumns: #AssistedColumns for query，when use ShardingQueryAssistedEncryptor, it can help query encrypted data
+    <encryptor-name>:
+      type: #encryptor type
       props: #Properties, e.g. `aes.key.value` for AES encryptor
-        aes.key.value:
+        aes.key.value: 
+  tables:
+    <table-name>:
+      columns:
+        <logic-column-name>:
+          plainColumn: #plaintext column name
+          cipherColumn: #ciphertext column name
+          assistedQueryColumn: #AssistedColumns for query，when use ShardingQueryAssistedEncryptor, it can help query encrypted data
+          encryptor: #encrypt name
 ```
 
 ## Overall Configuration Explanation

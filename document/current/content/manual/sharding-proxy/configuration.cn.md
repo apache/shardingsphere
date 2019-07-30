@@ -107,6 +107,40 @@ masterSlaveRule:
     - ds_slave1
 ```
 
+### 数据脱敏
+
+```yaml
+schemaName: encrypt_db
+
+dataSource:
+  url: jdbc:mysql://127.0.0.1:3306/demo_ds?serverTimezone=UTC&useSSL=false
+  username: root
+  password:
+  connectionTimeoutMilliseconds: 30000
+  idleTimeoutMilliseconds: 60000
+  maxLifetimeMilliseconds: 1800000
+  maxPoolSize: 50
+
+encryptRule:    
+  encryptors:
+    encryptor_aes:
+      type: aes
+      props:
+        aes.key.value: 123456abc
+    encryptor_md5:
+      type: md5
+  tables:
+    t_encrypt:
+      columns:
+        user_id:
+          plainColumn: user_plain
+          cipherColumn: user_cipher
+          encryptor: encryptor_aes
+        order_id:
+          cipherColumn: order_cipher
+          encryptor: encryptor_md5
+```
+
 ### 数据分片 + 读写分离
 
 ```yaml
@@ -272,13 +306,19 @@ shardingRule:
   defaultTableStrategy:
     none:
     
-  encryptRule:
+  encryptRule:    
     encryptors:
-      order_encryptor:
-        type: AES
-        qualifiedColumns: t_order.order_id
+      encryptor_aes:
+        type: aes
         props:
-          aes.key.value: 123456  
+          aes.key.value: 123456abc
+    tables:
+      t_order:
+        columns:
+          order_id:
+            plainColumn: order_plain
+            cipherColumn: order_cipher
+            encryptor: encryptor_aes
 ```
 
 ## 全局配置示例
@@ -352,14 +392,20 @@ masterSlaveRule: #省略读写分离配置，与Sharding-JDBC配置一致
 ```yaml
 dataSource: #省略数据源配置
 
-encryptRule:
+encryptRule:    
   encryptors:
-    encryptor_name: #加密器名字
-      type: #加解密器类型，可自定义或选择内置类型：MD5/AES
-      qualifiedColumns: #加解密字段，格式为：表名.列名，例如：tb.col1。多个列，请用逗号分隔
-      assistedQueryColumns: #辅助查询字段，针对ShardingQueryAssistedEncryptor类型的加解密器进行辅助查询
-      props: #属性配置, 比如AES算法的KEY属性：aes.key.value
-        aes.key.value:
+    <encryptor-name>:
+      type: #加解密器类型，可自定义或选择内置类型：MD5/AES 
+      props: #属性配置, 注意：使用AES加密器，需要配置AES加密器的KEY属性：aes.key.value
+        aes.key.value: 
+  tables:
+    <table-name>:
+      columns:
+        <logic-column-name>:
+          plainColumn: #存储明文的字段
+          cipherColumn: #存储密文的字段
+          assistedQueryColumn: #辅助查询字段，针对ShardingQueryAssistedEncryptor类型的加解密器进行辅助查询
+          encryptor: #加密器名字
 ```
 
 ## 全局配置项说明
