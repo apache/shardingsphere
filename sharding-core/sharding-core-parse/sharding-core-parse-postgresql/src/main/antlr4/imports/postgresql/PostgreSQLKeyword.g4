@@ -283,10 +283,6 @@ LAST
     : L A S T
     ;
 
-LOCAL
-    : L O C A L
-    ;
-
 LOGGED
     : L O G G E D
     ;
