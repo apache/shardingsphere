@@ -188,9 +188,23 @@ weight = 4
         <prop key="aes.key.value">123456</prop>
     </bean:properties>
     
-    <encrypt:data-source id="encryptDataSource" data-source-name="ds" >
-        <encrypt:encryptor-rule id="pwd_encryptor" type="assistedTest" qualified-columns="t_user.pwd" assisted-query-columns="t_user.assisted_query_pwd" />
-        <encrypt:encryptor-rule id="name_encryptor" type="AES" qualified-columns="t_user.user_name" props-ref="props" />
+    <encrypt:data-source id="encryptDataSource" data-source-name="db" >
+        <encrypt:encrypt-rule>
+            <encrypt:tables>
+                <encrypt:table name="t_order">
+                    <encrypt:column logic-column="user_id" plain-column="user_decrypt" cipher-column="user_encrypt" assisted-query-column="user_assisted" encryptor-ref="encryptor_aes" />
+                    <encrypt:column logic-column="order_id" plain-column="order_decrypt" cipher-column="order_encrypt" assisted-query-column="order_assisted" encryptor-ref="encryptor_md5"/>
+                </encrypt:table>
+            </encrypt:tables>
+            <encrypt:encryptors>
+                <encrypt:encryptor id="encryptor_aes" type="AES" props-ref="props"/>
+                <encrypt:encryptor id="encryptor_md5" type="MD5" />
+            </encrypt:encryptors>
+        </encrypt:encrypt-rule>
+        <encrypt:props>
+            <prop key="sql.show">${sql_show}</prop>
+            <prop key="query.with.cipher.column">true</prop>
+        </encrypt:props>
     </encrypt:data-source>
 </beans>
 ```
@@ -386,8 +400,17 @@ weight = 4
                 <sharding:table-rule logic-table="t_order_item" actual-data-nodes="demo_ds_${0..1}.t_order_item_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderItemTableStrategy" key-generator-ref="itemKeyGenerator" />
             </sharding:table-rules>
             <sharding:encrypt-rule>
-                <sharding:encryptor-rule id="order_encryptor" type="AES" qualified-columns="t_order.order_id" props-ref="dataProtectorProps" />
-            </sharding:encrypt-rule>
+                <encrypt:tables>
+                    <encrypt:table name="t_order">
+                        <encrypt:column logic-column="user_id" plain-column="user_decrypt" cipher-column="user_encrypt" assisted-query-column="user_assisted" encryptor-ref="encryptor_aes" />
+                        <encrypt:column logic-column="order_id" plain-column="order_decrypt" cipher-column="order_encrypt" assisted-query-column="order_assisted" encryptor-ref="encryptor_md5"/>
+                    </encrypt:table>
+                </encrypt:tables>
+                <encrypt:encryptors>
+                    <encrypt:encryptor id="encryptor_aes" type="AES" props-ref="props"/>
+                    <encrypt:encryptor id="encryptor_md5" type="MD5" />
+                </encrypt:encryptors>
+            </sharding:encrypt-rule>           
         </sharding:sharding-rule>
         <sharding:props>
             <prop key="sql.show">true</prop>
@@ -526,29 +549,20 @@ weight = 4
 | type              | 属性                          | 自增列值生成器类型，可自定义或选择内置类型：SNOWFLAKE/UUID/LEAF_SEGMENT                            |
 | props-ref         | 属性                          | 属性配置, 注意：使用SNOWFLAKE算法，需要配置worker.id与max.tolerate.time.difference.milliseconds属性 | 
 
-#### \<sharding:encrypt-rules />
-
-| *名称*              | *类型* | *说明*          |
-| -------------------| ----- | --------------- |
-| encryptor-rule (+) | 标签  | 加解密器配置对象   |
-
-#### \<sharding:encryptor-rule />
-| *名称*                 | *类型*                   | *说明*                                                                |
-| --------------------- | ---------------------- | ---------------------------------------------------------------------- |
-| type                  | 属性                    | 加解密器类型，可自定义或选择内置类型：MD5/AES                               |
-| qualified-columns     | 属性                    | 加解密字段，格式为：表名.列名，例如：tb.col1。多个列，请用逗号分隔             |
-| assisted-query-columns| 属性                    | 辅助查询字段，针对ShardingQueryAssistedEncryptor类型的加解密器进行辅助查询   |
-| props-ref             | 属性                    | 属性配置, 注意：使用AES加密器，需要配置AES加密器的KEY属性：aes.key.value       | 
- 
+#### \<sharding:encrypt-rule />
+| *名称*                     | *类型*                 | *说明*                                  |
+| ------------------------- | ---------------------- | -------------------------------------- |
+| encrypt:encrypt-rule(?)    | 标签                   | 加解密规则                              |
 
 #### \<sharding:props />
 
-| *名称*                             |  *类型* | *说明*                                        |
+| *名称*                             |  *类型* | *说明*                                         |
 | -----------------------------------| ----- | ---------------------------------------------- |
-| sql.show (?)                       | 属性  | 是否开启SQL显示，默认值: false                    |
+| sql.show (?)                       | 属性  | 是否开启SQL显示，默认值: false                     |
 | executor.size (?)                  | 属性  | 工作线程数量，默认值: CPU核数                      |
-| max.connections.size.per.query (?) | 属性  | 每个物理数据库为每次查询分配的最大连接数量。默认值: 1 |
+| max.connections.size.per.query (?) | 属性  | 每个物理数据库为每次查询分配的最大连接数量。默认值: 1  |
 | check.table.metadata.enabled (?)   | 属性  | 是否在启动时检查分表元数据一致性，默认值: false       |
+| query.with.cipher.column (?)       | 属性  | 当存在明文列时，是否使用密文列查询，默认值: true      |
 
 ### 读写分离
 
@@ -595,15 +609,47 @@ weight = 4
 | data-source-name        | 属性  | 加密数据源Bean Id                              |
 | props (?)               | 标签  | 属性配置                                       |
 
-#### \<encrypt:encryptor-rule />
+#### \<encrypt:encryptors />
+
+| *名称*                   | *类型* | *说明*                                                    |
+| ----------------------- | ----- | --------------------------------------------------------- |
+| encryptor(+)            | 标签  | 加密器配置                                                |
+
+#### \<encrypt:encryptor />
+
+| *名称*                    | *类型* | *说明*                                                             |
+| ------------------------ | ----- | ------------------------------------------------------------------ |
+| id                       | 属性  | 加密器的名称                                                         |
+| type                     | 属性  | 加解密器类型，可自定义或选择内置类型：MD5/AES                            |
+| props-ref                | 属性  | 属性配置, 注意：使用AES加密器，需要配置AES加密器的KEY属性：aes.key.value   |
+
+#### \<encrypt:tables />
 
 | *名称*                  | *类型* | *说明*                                                    |
 | ----------------------- | ----- | --------------------------------------------------------- |
-| id                      | 属性  | 加密器的名称                                                |
-| type                    | 属性  | 加解密器类型，可自定义或选择内置类型：MD5/AES                   |
-| qualified-columns       | 属性  | 加解密字段，格式为：表名.列名，例如：tb.col1。多个列，请用逗号分隔 |
+| table(+)                | 标签  | 加密表配置                                                  |
+
+#### \<encrypt:table />
+
+| *名称*                  | *类型* | *说明*                                                     |
+| ----------------------- | ----- | --------------------------------------------------------- |
+| column(+)               | 标签  | 加密列配置                                                  |
+
+#### \<encrypt:column />
+
+| *名称*                  | *类型* | *说明*                                                              |
+| ----------------------- | ----- | ------------------------------------------------------------------ |
+| logic-column            | 属性  | 逻辑列名                                                             |
+| plain-column            | 属性  | 存储明文的字段                                                        |
+| cipher-column           | 属性  | 存储密文的字段                                                        |
 | assisted-query-columns  | 属性  | 辅助查询字段，针对ShardingQueryAssistedEncryptor类型的加解密器进行辅助查询|
-| props-re                | 属性  | 属性配置                                                    |
+
+#### \<encrypt:props />
+
+| *名称*                             |  *类型* | *说明*                                         |
+| -----------------------------------| ----- | ---------------------------------------------- |
+| sql.show (?)                       | 属性  | 是否开启SQL显示，默认值: false                     |
+| query.with.cipher.column (?)       | 属性  | 当存在明文列时，是否使用密文列查询，默认值: true      |
 
 ### 数据分片 + 治理
 

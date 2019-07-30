@@ -188,11 +188,25 @@ Inline expression identifier can can use `${...} ` or `$->{...}`, but the former
         <prop key="aes.key.value">123456</prop>
     </bean:properties>
     
-    <encrypt:data-source id="encryptDataSource" data-source-name="ds" >
-        <encrypt:encryptor-rule id="pwd_encryptor" type="assistedTest" qualified-columns="t_user.pwd" assisted-query-columns="t_user.assisted_query_pwd" />
-        <encrypt:encryptor-rule id="name_encryptor" type="AES" qualified-columns="t_user.user_name" props-ref="props" />
+    <encrypt:data-source id="encryptDataSource" data-source-name="db" >
+        <encrypt:encrypt-rule>
+            <encrypt:tables>
+                <encrypt:table name="t_order">
+                    <encrypt:column logic-column="user_id" plain-column="user_decrypt" cipher-column="user_encrypt" assisted-query-column="user_assisted" encryptor-ref="encryptor_aes" />
+                    <encrypt:column logic-column="order_id" plain-column="order_decrypt" cipher-column="order_encrypt" assisted-query-column="order_assisted" encryptor-ref="encryptor_md5"/>
+                </encrypt:table>
+            </encrypt:tables>
+            <encrypt:encryptors>
+                <encrypt:encryptor id="encryptor_aes" type="AES" props-ref="props"/>
+                <encrypt:encryptor id="encryptor_md5" type="MD5" />
+            </encrypt:encryptors>
+        </encrypt:encrypt-rule>
+        <encrypt:props>
+            <prop key="sql.show">${sql_show}</prop>
+            <prop key="query.with.cipher.column">true</prop>
+        </encrypt:props>
     </encrypt:data-source>
-</beans>
+ </beans>
 ```
 
 ### Sharding + Read-write splitting
@@ -383,7 +397,16 @@ Inline expression identifier can can use `${...} ` or `$->{...}`, but the former
                 <sharding:table-rule logic-table="t_order_item" actual-data-nodes="demo_ds_${0..1}.t_order_item_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderItemTableStrategy" key-generator-ref="itemKeyGenerator" />
             </sharding:table-rules>
             <sharding:encrypt-rule>
-                <sharding:encryptor-rule id="order_encryptor" type="AES" qualified-columns="t_order.order_id" props-ref="dataProtectorProps" />
+                <encrypt:tables>
+                    <encrypt:table name="t_order">
+                        <encrypt:column logic-column="user_id" plain-column="user_decrypt" cipher-column="user_encrypt" assisted-query-column="user_assisted" encryptor-ref="encryptor_aes" />
+                        <encrypt:column logic-column="order_id" plain-column="order_decrypt" cipher-column="order_encrypt" assisted-query-column="order_assisted" encryptor-ref="encryptor_md5"/>
+                    </encrypt:table>
+                </encrypt:tables>
+                <encrypt:encryptors>
+                    <encrypt:encryptor id="encryptor_aes" type="AES" props-ref="props"/>
+                    <encrypt:encryptor id="encryptor_md5" type="MD5" />
+                </encrypt:encryptors>
             </sharding:encrypt-rule>
         </sharding:sharding-rule>
         <sharding:props>
@@ -539,14 +562,11 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/sharding/shard
 | -------------------| ------ | ---------------- |
 | encryptor-rule (+) | Tag    | Encryptor rule   |
 
-#### \<sharding:encryptor-rule />
+#### \<sharding:encrypt-rule />
 
-| *Name*                 | *Type*    | *Description*                                                |
-| ---------------------- | --------- | ------------------------------------------------------------ |
-| type                   | Attribute | Type of key generator, use user-defined ones or built-in ones, e.g. SNOWFLAKE, UUID                                                                  |
-| qualified-columns      | Attribute | Column names to be encrypted, the format is `tableName`.`columnName`, e.g. tb.col1. When configuring multiple column names, separate them with commas|
-| assisted-query-columns | Attribute | assistedColumns for query，when use ShardingQueryAssistedEncryptor, it can help query encrypted data                                                  |
-| props-ref              | Attribute | Properties, Notice: when use AES encryptor, `aes.key.value` for AES encryptor need to be set           |
+| *Name*                  | *Type*    | *Description*                                                |
+| ----------------------- | --------- | ------------------------------------------------------------ |
+| encrypt:encrypt-rule(?) | Tag       | Encrypt rule                                                  
 
 #### \<sharding:props />
 
@@ -555,7 +575,8 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/sharding/shard
 | sql.show (?)                       | Attribute | Show SQL or not; default value: false                        |
 | executor.size (?)                  | Attribute | Executing thread number; default value: CPU core number      |
 | max.connections.size.per.query (?) | Attribute | The maximum connection number that each physical database allocates to each query; default value: 1 |
-| check.table.metadata.enabled (?)   | Attribute | Whether to check meta-data consistency of sharding table when it initializes; default value: false |
+| check.table.metadata.enabled (?)   | Attribute | Whether to check meta-data consistency of sharding table when it initializes; default value: false  |
+| query.with.cipher.column (?)       | Attribute | When there is a plainColumn, use cipherColumn or not to query, default value: true                  |
 
 ### Read-Write Split
 
@@ -597,22 +618,53 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encryp
 
 #### \<encrypt:data-source />
 
-| *Name*                  | *Type*    | *Explanation*                                                |
+| *Name*                  | *Type*    | *Type*                                                |
 | ----------------------- | --------- | ------------------------------------------------------------ |
 | id                      | Attribute | Spring Bean Id                                               |
 | data-source-name        | Attribute | Encrypt data source Bean Id                                  |
 | props (?)               | Tag       | Attribute configurations                                     |
 
-#### \<encrypt:encryptor-rule />
+#### \<encrypt:encryptors />
+
+| *Name*               | *Type*  | *Type*                                                    |
+| -------------------- | ------- | --------------------------------------------------------- |
+| encryptor(+)         | Tag     | Encryptor configuration                                   |
+
+#### \<encrypt:encryptor />
 
 | *Name*                  | *Type*    | *Explanation*                                               |
 | ----------------------- | --------- | ----------------------------------------------------------- |
 | id                      | Attribute | Names of Encryptor                                          |
 | type                    | Attribute | Types of Encryptor, including MD5/AES or customize type     |
-| qualified-columns       | Attribute | Columns of Encrypt, format: tableName.columnName, such as tb.col1 . If multiple columns, use comma separated |
-| assisted-query-columns  | Attribute | Assisted query columns, do assisted query for the ShardingQueryAssistedEncryptor type |
 | props-re                | Attribute | Attribute configurations                                    |
 
+#### \<encrypt:tables />
+
+| *Name*                  | *Type* | *Explanation*                                             |
+| ----------------------- | -----  | --------------------------------------------------------- |
+| table(+)                | Tag    | Encrypt table configuration                               |
+
+#### \<encrypt:table />
+
+| *Name*                  | *Type* | *Explanation*                                            |
+| ----------------------- | ------ | ---------------------------------------------------------|
+| column(+)               | Tag    | Encrypt column configuration                             |
+
+#### \<encrypt:column />
+
+| *Name*                   | *Type*   | *Explanation*                                                                                       |
+| ----------------------- | --------- | --------------------------------------------------------------------------------------------------- |
+| logic-column            | Attribute | Logic column name                                                                                   |
+| plain-column            | Attribute | Plain column name                                                                                   |
+| cipher-column           | Attribute | Cipher column name                                                                                  |
+| assisted-query-columns  | Attribute | AssistedColumns for query，when use ShardingQueryAssistedEncryptor, it can help query encrypted data|
+
+#### \<encrypt:props />
+
+| *Name*                             | *Type*    | *Explanation*                                                |
+| ---------------------------------- | --------- | ------------------------------------------------------------ |
+| sql.show (?)                       | Attribute | Show SQL or not; default value: false                        |
+| query.with.cipher.column (?)       | Attribute | When there is a plainColumn, use cipherColumn or not to query, default value: true                  |
 
 ### Data Sharding + Orchestration
 
