@@ -482,3 +482,15 @@ DEFINER
 CURRENT_USER
     : C U R R E N T UL_ U S E R
     ;
+
+SQL
+    : S Q L
+    ;
+
+CASCADED
+    : C A S C A D E D
+    ;
+
+LOCAL
+    : L O C A L
+    ;
