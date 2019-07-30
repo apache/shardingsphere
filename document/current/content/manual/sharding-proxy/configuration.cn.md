@@ -121,7 +121,7 @@ dataSource:
   maxLifetimeMilliseconds: 1800000
   maxPoolSize: 50
 
-encryptRule:    
+encryptRule:
   encryptors:
     encryptor_aes:
       type: aes
@@ -273,7 +273,7 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 65
 
-shardingRule:  
+shardingRule:
   tables:
     t_order: 
       actualDataNodes: ds${0..1}.t_order${0..1}
@@ -306,7 +306,7 @@ shardingRule:
   defaultTableStrategy:
     none:
     
-  encryptRule:    
+  encryptRule:
     encryptors:
       encryptor_aes:
         type: aes
@@ -392,7 +392,7 @@ masterSlaveRule: #省略读写分离配置，与Sharding-JDBC配置一致
 ```yaml
 dataSource: #省略数据源配置
 
-encryptRule:    
+encryptRule:
   encryptors:
     <encryptor-name>:
       type: #加解密器类型，可自定义或选择内置类型：MD5/AES 

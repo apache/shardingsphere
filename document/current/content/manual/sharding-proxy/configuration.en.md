@@ -121,7 +121,7 @@ dataSource:
   maxLifetimeMilliseconds: 1800000
   maxPoolSize: 50
 
-encryptRule:    
+encryptRule:
   encryptors:
     encryptor_aes:
       type: aes
@@ -272,7 +272,7 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 65
 
-shardingRule:  
+shardingRule:
   tables:
     t_order: 
       actualDataNodes: ds${0..1}.t_order${0..1}
@@ -305,7 +305,7 @@ shardingRule:
   defaultTableStrategy:
     none:
     
-  encryptRule:    
+  encryptRule:
     encryptors:
       encryptor_aes:
         type: aes
@@ -391,7 +391,7 @@ masterSlaveRule: #Omit data source configurations; keep it consistent with Shard
 ```yaml
 dataSource: #Ignore data sources configuration
 
-encryptRule:    
+encryptRule:
   encryptors:
     <encryptor-name>:
       type: #encryptor type

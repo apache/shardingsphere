@@ -101,7 +101,7 @@ dataSource:  !!org.apache.commons.dbcp2.BasicDataSource
   username: root
   password:
 
-encryptRule:    
+encryptRule:
   encryptors:
     encryptor_aes:
       type: aes
@@ -256,7 +256,7 @@ shardingRule:
   defaultTableStrategy:
     none:
     
-  encryptRule:    
+  encryptRule:
     encryptors:
       encryptor_aes:
         type: aes
@@ -423,7 +423,7 @@ props: #属性配置
 ```yaml
 dataSource: #省略数据源配置
 
-encryptRule:    
+encryptRule:
   encryptors:
     <encryptor-name>:
       type: #加解密器类型，可自定义或选择内置类型：MD5/AES 

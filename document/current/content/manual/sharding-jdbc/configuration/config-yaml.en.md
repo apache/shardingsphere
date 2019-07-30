@@ -102,7 +102,7 @@ dataSource:  !!org.apache.commons.dbcp2.BasicDataSource
   username: root
   password:
 
-encryptRule:    
+encryptRule:
   encryptors:
     encryptor_aes:
       type: aes
@@ -257,7 +257,7 @@ shardingRule:
   defaultTableStrategy:
     none:
 
-  encryptRule:    
+  encryptRule:
     encryptors:
       encryptor_aes:
         type: aes
@@ -382,7 +382,7 @@ props: #Property configuration
 ```yaml
 dataSource: #Ignore data sources configuration
 
-encryptRule:    
+encryptRule:
   encryptors:
     <encryptor-name>:
       type: #encryptor type
