@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shardingjdbc.spring.boot.type;
 
+import com.google.common.base.Optional;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.rule.EncryptRule;
@@ -61,5 +62,7 @@ public class SpringBootEncryptTest {
         EncryptRule encryptRule = ((EncryptDataSource) dataSource).getRuntimeContext().getRule();
         assertThat(encryptRule.getEncryptTableNames().size(), is(1));
         assertTrue(encryptRule.getShardingEncryptor("t_order", "user_id").isPresent());
+        assertThat(encryptRule.getCipherColumn("t_order", "user_id"), is("user_encrypt"));
+        assertThat(encryptRule.getPlainColumn("t_order", "user_id"), is(Optional.of("user_decrypt")));
     }
 }

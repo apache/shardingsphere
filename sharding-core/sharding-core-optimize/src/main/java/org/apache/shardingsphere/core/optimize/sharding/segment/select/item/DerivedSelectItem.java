@@ -24,22 +24,28 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 /**
- * Common select item.
+ * Derived common select item.
  *
  * @author zhangliang
+ * @author sunbufu
  */
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
 @ToString
-public class CommonSelectItem implements SelectItem {
-    
+public final class DerivedSelectItem implements SelectItem {
+
     private final String expression;
-    
+
     private final String alias;
-    
+
     @Override
     public final Optional<String> getAlias() {
         return Optional.fromNullable(alias);
+    }
+
+    @Override
+    public final String getColumnLabel() {
+        return getAlias().or(getExpression());
     }
 }

@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one or more
   ~ contributor license agreements.  See the NOTICE file distributed with
@@ -15,10 +16,10 @@
   ~ limitations under the License.
   -->
 
-<dataset>
-    <metadata>
-        <column name="COUNT(DISTINCT &quot;order_id&quot;)" />
-        <column name="SUM(DISTINCT &quot;order_id&quot;)" />
-    </metadata>
-    <row values="2, 2001" />
-</dataset>
+<sql-cases>
+    <sql-case id="select_with_double_quotes" value="SELECT * FROM &quot;t_order_item&quot; WHERE &quot;item_id&quot; != ? ORDER BY &quot;item_id&quot;" db-types="PostgreSQL" />
+    <sql-case id="select_escape_with_single_quota" value="SELECT * FROM t_order where status='\''" db-types="MySQL" />
+    <sql-case id="select_escape_with_double_quota" value="SELECT * FROM t_order where status=&quot;\&quot;&quot;" db-types="MySQL" />
+    <sql-case id="select_alias_as_single_quote_string" value="SELECT status as 'status' FROM t_order" />
+    <sql-case id="select_alias_as_string_double_quote" value="SELECT status as &quot;status&quot; FROM t_order" />
+</sql-cases>

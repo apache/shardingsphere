@@ -139,7 +139,8 @@ public final class QueryResultMetaData {
      */
     @SneakyThrows
     public Optional<ShardingEncryptor> getShardingEncryptor(final int columnIndex) {
-        return encryptRule.getShardingEncryptor(getTableName(columnIndex), resultSetMetaData.getColumnName(columnIndex));
+        String logicTable = getTableName(columnIndex);
+        return encryptRule.getShardingEncryptor(logicTable, getLogicColumn(logicTable, columnIndex));
     }
     
     private String getTableName(final int columnIndex) throws SQLException {
@@ -149,5 +150,11 @@ public final class QueryResultMetaData {
         }
         Optional<TableRule> tableRule = shardingRule.findTableRuleByActualTable(actualTableName);
         return tableRule.isPresent() ? tableRule.get().getLogicTable() : actualTableName;
+    }
+    
+    @SneakyThrows
+    private String getLogicColumn(final String tableName, final int columnIndex) {
+        String columnLabel = resultSetMetaData.getColumnName(columnIndex);
+        return encryptRule.isCipherColumn(tableName, columnLabel) ? encryptRule.getLogicColumn(tableName, columnLabel) : columnLabel;
     }
 }

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.parse.core.constant;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -25,13 +26,14 @@ import lombok.RequiredArgsConstructor;
  * @author zhangliang
  */
 @RequiredArgsConstructor
+@Getter
 public enum Paren {
     
-    PARENTHESES("(", ")"), BRACKET("[", "]"), BRACES("{", "}");
+    PARENTHESES('(', ')'), BRACKET('[', ']'), BRACES('{', '}');
     
-    private final String leftParen;
+    private final char leftParen;
     
-    private final String rightParen;
+    private final char rightParen;
     
     /**
      * Judge passed token is left paren or not.
@@ -39,9 +41,9 @@ public enum Paren {
      * @param token token
      * @return is left paren or not
      */
-    public static boolean isLeftParen(final String token) {
+    public static boolean isLeftParen(final char token) {
         for (Paren each : Paren.values()) {
-            if (each.leftParen.equals(token)) {
+            if (each.leftParen == token) {
                 return true;
             }
         }
@@ -55,9 +57,9 @@ public enum Paren {
      * @param rightToken right token
      * @return match or not
      */
-    public static boolean match(final String leftToken, final String rightToken) {
+    public static boolean match(final char leftToken, final char rightToken) {
         for (Paren each : Paren.values()) {
-            if (each.leftParen.equals(leftToken) && each.rightParen.equals(rightToken)) {
+            if (each.leftParen == leftToken && each.rightParen == rightToken) {
                 return true;
             }
         }

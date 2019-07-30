@@ -17,19 +17,42 @@
 
 package org.apache.shardingsphere.core.optimize.sharding.segment.select.item;
 
+import com.google.common.base.Optional;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 /**
- * Derived common select item.
+ * Common select item.
  *
  * @author zhangliang
+ * @author sunbufu
  */
-@EqualsAndHashCode(callSuper = true)
-@ToString(callSuper = true)
-public final class DerivedCommonSelectItem extends CommonSelectItem {
-    
-    public DerivedCommonSelectItem(final String expression, final String alias) {
-        super(expression, alias);
+@RequiredArgsConstructor
+@Getter
+@EqualsAndHashCode
+@ToString
+public final class ColumnSelectItem implements SelectItem {
+
+    private final String owner;
+
+    private final String name;
+
+    private final String alias;
+
+    @Override
+    public final String getExpression() {
+        return null == owner ? name : owner + "." + name;
+    }
+
+    @Override
+    public final String getColumnLabel() {
+        return getAlias().or(name);
+    }
+
+    @Override
+    public final Optional<String> getAlias() {
+        return Optional.fromNullable(alias);
     }
 }

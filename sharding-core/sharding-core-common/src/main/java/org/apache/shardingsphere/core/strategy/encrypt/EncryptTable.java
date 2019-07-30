@@ -130,9 +130,7 @@ public final class EncryptTable {
     public Collection<String> getCipherColumns() {
         Collection<String> result = new LinkedList<>();
         for (EncryptColumn each : columns.values()) {
-            if (each.getPlainColumn().isPresent()) {
-                result.add(each.getCipherColumn());
-            }
+            result.add(each.getCipherColumn());
         }
         return result;
     }

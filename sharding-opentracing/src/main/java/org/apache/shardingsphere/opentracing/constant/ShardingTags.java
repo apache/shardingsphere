@@ -32,7 +32,7 @@ public final class ShardingTags {
     /**
      * Component of ShardingSphere's open tracing tag.
      */
-    public static final String COMPONENT_NAME = "Sharding-Sphere";
+    public static final String COMPONENT_NAME = "ShardingSphere";
     
     /**
      * Records the bind variables of SQL.

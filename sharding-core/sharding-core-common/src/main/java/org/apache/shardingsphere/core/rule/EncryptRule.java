@@ -183,6 +183,17 @@ public final class EncryptRule implements BaseRule {
     }
     
     /**
+     * Is cipher column or not.
+     *
+     * @param tableName table name
+     * @param columnName column name
+     * @return cipher column or not
+     */
+    public boolean isCipherColumn(final String tableName, final String columnName) {
+        return tables.keySet().contains(tableName) && tables.get(tableName).getCipherColumns().contains(columnName);
+    }
+    
+    /**
      * Get assisted query column.
      *
      * @param logicTable logic table name

@@ -39,11 +39,13 @@ import java.util.List;
 @ToString
 public final class SelectItems {
     
-    private final Collection<SelectItem> items;
+    private final int startIndex;
+    
+    private final int stopIndex;
     
     private final boolean distinctRow;
     
-    private final int selectListStopIndex;
+    private final Collection<SelectItem> items;
     
     /**
      * Judge is unqualified shorthand item or not.
@@ -115,7 +117,7 @@ public final class SelectItems {
         for (SelectItem each : items) {
             // TODO read * from metadata
             if (!(each instanceof ShorthandSelectItem)) {
-                result.add(each.getAlias().or(each.getExpression()));
+                result.add(each.getColumnLabel());
             }
         }
         return result;

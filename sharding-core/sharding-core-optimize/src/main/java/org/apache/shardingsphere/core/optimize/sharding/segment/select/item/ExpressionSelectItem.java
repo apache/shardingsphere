@@ -15,42 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.segment.dml.item;
+package org.apache.shardingsphere.core.optimize.sharding.segment.select.item;
 
 import com.google.common.base.Optional;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import org.apache.shardingsphere.core.parse.sql.segment.generic.AliasAvailable;
-import org.apache.shardingsphere.core.parse.util.SQLUtil;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 /**
- * Expression select item segment.
- * 
- * @author zhangliang
+ * Expression select item.
+ *
+ * @author sunbufu
  */
+@RequiredArgsConstructor
 @Getter
-public final class ExpressionSelectItemSegment implements SelectItemSegment, AliasAvailable {
-    
-    private final int startIndex;
-    
-    private final int stopIndex;
-    
-    private final String text;
-    
-    private String alias;
-    
-    public ExpressionSelectItemSegment(final int startIndex, final int stopIndex, final String text) {
-        this.startIndex = startIndex;
-        this.stopIndex = stopIndex;
-        this.text = SQLUtil.getExpressionWithoutOutsideParentheses(text);
-    }
-    
+@EqualsAndHashCode
+@ToString
+public final class ExpressionSelectItem implements SelectItem {
+
+    private final String expression;
+
+    private final String alias;
+
     @Override
     public Optional<String> getAlias() {
         return Optional.fromNullable(alias);
     }
-    
+
     @Override
-    public void setAlias(final String alias) {
-        this.alias = SQLUtil.getExactlyValue(alias);
+    public String getColumnLabel() {
+        return getAlias().or(getExpression());
     }
 }

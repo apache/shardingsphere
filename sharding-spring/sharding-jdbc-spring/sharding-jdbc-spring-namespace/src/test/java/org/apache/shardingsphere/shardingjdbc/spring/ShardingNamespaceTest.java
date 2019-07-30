@@ -28,6 +28,7 @@ import org.apache.shardingsphere.core.rule.BindingTableRule;
 import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
+import org.apache.shardingsphere.core.strategy.encrypt.impl.MD5ShardingEncryptor;
 import org.apache.shardingsphere.core.strategy.masterslave.RandomMasterSlaveLoadBalanceAlgorithm;
 import org.apache.shardingsphere.core.strategy.masterslave.RoundRobinMasterSlaveLoadBalanceAlgorithm;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
@@ -40,6 +41,8 @@ import org.apache.shardingsphere.shardingjdbc.spring.algorithm.RangeModuloTableS
 import org.apache.shardingsphere.shardingjdbc.spring.datasource.SpringShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.spring.fixture.IncrementKeyGenerator;
 import org.apache.shardingsphere.shardingjdbc.spring.util.FieldValueUtil;
+import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
+import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
@@ -107,6 +110,10 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
         ShardingRule shardingRule = getShardingRule("simpleShardingDataSource");
         assertThat(shardingRule.getTableRules().size(), is(1));
         assertThat(shardingRule.getTableRules().iterator().next().getLogicTable(), is("t_order"));
+        assertThat(shardingRule.getEncryptRule().getTables().size(), is(1));
+        assertThat(shardingRule.getEncryptRule().getTables().get("t_order").getCipherColumn("user_id"), is("user_encrypt"));
+        assertTrue(shardingRule.getEncryptRule().getShardingEncryptor("t_order", "order_id").isPresent());
+        assertThat(shardingRule.getEncryptRule().getShardingEncryptor("t_order", "order_id").get(), CoreMatchers.<ShardingEncryptor>instanceOf(MD5ShardingEncryptor.class));
         shardingRule.getTableRule("t_order");
     }
     
