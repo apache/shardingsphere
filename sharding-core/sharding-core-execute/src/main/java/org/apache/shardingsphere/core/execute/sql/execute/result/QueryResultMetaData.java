@@ -155,6 +155,6 @@ public final class QueryResultMetaData {
     @SneakyThrows
     private String getLogicColumn(final String tableName, final int columnIndex) {
         String columnLabel = resultSetMetaData.getColumnName(columnIndex);
-        return encryptRule.isCipherColumn(columnLabel) ? encryptRule.getLogicColumn(tableName, columnLabel) : columnLabel;
+        return encryptRule.isCipherColumn(tableName, columnLabel) ? encryptRule.getLogicColumn(tableName, columnLabel) : columnLabel;
     }
 }

@@ -130,10 +130,10 @@ public final class Bootstrap {
     private static Map<String, RuleConfiguration> getSchemaRules(final ShardingOrchestrationFacade shardingOrchestrationFacade) {
         Map<String, RuleConfiguration> result = new LinkedHashMap<>();
         for (String each : shardingOrchestrationFacade.getConfigService().getAllShardingSchemaNames()) {
-            if (shardingOrchestrationFacade.getConfigService().isShardingRule(each)) {
-                result.put(each, shardingOrchestrationFacade.getConfigService().loadShardingRuleConfiguration(each));
-            } else if (shardingOrchestrationFacade.getConfigService().isEncryptRule(each)) {
+            if (shardingOrchestrationFacade.getConfigService().isEncryptRule(each)) {
                 result.put(each, shardingOrchestrationFacade.getConfigService().loadEncryptRuleConfiguration(each));
+            } else if (shardingOrchestrationFacade.getConfigService().isShardingRule(each)) {
+                result.put(each, shardingOrchestrationFacade.getConfigService().loadShardingRuleConfiguration(each));
             } else {
                 result.put(each, shardingOrchestrationFacade.getConfigService().loadMasterSlaveRuleConfiguration(each));
             }
