@@ -462,3 +462,23 @@ DISABLE
 CALL
     : C A L L
     ;
+
+INSTANCE
+    : I N S T A N C E
+    ;
+
+PRESERVE
+    : P R E S E R V E
+    ;
+
+DO
+    : D O
+    ;
+
+DEFINER
+    : D E F I N E R
+    ;
+
+CURRENT_USER
+    : C U R R E N T UL_ U S E R
+    ;

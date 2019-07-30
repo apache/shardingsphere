@@ -959,3 +959,39 @@ SECOND_MICROSECOND
 UL_BINARY
     : UL_ B I N A R Y
     ;
+
+ROTATE
+    : R O T A T E
+    ;
+
+MASTER
+    : M A S T E R 
+    ;
+
+BINLOG
+    : B I N L O G
+    ;
+
+ERROR
+    : E R R O R
+    ;
+
+SCHEDULE
+    : S C H E D U L E
+    ;
+
+COMPLETION
+    : C O M P L E T I O N
+    ;
+
+EVERY
+    : E V E R Y
+    ;
+
+STARTS
+    : S T A R T S
+    ;
+
+ENDS
+    : E N D S
+    ;

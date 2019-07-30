@@ -159,10 +159,6 @@ CURRENT_TIMESTAMP
     : C U R R E N T UL_ T I M E S T A M P
     ;
 
-CURRENT_USER
-    : C U R R E N T UL_ U S E R
-    ;
-
 CYCLE
     : C Y C L E
     ;
