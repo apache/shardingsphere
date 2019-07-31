@@ -41,6 +41,12 @@ public final class UserEntity extends User {
         return super.getUserName();
     }
     
+    @Column(name = "user_name_plain")
+    @Override
+    public String getUserNamePlain() {
+        return super.getUserNamePlain();
+    }
+    
     @Column(name = "pwd")
     @Override
     public String getPwd() {
