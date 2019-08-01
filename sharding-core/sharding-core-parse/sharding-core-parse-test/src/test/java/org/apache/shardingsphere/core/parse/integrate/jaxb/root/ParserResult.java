@@ -22,7 +22,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.groupby.ExpectedGroupByColumn;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.insert.ExpectedInsertColumnsAndValues;
-import org.apache.shardingsphere.core.parse.integrate.jaxb.meta.ExpectedTableMetaData;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.orderby.ExpectedOrderByColumn;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.pagination.ExpectedPaginationValue;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.table.ExpectedAlterTable;
@@ -73,9 +72,6 @@ public final class ParserResult {
     
     @XmlElement(name = "row-count")
     private ExpectedPaginationValue rowCount;
-    
-    @XmlElement
-    private ExpectedTableMetaData meta;
     
     @XmlElement(name = "alter-table")
     private ExpectedAlterTable alterTable;

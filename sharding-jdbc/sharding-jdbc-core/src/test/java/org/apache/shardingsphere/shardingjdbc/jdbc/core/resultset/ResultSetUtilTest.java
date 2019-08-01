@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
+import com.google.common.primitives.Ints;
+import com.google.common.primitives.Longs;
+import com.google.common.primitives.Shorts;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.junit.Test;
 
@@ -81,6 +84,19 @@ public final class ResultSetUtilTest {
         assertThat((java.sql.Date) ResultSetUtil.convertValue(now, java.sql.Date.class), is(now));
         assertThat((Time) ResultSetUtil.convertValue(now, Time.class), is(now));
         assertThat((Timestamp) ResultSetUtil.convertValue(now, Timestamp.class), is(new Timestamp(now.getTime())));
+    }
+    
+    @Test
+    public void assertConvertByteArrayValueSuccess() {
+        byte[] bytesValue = new byte[] {};
+        assertThat((byte[]) ResultSetUtil.convertValue(bytesValue, byte.class), is(bytesValue));
+        assertThat((byte) ResultSetUtil.convertValue(new byte[] {1}, byte.class), is((byte) 1));
+        assertThat((short) ResultSetUtil.convertValue(Shorts.toByteArray((short) 1), short.class), is((short) 1));
+        assertThat((int) ResultSetUtil.convertValue(Ints.toByteArray(1), int.class), is(1));
+        assertThat((long) ResultSetUtil.convertValue(Longs.toByteArray(1L), long.class), is(1L));
+        assertThat((double) ResultSetUtil.convertValue(Longs.toByteArray(1L), double.class), is(1d));
+        assertThat((float) ResultSetUtil.convertValue(Longs.toByteArray(1L), float.class), is(1f));
+        assertThat((BigDecimal) ResultSetUtil.convertValue(Longs.toByteArray(1L), BigDecimal.class), is(new BigDecimal("1")));
     }
     
     @Test(expected = ShardingException.class)

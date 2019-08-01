@@ -21,8 +21,8 @@ import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.core.parse.sql.segment.OwnerAvailable;
-import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.generic.OwnerAvailable;
+import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 
 /**
  * Shorthand select item segment.

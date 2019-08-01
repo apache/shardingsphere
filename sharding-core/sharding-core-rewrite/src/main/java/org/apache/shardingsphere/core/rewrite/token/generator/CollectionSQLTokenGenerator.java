@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
-import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SQLToken;
 import org.apache.shardingsphere.core.rule.BaseRule;
@@ -40,7 +40,8 @@ public interface CollectionSQLTokenGenerator<T extends BaseRule> extends SQLToke
      * @param optimizedStatement optimized statement
      * @param parameterBuilder SQL parameter builder
      * @param rule rule
+     * @param isQueryWithCipherColumn is query with cipher column
      * @return SQL tokens
      */
-    Collection<? extends SQLToken> generateSQLTokens(OptimizedStatement optimizedStatement, ParameterBuilder parameterBuilder, T rule);
+    Collection<? extends SQLToken> generateSQLTokens(OptimizedStatement optimizedStatement, ParameterBuilder parameterBuilder, T rule, boolean isQueryWithCipherColumn);
 }

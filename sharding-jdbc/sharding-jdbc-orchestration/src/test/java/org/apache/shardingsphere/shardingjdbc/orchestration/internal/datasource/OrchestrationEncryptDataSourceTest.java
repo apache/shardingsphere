@@ -17,9 +17,12 @@
 
 package org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource;
 
+import com.google.common.base.Optional;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
-import org.apache.shardingsphere.api.config.encryptor.EncryptorRuleConfiguration;
+import org.apache.shardingsphere.api.config.encrypt.EncryptColumnRuleConfiguration;
+import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
+import org.apache.shardingsphere.api.config.encrypt.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.core.constant.ShardingConstant;
 import org.apache.shardingsphere.orchestration.config.OrchestrationConfiguration;
@@ -76,20 +79,23 @@ public final class OrchestrationEncryptDataSourceTest {
     @Test
     public void assertRenewRule() {
         encryptDataSource.renew(getEncryptRuleChangedEvent());
-        assertThat(encryptDataSource.getDataSource().getEncryptRule().getEncryptTableNames().size(), is(1));
-        assertThat(encryptDataSource.getDataSource().getEncryptRule().getEncryptTableNames().iterator().next(), is("t_order_item"));
-        Map<String, EncryptorRuleConfiguration> encryptorRuleConfigurations = encryptDataSource.getDataSource().getEncryptRule().getEncryptRuleConfig().getEncryptorRuleConfigs();
+        assertThat(encryptDataSource.getDataSource().getRuntimeContext().getRule().getEncryptTableNames().size(), is(1));
+        assertThat(encryptDataSource.getDataSource().getRuntimeContext().getRule().getEncryptTableNames().iterator().next(), is("t_order_item"));
+        assertThat(encryptDataSource.getDataSource().getRuntimeContext().getRule().getCipherColumn("t_order_item", "item_id"), is("cipher_item_id"));
+        assertThat(encryptDataSource.getDataSource().getRuntimeContext().getRule().getPlainColumn("t_order_item", "item_id"), is(Optional.of("plain_item_id")));
+        Map<String, EncryptorRuleConfiguration> encryptorRuleConfigurations = encryptDataSource.getDataSource().getRuntimeContext().getRule().getRuleConfiguration().getEncryptors();
         assertThat(encryptorRuleConfigurations.size(), is(1));
         assertTrue(encryptorRuleConfigurations.containsKey("order_encryptor"));
         EncryptorRuleConfiguration encryptorRuleConfig = encryptorRuleConfigurations.get("order_encryptor");
         assertThat(encryptorRuleConfig.getType(), is("md5"));
-        assertThat(encryptorRuleConfig.getQualifiedColumns(), is("t_order_item.order_id"));
         assertThat(encryptorRuleConfig.getProperties().stringPropertyNames().size(), is(0));
     }
     
     private EncryptRuleChangedEvent getEncryptRuleChangedEvent() {
         EncryptRuleConfiguration encryptRuleConfig = new EncryptRuleConfiguration();
-        encryptRuleConfig.getEncryptorRuleConfigs().put("order_encryptor", new EncryptorRuleConfiguration("md5", "t_order_item.order_id", new Properties()));
+        encryptRuleConfig.getEncryptors().put("order_encryptor", new EncryptorRuleConfiguration("md5", new Properties()));
+        encryptRuleConfig.getTables().put("t_order_item", 
+                new EncryptTableRuleConfiguration(Collections.singletonMap("item_id", new EncryptColumnRuleConfiguration("plain_item_id", "cipher_item_id", "", "order_encryptor"))));
         return new EncryptRuleChangedEvent(ShardingConstant.LOGIC_SCHEMA_NAME, encryptRuleConfig);
     }
     
@@ -121,7 +127,7 @@ public final class OrchestrationEncryptDataSourceTest {
     @Test
     public void assertRenewProperties() {
         encryptDataSource.renew(getPropertiesChangedEvent());
-        assertThat(encryptDataSource.getDataSource().getShardingProperties().getProps().getProperty("sql.show"), is("true"));
+        assertThat(encryptDataSource.getDataSource().getRuntimeContext().getProps().getProps().getProperty("sql.show"), is("true"));
     }
     
     private PropertiesChangedEvent getPropertiesChangedEvent() {

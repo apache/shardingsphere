@@ -34,7 +34,7 @@ public class WhereEncryptColumnTokenTest {
     
     @Test
     public void assertToStringWithoutPlaceholderWithEqual() {
-        Map<Integer, Comparable<?>> indexValues = new LinkedHashMap<>();
+        Map<Integer, Object> indexValues = new LinkedHashMap<>();
         indexValues.put(0, "a");
         whereEncryptColumnToken = new WhereEncryptColumnToken(0, 0, "column_x", indexValues, Collections.<Integer>emptyList(), ShardingOperator.EQUAL);
         assertThat(whereEncryptColumnToken.toString(), is("column_x = 'a'"));
@@ -46,13 +46,13 @@ public class WhereEncryptColumnTokenTest {
     
     @Test
     public void assertToStringWithPlaceholderWithEqual() {
-        whereEncryptColumnToken = new WhereEncryptColumnToken(0, 0, "column_x", Collections.<Integer, Comparable<?>>emptyMap(), Collections.singletonList(0), ShardingOperator.EQUAL);
+        whereEncryptColumnToken = new WhereEncryptColumnToken(0, 0, "column_x", Collections.<Integer, Object>emptyMap(), Collections.singletonList(0), ShardingOperator.EQUAL);
         assertThat(whereEncryptColumnToken.toString(), is("column_x = ?"));
     }
     
     @Test
     public void assertToStringWithoutPlaceholderWithIn() {
-        Map<Integer, Comparable<?>> indexValues = new LinkedHashMap<>();
+        Map<Integer, Object> indexValues = new LinkedHashMap<>();
         indexValues.put(0, "a");
         indexValues.put(1, "b");
         whereEncryptColumnToken = new WhereEncryptColumnToken(0, 0, "column_x", indexValues, Collections.<Integer>emptyList(), ShardingOperator.IN);
@@ -61,7 +61,7 @@ public class WhereEncryptColumnTokenTest {
     
     @Test
     public void assertToStringWithPlaceholderWithIn() {
-        whereEncryptColumnToken = new WhereEncryptColumnToken(0, 0, "column_x", Collections.<Integer, Comparable<?>>emptyMap(), Collections.singletonList(0), ShardingOperator.IN);
+        whereEncryptColumnToken = new WhereEncryptColumnToken(0, 0, "column_x", Collections.<Integer, Object>emptyMap(), Collections.singletonList(0), ShardingOperator.IN);
         assertThat(whereEncryptColumnToken.toString(), is("column_x IN (?)"));
     }
 }

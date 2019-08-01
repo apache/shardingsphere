@@ -58,7 +58,7 @@ public final class GroupByAssert {
     
     private void assertGroupByItem(final ColumnOrderByItemSegment actual, final ExpectedGroupByColumn expected) {
         assertThat(assertMessage.getFullAssertMessage("Group by item owner assertion error: "), 
-                actual.getColumn().getOwner().isPresent() ? actual.getColumn().getOwner().get().getName() : null, is(expected.getOwner()));
+                actual.getColumn().getOwner().isPresent() ? actual.getColumn().getOwner().get().getTableName() : null, is(expected.getOwner()));
         assertThat(assertMessage.getFullAssertMessage("Group by item name assertion error: "), actual.getColumn().getName(), is(expected.getName()));
         assertThat(assertMessage.getFullAssertMessage("Group by item order direction assertion error: "), actual.getOrderDirection().name(), is(expected.getOrderDirection()));
         // TODO assert nullOrderDirection

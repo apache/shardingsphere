@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.shardingproxy.backend.schema;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.parse.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.CreateIndexStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.CreateTableStatement;
@@ -42,6 +42,7 @@ import org.apache.shardingsphere.orchestration.internal.rule.OrchestrationShardi
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Map;
 
 /**
@@ -106,58 +107,66 @@ public final class ShardingSchema extends LogicSchema {
     }
     
     @Override
-    public void refreshTableMetaData(final SQLStatement sqlStatement) {
-        if (sqlStatement instanceof CreateTableStatement) {
-            refreshTableMetaData((CreateTableStatement) sqlStatement);
-        } else if (sqlStatement instanceof AlterTableStatement) {
-            refreshTableMetaData((AlterTableStatement) sqlStatement);
-        } else if (sqlStatement instanceof DropTableStatement) {
-            refreshTableMetaData((DropTableStatement) sqlStatement);
-        } else if (sqlStatement instanceof CreateIndexStatement) {
-            refreshTableMetaData((CreateIndexStatement) sqlStatement);
-        } else if (sqlStatement instanceof DropIndexStatement) {
-            refreshTableMetaData((DropIndexStatement) sqlStatement);
+    public void refreshTableMetaData(final OptimizedStatement optimizedStatement) {
+        if (null == optimizedStatement) {
+            return;
+        }
+        if (optimizedStatement.getSQLStatement() instanceof CreateTableStatement) {
+            refreshTableMetaDataForCreateTable(optimizedStatement);
+        } else if (optimizedStatement.getSQLStatement() instanceof AlterTableStatement) {
+            refreshTableMetaDataForAlterTable(optimizedStatement);
+        } else if (optimizedStatement.getSQLStatement() instanceof DropTableStatement) {
+            refreshTableMetaDataForDropTable(optimizedStatement);
+        } else if (optimizedStatement.getSQLStatement() instanceof CreateIndexStatement) {
+            refreshTableMetaDataForCreateIndex(optimizedStatement);
+        } else if (optimizedStatement.getSQLStatement() instanceof DropIndexStatement) {
+            refreshTableMetaDataForDropIndex(optimizedStatement);
         }
     }
     
-    private void refreshTableMetaData(final CreateTableStatement createTableStatement) {
-        String tableName = createTableStatement.getTables().getSingleTableName();
+    private void refreshTableMetaDataForCreateTable(final OptimizedStatement optimizedStatement) {
+        String tableName = optimizedStatement.getTables().getSingleTableName();
         getMetaData().getTable().put(tableName, getTableMetaDataInitializer(metaData.getDataSource()).load(tableName, shardingRule));
     }
     
-    private void refreshTableMetaData(final AlterTableStatement alterTableStatement) {
-        String tableName = alterTableStatement.getTables().getSingleTableName();
+    private void refreshTableMetaDataForAlterTable(final OptimizedStatement optimizedStatement) {
+        String tableName = optimizedStatement.getTables().getSingleTableName();
         getMetaData().getTable().put(tableName, getTableMetaDataInitializer(metaData.getDataSource()).load(tableName, shardingRule));
     }
     
-    private void refreshTableMetaData(final DropTableStatement dropTableStatement) {
-        for (String each : dropTableStatement.getTables().getTableNames()) {
+    private void refreshTableMetaDataForDropTable(final OptimizedStatement optimizedStatement) {
+        for (String each : optimizedStatement.getTables().getTableNames()) {
             getMetaData().getTable().remove(each);
         }
     }
     
-    private void refreshTableMetaData(final CreateIndexStatement createIndexStatement) {
-        if (Strings.isNullOrEmpty(createIndexStatement.getIndexName())) {
+    private void refreshTableMetaDataForCreateIndex(final OptimizedStatement optimizedStatement) {
+        CreateIndexStatement createIndexStatement = (CreateIndexStatement) optimizedStatement.getSQLStatement();
+        if (null == createIndexStatement.getIndex()) {
             return;
         }
-        String tableName = createIndexStatement.getTables().getSingleTableName();
-        getMetaData().getTable().get(tableName).getLogicIndexes().add(createIndexStatement.getIndexName());
+        getMetaData().getTable().get(optimizedStatement.getTables().getSingleTableName()).getLogicIndexes().add(createIndexStatement.getIndex().getName());
     }
     
-    private void refreshTableMetaData(final DropIndexStatement dropIndexStatement) {
-        if (Strings.isNullOrEmpty(dropIndexStatement.getIndexName())) {
-            return;
+    private void refreshTableMetaDataForDropIndex(final OptimizedStatement optimizedStatement) {
+        DropIndexStatement dropIndexStatement = (DropIndexStatement) optimizedStatement.getSQLStatement();
+        Collection<String> indexNames = getIndexNames(dropIndexStatement);
+        if (!optimizedStatement.getTables().isEmpty()) {
+            getMetaData().getTable().get(optimizedStatement.getTables().getSingleTableName()).getLogicIndexes().removeAll(indexNames);
         }
-        Optional<String> logicTableName = getLogicTableName(dropIndexStatement);
-        if (logicTableName.isPresent()) {
-            getMetaData().getTable().get(logicTableName.get()).getLogicIndexes().remove(dropIndexStatement.getIndexName());
+        for (String each : indexNames) {
+            Optional<String> logicTableName = getMetaData().getTable().getLogicTableName(each);
+            if (logicTableName.isPresent()) {
+                getMetaData().getTable().get(logicTableName.get()).getLogicIndexes().remove(each);
+            }
         }
     }
     
-    private Optional<String> getLogicTableName(final DropIndexStatement dropIndexStatement) {
-        if (dropIndexStatement.getTables().isEmpty()) {
-            return getMetaData().getTable().getLogicTableName(dropIndexStatement.getIndexName());
+    private Collection<String> getIndexNames(final DropIndexStatement dropIndexStatement) {
+        Collection<String> result = new LinkedList<>();
+        for (IndexSegment each : dropIndexStatement.getIndexes()) {
+            result.add(each.getName());
         }
-        return Optional.of(dropIndexStatement.getTables().getSingleTableName());
+        return result;
     }
 }

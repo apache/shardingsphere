@@ -20,9 +20,8 @@ package org.apache.shardingsphere.core;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
-import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
+import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.route.PreparedStatementRoutingEngine;
-import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.junit.Before;
@@ -56,7 +55,7 @@ public final class PreparedQueryShardingEngineTest extends BaseShardingEngineTes
         EncryptRule encryptRule = mock(EncryptRule.class);
         when(shardingRule.getEncryptRule()).thenReturn(encryptRule);
         shardingEngine = new PreparedQueryShardingEngine(
-                getSql(), shardingRule, getShardingProperties(), mock(ShardingMetaData.class), DatabaseTypes.getActualDatabaseType("MySQL"), new ParsingResultCache());
+                getSql(), shardingRule, getShardingProperties(), mock(ShardingMetaData.class), DatabaseTypes.getActualDatabaseType("MySQL"), mock(SQLParseEngine.class));
         setRoutingEngine();
     }
     
@@ -68,9 +67,7 @@ public final class PreparedQueryShardingEngineTest extends BaseShardingEngineTes
     }
     
     protected void assertShard() {
-        SQLRouteResult sqlRouteResult = createSQLRouteResult();
-        sqlRouteResult.getOptimizedStatement().getSQLStatement().setLogicSQL("SELECT ?");
-        when(routingEngine.route(getParameters())).thenReturn(sqlRouteResult);
+        when(routingEngine.route(getParameters())).thenReturn(createSQLRouteResult());
         assertSQLRouteResult(shardingEngine.shard(getSql(), getParameters()));
     }
     

@@ -41,9 +41,10 @@ public interface ShardingRouter {
     /**
      * Route SQL.
      * 
+     * @param logicSQL logic SQL
+     * @param parameters SQL parameters
      * @param sqlStatement SQL statement
-     * @param parameters parameters
      * @return parse result
      */
-    SQLRouteResult route(SQLStatement sqlStatement, List<Object> parameters);
+    SQLRouteResult route(String logicSQL, List<Object> parameters, SQLStatement sqlStatement);
 }

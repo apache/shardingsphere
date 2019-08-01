@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.core.rule;
 
+import org.apache.shardingsphere.api.config.RuleConfiguration;
+
 /**
  * Base rule.
  *
@@ -24,4 +26,11 @@ package org.apache.shardingsphere.core.rule;
  * @author panjuan
  */
 public interface BaseRule {
+    
+    /**
+     * Get rule configuration.
+     * 
+     * @return rule configuration
+     */
+    RuleConfiguration getRuleConfiguration();
 }

@@ -20,7 +20,7 @@
 # If you want to configure orchestration, authorization and proxy properties, please refer to this file.
 # 
 ######################################################################################################
-
+#
 #orchestration:
 #  name: orchestration_ds
 #  overwrite: true
@@ -28,7 +28,7 @@
 #    type: zookeeper
 #    serverLists: localhost:2181
 #    namespace: orchestration
-#    
+#
 #authentication:
 #  users:
 #    root:
@@ -36,7 +36,7 @@
 #    sharding:
 #      password: sharding 
 #      authorizedSchemas: sharding_db
-#      
+#
 #props:
 #  max.connections.size.per.query: 1
 #  acceptor.size: 16  # The default value is available processors count * 2.
@@ -47,4 +47,5 @@
 #    # BASE: Proxy will run with B.A.S.E transaction.
 #  proxy.transaction.type: LOCAL
 #  proxy.opentracing.enabled: false
+#  query.with.cipher.column: true
 #  sql.show: false

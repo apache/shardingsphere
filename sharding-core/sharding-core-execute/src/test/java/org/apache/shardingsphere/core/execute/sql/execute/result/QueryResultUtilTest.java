@@ -62,7 +62,7 @@ public class QueryResultUtilTest {
     public void assertGetValueByBit() {
         when(resultSetMetaData.getColumnType(1)).thenReturn(Types.BIT);
         byte[] bytes = {1};
-        when(resultSet.getBytes(1)).thenReturn(bytes);
+        when(resultSet.getObject(1)).thenReturn(bytes);
         assertThat((byte[]) QueryResultUtil.getValue(resultSet, 1), is(bytes));
     }
     

@@ -21,12 +21,12 @@ import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ShardingSelectOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.AggregationDistinctSelectItem;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.AggregationSelectItem;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.DerivedCommonSelectItem;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.item.SelectItem;
+import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.AggregationDistinctSelectItem;
+import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.AggregationSelectItem;
+import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.DerivedSelectItem;
+import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.SelectItem;
+import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SelectItemsToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -42,13 +42,14 @@ import java.util.LinkedList;
 public final class SelectItemsTokenGenerator implements OptionalSQLTokenGenerator<ShardingRule>, IgnoreForSingleRoute {
     
     @Override
-    public Optional<SelectItemsToken> generateSQLToken(final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final ShardingRule shardingRule) {
+    public Optional<SelectItemsToken> generateSQLToken(
+            final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final ShardingRule shardingRule, final boolean isQueryWithCipherColumn) {
         if (!(optimizedStatement instanceof ShardingSelectOptimizedStatement)) {
             return Optional.absent();
         }
         Collection<String> derivedItemTexts = getDerivedItemTexts((ShardingSelectOptimizedStatement) optimizedStatement);
         return derivedItemTexts.isEmpty() ? Optional.<SelectItemsToken>absent()
-                : Optional.of(new SelectItemsToken(((ShardingSelectOptimizedStatement) optimizedStatement).getSelectItems().getSelectListStopIndex() + 1 + " ".length(), derivedItemTexts));
+                : Optional.of(new SelectItemsToken(((ShardingSelectOptimizedStatement) optimizedStatement).getSelectItems().getStopIndex() + 1 + " ".length(), derivedItemTexts));
     }
     
     private Collection<String> getDerivedItemTexts(final ShardingSelectOptimizedStatement optimizedStatement) {
@@ -62,7 +63,7 @@ public final class SelectItemsTokenGenerator implements OptionalSQLTokenGenerato
                         return getDerivedItemText(input);
                     }
                 }));
-            } else if (each instanceof DerivedCommonSelectItem) {
+            } else if (each instanceof DerivedSelectItem) {
                 result.add(getDerivedItemText(each));
             }
         }

@@ -27,12 +27,19 @@ dataSource:
   maxPoolSize: 50
 
 encryptRule:
+  tables:
+    t_encrypt:
+      columns:
+        pwd:
+          cipherColumn: pwd
+          encryptor: encryptor_aes
+        name:
+          cipherColumn: name
+          encryptor: encryptor_md5
   encryptors:
     encryptor_aes:
       type: aes
-      qualifiedColumns: t_encrypt.pwd
       props:
         aes.key.value: 123456abc
     encryptor_md5:
           type: md5
-          qualifiedColumns: t_encrypt.name

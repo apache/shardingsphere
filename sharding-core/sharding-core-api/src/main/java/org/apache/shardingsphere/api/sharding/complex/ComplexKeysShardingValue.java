@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.api.sharding.complex;
 
+import com.google.common.collect.Range;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
@@ -38,4 +39,6 @@ public final class ComplexKeysShardingValue<T extends Comparable<?>> implements 
     private final String logicTableName;
     
     private final Map<String, Collection<T>> columnNameAndShardingValuesMap;
+    
+    private final Map<String, Range<T>> columnNameAndRangeValuesMap;
 }

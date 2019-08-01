@@ -30,7 +30,7 @@ shardingRule:
         inline:
           shardingColumn: order_id
           algorithmExpression: t_order_${order_id % 2}
-      keyGenerator:    
+      keyGenerator:
         type: INCREMENT
         column: order_id
     t_order_item:

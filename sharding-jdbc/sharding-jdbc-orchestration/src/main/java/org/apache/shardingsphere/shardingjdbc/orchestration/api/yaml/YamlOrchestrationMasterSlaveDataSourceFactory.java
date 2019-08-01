@@ -19,6 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.core.yaml.swapper.impl.MasterSlaveRuleConfigurationYamlSwapper;
@@ -108,7 +109,7 @@ public final class YamlOrchestrationMasterSlaveDataSourceFactory {
         if (null == yamlMasterSlaveRuleConfiguration) {
             return new OrchestrationMasterSlaveDataSource(ORCHESTRATION_SWAPPER.swap(yamlOrchestrationConfiguration));
         } else {
-            MasterSlaveDataSource masterSlaveDataSource = new MasterSlaveDataSource(dataSourceMap, MASTER_SLAVE_RULE_SWAPPER.swap(yamlMasterSlaveRuleConfiguration), props);
+            MasterSlaveDataSource masterSlaveDataSource = new MasterSlaveDataSource(dataSourceMap, new MasterSlaveRule(MASTER_SLAVE_RULE_SWAPPER.swap(yamlMasterSlaveRuleConfiguration)), props);
             return new OrchestrationMasterSlaveDataSource(masterSlaveDataSource, ORCHESTRATION_SWAPPER.swap(yamlOrchestrationConfiguration));
         }
     }

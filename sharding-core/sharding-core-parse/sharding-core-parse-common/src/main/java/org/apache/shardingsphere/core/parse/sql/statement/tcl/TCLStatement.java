@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.core.parse.sql.statement.tcl;
 
-import lombok.ToString;
-import org.apache.shardingsphere.core.parse.sql.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.generic.AbstractSQLStatement;
 
 /**
  * Transaction Control Language statement.
@@ -26,6 +25,5 @@ import org.apache.shardingsphere.core.parse.sql.statement.AbstractSQLStatement;
  * @author zhangliang
  * @author maxiaoguang
  */
-@ToString(callSuper = true)
 public class TCLStatement extends AbstractSQLStatement {
 }

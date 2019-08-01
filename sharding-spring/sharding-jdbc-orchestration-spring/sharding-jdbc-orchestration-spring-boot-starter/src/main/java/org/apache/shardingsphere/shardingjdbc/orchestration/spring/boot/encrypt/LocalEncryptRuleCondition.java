@@ -27,14 +27,18 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  * Local encrypt rule condition.
  *
  * @author yangyi
+ * @author panjuan
  */
 public final class LocalEncryptRuleCondition extends SpringBootCondition {
     
-    private static final String ENCRYPT_PREFIX = "spring.shardingsphere.encrypt.encryptors";
+    private static final String ENCRYPT_ENCRYPTORS_PREFIX = "spring.shardingsphere.encrypt.encryptors";
+    
+    private static final String ENCRYPT_TABLES_PREFIX = "spring.shardingsphere.encrypt.tables";
     
     @Override
     public ConditionOutcome getMatchOutcome(final ConditionContext conditionContext, final AnnotatedTypeMetadata annotatedTypeMetadata) {
-        return PropertyUtil.containPropertyPrefix(conditionContext.getEnvironment(), ENCRYPT_PREFIX)
-            ? ConditionOutcome.match() : ConditionOutcome.noMatch("Can't find ShardingSphere encrypt rule configuration in local environment.");
+        boolean isEncrypt = PropertyUtil.containPropertyPrefix(conditionContext.getEnvironment(), ENCRYPT_ENCRYPTORS_PREFIX)
+                && PropertyUtil.containPropertyPrefix(conditionContext.getEnvironment(), ENCRYPT_TABLES_PREFIX);
+        return isEncrypt ? ConditionOutcome.match() : ConditionOutcome.noMatch("Can't find ShardingSphere encrypt rule configuration in environment.");
     }
 }

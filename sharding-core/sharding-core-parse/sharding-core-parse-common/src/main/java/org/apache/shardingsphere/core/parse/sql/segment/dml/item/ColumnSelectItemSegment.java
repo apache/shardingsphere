@@ -19,8 +19,8 @@ package org.apache.shardingsphere.core.parse.sql.segment.dml.item;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
-import org.apache.shardingsphere.core.parse.sql.segment.AliasAvailable;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.generic.AliasAvailable;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 /**
@@ -37,7 +37,7 @@ public final class ColumnSelectItemSegment extends ColumnSegment implements Sele
     
     public ColumnSelectItemSegment(final String text, final ColumnSegment columnSegment) {
         super(columnSegment.getStartIndex(), columnSegment.getStopIndex(), columnSegment.getName());
-        this.text = text;
+        this.text = SQLUtil.getExpressionWithoutOutsideParentheses(text);
         if (columnSegment.getOwner().isPresent()) {
             setOwner(columnSegment.getOwner().get());
         }
