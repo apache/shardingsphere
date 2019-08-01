@@ -39,7 +39,8 @@ pipeline {
         }
         stage('Build & Test') {
             tools {
-                maven 'maven-3.2.1'
+			    // use at least Apache Maven 3.3.1 to have .mvn/jvm.config support
+                maven 'maven-3.3.1'
                 jdk 'JDK 1.8 (latest)'
             }
             steps {
@@ -47,8 +48,7 @@ pipeline {
                     ssBuildBadge.setStatus('running')
                     try {
                         sh '''
-                        echo "MAVEN_OPTS='-Xmx1024m -XX:MaxPermSize=256m'" > ~/.mavenrc
-                        mvn clean install cobertura:cobertura coveralls:report -DrepoToken=${COVERALLS_REPO_TOKEN} -Prelease
+                        mvn clean verify cobertura:cobertura coveralls:report -DrepoToken=${COVERALLS_REPO_TOKEN} -Prelease
                         '''
                         ssBuildBadge.setStatus('passing')
                     } catch (Exception err) {
