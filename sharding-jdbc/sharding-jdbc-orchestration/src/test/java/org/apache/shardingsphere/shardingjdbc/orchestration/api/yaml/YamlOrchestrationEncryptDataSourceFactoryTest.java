@@ -28,6 +28,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
+import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
@@ -35,34 +36,34 @@ import static org.junit.Assert.assertThat;
 public final class YamlOrchestrationEncryptDataSourceFactoryTest {
     
     @Test
-    public void assertCreateDataSourceByYamlFile() throws URISyntaxException, IOException {
+    public void assertCreateDataSourceByYamlFile() throws URISyntaxException, IOException, SQLException {
         File yamlFile = new File(OrchestrationEncryptDataSource.class.getResource("/yaml/unit/encryptWithRegistryCenter.yaml").toURI());
         DataSource dataSource = YamlOrchestrationEncryptDataSourceFactory.createDataSource(yamlFile);
         assertThat(dataSource, instanceOf(OrchestrationEncryptDataSource.class));
     }
     
     @Test
-    public void assertCreateDataSourceByYamlFileWithDataSource() throws URISyntaxException, IOException {
+    public void assertCreateDataSourceByYamlFileWithDataSource() throws URISyntaxException, IOException, SQLException {
         File yamlFile = new File(OrchestrationEncryptDataSource.class.getResource("/yaml/unit/encryptWithRegistryCenter.yaml").toURI());
         DataSource dataSource = YamlOrchestrationEncryptDataSourceFactory.createDataSource(getDataSource(), yamlFile);
         assertThat(dataSource, instanceOf(OrchestrationEncryptDataSource.class));
     }
     
     @Test
-    public void assertCreateDataSourceByYamlFileWithoutRule() throws URISyntaxException, IOException {
+    public void assertCreateDataSourceByYamlFileWithoutRule() throws URISyntaxException, IOException, SQLException {
         File yamlFile = new File(OrchestrationEncryptDataSource.class.getResource("/yaml/unit/noRule.yaml").toURI());
         DataSource dataSource = YamlOrchestrationEncryptDataSourceFactory.createDataSource(getDataSource(), yamlFile);
         assertThat(dataSource, instanceOf(OrchestrationEncryptDataSource.class));
     }
     
     @Test
-    public void assertCreateDataSourceByYamlBytes() throws IOException {
+    public void assertCreateDataSourceByYamlBytes() throws IOException, SQLException {
         DataSource dataSource = YamlOrchestrationEncryptDataSourceFactory.createDataSource(readBytesFromYamlFile());
         assertThat(dataSource, instanceOf(OrchestrationEncryptDataSource.class));
     }
     
     @Test
-    public void assertCreateDataSourceByYamlBytesWithDataSource() throws IOException {
+    public void assertCreateDataSourceByYamlBytesWithDataSource() throws IOException, SQLException {
         DataSource dataSource = YamlOrchestrationEncryptDataSourceFactory.createDataSource(getDataSource(), readBytesFromYamlFile());
         assertThat(dataSource, instanceOf(OrchestrationEncryptDataSource.class));
     }

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.rewrite.token.pojo;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.constant.OrderDirection;
+import org.apache.shardingsphere.core.parse.core.constant.OrderDirection;
 
 import java.util.LinkedList;
 import java.util.List;

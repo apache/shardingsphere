@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
-import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
@@ -36,9 +36,10 @@ import java.util.LinkedList;
 public final class IndexTokenGenerator implements CollectionSQLTokenGenerator<ShardingRule> {
     
     @Override
-    public Collection<IndexToken> generateSQLTokens(final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final ShardingRule shardingRule) {
+    public Collection<IndexToken> generateSQLTokens(
+            final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final ShardingRule shardingRule, final boolean isQueryWithCipherColumn) {
         Collection<IndexToken> result = new LinkedList<>();
-        for (SQLSegment each : optimizedStatement.getSQLStatement().getSQLSegments()) {
+        for (SQLSegment each : optimizedStatement.getSQLStatement().getAllSQLSegments()) {
             if (each instanceof IndexSegment) {
                 result.add(createIndexToken((IndexSegment) each));
             }
@@ -47,6 +48,6 @@ public final class IndexTokenGenerator implements CollectionSQLTokenGenerator<Sh
     }
     
     private IndexToken createIndexToken(final IndexSegment segment) {
-        return new IndexToken(segment.getStartIndex(), segment.getStopIndex(), segment.getIndexName(), segment.getQuoteCharacter());
+        return new IndexToken(segment.getStartIndex(), segment.getStopIndex(), segment.getName(), segment.getQuoteCharacter());
     }
 }

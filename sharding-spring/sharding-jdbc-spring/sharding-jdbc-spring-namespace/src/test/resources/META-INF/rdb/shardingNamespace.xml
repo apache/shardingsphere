@@ -21,14 +21,14 @@
        xmlns:master-slave="http://shardingsphere.apache.org/schema/shardingsphere/masterslave"
        xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
        xmlns:bean="http://www.springframework.org/schema/util"
+       xmlns:encrypt="http://shardingsphere.apache.org/schema/shardingsphere/encrypt"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                         http://www.springframework.org/schema/beans/spring-beans.xsd
                         http://shardingsphere.apache.org/schema/shardingsphere/masterslave
                         http://shardingsphere.apache.org/schema/shardingsphere/masterslave/master-slave.xsd
                         http://shardingsphere.apache.org/schema/shardingsphere/sharding
                         http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
-                        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
-                        ">
+                        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd http://shardingsphere.apache.org/schema/shardingsphere/encrypt http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd">
     <import resource="datasource/dataSource.xml" />
     <import resource="datasource/masterSlaveDataSource.xml" />
 
@@ -49,7 +49,7 @@
     <sharding:key-generator id="orderKeyGenerator" type="INCREMENT" column="order_id" />
     <master-slave:load-balance-algorithm id="randomLoadBalanceAlgorithm" type="RANDOM" />
     
-    <bean:properties id="dataProtectorProps">
+    <bean:properties id="props">
         <prop key="appToken">business</prop>
     </bean:properties>
     
@@ -58,9 +58,18 @@
             <sharding:table-rules>
                 <sharding:table-rule logic-table="t_order" />
             </sharding:table-rules>
-            <sharding:encrypt-rules>
-                <sharding:encryptor-rule id="encryptor" type="test" qualified-columns="t_order.pwd1, t_order.pwd2" assisted-query-columns="t_order.pwd1_index, t_order.pwd2_index" props-ref="dataProtectorProps" />
-            </sharding:encrypt-rules>
+            <sharding:encrypt-rule>
+                <encrypt:tables>
+                <encrypt:table name="t_order">
+                    <encrypt:column logic-column="user_id" plain-column="user_decrypt" cipher-column="user_encrypt" assisted-query-column="user_assisted" encryptor-ref="encryptor_aes" />
+                    <encrypt:column logic-column="order_id" plain-column="order_decrypt" cipher-column="order_encrypt" assisted-query-column="order_assisted" encryptor-ref="encryptor_md5"/>
+                </encrypt:table>
+            </encrypt:tables>
+            <encrypt:encryptors>
+                <encrypt:encryptor id="encryptor_aes" type="AES" props-ref="props"/>
+                <encrypt:encryptor id="encryptor_md5" type="MD5" />
+            </encrypt:encryptors>
+            </sharding:encrypt-rule>
         </sharding:sharding-rule>
     </sharding:data-source>
 

@@ -113,9 +113,9 @@ public final class SchemaChangedListener extends PostShardingOrchestrationEventL
     }
     
     private ShardingOrchestrationEvent createRuleChangedEvent(final String shardingSchemaName, final DataChangedEvent event) {
-        return isShardingRule(event)
-                ? createShardingRuleChangedEvent(shardingSchemaName, event.getValue()) : isEncryptRule(event)
-                    ? createEncryptRuleChangedEvent(shardingSchemaName, event.getValue()) : createMasterSlaveRuleChangedEvent(shardingSchemaName, event.getValue());
+        return isEncryptRule(event)
+                ? createEncryptRuleChangedEvent(shardingSchemaName, event.getValue()) : isShardingRule(event)
+                    ? createShardingRuleChangedEvent(shardingSchemaName, event.getValue()) : createMasterSlaveRuleChangedEvent(shardingSchemaName, event.getValue());
     }
     
     private boolean isShardingRule(final DataChangedEvent event) {
@@ -152,9 +152,9 @@ public final class SchemaChangedListener extends PostShardingOrchestrationEventL
     }
     
     private RuleConfiguration createRuleConfiguration(final String shardingSchemaName) {
-        return configurationService.isShardingRule(shardingSchemaName) 
-                ? configurationService.loadShardingRuleConfiguration(shardingSchemaName) : configurationService.isEncryptRule(shardingSchemaName)
-                    ? configurationService.loadEncryptRuleConfiguration(shardingSchemaName) : configurationService.loadMasterSlaveRuleConfiguration(shardingSchemaName);
+        return configurationService.isEncryptRule(shardingSchemaName) 
+                ? configurationService.loadEncryptRuleConfiguration(shardingSchemaName) : configurationService.isShardingRule(shardingSchemaName)
+                    ? configurationService.loadShardingRuleConfiguration(shardingSchemaName) : configurationService.loadMasterSlaveRuleConfiguration(shardingSchemaName);
     }
     
     private ShardingOrchestrationEvent createDeletedEvent(final String shardingSchemaName) {

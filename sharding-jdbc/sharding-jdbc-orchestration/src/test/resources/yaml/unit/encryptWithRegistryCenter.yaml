@@ -30,9 +30,14 @@ dataSource: !!org.apache.commons.dbcp2.BasicDataSource
   password:
 
 encryptRule:
+  tables:
+    t_order:
+      columns:
+        user_id:
+          cipherColumn: user_id
+          encryptor: order_encryptor
   encryptors:
     order_encryptor:
       type: aes
-      qualifiedColumns: t_order.user_id
       props:
         aes.key.value: 123456

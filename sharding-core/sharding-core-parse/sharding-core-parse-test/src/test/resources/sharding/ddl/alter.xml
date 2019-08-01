@@ -156,11 +156,6 @@
         <tokens>
             <table-token start-index="12" table-name="t_order" length="7" />
         </tokens>
-        <alter-table>
-            <update-columns>
-                <update-column origin-column-name="column4" name="column4" type="VARCHAR" />
-            </update-columns>
-        </alter-table>
     </parser-result>
     
     <parser-result sql-case-id="alter_table_modify_columns">
@@ -170,13 +165,6 @@
         <tokens>
             <table-token start-index="12" table-name="t_order" length="7" />
         </tokens>
-        <alter-table>
-            <update-columns>
-                <update-column origin-column-name="column4" name="column4" type="VARCHAR" />
-                <update-column origin-column-name="column5" name="column5" type="VARCHAR" />
-                <update-column origin-column-name="column6" name="column6" type="VARCHAR" />
-            </update-columns>
-        </alter-table>
     </parser-result>
     
     <parser-result sql-case-id="alter_table_modify_column_with_first">
@@ -186,14 +174,6 @@
         <tokens>
             <table-token start-index="12" table-name="t_order" length="7" />
         </tokens>
-        <alter-table>
-            <update-columns>
-                <update-column origin-column-name="status" name="status" type="VARCHAR" />
-            </update-columns>
-            <position-changed-columns>
-                <position-changed-column start-index="46" column-name="status"/>
-            </position-changed-columns>
-        </alter-table>
     </parser-result>
     
     <parser-result sql-case-id="alter_table_modify_column_with_after">
@@ -203,14 +183,6 @@
         <tokens>
             <table-token start-index="12" table-name="t_order" length="7" />
         </tokens>
-        <alter-table>
-            <update-columns>
-                <update-column origin-column-name="status" name="status" type="VARCHAR" />
-            </update-columns>
-            <position-changed-columns>
-                <position-changed-column column-name="status" after-column="order_id" start-index="46" />
-            </position-changed-columns>
-        </alter-table>
     </parser-result>
     
     <parser-result sql-case-id="alter_table_modify_column_with_first_after">
@@ -221,10 +193,6 @@
             <table-token start-index="12" table-name="t_order" length="7" />
         </tokens>
         <alter-table>
-            <update-columns>
-                <update-column origin-column-name="status" name="status" type="VARCHAR" />
-                <update-column origin-column-name="user_id" name="user_id" type="INT" />
-            </update-columns>
             <position-changed-columns>
                 <position-changed-column start-index="46" column-name="status" />
                 <position-changed-column start-index="72" column-name="user_id" after-column="status" />
@@ -259,11 +227,6 @@
         <tokens>
             <table-token start-index="12" table-name="t_order" length="7" />
         </tokens>
-        <alter-table>
-            <update-columns>
-                <update-column origin-column-name="user_id" name="column4" type="VARCHAR" />
-            </update-columns>
-        </alter-table>
     </parser-result>
     
     <parser-result sql-case-id="alter_table_add_primary_key">
@@ -273,11 +236,6 @@
         <tokens>
             <table-token start-index="12" table-name="t_order" length="7" />
         </tokens>
-        <alter-table>
-            <update-columns>
-                <update-column origin-column-name="user_id" name="user_id" type="int" primary-key="true"/>
-            </update-columns>
-        </alter-table>
     </parser-result>
     
     <parser-result sql-case-id="alter_table_add_composite_primary_key">
@@ -287,13 +245,6 @@
         <tokens>
             <table-token start-index="12" table-name="t_order" length="7" />
         </tokens>
-        <alter-table>
-            <update-columns>
-                <update-column origin-column-name="order_id" name="order_id" type="int" primary-key="true"/>
-                <update-column origin-column-name="user_id" name="user_id" type="int" primary-key="true"/>
-                <update-column origin-column-name="status" name="status" type="int" primary-key="true"/>
-            </update-columns>
-        </alter-table>
     </parser-result>
     
     <parser-result sql-case-id="alter_table_add_unique_key">
@@ -325,11 +276,6 @@
             <table-token start-index="12" table-name="t_order_item" length="12" />
             <table-token start-index="113" table-name="t_order" length="7" />
         </tokens>
-        <alter-table>
-            <update-columns>
-                <update-column origin-column-name="order_id" name="order_id" type="int" primary-key="true"/>
-            </update-columns>
-        </alter-table>
     </parser-result>
     
     <parser-result sql-case-id="alter_table_drop_primary_key">
@@ -339,7 +285,6 @@
         <tokens>
             <table-token start-index="12" table-name="t_order" length="7" />
         </tokens>
-        <alter-table drop-primary-key="true" />
     </parser-result>
     
     <parser-result sql-case-id="alter_table_drop_foreign_key">
@@ -358,7 +303,6 @@
         <tokens>
             <table-token start-index="12" table-name="t_order" length="7" />
         </tokens>
-        <alter-table drop-primary-key="true" />
     </parser-result>
     
     <parser-result sql-case-id="alter_table_add_index">
@@ -455,9 +399,6 @@
                 <add-column name="column5" type="VARCHAR" />
                 <add-column name="column6" type="VARCHAR" />
             </add-columns>
-            <update-columns>
-                <update-column origin-column-name="user_id" name="user_id" type="bigint" />
-            </update-columns>
         </alter-table>
     </parser-result>
     
@@ -502,13 +443,6 @@
         <tokens>
             <table-token start-index="12" table-name="t_order" length="7" />
         </tokens>
-        <alter-table>
-            <update-columns>
-                <update-column origin-column-name="column4" name="column4" type="VARCHAR2" />
-                <update-column origin-column-name="column5" name="column5" type="VARCHAR2" />
-                <update-column origin-column-name="column6" name="column6" type="VARCHAR2" />
-            </update-columns>
-        </alter-table>
     </parser-result>
     
     <parser-result sql-case-id="alter_table_drop_columns_oracle">
@@ -530,11 +464,6 @@
             <table-token start-index="12" table-name="t_order_item" length="12" />
             <table-token start-index="125" table-name="t_order" length="7" />
         </tokens>
-        <alter-table>
-            <update-columns>
-                <update-column origin-column-name="order_id" name="order_id" type="int" primary-key="true"/>
-            </update-columns>
-        </alter-table>
     </parser-result>
     
     <parser-result sql-case-id="alter_table_add_composite_primary_key_oracle">
@@ -544,13 +473,6 @@
         <tokens>
             <table-token start-index="12" table-name="t_order" length="7" />
         </tokens>
-        <alter-table>
-            <update-columns>
-                <update-column origin-column-name="order_id" name="order_id" type="int" primary-key="true"/>
-                <update-column origin-column-name="user_id" name="user_id" type="int" primary-key="true"/>
-                <update-column origin-column-name="status" name="status" type="int" primary-key="true"/>
-            </update-columns>
-        </alter-table>
     </parser-result>
        
     <parser-result sql-case-id="alter_table_drop_unique_key">
@@ -578,7 +500,6 @@
         <tokens>
             <table-token start-index="12" table-name="t_order" length="7" />
         </tokens>
-        <alter-table drop-primary-key="true"/>
     </parser-result>
         
     <parser-result sql-case-id="alter_table_rename_constraint">
@@ -633,11 +554,6 @@
         <tokens>
             <table-token start-index="12" table-name="t_order" length="7" />
         </tokens>
-        <alter-table>
-            <update-columns>
-                <update-column origin-column-name="column4" name="column4" type="VARCHAR" />
-            </update-columns>
-        </alter-table>
     </parser-result>
     
     <parser-result sql-case-id="alter_table_alter_columns">
@@ -647,13 +563,6 @@
         <tokens>
             <table-token start-index="12" table-name="t_order" length="7" />
         </tokens>
-        <alter-table>
-            <update-columns>
-                <update-column origin-column-name="column4" name="column4" type="VARCHAR" />
-                <update-column origin-column-name="column5" name="column5" type="VARCHAR" />
-                <update-column origin-column-name="column6" name="column6" type="VARCHAR" />
-            </update-columns>
-        </alter-table>
     </parser-result>
         
     <parser-result sql-case-id="alter_table_add_foreign_key_with_cascade">
@@ -701,11 +610,6 @@
         <tokens>
             <table-token start-index="12" table-name="t_order" length="7" />
         </tokens>
-        <alter-table>
-            <update-columns>
-                <update-column origin-column-name="user_id" name="user_id1" type="int"/>
-            </update-columns>
-        </alter-table>
     </parser-result>
     
     <!--<parser-result sql-case-id="create_table_with_exist_index">-->
@@ -716,11 +620,6 @@
             <!--<table-token start-index="12" table-name="t_order" length="7" />-->
             <!--<index-token begin-position="48" table-name="order_index" />-->
         <!--</tokens>-->
-        <!--<alter-table>-->
-            <!--<update-columns>-->
-                <!--<update-column origin-column-name="order_id" name="order_id" primary-key="true"/>-->
-            <!--</update-columns>-->
-        <!--</alter-table>-->
     <!--</parser-result>-->
     
     <parser-result sql-case-id="alter_table_with_bracket">
@@ -755,11 +654,6 @@
         <tokens>
             <table-token start-index="12" table-name="t_order" length="7" />
         </tokens>
-        <alter-table>
-            <update-columns>
-                <update-column origin-column-name="column4" name="column4" type="VARCHAR" />
-            </update-columns>
-        </alter-table>
     </parser-result>
     
     <parser-result sql-case-id="alter_table_drop_columns_sqlserver">
@@ -779,13 +673,6 @@
         <tokens>
             <table-token start-index="12" table-name="t_order" length="7" />
         </tokens>
-        <alter-table>
-            <update-columns>
-                <update-column origin-column-name="order_id" name="order_id" type="int" primary-key="true"/>
-                <update-column origin-column-name="user_id" name="user_id" type="int" primary-key="true"/>
-                <update-column origin-column-name="status" name="status" type="int" primary-key="true"/>
-            </update-columns>
-        </alter-table>
     </parser-result>
     
     <parser-result sql-case-id="alter_table_add_constraints_sqlserver">
@@ -797,11 +684,6 @@
             <table-token start-index="12" table-name="t_order_item" length="12" />
             <table-token start-index="128" table-name="t_order" length="7" />
         </tokens>
-        <alter-table>
-            <update-columns>
-                <update-column origin-column-name="order_id" name="order_id" type="int" primary-key="true" />
-            </update-columns>
-        </alter-table>
     </parser-result>
     
     <parser-result sql-case-id="alter_table_drop_constraints_sqlserver">

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.route;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 
 import java.util.Collection;

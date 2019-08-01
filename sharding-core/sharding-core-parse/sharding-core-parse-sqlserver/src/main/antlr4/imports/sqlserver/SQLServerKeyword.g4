@@ -483,10 +483,6 @@ DDL
     : D D L
     ;
 
-SQL
-    : S Q L
-    ;
-
 XML
     : X M L
     ;

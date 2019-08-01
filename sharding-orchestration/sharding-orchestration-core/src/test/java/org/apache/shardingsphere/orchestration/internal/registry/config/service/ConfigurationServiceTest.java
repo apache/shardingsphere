@@ -20,8 +20,8 @@ package org.apache.shardingsphere.orchestration.internal.registry.config.service
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
-import org.apache.shardingsphere.api.config.encryptor.EncryptorRuleConfiguration;
+import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
+import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.config.DataSourceConfiguration;
@@ -84,8 +84,10 @@ public final class ConfigurationServiceTest {
     
     private static final String MASTER_SLAVE_RULE_YAML = "masterDataSourceName: master_ds\n" + "name: ms_ds\n" + "slaveDataSourceNames:\n" + "- slave_ds_0\n" + "- slave_ds_1\n";
     
-    private static final String ENCRYPT_RULE_YAML = "encryptors:\n  order_encryptor:\n    assistedQueryColumns: ''\n"
-        + "    props:\n      aes.key.value: 123456\n    qualifiedColumns: t_order.order_id\n    type: AES\n";
+    private static final String ENCRYPT_RULE_YAML = "encryptors:\n" + "  order_encryptor:\n"
+            + "    props:\n" + "      aes.key.value: 123456\n" + "    type: aes\n" + "tables:\n" + "  t_order:\n" + "    columns:\n" 
+            + "      order_id:\n"
+            + "        cipherColumn: order_id\n" + "        encryptor: order_encryptor\n";
     
     private static final String AUTHENTICATION_YAML = "users:\n" + "  root1:\n" + "    authorizedSchemas: sharding_db\n" + "    password: root1\n" 
             + "  root2:\n" + "    authorizedSchemas: sharding_db,ms_db\n" + "    password: root2\n";
@@ -227,7 +229,7 @@ public final class ConfigurationServiceTest {
     }
     
     @Test
-    public void assertPersisteConfigurationForEncrypt() {
+    public void assertPersistConfigurationForEncrypt() {
         ConfigurationService configurationService = new ConfigurationService("test", regCenter);
         configurationService.persistConfiguration("sharding_db", createDataSourceConfigurations(), createEncryptRuleConfiguration(), null, createProperties(), true);
         verify(regCenter).persist(eq("/test/config/schema/sharding_db/datasource"), ArgumentMatchers.<String>any());
@@ -346,11 +348,10 @@ public final class ConfigurationServiceTest {
         when(regCenter.getDirectly("/test/config/schema/sharding_db/rule")).thenReturn(ENCRYPT_RULE_YAML);
         ConfigurationService configurationService = new ConfigurationService("test", regCenter);
         EncryptRuleConfiguration actual = configurationService.loadEncryptRuleConfiguration("sharding_db");
-        assertThat(actual.getEncryptorRuleConfigs().size(), is(1));
-        Entry<String, EncryptorRuleConfiguration> entry = actual.getEncryptorRuleConfigs().entrySet().iterator().next();
+        assertThat(actual.getEncryptors().size(), is(1));
+        Entry<String, EncryptorRuleConfiguration> entry = actual.getEncryptors().entrySet().iterator().next();
         assertThat(entry.getKey(), is("order_encryptor"));
-        assertThat(entry.getValue().getType(), is("AES"));
-        assertThat(entry.getValue().getQualifiedColumns(), is("t_order.order_id"));
+        assertThat(entry.getValue().getType(), is("aes"));
         assertThat(entry.getValue().getProperties().get("aes.key.value").toString(), is("123456"));
     }
     

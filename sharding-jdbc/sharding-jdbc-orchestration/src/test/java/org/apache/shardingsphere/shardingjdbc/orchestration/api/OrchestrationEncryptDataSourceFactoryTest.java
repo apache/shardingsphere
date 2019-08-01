@@ -18,14 +18,15 @@
 package org.apache.shardingsphere.shardingjdbc.orchestration.api;
 
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
-import org.apache.shardingsphere.api.config.encryptor.EncryptorRuleConfiguration;
+import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
+import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationEncryptDataSource;
 import org.junit.Test;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -34,19 +35,19 @@ import static org.junit.Assert.assertThat;
 public final class OrchestrationEncryptDataSourceFactoryTest {
     
     @Test
-    public void assertCreateDataSourceWithDataSource() {
+    public void assertCreateDataSourceWithDataSource() throws SQLException {
         DataSource dataSource = OrchestrationEncryptDataSourceFactory.createDataSource(getDataSource(), getEncryptRuleConfiguration(), new Properties(), getOrchestrationConfiguration());
         assertThat(dataSource, instanceOf(OrchestrationEncryptDataSource.class));
     }
     
     @Test
-    public void assertCreateDataSourceWithoutDataSource() {
+    public void assertCreateDataSourceWithoutDataSource() throws SQLException {
         DataSource dataSource = OrchestrationEncryptDataSourceFactory.createDataSource(getOrchestrationConfiguration());
         assertThat(dataSource, instanceOf(OrchestrationEncryptDataSource.class));
     }
     
     @Test
-    public void assertCreateDataSourceWithEmptyRule() {
+    public void assertCreateDataSourceWithEmptyRule() throws SQLException {
         DataSource dataSource = OrchestrationEncryptDataSourceFactory.createDataSource(null, null, null, getOrchestrationConfiguration());
         assertThat(dataSource, instanceOf(OrchestrationEncryptDataSource.class));
     }
@@ -64,8 +65,8 @@ public final class OrchestrationEncryptDataSourceFactoryTest {
         EncryptRuleConfiguration result = new EncryptRuleConfiguration();
         Properties properties = new Properties();
         properties.setProperty("aes.key.value", "123456");
-        EncryptorRuleConfiguration encryptorRuleConfig = new EncryptorRuleConfiguration("aes", "t_order.user_id", properties);
-        result.getEncryptorRuleConfigs().put("order_encryptor", encryptorRuleConfig);
+        EncryptorRuleConfiguration encryptorRuleConfig = new EncryptorRuleConfiguration("aes", properties);
+        result.getEncryptors().put("order_encryptor", encryptorRuleConfig);
         return result;
     }
     

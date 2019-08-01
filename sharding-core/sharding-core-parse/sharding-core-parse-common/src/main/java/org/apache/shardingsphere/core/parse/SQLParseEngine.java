@@ -17,51 +17,61 @@
 
 package org.apache.shardingsphere.core.parse;
 
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.apache.shardingsphere.core.database.DatabaseTypes;
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parse.extractor.SQLSegmentsExtractorEngine;
-import org.apache.shardingsphere.core.parse.filler.SQLStatementFillerEngine;
-import org.apache.shardingsphere.core.parse.parser.SQLAST;
-import org.apache.shardingsphere.core.parse.parser.SQLParserEngine;
-import org.apache.shardingsphere.core.parse.rule.registry.ParseRuleRegistry;
-import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
+import com.google.common.base.Optional;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.parse.cache.SQLParseResultCache;
+import org.apache.shardingsphere.core.parse.core.SQLParseKernel;
+import org.apache.shardingsphere.core.parse.core.rule.registry.ParseRuleRegistry;
+import org.apache.shardingsphere.core.parse.hook.ParsingHook;
+import org.apache.shardingsphere.core.parse.hook.SPIParsingHook;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.spi.database.DatabaseType;
-
-import java.util.Collection;
-import java.util.Map;
 
 /**
  * SQL parse engine.
  *
- * @author duhongjun
  * @author zhangliang
  */
+@RequiredArgsConstructor
 public final class SQLParseEngine {
     
-    private final SQLParserEngine parserEngine;
+    private final DatabaseType databaseType;
     
-    private final SQLSegmentsExtractorEngine extractorEngine;
-    
-    private final SQLStatementFillerEngine fillerEngine;
-    
-    public SQLParseEngine(final ParseRuleRegistry parseRuleRegistry, final DatabaseType databaseType, final String sql, final ShardingTableMetaData shardingTableMetaData) {
-        DatabaseType trunkDatabaseType = DatabaseTypes.getTrunkDatabaseType(databaseType.getName());
-        parserEngine = new SQLParserEngine(parseRuleRegistry, trunkDatabaseType, sql);
-        extractorEngine = new SQLSegmentsExtractorEngine();
-        fillerEngine = new SQLStatementFillerEngine(parseRuleRegistry, trunkDatabaseType, sql, shardingTableMetaData);
-    }
+    private final SQLParseResultCache cache = new SQLParseResultCache();
     
     /**
      * Parse SQL.
      *
+     * @param sql SQL
+     * @param useCache use cache or not
      * @return SQL statement
      */
-    public SQLStatement parse() {
-        SQLAST ast = parserEngine.parse();
-        Collection<SQLSegment> sqlSegments = extractorEngine.extract(ast);
-        Map<ParserRuleContext, Integer> parameterMarkerIndexes = ast.getParameterMarkerIndexes();
-        return fillerEngine.fill(sqlSegments, parameterMarkerIndexes.size(), ast.getSqlStatementRule());
+    public SQLStatement parse(final String sql, final boolean useCache) {
+        ParsingHook parsingHook = new SPIParsingHook();
+        parsingHook.start(sql);
+        try {
+            SQLStatement result = parse0(sql, useCache);
+            parsingHook.finishSuccess(result);
+            return result;
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            parsingHook.finishFailure(ex);
+            throw ex;
+        }
+    }
+    
+    private SQLStatement parse0(final String sql, final boolean useCache) {
+        if (useCache) {
+            Optional<SQLStatement> cachedSQLStatement = cache.getSQLStatement(sql);
+            if (cachedSQLStatement.isPresent()) {
+                return cachedSQLStatement.get();
+            }
+        }
+        SQLStatement result = new SQLParseKernel(ParseRuleRegistry.getInstance(), databaseType, sql).parse();
+        if (useCache) {
+            cache.put(sql, result);
+        }
+        return result;
     }
 }

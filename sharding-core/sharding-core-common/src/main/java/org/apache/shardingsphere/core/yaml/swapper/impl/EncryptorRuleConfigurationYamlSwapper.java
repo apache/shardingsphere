@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.core.yaml.swapper.impl;
 
-import org.apache.shardingsphere.api.config.encryptor.EncryptorRuleConfiguration;
+import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptorRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.swapper.YamlSwapper;
 
 /**
  * Encryptor configuration YAML swapper.
  *
- * @author zhangliang
+ * @author panjuan
  */
 public final class EncryptorRuleConfigurationYamlSwapper implements YamlSwapper<YamlEncryptorRuleConfiguration, EncryptorRuleConfiguration> {
     
@@ -32,17 +32,12 @@ public final class EncryptorRuleConfigurationYamlSwapper implements YamlSwapper<
     public YamlEncryptorRuleConfiguration swap(final EncryptorRuleConfiguration data) {
         YamlEncryptorRuleConfiguration result = new YamlEncryptorRuleConfiguration();
         result.setType(data.getType());
-        result.setQualifiedColumns(data.getQualifiedColumns());
-        result.setAssistedQueryColumns(data.getAssistedQueryColumns());
         result.setProps(data.getProperties());
         return result;
     }
     
     @Override
     public EncryptorRuleConfiguration swap(final YamlEncryptorRuleConfiguration yamlConfiguration) {
-        if (null == yamlConfiguration.getAssistedQueryColumns()) {
-            return new EncryptorRuleConfiguration(yamlConfiguration.getType(), yamlConfiguration.getQualifiedColumns(), yamlConfiguration.getProps());
-        }
-        return new EncryptorRuleConfiguration(yamlConfiguration.getType(), yamlConfiguration.getQualifiedColumns(), yamlConfiguration.getAssistedQueryColumns(), yamlConfiguration.getProps());
+        return new EncryptorRuleConfiguration(yamlConfiguration.getType(), yamlConfiguration.getProps());
     }
 }

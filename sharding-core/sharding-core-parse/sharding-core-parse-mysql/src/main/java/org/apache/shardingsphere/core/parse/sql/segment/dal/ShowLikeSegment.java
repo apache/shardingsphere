@@ -19,9 +19,9 @@ package org.apache.shardingsphere.core.parse.sql.segment.dal;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.constant.QuoteCharacter;
+import org.apache.shardingsphere.core.parse.core.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.TableAvailable;
+import org.apache.shardingsphere.core.parse.sql.segment.generic.TableAvailable;
 
 /**
  * Show like segment.

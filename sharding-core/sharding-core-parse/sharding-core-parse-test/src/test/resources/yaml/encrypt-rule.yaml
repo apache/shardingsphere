@@ -16,7 +16,7 @@
 #
 
 encryptors:
-  t_encrypt:     
+  t_encrypt:
     type: aes
     qualifiedColumns: t_encrypt.name,t_encrypt.mobile
     props:

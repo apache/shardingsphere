@@ -25,20 +25,63 @@
     <xsd:element name="data-source">
         <xsd:complexType>
             <xsd:sequence>
-                <xsd:element ref="encryptor-rule" maxOccurs="unbounded" />
+                <xsd:element name="encrypt-rule" type="encrypt-rule" />
                 <xsd:element ref="props" minOccurs="0" />
             </xsd:sequence>
             <xsd:attribute name="id" type="xsd:string" use="required" />
             <xsd:attribute name="data-source-name" type="xsd:string" use="required" />
         </xsd:complexType>
     </xsd:element>
-    <xsd:element name="encryptor-rule">
+    <xsd:complexType name="encrypt-rule">
+        <xsd:all>
+            <xsd:element ref="encryptors" />
+            <xsd:element ref="tables" />
+        </xsd:all>
+    </xsd:complexType>
+    <!--<xsd:element name="encrypt-rule">-->
+        <!--<xsd:complexType>-->
+            <!--<xsd:all>-->
+                <!--<xsd:element ref="encryptors" />-->
+                <!--<xsd:element ref="tables" />-->
+            <!--</xsd:all>-->
+        <!--</xsd:complexType>-->
+    <!--</xsd:element>-->
+     <xsd:element name="encryptors">
+       <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="encryptor" maxOccurs="unbounded"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+     <xsd:element name="encryptor">
         <xsd:complexType>
             <xsd:attribute name="id" type="xsd:string" use="required" />
             <xsd:attribute name="type" type="xsd:string" use="required" />
-            <xsd:attribute name="qualified-columns" type="xsd:string" use="required" />
-            <xsd:attribute name="assisted-query-columns" type="xsd:string" />
             <xsd:attribute name="props-ref" type="xsd:string" />
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="tables">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="table" maxOccurs="unbounded"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="table">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="column" maxOccurs="unbounded" />
+            </xsd:sequence>
+            <xsd:attribute name="name" type="xsd:string" use="required" />
+        </xsd:complexType>
+    </xsd:element>
+     <xsd:element name="column">
+        <xsd:complexType>
+            <xsd:attribute name="logic-column" type="xsd:string" use="required" />
+            <xsd:attribute name="plain-column" type="xsd:string" />
+            <xsd:attribute name="cipher-column" type="xsd:string" use="required" />
+            <xsd:attribute name="assisted-query-column" type="xsd:string" />
+            <xsd:attribute name="encryptor-ref" type="xsd:string" use="required" />
         </xsd:complexType>
     </xsd:element>
     <xsd:element name="props">

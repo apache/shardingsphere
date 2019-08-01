@@ -155,10 +155,6 @@ TRANSLATE
     : T R A N S L A T E
     ;
 
-SQL
-    : S Q L
-    ;
-
 MERGE
     : M E R G E
     ;
@@ -279,10 +275,6 @@ LEVELS
     : L E V E L S
     ;
 
-LOCAL
-    : L O C A L
-    ;
-
 MAXVALUE
     : M A X V A L U E
     ;
@@ -333,10 +325,6 @@ OF
 
 ONLY
     : O N L Y
-    ;
-
-PRESERVE
-    : P R E S E R V E
     ;
 
 PRIOR

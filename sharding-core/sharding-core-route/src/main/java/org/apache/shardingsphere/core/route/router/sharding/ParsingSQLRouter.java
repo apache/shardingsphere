@@ -22,17 +22,14 @@ import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
-import org.apache.shardingsphere.core.optimize.OptimizeEngineFactory;
-import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.ShardingWhereOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.condition.ShardingConditions;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.insert.ShardingInsertOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.sharding.dml.select.ShardingSelectOptimizedStatement;
-import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
-import org.apache.shardingsphere.core.parse.entry.ShardingSQLParseEntry;
-import org.apache.shardingsphere.core.parse.hook.ParsingHook;
-import org.apache.shardingsphere.core.parse.hook.SPIParsingHook;
+import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.optimize.sharding.ShardingOptimizeEngineFactory;
+import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingCondition;
+import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingConditions;
+import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingConditionOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingInsertOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
+import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
@@ -41,7 +38,6 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
-import org.apache.shardingsphere.spi.database.DatabaseType;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -61,36 +57,23 @@ public final class ParsingSQLRouter implements ShardingRouter {
     
     private final ShardingMetaData shardingMetaData;
     
-    private final DatabaseType databaseType;
-    
-    private final ParsingResultCache parsingResultCache;
+    private final SQLParseEngine parseEngine;
     
     private final List<Comparable<?>> generatedValues = new LinkedList<>();
     
-    private final ParsingHook parsingHook = new SPIParsingHook();
-    
     @Override
     public SQLStatement parse(final String logicSQL, final boolean useCache) {
-        parsingHook.start(logicSQL);
-        try {
-            SQLStatement result = new ShardingSQLParseEntry(databaseType, shardingMetaData.getTable(), parsingResultCache).parse(logicSQL, useCache);
-            parsingHook.finishSuccess(result, shardingMetaData.getTable());
-            return result;
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            parsingHook.finishFailure(ex);
-            throw ex;
-        }
+        return parseEngine.parse(logicSQL, useCache);
     }
     
+    @SuppressWarnings("unchecked")
     @Override
-    public SQLRouteResult route(final SQLStatement sqlStatement, final List<Object> parameters) {
-        OptimizedStatement optimizedStatement = OptimizeEngineFactory.newInstance(shardingRule, shardingMetaData.getTable(), sqlStatement, parameters).optimize();
+    public SQLRouteResult route(final String logicSQL, final List<Object> parameters, final SQLStatement sqlStatement) {
+        OptimizedStatement optimizedStatement = ShardingOptimizeEngineFactory.newInstance(sqlStatement).optimize(shardingRule, shardingMetaData.getTable(), logicSQL, parameters, sqlStatement);
         boolean needMergeShardingValues = isNeedMergeShardingValues(optimizedStatement);
-        if (optimizedStatement instanceof ShardingWhereOptimizedStatement && needMergeShardingValues) {
-            checkSubqueryShardingValues(sqlStatement, ((ShardingWhereOptimizedStatement) optimizedStatement).getShardingConditions());
-            mergeShardingConditions(((ShardingWhereOptimizedStatement) optimizedStatement).getShardingConditions());
+        if (optimizedStatement instanceof ShardingConditionOptimizedStatement && needMergeShardingValues) {
+            checkSubqueryShardingValues(optimizedStatement, ((ShardingConditionOptimizedStatement) optimizedStatement).getShardingConditions());
+            mergeShardingConditions(((ShardingConditionOptimizedStatement) optimizedStatement).getShardingConditions());
         }
         RoutingResult routingResult = RoutingEngineFactory.newInstance(shardingRule, shardingMetaData.getDataSource(), optimizedStatement).route();
         if (needMergeShardingValues) {
@@ -114,26 +97,26 @@ public final class ParsingSQLRouter implements ShardingRouter {
     
     private boolean isNeedMergeShardingValues(final OptimizedStatement optimizedStatement) {
         return optimizedStatement instanceof ShardingSelectOptimizedStatement && ((ShardingSelectOptimizedStatement) optimizedStatement).isContainsSubquery() 
-                && !shardingRule.getShardingLogicTableNames(optimizedStatement.getSQLStatement().getTables().getTableNames()).isEmpty();
+                && !shardingRule.getShardingLogicTableNames(optimizedStatement.getTables().getTableNames()).isEmpty();
     }
     
-    private void checkSubqueryShardingValues(final SQLStatement sqlStatement, final ShardingConditions shardingConditions) {
-        for (String each : sqlStatement.getTables().getTableNames()) {
+    private void checkSubqueryShardingValues(final OptimizedStatement optimizedStatement, final ShardingConditions shardingConditions) {
+        for (String each : optimizedStatement.getTables().getTableNames()) {
             Optional<TableRule> tableRule = shardingRule.findTableRule(each);
             if (tableRule.isPresent() && shardingRule.isRoutingByHint(tableRule.get()) && !HintManager.getDatabaseShardingValues(each).isEmpty()
                     && !HintManager.getTableShardingValues(each).isEmpty()) {
                 return;
             }
         }
-        Preconditions.checkState(null != shardingConditions.getShardingConditions() && !shardingConditions.getShardingConditions().isEmpty(), "Must have sharding column with subquery.");
-        if (shardingConditions.getShardingConditions().size() > 1) {
+        Preconditions.checkState(null != shardingConditions.getConditions() && !shardingConditions.getConditions().isEmpty(), "Must have sharding column with subquery.");
+        if (shardingConditions.getConditions().size() > 1) {
             Preconditions.checkState(isSameShardingCondition(shardingConditions), "Sharding value must same with subquery.");
         }
     }
     
     private boolean isSameShardingCondition(final ShardingConditions shardingConditions) {
-        ShardingCondition example = shardingConditions.getShardingConditions().remove(shardingConditions.getShardingConditions().size() - 1);
-        for (ShardingCondition each : shardingConditions.getShardingConditions()) {
+        ShardingCondition example = shardingConditions.getConditions().remove(shardingConditions.getConditions().size() - 1);
+        for (ShardingCondition each : shardingConditions.getConditions()) {
             if (!isSameShardingCondition(example, each)) {
                 return false;
             }
@@ -170,10 +153,10 @@ public final class ParsingSQLRouter implements ShardingRouter {
     }
     
     private void mergeShardingConditions(final ShardingConditions shardingConditions) {
-        if (shardingConditions.getShardingConditions().size() > 1) {
-            ShardingCondition shardingCondition = shardingConditions.getShardingConditions().remove(shardingConditions.getShardingConditions().size() - 1);
-            shardingConditions.getShardingConditions().clear();
-            shardingConditions.getShardingConditions().add(shardingCondition);
+        if (shardingConditions.getConditions().size() > 1) {
+            ShardingCondition shardingCondition = shardingConditions.getConditions().remove(shardingConditions.getConditions().size() - 1);
+            shardingConditions.getConditions().clear();
+            shardingConditions.getConditions().add(shardingCondition);
         }
     }
 }

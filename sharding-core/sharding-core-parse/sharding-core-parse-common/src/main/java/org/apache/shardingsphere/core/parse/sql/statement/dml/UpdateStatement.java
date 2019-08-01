@@ -17,18 +17,17 @@
 
 package org.apache.shardingsphere.core.parse.sql.statement.dml;
 
+import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
-import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.core.parse.sql.statement.generic.TableSegmentsAvailable;
+import org.apache.shardingsphere.core.parse.sql.statement.generic.WhereSegmentAvailable;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Update statement.
@@ -38,34 +37,16 @@ import java.util.Map;
  */
 @Getter
 @Setter
-@ToString(callSuper = true)
-public final class UpdateStatement extends DMLStatement {
+public final class UpdateStatement extends DMLStatement implements TableSegmentsAvailable, WhereSegmentAvailable {
     
-    private final Map<Column, ExpressionSegment> assignments = new LinkedHashMap<>();
+    private final Collection<TableSegment> tables = new LinkedList<>();
     
-    private int whereStartIndex;
+    private SetAssignmentsSegment setAssignment;
     
-    private int whereStopIndex;
+    private WhereSegment where;
     
-    private int whereParameterStartIndex;
-    
-    private int whereParameterEndIndex;
-    
-    /**
-     * Get column value.
-     * 
-     * @param column column
-     * @param parameters parameters
-     * @return column value
-     */
-    public Comparable<?> getColumnValue(final Column column, final List<Object> parameters) {
-        ExpressionSegment expressionSegment = assignments.get(column);
-        if (expressionSegment instanceof ParameterMarkerExpressionSegment) {
-            return (Comparable<?>) parameters.get(((ParameterMarkerExpressionSegment) expressionSegment).getParameterMarkerIndex());
-        }
-        if (expressionSegment instanceof LiteralExpressionSegment) {
-            return (Comparable<?>) ((LiteralExpressionSegment) expressionSegment).getLiterals();
-        }
-        throw new ShardingException("Can not find column value by %s.", column);
+    @Override
+    public Optional<WhereSegment> getWhere() {
+        return Optional.fromNullable(where);
     }
 }
