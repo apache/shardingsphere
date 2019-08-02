@@ -21,6 +21,7 @@ import com.google.common.collect.Lists;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.dql.common.MemoryQueryResultRow;
 import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
+import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.optimize.encrypt.segment.condition.EncryptCondition;
 import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.groupby.GroupBy;
@@ -62,7 +63,7 @@ public final class GroupByRowComparatorTest {
                 new OrderBy(Arrays.asList(
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC)),
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.ASC, OrderDirection.ASC))), false),
-                new SelectItems(0, 0, false, Collections.<SelectItem>emptyList()), new Pagination(null, null, Collections.emptyList()));
+                new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<String, TableMetaData>emptyMap()), new Pagination(null, null, Collections.emptyList()));
         GroupByRowComparator groupByRowComparator = new GroupByRowComparator(optimizedStatement, caseSensitives);
         MemoryQueryResultRow o1 = new MemoryQueryResultRow(mockQueryResult("1", "2"));
         MemoryQueryResultRow o2 = new MemoryQueryResultRow(mockQueryResult("3", "4"));
@@ -79,7 +80,7 @@ public final class GroupByRowComparatorTest {
                 new OrderBy(Arrays.asList(
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC)),
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC))), false),
-                new SelectItems(0, 0, false, Collections.<SelectItem>emptyList()), new Pagination(null, null, Collections.emptyList()));
+                new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<String, TableMetaData>emptyMap()), new Pagination(null, null, Collections.emptyList()));
         GroupByRowComparator groupByRowComparator = new GroupByRowComparator(optimizedStatement, caseSensitives);
         MemoryQueryResultRow o1 = new MemoryQueryResultRow(mockQueryResult("1", "2"));
         MemoryQueryResultRow o2 = new MemoryQueryResultRow(mockQueryResult("3", "4"));
@@ -96,7 +97,7 @@ public final class GroupByRowComparatorTest {
                 new OrderBy(Arrays.asList(
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC)),
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC))), false),
-                new SelectItems(0, 0, false, Collections.<SelectItem>emptyList()), new Pagination(null, null, Collections.emptyList()));
+                new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<String, TableMetaData>emptyMap()), new Pagination(null, null, Collections.emptyList()));
         GroupByRowComparator groupByRowComparator = new GroupByRowComparator(optimizedStatement, caseSensitives);
         MemoryQueryResultRow o1 = new MemoryQueryResultRow(mockQueryResult("1", "2"));
         MemoryQueryResultRow o2 = new MemoryQueryResultRow(mockQueryResult("1", "2"));
@@ -110,7 +111,7 @@ public final class GroupByRowComparatorTest {
                 new GroupBy(Arrays.asList(
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC)),
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.ASC, OrderDirection.ASC))), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
-                new SelectItems(0, 0, false, Collections.<SelectItem>emptyList()), new Pagination(null, null, Collections.emptyList()));
+                new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<String, TableMetaData>emptyMap()), new Pagination(null, null, Collections.emptyList()));
         GroupByRowComparator groupByRowComparator = new GroupByRowComparator(optimizedStatement, caseSensitives);
         MemoryQueryResultRow o1 = new MemoryQueryResultRow(mockQueryResult("1", "2"));
         MemoryQueryResultRow o2 = new MemoryQueryResultRow(mockQueryResult("3", "4"));
@@ -124,7 +125,7 @@ public final class GroupByRowComparatorTest {
                 new GroupBy(Arrays.asList(
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC)),
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC))), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
-                new SelectItems(0, 0, false, Collections.<SelectItem>emptyList()), new Pagination(null, null, Collections.emptyList()));
+                new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<String, TableMetaData>emptyMap()), new Pagination(null, null, Collections.emptyList()));
         GroupByRowComparator groupByRowComparator = new GroupByRowComparator(optimizedStatement, caseSensitives);
         MemoryQueryResultRow o1 = new MemoryQueryResultRow(mockQueryResult("1", "2"));
         MemoryQueryResultRow o2 = new MemoryQueryResultRow(mockQueryResult("3", "4"));
@@ -138,7 +139,7 @@ public final class GroupByRowComparatorTest {
                 new GroupBy(Arrays.asList(
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC)),
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC))), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
-                new SelectItems(0, 0, false, Collections.<SelectItem>emptyList()), new Pagination(null, null, Collections.emptyList()));
+                new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<String, TableMetaData>emptyMap()), new Pagination(null, null, Collections.emptyList()));
         GroupByRowComparator groupByRowComparator = new GroupByRowComparator(optimizedStatement, caseSensitives);
         MemoryQueryResultRow o1 = new MemoryQueryResultRow(mockQueryResult("1", "2"));
         MemoryQueryResultRow o2 = new MemoryQueryResultRow(mockQueryResult("1", "2"));

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.rewrite.token;
 
+import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.optimize.encrypt.segment.condition.EncryptCondition;
 import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.groupby.GroupBy;
@@ -57,7 +58,7 @@ public final class SQLTokenGenerateEngineTest {
     @Before
     public void setUp() {
         SelectStatement selectStatement = new SelectStatement();
-        SelectItems selectItems = new SelectItems(1, 20, false, Collections.<SelectItem>singletonList(new AggregationDistinctSelectItem(1, 2, AggregationType.COUNT, "(DISTINCT id)", "c", "id")));
+        SelectItems selectItems = new SelectItems(1, 20, false, Collections.<SelectItem>singletonList(new AggregationDistinctSelectItem(1, 2, AggregationType.COUNT, "(DISTINCT id)", "c", "id")), Collections.<String, TableMetaData>emptyMap());
         optimizedStatement = new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), Collections.<EncryptCondition>emptyList(), 
                 new GroupBy(Collections.<OrderByItem>emptyList(), 1), new OrderBy(Collections.<OrderByItem>emptyList(), false), selectItems, new Pagination(null, null, Collections.emptyList()));
     }

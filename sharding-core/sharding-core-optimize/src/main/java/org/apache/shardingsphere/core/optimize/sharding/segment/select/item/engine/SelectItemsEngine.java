@@ -21,6 +21,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.optimize.api.segment.Table;
 import org.apache.shardingsphere.core.optimize.api.segment.Tables;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.groupby.GroupBy;
@@ -37,10 +38,13 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrd
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.TextOrderByItemSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * Select items engine.
@@ -49,14 +53,14 @@ import java.util.LinkedList;
  */
 @RequiredArgsConstructor
 public final class SelectItemsEngine {
-    
+
     private final ShardingTableMetaData shardingTableMetaData;
-    
+
     private final SelectItemEngine selectItemEngine = new SelectItemEngine();
-    
+
     /**
      * Create select items.
-     * 
+     *
      * @param sql SQL
      * @param selectStatement SQL statement
      * @param groupBy group by
@@ -66,13 +70,22 @@ public final class SelectItemsEngine {
     public SelectItems createSelectItems(final String sql, final SelectStatement selectStatement, final GroupBy groupBy, final OrderBy orderBy) {
         SelectItemsSegment selectItemsSegment = selectStatement.getSelectItems();
         Collection<SelectItem> items = getSelectItemList(sql, selectItemsSegment);
-        SelectItems result = new SelectItems(selectItemsSegment.getStartIndex(), selectItemsSegment.getStopIndex(), selectItemsSegment.isDistinctRow(), items);
+        SelectItems result = new SelectItems(selectItemsSegment.getStartIndex(), selectItemsSegment.getStopIndex(), selectItemsSegment.isDistinctRow(), items,
+            getOwnerTableMetaDataMap(selectStatement.getTables()));
         Tables tables = new Tables(selectStatement);
         result.getItems().addAll(getDerivedGroupByColumns(tables, items, groupBy));
         result.getItems().addAll(getDerivedOrderByColumns(tables, items, orderBy));
         return result;
     }
-    
+
+    private Map<String, TableMetaData> getOwnerTableMetaDataMap(final Collection<TableSegment> tables) {
+        Map<String, TableMetaData> result = new HashMap<>(tables.size(), 1);
+        for (TableSegment tableSegment : tables) {
+            result.put(tableSegment.getAlias().isPresent() ? tableSegment.getAlias().get() : tableSegment.getTableName(), shardingTableMetaData.get(tableSegment.getTableName()));
+        }
+        return result;
+    }
+
     private Collection<SelectItem> getSelectItemList(final String sql, final SelectItemsSegment selectItemsSegment) {
         Collection<SelectItem> result = new LinkedList<>();
         for (SelectItemSegment each : selectItemsSegment.getSelectItems()) {
@@ -83,15 +96,15 @@ public final class SelectItemsEngine {
         }
         return result;
     }
-    
+
     private Collection<SelectItem> getDerivedGroupByColumns(final Tables tables, final Collection<SelectItem> selectItems, final GroupBy groupBy) {
         return getDerivedOrderColumns(tables, selectItems, groupBy.getItems(), DerivedColumn.GROUP_BY_ALIAS);
     }
-    
+
     private Collection<SelectItem> getDerivedOrderByColumns(final Tables tables, final Collection<SelectItem> selectItems, final OrderBy orderBy) {
         return getDerivedOrderColumns(tables, selectItems, orderBy.getItems(), DerivedColumn.ORDER_BY_ALIAS);
     }
-    
+
     private Collection<SelectItem> getDerivedOrderColumns(final Tables tables, final Collection<SelectItem> selectItems, final Collection<OrderByItem> orderItems, final DerivedColumn derivedColumn) {
         Collection<SelectItem> result = new LinkedList<>();
         int derivedColumnOffset = 0;
@@ -102,17 +115,17 @@ public final class SelectItemsEngine {
         }
         return result;
     }
-    
+
     private boolean containsItem(final Tables tables, final Collection<SelectItem> items, final OrderByItemSegment orderByItemSegment) {
         return orderByItemSegment instanceof IndexOrderByItemSegment
                 || containsItemInShorthandItems(tables, items, orderByItemSegment) || containsItemInSelectItems(items, orderByItemSegment);
     }
-    
+
     private boolean containsItemInShorthandItems(final Tables tables, final Collection<SelectItem> items, final OrderByItemSegment orderByItemSegment) {
         return isUnqualifiedShorthandItem(items)
                 || containsItemWithOwnerInShorthandItems(tables, items, orderByItemSegment) || containsItemWithoutOwnerInShorthandItems(tables, items, orderByItemSegment);
     }
-    
+
     private boolean isUnqualifiedShorthandItem(final Collection<SelectItem> items) {
         if (1 != items.size()) {
             return false;
@@ -120,12 +133,12 @@ public final class SelectItemsEngine {
         SelectItem item = items.iterator().next();
         return item instanceof ShorthandSelectItem && !((ShorthandSelectItem) item).getOwner().isPresent();
     }
-    
+
     private boolean containsItemWithOwnerInShorthandItems(final Tables tables, final Collection<SelectItem> items, final OrderByItemSegment orderItem) {
         return orderItem instanceof ColumnOrderByItemSegment && ((ColumnOrderByItemSegment) orderItem).getColumn().getOwner().isPresent()
                 && findShorthandItem(tables, items, ((ColumnOrderByItemSegment) orderItem).getColumn().getOwner().get().getTableName()).isPresent();
     }
-    
+
     private Optional<ShorthandSelectItem> findShorthandItem(final Tables tables, final Collection<SelectItem> items, final String tableNameOrAlias) {
         Optional<Table> table = tables.find(tableNameOrAlias);
         if (!table.isPresent()) {
@@ -142,7 +155,7 @@ public final class SelectItemsEngine {
         }
         return Optional.absent();
     }
-    
+
     private boolean containsItemWithoutOwnerInShorthandItems(final Tables tables, final Collection<SelectItem> items, final OrderByItemSegment orderItem) {
         if (!(orderItem instanceof ColumnOrderByItemSegment)) {
             return false;
@@ -156,7 +169,7 @@ public final class SelectItemsEngine {
         }
         return false;
     }
-    
+
     private Collection<ShorthandSelectItem> getQualifiedShorthandItems(final Collection<SelectItem> items) {
         Collection<ShorthandSelectItem> result = new LinkedList<>();
         for (SelectItem each : items) {
@@ -166,13 +179,13 @@ public final class SelectItemsEngine {
         }
         return result;
     }
-    
+
     private boolean isSameSelectItem(final Tables tables, final ShorthandSelectItem shorthandSelectItem, final ColumnOrderByItemSegment orderItem) {
         Preconditions.checkState(shorthandSelectItem.getOwner().isPresent());
         Optional<Table> table = tables.find(shorthandSelectItem.getOwner().get());
         return table.isPresent() && shardingTableMetaData.containsColumn(table.get().getName(), orderItem.getColumn().getName());
     }
-    
+
     private boolean containsItemInSelectItems(final Collection<SelectItem> items, final OrderByItemSegment orderItem) {
         for (SelectItem each : items) {
             if (orderItem instanceof IndexOrderByItemSegment) {
@@ -184,11 +197,11 @@ public final class SelectItemsEngine {
         }
         return false;
     }
-    
+
     private boolean isSameAlias(final SelectItem selectItem, final TextOrderByItemSegment orderItem) {
         return selectItem.getAlias().isPresent() && (orderItem.getText().equalsIgnoreCase(selectItem.getAlias().get()) || orderItem.getText().equalsIgnoreCase(selectItem.getExpression()));
     }
-    
+
     private boolean isSameQualifiedName(final SelectItem selectItem, final TextOrderByItemSegment orderItem) {
         return !selectItem.getAlias().isPresent() && selectItem.getExpression().equalsIgnoreCase(orderItem.getText());
     }
