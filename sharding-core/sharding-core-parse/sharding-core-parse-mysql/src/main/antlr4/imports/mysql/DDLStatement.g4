@@ -39,11 +39,6 @@ dropTable
     : DROP dropTableSpecification_ TABLE tableExistClause_ tableNames
     ;
 
-renameTable
-    : RENAME TABLE
-    (tableName TO tableName) (COMMA_ tableName TO tableName)*
-    ;
-
 dropIndex
     : DROP INDEX dropIndexSpecification_? indexName (ON tableName)?
     (
@@ -230,28 +225,6 @@ alterLogfileGroup
 
 dropLogfileGroup
     : DROP LOGFILE GROUP identifier_ ENGINE EQ_ identifier_
-    ;
-
-createSpatialReferenceSystem
-    : CREATE (OR REPLACE)? SPATIAL REFERENCE SYSTEM (IF NOT EXISTS)? numberLiterals srsOption_*
-    ;
-
-dropSpatialReferenceSystem
-    : DROP SPATIAL REFERENCE SYSTEM (IF EXISTS)? numberLiterals
-    ;
-
-createTrigger
-    : CREATE ownerStatement?
-      TRIGGER identifier_
-      (BEFORE | AFTER)
-      (INSERT | UPDATE | DELETE)
-      ON tableName FOR EACH ROW
-      ((FOLLOWS | PRECEDES) identifier_)?
-      routineBody
-    ;
-
-dropTrigger
-    : DROP TRIGGER (IF EXISTS)? (owner DOT_)? identifier_
     ;
 
 createTableSpecification_
@@ -595,11 +568,4 @@ procedureParameter_
 
 fileSizeLiteral_
     : numberLiterals ('K'|'M'|'G'|'T') | numberLiterals
-    ;
-
-srsOption_
-    : NAME STRING_
-    | DEFINITION STRING_*
-    | ORGANIZATION STRING_ IDENTIFIED BY numberLiterals
-    | DESCRIPTION STRING_
     ;
