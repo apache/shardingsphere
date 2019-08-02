@@ -28,7 +28,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ExpectedBaseSelectItem implements ExpectedSelectItem {
 
-    @XmlAttribute(name="start-index")
+    @XmlAttribute(name = "start-index")
     protected Integer startIndex;
 
     @XmlAttribute(name = "stop-index")

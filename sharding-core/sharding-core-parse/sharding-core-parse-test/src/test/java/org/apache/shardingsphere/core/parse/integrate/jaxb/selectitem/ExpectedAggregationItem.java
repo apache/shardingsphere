@@ -37,7 +37,7 @@ public class ExpectedAggregationItem extends ExpectedBaseSelectItem {
     @XmlAttribute
     private String alias;
 
-    @XmlAttribute(name="aggregation-inner-expression")
+    @XmlAttribute(name = "aggregation-inner-expression")
     private String innerExpression;
 
 }

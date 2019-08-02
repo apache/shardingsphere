@@ -28,7 +28,7 @@ import java.util.LinkedList;
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class ExpectedSelectItems {
 
-    @XmlAttribute(name="start-index")
+    @XmlAttribute(name = "start-index")
     private Integer startIndex;
 
     @XmlAttribute(name = "stop-index")
@@ -38,23 +38,23 @@ public final class ExpectedSelectItems {
     private boolean distinctRow = false;
 
     @XmlElementWrapper(name = "select-item-segments")
-    @XmlElement(name="select-item-segment")
+    @XmlElement(name = "select-item-segment")
     private Collection<ExpectedShorthandSelectItem> expectedShorthandSelectItems = new LinkedList<>();
 
     @XmlElementWrapper(name ="aggregation-select-items")
-    @XmlElement(name="aggregation-select-item")
+    @XmlElement(name = "aggregation-select-item")
     private Collection<ExpectedAggregationItem> expectedAggregationItems = new LinkedList<>();
 
-    @XmlElementWrapper(name ="aggregation-distinct-select-items")
-    @XmlElement(name="aggregation-distinct-select-item")
+    @XmlElementWrapper(name = "aggregation-distinct-select-items")
+    @XmlElement(name = "aggregation-distinct-select-item")
     private Collection<ExpectedAggregationDistinctItem> expectedAggregationDistinctItems = new LinkedList<>();
 
-    @XmlElementWrapper(name ="column-select-items")
-    @XmlElement(name="column-select-item")
+    @XmlElementWrapper(name = "column-select-items")
+    @XmlElement(name = "column-select-item")
     private Collection<ExpectedColumnSelectItem> expectedColumnSelectItems = new LinkedList<>();
 
-    @XmlElementWrapper(name ="expression-items")
-    @XmlElement(name="expression-item")
+    @XmlElementWrapper(name = "expression-items")
+    @XmlElement(name = "expression-item")
     private Collection<ExpectedExpressionItem> expectedExpressionItems = new LinkedList<>();
 
     public int getSize(){

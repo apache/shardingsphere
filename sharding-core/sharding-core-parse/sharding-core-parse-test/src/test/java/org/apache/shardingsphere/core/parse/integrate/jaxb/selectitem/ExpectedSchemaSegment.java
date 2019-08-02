@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.shardingsphere.core.parse.integrate.jaxb.selectitem;
 
 import lombok.Getter;
@@ -23,15 +24,14 @@ import org.apache.shardingsphere.core.parse.core.constant.QuoteCharacter;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ExpectedTableSegment {
+public final class ExpectedSchemaSegment {
 
     @XmlAttribute(name = "start-index")
-    protected Integer startIndex;
+    private Integer startIndex;
 
     @XmlAttribute(name = "stop-index")
     private Integer stopIndex;
@@ -39,12 +39,5 @@ public class ExpectedTableSegment {
     @XmlAttribute
     private String name;
 
-    @XmlAttribute
     private QuoteCharacter quoteCharacter = QuoteCharacter.NONE;
-
-    @XmlElement(name = "schema-segment")
-    private ExpectedSchemaSegment expectedSchemaSegment;
-
-    @XmlAttribute
-    private String alias;
 }
