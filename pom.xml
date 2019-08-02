@@ -746,6 +746,7 @@
                         <exclude>**/.git/**</exclude>
                         <!-- CI files -->
                         <exclude>**/.travis.yml</exclude>
+                        <exclude>**/.mvn/jvm.config</exclude>
                         <!-- GitHub files -->
                         <exclude>**/.github/**</exclude>
                         <!-- document files -->
