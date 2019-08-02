@@ -846,3 +846,7 @@ DROP_EXISTING
 ROW_NUMBER
     : R O W UL_ N U M B E R
     ;
+
+INSTANCE
+    : I N S T A N C E
+    ;

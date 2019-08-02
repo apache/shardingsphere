@@ -674,3 +674,7 @@ SYSOPER
 DBA_RECYCLEBIN
     : D B A UL_ R E C Y C L E B I N
     ;
+
+INSTANCE
+    : I N S T A N C E
+    ;

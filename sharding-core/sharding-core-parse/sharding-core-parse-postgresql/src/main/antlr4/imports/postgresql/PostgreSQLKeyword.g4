@@ -474,3 +474,11 @@ GROUPS
 RECURSIVE
     : R E C U R S I V E
     ;
+
+DO 
+    : D O
+    ;
+
+INSTANCE
+    : I N S T A N C E
+    ;

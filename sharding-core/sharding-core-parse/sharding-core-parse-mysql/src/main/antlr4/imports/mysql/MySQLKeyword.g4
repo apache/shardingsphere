@@ -1120,3 +1120,50 @@ REDO_BUFFER_SIZE
     : R E D O UL_ B U F F E R UL_ S I Z E
     ;
 
+DEFINITION
+    : D E F I N I T I O N
+    ;
+
+ORGANIZATION
+    : O R G A N I Z A T I O N
+    ;
+
+DESCRIPTION
+    : D E S C R I P T I O N
+    ;
+
+REFERENCE
+    : R E F E R E N C E
+    ;
+
+SYSTEM
+    : S Y S T E M
+    ;
+
+FOLLOWS
+    : F O L L O W S
+    ;
+
+PRECEDES
+    : P R E C E D E S
+    ;
+
+BEFORE
+    : B E F O R E
+    ;
+
+EACH
+    : E A C H
+    ;
+
+DEFINER
+    : D E F I N E R
+    ;
+
+DO
+    : D O
+    ;
+
+INSTANCE
+    : I N S T A N C E
+    ;
