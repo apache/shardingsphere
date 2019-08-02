@@ -39,7 +39,7 @@ pipeline {
         }
         stage('Build & Test') {
             tools {
-			    // use at least Apache Maven 3.3.1 to have .mvn/jvm.config support
+                // use at least Apache Maven 3.3.1 to have .mvn/jvm.config support
                 maven 'Maven 3.6.0'
                 jdk 'JDK 1.8 (latest)'
             }
