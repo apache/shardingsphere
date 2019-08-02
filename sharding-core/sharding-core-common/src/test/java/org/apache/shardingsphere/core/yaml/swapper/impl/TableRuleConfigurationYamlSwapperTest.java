@@ -76,7 +76,6 @@ public final class TableRuleConfigurationYamlSwapperTest {
         assertNull(actual.getDatabaseStrategy());
         assertNull(actual.getTableStrategy());
         assertNull(actual.getKeyGenerator());
-        assertNull(actual.getLogicIndex());
     }
     
     @Test
@@ -85,14 +84,12 @@ public final class TableRuleConfigurationYamlSwapperTest {
         tableRuleConfiguration.setDatabaseShardingStrategyConfig(mock(InlineShardingStrategyConfiguration.class));
         tableRuleConfiguration.setTableShardingStrategyConfig(mock(InlineShardingStrategyConfiguration.class));
         tableRuleConfiguration.setKeyGeneratorConfig(mock(KeyGeneratorConfiguration.class));
-        tableRuleConfiguration.setLogicIndex("idx");
         YamlTableRuleConfiguration actual = tableRuleConfigurationYamlSwapper.swap(tableRuleConfiguration);
         assertThat(actual.getLogicTable(), is("tbl"));
         assertThat(actual.getActualDataNodes(), is("ds_$->{0..1}.tbl_$->{0..1}"));
         assertNotNull(actual.getDatabaseStrategy());
         assertNotNull(actual.getTableStrategy());
         assertNotNull(actual.getKeyGenerator());
-        assertThat(actual.getLogicIndex(), is("idx"));
     }
     
     @Test(expected = NullPointerException.class)
@@ -111,7 +108,6 @@ public final class TableRuleConfigurationYamlSwapperTest {
         assertNull(actual.getDatabaseShardingStrategyConfig());
         assertNull(actual.getTableShardingStrategyConfig());
         assertNull(actual.getKeyGeneratorConfig());
-        assertNull(actual.getLogicIndex());
     }
     
     @Test
@@ -122,13 +118,11 @@ public final class TableRuleConfigurationYamlSwapperTest {
         yamlConfiguration.setDatabaseStrategy(mock(YamlShardingStrategyConfiguration.class));
         yamlConfiguration.setTableStrategy(mock(YamlShardingStrategyConfiguration.class));
         yamlConfiguration.setKeyGenerator(mock(YamlKeyGeneratorConfiguration.class));
-        yamlConfiguration.setLogicIndex("idx");
         TableRuleConfiguration actual = tableRuleConfigurationYamlSwapper.swap(yamlConfiguration);
         assertThat(actual.getLogicTable(), is("tbl"));
         assertThat(actual.getActualDataNodes(), is("ds_$->{0..1}.tbl_$->{0..1}"));
         assertNotNull(actual.getDatabaseShardingStrategyConfig());
         assertNotNull(actual.getTableShardingStrategyConfig());
         assertNotNull(actual.getKeyGeneratorConfig());
-        assertThat(actual.getLogicIndex(), is("idx"));
     }
 }

@@ -22,10 +22,10 @@ import io.opentracing.ActiveSpan;
 import io.opentracing.Span;
 import io.opentracing.tag.Tags;
 import org.apache.shardingsphere.core.execute.hook.SQLExecutionHook;
-import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import org.apache.shardingsphere.core.route.RouteUnit;
 import org.apache.shardingsphere.opentracing.ShardingTracer;
 import org.apache.shardingsphere.opentracing.constant.ShardingTags;
+import org.apache.shardingsphere.spi.database.DataSourceMetaData;
 
 import java.util.List;
 import java.util.Map;
@@ -64,7 +64,7 @@ public final class OpenTracingSQLExecutionHook implements SQLExecutionHook {
         if (null == parameterSets || parameterSets.isEmpty()) {
             return "";
         }
-        return String.format("[%s]", Joiner.on(", ").join(parameterSets));
+        return String.format("[%s]", Joiner.on(", ").useForNull("Null").join(parameterSets));
     }
     
     @Override

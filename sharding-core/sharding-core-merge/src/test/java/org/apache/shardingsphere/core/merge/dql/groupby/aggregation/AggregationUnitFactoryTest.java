@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.merge.dql.groupby.aggregation;
 
-import org.apache.shardingsphere.core.constant.AggregationType;
+import org.apache.shardingsphere.core.parse.core.constant.AggregationType;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;

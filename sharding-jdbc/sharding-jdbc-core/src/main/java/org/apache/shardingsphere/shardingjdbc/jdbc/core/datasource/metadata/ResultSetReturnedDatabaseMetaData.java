@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata;
 
+import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.WrapperAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.DatabaseMetaDataResultSet;
@@ -257,15 +258,27 @@ public abstract class ResultSetReturnedDatabaseMetaData extends WrapperAdapter i
     }
     
     private String getCurrentDataSourceName() {
-        currentDataSourceName = shardingRule.getShardingDataSourceNames().getRandomDataSourceName();
+        currentDataSourceName = null == currentDataSourceName ? shardingRule.getShardingDataSourceNames().getRandomDataSourceName() : currentDataSourceName;
         return shardingRule.getShardingDataSourceNames().getRawMasterDataSourceName(currentDataSourceName);
     }
     
     private String getActualTableNamePattern(final String tableNamePattern) {
-        return null == tableNamePattern ? tableNamePattern : (shardingRule.findTableRule(tableNamePattern).isPresent() ? "%" + tableNamePattern + "%" : tableNamePattern);
+        if (null == tableNamePattern || null == shardingRule) {
+            return tableNamePattern;
+        }
+        return shardingRule.findTableRule(tableNamePattern).isPresent() ? "%" + tableNamePattern + "%" : tableNamePattern;
     }
     
     private String getActualTable(final String table) {
-        return null == table || null == shardingRule ? table : (shardingRule.findTableRule(table).isPresent() ? shardingRule.getDataNode(currentDataSourceName, table).getTableName() : table);
+        if (null == table || null == shardingRule) {
+            return table;
+        }
+        String result = table;
+        if (shardingRule.findTableRule(table).isPresent()) {
+            DataNode dataNode = shardingRule.getDataNode(table);
+            currentDataSourceName = dataNode.getDataSourceName();
+            result = dataNode.getTableName();
+        }
+        return result;
     }
 }

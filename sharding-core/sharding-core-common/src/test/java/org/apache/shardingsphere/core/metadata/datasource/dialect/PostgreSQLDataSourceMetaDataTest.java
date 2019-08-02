@@ -17,15 +17,16 @@
 
 package org.apache.shardingsphere.core.metadata.datasource.dialect;
 
-import org.apache.shardingsphere.core.exception.ShardingException;
+import org.apache.shardingsphere.core.metadata.datasource.UnrecognizedDatabaseURLException;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class PostgreSQLDataSourceMetaDataTest {
+public final class PostgreSQLDataSourceMetaDataTest {
+    
     @Test
-    public void assertGetALLProperties() {
+    public void assertGetPropertiesWithPort() {
         PostgreSQLDataSourceMetaData actual = new PostgreSQLDataSourceMetaData("jdbc:postgresql://127.0.0.1:9999/ds_0");
         assertThat(actual.getHostName(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(9999));
@@ -33,30 +34,15 @@ public class PostgreSQLDataSourceMetaDataTest {
     }
     
     @Test
-    public void assertGetALLPropertiesWithDefaultPort() {
+    public void assertGetPropertiesWithDefaultPort() {
         PostgreSQLDataSourceMetaData actual = new PostgreSQLDataSourceMetaData("jdbc:postgresql://127.0.0.1/ds_0");
         assertThat(actual.getHostName(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(5432));
         assertThat(actual.getSchemaName(), is("ds_0"));
     }
     
-    @Test
-    public void assertGetPropertiesWithMinus() {
-        PostgreSQLDataSourceMetaData actual = new PostgreSQLDataSourceMetaData("jdbc:postgresql://host-0/ds-0");
-        assertThat(actual.getHostName(), is("host-0"));
-        assertThat(actual.getPort(), is(5432));
-        assertThat(actual.getSchemaName(), is("ds-0"));
-    }
-    
-    @Test(expected = ShardingException.class)
-    public void assertGetALLPropertiesFailure() {
+    @Test(expected = UnrecognizedDatabaseURLException.class)
+    public void assertGetPropertiesFailure() {
         new PostgreSQLDataSourceMetaData("jdbc:postgresql:xxxxxxxx");
-    }
-    
-    @Test
-    public void assertIsInSameDatabaseInstance() {
-        PostgreSQLDataSourceMetaData target = new PostgreSQLDataSourceMetaData("jdbc:postgresql://127.0.0.1/ds_0");
-        PostgreSQLDataSourceMetaData actual = new PostgreSQLDataSourceMetaData("jdbc:postgresql://127.0.0.1:5432/ds_0");
-        assertThat(actual.isInSameDatabaseInstance(target), is(true));
     }
 }

@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
+import com.google.common.primitives.Ints;
+import com.google.common.primitives.Longs;
+import com.google.common.primitives.Shorts;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.exception.ShardingException;
@@ -54,6 +57,9 @@ public final class ResultSetUtil {
         if (value instanceof Date) {
             return convertDateValue(value, convertType);
         }
+        if (value instanceof byte[]) {
+            return convertByteArrayValue(value, convertType);
+        }
         if (String.class.equals(convertType)) {
             return value.toString();
         } else {
@@ -85,6 +91,8 @@ public final class ResultSetUtil {
     private static Object convertNumberValue(final Object value, final Class<?> convertType) {
         Number number = (Number) value;
         switch (convertType.getName()) {
+            case "boolean":
+                return 0 != number.longValue();
             case "byte":
                 return number.byteValue();
             case "short":
@@ -119,6 +127,22 @@ public final class ResultSetUtil {
                 return new Timestamp(date.getTime());
             default:
                 throw new ShardingException("Unsupported Date type:%s", convertType);
+        }
+    }
+    
+    private static Object convertByteArrayValue(final Object value, final Class<?> convertType) {
+        byte[] bytesValue = (byte[]) value;
+        switch (bytesValue.length) {
+            case 1:
+                return convertNumberValue(bytesValue[0], convertType);
+            case Shorts.BYTES:
+                return convertNumberValue(Shorts.fromByteArray(bytesValue), convertType);
+            case Ints.BYTES:
+                return convertNumberValue(Ints.fromByteArray(bytesValue), convertType);
+            case Longs.BYTES:
+                return convertNumberValue(Longs.fromByteArray(bytesValue), convertType);
+            default:
+                return value;
         }
     }
 }

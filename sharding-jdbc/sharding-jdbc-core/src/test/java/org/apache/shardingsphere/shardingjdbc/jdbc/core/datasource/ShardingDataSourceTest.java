@@ -22,11 +22,14 @@ import org.apache.shardingsphere.api.config.masterslave.LoadBalanceStrategyConfi
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
-import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.spi.database.H2DatabaseType;
+import org.apache.shardingsphere.core.spi.database.MySQLDatabaseType;
 import org.apache.shardingsphere.shardingjdbc.api.MasterSlaveDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.fixture.XAShardingTransactionManagerFixture;
+import org.apache.shardingsphere.spi.database.DatabaseType;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 import org.junit.After;
@@ -63,8 +66,8 @@ public final class ShardingDataSourceTest {
     
     @Test(expected = IllegalStateException.class)
     public void assertGetDatabaseProductNameWhenDataBaseProductNameDifferent() throws SQLException {
-        DataSource dataSource1 = mockDataSource("MySQL");
-        DataSource dataSource2 = mockDataSource("H2");
+        DataSource dataSource1 = mockDataSource(DatabaseTypes.getActualDatabaseType("MySQL"));
+        DataSource dataSource2 = mockDataSource(DatabaseTypes.getActualDatabaseType("H2"));
         Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
         dataSourceMap.put("ds1", dataSource1);
         dataSourceMap.put("ds2", dataSource2);
@@ -73,9 +76,9 @@ public final class ShardingDataSourceTest {
     
     @Test(expected = IllegalStateException.class)
     public void assertGetDatabaseProductNameWhenDataBaseProductNameDifferentForMasterSlave() throws SQLException {
-        DataSource dataSource1 = mockDataSource("MySQL");
-        DataSource masterDataSource = mockDataSource("H2");
-        DataSource slaveDataSource = mockDataSource("H2");
+        DataSource dataSource1 = mockDataSource(DatabaseTypes.getActualDatabaseType("MySQL"));
+        DataSource masterDataSource = mockDataSource(DatabaseTypes.getActualDatabaseType("H2"));
+        DataSource slaveDataSource = mockDataSource(DatabaseTypes.getActualDatabaseType("H2"));
         Map<String, DataSource> masterSlaveDataSourceMap = new HashMap<>(2, 1);
         masterSlaveDataSourceMap.put("masterDataSource", masterDataSource);
         masterSlaveDataSourceMap.put("slaveDataSource", slaveDataSource);
@@ -89,9 +92,9 @@ public final class ShardingDataSourceTest {
     
     @Test
     public void assertGetDatabaseProductName() throws SQLException {
-        DataSource dataSource1 = mockDataSource("H2");
-        DataSource dataSource2 = mockDataSource("H2");
-        DataSource dataSource3 = mockDataSource("H2");
+        DataSource dataSource1 = mockDataSource(DatabaseTypes.getActualDatabaseType("H2"));
+        DataSource dataSource2 = mockDataSource(DatabaseTypes.getActualDatabaseType("H2"));
+        DataSource dataSource3 = mockDataSource(DatabaseTypes.getActualDatabaseType("H2"));
         Map<String, DataSource> dataSourceMap = new HashMap<>(3, 1);
         dataSourceMap.put("ds1", dataSource1);
         dataSourceMap.put("ds2", dataSource2);
@@ -101,10 +104,10 @@ public final class ShardingDataSourceTest {
     
     @Test
     public void assertGetDatabaseProductNameForMasterSlave() throws SQLException {
-        DataSource dataSource1 = mockDataSource("H2");
-        DataSource masterDataSource = mockDataSource("H2");
-        DataSource slaveDataSource = mockDataSource("H2");
-        DataSource dataSource3 = mockDataSource("H2");
+        DataSource dataSource1 = mockDataSource(DatabaseTypes.getActualDatabaseType("H2"));
+        DataSource masterDataSource = mockDataSource(DatabaseTypes.getActualDatabaseType("H2"));
+        DataSource slaveDataSource = mockDataSource(DatabaseTypes.getActualDatabaseType("H2"));
+        DataSource dataSource3 = mockDataSource(DatabaseTypes.getActualDatabaseType("H2"));
         Map<String, DataSource> dataSourceMap = new HashMap<>(4, 1);
         dataSourceMap.put("ds1", dataSource1);
         dataSourceMap.put("masterDataSource", masterDataSource);
@@ -115,7 +118,7 @@ public final class ShardingDataSourceTest {
     
     private void assertDatabaseProductName(final Map<String, DataSource> dataSourceMap, final Connection... connections) throws SQLException {
         try {
-            assertThat(createShardingDataSource(dataSourceMap).getDatabaseType(), is(DatabaseType.H2));
+            assertThat(createShardingDataSource(dataSourceMap).getDatabaseType(), instanceOf(H2DatabaseType.class));
         } finally {
             for (Connection each : connections) {
                 verify(each, atLeast(1)).close();
@@ -123,7 +126,7 @@ public final class ShardingDataSourceTest {
         }
     }
     
-    private DataSource mockDataSource(final String dataBaseProductName) throws SQLException {
+    private DataSource mockDataSource(final DatabaseType databaseType) throws SQLException {
         DataSource result = mock(DataSource.class);
         Connection connection = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
@@ -131,7 +134,6 @@ public final class ShardingDataSourceTest {
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.next()).thenReturn(false);
         when(statement.getResultSet()).thenReturn(resultSet);
-        when(databaseMetaData.getDatabaseProductName()).thenReturn(dataBaseProductName);
         when(result.getConnection()).thenReturn(connection);
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         when(statement.getConnection()).thenReturn(connection);
@@ -139,9 +141,9 @@ public final class ShardingDataSourceTest {
         when(statement.executeQuery(ArgumentMatchers.<String>any())).thenReturn(resultSet);
         when(statement.getConnection().getMetaData().getTables(ArgumentMatchers.<String>any(), ArgumentMatchers.<String>any(),
                 ArgumentMatchers.<String>any(), ArgumentMatchers.<String[]>any())).thenReturn(resultSet);
-        if ("MySQL".equals(dataBaseProductName)) {
+        if (databaseType instanceof MySQLDatabaseType) {
             when(result.getConnection().getMetaData().getURL()).thenReturn("jdbc:mysql://localhost:3306/test");
-        } else if ("H2".equals(dataBaseProductName)) {
+        } else if (databaseType instanceof H2DatabaseType) {
             when(statement.getConnection().getMetaData().getURL()).thenReturn("jdbc:h2:mem:demo_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         }
         return result;
@@ -149,7 +151,7 @@ public final class ShardingDataSourceTest {
     
     @Test
     public void assertGetConnection() throws SQLException {
-        DataSource dataSource = mockDataSource("H2");
+        DataSource dataSource = mockDataSource(DatabaseTypes.getActualDatabaseType("H2"));
         Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
         dataSourceMap.put("ds", dataSource);
         assertThat(createShardingDataSource(dataSourceMap).getConnection().getConnection("ds"), is(dataSource.getConnection()));
@@ -157,7 +159,7 @@ public final class ShardingDataSourceTest {
     
     @Test
     public void assertGetXaConnection() throws SQLException {
-        DataSource dataSource = mockDataSource("MySQL");
+        DataSource dataSource = mockDataSource(DatabaseTypes.getActualDatabaseType("MySQL"));
         Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
         dataSourceMap.put("ds", dataSource);
         TransactionTypeHolder.set(TransactionType.XA);
@@ -169,7 +171,7 @@ public final class ShardingDataSourceTest {
     
     @Test
     public void assertGetXaConnectionThenGetLocalConnection() throws SQLException {
-        DataSource dataSource = mockDataSource("MySQL");
+        DataSource dataSource = mockDataSource(DatabaseTypes.getActualDatabaseType("MySQL"));
         Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
         dataSourceMap.put("ds", dataSource);
         TransactionTypeHolder.set(TransactionType.XA);
@@ -187,7 +189,7 @@ public final class ShardingDataSourceTest {
     }
     
     private ShardingDataSource createShardingDataSource(final Map<String, DataSource> dataSourceMap) throws SQLException {
-        return new ShardingDataSource(dataSourceMap, new ShardingRule(createShardingRuleConfig(dataSourceMap), dataSourceMap.keySet()));
+        return new ShardingDataSource(dataSourceMap, new ShardingRule(createShardingRuleConfig(dataSourceMap), dataSourceMap.keySet()), new Properties());
     }
     
     private ShardingRuleConfiguration createShardingRuleConfig(final Map<String, DataSource> dataSourceMap) {

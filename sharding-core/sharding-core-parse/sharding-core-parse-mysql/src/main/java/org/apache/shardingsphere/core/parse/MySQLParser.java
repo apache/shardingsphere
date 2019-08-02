@@ -18,9 +18,8 @@
 package org.apache.shardingsphere.core.parse;
 
 import org.antlr.v4.runtime.TokenStream;
-import org.apache.shardingsphere.core.parse.antlr.autogen.MySQLStatementParser;
-import org.apache.shardingsphere.core.parse.antlr.parser.advanced.AdvancedErrorStrategy;
 import org.apache.shardingsphere.core.parse.api.SQLParser;
+import org.apache.shardingsphere.core.parse.autogen.MySQLStatementParser;
 
 /**
  * SQL parser for MySQL.
@@ -31,6 +30,5 @@ public final class MySQLParser extends MySQLStatementParser implements SQLParser
     
     public MySQLParser(final TokenStream input) {
         super(input);
-        setErrorHandler(new AdvancedErrorStrategy(IDENTIFIER_));
     }
 }

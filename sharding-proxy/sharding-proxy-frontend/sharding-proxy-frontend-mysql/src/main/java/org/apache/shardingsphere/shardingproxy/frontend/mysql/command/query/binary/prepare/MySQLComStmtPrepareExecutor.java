@@ -17,16 +17,10 @@
 
 package org.apache.shardingsphere.shardingproxy.frontend.mysql.command.query.binary.prepare;
 
-import org.apache.shardingsphere.core.parse.SQLParsingEngine;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.optimize.api.segment.Tables;
+import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
-import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
-import org.apache.shardingsphere.shardingproxy.backend.schema.MasterSlaveSchema;
-import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSchema;
 import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLColumnType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.MySQLColumnDefinition41Packet;
@@ -63,38 +57,26 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     
     @Override
     public Collection<DatabasePacket> execute() {
-        // TODO we should use none-sharding parsing engine in future.
-        SQLParsingEngine sqlParsingEngine = new SQLParsingEngine(
-                LogicSchemas.getInstance().getDatabaseType(), packet.getSql(), getShardingRule(logicSchema), logicSchema.getMetaData().getTable(), logicSchema.getParsingResultCache());
         Collection<DatabasePacket> result = new LinkedList<>();
         int currentSequenceId = 0;
-        SQLStatement sqlStatement = sqlParsingEngine.parse(true);
-        int parametersIndex = sqlStatement.getParametersIndex();
-        result.add(new MySQLComStmtPrepareOKPacket(
-                ++currentSequenceId, PREPARED_STATEMENT_REGISTRY.register(packet.getSql(), parametersIndex), getNumColumns(sqlStatement), parametersIndex, 0));
-        for (int i = 0; i < parametersIndex; i++) {
+        SQLStatement sqlStatement = logicSchema.getParseEngine().parse(packet.getSql(), true);
+        int parametersCount = sqlStatement.getParametersCount();
+        result.add(new MySQLComStmtPrepareOKPacket(++currentSequenceId, PREPARED_STATEMENT_REGISTRY.register(packet.getSql(), parametersCount), getNumColumns(), parametersCount, 0));
+        Tables tables = new Tables(sqlStatement);
+        for (int i = 0; i < parametersCount; i++) {
             // TODO add column name
             result.add(new MySQLColumnDefinition41Packet(++currentSequenceId, schemaName,
-                    sqlStatement.getTables().isSingleTable() ? sqlStatement.getTables().getSingleTableName() : "", "", "", "", 100, MySQLColumnType.MYSQL_TYPE_VARCHAR, 0));
+                    tables.isSingleTable() ? tables.getSingleTableName() : "", "", "", "", 100, MySQLColumnType.MYSQL_TYPE_VARCHAR, 0));
         }
-        if (parametersIndex > 0) {
+        if (parametersCount > 0) {
             result.add(new MySQLEofPacket(++currentSequenceId));
         }
         // TODO add If numColumns > 0
         return result;
     }
     
-    private ShardingRule getShardingRule(final LogicSchema logicSchema) {
-        return logicSchema instanceof MasterSlaveSchema ? ((MasterSlaveSchema) logicSchema).getDefaultShardingRule() : ((ShardingSchema) logicSchema).getShardingRule();
-    }
-    
-    private int getNumColumns(final SQLStatement sqlStatement) {
-        if (sqlStatement instanceof SelectStatement) {
-            return ((SelectStatement) sqlStatement).getItems().size();
-        }
-        if (sqlStatement instanceof InsertStatement) {
-            return ((InsertStatement) sqlStatement).getColumnNames().size();
-        }
+    // TODO Set columnsCount=0 is a workaround to escape jdbc check for now, there's no issues found during a few tests.
+    private int getNumColumns() {
         return 0;
     }
 }

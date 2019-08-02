@@ -1,0 +1,752 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<parser-result-sets>
+    <parser-result sql-case-id="create_table">
+        <tables>
+            <table name="t_log" />
+        </tables>
+        <tokens>
+            <table-token start-index="13" table-name="t_log" length="5" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_table_if_not_exists">
+        <tables>
+            <table name="t_log" />
+        </tables>
+        <tokens>
+            <table-token start-index="27" table-name="t_log" length="5" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_temporary_table_if_not_exists">
+        <tables>
+            <table name="t_temp_log" />
+        </tables>
+        <tokens>
+            <table-token start-index="37" table-name="t_temp_log" length="10" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_global_temporary_table">
+        <tables>
+            <table name="t_temp_log" />
+        </tables>
+        <tokens>
+            <table-token start-index="30" table-name="t_temp_log" length="10" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_local_temp_table">
+        <tables>
+            <table name="t_temp_log" />
+        </tables>
+        <tokens>
+            <table-token start-index="24" table-name="t_temp_log" length="10" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_unlogged_table">
+        <tables>
+            <table name="t_log" />
+        </tables>
+        <tokens>
+            <table-token start-index="22" table-name="t_log" length="5" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_index">
+        <tables>
+            <table name="t_log" />
+        </tables>
+        <tokens>
+            <index-token start-index="13" stop-index="23" table-name="t_log" />
+            <table-token start-index="28" table-name="t_log" length="5" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_unique_index">
+        <tables>
+            <table name="t_log" />
+        </tables>
+        <tokens>
+            <index-token start-index="20" stop-index="30" table-name="t_log" />
+            <table-token start-index="35" table-name="t_log" length="5" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_table_with_space">
+        <tables>
+            <table name="t_order_item" />
+        </tables>
+        <tokens>
+            <table-token start-index="17" table-name="t_order_item" length="12" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_table_with_back_quota">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="13" table-name="t_order" left-delimiter="`" right-delimiter="`" length="9" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_temporary_table">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="23" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_table_with_column_not_null">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="13" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_table_with_column_default">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="13" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_table_with_column_increment">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="13" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_table_with_column_generated">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="13" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_table_with_column_comment">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="13" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_table_with_inline_primary_key">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="13" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_table_with_inline_unique_key">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="13" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_table_with_inline_foreign_key">
+        <tables>
+            <table name="t_order_item" />
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="13" table-name="t_order_item" length="12" />
+            <table-token start-index="64" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_table_with_inline_constraints">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="13" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_table_with_out_of_line_primary_key">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="13" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+
+    <parser-result sql-case-id="create_table_with_out_of_line_composite_primary_key">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="13" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_table_with_out_of_line_unique_key">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="13" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_table_with_out_of_line_composite_unique_key">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="13" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_table_with_out_of_line_foreign_key">
+        <tables>
+            <table name="t_order_item" />
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="13" table-name="t_order_item" length="12" />
+            <table-token start-index="207" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_table_with_out_of_line_composite_foreign_key">
+        <tables>
+            <table name="t_order_item" />
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="13" table-name="t_order_item" length="12" />
+            <table-token start-index="224" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_table_with_out_of_line_check">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="13" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_table_with_out_of_line_constraints">
+        <tables>
+            <table name="t_order_item" />
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="13" table-name="t_order_item" length="12" />
+            <table-token start-index="225" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_table_with_out_of_line_index">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="13" table-name="t_order" length="7" />
+            <index-token start-index="138" stop-index="148" table-name="t_order" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_table_with_out_of_line_composite_index">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="13" table-name="t_order" length="7" />
+            <index-token start-index="138" stop-index="148" table-name="t_order" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_table_with_out_of_line_btree_index">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="13" table-name="t_order" length="7" />
+            <index-token start-index="138" stop-index="148" table-name="t_order"/>
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_table_with_comment">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="13" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_table_with_partition">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="13" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <!--<parser-result sql-case-id="create_table_select">-->
+        <!--<tables>-->
+            <!--<table name="t_order_bak" />-->
+            <!--<table name="t_order" />-->
+        <!--</tables>-->
+        <!--<tokens>-->
+            <!--<table-token start-index="13" table-name="t_order_bak" length="10" />-->
+            <!--<table-token start-index="42" table-name="t_order" length="7" />-->
+        <!--</tokens>-->
+    <!--</parser-result>-->
+
+    <!--<parser-result sql-case-id="create_table_like">-->
+        <!--<tables>-->
+            <!--<table name="t_order_bak" />-->
+            <!--<table name="t_order" />-->
+        <!--</tables>-->
+        <!--<tokens>-->
+            <!--<table-token start-index="13" table-name="t_order_bak" length="10" />-->
+            <!--<table-token start-index="31" table-name="t_order" length="7" />-->
+        <!--</tokens>-->
+    <!--</parser-result>-->
+    
+    <parser-result sql-case-id="create_index_with_space">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <index-token start-index="25" stop-index="35" table-name="t_order" />
+            <table-token start-index="52" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_index_with_back_quota">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <index-token start-index="13" stop-index="25" table-name="t_order" />
+            <table-token start-index="30" table-name="t_order" left-delimiter="`" right-delimiter="`" length="9" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_composite_index">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <index-token start-index="13" stop-index="23" table-name="t_order" />
+            <table-token start-index="28" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_btree_index">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <index-token start-index="13" stop-index="23" table-name="t_order" />
+            <table-token start-index="40" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_table_with_quota">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="13" table-name="t_order" left-delimiter="&quot;" right-delimiter="&quot;" length="9" />
+        </tokens>
+    </parser-result>
+   
+    <parser-result sql-case-id="create_table_with_column_on_null_default">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="13" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_table_with_column_identity">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="13" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_table_with_column_encrypt">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="13" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_table_with_inline_foreign_key_reference">
+        <tables>
+            <table name="t_order_item" />
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="13" table-name="t_order_item" length="12" />
+            <table-token start-index="101" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_table_with_inline_check">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="13" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_table_with_inline_constraints_cascade">
+        <tables>
+            <table name="t_order_item" />
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="13" table-name="t_order_item" length="12" />
+            <table-token start-index="150" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_table_with_out_of_line_foreign_key_oracle">
+        <tables>
+            <table name="t_order_item" />
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="13" table-name="t_order_item" length="12" />
+            <table-token start-index="232" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_table_with_out_of_line_composite_foreign_key_oracle">
+        <tables>
+            <table name="t_order_item" />
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="13" table-name="t_order_item" length="12" />
+            <table-token start-index="249" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_table_with_out_of_line_constraints_oracle">
+        <tables>
+            <table name="t_order_item" />
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="13" table-name="t_order_item" length="12" />
+            <table-token start-index="250" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_table_with_exist_index">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="13" table-name="t_order" length="7" />
+            <index-token start-index="66" stop-index="76" table-name="t_order"/>
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_table_with_create_index">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="13" table-name="t_order" length="7" />
+            <index-token start-index="80" stop-index="90" table-name="t_order"/>
+            <table-token start-index="95" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_table_with_partition_oracle">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="13" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_index_with_quota">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <index-token start-index="13" stop-index="25" table-name="t_order"/>
+            <table-token start-index="30" table-name="t_order" left-delimiter="&quot;" right-delimiter="&quot;" length="9" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_index_with_function">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <index-token start-index="13" stop-index="28" table-name="t_order"/>
+            <table-token start-index="33" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_table_with_double_quota">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="13" table-name="t_order" left-delimiter="&quot;" right-delimiter="&quot;" length="9" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_local_temporary_table">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="29" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_table_with_column_increment">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="13" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_table_with_range_partition">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="13" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <!--<parser-result sql-case-id="create_table_like">-->
+        <!--<tables>-->
+            <!--<table name="t_order_bak" />-->
+            <!--<table name="t_order" />-->
+        <!--</tables>-->
+        <!--<tokens>-->
+            <!--<table-token start-index="13" table-name="t_order_bak" length="10" />-->
+            <!--<table-token start-index="31" table-name="t_order" length="7" />-->
+        <!--</tokens>-->
+    <!--</parser-result>-->
+
+    <!--<parser-result sql-case-id="create_table_inherits">-->
+        <!--<tables>-->
+            <!--<table name="t_order_bak" />-->
+            <!--<table name="t_order" />-->
+        <!--</tables>-->
+        <!--<tokens>-->
+            <!--<table-token start-index="13" table-name="t_order_bak" length="10" />-->
+            <!--<table-token start-index="37" table-name="t_order" length="7" />-->
+        <!--</tokens>-->
+    <!--</parser-result>-->
+    
+    <parser-result sql-case-id="create_index_with_double_quota">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <index-token start-index="13" stop-index="25" table-name="t_order"/>
+            <table-token start-index="30" table-name="t_order" left-delimiter="&quot;" right-delimiter="&quot;" length="9" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_index_with_double_quota_and_uescape">
+        <tables>
+            <table name="u&amp;t_order" />
+        </tables>
+        <tokens>
+            <index-token start-index="13" stop-index="53" table-name="u&amp;t_order"/>
+            <table-token start-index="58" table-name="u&amp;t_order" length="9" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_index_concurrently">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <index-token start-index="26" stop-index="36" table-name="t_order" />
+            <table-token start-index="41" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_index_if_not_exists">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <index-token start-index="27" stop-index="37" table-name="t_order" />
+            <table-token start-index="42" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_index_using_btree">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <index-token start-index="13" stop-index="23" table-name="t_order" />
+            <table-token start-index="28" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_table_with_bracket">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="13" table-name="t_order" left-delimiter="[" right-delimiter="]" length="9" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_table_with_identity">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="13" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_table_with_column_as">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="13" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_table_with_column_encrypt_algorithm">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="13" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_table_with_inline_primary_key_sqlserver">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="13" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_table_with_inline_unique_key_sqlserver">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="13" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_table_with_inline_foreign_key_sqlserver">
+        <tables>
+            <table name="t_order_item" />
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="13" table-name="t_order_item" length="12" />
+            <table-token start-index="87" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_table_with_index">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="13" table-name="t_order" length="7" />
+            <index-token start-index="41" stop-index="51" table-name="t_order" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_table_with_inline_check_sqlserver">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="13" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_table_with_inline_constraints_sqlserver">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="13" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_index_with_bracket">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <index-token start-index="13" stop-index="25" table-name="t_order" />
+            <table-token start-index="30" table-name="t_order" left-delimiter="[" right-delimiter="]" length="9" />
+        </tokens>
+    </parser-result>
+</parser-result-sets>

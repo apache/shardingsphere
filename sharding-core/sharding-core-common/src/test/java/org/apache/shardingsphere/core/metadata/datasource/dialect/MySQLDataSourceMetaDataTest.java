@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.metadata.datasource.dialect;
 
-import org.apache.shardingsphere.core.exception.ShardingException;
+import org.apache.shardingsphere.core.metadata.datasource.UnrecognizedDatabaseURLException;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -26,7 +26,7 @@ import static org.junit.Assert.assertThat;
 public final class MySQLDataSourceMetaDataTest {
     
     @Test
-    public void assertGetALLProperties() {
+    public void assertGetPropertiesWithPort() {
         MySQLDataSourceMetaData actual = new MySQLDataSourceMetaData("jdbc:mysql://127.0.0.1:9999/ds_0?serverTimezone=UTC&useSSL=false");
         assertThat(actual.getHostName(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(9999));
@@ -34,31 +34,15 @@ public final class MySQLDataSourceMetaDataTest {
     }
     
     @Test
-    public void assertGetALLPropertiesWithDefaultPort() {
-        MySQLDataSourceMetaData actual = new MySQLDataSourceMetaData("jdbc:mysql://127.0.0.1/ds_0?serverTimezone=UTC&useSSL=false");
+    public void assertGetPropertiesWithDefaultPort() {
+        MySQLDataSourceMetaData actual = new MySQLDataSourceMetaData("jdbc:mysql:loadbalance://127.0.0.1/ds_0?serverTimezone=UTC&useSSL=false");
         assertThat(actual.getHostName(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(3306));
         assertThat(actual.getSchemaName(), is("ds_0"));
     }
     
-    @Test
-    public void assertGetPropertiesWithMinus() {
-        MySQLDataSourceMetaData actual = new MySQLDataSourceMetaData("jdbc:mysql://host-0:3306/ds-0?serverTimezone=UTC&useSSL=false");
-        assertThat(actual.getHostName(), is("host-0"));
-        assertThat(actual.getPort(), is(3306));
-        assertThat(actual.getSchemaName(), is("ds-0"));
-    }
-    
-    @Test(expected = ShardingException.class)
-    public void assertGetALLPropertiesFailure() {
+    @Test(expected = UnrecognizedDatabaseURLException.class)
+    public void assertGetPropertiesFailure() {
         new MySQLDataSourceMetaData("jdbc:mysql:xxxxxxxx");
     }
-    
-    @Test
-    public void assertIsInSameDatabaseInstance() {
-        MySQLDataSourceMetaData target = new MySQLDataSourceMetaData("jdbc:mysql://127.0.0.1:3306/ds_0");
-        MySQLDataSourceMetaData actual = new MySQLDataSourceMetaData("jdbc:mysql://127.0.0.1/ds_0?serverTimezone=UTC&useSSL=false");
-        assertThat(actual.isInSameDatabaseInstance(target), is(true));
-    }
 }
-

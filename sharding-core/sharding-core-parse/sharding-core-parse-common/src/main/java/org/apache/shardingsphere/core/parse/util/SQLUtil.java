@@ -18,11 +18,13 @@
 package org.apache.shardingsphere.core.parse.util;
 
 import com.google.common.base.CharMatcher;
+import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import org.apache.shardingsphere.core.constant.DatabaseType;
-import org.apache.shardingsphere.core.parse.old.lexer.dialect.mysql.MySQLKeyword;
-import org.apache.shardingsphere.core.parse.old.lexer.token.DefaultKeyword;
+import org.apache.shardingsphere.core.parse.core.constant.Paren;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
 
 /**
  * SQL utility class.
@@ -32,6 +34,32 @@ import org.apache.shardingsphere.core.parse.old.lexer.token.DefaultKeyword;
  */
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLUtil {
+    
+    /**
+     * Get exactly number value and type.
+     *
+     * @param value string to be converted
+     * @param radix radix
+     * @return exactly number value and type
+     */
+    public static Number getExactlyNumber(final String value, final int radix) {
+        try {
+            return getBigInteger(value, radix);
+        } catch (final NumberFormatException ex) {
+            return new BigDecimal(value);
+        }
+    }
+    
+    private static Number getBigInteger(final String value, final int radix) {
+        BigInteger result = new BigInteger(value, radix);
+        if (result.compareTo(new BigInteger(String.valueOf(Integer.MIN_VALUE))) >= 0 && result.compareTo(new BigInteger(String.valueOf(Integer.MAX_VALUE))) <= 0) {
+            return result.intValue();
+        }
+        if (result.compareTo(new BigInteger(String.valueOf(Long.MIN_VALUE))) >= 0 && result.compareTo(new BigInteger(String.valueOf(Long.MAX_VALUE))) <= 0) {
+            return result.longValue();
+        }
+        return result;
+    }
     
     /**
      * Get exactly value for SQL expression.
@@ -54,34 +82,25 @@ public final class SQLUtil {
      * @return exactly SQL expression
      */
     public static String getExactlyExpression(final String value) {
-        return null == value ? null : CharMatcher.anyOf(" ").removeFrom(value);
+        return Strings.isNullOrEmpty(value) ? value : CharMatcher.anyOf(" ").removeFrom(value);
     }
     
     /**
-     * Get original value for SQL expression.
+     * Get exactly SQL expression without outside parentheses.
      * 
      * @param value SQL expression
-     * @param databaseType database type
-     * @return original SQL expression
+     * @return exactly SQL expression
      */
-    public static String getOriginalValue(final String value, final DatabaseType databaseType) {
-        if (DatabaseType.MySQL != databaseType) {
-            return value;
-        }
-        try {
-            DefaultKeyword.valueOf(value.toUpperCase());
-            return String.format("`%s`", value);
-        } catch (final IllegalArgumentException ex) {
-            return getOriginalValueForMySQLKeyword(value);
-        }
+    public static String getExpressionWithoutOutsideParentheses(final String value) {
+        int parenthesesOffset = getParenthesesOffset(value);
+        return 0 == parenthesesOffset ? value : value.substring(parenthesesOffset, value.length() - parenthesesOffset);
     }
     
-    private static String getOriginalValueForMySQLKeyword(final String value) {
-        try {
-            MySQLKeyword.valueOf(value.toUpperCase());
-            return String.format("`%s`", value);
-        } catch (final IllegalArgumentException ex) {
-            return value;
+    private static int getParenthesesOffset(final String value) {
+        int result = 0;
+        while (Paren.PARENTHESES.getLeftParen() == value.charAt(result)) {
+            result++;
         }
+        return result;
     }
 }

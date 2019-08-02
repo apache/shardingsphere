@@ -43,8 +43,6 @@ public final class TableRuleConfiguration {
     
     private KeyGeneratorConfiguration keyGeneratorConfig;
     
-    private String logicIndex;
-    
     public TableRuleConfiguration(final String logicTable) {
         this(logicTable, null);
     }

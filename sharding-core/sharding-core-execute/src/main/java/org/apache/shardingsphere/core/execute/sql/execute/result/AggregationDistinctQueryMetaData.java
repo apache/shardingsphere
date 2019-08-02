@@ -19,10 +19,10 @@ package org.apache.shardingsphere.core.execute.sql.execute.result;
 
 import com.google.common.collect.Multimap;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.constant.AggregationType;
 import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.core.parse.old.parser.context.selectitem.AggregationDistinctSelectItem;
-import org.apache.shardingsphere.core.parse.old.parser.context.selectitem.AggregationSelectItem;
+import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.AggregationDistinctSelectItem;
+import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.AggregationSelectItem;
+import org.apache.shardingsphere.core.parse.core.constant.AggregationType;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -69,20 +69,13 @@ public final class AggregationDistinctQueryMetaData {
     
     private AggregationDistinctColumnMetaData getAggregationDistinctColumnMetaData(final AggregationDistinctSelectItem selectItem, 
                                                                                    final int aggregationDistinctColumnIndex, final Multimap<String, Integer> columnLabelAndIndexMap) {
-        List<AggregationSelectItem> derivedSelectItems = selectItem.getDerivedAggregationSelectItems();
+        List<AggregationSelectItem> derivedSelectItems = selectItem.getDerivedAggregationItems();
         if (derivedSelectItems.isEmpty()) {
             return new AggregationDistinctColumnMetaData(aggregationDistinctColumnIndex, selectItem.getColumnLabel(), selectItem.getType());
         }
-        int countDerivedIndex = columnLabelAndIndexMap.size() + 1;
-        int sumDerivedIndex = countDerivedIndex + 1;
-        reviseColumnLabelAndIndexMap(columnLabelAndIndexMap, selectItem, countDerivedIndex, sumDerivedIndex);
+        int countDerivedIndex = columnLabelAndIndexMap.get(derivedSelectItems.get(0).getColumnLabel()).iterator().next();
+        int sumDerivedIndex = columnLabelAndIndexMap.get(derivedSelectItems.get(1).getColumnLabel()).iterator().next();
         return new AggregationDistinctColumnMetaData(aggregationDistinctColumnIndex, selectItem.getColumnLabel(), selectItem.getType(), countDerivedIndex, sumDerivedIndex);
-    }
-    
-    private void reviseColumnLabelAndIndexMap(final Multimap<String, Integer> columnLabelAndIndexMap, 
-                                              final AggregationDistinctSelectItem selectItem, final int countDerivedIndex, final int sumDerivedIndex) {
-        columnLabelAndIndexMap.put(selectItem.getDerivedAggregationSelectItems().get(0).getColumnLabel(), countDerivedIndex);
-        columnLabelAndIndexMap.put(selectItem.getDerivedAggregationSelectItems().get(1).getColumnLabel(), sumDerivedIndex);
     }
     
     private Map<Integer, String> getAggregationDistinctColumnIndexAndLabels() {

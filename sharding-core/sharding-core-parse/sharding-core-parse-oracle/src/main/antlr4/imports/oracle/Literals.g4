@@ -20,16 +20,17 @@ lexer grammar Literals;
 import Alphabet, Symbol;
 
 IDENTIFIER_
-    : (BQ_?[a-zA-Z_$][a-zA-Z0-9_$#]* BQ_? DOT_)? (BQ_?[a-zA-Z_$][a-zA-Z0-9_$#]* BQ_?) | [a-zA-Z_$#0-9]+ DOT_ASTERISK_
+    : [A-Za-z_$0-9]*?[A-Za-z_$]+?[A-Za-z_$0-9]*
+    |  DQ_ ~'"'+ DQ_
     ;
 
 STRING_ 
-    : ('"' ( '\\'. | '""' | ~('"'| '\\') )* '"')
-    | ('\'' ('\\'. | '\'\'' | ~('\'' | '\\'))* '\'')
+    : (DQ_ ( '\\'. | '""' | ~('"'| '\\') )* DQ_)
+    | (SQ_ ('\\'. | '\'\'' | ~('\'' | '\\'))* SQ_)
     ;
 
 NUMBER_
-    : MINUS_? INT_? DOT_? INT_ (E [+\-]? INT_)?
+    : INT_? DOT_? INT_ (E (PLUS_ | MINUS_)? INT_)?
     ;
 
 HEX_DIGIT_

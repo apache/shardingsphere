@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.shardingproxy.frontend.postgresql;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.frontend.context.FrontendContext;
 import org.apache.shardingsphere.shardingproxy.frontend.postgresql.auth.PostgreSQLAuthenticationEngine;
@@ -47,7 +46,7 @@ public final class PostgreSQLProtocolFrontendEngine implements DatabaseProtocolF
     
     @Override
     public String getDatabaseType() {
-        return DatabaseType.PostgreSQL.name();
+        return "PostgreSQL";
     }
     
     @Override

@@ -21,13 +21,13 @@ import com.google.common.collect.Sets;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.shardingjdbc.common.env.DatabaseEnvironment;
+import org.apache.shardingsphere.spi.database.DatabaseType;
 import org.h2.tools.RunScript;
 import org.junit.BeforeClass;
 
 import javax.sql.DataSource;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -35,27 +35,20 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 
 public abstract class AbstractSQLTest {
     
     private static final List<String> DB_NAMES = Arrays.asList("jdbc_0", "jdbc_1", "encrypt");
     
-    private static Set<DatabaseType> databaseTypes = Sets.newHashSet(DatabaseType.H2);
+    private static Set<DatabaseType> databaseTypes = Sets.newHashSet(DatabaseTypes.getActualDatabaseType("H2"));
     
     @Getter(AccessLevel.PROTECTED)
     private static Map<DatabaseType, Map<String, DataSource>> databaseTypeMap = new HashMap<>();
     
     @BeforeClass
     public static synchronized void initDataSource() {
-        try {
-            Properties prop = new Properties();
-            prop.load(AbstractSQLTest.class.getClassLoader().getResourceAsStream("integrate/env.properties"));
-            createDataSources();
-        } catch (final IOException ex) {
-            ex.printStackTrace();
-        }
+        createDataSources();
     }
     
     private static void createDataSources() {
@@ -66,19 +59,19 @@ public abstract class AbstractSQLTest {
         }
     }
     
-    private static void createDataSources(final String dbName, final DatabaseType type) {
-        Map<String, DataSource> dataSourceMap = databaseTypeMap.get(type);
+    private static void createDataSources(final String dbName, final DatabaseType databaseType) {
+        Map<String, DataSource> dataSourceMap = databaseTypeMap.get(databaseType);
         if (null == dataSourceMap) {
             dataSourceMap = new HashMap<>();
-            databaseTypeMap.put(type, dataSourceMap);
+            databaseTypeMap.put(databaseType, dataSourceMap);
         }
-        BasicDataSource result = buildDataSource(dbName, type);
+        BasicDataSource result = buildDataSource(dbName, databaseType);
         dataSourceMap.put(dbName, result);
-        createSchema(dbName, type);
+        createSchema(dbName, databaseType);
     }
     
-    private static BasicDataSource buildDataSource(final String dbName, final DatabaseType type) {
-        DatabaseEnvironment dbEnv = new DatabaseEnvironment(type);
+    private static BasicDataSource buildDataSource(final String dbName, final DatabaseType databaseType) {
+        DatabaseEnvironment dbEnv = new DatabaseEnvironment(databaseType);
         BasicDataSource result = new BasicDataSource();
         result.setDriverClassName(dbEnv.getDriverClassName());
         result.setUrl(dbEnv.getURL(dbName));
@@ -88,10 +81,10 @@ public abstract class AbstractSQLTest {
         return result;
     }
     
-    private static void createSchema(final String dbName, final DatabaseType dbType) {
+    private static void createSchema(final String dbName, final DatabaseType databaseType) {
         try {
-            Connection conn = databaseTypeMap.get(dbType).get(dbName).getConnection();
-            RunScript.execute(conn, new InputStreamReader(AbstractSQLTest.class.getClassLoader().getResourceAsStream("integrate/cases/jdbc/jdbc_init.sql")));
+            Connection conn = databaseTypeMap.get(databaseType).get(dbName).getConnection();
+            RunScript.execute(conn, new InputStreamReader(AbstractSQLTest.class.getClassLoader().getResourceAsStream("jdbc_init.sql")));
             conn.close();
         } catch (final SQLException ex) {
             ex.printStackTrace();

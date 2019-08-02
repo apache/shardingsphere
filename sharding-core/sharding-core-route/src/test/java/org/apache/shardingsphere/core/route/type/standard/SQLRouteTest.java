@@ -23,7 +23,8 @@ import org.junit.Test;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public class SQLRouteTest extends AbstractSQLRouteTest {
     
@@ -37,11 +38,11 @@ public class SQLRouteTest extends AbstractSQLRouteTest {
     
     @Test
     public void assertDefaultDataSourceRoute() {
-        String sql = "SELECT id,name from user where id = ?";
+        String sql = "SELECT id,name from t_other where id = ?";
         List<Object> parameters = new LinkedList<>();
         parameters.add(1);
         SQLRouteResult result = assertRoute(sql, parameters);
-        assertEquals("assert default datasource name", "main", result.getRoutingResult().getTableUnits().getTableUnits().iterator().next().getDataSourceName());
+        assertThat("assert default datasource name", result.getRoutingResult().getRoutingUnits().iterator().next().getDataSourceName(), is("main"));
     }
     
     @Test

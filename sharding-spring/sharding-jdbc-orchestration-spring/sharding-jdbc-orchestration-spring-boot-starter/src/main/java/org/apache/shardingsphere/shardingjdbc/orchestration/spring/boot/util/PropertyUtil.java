@@ -45,6 +45,25 @@ public final class PropertyUtil {
     }
     
     /**
+     * Whether environment contain properties with specified prefix.
+     *
+     * @param environment the environment context
+     * @param prefix the prefix part of property key
+     * @return true if contain, otherwise false
+     */
+    @SuppressWarnings("unchecked")
+    public static boolean containPropertyPrefix(final Environment environment, final String prefix) {
+        try {
+            Map<String, Object> properties = (Map<String, Object>) (1 == springBootVersion ? v1(environment, prefix, false) : v2(environment, prefix, Map.class));
+            return !properties.isEmpty();
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            return false;
+        }
+    }
+    
+    /**
      * Spring Boot 1.x is compatible with Spring Boot 2.x by Using Java Reflect.
      * @param environment : the environment context
      * @param prefix : the prefix part of property key
@@ -56,7 +75,7 @@ public final class PropertyUtil {
     public static <T> T handle(final Environment environment, final String prefix, final Class<T> targetClass) {
         switch (springBootVersion) {
             case 1:
-                return (T) v1(environment, prefix);
+                return (T) v1(environment, prefix, true);
             default:
                 return (T) v2(environment, prefix, targetClass);
         }
@@ -64,7 +83,7 @@ public final class PropertyUtil {
 
     @SuppressWarnings("unchecked")
     @SneakyThrows
-    private static Object v1(final Environment environment, final String prefix) {
+    private static Object v1(final Environment environment, final String prefix, final boolean handlePlaceholder) {
         Class<?> resolverClass = Class.forName("org.springframework.boot.bind.RelaxedPropertyResolver");
         Constructor<?> resolverConstructor = resolverClass.getDeclaredConstructor(PropertyResolver.class);
         Method getSubPropertiesMethod = resolverClass.getDeclaredMethod("getSubProperties", String.class);
@@ -76,8 +95,7 @@ public final class PropertyUtil {
         for (Entry<String, Object> entry : dataSourceProps.entrySet()) {
             String key = entry.getKey();
             Object value = entry.getValue();
-            if (value instanceof String && ((String) value).contains(
-                    PlaceholderConfigurerSupport.DEFAULT_PLACEHOLDER_PREFIX)) {
+            if (handlePlaceholder && value instanceof String && ((String) value).contains(PlaceholderConfigurerSupport.DEFAULT_PLACEHOLDER_PREFIX)) {
                 String resolvedValue = (String) getPropertyMethod.invoke(resolverObject, prefixParam + key);
                 propertiesWithPlaceholderResolved.put(key, resolvedValue);
             } else {

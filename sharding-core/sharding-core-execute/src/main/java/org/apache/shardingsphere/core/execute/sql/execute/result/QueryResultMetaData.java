@@ -19,16 +19,13 @@ package org.apache.shardingsphere.core.execute.sql.execute.result;
 
 import com.google.common.base.Optional;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
-import org.apache.shardingsphere.core.strategy.encrypt.ShardingEncryptorEngine;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Map.Entry;
-import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -36,32 +33,44 @@ import java.util.TreeMap;
  * Query result meta data.
  *
  * @author panjuan
+ * @author yangyi
  */
 public final class QueryResultMetaData {
-    
-    private final Map<String, Integer> columnLabelAndIndexes;
     
     private final ResultSetMetaData resultSetMetaData;
     
     private final ShardingRule shardingRule;
     
-    private final ShardingEncryptorEngine shardingEncryptorEngine;
+    private final EncryptRule encryptRule;
     
-    @SneakyThrows 
-    public QueryResultMetaData(final ResultSetMetaData resultSetMetaData, final ShardingRule shardingRule, final ShardingEncryptorEngine shardingEncryptorEngine) {
-        columnLabelAndIndexes = getColumnLabelAndIndexMap(resultSetMetaData);
+    private final Map<String, Integer> columnLabelAndIndexes;
+    
+    @SneakyThrows
+    public QueryResultMetaData(final ResultSetMetaData resultSetMetaData, final ShardingRule shardingRule) {
         this.resultSetMetaData = resultSetMetaData;
         this.shardingRule = shardingRule;
-        this.shardingEncryptorEngine = shardingEncryptorEngine;
+        this.encryptRule = shardingRule.getEncryptRule();
+        columnLabelAndIndexes = getColumnLabelAndIndexMap();
+    }
+    
+    @SneakyThrows
+    public QueryResultMetaData(final ResultSetMetaData resultSetMetaData, final EncryptRule encryptRule) {
+        this.resultSetMetaData = resultSetMetaData;
+        this.shardingRule = null;
+        this.encryptRule = encryptRule;
+        columnLabelAndIndexes = getColumnLabelAndIndexMap();
     }
     
     @SneakyThrows
     public QueryResultMetaData(final ResultSetMetaData resultSetMetaData) {
-        this(resultSetMetaData, null, new ShardingEncryptorEngine());
+        this.resultSetMetaData = resultSetMetaData;
+        this.shardingRule = null;
+        this.encryptRule = new EncryptRule();
+        columnLabelAndIndexes = getColumnLabelAndIndexMap();
     }
     
     @SneakyThrows
-    private Map<String, Integer> getColumnLabelAndIndexMap(final ResultSetMetaData resultSetMetaData) {
+    private Map<String, Integer> getColumnLabelAndIndexMap() {
         Map<String, Integer> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         for (int columnIndex = resultSetMetaData.getColumnCount(); columnIndex > 0; columnIndex--) {
             result.put(resultSetMetaData.getColumnLabel(columnIndex), columnIndex);
@@ -112,6 +121,17 @@ public final class QueryResultMetaData {
     }
     
     /**
+     * Whether the column value is case sensitive.
+     *
+     * @param columnIndex column index
+     * @return true if column is case sensitive, otherwise false
+     */
+    @SneakyThrows
+    public boolean isCaseSensitive(final int columnIndex) {
+        return resultSetMetaData.isCaseSensitive(columnIndex);
+    }
+    
+    /**
      * Get sharding encryptor.
      * 
      * @param columnIndex column index
@@ -119,7 +139,8 @@ public final class QueryResultMetaData {
      */
     @SneakyThrows
     public Optional<ShardingEncryptor> getShardingEncryptor(final int columnIndex) {
-        return shardingEncryptorEngine.getShardingEncryptor(getTableName(columnIndex), resultSetMetaData.getColumnName(columnIndex));
+        String logicTable = getTableName(columnIndex);
+        return encryptRule.getShardingEncryptor(logicTable, getLogicColumn(logicTable, columnIndex));
     }
     
     private String getTableName(final int columnIndex) throws SQLException {
@@ -129,5 +150,11 @@ public final class QueryResultMetaData {
         }
         Optional<TableRule> tableRule = shardingRule.findTableRuleByActualTable(actualTableName);
         return tableRule.isPresent() ? tableRule.get().getLogicTable() : actualTableName;
+    }
+    
+    @SneakyThrows
+    private String getLogicColumn(final String tableName, final int columnIndex) {
+        String columnLabel = resultSetMetaData.getColumnName(columnIndex);
+        return encryptRule.isCipherColumn(tableName, columnLabel) ? encryptRule.getLogicColumn(tableName, columnLabel) : columnLabel;
     }
 }

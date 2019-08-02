@@ -17,6 +17,14 @@
 
 package org.apache.shardingsphere.transaction;
 
+import com.google.common.base.Preconditions;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.spi.database.DatabaseType;
+import org.apache.shardingsphere.transaction.core.ResourceDataSource;
+import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;
+
+import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.LinkedList;
@@ -24,17 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.ServiceLoader;
-
-import javax.sql.DataSource;
-
-import org.apache.shardingsphere.core.constant.DatabaseType;
-import org.apache.shardingsphere.transaction.core.ResourceDataSource;
-import org.apache.shardingsphere.transaction.core.TransactionType;
-import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;
-
-import com.google.common.base.Preconditions;
-
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * Sharding transaction manager engine.

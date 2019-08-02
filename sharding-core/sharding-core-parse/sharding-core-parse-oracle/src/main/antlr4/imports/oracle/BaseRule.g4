@@ -17,22 +17,117 @@
 
 grammar BaseRule;
 
-import Symbol, Keyword, Literals;
+import Symbol, Keyword, OracleKeyword, Literals;
+
+parameterMarker
+    : QUESTION_
+    ;
+
+literals
+    : stringLiterals
+    | numberLiterals
+    | dateTimeLiterals
+    | hexadecimalLiterals
+    | bitValueLiterals
+    | booleanLiterals
+    | nullValueLiterals
+    ;
+
+stringLiterals
+    : STRING_
+    ;
+
+numberLiterals
+   : MINUS_? NUMBER_
+   ;
+
+dateTimeLiterals
+    : (DATE | TIME | TIMESTAMP) STRING_
+    | LBE_ identifier_ STRING_ RBE_
+    ;
+
+hexadecimalLiterals
+    : HEX_DIGIT_
+    ;
+
+bitValueLiterals
+    : BIT_NUM_
+    ;
+    
+booleanLiterals
+    : TRUE | FALSE
+    ;
+
+nullValueLiterals
+    : NULL
+    ;
+
+identifier_
+    : IDENTIFIER_ | unreservedWord_
+    ;
+
+unreservedWord_
+    : TRUNCATE | FUNCTION | PROCEDURE | CASE | WHEN | CAST | TRIM | SUBSTRING
+    | NATURAL | JOIN | FULL | INNER | OUTER | LEFT | RIGHT
+    | CROSS | USING | IF | TRUE | FALSE | LIMIT | OFFSET
+    | BEGIN | COMMIT | ROLLBACK | SAVEPOINT | BOOLEAN | DOUBLE | CHARACTER
+    | ARRAY | INTERVAL | TIME | TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | YEAR
+    | QUARTER | MONTH | WEEK | DAY | HOUR | MINUTE | SECOND
+    | MICROSECOND | MAX | MIN | SUM | COUNT | AVG | ENABLE
+    | DISABLE | BINARY | ESCAPE | MOD | UNKNOWN | XOR | ALWAYS
+    | CASCADE | GENERATED | PRIVILEGES | READ | WRITE | REFERENCES | TRANSACTION
+    | ROLE | VISIBLE | INVISIBLE | EXECUTE | USE | DEBUG | UNDER
+    | FLASHBACK | ARCHIVE | REFRESH | QUERY | REWRITE | KEEP | SEQUENCE
+    | INHERIT | TRANSLATE | SQL | MERGE | AT | BITMAP | CACHE | CHECKPOINT
+    | CONNECT | CONSTRAINTS | CYCLE | DBTIMEZONE | ENCRYPT | DECRYPT | DEFERRABLE
+    | DEFERRED | EDITION | ELEMENT | END | EXCEPTIONS | FORCE | GLOBAL
+    | IDENTITY | INITIALLY | INVALIDATE | JAVA | LEVELS | LOCAL | MAXVALUE
+    | MINVALUE | NOMAXVALUE | NOMINVALUE | MINING | MODEL | NATIONAL | NEW
+    | NOCACHE | NOCYCLE | NOORDER | NORELY | NOVALIDATE | ONLY | PRESERVE
+    | PROFILE | REF | REKEY | RELY | REPLACE | SOURCE | SALT
+    | SCOPE | SORT | SUBSTITUTABLE | TABLESPACE | TEMPORARY | TRANSLATION | TREAT
+    | NO | TYPE | UNUSED | VALUE | VARYING | VIRTUAL | ZONE
+    | ADVISOR | ADMINISTER | TUNING | MANAGE | MANAGEMENT | OBJECT | CLUSTER
+    | CONTEXT | EXEMPT | REDACTION | POLICY | DATABASE | SYSTEM | AUDIT
+    | LINK | ANALYZE | DICTIONARY | DIMENSION | INDEXTYPE | EXTERNAL | JOB
+    | CLASS | PROGRAM | SCHEDULER | LIBRARY | LOGMINING | MATERIALIZED | CUBE
+    | MEASURE | FOLDER | BUILD | PROCESS | OPERATOR | OUTLINE | PLUGGABLE
+    | CONTAINER | SEGMENT | RESTRICTED | COST | SYNONYM | BACKUP | UNLIMITED
+    | BECOME | CHANGE | NOTIFICATION | ACCESS | PRIVILEGE | PURGE | RESUMABLE
+    | SYSGUID | SYSBACKUP | SYSDBA | SYSDG | SYSKM | SYSOPER | DBA_RECYCLEBIN |SCHEMA
+    | CURRENT_USER | CASCADED | NAME
+    ;
 
 schemaName
-    : IDENTIFIER_
+    : identifier_
     ;
 
 tableName
-    : oracleId
+    : (owner DOT_)? name
     ;
 
 columnName
-    : oracleId
+    : (owner DOT_)? name
+    ;
+
+owner
+    : identifier_
+    ;
+
+name
+    : identifier_
+    ;
+
+columnNames
+    : LP_? columnName (COMMA_ columnName)* RP_?
+    ;
+
+tableNames
+    : LP_? tableName (COMMA_ tableName)* RP_?
     ;
 
 indexName
-    : oracleId
+    : identifier_
     ;
 
 oracleId
@@ -55,10 +150,6 @@ primaryKey
     : PRIMARY? KEY
     ;
 
-columnNames
-    : LP_ columnName (COMMA_ columnName)* RP_
-    ;
-
 exprs
     : expr (COMMA_ expr)*
     ;
@@ -67,47 +158,39 @@ exprList
     : LP_ exprs RP_
     ;
 
+// TODO comb expr
 expr
-    : expr AND expr
-    | expr AND_ expr
-    | expr XOR expr
+    : expr logicalOperator expr
+    | notOperator_ expr
     | LP_ expr RP_
-    | NOT expr
-    | NOT_ expr
-    | expr OR expr
-    | expr OR_ expr
-    | booleanPrimary
-    | exprRecursive
+    | booleanPrimary_
     ;
 
-exprRecursive
-    : PRIOR expr
+logicalOperator
+    : OR | OR_ | AND | AND_
     ;
 
-booleanPrimary
-    : booleanPrimary IS NOT? (TRUE | FALSE | UNKNOWN |NULL)
-    | booleanPrimary SAFE_EQ_ predicate
-    | booleanPrimary comparisonOperator predicate
-    | booleanPrimary comparisonOperator (ALL | ANY) subquery
+notOperator_
+    : NOT | NOT_
+    ;
+
+booleanPrimary_
+    : booleanPrimary_ IS NOT? (TRUE | FALSE | UNKNOWN | NULL)
+    | booleanPrimary_ SAFE_EQ_ predicate
+    | booleanPrimary_ comparisonOperator predicate
+    | booleanPrimary_ comparisonOperator (ALL | ANY) subquery
     | predicate
     ;
 
 comparisonOperator
-    : EQ_
-    | GTE_
-    | GT_
-    | LTE_
-    | LT_
-    | NEQ_
+    : EQ_ | GTE_ | GT_ | LTE_ | LT_ | NEQ_
     ;
 
 predicate
     : bitExpr NOT? IN subquery
-    | bitExpr NOT? IN LP_ simpleExpr (COMMA_ simpleExpr)* RP_
-    | bitExpr NOT? BETWEEN simpleExpr AND predicate
-    | bitExpr SOUNDS LIKE simpleExpr
-    | bitExpr NOT? LIKE simpleExpr (ESCAPE simpleExpr)*
-    | bitExpr NOT? REGEXP simpleExpr
+    | bitExpr NOT? IN LP_ expr (COMMA_ expr)* RP_
+    | bitExpr NOT? BETWEEN bitExpr AND predicate
+    | bitExpr NOT? LIKE simpleExpr (ESCAPE simpleExpr)?
     | bitExpr
     ;
 
@@ -120,93 +203,74 @@ bitExpr
     | bitExpr MINUS_ bitExpr
     | bitExpr ASTERISK_ bitExpr
     | bitExpr SLASH_ bitExpr
-    | bitExpr MOD bitExpr
     | bitExpr MOD_ bitExpr
     | bitExpr CARET_ bitExpr
-    | bitExpr PLUS_ intervalExpr
-    | bitExpr MINUS_ intervalExpr
     | simpleExpr
     ;
 
 simpleExpr
     : functionCall
-    | literal
+    | parameterMarker
+    | literals
     | columnName
-    | simpleExpr collateClause
-    //| param_marker
-    | variable
-    | simpleExpr AND_ simpleExpr
-    | PLUS_ simpleExpr
-    | MINUS_ simpleExpr
-    | TILDE_ simpleExpr
-    | NOT_ simpleExpr
-    | BINARY simpleExpr
-    | exprList
-    | ROW exprList
-    | subquery
-    | EXISTS subquery
-    // | (identifier_ expr)
-    //| match_expr
-    | caseExpress
-    | intervalExpr
+    | simpleExpr OR_ simpleExpr
+    | (PLUS_ | MINUS_ | TILDE_ | NOT_ | BINARY) simpleExpr
+    | ROW? LP_ expr (COMMA_ expr)* RP_
+    | EXISTS? subquery
+    | LBE_ identifier_ expr RBE_
+    | caseExpression_
     | privateExprOfDb
     ;
 
 functionCall
-    : IDENTIFIER_ LP_ distinct? (exprs | ASTERISK_)? RP_
+    : aggregationFunction | specialFunction_ | regularFunction_ 
+    ;
+
+aggregationFunction
+    : aggregationFunctionName_ LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? RP_
+    ;
+
+aggregationFunctionName_
+    : MAX | MIN | SUM | COUNT | AVG
     ;
 
 distinct
     : DISTINCT
     ;
 
-intervalExpr
-    : matchNone
+specialFunction_
+    : castFunction_  | charFunction_
     ;
 
-caseExpress
-    : matchNone
+castFunction_
+    : CAST LP_ expr AS dataType RP_
     ;
 
-privateExprOfDb
-    : treatFunction | caseExpr | intervalExpression | objectAccessExpression | constructorExpr
+charFunction_
+    : CHAR LP_ expr (COMMA_ expr)* (USING ignoredIdentifier_)? RP_
     ;
 
-variable
-    : matchNone
+regularFunction_
+    : regularFunctionName_ LP_ (expr (COMMA_ expr)* | ASTERISK_)? RP_
     ;
 
-literal
-    : question
-    | number
-    | TRUE
-    | FALSE
-    | NULL
-    | LBE_ IDENTIFIER_ STRING_ RBE_
-    | HEX_DIGIT_
-    | string
-    | IDENTIFIER_ STRING_ collateClause?
-    | (DATE | TIME | TIMESTAMP) STRING_
-    | IDENTIFIER_? BIT_NUM_ collateClause?
+regularFunctionName_
+    : identifier_ | IF | LOCALTIME | LOCALTIMESTAMP | INTERVAL
     ;
 
-question
-    : QUESTION_
+caseExpression_
+    : CASE simpleExpr? caseWhen_+ caseElse_?
     ;
 
-number
-   : NUMBER_
-   ;
+caseWhen_
+    : WHEN expr THEN expr
+    ;
 
-string
-    : STRING_
+caseElse_
+    : ELSE expr
     ;
 
 subquery
-    : matchNone
-    ;
-
-collateClause
     : matchNone
     ;
 
@@ -215,11 +279,7 @@ orderByClause
     ;
 
 orderByItem
-    : (columnName | number | expr) (ASC | DESC)?
-    ;
-
-asterisk
-    : ASTERISK_
+    : (columnName | numberLiterals | expr) (ASC | DESC)?
     ;
 
 attributeName
@@ -228,10 +288,6 @@ attributeName
 
 indexTypeName
     : IDENTIFIER_
-    ;
-
-simpleExprsWithParen
-    : LP_ simpleExprs RP_ 
     ;
 
 simpleExprs
@@ -270,6 +326,10 @@ treatFunction
     : TREAT LP_ expr AS REF? dataTypeName_ RP_
     ;
 
+privateExprOfDb
+    : treatFunction | caseExpr | intervalExpression | objectAccessExpression | constructorExpr
+    ;
+
 caseExpr
     : CASE (simpleCaseExpr | searchedCaseExpr) elseClause? END
     ;
@@ -284,10 +344,6 @@ searchedCaseExpr
 
 elseClause
     : ELSE expr
-    ;
-
-dateTimeExpr
-    : expr AT (LOCAL | TIME ZONE (STRING_ | DBTIMEZONE | expr))
     ;
 
 intervalExpression

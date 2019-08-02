@@ -22,16 +22,14 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import lombok.Getter;
-import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
+import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.ShardingStrategyConfiguration;
-import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
-import org.apache.shardingsphere.core.exception.ShardingException;
+import org.apache.shardingsphere.core.config.ShardingConfigurationException;
 import org.apache.shardingsphere.core.spi.algorithm.keygen.ShardingKeyGeneratorServiceLoader;
-import org.apache.shardingsphere.core.strategy.encrypt.ShardingEncryptorEngine;
 import org.apache.shardingsphere.core.strategy.route.ShardingStrategy;
 import org.apache.shardingsphere.core.strategy.route.ShardingStrategyFactory;
 import org.apache.shardingsphere.core.strategy.route.hint.HintShardingStrategy;
@@ -54,7 +52,7 @@ import java.util.TreeSet;
 @Getter
 public class ShardingRule implements BaseRule {
     
-    private final ShardingRuleConfiguration shardingRuleConfig;
+    private final ShardingRuleConfiguration ruleConfiguration;
     
     private final ShardingDataSourceNames shardingDataSourceNames;
     
@@ -72,11 +70,12 @@ public class ShardingRule implements BaseRule {
     
     private final Collection<MasterSlaveRule> masterSlaveRules;
     
-    private final ShardingEncryptorEngine shardingEncryptorEngine;
+    private final EncryptRule encryptRule;
     
     public ShardingRule(final ShardingRuleConfiguration shardingRuleConfig, final Collection<String> dataSourceNames) {
-        Preconditions.checkArgument(!dataSourceNames.isEmpty(), "Data sources cannot be empty.");
-        this.shardingRuleConfig = shardingRuleConfig;
+        Preconditions.checkArgument(null != shardingRuleConfig, "ShardingRuleConfig cannot be null.");
+        Preconditions.checkArgument(null != dataSourceNames && !dataSourceNames.isEmpty(), "Data sources cannot be empty.");
+        this.ruleConfiguration = shardingRuleConfig;
         shardingDataSourceNames = new ShardingDataSourceNames(shardingRuleConfig, dataSourceNames);
         tableRules = createTableRules(shardingRuleConfig);
         bindingTableRules = createBindingTableRules(shardingRuleConfig.getBindingTableGroups());
@@ -85,7 +84,7 @@ public class ShardingRule implements BaseRule {
         defaultTableShardingStrategy = createDefaultShardingStrategy(shardingRuleConfig.getDefaultTableShardingStrategyConfig());
         defaultShardingKeyGenerator = createDefaultKeyGenerator(shardingRuleConfig.getDefaultKeyGeneratorConfig());
         masterSlaveRules = createMasterSlaveRules(shardingRuleConfig.getMasterSlaveRuleConfigs());
-        shardingEncryptorEngine = createShardingEncryptorEngine(shardingRuleConfig.getEncryptRuleConfig());
+        encryptRule = createEncryptRule(shardingRuleConfig.getEncryptRuleConfig());
     }
     
     private Collection<TableRule> createTableRules(final ShardingRuleConfiguration shardingRuleConfig) {
@@ -139,8 +138,8 @@ public class ShardingRule implements BaseRule {
         return result;
     }
     
-    private ShardingEncryptorEngine createShardingEncryptorEngine(final EncryptRuleConfiguration encryptRuleConfig) {
-        return null == encryptRuleConfig ? new ShardingEncryptorEngine() : new ShardingEncryptorEngine(shardingRuleConfig.getEncryptRuleConfig());
+    private EncryptRule createEncryptRule(final EncryptRuleConfiguration encryptRuleConfig) {
+        return null == encryptRuleConfig ? new EncryptRule() : new EncryptRule(ruleConfiguration.getEncryptRuleConfig());
     }
     
     /**
@@ -364,21 +363,6 @@ public class ShardingRule implements BaseRule {
     }
     
     /**
-     * Get logic table name base on logic index name.
-     *
-     * @param logicIndexName logic index name
-     * @return logic table name
-     */
-    public String getLogicTableName(final String logicIndexName) {
-        for (TableRule each : tableRules) {
-            if (logicIndexName.equals(each.getLogicIndex())) {
-                return each.getLogicTable();
-            }
-        }
-        throw new ShardingConfigurationException("Cannot find logic table name with logic index name: '%s'", logicIndexName);
-    }
-    
-    /**
      * Get logic table names base on actual table name.
      *
      * @param actualTableName actual table name
@@ -460,33 +444,6 @@ public class ShardingRule implements BaseRule {
             }
         }
         return Optional.absent();
-    }
-    
-    /**
-     * Get actual data source name.
-     *
-     * @param actualTableName actual table name
-     * @return actual data source name
-     */
-    public String getActualDataSourceName(final String actualTableName) {
-        Optional<TableRule> tableRule = findTableRuleByActualTable(actualTableName);
-        if (tableRule.isPresent()) {
-            return tableRule.get().getActualDatasourceNames().iterator().next();
-        }
-        if (!Strings.isNullOrEmpty(shardingDataSourceNames.getDefaultDataSourceName())) {
-            return shardingDataSourceNames.getDefaultDataSourceName();
-        }
-        throw new ShardingException("Cannot found actual data source name of '%s' in sharding rule.", actualTableName);
-    }
-    
-    /**
-     * Judge contains table in sharding rule.
-     *
-     * @param logicTableName logic table name
-     * @return contains table in sharding rule or not
-     */
-    public boolean contains(final String logicTableName) {
-        return findTableRule(logicTableName).isPresent() || findBindingTableRule(logicTableName).isPresent() || isBroadcastTable(logicTableName);
     }
     
     /**

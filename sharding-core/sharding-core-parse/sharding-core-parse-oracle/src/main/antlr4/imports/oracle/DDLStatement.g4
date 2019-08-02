@@ -17,22 +17,39 @@
 
 grammar DDLStatement;
 
-import Symbol, Keyword, Literals, BaseRule;
+import Symbol, Keyword, OracleKeyword, Literals, BaseRule;
 
 createTable
-    : CREATE (GLOBAL TEMPORARY)? TABLE tableName relationalTable
+    : CREATE createTableSpecification_ TABLE tableName createDefinitionClause_
+    ;
+
+createIndex
+    : CREATE createIndexSpecification_ INDEX indexName ON createIndexDefinitionClause_
     ;
 
 alterTable
-    : ALTER TABLE tableName (alterTableProperties | columnClauses | constraintClauses | alterExternalTable)?
+    : ALTER TABLE tableName alterDefinitionClause_
+    ;
+
+// TODO hongjun throw exeption when alter index on oracle
+alterIndex
+    : ALTER INDEX indexName renameIndexClause_
     ;
 
 dropTable
     : DROP TABLE tableName
     ;
+ 
+dropIndex
+    : DROP INDEX indexName
+    ;
 
 truncateTable
     : TRUNCATE TABLE tableName
+    ;
+
+createTableSpecification_
+    : (GLOBAL TEMPORARY)?
     ;
 
 tablespaceClauseWithParen
@@ -47,8 +64,8 @@ domainIndexClause
     : indexTypeName
     ;
 
-relationalTable
-    : (LP_ relationalProperties RP_)? (ON COMMIT (DELETE | PRESERVE) ROWS)? tableProperties
+createDefinitionClause_
+    : (LP_ relationalProperties RP_)? (ON COMMIT (DELETE | PRESERVE) ROWS)?
     ;
 
 relationalProperties
@@ -59,31 +76,159 @@ relationalProperty
     : columnDefinition | virtualColumnDefinition | outOfLineConstraint | outOfLineRefConstraint
     ;
 
-tableProperties
-    : columnProperties? (AS unionSelect)?
+columnDefinition
+    : columnName dataType SORT? visibleClause_ (defaultNullClause_ expr | identityClause)? (ENCRYPT encryptionSpecification_)? (inlineConstraint+ | inlineRefConstraint)?
     ;
 
-unionSelect
-    : matchNone
+visibleClause_
+    : (VISIBLE | INVISIBLE)?
+    ;
+
+defaultNullClause_
+    : DEFAULT (ON NULL)?
+    ;
+
+identityClause
+    : GENERATED (ALWAYS | BY DEFAULT (ON NULL)?) AS IDENTITY identifyOptions
+    ;
+
+identifyOptions
+    : LP_? (identityOption+)? RP_?
+    ;
+
+identityOption
+    : START WITH (NUMBER_ | LIMIT VALUE)
+    | INCREMENT BY NUMBER_
+    | MAXVALUE NUMBER_
+    | NOMAXVALUE
+    | MINVALUE NUMBER_
+    | NOMINVALUE
+    | CYCLE
+    | NOCYCLE
+    | CACHE NUMBER_
+    | NOCACHE
+    | ORDER
+    | NOORDER
+    ;
+
+encryptionSpecification_
+    : (USING STRING_)? (IDENTIFIED BY STRING_)? STRING_? (NO? SALT)?
+    ;
+
+inlineConstraint
+    : (CONSTRAINT ignoredIdentifier_)? (NOT? NULL | UNIQUE | primaryKey | referencesClause | CHECK LP_ expr RP_) constraintState*
+    ;
+
+referencesClause
+    : REFERENCES tableName columnNames? (ON DELETE (CASCADE | SET NULL))?
+    ;
+
+constraintState
+    : notDeferrable 
+    | initiallyClause 
+    | RELY | NORELY 
+    | usingIndexClause 
+    | ENABLE | DISABLE 
+    | VALIDATE | NOVALIDATE 
+    | exceptionsClause
+    ;
+
+notDeferrable
+    : NOT? DEFERRABLE
+    ;
+
+initiallyClause
+    : INITIALLY (IMMEDIATE | DEFERRED)
+    ;
+
+exceptionsClause
+    : EXCEPTIONS INTO tableName
+    ;
+
+usingIndexClause
+    : USING INDEX (indexName | createIndexClause_)?
+    ;
+
+createIndexClause_ 
+    :  LP_ createIndex RP_
+    ;
+
+inlineRefConstraint
+    : SCOPE IS tableName | WITH ROWID | (CONSTRAINT ignoredIdentifier_)? referencesClause constraintState*
+    ;
+
+virtualColumnDefinition
+    : columnName dataType? (GENERATED ALWAYS)? AS LP_ expr RP_ VIRTUAL? inlineConstraint*
+    ;
+
+outOfLineConstraint
+    : (CONSTRAINT ignoredIdentifier_)?
+    (UNIQUE columnNames
+    | primaryKey columnNames 
+    | FOREIGN KEY columnNames referencesClause
+    | CHECK LP_ expr RP_
+    ) constraintState*
+    ;
+
+outOfLineRefConstraint
+    : SCOPE FOR LP_ lobItem RP_ IS tableName
+    | REF LP_ lobItem RP_ WITH ROWID
+    | (CONSTRAINT ignoredIdentifier_)? FOREIGN KEY lobItemList referencesClause constraintState*
+    ;
+
+createIndexSpecification_
+    : (UNIQUE | BITMAP)?
+    ;
+
+tableIndexClause_
+    : tableName alias? indexExpressions_
+    ;
+
+indexExpressions_
+    : LP_ indexExpression_ (COMMA_ indexExpression_)* RP_
+    ;
+
+indexExpression_
+    : (columnName | expr) (ASC | DESC)?
+    ;
+
+bitmapJoinIndexClause_
+    : tableName columnSortsClause_ FROM tableAlias WHERE expr
+    ;
+
+columnSortsClause_
+    : LP_ columnSortClause_ (COMMA_ columnSortClause_)* RP_
+    ;
+    
+columnSortClause_
+    : (tableName | alias)? columnName (ASC | DESC)?
+    ;
+
+createIndexDefinitionClause_
+    : tableIndexClause_ | bitmapJoinIndexClause_
+    ;
+
+tableAlias
+    : tableName alias? (COMMA_ tableName alias?)*
+    ;
+
+alterDefinitionClause_
+    : (alterTableProperties | columnClauses | constraintClauses | alterExternalTable)?
     ;
 
 alterTableProperties
-    : renameTableSpecification_ | REKEY encryptionSpec
+    : renameTableSpecification_ | REKEY encryptionSpecification_
     ;
 
 renameTableSpecification_
-    : RENAME TO newTableName
-    ;
-
-newTableName
-    : IDENTIFIER_
+    : RENAME TO identifier_
     ;
 
 columnClauses
-    : opColumnClause+ | renameColumnSpecification
+    : operateColumnClause+ | renameColumnClause
     ;
 
-opColumnClause
+operateColumnClause
     : addColumnSpecification | modifyColumnSpecification | dropColumnClause
     ;
 
@@ -99,12 +244,28 @@ columnOrVirtualDefinition
     : columnDefinition | virtualColumnDefinition
     ;
 
+columnProperties
+    : columnProperty+
+    ;
+
+columnProperty
+    : objectTypeColProperties
+    ;
+
+objectTypeColProperties
+    : COLUMN columnName substitutableColumnClause
+    ;
+
+substitutableColumnClause
+    : ELEMENT? IS OF TYPE? LP_ ONLY? dataTypeName_ RP_ | NOT? SUBSTITUTABLE AT ALL LEVELS
+    ;
+
 modifyColumnSpecification
     : MODIFY (LP_? modifyColProperties (COMMA_ modifyColProperties)* RP_? | modifyColSubstitutable)
     ;
 
 modifyColProperties
-    : columnName dataType? (DEFAULT expr)? (ENCRYPT encryptionSpec | DECRYPT)? inlineConstraint* 
+    : columnName dataType? (DEFAULT expr)? (ENCRYPT encryptionSpecification_ | DECRYPT)? inlineConstraint* 
     ;
 
 modifyColSubstitutable
@@ -131,7 +292,7 @@ checkpointNumber
     : CHECKPOINT NUMBER_
     ;
 
-renameColumnSpecification
+renameColumnClause
     : RENAME COLUMN columnName TO columnName
     ;
 
@@ -174,95 +335,6 @@ alterExternalTable
     : (addColumnSpecification | modifyColumnSpecification | dropColumnSpecification)+
     ;
 
-columnDefinition
-    : columnName dataType SORT? (DEFAULT (ON NULL)? expr | identityClause)? (ENCRYPT encryptionSpec)? (inlineConstraint+ | inlineRefConstraint)?
-    ;
-
-identityClause
-    : GENERATED (ALWAYS | BY DEFAULT (ON NULL)?) AS IDENTITY LP_? (identityOptions+)? RP_?
-    ;
-
-identityOptions
-    : START WITH (NUMBER_ | LIMIT VALUE)
-    | INCREMENT BY NUMBER_
-    | MAXVALUE NUMBER_
-    | NOMAXVALUE
-    | MINVALUE NUMBER_
-    | NOMINVALUE
-    | CYCLE
-    | NOCYCLE
-    | CACHE NUMBER_
-    | NOCACHE
-    | ORDER
-    | NOORDER
-    ;
-
-virtualColumnDefinition
-    : columnName dataType? (GENERATED ALWAYS)? AS LP_ expr RP_ VIRTUAL? inlineConstraint*
-    ;
-
-inlineConstraint
-    : (CONSTRAINT ignoredIdentifier_)? (NOT? NULL | UNIQUE | primaryKey | referencesClause | CHECK LP_ expr RP_) constraintState*
-    ;
-
-referencesClause
-    : REFERENCES tableName columnNames? (ON DELETE (CASCADE | SET NULL))?
-    ;
-
-constraintState
-    : notDeferrable 
-    | initiallyClause 
-    | RELY 
-    | NORELY 
-    | usingIndexClause 
-    | ENABLE 
-    | DISABLE 
-    | VALIDATE 
-    | NOVALIDATE 
-    | exceptionsClause
-    ;
-
-notDeferrable
-    : NOT? DEFERRABLE
-    ;
-
-initiallyClause
-    : INITIALLY (IMMEDIATE | DEFERRED)
-    ;
-
-exceptionsClause
-    : EXCEPTIONS INTO
-    ;
-
-usingIndexClause
-    : USING INDEX (indexName | LP_ createIndex RP_)?
-    ;
-
-inlineRefConstraint
-    : SCOPE IS tableName | WITH ROWID | (CONSTRAINT ignoredIdentifier_)? referencesClause constraintState*
-    ;
-
-outOfLineConstraint
-    : (CONSTRAINT ignoredIdentifier_)?
-    (
-    	UNIQUE columnNames
-        | primaryKey columnNames 
-        | FOREIGN KEY columnNames referencesClause
-        | CHECK LP_ expr RP_
-    ) 
-    constraintState*
-    ;
-
-outOfLineRefConstraint
-    : SCOPE FOR LP_ lobItem RP_ IS tableName
-    | REF LP_ lobItem RP_ WITH ROWID
-    | (CONSTRAINT ignoredIdentifier_)? FOREIGN KEY lobItemList referencesClause constraintState*
-    ;
-
-encryptionSpec
-    : (USING STRING_)? (IDENTIFIED BY STRING_)? STRING_? (NO? SALT)?
-    ;
-
 objectProperties
     : objectProperty (COMMA_ objectProperty)*
     ;
@@ -271,47 +343,6 @@ objectProperty
     : (columnName | attributeName) (DEFAULT expr)? (inlineConstraint* | inlineRefConstraint?) | outOfLineConstraint | outOfLineRefConstraint
     ;
 
-columnProperties
-    : columnProperty+
-    ;
-
-columnProperty
-    : objectTypeColProperties
-    ;
-
-objectTypeColProperties
-    : COLUMN columnName substitutableColumnClause
-    ;
-
-substitutableColumnClause
-    : ELEMENT? IS OF TYPE? LP_ ONLY? dataTypeName_ RP_ | NOT? SUBSTITUTABLE AT ALL LEVELS
-    ;
-
-createIndex
-    : CREATE (UNIQUE | BITMAP)? INDEX indexName ON (tableIndexClause_ | bitmapJoinIndexClause_)
-    ;
-
-tableIndexClause_
-    : tableName alias? LP_ indexExpr_ (COMMA_ indexExpr_)* RP_
-    ;
-
-indexExpr_
-    : (columnName | expr) (ASC | DESC)?
-    ;
-
-bitmapJoinIndexClause_
-    : tableName LP_ columnSortClause_ (COMMA_ columnSortClause_)* RP_ FROM tableName alias? (COMMA_ tableName alias?)* WHERE expr
-    ;
-
-columnSortClause_
-    : tableName alias? columnName (ASC | DESC)?
-    ;
-
-dropIndex
-    : DROP INDEX indexName
-    ;
-
-// TODO hongjun throw exeption when alter index on oracle
-alterIndex
-    : ALTER INDEX indexName (RENAME TO indexName)?
+renameIndexClause_
+    : (RENAME TO indexName)?
     ;

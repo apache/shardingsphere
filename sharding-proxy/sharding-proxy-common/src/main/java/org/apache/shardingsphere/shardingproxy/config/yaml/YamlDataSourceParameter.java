@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.config.yaml;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -24,9 +25,11 @@ import lombok.Setter;
  * Data source parameters for YAML.
  *
  * @author zhangyonglun
+ * @author panjuan
  */
 @Getter
 @Setter
+@EqualsAndHashCode
 public final class YamlDataSourceParameter {
     
     private String url;
@@ -46,4 +49,6 @@ public final class YamlDataSourceParameter {
     private int minPoolSize = 1;
     
     private long maintenanceIntervalMilliseconds = 30 * 1000;
+
+    private boolean readOnly = false;
 }

@@ -19,13 +19,15 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.connection;
 
 import lombok.Getter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractConnectionAdapter;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
+import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteCallback;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingPreparedStatement;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingStatement;
-import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -45,18 +47,40 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     
     private final Map<String, DataSource> dataSourceMap;
     
-    private final ShardingContext shardingContext;
+    private final ShardingRuntimeContext runtimeContext;
     
-    public ShardingConnection(final Map<String, DataSource> dataSourceMap, final ShardingContext shardingContext,
-                              final ShardingTransactionManagerEngine shardingTransactionManagerEngine, final TransactionType transactionType) {
-        super(shardingTransactionManagerEngine, transactionType);
+    private final TransactionType transactionType;
+    
+    private final ShardingTransactionManager shardingTransactionManager;
+    
+    public ShardingConnection(final Map<String, DataSource> dataSourceMap, final ShardingRuntimeContext runtimeContext, final TransactionType transactionType) {
         this.dataSourceMap = dataSourceMap;
-        this.shardingContext = shardingContext;
+        this.runtimeContext = runtimeContext;
+        this.transactionType = transactionType;
+        shardingTransactionManager = runtimeContext.getShardingTransactionManagerEngine().getTransactionManager(transactionType);
+    }
+    
+    /**
+     * Whether hold transaction or not.
+     *
+     * @return true or false
+     */
+    public boolean isHoldTransaction() {
+        return (TransactionType.LOCAL == transactionType && !getAutoCommit()) || (TransactionType.XA == transactionType && isInShardingTransaction());
+    }
+    
+    @Override
+    protected Connection createConnection(final String dataSourceName, final DataSource dataSource) throws SQLException {
+        return isInShardingTransaction() ? shardingTransactionManager.getConnection(dataSourceName) : dataSource.getConnection();
+    }
+    
+    private boolean isInShardingTransaction() {
+        return null != shardingTransactionManager && shardingTransactionManager.isInTransaction();
     }
     
     @Override
     public DatabaseMetaData getMetaData() throws SQLException {
-        return getCachedConnections().isEmpty() ? shardingContext.getCachedDatabaseMetaData() : getCachedConnections().values().iterator().next().getMetaData();
+        return getCachedConnections().isEmpty() ? runtimeContext.getCachedDatabaseMetaData() : getCachedConnections().values().iterator().next().getMetaData();
     }
     
     @Override
@@ -105,7 +129,51 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     }
     
     @Override
-    protected boolean isOnlyLocalTransactionValid() {
-        return false;
+    public void setAutoCommit(final boolean autoCommit) throws SQLException {
+        if (TransactionType.LOCAL == transactionType) {
+            super.setAutoCommit(autoCommit);
+            return;
+        }
+        if (autoCommit && !shardingTransactionManager.isInTransaction() || !autoCommit && shardingTransactionManager.isInTransaction()) {
+            return;
+        }
+        if (autoCommit && shardingTransactionManager.isInTransaction()) {
+            shardingTransactionManager.commit();
+            return;
+        }
+        if (!autoCommit && !shardingTransactionManager.isInTransaction()) {
+            recordMethodInvocation(Connection.class, "setAutoCommit", new Class[]{boolean.class}, new Object[]{true});
+            closeCachedConnections();
+            shardingTransactionManager.begin();
+        }
+    }
+    
+    private void closeCachedConnections() throws SQLException {
+        getForceExecuteTemplate().execute(getCachedConnections().values(), new ForceExecuteCallback<Connection>() {
+            
+            @Override
+            public void execute(final Connection connection) throws SQLException {
+                connection.close();
+            }
+        });
+        getCachedConnections().clear();
+    }
+    
+    @Override
+    public void commit() throws SQLException {
+        if (TransactionType.LOCAL == transactionType) {
+            super.commit();
+        } else {
+            shardingTransactionManager.commit();
+        }
+    }
+    
+    @Override
+    public void rollback() throws SQLException {
+        if (TransactionType.LOCAL == transactionType) {
+            super.rollback();
+        } else {
+            shardingTransactionManager.rollback();
+        }
     }
 }

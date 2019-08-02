@@ -20,12 +20,10 @@ package org.apache.shardingsphere.core.parse.integrate.jaxb.root;
 import com.google.common.base.Splitter;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.core.parse.integrate.jaxb.condition.ExpectedOrCondition;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.groupby.ExpectedGroupByColumn;
-import org.apache.shardingsphere.core.parse.integrate.jaxb.item.ExpectedSelectItems;
-import org.apache.shardingsphere.core.parse.integrate.jaxb.limit.ExpectedLimit;
-import org.apache.shardingsphere.core.parse.integrate.jaxb.meta.ExpectedTableMetaData;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.insert.ExpectedInsertColumnsAndValues;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.orderby.ExpectedOrderByColumn;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.pagination.ExpectedPaginationValue;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.table.ExpectedAlterTable;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.table.ExpectedTable;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.token.ExpectedTokens;
@@ -58,12 +56,6 @@ public final class ParserResult {
     @XmlElement(name = "schema")
     private List<ExpectedTable> schemas = new LinkedList<>();
     
-    @XmlElement(name = "or-condition")
-    private ExpectedOrCondition orCondition = new ExpectedOrCondition();
-    
-    @XmlElement(name = "select-items")
-    private ExpectedSelectItems selectItems = new ExpectedSelectItems();
-    
     @XmlElement
     private ExpectedTokens tokens = new ExpectedTokens();
     
@@ -76,19 +68,22 @@ public final class ParserResult {
     private List<ExpectedGroupByColumn> groupByColumns = new LinkedList<>();
     
     @XmlElement 
-    private ExpectedLimit limit;
+    private ExpectedPaginationValue offset;
     
-    @XmlElement
-    private ExpectedTableMetaData meta;
+    @XmlElement(name = "row-count")
+    private ExpectedPaginationValue rowCount;
     
     @XmlElement(name = "alter-table")
     private ExpectedAlterTable alterTable;
     
+    @XmlElement(name = "insert-columns-and-values")
+    private ExpectedInsertColumnsAndValues insertColumnsAndValues = new ExpectedInsertColumnsAndValues();
+    
     @XmlAttribute(name = "tcl-actual-statement-class-type")
     private String tclActualStatementClassType;
     
-    @XmlElement(name = "encrypt-condition")
-    private ExpectedOrCondition encryptCondition = new ExpectedOrCondition();
+    @XmlAttribute(name = "auto-commit")
+    private boolean autoCommit;
     
     /**
      * Get parameters.

@@ -35,9 +35,6 @@ public final class ExpectedGroupByColumn {
     @XmlAttribute
     private String name;
     
-    @XmlAttribute
-    private String alias;
-    
     @XmlAttribute(name = "order-direction") 
     private String orderDirection;
 }

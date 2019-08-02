@@ -19,12 +19,13 @@ package org.apache.shardingsphere.core.merge.dql.orderby;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.constant.OrderDirection;
+import org.apache.shardingsphere.core.parse.core.constant.OrderDirection;
 
 /**
  * Compare util.
  *
  * @author zhangliang
+ * @author yangyi
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CompareUtil {
@@ -36,10 +37,11 @@ public final class CompareUtil {
      * @param otherValue other value
      * @param orderDirection order direction 
      * @param nullOrderDirection order direction for null value
+     * @param caseSensitive case sensitive
      * @return compare result
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public static int compareTo(final Comparable thisValue, final Comparable otherValue, final OrderDirection orderDirection, final OrderDirection nullOrderDirection) {
+    public static int compareTo(final Comparable thisValue, final Comparable otherValue, final OrderDirection orderDirection, final OrderDirection nullOrderDirection, final boolean caseSensitive) {
         if (null == thisValue && null == otherValue) {
             return 0;
         }
@@ -49,6 +51,14 @@ public final class CompareUtil {
         if (null == otherValue) {
             return orderDirection == nullOrderDirection ? 1 : -1;
         }
+        if (!caseSensitive && thisValue instanceof String && otherValue instanceof String) {
+            return compareToCaseInsensitiveString((String) thisValue, (String) otherValue, orderDirection);
+        }
         return OrderDirection.ASC == orderDirection ? thisValue.compareTo(otherValue) : -thisValue.compareTo(otherValue);
+    }
+    
+    private static int compareToCaseInsensitiveString(final String thisValue, final String otherValue, final OrderDirection orderDirection) {
+        int result = thisValue.toUpperCase().compareTo(otherValue.toUpperCase());
+        return OrderDirection.ASC == orderDirection ? result : -result;
     }
 }

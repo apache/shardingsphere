@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.route.type.unicast;
 
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
-import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
+import org.apache.shardingsphere.core.config.ShardingConfigurationException;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.junit.Before;
@@ -52,7 +52,7 @@ public final class UnicastRoutingEngineTest {
         UnicastRoutingEngine unicastRoutingEngine = new UnicastRoutingEngine(shardingRule, Collections.singleton("t_order"));
         RoutingResult routingResult = unicastRoutingEngine.route();
         assertThat(routingResult, instanceOf(RoutingResult.class));
-        assertThat(routingResult.getTableUnits().getTableUnits().size(), is(1));
+        assertThat(routingResult.getRoutingUnits().size(), is(1));
     }
 
     @Test
@@ -60,7 +60,7 @@ public final class UnicastRoutingEngineTest {
         UnicastRoutingEngine unicastRoutingEngine = new UnicastRoutingEngine(shardingRule, Collections.singleton("t_config"));
         RoutingResult routingResult = unicastRoutingEngine.route();
         assertThat(routingResult, instanceOf(RoutingResult.class));
-        assertThat(routingResult.getTableUnits().getTableUnits().size(), is(1));
+        assertThat(routingResult.getRoutingUnits().size(), is(1));
     }
 
     @Test
@@ -68,7 +68,7 @@ public final class UnicastRoutingEngineTest {
         UnicastRoutingEngine unicastRoutingEngine = new UnicastRoutingEngine(shardingRule, Collections.<String>emptyList());
         RoutingResult routingResult = unicastRoutingEngine.route();
         assertThat(routingResult, instanceOf(RoutingResult.class));
-        assertThat(routingResult.getTableUnits().getTableUnits().size(), is(1));
+        assertThat(routingResult.getRoutingUnits().size(), is(1));
     }
     
     @Test
@@ -79,7 +79,7 @@ public final class UnicastRoutingEngineTest {
         UnicastRoutingEngine unicastRoutingEngine = new UnicastRoutingEngine(shardingRule, sets);
         RoutingResult routingResult = unicastRoutingEngine.route();
         assertThat(routingResult, instanceOf(RoutingResult.class));
-        assertThat(routingResult.getTableUnits().getTableUnits().size(), is(1));
+        assertThat(routingResult.getRoutingUnits().size(), is(1));
     }
     
     @Test(expected = ShardingConfigurationException.class)

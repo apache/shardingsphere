@@ -22,9 +22,9 @@ import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.core.constant.AggregationType;
 import org.apache.shardingsphere.core.execute.sql.execute.row.QueryRow;
-import org.apache.shardingsphere.core.parse.old.parser.context.selectitem.AggregationDistinctSelectItem;
+import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.AggregationDistinctSelectItem;
+import org.apache.shardingsphere.core.parse.core.constant.AggregationType;
 
 import java.io.InputStream;
 import java.sql.SQLException;
@@ -45,8 +45,9 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     
     private final AggregationDistinctQueryMetaData metaData;
         
-    private AggregationDistinctQueryResult(final Multimap<String, Integer> columnLabelAndIndexMap, final Iterator<QueryRow> resultData, final AggregationDistinctQueryMetaData distinctQueryMetaData) {
-        super(columnLabelAndIndexMap, resultData);
+    private AggregationDistinctQueryResult(final Multimap<String, Integer> columnLabelAndIndexMap, final List<Boolean> columnCaseSensitive, final Iterator<QueryRow> resultData,
+        final AggregationDistinctQueryMetaData distinctQueryMetaData) {
+        super(columnLabelAndIndexMap, columnCaseSensitive, resultData);
         metaData = distinctQueryMetaData;
     }
     
@@ -75,7 +76,7 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
             public DistinctQueryResult apply(final QueryRow input) {
                 Set<QueryRow> resultData = new LinkedHashSet<>();
                 resultData.add(input);
-                return new AggregationDistinctQueryResult(getColumnLabelAndIndexMap(), resultData.iterator(), metaData);
+                return new AggregationDistinctQueryResult(getColumnLabelAndIndexMap(), getColumnCaseSensitive(), resultData.iterator(), metaData);
             }
         }));
     }

@@ -19,9 +19,10 @@ package org.apache.shardingsphere.core.route.type.broadcast;
 
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.ddl.DDLStatement;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.DQLStatement;
-import org.apache.shardingsphere.core.parse.antlr.sql.token.IndexToken;
+import org.apache.shardingsphere.core.optimize.transparent.statement.TransparentOptimizedStatement;
+import org.apache.shardingsphere.core.parse.sql.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.core.parse.sql.statement.ddl.CreateIndexStatement;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.junit.Before;
@@ -41,26 +42,9 @@ public final class TableBroadcastRoutingEngineTest {
     @Before
     public void setEngineContext() {
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration("t_order", "ds${0..1}.t_order_${0..2}");
-        tableRuleConfig.setLogicIndex("t_order_index");
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
         shardingRule = new ShardingRule(shardingRuleConfig, Arrays.asList("ds0", "ds1"));
-    }
-    
-    @Test
-    public void assertRoutingResultForDQLStatement() {
-        assertThat(createDQLStatementRoutingResult(), instanceOf(RoutingResult.class));
-    }
-    
-    @Test
-    public void assertIsSingleRoutingForDQLStatement() {
-        assertFalse(createDQLStatementRoutingResult().isSingleRouting());
-    }
-    
-    @Test
-    public void assertTableUnitsForDQLStatement() {
-        RoutingResult routingResult = createDQLStatementRoutingResult();
-        assertThat(routingResult.getTableUnits().getTableUnits().size(), is(0));
     }
     
     @Test
@@ -76,19 +60,13 @@ public final class TableBroadcastRoutingEngineTest {
     @Test
     public void assertTableUnitsForDDLStatement() {
         RoutingResult routingResult = createDDLStatementRoutingResult();
-        assertThat(routingResult.getTableUnits().getTableUnits().size(), is(6));
-    }
-    
-    private RoutingResult createDQLStatementRoutingResult() {
-        TableBroadcastRoutingEngine tableBroadcastRoutingEngine = new TableBroadcastRoutingEngine(shardingRule, new DQLStatement());
-        return tableBroadcastRoutingEngine.route();
+        assertThat(routingResult.getRoutingUnits().size(), is(6));
     }
     
     private RoutingResult createDDLStatementRoutingResult() {
-        DDLStatement ddlStatement = new DDLStatement();
-        ddlStatement.setLogicSQL("CREATE INDEX t_order_index on t_order");
-        ddlStatement.addSQLToken(new IndexToken(13, 25, "t_order"));
-        TableBroadcastRoutingEngine tableBroadcastRoutingEngine = new TableBroadcastRoutingEngine(shardingRule, ddlStatement);
-        return tableBroadcastRoutingEngine.route();
+        CreateIndexStatement createIndexStatement = new CreateIndexStatement();
+        createIndexStatement.getAllSQLSegments().add(new TableSegment(0, 0, "t_order"));
+        createIndexStatement.setIndex(new IndexSegment(0, 0, "t_order_index"));
+        return new TableBroadcastRoutingEngine(shardingRule, new TransparentOptimizedStatement(createIndexStatement)).route();
     }
 }

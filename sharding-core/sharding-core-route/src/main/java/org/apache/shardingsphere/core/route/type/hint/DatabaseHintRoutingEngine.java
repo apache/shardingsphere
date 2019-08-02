@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
-import org.apache.shardingsphere.core.route.type.TableUnit;
+import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.strategy.route.hint.HintShardingStrategy;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
@@ -53,7 +53,7 @@ public final class DatabaseHintRoutingEngine implements RoutingEngine {
         Preconditions.checkState(!routingDataSources.isEmpty(), "no database route info");
         RoutingResult result = new RoutingResult();
         for (String each : routingDataSources) {
-            result.getTableUnits().getTableUnits().add(new TableUnit(each));
+            result.getRoutingUnits().add(new RoutingUnit(each));
         }
         return result;
     }

@@ -20,16 +20,16 @@ package org.apache.shardingsphere.shardingjdbc.executor;
 import com.google.common.base.Optional;
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.execute.ShardingExecuteEngine;
 import org.apache.shardingsphere.core.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
+import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
-import org.apache.shardingsphere.core.strategy.encrypt.ShardingEncryptorEngine;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -65,19 +65,19 @@ public abstract class AbstractBaseExecutorTest {
     }
     
     private void setConnection() throws SQLException {
-        ShardingContext shardingContext = mock(ShardingContext.class);
-        when(shardingContext.getExecuteEngine()).thenReturn(executeEngine);
-        when(shardingContext.getShardingProperties()).thenReturn(getShardingProperties());
-        when(shardingContext.getDatabaseType()).thenReturn(DatabaseType.H2);
+        ShardingRuntimeContext runtimeContext = mock(ShardingRuntimeContext.class);
+        when(runtimeContext.getExecuteEngine()).thenReturn(executeEngine);
+        when(runtimeContext.getProps()).thenReturn(getShardingProperties());
+        when(runtimeContext.getDatabaseType()).thenReturn(DatabaseTypes.getActualDatabaseType("H2"));
         ShardingRule shardingRule = getShardingRule();
-        when(shardingContext.getShardingRule()).thenReturn(shardingRule);
+        when(runtimeContext.getRule()).thenReturn(shardingRule);
+        when(runtimeContext.getShardingTransactionManagerEngine()).thenReturn(new ShardingTransactionManagerEngine());
         DataSource dataSource = mock(DataSource.class);
         when(dataSource.getConnection()).thenReturn(mock(Connection.class));
         Map<String, DataSource> dataSourceSourceMap = new LinkedHashMap<>();
         dataSourceSourceMap.put("ds_0", dataSource);
         dataSourceSourceMap.put("ds_1", dataSource);
-        ShardingTransactionManagerEngine shardingTransactionManagerEngine = mock(ShardingTransactionManagerEngine.class);
-        connection = new ShardingConnection(dataSourceSourceMap, shardingContext, shardingTransactionManagerEngine, TransactionType.LOCAL);
+        connection = new ShardingConnection(dataSourceSourceMap, runtimeContext, TransactionType.LOCAL);
     }
     
     private ShardingRule getShardingRule() {
@@ -85,9 +85,9 @@ public abstract class AbstractBaseExecutorTest {
         when(shardingRule.getLogicTableNames(anyString())).thenReturn(Collections.<String>emptyList());
         ShardingEncryptor shardingEncryptor = mock(ShardingEncryptor.class);
         when(shardingEncryptor.decrypt(anyString())).thenReturn("decryptValue");
-        ShardingEncryptorEngine shardingEncryptorEngine = mock(ShardingEncryptorEngine.class);
-        when(shardingEncryptorEngine.getShardingEncryptor(anyString(), anyString())).thenReturn(Optional.of(shardingEncryptor));
-        when(shardingRule.getShardingEncryptorEngine()).thenReturn(shardingEncryptorEngine);
+        EncryptRule encryptRule = mock(EncryptRule.class);
+        when(encryptRule.getShardingEncryptor(anyString(), anyString())).thenReturn(Optional.of(shardingEncryptor));
+        when(shardingRule.getEncryptRule()).thenReturn(encryptRule);
         when(shardingRule.findTableRuleByActualTable("table_x")).thenReturn(Optional.<TableRule>absent());
         return shardingRule;
     }

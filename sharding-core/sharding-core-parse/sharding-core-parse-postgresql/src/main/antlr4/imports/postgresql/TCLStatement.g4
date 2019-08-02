@@ -17,7 +17,7 @@
 
 grammar TCLStatement;
 
-import Symbol, Keyword, Literals, BaseRule;
+import Symbol, Keyword, PostgreSQLKeyword, Literals, BaseRule;
 
 setTransaction
     : SET (SESSION CHARACTERISTICS AS)? TRANSACTION

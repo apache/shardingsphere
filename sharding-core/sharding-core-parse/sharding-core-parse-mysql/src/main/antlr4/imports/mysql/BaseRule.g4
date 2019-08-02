@@ -17,7 +17,7 @@
 
 grammar BaseRule;
 
-import Symbol, Keyword, Literals;
+import Symbol, Keyword, MySQLKeyword, Literals;
 
 parameterMarker
     : QUESTION_
@@ -34,11 +34,11 @@ literals
     ;
 
 stringLiterals
-    : characterSetName_? STRING_ collateName_?
+    : characterSetName_? STRING_ collateClause_?
     ;
 
 numberLiterals
-   : NUMBER_
+   : MINUS_? NUMBER_
    ;
 
 dateTimeLiterals
@@ -47,11 +47,11 @@ dateTimeLiterals
     ;
 
 hexadecimalLiterals
-    : characterSetName_? HEX_DIGIT_ collateName_?
+    : characterSetName_? HEX_DIGIT_ collateClause_?
     ;
 
 bitValueLiterals
-    : characterSetName_? BIT_NUM_ collateName_?
+    : characterSetName_? BIT_NUM_ collateClause_?
     ;
     
 booleanLiterals
@@ -62,20 +62,17 @@ nullValueLiterals
     : NULL
     ;
 
-characterSetName_
-    : IDENTIFIER_
-    ;
-
-collateName_
-    : IDENTIFIER_
-    ;
-
 identifier_
     : IDENTIFIER_ | unreservedWord_
     ;
 
 variable_
-    : (AT_ AT_)? (GLOBAL | PERSIST | PERSIST_ONLY | SESSION)? DOT_? identifier_
+    : (AT_? AT_)? (GLOBAL | PERSIST | PERSIST_ONLY | SESSION)? DOT_? identifier_
+    ;
+
+scope_
+    : (GLOBAL | PERSIST | PERSIST_ONLY | SESSION)
+    | AT_ AT_ (GLOBAL | PERSIST | PERSIST_ONLY | SESSION) DOT_
     ;
 
 unreservedWord_
@@ -100,24 +97,86 @@ unreservedWord_
     | QUARTER | YEAR | AGAINST | LANGUAGE | MODE | QUERY | EXPANSION
     | BOOLEAN | MAX | MIN | SUM | COUNT | AVG | BIT_AND
     | BIT_OR | BIT_XOR | GROUP_CONCAT | JSON_ARRAYAGG | JSON_OBJECTAGG | STD | STDDEV
-    | STDDEV_POP | STDDEV_SAMP | VAR_POP | VAR_SAMP | VARIANCE
+    | STDDEV_POP | STDDEV_SAMP | VAR_POP | VAR_SAMP | VARIANCE | EXTENDED | STATUS
+    | FIELDS | INDEXES | USER | ROLE | OJ | AUTOCOMMIT | OFF | ROTATE | INSTANCE | MASTER | BINLOG |ERROR
+    | SCHEDULE | COMPLETION | DO | DEFINER | START | EVERY | HOST | SOCKET | OWNER | PORT | RETURNS | CONTAINS
+    | SECURITY | INVOKER | UNDEFINED | MERGE | TEMPTABLE | CASCADED | LOCAL | SERVER | WRAPPER | OPTIONS | DATAFILE
+    | FILE_BLOCK_SIZE | EXTENT_SIZE | INITIAL_SIZE | AUTOEXTEND_SIZE | MAX_SIZE | NODEGROUP
+    | WAIT | LOGFILE | UNDOFILE | UNDO_BUFFER_SIZE | REDO_BUFFER_SIZE | DEFINITION | ORGANIZATION
+    | DESCRIPTION | REFERENCE | FOLLOWS | PRECEDES
+    ;
+
+schemaName
+    : identifier_
     ;
 
 tableName
-    : (identifier_ DOT_)? identifier_
+    : (owner DOT_)? name
     ;
 
 columnName
-    : (identifier_ DOT_)? identifier_
+    : (owner DOT_)? name
+    ;
+
+userName
+    : (STRING_ | IDENTIFIER_) AT_ (STRING_ IDENTIFIER_)
+    | identifier_
+    | STRING_
+    ;
+
+eventName
+    : (STRING_ | IDENTIFIER_) AT_ (STRING_ IDENTIFIER_)
+    | identifier_
+    | STRING_ 
+    ;
+
+serverName
+    : identifier_
+    | STRING_
+    ; 
+
+wrapperName
+    : identifier_
+    | STRING_
+    ;
+
+functionName
+    : identifier_
+    | (owner DOT_)? identifier_
+    ;
+
+viewName
+    : identifier_
+    | (owner DOT_)? identifier_
+    ;
+
+owner
+    : identifier_
+    ;
+
+name
+    : identifier_
     ;
 
 columnNames
-    : LP_ columnName (COMMA_ columnName)* RP_
+    : LP_? columnName (COMMA_ columnName)* RP_?
+    ;
+
+tableNames
+    : LP_? tableName (COMMA_ tableName)* RP_?
     ;
 
 indexName
     : identifier_
     ;
+
+characterSetName_
+    : IDENTIFIER_
+    ;
+
+collationName_
+   : IDENTIFIER_
+   ;
 
 expr
     : expr logicalOperator expr
@@ -297,7 +356,7 @@ regularFunction_
     ;
 
 regularFunctionName_
-    : identifier_ | IF | CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | NOW | REPLACE
+    : identifier_ | IF | CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | NOW | REPLACE | INTERVAL | SUBSTRING
     ;
 
 matchExpression_
@@ -355,7 +414,7 @@ dataTypeLength
     ;
 
 characterSet_
-    : (CHARACTER | CHAR) SET EQ_? ignoredIdentifier_ | CHARSET EQ_? ignoredIdentifier_
+    : (CHARACTER | CHAR) SET EQ_? ignoredIdentifier_
     ;
 
 collateClause_

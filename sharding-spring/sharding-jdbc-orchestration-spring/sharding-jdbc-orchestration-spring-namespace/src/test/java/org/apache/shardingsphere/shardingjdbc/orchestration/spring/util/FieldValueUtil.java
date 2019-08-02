@@ -49,15 +49,4 @@ public final class FieldValueUtil {
         field.setAccessible(true);
         return field.get(obj);
     }
-    
-    /**
-     * Get field value.
-     *
-     * @param obj obj
-     * @param fieldName field name
-     * @return field value
-     */
-    public static Object getFieldValue(final Object obj, final String fieldName) {
-        return getFieldValue(obj, fieldName, false);
-    }
 }

@@ -21,6 +21,7 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.SneakyThrows;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.api.ACLProvider;
@@ -28,6 +29,7 @@ import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.TreeCache;
 import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
 import org.apache.curator.framework.recipes.cache.TreeCacheListener;
+import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.utils.CloseableUtils;
 import org.apache.shardingsphere.orchestration.reg.api.RegistryCenter;
@@ -60,6 +62,8 @@ public final class CuratorZookeeperRegistryCenter implements RegistryCenter {
     private final Map<String, TreeCache> caches = new HashMap<>();
     
     private CuratorFramework client;
+
+    private InterProcessMutex leafLock;
     
     @Getter
     @Setter
@@ -289,5 +293,22 @@ public final class CuratorZookeeperRegistryCenter implements RegistryCenter {
     @Override
     public String getType() {
         return "zookeeper";
+    }
+
+    @Override
+    public void initLock(final String key) {
+        leafLock = new InterProcessMutex(client, key);
+    }
+
+    @Override
+    @SneakyThrows
+    public boolean tryLock() {
+        return leafLock.acquire(5, TimeUnit.SECONDS);
+    }
+
+    @Override
+    @SneakyThrows
+    public void tryRelease() {
+        leafLock.release();
     }
 }

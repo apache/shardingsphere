@@ -17,9 +17,8 @@
 
 package org.apache.shardingsphere.core.parse.hook.fixture;
 
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.hook.ParsingHook;
+import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -34,7 +33,7 @@ public final class ParsingHookFixture implements ParsingHook {
     }
     
     @Override
-    public void finishSuccess(final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
+    public void finishSuccess(final SQLStatement sqlStatement) {
         ACTIONS.add("finishSuccess");
     }
     

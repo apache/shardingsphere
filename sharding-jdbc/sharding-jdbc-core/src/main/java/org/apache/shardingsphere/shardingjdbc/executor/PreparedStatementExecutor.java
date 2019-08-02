@@ -66,7 +66,7 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
      * @throws SQLException SQL exception
      */
     public void init(final SQLRouteResult routeResult) throws SQLException {
-        setSqlStatement(routeResult.getSqlStatement());
+        setOptimizedStatement(routeResult.getOptimizedStatement());
         getExecuteGroups().addAll(obtainExecuteGroups(routeResult.getRouteUnits()));
         cacheStatements();
     }
@@ -113,10 +113,10 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     private QueryResult getQueryResult(final Statement statement, final ConnectionMode connectionMode) throws SQLException {
         PreparedStatement preparedStatement = (PreparedStatement) statement;
         ResultSet resultSet = preparedStatement.executeQuery();
-        ShardingRule shardingRule = getConnection().getShardingContext().getShardingRule();
+        ShardingRule shardingRule = getConnection().getRuntimeContext().getRule();
         getResultSets().add(resultSet);
-        return ConnectionMode.MEMORY_STRICTLY == connectionMode ? new StreamQueryResult(resultSet, shardingRule, shardingRule.getShardingEncryptorEngine()) 
-                : new MemoryQueryResult(resultSet, shardingRule, shardingRule.getShardingEncryptorEngine());
+        return ConnectionMode.MEMORY_STRICTLY == connectionMode ? new StreamQueryResult(resultSet, shardingRule) 
+                : new MemoryQueryResult(resultSet, shardingRule);
     }
     
     /**

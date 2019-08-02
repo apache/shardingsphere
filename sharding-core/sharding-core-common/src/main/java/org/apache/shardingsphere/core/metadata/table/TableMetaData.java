@@ -22,8 +22,10 @@ import lombok.Getter;
 import lombok.ToString;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * Table metadata.
@@ -37,10 +39,18 @@ public final class TableMetaData {
     
     private final Map<String, ColumnMetaData> columns;
     
-    public TableMetaData(final Collection<ColumnMetaData> columnMetaDataList) {
-        columns = new LinkedHashMap<>(columnMetaDataList.size(), 1);
+    private final Collection<String> logicIndexes;
+    
+    public TableMetaData(final Collection<ColumnMetaData> columnMetaDataList, final Collection<String> logicIndexes) {
+        columns = getColumns(columnMetaDataList);
+        this.logicIndexes = new CopyOnWriteArraySet<>(logicIndexes);
+    }
+    
+    private Map<String, ColumnMetaData> getColumns(final Collection<ColumnMetaData> columnMetaDataList) {
+        Map<String, ColumnMetaData> columns = new LinkedHashMap<>(columnMetaDataList.size(), 1);
         for (ColumnMetaData each : columnMetaDataList) {
             columns.put(each.getColumnName(), each);
         }
+        return Collections.synchronizedMap(columns);
     }
 }

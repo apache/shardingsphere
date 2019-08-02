@@ -19,8 +19,8 @@ package org.apache.shardingsphere.core.metadata.datasource.dialect;
 
 import com.google.common.base.Strings;
 import lombok.Getter;
-import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetaData;
+import org.apache.shardingsphere.core.metadata.datasource.UnrecognizedDatabaseURLException;
+import org.apache.shardingsphere.spi.database.DataSourceMetaData;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -41,21 +41,15 @@ public final class MySQLDataSourceMetaData implements DataSourceMetaData {
     
     private final String schemaName;
     
-    private final Pattern pattern = Pattern.compile("jdbc:mysql:(\\w*:)?//([\\w\\-\\.]+):?([0-9]*)/([\\w\\-]+);?\\S*", Pattern.CASE_INSENSITIVE);
+    private final Pattern pattern = Pattern.compile("jdbc:(mysql|mysqlx)(:loadbalance|:replication)?:(\\w*:)?//([\\w\\-\\.]+):?([0-9]*)/([\\w\\-]+);?\\S*", Pattern.CASE_INSENSITIVE);
     
     public MySQLDataSourceMetaData(final String url) {
         Matcher matcher = pattern.matcher(url);
-        if (matcher.find()) {
-            hostName = matcher.group(2);
-            port = Strings.isNullOrEmpty(matcher.group(3)) ? DEFAULT_PORT : Integer.valueOf(matcher.group(3));
-            schemaName = matcher.group(4);
-        } else {
-            throw new ShardingException("The URL of JDBC is not supported. Please refer to this pattern: %s.", pattern.pattern());
+        if (!matcher.find()) {
+            throw new UnrecognizedDatabaseURLException(url, pattern.pattern());
         }
-    }
-    
-    @Override
-    public boolean isInSameDatabaseInstance(final DataSourceMetaData dataSourceMetaData) {
-        return hostName.equals(dataSourceMetaData.getHostName()) && port == dataSourceMetaData.getPort();
+        hostName = matcher.group(4);
+        port = Strings.isNullOrEmpty(matcher.group(5)) ? DEFAULT_PORT : Integer.valueOf(matcher.group(5));
+        schemaName = matcher.group(6);
     }
 }

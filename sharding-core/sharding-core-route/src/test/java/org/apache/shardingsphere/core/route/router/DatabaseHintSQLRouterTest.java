@@ -21,8 +21,8 @@ import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.HintShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.hint.HintManager;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.DQLStatement;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.core.database.DatabaseTypes;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.fixture.HintShardingAlgorithmFixture;
 import org.apache.shardingsphere.core.route.router.sharding.DatabaseHintSQLRouter;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -54,17 +54,18 @@ public final class DatabaseHintSQLRouterTest {
         shardingRuleConfig.getTableRuleConfigs().add(new TableRuleConfiguration("LOGIC_TABLE", "ds${0..1}.table_${0..2}"));
         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new HintShardingStrategyConfiguration(new HintShardingAlgorithmFixture()));
         ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, Arrays.asList("ds0", "ds1"));
-        databaseHintSQLRouter = new DatabaseHintSQLRouter(shardingRule);
+        databaseHintSQLRouter = new DatabaseHintSQLRouter(DatabaseTypes.getActualDatabaseType("MySQL"), shardingRule);
     }
     
     @Test
     public void assertParse() {
-        assertThat(databaseHintSQLRouter.parse("select t from table t", false), instanceOf(SelectStatement.class));
+        assertThat(databaseHintSQLRouter.parse("select t from tbl t", false), instanceOf(SelectStatement.class));
     }
     
     @Test
     public void assertRoute() {
         hintManager.addDatabaseShardingValue("", 1);
-        assertNotNull(databaseHintSQLRouter.route("select t from table t", Collections.emptyList(), new DQLStatement()));
+        SelectStatement dqlStatement = new SelectStatement();
+        assertNotNull(databaseHintSQLRouter.route("select t from tbl t", Collections.emptyList(), dqlStatement));
     }
 }

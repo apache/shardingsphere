@@ -28,10 +28,7 @@ import org.apache.shardingsphere.core.route.router.masterslave.MasterVisitedMana
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteCallback;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteTemplate;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationConnection;
-import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
-import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
-import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -72,17 +69,8 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     
     private final RootInvokeHook rootInvokeHook = new SPIRootInvokeHook();
     
-    private final ShardingTransactionManager shardingTransactionManager;
-    
-    private ShardingTransactionManagerEngine shardingTransactionManagerEngine;
-    
-    private TransactionType transactionType;
-    
-    protected AbstractConnectionAdapter(final ShardingTransactionManagerEngine shardingTransactionManagerEngine, final TransactionType transactionType) {
+    protected AbstractConnectionAdapter() {
         rootInvokeHook.start();
-        this.transactionType = transactionType;
-        this.shardingTransactionManagerEngine = shardingTransactionManagerEngine;
-        shardingTransactionManager = shardingTransactionManagerEngine.getTransactionManager(transactionType);
     }
     
     /**
@@ -135,7 +123,9 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     @SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
     private List<Connection> createConnections(final String dataSourceName, final ConnectionMode connectionMode, final DataSource dataSource, final int connectionSize) throws SQLException {
         if (1 == connectionSize) {
-            return Collections.singletonList(createConnection(dataSourceName, dataSource));
+            Connection connection = createConnection(dataSourceName, dataSource);
+            replayMethodsInvocation(connection);
+            return Collections.singletonList(connection);
         }
         if (ConnectionMode.CONNECTION_STRICTLY == connectionMode) {
             return createConnections(dataSourceName, dataSource, connectionSize);
@@ -149,7 +139,9 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         List<Connection> result = new ArrayList<>(connectionSize);
         for (int i = 0; i < connectionSize; i++) {
             try {
-                result.add(createConnection(dataSourceName, dataSource));
+                Connection connection = createConnection(dataSourceName, dataSource);
+                replayMethodsInvocation(connection);
+                result.add(connection);
             } catch (final SQLException ex) {
                 for (Connection each : result) {
                     each.close();
@@ -160,24 +152,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         return result;
     }
     
-    private Connection createConnection(final String dataSourceName, final DataSource dataSource) throws SQLException {
-        Connection result = isInShardingTransaction() ? shardingTransactionManager.getConnection(dataSourceName) : dataSource.getConnection();
-        replayMethodsInvocation(result);
-        return result;
-    }
-    
-    private boolean isInShardingTransaction() {
-        return null != shardingTransactionManager && shardingTransactionManager.isInTransaction();
-    }
-    
-    /**
-     * Whether execute SQL serial or not.
-     *
-     * @return true or false
-     */
-    public boolean isSerialExecute() {
-        return (!autoCommit && TransactionType.LOCAL == transactionType) || (isInShardingTransaction() && TransactionType.XA == transactionType);
-    }
+    protected abstract Connection createConnection(String dataSourceName, DataSource dataSource) throws SQLException;
     
     protected abstract Map<String, DataSource> getDataSourceMap();
     
@@ -187,16 +162,10 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     }
     
     @Override
-    public final void setAutoCommit(final boolean autoCommit) throws SQLException {
+    public void setAutoCommit(final boolean autoCommit) throws SQLException {
         this.autoCommit = autoCommit;
-        if (TransactionType.LOCAL == transactionType || isOnlyLocalTransactionValid()) {
-            setAutoCommitForLocalTransaction(autoCommit);
-        } else if (!autoCommit) {
-            shardingTransactionManager.begin();
-        }
+        setAutoCommitForLocalTransaction(autoCommit);
     }
-    
-    protected abstract boolean isOnlyLocalTransactionValid();
     
     private void setAutoCommitForLocalTransaction(final boolean autoCommit) throws SQLException {
         recordMethodInvocation(Connection.class, "setAutoCommit", new Class[]{boolean.class}, new Object[]{autoCommit});
@@ -210,17 +179,9 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     }
     
     @Override
-    public final void commit() throws SQLException {
-        if (TransactionType.LOCAL == transactionType || isOnlyLocalTransactionValid()) {
-            commitForLocalTransaction();
-        } else {
-            shardingTransactionManager.commit();
-        }
-    }
-    
-    private void commitForLocalTransaction() throws SQLException {
+    public void commit() throws SQLException {
         forceExecuteTemplate.execute(cachedConnections.values(), new ForceExecuteCallback<Connection>() {
-            
+        
             @Override
             public void execute(final Connection connection) throws SQLException {
                 connection.commit();
@@ -229,17 +190,9 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     }
     
     @Override
-    public final void rollback() throws SQLException {
-        if (TransactionType.LOCAL == transactionType || isOnlyLocalTransactionValid()) {
-            rollbackForLocalTransaction();
-        } else {
-            shardingTransactionManager.rollback();
-        }
-    }
-    
-    private void rollbackForLocalTransaction() throws SQLException {
+    public void rollback() throws SQLException {
         forceExecuteTemplate.execute(cachedConnections.values(), new ForceExecuteCallback<Connection>() {
-            
+        
             @Override
             public void execute(final Connection connection) throws SQLException {
                 connection.rollback();

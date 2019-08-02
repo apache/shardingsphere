@@ -22,6 +22,7 @@
 #   
 # If you want to use sharding, please refer to this file; 
 # if you want to use master-slave, please refer to the config-master_slave.yaml.
+# if you want to use master-slave, please refer to the config-encrypt.yaml.
 # 
 ######################################################################################################
 #
@@ -73,7 +74,7 @@
 #      algorithmExpression: ds_${user_id % 2}
 #  defaultTableStrategy:
 #    none:
-
+#
 ######################################################################################################
 #
 # If you want to connect to MySQL, you should manually copy MySQL driver to lib directory.

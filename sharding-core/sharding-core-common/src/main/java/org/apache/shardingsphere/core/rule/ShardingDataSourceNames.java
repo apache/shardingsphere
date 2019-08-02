@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.core.rule;
 
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import lombok.Getter;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Random;
 
@@ -41,6 +42,7 @@ public final class ShardingDataSourceNames {
     private final Collection<String> dataSourceNames;
     
     public ShardingDataSourceNames(final ShardingRuleConfiguration shardingRuleConfig, final Collection<String> rawDataSourceNames) {
+        Preconditions.checkArgument(null != shardingRuleConfig, "can not construct ShardingDataSourceNames with null ShardingRuleConfig");
         this.shardingRuleConfig = shardingRuleConfig;
         dataSourceNames = getAllDataSourceNames(rawDataSourceNames);
     }
@@ -57,7 +59,7 @@ public final class ShardingDataSourceNames {
     
     /**
      * Get default data source name.
-     * 
+     *
      * @return default data source name
      */
     public String getDefaultDataSourceName() {
@@ -95,12 +97,6 @@ public final class ShardingDataSourceNames {
      * @return random data source name
      */
     public String getRandomDataSourceName(final Collection<String> dataSourceNames) {
-        Random random = new Random();
-        int index = random.nextInt(dataSourceNames.size());
-        Iterator<String> iterator = dataSourceNames.iterator();
-        for (int i = 0; i < index; i++) {
-            iterator.next();
-        }
-        return iterator.next();
+        return Lists.newArrayList(dataSourceNames).get(new Random().nextInt(dataSourceNames.size()));
     }
 }

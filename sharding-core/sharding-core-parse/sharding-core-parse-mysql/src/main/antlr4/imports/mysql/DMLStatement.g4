@@ -17,7 +17,7 @@
 
 grammar DMLStatement;
 
-import Symbol, Keyword, Literals, BaseRule;
+import Symbol, Keyword, MySQLKeyword, Literals, BaseRule;
 
 insert
     : INSERT insertSpecification_ INTO? tableName partitionNames_? (insertValuesClause | setAssignmentsClause | insertSelectClause) onDuplicateKeyClause?
@@ -39,6 +39,14 @@ onDuplicateKeyClause
     : ON DUPLICATE KEY UPDATE assignment (COMMA_ assignment)*
     ;
 
+replace
+    : REPLACE replaceSpecification_? INTO? tableName partitionNames_? (insertValuesClause | setAssignmentsClause | insertSelectClause)
+    ;
+
+replaceSpecification_
+    : LOW_PRIORITY | DELAYED
+    ;
+
 update
     : UPDATE updateSpecification_ tableReferences setAssignmentsClause whereClause?
     ;
@@ -48,7 +56,7 @@ updateSpecification_
     ;
 
 assignment
-    : columnName EQ_ assignmentValue
+    : columnName EQ_ VALUES? LP_? assignmentValue RP_?
     ;
 
 setAssignmentsClause
@@ -61,7 +69,11 @@ assignmentValues
     ;
 
 assignmentValue
-    : expr | DEFAULT
+    : expr | DEFAULT | blobValue
+    ;
+
+blobValue
+    : UL_BINARY STRING_
     ;
 
 delete
@@ -149,7 +161,7 @@ tableReference
     ;
 
 tableFactor
-    : tableName partitionNames_? (AS? alias)? indexHintList_? | subquery AS? alias columnNames? | LP_ tableReferences RP_
+    : tableName partitionNames_? (AS? alias)? indexHintList_? | subquery columnNames? | LP_ tableReferences RP_
     ;
 
 partitionNames_ 
@@ -178,7 +190,7 @@ whereClause
     : WHERE expr
     ;
 
-groupByClause 
+groupByClause
     : GROUP BY orderByItem (COMMA_ orderByItem)* (WITH ROLLUP)?
     ;
 
@@ -187,10 +199,14 @@ havingClause
     ;
 
 limitClause
-    : LIMIT (rangeItem_ (COMMA_ rangeItem_)? | rangeItem_ OFFSET rangeItem_)
+    : LIMIT ((limitOffset COMMA_)? limitRowCount | limitRowCount OFFSET limitOffset)
     ;
 
-rangeItem_
+limitRowCount
+    : numberLiterals | parameterMarker
+    ;
+    
+limitOffset
     : numberLiterals | parameterMarker
     ;
 
@@ -203,5 +219,5 @@ windowItem_
     ;
 
 subquery
-    : LP_ unionClause_ RP_
+    : LP_ unionClause_ RP_ AS? alias?
     ;

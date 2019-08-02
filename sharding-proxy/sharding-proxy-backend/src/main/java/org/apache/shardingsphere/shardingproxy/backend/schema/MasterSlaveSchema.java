@@ -26,6 +26,7 @@ import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMeta
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.util.ConfigurationLogger;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.MasterSlaveRuleChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.state.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.state.schema.OrchestrationShardingSchema;
@@ -38,21 +39,22 @@ import java.util.Map;
  * Master-slave schema.
  *
  * @author panjuan
+ * @author sunbufu
  */
 @Getter
 public final class MasterSlaveSchema extends LogicSchema {
     
     private MasterSlaveRule masterSlaveRule;
     
-    private final ShardingMetaData metaData;
+    private final ShardingRule shardingRule;
     
-    private final ShardingRule defaultShardingRule;
+    private final ShardingMetaData metaData;
     
     public MasterSlaveSchema(final String name, final Map<String, YamlDataSourceParameter> dataSources, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final boolean isUsingRegistry) {
         super(name, dataSources);
         masterSlaveRule = createMasterSlaveRule(masterSlaveRuleConfig, isUsingRegistry);
         // TODO we should remove it after none-sharding parsingEngine completed.
-        defaultShardingRule = new ShardingRule(new ShardingRuleConfiguration(), getDataSources().keySet());
+        shardingRule = new ShardingRule(new ShardingRuleConfiguration(), getDataSources().keySet());
         metaData = createShardingMetaData();
     }
     
@@ -61,8 +63,8 @@ public final class MasterSlaveSchema extends LogicSchema {
     }
     
     private ShardingMetaData createShardingMetaData() {
-        ShardingDataSourceMetaData shardingDataSourceMetaData = new ShardingDataSourceMetaData(getDataSourceURLs(getDataSources()), defaultShardingRule, LogicSchemas.getInstance().getDatabaseType());
-        ShardingTableMetaData shardingTableMetaData = new ShardingTableMetaData(getTableMetaDataInitializer(shardingDataSourceMetaData).load(defaultShardingRule));
+        ShardingDataSourceMetaData shardingDataSourceMetaData = new ShardingDataSourceMetaData(getDataSourceURLs(getDataSources()), shardingRule, LogicSchemas.getInstance().getDatabaseType());
+        ShardingTableMetaData shardingTableMetaData = new ShardingTableMetaData(getTableMetaDataInitializer(shardingDataSourceMetaData).load(shardingRule));
         return new ShardingMetaData(shardingDataSourceMetaData, shardingTableMetaData);
     }
     
@@ -74,6 +76,7 @@ public final class MasterSlaveSchema extends LogicSchema {
     @Subscribe
     public synchronized void renew(final MasterSlaveRuleChangedEvent masterSlaveRuleChangedEvent) {
         if (getName().equals(masterSlaveRuleChangedEvent.getShardingSchemaName())) {
+            ConfigurationLogger.log(masterSlaveRuleChangedEvent.getMasterSlaveRuleConfiguration());
             masterSlaveRule = new OrchestrationMasterSlaveRule(masterSlaveRuleChangedEvent.getMasterSlaveRuleConfiguration());
         }
     }

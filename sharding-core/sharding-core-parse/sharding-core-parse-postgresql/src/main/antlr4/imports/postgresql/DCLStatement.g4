@@ -17,7 +17,7 @@
 
 grammar DCLStatement;
 
-import Symbol, Keyword, Literals, BaseRule;
+import Symbol, Keyword, PostgreSQLKeyword, Literals, BaseRule;
 
 grant
     : GRANT (privilegeClause_ | roleClause_)
@@ -38,7 +38,7 @@ roleClause_
 optionForClause_
     : (GRANT | ADMIN) OPTION FOR
     ;
-    
+
 privileges_
     : privilegeType_ columnNames? (COMMA_ privilegeType_ columnNames?)*
     ;
@@ -61,8 +61,7 @@ privilegeType_
     ;
 
 onObjectClause_
-    : TABLE? tableName (COMMA_ tableName)*
-    | DATABASE
+    : DATABASE 
     | SCHEMA
     | DOMAIN
     | FOREIGN
@@ -73,8 +72,9 @@ onObjectClause_
     | LANGUAGE
     | LARGE OBJECT
     | TABLESPACE
-    | TYPE
+    | TYPE 
     | SEQUENCE
+    | TABLE? tableNames
     ;
 
 createUser

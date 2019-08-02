@@ -24,11 +24,11 @@ import io.opentracing.tag.Tags;
 import org.apache.shardingsphere.core.execute.ShardingExecuteDataMap;
 import org.apache.shardingsphere.core.execute.hook.SPISQLExecutionHook;
 import org.apache.shardingsphere.core.execute.hook.SQLExecutionHook;
-import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import org.apache.shardingsphere.core.route.RouteUnit;
 import org.apache.shardingsphere.core.route.SQLUnit;
 import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
 import org.apache.shardingsphere.opentracing.constant.ShardingTags;
+import org.apache.shardingsphere.spi.database.DataSourceMetaData;
 import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Before;
@@ -84,7 +84,7 @@ public final class OpenTracingSQLExecutionHookTest extends BaseOpenTracingHookTe
         sqlExecutionHook.start(createRouteUnit("success_ds", "SELECT * FROM success_tbl;", Arrays.<Object>asList("1", 2)), dataSourceMetaData, true, null);
         sqlExecutionHook.finishSuccess();
         MockSpan actual = getActualSpan();
-        assertThat(actual.operationName(), is("/Sharding-Sphere/executeSQL/"));
+        assertThat(actual.operationName(), is("/ShardingSphere/executeSQL/"));
         Map<String, Object> actualTags = actual.tags();
         assertThat(actualTags.get(Tags.COMPONENT.getKey()), CoreMatchers.<Object>is(ShardingTags.COMPONENT_NAME));
         assertThat(actualTags.get(Tags.SPAN_KIND.getKey()), CoreMatchers.<Object>is(Tags.SPAN_KIND_CLIENT));
@@ -107,7 +107,7 @@ public final class OpenTracingSQLExecutionHookTest extends BaseOpenTracingHookTe
         sqlExecutionHook.start(createRouteUnit("success_ds", "SELECT * FROM success_tbl;", null), dataSourceMetaData, true, null);
         sqlExecutionHook.finishSuccess();
         MockSpan actual = getActualSpan();
-        assertThat(actual.operationName(), is("/Sharding-Sphere/executeSQL/"));
+        assertThat(actual.operationName(), is("/ShardingSphere/executeSQL/"));
         Map<String, Object> actualTags = actual.tags();
         assertThat(actualTags.get(Tags.COMPONENT.getKey()), CoreMatchers.<Object>is(ShardingTags.COMPONENT_NAME));
         assertThat(actualTags.get(Tags.SPAN_KIND.getKey()), CoreMatchers.<Object>is(Tags.SPAN_KIND_CLIENT));
@@ -129,7 +129,7 @@ public final class OpenTracingSQLExecutionHookTest extends BaseOpenTracingHookTe
                 createRouteUnit("success_ds", "SELECT * FROM success_tbl;", Arrays.<Object>asList("1", 2)), dataSourceMetaData, false, ShardingExecuteDataMap.getDataMap());
         sqlExecutionHook.finishSuccess();
         MockSpan actual = getActualSpan();
-        assertThat(actual.operationName(), is("/Sharding-Sphere/executeSQL/"));
+        assertThat(actual.operationName(), is("/ShardingSphere/executeSQL/"));
         Map<String, Object> actualTags = actual.tags();
         assertThat(actualTags.get(Tags.COMPONENT.getKey()), CoreMatchers.<Object>is(ShardingTags.COMPONENT_NAME));
         assertThat(actualTags.get(Tags.SPAN_KIND.getKey()), CoreMatchers.<Object>is(Tags.SPAN_KIND_CLIENT));
@@ -150,7 +150,7 @@ public final class OpenTracingSQLExecutionHookTest extends BaseOpenTracingHookTe
         sqlExecutionHook.start(createRouteUnit("failure_ds", "SELECT * FROM failure_tbl;", Collections.emptyList()), dataSourceMetaData, true, null);
         sqlExecutionHook.finishFailure(new RuntimeException("SQL execution error"));
         MockSpan actual = getActualSpan();
-        assertThat(actual.operationName(), is("/Sharding-Sphere/executeSQL/"));
+        assertThat(actual.operationName(), is("/ShardingSphere/executeSQL/"));
         Map<String, Object> actualTags = actual.tags();
         assertThat(actualTags.get(Tags.COMPONENT.getKey()), CoreMatchers.<Object>is(ShardingTags.COMPONENT_NAME));
         assertThat(actualTags.get(Tags.SPAN_KIND.getKey()), CoreMatchers.<Object>is(Tags.SPAN_KIND_CLIENT));

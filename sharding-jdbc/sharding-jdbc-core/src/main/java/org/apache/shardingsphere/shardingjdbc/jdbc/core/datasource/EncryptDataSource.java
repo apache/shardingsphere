@@ -18,31 +18,14 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource;
 
 import lombok.Getter;
-import lombok.Setter;
-import lombok.SneakyThrows;
-import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
-import org.apache.shardingsphere.core.constant.DatabaseType;
-import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.metadata.table.TableMetaData;
-import org.apache.shardingsphere.core.parse.EncryptSQLParsingEngine;
 import org.apache.shardingsphere.core.rule.EncryptRule;
+import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
-import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.EncryptRuntimeContext;
 
 import javax.sql.DataSource;
-import java.io.PrintWriter;
-import java.lang.reflect.Method;
-import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
+import java.util.Properties;
 
 /**
  * Encrypt data source.
@@ -50,99 +33,26 @@ import java.util.logging.Logger;
  * @author panjuan
  */
 @Getter
-public class EncryptDataSource extends AbstractUnsupportedOperationDataSource implements AutoCloseable {
-
-    private final DataSource dataSource;
+public class EncryptDataSource extends AbstractDataSourceAdapter {
     
-    private final EncryptRule encryptRule;
+    private final EncryptRuntimeContext runtimeContext;
     
-    private final DatabaseType databaseType;
-    
-    private final EncryptSQLParsingEngine encryptSQLParsingEngine;
-    
-    @Setter
-    private PrintWriter logWriter = new PrintWriter(System.out);
-
-    @SneakyThrows
-    public EncryptDataSource(final DataSource dataSource, final EncryptRuleConfiguration encryptRuleConfiguration) {
-        this.dataSource = dataSource;
-        encryptRule = new EncryptRule(encryptRuleConfiguration);
-        databaseType = getDatabaseType();
-        encryptSQLParsingEngine = new EncryptSQLParsingEngine(databaseType, encryptRule, createEncryptTableMetaData());
-    }
-    
-    @SneakyThrows
-    private ShardingTableMetaData createEncryptTableMetaData() {
-        Map<String, TableMetaData> tables = new LinkedHashMap<>();
-        try (Connection connection = dataSource.getConnection()) {
-            for (String each : encryptRule.getEncryptTableNames()) {
-                if (isTableExist(connection, each)) {
-                    tables.put(each, new TableMetaData(getColumnMetaDataList(connection, each)));
-                }
-            }
-        }
-        return new ShardingTableMetaData(tables);
-    }
-    
-    private boolean isTableExist(final Connection connection, final String tableName) throws SQLException {
-        try (ResultSet resultSet = connection.getMetaData().getTables(connection.getCatalog(), null, tableName, null)) {
-            return resultSet.next();
-        }
-    }
-    
-    private List<ColumnMetaData> getColumnMetaDataList(final Connection connection, final String tableName) throws SQLException {
-        List<ColumnMetaData> result = new LinkedList<>();
-        Collection<String> primaryKeys = getPrimaryKeys(connection, tableName);
-        try (ResultSet resultSet = connection.getMetaData().getColumns(connection.getCatalog(), null, tableName, "%")) {
-            while (resultSet.next()) {
-                String columnName = resultSet.getString("COLUMN_NAME");
-                String columnType = resultSet.getString("TYPE_NAME");
-                result.add(new ColumnMetaData(columnName, columnType, primaryKeys.contains(columnName)));
-            }
-        }
-        return result;
-    }
-    
-    private Collection<String> getPrimaryKeys(final Connection connection, final String tableName) throws SQLException {
-        Collection<String> result = new HashSet<>();
-        try (ResultSet resultSet = connection.getMetaData().getPrimaryKeys(connection.getCatalog(), null, tableName)) {
-            while (resultSet.next()) {
-                result.add(resultSet.getString("COLUMN_NAME"));
-            }
-        }
-        return result;
-    }
-    
-    private DatabaseType getDatabaseType() throws SQLException {
-        try (Connection connection = dataSource.getConnection()) {
-            return DatabaseType.valueFrom(connection.getMetaData().getDatabaseProductName());
-        }
-    }
-
-    @Override
-    @SneakyThrows
-    public EncryptConnection getConnection() {
-        return new EncryptConnection(dataSource.getConnection(), encryptRule, databaseType, encryptSQLParsingEngine);
+    public EncryptDataSource(final DataSource dataSource, final EncryptRule encryptRule, final Properties props) throws SQLException {
+        super(dataSource);
+        runtimeContext = new EncryptRuntimeContext(dataSource, encryptRule, props, getDatabaseType());
     }
     
     @Override
-    @SneakyThrows
-    public Connection getConnection(final String username, final String password) {
-        return getConnection();
+    public final EncryptConnection getConnection() throws SQLException {
+        return new EncryptConnection(getDataSource().getConnection(), runtimeContext);
     }
     
-    @Override
-    public Logger getParentLogger() {
-        return Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
-    }
-    
-    @Override
-    public void close() {
-        try {
-            Method method = dataSource.getClass().getDeclaredMethod("close");
-            method.setAccessible(true);
-            method.invoke(dataSource);
-        } catch (final ReflectiveOperationException ignored) {
-        }
+    /**
+     * Get data source.
+     *
+     * @return data source
+     */
+    public DataSource getDataSource() {
+        return getDataSourceMap().values().iterator().next();
     }
 }

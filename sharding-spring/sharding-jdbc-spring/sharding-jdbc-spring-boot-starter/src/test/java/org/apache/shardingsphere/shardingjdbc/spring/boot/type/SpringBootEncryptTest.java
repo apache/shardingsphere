@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.shardingjdbc.spring.boot.type;
 
+import com.google.common.base.Optional;
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
 import org.junit.Test;
@@ -44,6 +46,11 @@ public class SpringBootEncryptTest {
     private DataSource dataSource;
     
     @Test
+    public void assertSqlShow() {
+        assertTrue(((EncryptDataSource) dataSource).getRuntimeContext().getProps().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW));
+    }
+    
+    @Test
     public void assertWithEncryptDataSource() {
         assertTrue(dataSource instanceof EncryptDataSource);
         BasicDataSource basicDataSource = (BasicDataSource) ((EncryptDataSource) dataSource).getDataSource();
@@ -52,8 +59,10 @@ public class SpringBootEncryptTest {
     
     @Test
     public void assertWithEncryptRule() {
-        EncryptRule encryptRule = ((EncryptDataSource) dataSource).getEncryptRule();
+        EncryptRule encryptRule = ((EncryptDataSource) dataSource).getRuntimeContext().getRule();
         assertThat(encryptRule.getEncryptTableNames().size(), is(1));
-        assertTrue(encryptRule.getEncryptorEngine().getShardingEncryptor("t_order", "user_id").isPresent());
+        assertTrue(encryptRule.getShardingEncryptor("t_order", "user_id").isPresent());
+        assertThat(encryptRule.getCipherColumn("t_order", "user_id"), is("user_encrypt"));
+        assertThat(encryptRule.getPlainColumn("t_order", "user_id"), is(Optional.of("user_decrypt")));
     }
 }

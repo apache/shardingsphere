@@ -19,8 +19,8 @@ package org.apache.shardingsphere.core.metadata.datasource.dialect;
 
 import com.google.common.base.Strings;
 import lombok.Getter;
-import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetaData;
+import org.apache.shardingsphere.core.metadata.datasource.UnrecognizedDatabaseURLException;
+import org.apache.shardingsphere.spi.database.DataSourceMetaData;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -45,17 +45,11 @@ public final class PostgreSQLDataSourceMetaData implements DataSourceMetaData {
     
     public PostgreSQLDataSourceMetaData(final String url) {
         Matcher matcher = pattern.matcher(url);
-        if (matcher.find()) {
-            hostName = matcher.group(1);
-            port = Strings.isNullOrEmpty(matcher.group(2)) ? DEFAULT_PORT : Integer.valueOf(matcher.group(2));
-            schemaName = matcher.group(3);
-        } else {
-            throw new ShardingException("The URL of JDBC is not supported. Please refer to this pattern: %s.", pattern.pattern());
+        if (!matcher.find()) {
+            throw new UnrecognizedDatabaseURLException(url, pattern.pattern());
         }
-    }
-  
-    @Override
-    public boolean isInSameDatabaseInstance(final DataSourceMetaData dataSourceMetaData) {
-        return hostName.equals(dataSourceMetaData.getHostName()) && port == dataSourceMetaData.getPort();
+        hostName = matcher.group(1);
+        port = Strings.isNullOrEmpty(matcher.group(2)) ? DEFAULT_PORT : Integer.valueOf(matcher.group(2));
+        schemaName = matcher.group(3);
     }
 }

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.shardingproxy.frontend.mysql;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.frontend.context.FrontendContext;
 import org.apache.shardingsphere.shardingproxy.frontend.mysql.auth.MySQLAuthenticationEngine;
@@ -48,7 +47,7 @@ public final class MySQLProtocolFrontendEngine implements DatabaseProtocolFronte
     
     @Override
     public String getDatabaseType() {
-        return DatabaseType.MySQL.name();
+        return "MySQL";
     }
     
     @Override

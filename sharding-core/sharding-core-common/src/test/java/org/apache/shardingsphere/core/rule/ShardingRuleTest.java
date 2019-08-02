@@ -24,7 +24,7 @@ import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
+import org.apache.shardingsphere.core.config.ShardingConfigurationException;
 import org.apache.shardingsphere.core.fixture.PreciseShardingAlgorithmFixture;
 import org.apache.shardingsphere.core.strategy.keygen.SnowflakeShardingKeyGenerator;
 import org.apache.shardingsphere.core.strategy.keygen.fixture.IncrementShardingKeyGenerator;
@@ -309,22 +309,6 @@ public final class ShardingRuleTest {
     }
     
     @Test
-    public void assertGetLogicTableNameSuccess() {
-        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        TableRuleConfiguration tableRuleConfig = createTableRuleConfigWithLogicIndex();
-        shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
-        assertThat(new ShardingRule(shardingRuleConfig, createDataSourceNames()).getLogicTableName("index_table"), is("logic_table"));
-    }
-    
-    @Test(expected = ShardingConfigurationException.class)
-    public void assertGetLogicTableNameFailure() {
-        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        TableRuleConfiguration tableRuleConfig = createTableRuleConfigWithLogicIndex();
-        shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
-        new ShardingRule(shardingRuleConfig, createDataSourceNames()).getLogicTableName("");
-    }
-    
-    @Test
     public void assertGetDataNodeByLogicTable() {
         assertThat(createMaximumShardingRule().getDataNode("logic_table"), is(new DataNode("ds_0.table_0")));
     }
@@ -340,29 +324,24 @@ public final class ShardingRuleTest {
     }
     
     @Test
-    public void assertContainsWithTableRule() {
-        assertTrue(createMaximumShardingRule().contains("LOGIC_TABLE"));
-    }
-    
-    @Test
-    public void assertContainsWithBindingTableRule() {
-        assertTrue(createMaximumShardingRule().contains("SUB_LOGIC_TABLE"));
-    }
-    
-    @Test
-    public void assertContainsWithBroadcastTableRule() {
-        assertTrue(createMaximumShardingRule().contains("BROADCAST_TABLE"));
-    }
-    
-    @Test
-    public void assertNotContains() {
-        assertFalse(createMaximumShardingRule().contains("NEW_TABLE"));
-    }
-    
-    @Test
     public void assertGetShardingLogicTableNames() {
         ShardingRule actual = createMaximumShardingRule();
         assertThat(actual.getShardingLogicTableNames(Arrays.asList("LOGIC_TABLE", "BROADCAST_TABLE")), CoreMatchers.<Collection<String>>is(Collections.singletonList("LOGIC_TABLE")));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void assertConstructShardingRuleWithNullShardingRuleConfiguration() {
+        new ShardingRule(null, createDataSourceNames());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void assertConstructShardingRuleWithNullDataSourceNames(){
+        ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
+        TableRuleConfiguration tableRuleConfiguration = createTableRuleConfiguration("LOGIC_TABLE", "ms_ds_${0..1}.table_${0..2}");
+        shardingRuleConfiguration.getTableRuleConfigs().add(tableRuleConfiguration);
+        shardingRuleConfiguration.getMasterSlaveRuleConfigs().add(createMasterSlaveRuleConfiguration("ms_ds_0", "master_ds_0", "slave_ds_0"));
+        shardingRuleConfiguration.getMasterSlaveRuleConfigs().add(createMasterSlaveRuleConfiguration("ms_ds_1", "master_ds_1", "slave_ds_1"));
+        new ShardingRule(shardingRuleConfiguration, null);
     }
     
     private ShardingRule createMaximumShardingRule() {
@@ -411,12 +390,6 @@ public final class ShardingRuleTest {
     
     private Collection<String> createMasterSlaveDataSourceNames() {
         return Arrays.asList("master_ds_0", "slave_ds_0", "master_ds_1", "slave_ds_1");
-    }
-    
-    private TableRuleConfiguration createTableRuleConfigWithLogicIndex() {
-        TableRuleConfiguration result = new TableRuleConfiguration("LOGIC_TABLE", "ds_${0..1}.table_${0..2}");
-        result.setLogicIndex("INDEX_TABLE");
-        return result;
     }
     
     private TableRuleConfiguration createTableRuleConfigWithAllStrategies() {

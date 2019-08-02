@@ -19,22 +19,19 @@ package org.apache.shardingsphere.core.parse.integrate.asserts.table;
 
 import com.google.common.base.Joiner;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.column.ColumnDefinitionSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.column.position.ColumnAfterPositionSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.column.position.ColumnPositionSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.core.parse.integrate.asserts.SQLStatementAssertMessage;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.table.ExpectedAlterTable;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.token.ExpectedColumnDefinition;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.token.ExpectedColumnPosition;
-import org.apache.shardingsphere.core.parse.integrate.jaxb.token.ExpectedUpdateColumnDefinition;
+import org.apache.shardingsphere.core.parse.sql.segment.ddl.column.ColumnDefinitionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.ddl.column.position.ColumnAfterPositionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.ddl.column.position.ColumnPositionSegment;
+import org.apache.shardingsphere.core.parse.sql.statement.ddl.AlterTableStatement;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map.Entry;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
 
 @RequiredArgsConstructor
@@ -50,10 +47,7 @@ public final class AlterTableAssert {
      */
     public void assertAlterTable(final AlterTableStatement actual, final ExpectedAlterTable expected) {
         assertThat(assertMessage.getFullAssertMessage("Drop names assertion error: "), Joiner.on(",").join(actual.getDroppedColumnNames()), is(expected.getDropColumns()));
-        assertSame(assertMessage.getFullAssertMessage("Drop primary key assertion error: "), actual.isDropPrimaryKey(), expected.isDropPrimaryKey());
-        assertThat(assertMessage.getFullAssertMessage("Rename new table name assertion error: "), actual.getNewTableName().orNull(), is(expected.getNewTableName()));
         assertAddColumns(actual, expected.getAddColumns());
-        assertUpdateColumns(actual, expected.getUpdateColumns());
         assertColumnPositions(actual.getChangedPositionColumns(), expected.getPositionChangedColumns());
     }
     
@@ -69,20 +63,6 @@ public final class AlterTableAssert {
     private void assertColumnDefinition(final ColumnDefinitionSegment actual, final ExpectedColumnDefinition expected) {
         assertThat(assertMessage.getFullAssertMessage("Column name assertion error: "), actual.getColumnName(), is(expected.getName()));
         assertThat(assertMessage.getFullAssertMessage("Column " + actual.getColumnName() + " type assertion error: "), actual.getDataType(), is(expected.getType()));
-    }
-    
-    private void assertUpdateColumns(final AlterTableStatement actual, final List<ExpectedUpdateColumnDefinition> expected) {
-        assertThat(assertMessage.getFullAssertMessage("Update column size error: "), actual.getModifiedColumnDefinitions().size(), is(expected.size()));
-        int count = 0;
-        for (Entry<String, ColumnDefinitionSegment> each : actual.getModifiedColumnDefinitions().entrySet()) {
-            assertUpdateColumnDefinition(each, expected.get(count));
-            count++;
-        }
-    }
-    
-    private void assertUpdateColumnDefinition(final Entry<String, ColumnDefinitionSegment> actual, final ExpectedUpdateColumnDefinition expected) {
-        assertThat(assertMessage.getFullAssertMessage("Origin column name assertion error: "), actual.getKey(), is(expected.getOriginColumnName()));
-        assertColumnDefinition(actual.getValue(), expected);
     }
     
     private void assertColumnPositions(final Collection<ColumnPositionSegment> actual, final List<ExpectedColumnPosition> expected) {

@@ -30,6 +30,19 @@ import java.sql.Types;
 public class QueryResultUtil {
     
     /**
+     * Get value.
+     *
+     * @param resultSet result set
+     * @param columnIndex column index of value
+     * @return {@code null} if the column is SQL {@code NULL}, otherwise the value of column
+     * @throws SQLException SQL exception
+     */
+    public static Object getValue(final ResultSet resultSet, final int columnIndex) throws SQLException {
+        Object result = getValueByColumnType(resultSet, columnIndex);
+        return resultSet.wasNull() ? null : result;
+    }
+    
+    /**
      * Get value by column type.
      *
      * @param resultSet result set
@@ -40,7 +53,6 @@ public class QueryResultUtil {
     public static Object getValueByColumnType(final ResultSet resultSet, final int columnIndex) throws SQLException {
         ResultSetMetaData metaData = resultSet.getMetaData();
         switch (metaData.getColumnType(columnIndex)) {
-            case Types.BIT:
             case Types.BOOLEAN:
                 return resultSet.getBoolean(columnIndex);
             case Types.TINYINT:

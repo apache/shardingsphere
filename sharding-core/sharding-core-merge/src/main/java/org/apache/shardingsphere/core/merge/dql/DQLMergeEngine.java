@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.merge.dql;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import lombok.Getter;
-import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.execute.sql.execute.result.AggregationDistinctQueryResult;
 import org.apache.shardingsphere.core.execute.sql.execute.result.DistinctQueryResult;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
@@ -33,13 +33,14 @@ import org.apache.shardingsphere.core.merge.dql.orderby.OrderByStreamMergedResul
 import org.apache.shardingsphere.core.merge.dql.pagination.LimitDecoratorMergedResult;
 import org.apache.shardingsphere.core.merge.dql.pagination.RowNumberDecoratorMergedResult;
 import org.apache.shardingsphere.core.merge.dql.pagination.TopAndRowNumberDecoratorMergedResult;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.core.parse.old.parser.context.limit.Limit;
+import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.AggregationDistinctSelectItem;
+import org.apache.shardingsphere.core.optimize.sharding.segment.select.pagination.Pagination;
+import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
+import org.apache.shardingsphere.spi.database.DatabaseType;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -56,7 +57,7 @@ public final class DQLMergeEngine implements MergeEngine {
     
     private final SQLRouteResult routeResult;
     
-    private final SelectStatement selectStatement;
+    private final ShardingSelectOptimizedStatement optimizedStatement;
     
     private final List<QueryResult> queryResults;
     
@@ -66,7 +67,7 @@ public final class DQLMergeEngine implements MergeEngine {
     public DQLMergeEngine(final DatabaseType databaseType, final SQLRouteResult routeResult, final List<QueryResult> queryResults) throws SQLException {
         this.databaseType = databaseType;
         this.routeResult = routeResult;
-        this.selectStatement = (SelectStatement) routeResult.getSqlStatement();
+        this.optimizedStatement = (ShardingSelectOptimizedStatement) routeResult.getOptimizedStatement();
         this.queryResults = getRealQueryResults(queryResults);
         columnLabelIndexMap = getColumnLabelIndexMap(this.queryResults.get(0));
     }
@@ -76,11 +77,12 @@ public final class DQLMergeEngine implements MergeEngine {
         if (1 == result.size()) {
             return result;
         }
-        if (!selectStatement.getAggregationDistinctSelectItems().isEmpty()) {
-            result = getDividedQueryResults(new AggregationDistinctQueryResult(queryResults, selectStatement.getAggregationDistinctSelectItems()));
+        List<AggregationDistinctSelectItem> aggregationDistinctSelectItems = optimizedStatement.getSelectItems().getAggregationDistinctSelectItems();
+        if (!aggregationDistinctSelectItems.isEmpty()) {
+            result = getDividedQueryResults(new AggregationDistinctQueryResult(queryResults, aggregationDistinctSelectItems));
         }
-        if (isNeedProcessDistinctSelectItem()) {
-            result = getDividedQueryResults(new DistinctQueryResult(queryResults, new ArrayList<>(selectStatement.getDistinctSelectItem().get().getDistinctColumnLabels())));
+        if (isDistinctRowSelectItems()) {
+            result = getDividedQueryResults(new DistinctQueryResult(queryResults, optimizedStatement.getSelectItems().getColumnLabels()));
         }
         return result.isEmpty() ? queryResults : result;
     }
@@ -95,8 +97,8 @@ public final class DQLMergeEngine implements MergeEngine {
         });
     }
     
-    private boolean isNeedProcessDistinctSelectItem() {
-        return selectStatement.getDistinctSelectItem().isPresent() && selectStatement.getGroupByItems().isEmpty();
+    private boolean isDistinctRowSelectItems() {
+        return optimizedStatement.getSelectItems().isDistinctRow() && optimizedStatement.getGroupBy().getItems().isEmpty();
     }
     
     private Map<String, Integer> getColumnLabelIndexMap(final QueryResult queryResult) throws SQLException {
@@ -112,41 +114,39 @@ public final class DQLMergeEngine implements MergeEngine {
         if (1 == queryResults.size()) {
             return new IteratorStreamMergedResult(queryResults);
         }
-        selectStatement.setIndexForItems(columnLabelIndexMap);
+        optimizedStatement.setIndexForItems(columnLabelIndexMap);
         return decorate(build());
     }
     
     private MergedResult build() throws SQLException {
-        if (!selectStatement.getGroupByItems().isEmpty() || !selectStatement.getAggregationSelectItems().isEmpty()) {
+        if (!optimizedStatement.getGroupBy().getItems().isEmpty() || !optimizedStatement.getSelectItems().getAggregationSelectItems().isEmpty()) {
             return getGroupByMergedResult();
         }
-        if (!selectStatement.getOrderByItems().isEmpty()) {
-            return new OrderByStreamMergedResult(queryResults, selectStatement.getOrderByItems());
+        if (!optimizedStatement.getOrderBy().getItems().isEmpty()) {
+            return new OrderByStreamMergedResult(queryResults, optimizedStatement.getOrderBy().getItems());
         }
         return new IteratorStreamMergedResult(queryResults);
     }
     
     private MergedResult getGroupByMergedResult() throws SQLException {
-        if (selectStatement.isSameGroupByAndOrderByItems()) {
-            return new GroupByStreamMergedResult(columnLabelIndexMap, queryResults, selectStatement);
-        } else {
-            return new GroupByMemoryMergedResult(columnLabelIndexMap, queryResults, selectStatement);
-        }
+        return optimizedStatement.isSameGroupByAndOrderByItems()
+                ? new GroupByStreamMergedResult(columnLabelIndexMap, queryResults, optimizedStatement) : new GroupByMemoryMergedResult(columnLabelIndexMap, queryResults, optimizedStatement);
     }
     
     private MergedResult decorate(final MergedResult mergedResult) throws SQLException {
-        Limit limit = routeResult.getLimit();
-        if (null == limit || 1 == queryResults.size()) {
+        Pagination pagination = ((ShardingSelectOptimizedStatement) routeResult.getOptimizedStatement()).getPagination();
+        if (!pagination.isHasPagination() || 1 == queryResults.size()) {
             return mergedResult;
         }
-        if (DatabaseType.MySQL == databaseType || DatabaseType.PostgreSQL == databaseType || DatabaseType.H2 == databaseType) {
-            return new LimitDecoratorMergedResult(mergedResult, routeResult.getLimit());
+        String trunkDatabaseName = DatabaseTypes.getTrunkDatabaseType(databaseType.getName()).getName();
+        if ("MySQL".equals(trunkDatabaseName) || "PostgreSQL".equals(trunkDatabaseName)) {
+            return new LimitDecoratorMergedResult(mergedResult, pagination);
         }
-        if (DatabaseType.Oracle == databaseType) {
-            return new RowNumberDecoratorMergedResult(mergedResult, routeResult.getLimit());
+        if ("Oracle".equals(trunkDatabaseName)) {
+            return new RowNumberDecoratorMergedResult(mergedResult, pagination);
         }
-        if (DatabaseType.SQLServer == databaseType) {
-            return new TopAndRowNumberDecoratorMergedResult(mergedResult, routeResult.getLimit());
+        if ("SQLServer".equals(trunkDatabaseName)) {
+            return new TopAndRowNumberDecoratorMergedResult(mergedResult, pagination);
         }
         return mergedResult;
     }

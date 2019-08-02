@@ -37,36 +37,12 @@ public final class ExpectedTokens {
     @XmlElement(name = "index-token")
     private List<ExpectedIndexToken> indexTokens = new LinkedList<>();
     
-    @XmlElement(name = "items-token")
-    private ExpectedItemsToken itemsToken;
-    
     @XmlElement(name = "generated-key-token")
     private ExpectedGeneratedKeyToken generatedKeyToken;
-    
-    @XmlElement(name = "insert-values-token")
-    private ExpectedInsertValuesToken insertValuesToken;
     
     @XmlElement(name = "insert-set-token")
     private ExpectedInsertSetToken insertSetToken;
     
-    @XmlElement(name = "order-by-token")
-    private ExpectedOrderByToken orderByToken;
-    
-    @XmlElement(name = "offset-token")
-    private ExpectedOffsetToken offsetToken;
-    
-    @XmlElement(name = "row-count-token")
-    private ExpectedRowCountToken rowCountToken;
-    
     @XmlElement(name = "insert-column-token")
     private ExpectedInsertColumnToken insertColumnToken;
-    
-    @XmlElement(name = "schema-token")
-    private List<ExpectedSchemaToken> schemaTokens = new LinkedList<>();
-    
-    @XmlElement(name = "aggregation-distinct-token")
-    private List<ExpectedAggregationDistinctToken> aggregationDistinctTokens = new LinkedList<>();
-    
-    @XmlElement(name = "encrypt-column-token")
-    private List<ExpectedEncryptColumnToken> encryptColumnTokens = new LinkedList<>();
 }

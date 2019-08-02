@@ -19,15 +19,15 @@ package org.apache.shardingsphere.core.merge;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.dal.DALMergeEngine;
 import org.apache.shardingsphere.core.merge.dql.DQLMergeEngine;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.dal.DALStatement;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.spi.database.DatabaseType;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -54,12 +54,12 @@ public final class MergeEngineFactory {
      */
     public static MergeEngine newInstance(final DatabaseType databaseType, final ShardingRule shardingRule,
                                           final SQLRouteResult routeResult, final ShardingTableMetaData shardingTableMetaData, final List<QueryResult> queryResults) throws SQLException {
-        if (routeResult.getSqlStatement() instanceof SelectStatement) {
+        if (routeResult.getOptimizedStatement() instanceof ShardingSelectOptimizedStatement) {
             return new DQLMergeEngine(databaseType, routeResult, queryResults);
         } 
-        if (routeResult.getSqlStatement() instanceof DALStatement) {
-            return new DALMergeEngine(shardingRule, queryResults, (DALStatement) routeResult.getSqlStatement(), shardingTableMetaData);
+        if (routeResult.getOptimizedStatement().getSQLStatement() instanceof DALStatement) {
+            return new DALMergeEngine(shardingRule, queryResults, (DALStatement) routeResult.getOptimizedStatement().getSQLStatement(), shardingTableMetaData);
         }
-        throw new UnsupportedOperationException(String.format("Cannot support type '%s'", routeResult.getSqlStatement().getType()));
+        return new TransparentMergeEngine(queryResults);
     }
 }

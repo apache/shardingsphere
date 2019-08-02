@@ -19,9 +19,12 @@
 <xsd:schema xmlns="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
             xmlns:beans="http://www.springframework.org/schema/beans"
+            xmlns:encrypt="http://shardingsphere.apache.org/schema/shardingsphere/encrypt"
             targetNamespace="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
-            elementFormDefault="qualified">
+            elementFormDefault="qualified" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://shardingsphere.apache.org/schema/shardingsphere/encrypt http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd">
     <xsd:import namespace="http://www.springframework.org/schema/beans" schemaLocation="http://www.springframework.org/schema/beans/spring-beans.xsd" />
+    <xsd:import namespace="http://shardingsphere.apache.org/schema/shardingsphere/encrypt" schemaLocation="http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd"/>
     <xsd:element name="data-source">
         <xsd:complexType>
             <xsd:all>
@@ -33,13 +36,13 @@
     </xsd:element>
     <xsd:element name="sharding-rule">
         <xsd:complexType>
-            <xsd:sequence>
+            <xsd:all>
                 <xsd:element ref="master-slave-rules" minOccurs="0" />
                 <xsd:element ref="table-rules" minOccurs="0" />
                 <xsd:element ref="binding-table-rules" minOccurs="0" />
                 <xsd:element ref="broadcast-table-rules" minOccurs="0" />
-                <xsd:element ref="encrypt-rules" minOccurs="0" />
-            </xsd:sequence>
+                <xsd:element name="encrypt-rule" type="encrypt:encrypt-rule" minOccurs="0" />
+            </xsd:all>
             <xsd:attribute name="data-source-names" type="xsd:string" use="required" />
             <xsd:attribute name="default-data-source-name" type="xsd:string" />
             <xsd:attribute name="default-database-strategy-ref" type="xsd:string" />
@@ -142,22 +145,6 @@
             <xsd:attribute name="id" type="xsd:string" use="required" />
             <xsd:attribute name="column" type="xsd:string" />
             <xsd:attribute name="type" type="xsd:string" />
-            <xsd:attribute name="props-ref" type="xsd:string" />
-        </xsd:complexType>
-    </xsd:element>
-    <xsd:element name="encrypt-rules">
-        <xsd:complexType>
-            <xsd:sequence>
-                <xsd:element ref="encryptor-rule" maxOccurs="unbounded" />
-            </xsd:sequence>
-        </xsd:complexType>
-    </xsd:element>
-    <xsd:element name="encryptor-rule">
-        <xsd:complexType>
-            <xsd:attribute name="id" type="xsd:string" use="required" />
-            <xsd:attribute name="type" type="xsd:string" use="required" />
-            <xsd:attribute name="qualified-columns" type="xsd:string" use="required" />
-            <xsd:attribute name="assisted-query-columns" type="xsd:string" />
             <xsd:attribute name="props-ref" type="xsd:string" />
         </xsd:complexType>
     </xsd:element>

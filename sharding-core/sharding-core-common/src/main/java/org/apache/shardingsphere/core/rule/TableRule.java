@@ -47,7 +47,7 @@ import java.util.Set;
  * @author zhangliang
  */
 @Getter
-@ToString(exclude = {"dataNodeIndexMap", "actualTables"})
+@ToString(exclude = {"dataNodeIndexMap", "actualTables", "actualDatasourceNames", "datasourceToTablesMap"})
 public final class TableRule {
     
     private final String logicTable;
@@ -68,18 +68,20 @@ public final class TableRule {
     
     private final ShardingKeyGenerator shardingKeyGenerator;
     
-    private final String logicIndex;
+    private final Collection<String> actualDatasourceNames = new LinkedHashSet<>();
+    
+    private final Map<String, Collection<String>> datasourceToTablesMap = new HashMap<>();
     
     public TableRule(final String defaultDataSourceName, final String logicTableName) {
         logicTable = logicTableName.toLowerCase();
         actualDataNodes = Collections.singletonList(new DataNode(defaultDataSourceName, logicTableName));
         actualTables = getActualTables();
+        cacheActualDatasourcesAndTables();
         dataNodeIndexMap = Collections.emptyMap();
         databaseShardingStrategy = null;
         tableShardingStrategy = null;
         generateKeyColumn = null;
         shardingKeyGenerator = null;
-        logicIndex = null;
     }
     
     public TableRule(final Collection<String> dataSourceNames, final String logicTableName) {
@@ -91,7 +93,6 @@ public final class TableRule {
         tableShardingStrategy = null;
         generateKeyColumn = null;
         shardingKeyGenerator = null;
-        logicIndex = null;
     }
     
     public TableRule(final TableRuleConfiguration tableRuleConfig, final ShardingDataSourceNames shardingDataSourceNames, final String defaultGenerateKeyColumn) {
@@ -106,7 +107,13 @@ public final class TableRule {
         generateKeyColumn = getGenerateKeyColumn(tableRuleConfig.getKeyGeneratorConfig(), defaultGenerateKeyColumn);
         shardingKeyGenerator = containsKeyGeneratorConfiguration(tableRuleConfig)
                 ? new ShardingKeyGeneratorServiceLoader().newService(tableRuleConfig.getKeyGeneratorConfig().getType(), tableRuleConfig.getKeyGeneratorConfig().getProperties()) : null;
-        logicIndex = null == tableRuleConfig.getLogicIndex() ? null : tableRuleConfig.getLogicIndex().toLowerCase();
+    }
+    
+    private void cacheActualDatasourcesAndTables() {
+        for (DataNode each : actualDataNodes) {
+            actualDatasourceNames.add(each.getDataSourceName());
+            addActualTable(each.getDataSourceName(), each.getTableName());
+        }
     }
     
     private Set<String> getActualTables() {
@@ -115,6 +122,15 @@ public final class TableRule {
             result.add(each.getTableName());
         }
         return result;
+    }
+    
+    private void addActualTable(final String datasourceName, final String tableName) {
+        Collection<String> actualTables = datasourceToTablesMap.get(datasourceName);
+        if (null == actualTables) {
+            actualTables = new LinkedHashSet<>();
+            datasourceToTablesMap.put(datasourceName, actualTables);
+        }
+        actualTables.add(tableName);
     }
     
     private boolean containsKeyGeneratorConfiguration(final TableRuleConfiguration tableRuleConfiguration) {
@@ -139,6 +155,8 @@ public final class TableRule {
             DataNode dataNode = new DataNode(each, logicTable);
             result.add(dataNode);
             dataNodeIndexMap.put(dataNode, index);
+            actualDatasourceNames.add(each);
+            addActualTable(dataNode.getDataSourceName(), dataNode.getTableName());
             index++;
         }
         return result;
@@ -154,6 +172,8 @@ public final class TableRule {
             }
             result.add(dataNode);
             dataNodeIndexMap.put(dataNode, index);
+            actualDatasourceNames.add(dataNode.getDataSourceName());
+            addActualTable(dataNode.getDataSourceName(), dataNode.getTableName());
             index++;
         }
         return result;
@@ -182,11 +202,7 @@ public final class TableRule {
      * @return actual data source names
      */
     public Collection<String> getActualDatasourceNames() {
-        Collection<String> result = new LinkedHashSet<>(actualDataNodes.size());
-        for (DataNode each : actualDataNodes) {
-            result.add(each.getDataSourceName());
-        }
-        return result;
+        return actualDatasourceNames;
     }
     
     /**
@@ -196,11 +212,9 @@ public final class TableRule {
      * @return names of actual tables
      */
     public Collection<String> getActualTableNames(final String targetDataSource) {
-        Collection<String> result = new LinkedHashSet<>(actualDataNodes.size());
-        for (DataNode each : actualDataNodes) {
-            if (targetDataSource.equals(each.getDataSourceName())) {
-                result.add(each.getTableName());
-            }
+        Collection<String> result = datasourceToTablesMap.get(targetDataSource);
+        if (null == result) {
+            result = Collections.emptySet();
         }
         return result;
     }

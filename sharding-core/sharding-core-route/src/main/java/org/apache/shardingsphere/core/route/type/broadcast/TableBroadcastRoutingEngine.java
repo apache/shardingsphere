@@ -17,24 +17,19 @@
 
 package org.apache.shardingsphere.core.route.type.broadcast;
 
-import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.ddl.DDLStatement;
-import org.apache.shardingsphere.core.parse.antlr.sql.token.IndexToken;
-import org.apache.shardingsphere.core.parse.antlr.sql.token.SQLToken;
+import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.optimize.sharding.statement.ddl.ShardingDropIndexOptimizedStatement;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
-import org.apache.shardingsphere.core.route.type.RoutingTable;
+import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.route.type.TableUnit;
 import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Broadcast routing engine for tables.
@@ -48,42 +43,29 @@ public final class TableBroadcastRoutingEngine implements RoutingEngine {
     
     private final ShardingRule shardingRule;
     
-    private final SQLStatement sqlStatement;
+    private final OptimizedStatement optimizedStatement;
     
     @Override
     public RoutingResult route() {
         RoutingResult result = new RoutingResult();
         for (String each : getLogicTableNames()) {
-            result.getTableUnits().getTableUnits().addAll(getAllTableUnits(each));
+            result.getRoutingUnits().addAll(getAllRoutingUnits(each));
         }
         return result;
     }
     
     private Collection<String> getLogicTableNames() {
-        if (isOperateIndexWithoutTable()) {
-            String indexName = sqlStatement.getLogicSQL().substring(getIndexToken().getStartIndex(), getIndexToken().getStopIndex() + 1);
-            return Collections.singletonList(shardingRule.getLogicTableName(indexName));
-        }
-        return sqlStatement.getTables().getTableNames();
+        return optimizedStatement instanceof ShardingDropIndexOptimizedStatement
+                ? ((ShardingDropIndexOptimizedStatement) optimizedStatement).getTableNames() : optimizedStatement.getTables().getTableNames();
     }
     
-    private boolean isOperateIndexWithoutTable() {
-        return sqlStatement instanceof DDLStatement && sqlStatement.getTables().isEmpty();
-    }
-    
-    private IndexToken getIndexToken() {
-        List<SQLToken> sqlTokens = sqlStatement.getSQLTokens();
-        Preconditions.checkState(1 == sqlTokens.size());
-        return (IndexToken) sqlTokens.get(0);
-    }
-    
-    private Collection<TableUnit> getAllTableUnits(final String logicTableName) {
-        Collection<TableUnit> result = new LinkedList<>();
+    private Collection<RoutingUnit> getAllRoutingUnits(final String logicTableName) {
+        Collection<RoutingUnit> result = new LinkedList<>();
         TableRule tableRule = shardingRule.getTableRule(logicTableName);
         for (DataNode each : tableRule.getActualDataNodes()) {
-            TableUnit tableUnit = new TableUnit(each.getDataSourceName());
-            tableUnit.getRoutingTables().add(new RoutingTable(logicTableName, each.getTableName()));
-            result.add(tableUnit);
+            RoutingUnit routingUnit = new RoutingUnit(each.getDataSourceName());
+            routingUnit.getTableUnits().add(new TableUnit(logicTableName, each.getTableName()));
+            result.add(routingUnit);
         }
         return result;
     }

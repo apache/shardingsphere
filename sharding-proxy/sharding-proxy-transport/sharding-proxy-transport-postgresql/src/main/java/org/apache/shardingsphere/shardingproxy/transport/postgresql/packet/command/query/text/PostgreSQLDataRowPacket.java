@@ -50,7 +50,7 @@ public final class PostgreSQLDataRowPacket implements PostgreSQLPacket {
                     payload.writeBytes((byte[]) each);
                 } else {
                     String columnData = each.toString();
-                    payload.writeInt4(columnData.length());
+                    payload.writeInt4(columnData.getBytes().length);
                     payload.writeStringEOF(columnData);
                 }
             }

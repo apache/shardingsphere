@@ -17,18 +17,18 @@
 
 grammar TCLStatement;
 
-import Symbol, Keyword, Literals, BaseRule;
+import Symbol, Keyword, MySQLKeyword, Literals, BaseRule;
 
 setTransaction
-    : SET (GLOBAL | SESSION)? TRANSACTION
+    : SET scope_? TRANSACTION
     ;
 
 setAutoCommit
-    : SET AUTOCOMMIT EQ_ autoCommitValue
+    : SET scope_? AUTOCOMMIT EQ_ autoCommitValue
     ;
 
 autoCommitValue
-    : NUMBER_
+    : NUMBER_ | ON | OFF
     ;
 
 beginTransaction

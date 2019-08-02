@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.transaction.xa.jta.connection;
 
-import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.h2.jdbcx.JdbcXAConnection;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mariadb.jdbc.MariaXaConnection;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.postgresql.xa.PGXAConnection;
@@ -43,21 +44,26 @@ public final class XAConnectionFactoryTest {
     @Test(expected = Exception.class)
     // TODO assert fail
     public void assertCreateMySQLXAConnection() {
-        XAConnectionFactory.createXAConnection(DatabaseType.MySQL, xaDataSource, connection);
+        XAConnectionFactory.createXAConnection(DatabaseTypes.getActualDatabaseType("MySQL"), xaDataSource, connection);
     }
-    
-    @Test
-    public void assertCreateH2XAConnection() {
-        assertThat(XAConnectionFactory.createXAConnection(DatabaseType.H2, xaDataSource, connection), instanceOf(JdbcXAConnection.class));
+
+    @Test(expected = Exception.class)
+    public void assertCreateMariaDBXAConnection() {
+        assertThat(XAConnectionFactory.createXAConnection(DatabaseTypes.getActualDatabaseType("MariaDB"), xaDataSource, connection), instanceOf(MariaXaConnection.class));
     }
 
     @Test
     public void assertCreatePostgreSQLXAConnection() {
-        assertThat(XAConnectionFactory.createXAConnection(DatabaseType.PostgreSQL, xaDataSource, connection), instanceOf(PGXAConnection.class));
+        assertThat(XAConnectionFactory.createXAConnection(DatabaseTypes.getActualDatabaseType("PostgreSQL"), xaDataSource, connection), instanceOf(PGXAConnection.class));
     }
-
+    
+    @Test
+    public void assertCreateH2XAConnection() {
+        assertThat(XAConnectionFactory.createXAConnection(DatabaseTypes.getActualDatabaseType("H2"), xaDataSource, connection), instanceOf(JdbcXAConnection.class));
+    }
+    
     @Test(expected = UnsupportedOperationException.class)
     public void assertCreateUnknownXAConnectionThrowsUnsupportedOperationException() {
-        XAConnectionFactory.createXAConnection(DatabaseType.Oracle, xaDataSource, connection);
+        XAConnectionFactory.createXAConnection(DatabaseTypes.getActualDatabaseType("Oracle"), xaDataSource, connection);
     }
 }

@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.core.parse.hook;
 
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
 
 import java.util.Collection;
@@ -44,9 +43,9 @@ public final class SPIParsingHook implements ParsingHook {
     }
     
     @Override
-    public void finishSuccess(final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
+    public void finishSuccess(final SQLStatement sqlStatement) {
         for (ParsingHook each : parsingHooks) {
-            each.finishSuccess(sqlStatement, shardingTableMetaData);
+            each.finishSuccess(sqlStatement);
         }
     }
     

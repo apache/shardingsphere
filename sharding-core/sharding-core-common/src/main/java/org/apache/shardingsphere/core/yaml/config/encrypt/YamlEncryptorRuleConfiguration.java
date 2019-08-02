@@ -24,7 +24,7 @@ import org.apache.shardingsphere.core.yaml.config.YamlConfiguration;
 import java.util.Properties;
 
 /**
- * Yaml encryptor configuration.
+ * Encryptor configuration.
  *
  * @author panjuan
  */
@@ -33,10 +33,6 @@ import java.util.Properties;
 public final class YamlEncryptorRuleConfiguration implements YamlConfiguration {
     
     private String type;
-    
-    private String qualifiedColumns;
-    
-    private String assistedQueryColumns;
     
     private Properties props = new Properties();
 }

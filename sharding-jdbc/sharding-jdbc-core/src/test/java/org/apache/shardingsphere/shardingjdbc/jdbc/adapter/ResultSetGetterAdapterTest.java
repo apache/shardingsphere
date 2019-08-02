@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.adapter;
 
-import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.shardingjdbc.common.base.AbstractShardingJDBCDatabaseAndTableTest;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.util.JDBCTestSQL;
+import org.apache.shardingsphere.spi.database.DatabaseType;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -61,7 +62,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
         statements.add(statement);
         ResultSet resultSet = statement.executeQuery(JDBCTestSQL.SELECT_ORDER_BY_USER_ID_SQL);
         resultSet.next();
-        resultSets.put(DatabaseType.H2, resultSet);
+        resultSets.put(DatabaseTypes.getActualDatabaseType("H2"), resultSet);
     }
     
     @After
@@ -78,26 +79,16 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
     }
     
     @Test
-    public void assertGetBooleanForColumnIndex() {
-        for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
-            try {
-                each.getValue().getBoolean(1);
-                fail("Expected an SQLException to be thrown");
-            } catch (final Exception ex) {
-                assertFalse(ex.getMessage().isEmpty());
-            }
+    public void assertGetBooleanForColumnIndex() throws SQLException {
+        for (ResultSet each : resultSets.values()) {
+            assertThat(each.getBoolean(1), is(true));
         }
     }
     
     @Test
-    public void assertGetBooleanForColumnLabel() {
-        for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
-            try {
-                assertTrue(each.getValue().getBoolean(columnName));
-                fail("Expected an SQLException to be thrown");
-            } catch (final Exception ex) {
-                assertFalse(ex.getMessage().isEmpty());
-            }
+    public void assertGetBooleanForColumnLabel() throws SQLException {
+        for (ResultSet each : resultSets.values()) {
+            assertThat(each.getBoolean(columnName), is(true));
         }
     }
     
@@ -354,7 +345,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
         for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
             try {
                 each.getValue().getTimestamp(1);
-                if (DatabaseType.MySQL == each.getKey() || DatabaseType.PostgreSQL == each.getKey()) {
+                if (DatabaseTypes.getActualDatabaseType("MySQL") == each.getKey() || DatabaseTypes.getActualDatabaseType("PostgreSQL") == each.getKey()) {
                     continue;
                 }
                 fail("Expected an SQLException to be thrown");
@@ -369,7 +360,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
         for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
             try {
                 each.getValue().getTimestamp(columnName);
-                if (DatabaseType.MySQL == each.getKey() || DatabaseType.PostgreSQL == each.getKey()) {
+                if (DatabaseTypes.getActualDatabaseType("MySQL") == each.getKey() || DatabaseTypes.getActualDatabaseType("PostgreSQL") == each.getKey()) {
                     continue;
                 }
                 fail("Expected an SQLException to be thrown");
@@ -384,7 +375,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
         for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
             try {
                 each.getValue().getTimestamp(1, Calendar.getInstance());
-                if (DatabaseType.MySQL == each.getKey() || DatabaseType.PostgreSQL == each.getKey()) {
+                if (DatabaseTypes.getActualDatabaseType("MySQL") == each.getKey() || DatabaseTypes.getActualDatabaseType("PostgreSQL") == each.getKey()) {
                     continue;
                 }
                 fail("Expected an SQLException to be thrown");
@@ -399,7 +390,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
         for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
             try {
                 each.getValue().getTimestamp(columnName, Calendar.getInstance());
-                if (DatabaseType.MySQL == each.getKey() || DatabaseType.PostgreSQL == each.getKey()) {
+                if (DatabaseTypes.getActualDatabaseType("MySQL") == each.getKey() || DatabaseTypes.getActualDatabaseType("PostgreSQL") == each.getKey()) {
                     continue;
                 }
                 fail("Expected an SQLException to be thrown");
@@ -412,7 +403,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
     @Test
     public void assertGetAsciiStreamForColumnIndex() throws SQLException, IOException {
         for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
-            if (DatabaseType.MySQL == each.getKey() || DatabaseType.PostgreSQL == each.getKey()) {
+            if (DatabaseTypes.getActualDatabaseType("MySQL") == each.getKey() || DatabaseTypes.getActualDatabaseType("PostgreSQL") == each.getKey()) {
                 byte[] b = new byte[1];
                 each.getValue().getAsciiStream(1).read(b);
                 assertThat(new String(b), is("1"));
@@ -423,7 +414,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
     @Test
     public void assertGetAsciiStreamForColumnLabel() throws SQLException, IOException {
         for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
-            if (DatabaseType.MySQL == each.getKey() || DatabaseType.PostgreSQL == each.getKey()) {
+            if (DatabaseTypes.getActualDatabaseType("MySQL") == each.getKey() || DatabaseTypes.getActualDatabaseType("PostgreSQL") == each.getKey()) {
                 byte[] b = new byte[1];
                 each.getValue().getAsciiStream(columnName).read(b);
                 assertThat(new String(b), is("1"));
@@ -435,11 +426,11 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
     @Test
     public void assertGetUnicodeStreamForColumnIndex() throws SQLException, IOException {
         for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
-            if (DatabaseType.Oracle == each.getKey()) {
+            if (DatabaseTypes.getActualDatabaseType("Oracle") == each.getKey()) {
                 continue;
             }
             byte[] b = new byte[1];
-            if (DatabaseType.H2 == each.getKey() || DatabaseType.SQLServer == each.getKey()) {
+            if (DatabaseTypes.getActualDatabaseType("H2") == each.getKey() || DatabaseTypes.getActualDatabaseType("SQLServer") == each.getKey()) {
                 try {
                     each.getValue().getUnicodeStream(1).read(b);
                 } catch (final Exception ignored) {
@@ -455,11 +446,11 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
     @Test
     public void assertGetUnicodeStreamForColumnLabel() throws SQLException, IOException {
         for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
-            if (DatabaseType.Oracle == each.getKey()) {
+            if (DatabaseTypes.getActualDatabaseType("Oracle") == each.getKey()) {
                 continue;
             }
             byte[] b = new byte[1];
-            if (DatabaseType.H2 == each.getKey() || DatabaseType.SQLServer == each.getKey()) {
+            if (DatabaseTypes.getActualDatabaseType("H2") == each.getKey() || DatabaseTypes.getActualDatabaseType("SQLServer") == each.getKey()) {
                 try {
                     each.getValue().getUnicodeStream(columnName).read(b);
                 } catch (final Exception ignored) {
@@ -474,7 +465,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
     @Test
     public void assertGetBinaryStreamForColumnIndex() throws SQLException, IOException {
         for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
-            if (DatabaseType.MySQL == each.getKey() || DatabaseType.PostgreSQL == each.getKey()) {
+            if (DatabaseTypes.getActualDatabaseType("MySQL") == each.getKey() || DatabaseTypes.getActualDatabaseType("PostgreSQL") == each.getKey()) {
                 assertTrue(each.getValue().getBinaryStream(1).read() != -1);
             }
         }
@@ -483,7 +474,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
     @Test
     public void assertGetBinaryStreamForColumnLabel() throws SQLException, IOException {
         for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
-            if (DatabaseType.MySQL == each.getKey() || DatabaseType.PostgreSQL == each.getKey()) {
+            if (DatabaseTypes.getActualDatabaseType("MySQL") == each.getKey() || DatabaseTypes.getActualDatabaseType("PostgreSQL") == each.getKey()) {
                 assertTrue(each.getValue().getBinaryStream(columnName).read() != -1);
             }
         }
@@ -492,7 +483,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
     @Test
     public void assertGetCharacterStreamForColumnIndex() throws SQLException, IOException {
         for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
-            if (DatabaseType.MySQL == each.getKey() || DatabaseType.PostgreSQL == each.getKey()) {
+            if (DatabaseTypes.getActualDatabaseType("MySQL") == each.getKey() || DatabaseTypes.getActualDatabaseType("PostgreSQL") == each.getKey()) {
                 char[] c = new char[1];
                 each.getValue().getCharacterStream(1).read(c);
                 assertThat(c[0], is('1'));
@@ -503,7 +494,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
     @Test
     public void assertGetCharacterStreamForColumnLabel() throws SQLException, IOException {
         for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
-            if (DatabaseType.MySQL == each.getKey() || DatabaseType.PostgreSQL == each.getKey()) {
+            if (DatabaseTypes.getActualDatabaseType("MySQL") == each.getKey() || DatabaseTypes.getActualDatabaseType("PostgreSQL") == each.getKey()) {
                 char[] c = new char[1];
                 each.getValue().getCharacterStream(columnName).read(c);
                 assertThat(c[0], is('1'));
@@ -514,7 +505,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
     @Test
     public void assertGetBlobForColumnIndex() {
         for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
-            if (DatabaseType.H2 == each.getKey()) {
+            if (DatabaseTypes.getActualDatabaseType("H2") == each.getKey()) {
                 try {
                     assertTrue(each.getValue().getBlob(1).length() > 0);
                     fail("Expected an SQLException to be thrown");
@@ -528,7 +519,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
     @Test
     public void assertGetBlobForColumnLabel() {
         for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
-            if (DatabaseType.H2 == each.getKey()) {
+            if (DatabaseTypes.getActualDatabaseType("H2") == each.getKey()) {
                 try {
                     assertTrue(each.getValue().getBlob(columnName).length() > 0);
                     fail("Expected an SQLException to be thrown");
@@ -590,10 +581,10 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
     @Test
     public void assertGetSQLXMLForColumnIndex() throws SQLException {
         for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
-            if (DatabaseType.Oracle == each.getKey()) {
+            if (DatabaseTypes.getActualDatabaseType("Oracle") == each.getKey()) {
                 continue;
             }
-            if (DatabaseType.H2 == each.getKey() || DatabaseType.SQLServer == each.getKey()) {
+            if (DatabaseTypes.getActualDatabaseType("H2") == each.getKey() || DatabaseTypes.getActualDatabaseType("SQLServer") == each.getKey()) {
                 try {
                     each.getValue().getSQLXML(1);
                     fail("Expected an SQLException to be thrown");
@@ -609,10 +600,10 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
     @Test
     public void assertGetSQLXMLForColumnLabel() throws SQLException {
         for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
-            if (DatabaseType.Oracle == each.getKey()) {
+            if (DatabaseTypes.getActualDatabaseType("Oracle") == each.getKey()) {
                 continue;
             }
-            if (DatabaseType.H2 == each.getKey() || DatabaseType.SQLServer == each.getKey()) {
+            if (DatabaseTypes.getActualDatabaseType("H2") == each.getKey() || DatabaseTypes.getActualDatabaseType("SQLServer") == each.getKey()) {
                 try {
                     each.getValue().getSQLXML(columnName);
                     fail("Expected an SQLException to be thrown");

@@ -17,26 +17,121 @@
 
 grammar BaseRule;
 
-import Keyword, Symbol, Literals;
+import Symbol, Keyword, SQLServerKeyword, Literals;
+
+parameterMarker
+    : QUESTION_
+    ;
+
+literals
+    : stringLiterals
+    | numberLiterals
+    | dateTimeLiterals
+    | hexadecimalLiterals
+    | bitValueLiterals
+    | booleanLiterals
+    | nullValueLiterals
+    ;
+
+stringLiterals
+    : STRING_
+    ;
+
+numberLiterals
+   : MINUS_? NUMBER_
+   ;
+
+dateTimeLiterals
+    : (DATE | TIME | TIMESTAMP) STRING_
+    | LBE_ identifier_ STRING_ RBE_
+    ;
+
+hexadecimalLiterals
+    : HEX_DIGIT_
+    ;
+
+bitValueLiterals
+    : BIT_NUM_
+    ;
+    
+booleanLiterals
+    : TRUE | FALSE
+    ;
+
+nullValueLiterals
+    : NULL
+    ;
+
+identifier_
+    : IDENTIFIER_ | unreservedWord_
+    ;
+
+unreservedWord_
+    : TRUNCATE | FUNCTION | TRIGGER | LIMIT | OFFSET | SAVEPOINT | BOOLEAN
+    | ARRAY | LOCALTIME | LOCALTIMESTAMP | QUARTER | WEEK | MICROSECOND | ENABLE
+    | DISABLE | BINARY | HIDDEN_ | MOD | PARTITION | TOP | ROW
+    | XOR | ALWAYS | ROLE | START | ALGORITHM | AUTO | BLOCKERS
+    | CLUSTERED | COLUMNSTORE | CONTENT | DATABASE | DAYS | DENY | DETERMINISTIC
+    | DISTRIBUTION | DOCUMENT | DURABILITY | ENCRYPTED | FILESTREAM | FILETABLE | FOLLOWING
+    | HASH | HEAP | INBOUND | INFINITE | LOGIN | MASKED | MAXDOP 
+    | MINUTES | MONTHS | MOVE | NOCHECK | NONCLUSTERED | OBJECT | OFF
+    | ONLINE | OUTBOUND | OVER | PAGE | PARTITIONS | PAUSED | PERIOD
+    | PERSISTED | PRECEDING | RANDOMIZED | RANGE | REBUILD | REPLICATE | REPLICATION
+    | RESUMABLE | ROWGUIDCOL | SAVE | SELF | SPARSE | SWITCH | TRAN
+    | TRANCOUNT | UNBOUNDED | YEARS | WEEKS | ABORT_AFTER_WAIT | ALLOW_PAGE_LOCKS | ALLOW_ROW_LOCKS
+    | ALL_SPARSE_COLUMNS | BUCKET_COUNT | COLUMNSTORE_ARCHIVE | COLUMN_ENCRYPTION_KEY | COLUMN_SET | COMPRESSION_DELAY | DATABASE_DEAULT
+    | DATA_COMPRESSION | DATA_CONSISTENCY_CHECK | ENCRYPTION_TYPE | SYSTEM_TIME | SYSTEM_VERSIONING | TEXTIMAGE_ON | WAIT_AT_LOW_PRIORITY
+    | STATISTICS_INCREMENTAL | STATISTICS_NORECOMPUTE | ROUND_ROBIN | SCHEMA_AND_DATA | SCHEMA_ONLY | SORT_IN_TEMPDB | IGNORE_DUP_KEY
+    | IMPLICIT_TRANSACTIONS | MAX_DURATION | MEMORY_OPTIMIZED | MIGRATION_STATE | PAD_INDEX | REMOTE_DATA_ARCHIVE | FILESTREAM_ON
+    | FILETABLE_COLLATE_FILENAME | FILETABLE_DIRECTORY | FILETABLE_FULLPATH_UNIQUE_CONSTRAINT_NAME | FILETABLE_PRIMARY_KEY_CONSTRAINT_NAME | FILETABLE_STREAMID_UNIQUE_CONSTRAINT_NAME
+    | FILLFACTOR | FILTER_PREDICATE | HISTORY_RETENTION_PERIOD | HISTORY_TABLE | LOCK_ESCALATION | DROP_EXISTING | ROW_NUMBER
+    | CONTROL | TAKE | OWNERSHIP | DEFINITION | APPLICATION | ASSEMBLY | SYMMETRIC | ASYMMETRIC
+    | SERVER | RECEIVE | CHANGE | TRACE | TRACKING | RESOURCES | SETTINGS
+    | STATE | AVAILABILITY | CREDENTIAL | ENDPOINT | EVENT | NOTIFICATION
+    | LINKED | AUDIT | DDL | SQL | XML | IMPERSONATE | SECURABLES | AUTHENTICATE
+    | EXTERNAL | ACCESS | ADMINISTER | BULK | OPERATIONS | UNSAFE | SHUTDOWN
+    | SCOPED | CONFIGURATION |DATASPACE | SERVICE | CERTIFICATE | CONTRACT | ENCRYPTION
+    | MASTER | DATA | SOURCE | FILE | FORMAT | LIBRARY | FULLTEXT | MASK | UNMASK
+    | MESSAGE | TYPE | REMOTE | BINDING | ROUTE | SECURITY | POLICY | AGGREGATE | QUEUE
+    | RULE | SYNONYM | COLLECTION | SCRIPT | KILL | BACKUP | LOG | SHOWPLAN
+    | SUBSCRIBE | QUERY | NOTIFICATIONS | CHECKPOINT | SEQUENCE | INSTANCE | LOCAL | CASCADED
+    | NAME
+    ;
 
 schemaName
-    : IDENTIFIER_
+    : identifier_
     ;
 
 tableName
-    : IDENTIFIER_
+    : (owner DOT_)? name
     ;
 
 columnName
-    : IDENTIFIER_
+    : (owner DOT_)? name
+    ;
+
+owner
+    : identifier_
+    ;
+
+name
+    : identifier_
+    ;
+
+columnNames
+    : LP_ columnNameWithSort (COMMA_ columnNameWithSort)* RP_
+    ;
+
+tableNames
+    : LP_? tableName (COMMA_ tableName)* RP_?
+    ;
+
+indexName
+    : identifier_
     ;
 
 collationName
     : STRING_ | IDENTIFIER_
-    ;
-
-indexName
-    : IDENTIFIER_
     ;
 
 alias
@@ -51,59 +146,39 @@ primaryKey
     : PRIMARY? KEY
     ;
 
-columnNames
-    : LP_ columnNameWithSort (COMMA_ columnNameWithSort)* RP_
-    ;
-
-exprs
-    : expr (COMMA_ expr)*
-    ;
-
-exprList
-    : LP_ exprs RP_
-    ;
-
+// TODO comb expr
 expr
-    : expr AND expr
-    | expr AND_ expr
-    | expr XOR expr
+    : expr logicalOperator expr
+    | notOperator_ expr
     | LP_ expr RP_
-    | NOT expr
-    | NOT_ expr
-    | expr OR expr
-    | expr OR_ expr
-    | booleanPrimary
-    | exprRecursive
+    | booleanPrimary_
     ;
 
-exprRecursive
-    : matchNone
+logicalOperator
+    : OR | OR_ | AND | AND_
     ;
 
-booleanPrimary
-    : booleanPrimary IS NOT? (TRUE | FALSE | UNKNOWN |NULL)
-    | booleanPrimary SAFE_EQ_ predicate
-    | booleanPrimary comparisonOperator predicate
-    | booleanPrimary comparisonOperator (ALL | ANY) subquery
+notOperator_
+    : NOT | NOT_
+    ;
+
+booleanPrimary_
+    : booleanPrimary_ IS NOT? (TRUE | FALSE | UNKNOWN | NULL)
+    | booleanPrimary_ SAFE_EQ_ predicate
+    | booleanPrimary_ comparisonOperator predicate
+    | booleanPrimary_ comparisonOperator (ALL | ANY) subquery
     | predicate
     ;
 
 comparisonOperator
-    : EQ_
-    | GTE_
-    | GT_
-    | LTE_
-    | LT_
-    | NEQ_
+    : EQ_ | GTE_ | GT_ | LTE_ | LT_ | NEQ_
     ;
 
 predicate
     : bitExpr NOT? IN subquery
-    | bitExpr NOT? IN LP_ simpleExpr (COMMA_ simpleExpr)* RP_
-    | bitExpr NOT? BETWEEN simpleExpr AND predicate
-    | bitExpr SOUNDS LIKE simpleExpr
-    | bitExpr NOT? LIKE simpleExpr (ESCAPE simpleExpr)*
-    | bitExpr NOT? REGEXP simpleExpr
+    | bitExpr NOT? IN LP_ expr (COMMA_ expr)* RP_
+    | bitExpr NOT? BETWEEN bitExpr AND predicate
+    | bitExpr NOT? LIKE simpleExpr (ESCAPE simpleExpr)?
     | bitExpr
     ;
 
@@ -116,106 +191,87 @@ bitExpr
     | bitExpr MINUS_ bitExpr
     | bitExpr ASTERISK_ bitExpr
     | bitExpr SLASH_ bitExpr
-    | bitExpr MOD bitExpr
     | bitExpr MOD_ bitExpr
     | bitExpr CARET_ bitExpr
-    | bitExpr PLUS_ intervalExpr
-    | bitExpr MINUS_ intervalExpr
     | simpleExpr
     ;
 
 simpleExpr
     : functionCall
-    | literal
+    | parameterMarker
+    | literals
     | columnName
-    | simpleExpr collateClause
-    //| param_marker
-    | variable
-    | simpleExpr AND_ simpleExpr
-    | PLUS_ simpleExpr
-    | MINUS_ simpleExpr
-    | TILDE_ simpleExpr
-    | NOT_ simpleExpr
-    | BINARY simpleExpr
-    | exprList
-    | ROW exprList
-    | subquery
-    | EXISTS subquery
-    // | (identifier_ expr)
-    //| match_expr
-    | caseExpress
-    | intervalExpr
+    | simpleExpr OR_ simpleExpr
+    | (PLUS_ | MINUS_ | TILDE_ | NOT_ | BINARY) simpleExpr
+    | ROW? LP_ expr (COMMA_ expr)* RP_
+    | EXISTS? subquery
+    | LBE_ identifier_ expr RBE_
+    | caseExpression_
     | privateExprOfDb
     ;
 
 functionCall
-    : IDENTIFIER_ LP_ distinct? (exprs | ASTERISK_)? RP_
+    : aggregationFunction | specialFunction_ | regularFunction_ 
+    ;
+
+aggregationFunction
+    : aggregationFunctionName_ LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? RP_
+    ;
+
+aggregationFunctionName_
+    : MAX | MIN | SUM | COUNT | AVG
     ;
 
 distinct
     : DISTINCT
     ;
 
-intervalExpr
-    : matchNone
+specialFunction_
+    : castFunction_  | charFunction_
     ;
 
-caseExpress
-    : matchNone
+castFunction_
+    : CAST LP_ expr AS dataType RP_
+    ;
+
+charFunction_
+    : CHAR LP_ expr (COMMA_ expr)* (USING ignoredIdentifier_)? RP_
+    ;
+
+regularFunction_
+    : regularFunctionName_ LP_ (expr (COMMA_ expr)* | ASTERISK_)? RP_
+    ;
+
+regularFunctionName_
+    : identifier_ | IF | LOCALTIME | LOCALTIMESTAMP | INTERVAL
+    ;
+
+caseExpression_
+    : CASE simpleExpr? caseWhen_+ caseElse_?
+    ;
+
+caseWhen_
+    : WHEN expr THEN expr
+    ;
+
+caseElse_
+    : ELSE expr
     ;
 
 privateExprOfDb
     : windowedFunction | atTimeZoneExpr | castExpr | convertExpr
     ;
 
-variable
-    : matchNone
-    ;
-
-literal
-    : question
-    | number
-    | TRUE
-    | FALSE
-    | NULL
-    | LBE_ IDENTIFIER_ STRING_ RBE_
-    | HEX_DIGIT_
-    | string
-    | IDENTIFIER_ STRING_ collateClause?
-    | (DATE | TIME | TIMESTAMP) STRING_
-    | IDENTIFIER_? BIT_NUM_ collateClause?
-    ;
-
-question
-    : QUESTION_
-    ;
-
-number
-   : NUMBER_
-   ;
-
-string
-    : STRING_
-    ;
-
 subquery
     : matchNone
     ;
 
-collateClause
-    : matchNone
-    ;
-
 orderByClause
-    : ORDER BY orderByExpr (COMMA_ orderByExpr)*
-    ;
-    
-orderByItem
-    : (columnName | number | expr) (ASC | DESC)?
+    : ORDER BY orderByItem (COMMA_ orderByItem)*
     ;
 
-asterisk
-    : ASTERISK_
+orderByItem
+    : (columnName | numberLiterals | expr) (ASC | DESC)?
     ;
 
 dataType
@@ -248,10 +304,6 @@ overClause
 
 partitionByClause
     : PARTITION BY expr (COMMA_ expr)*
-    ;
-
-orderByExpr
-    : expr (COLLATE collationName)? (ASC | DESC)? 
     ;
 
 rowRangeClause 

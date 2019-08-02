@@ -20,8 +20,8 @@ package org.apache.shardingsphere.core.execute.sql.execute.result;
 import com.google.common.base.Optional;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.execute.sql.execute.row.QueryRow;
+import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.core.strategy.encrypt.ShardingEncryptorEngine;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 
 import java.io.ByteArrayInputStream;
@@ -41,6 +41,7 @@ import java.util.List;
  *
  * @author zhangliang
  * @author panjuan
+ * @author yangyi
  */
 public final class MemoryQueryResult implements QueryResult {
     
@@ -50,10 +51,16 @@ public final class MemoryQueryResult implements QueryResult {
     
     private final QueryResultMetaData metaData;
     
-    @SneakyThrows 
-    public MemoryQueryResult(final ResultSet resultSet, final ShardingRule shardingRule, final ShardingEncryptorEngine shardingEncryptorEngine) {
+    @SneakyThrows
+    public MemoryQueryResult(final ResultSet resultSet, final ShardingRule shardingRule) {
         resultData = getResultData(resultSet);
-        metaData = new QueryResultMetaData(resultSet.getMetaData(), shardingRule, shardingEncryptorEngine);
+        metaData = new QueryResultMetaData(resultSet.getMetaData(), shardingRule);
+    }
+    
+    @SneakyThrows
+    public MemoryQueryResult(final ResultSet resultSet, final EncryptRule encryptRule) {
+        resultData = getResultData(resultSet);
+        metaData = new QueryResultMetaData(resultSet.getMetaData(), encryptRule);
     }
     
     @SneakyThrows
@@ -68,7 +75,7 @@ public final class MemoryQueryResult implements QueryResult {
         while (resultSet.next()) {
             List<Object> rowData = new ArrayList<>(resultSet.getMetaData().getColumnCount());
             for (int columnIndex = 1; columnIndex <= resultSet.getMetaData().getColumnCount(); columnIndex++) {
-                rowData.add(QueryResultUtil.getValueByColumnType(resultSet, columnIndex));
+                rowData.add(QueryResultUtil.getValue(resultSet, columnIndex));
             }
             result.add(new QueryRow(rowData));
         }
@@ -128,6 +135,11 @@ public final class MemoryQueryResult implements QueryResult {
     @Override
     public boolean wasNull() {
         return null == currentRow;
+    }
+    
+    @Override
+    public boolean isCaseSensitive(final int columnIndex) {
+        return metaData.isCaseSensitive(columnIndex);
     }
     
     @Override

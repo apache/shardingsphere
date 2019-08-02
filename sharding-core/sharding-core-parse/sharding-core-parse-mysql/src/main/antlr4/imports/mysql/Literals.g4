@@ -21,16 +21,17 @@ import Alphabet, Symbol;
 
 IDENTIFIER_
     : [A-Za-z_$0-9]*?[A-Za-z_$]+?[A-Za-z_$0-9]*
-    |  '`' ~'`'+ '`'
+    |  BQ_ ~'`'+ BQ_
+    | (DQ_ ( '\\'. | '""' | ~('"'| '\\') )* DQ_)
     ;
 
 STRING_ 
-    : ('"' ( '\\'. | '""' | ~('"'| '\\') )* '"')
-    | ('\'' ('\\'. | '\'\'' | ~('\'' | '\\'))* '\'')
+    : (DQ_ ( '\\'. | '""' | ~('"'| '\\') )* DQ_)
+    | (SQ_ ('\\'. | '\'\'' | ~('\'' | '\\'))* SQ_)
     ;
 
 NUMBER_
-    : MINUS_? INT_? DOT_? INT_ (E (PLUS_ | MINUS_)? INT_)?
+    : INT_? DOT_? INT_ (E (PLUS_ | MINUS_)? INT_)?
     ;
 
 HEX_DIGIT_

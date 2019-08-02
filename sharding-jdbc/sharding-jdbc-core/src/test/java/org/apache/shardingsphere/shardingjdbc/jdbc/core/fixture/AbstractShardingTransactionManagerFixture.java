@@ -18,32 +18,41 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.fixture;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.spi.database.DatabaseType;
 import org.apache.shardingsphere.transaction.core.ResourceDataSource;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
 import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 public abstract class AbstractShardingTransactionManagerFixture implements ShardingTransactionManager {
     
     @Getter
     private static Collection<TransactionOperationType> invocations = new LinkedList<>();
     
+    private final Map<String, DataSource> dataSourceMap = new HashMap<>();
+    
     @Override
     public final void init(final DatabaseType databaseType, final Collection<ResourceDataSource> resourceDataSources) {
+        for (ResourceDataSource each : resourceDataSources) {
+            dataSourceMap.put(each.getOriginalName(), each.getDataSource());
+        }
     }
     
     @Override
     public final boolean isInTransaction() {
-        return true;
+        return invocations.contains(TransactionOperationType.BEGIN);
     }
     
     @Override
-    public final Connection getConnection(final String dataSourceName) {
-        return null;
+    public final Connection getConnection(final String dataSourceName) throws SQLException {
+        return dataSourceMap.get(dataSourceName).getConnection();
     }
     
     @Override

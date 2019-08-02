@@ -19,8 +19,9 @@ package org.apache.shardingsphere.core.route.router.masterslave;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
-import org.apache.shardingsphere.core.constant.SQLType;
-import org.apache.shardingsphere.core.parse.SQLJudgeEngine;
+import org.apache.shardingsphere.core.parse.SQLParseEngine;
+import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.SQLLogger;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 
@@ -39,25 +40,28 @@ public final class MasterSlaveRouter {
     
     private final MasterSlaveRule masterSlaveRule;
     
+    private final SQLParseEngine parseEngine;
+    
     private final boolean showSQL;
     
     /**
      * Route Master slave.
      *
      * @param sql SQL
+     * @param useCache use cache or not
      * @return data source names
      */
     // TODO for multiple masters may return more than one data source
-    public Collection<String> route(final String sql) {
-        Collection<String> result = route(new SQLJudgeEngine(sql).judge().getType());
+    public Collection<String> route(final String sql, final boolean useCache) {
+        Collection<String> result = route(parseEngine.parse(sql, useCache));
         if (showSQL) {
             SQLLogger.logSQL(sql, result);
         }
         return result;
     }
     
-    private Collection<String> route(final SQLType sqlType) {
-        if (isMasterRoute(sqlType)) {
+    private Collection<String> route(final SQLStatement sqlStatement) {
+        if (isMasterRoute(sqlStatement)) {
             MasterVisitedManager.setMasterVisited();
             return Collections.singletonList(masterSlaveRule.getMasterDataSourceName());
         }
@@ -65,7 +69,7 @@ public final class MasterSlaveRouter {
                 masterSlaveRule.getName(), masterSlaveRule.getMasterDataSourceName(), new ArrayList<>(masterSlaveRule.getSlaveDataSourceNames())));
     }
     
-    private boolean isMasterRoute(final SQLType sqlType) {
-        return SQLType.DQL != sqlType || MasterVisitedManager.isMasterVisited() || HintManager.isMasterRouteOnly();
+    private boolean isMasterRoute(final SQLStatement sqlStatement) {
+        return !(sqlStatement instanceof SelectStatement) || MasterVisitedManager.isMasterVisited() || HintManager.isMasterRouteOnly();
     }
 }

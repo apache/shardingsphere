@@ -30,6 +30,11 @@ import java.util.Collections;
 public final class OracleRecognizer implements JDBCDriverURLRecognizer {
     
     @Override
+    public String getDatabaseType() {
+        return "Oracle";
+    }
+    
+    @Override
     public Collection<String> getURLPrefixes() {
         return Collections.singletonList("jdbc:oracle:");
     }

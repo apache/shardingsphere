@@ -22,6 +22,7 @@ import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 
@@ -37,18 +38,23 @@ public final class TransparentSchema extends LogicSchema {
     
     private final ShardingMetaData metaData;
     
-    private final ShardingRule defaultShardingRule;
+    private final ShardingRule shardingRule;
     
     public TransparentSchema(final String name, final Map<String, YamlDataSourceParameter> dataSources) {
         super(name, dataSources);
         // TODO we should remove it after none-sharding parsingEngine completed.
-        defaultShardingRule = new ShardingRule(new ShardingRuleConfiguration(), getDataSources().keySet());
+        shardingRule = new ShardingRule(new ShardingRuleConfiguration(), getDataSources().keySet());
         metaData = createShardingMetaData();
     }
     
+    @Override
+    public SQLParseEngine getParseEngine() {
+        return null;
+    }
+    
     private ShardingMetaData createShardingMetaData() {
-        ShardingDataSourceMetaData shardingDataSourceMetaData = new ShardingDataSourceMetaData(getDataSourceURLs(getDataSources()), defaultShardingRule, LogicSchemas.getInstance().getDatabaseType());
-        ShardingTableMetaData shardingTableMetaData = new ShardingTableMetaData(getTableMetaDataInitializer(shardingDataSourceMetaData).load(defaultShardingRule));
+        ShardingDataSourceMetaData shardingDataSourceMetaData = new ShardingDataSourceMetaData(getDataSourceURLs(getDataSources()), shardingRule, LogicSchemas.getInstance().getDatabaseType());
+        ShardingTableMetaData shardingTableMetaData = new ShardingTableMetaData(getTableMetaDataInitializer(shardingDataSourceMetaData).load(shardingRule));
         return new ShardingMetaData(shardingDataSourceMetaData, shardingTableMetaData);
     }
 }

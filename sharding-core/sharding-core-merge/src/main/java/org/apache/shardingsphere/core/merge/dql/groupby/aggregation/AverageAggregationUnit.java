@@ -54,7 +54,7 @@ public final class AverageAggregationUnit implements AggregationUnit {
         if (null == count || BigDecimal.ZERO.equals(count)) {
             return count;
         }
-        // TODO 通过metadata获取数据库的浮点数精度值
+        // TODO use metadata to fetch float number precise for database field
         return sum.divide(count, 4, BigDecimal.ROUND_HALF_UP);
     }
 }

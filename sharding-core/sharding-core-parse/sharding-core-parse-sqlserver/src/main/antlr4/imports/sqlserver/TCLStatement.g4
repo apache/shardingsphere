@@ -17,17 +17,17 @@
 
 grammar TCLStatement;
 
-import Symbol, Keyword, Literals;
+import Symbol, Keyword, SQLServerKeyword, Literals;
 
 setTransaction
     : SET TRANSACTION
     ;
 
-setAutoCommit
-    : (IF AT_ AT_ TRANCOUNT GT_ NUMBER_ COMMIT TRAN)? SET IMPLICIT_TRANSACTIONS autoCommitValue
+setImplicitTransactions
+    : (IF AT_ AT_ TRANCOUNT GT_ NUMBER_ COMMIT TRAN)? SET IMPLICIT_TRANSACTIONS implicitTransactionsValue
     ;
 
-autoCommitValue
+implicitTransactionsValue
     : ON | OFF
     ;
 
