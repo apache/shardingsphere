@@ -37,7 +37,7 @@
 #  maxLifetimeMilliseconds: 1800000
 #  maxPoolSize: 50
 #
-#encryptRule:    
+#encryptRule:
 #  encryptors:
 #    encryptor_aes:
 #      type: aes
@@ -73,7 +73,7 @@
 #  maxLifetimeMilliseconds: 1800000
 #  maxPoolSize: 50
 #
-#encryptRule:    
+#encryptRule:
 #  encryptors:
 #    encryptor_aes:
 #      type: aes
@@ -91,4 +91,3 @@
 #        order_id:
 #          cipherColumn: order_cipher
 #          encryptor: encryptor_md5
-

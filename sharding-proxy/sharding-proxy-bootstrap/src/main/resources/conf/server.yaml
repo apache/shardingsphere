@@ -28,7 +28,7 @@
 #    type: zookeeper
 #    serverLists: localhost:2181
 #    namespace: orchestration
-#    
+#
 #authentication:
 #  users:
 #    root:
