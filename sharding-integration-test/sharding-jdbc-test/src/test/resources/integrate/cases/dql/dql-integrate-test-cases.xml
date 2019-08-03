@@ -81,10 +81,6 @@
         <assertion expected-data-file="select_full_route_with_binding_tables.xml" />
     </dql-test-case>
     
-    <dql-test-case sql-case-id="select_full_route_for_upper_case_with_binding_tables">
-        <assertion parameters="10:int, 11:int, 1000:int, 1909:int" expected-data-file="select_sharding_route_with_binding_tables.xml" />
-    </dql-test-case>
-    
     <dql-test-case sql-case-id="select_sharding_route_with_broadcast_table">
         <assertion parameters="10:int, 11:int, 1001:int, 1100:int, init:String" expected-data-file="select_sharding_route_with_broadcast_table.xml" />
         <assertion parameters="10:int, 11:int, 1009:int, 1108:int, none:String" expected-data-file="empty_order_item.xml" />
