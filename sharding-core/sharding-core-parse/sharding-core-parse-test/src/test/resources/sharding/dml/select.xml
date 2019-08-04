@@ -543,6 +543,9 @@
             <table name="t_order"/>
             <table name="t_order_item"/>
         </tables>
+        <order-by-columns>
+            <order-by-column owner="t_order" name="order_id" order-direction="ASC" />
+        </order-by-columns>
     </parser-result>
     
     <parser-result sql-case-id="select_distinct_with_sum" >
