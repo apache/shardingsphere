@@ -50,6 +50,7 @@ import java.util.Map;
  * Select items engine.
  *
  * @author zhangliang
+ * @author sunbufu
  */
 @RequiredArgsConstructor
 public final class SelectItemsEngine {
