@@ -22,7 +22,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -50,7 +49,7 @@ public final class SelectItems {
     
     private final Collection<SelectItem> items;
 
-    private final Map<String, TableMetaData> ownerTableMetaDataMap;
+    private final Map<String, Collection<String>> ownerTableColumnsMap;
     
     /**
      * Judge is unqualified shorthand item or not.
@@ -123,13 +122,11 @@ public final class SelectItems {
             if (!(each instanceof ShorthandSelectItem)) {
                 result.add(each.getColumnLabel());
             } else {
-                // get tableMetaData from ownerTableMetaDataMap by owner
-                // add tableMetaData's all columnLabels
                 if (((ShorthandSelectItem) each).getOwner().isPresent()) {
-                    result.addAll(ownerTableMetaDataMap.get(((ShorthandSelectItem) each).getOwner().get()).getColumns().keySet());
+                    result.addAll(ownerTableColumnsMap.get(((ShorthandSelectItem) each).getOwner().get()));
                 } else {
-                    for (TableMetaData tableMetaData : ownerTableMetaDataMap.values()) {
-                        result.addAll(tableMetaData.getColumns().keySet());
+                    for (Collection<String> tableColumns : ownerTableColumnsMap.values()) {
+                        result.addAll(tableColumns);
                     }
                 }
             }

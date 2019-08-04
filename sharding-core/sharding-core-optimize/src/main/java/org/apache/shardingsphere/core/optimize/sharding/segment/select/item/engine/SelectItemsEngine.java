@@ -71,17 +71,20 @@ public final class SelectItemsEngine {
         SelectItemsSegment selectItemsSegment = selectStatement.getSelectItems();
         Collection<SelectItem> items = getSelectItemList(sql, selectItemsSegment);
         SelectItems result = new SelectItems(selectItemsSegment.getStartIndex(), selectItemsSegment.getStopIndex(), selectItemsSegment.isDistinctRow(), items,
-            getOwnerTableMetaDataMap(selectStatement.getTables()));
+            getOwnerTableColumnsMap(selectStatement.getTables()));
         Tables tables = new Tables(selectStatement);
         result.getItems().addAll(getDerivedGroupByColumns(tables, items, groupBy));
         result.getItems().addAll(getDerivedOrderByColumns(tables, items, orderBy));
         return result;
     }
 
-    private Map<String, TableMetaData> getOwnerTableMetaDataMap(final Collection<TableSegment> tables) {
-        Map<String, TableMetaData> result = new HashMap<>(tables.size(), 1);
+    private Map<String, Collection<String>> getOwnerTableColumnsMap(final Collection<TableSegment> tables) {
+        Map<String, Collection<String>> result = new HashMap<>(tables.size(), 1);
         for (TableSegment tableSegment : tables) {
-            result.put(tableSegment.getAlias().isPresent() ? tableSegment.getAlias().get() : tableSegment.getTableName(), shardingTableMetaData.get(tableSegment.getTableName()));
+            TableMetaData tableMetaData = shardingTableMetaData.get(tableSegment.getTableName());
+            if (null != tableMetaData) {
+                result.put(tableSegment.getAlias().isPresent() ? tableSegment.getAlias().get() : tableSegment.getTableName(), tableMetaData.getColumns().keySet());
+            }
         }
         return result;
     }

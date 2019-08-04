@@ -563,6 +563,13 @@
             <order-by-column name="order_id" order-direction="ASC" />
         </order-by-columns>
     </parser-result>
+
+    <parser-result sql-case-id="select_distinct_with_owner_star">
+        <tables>
+            <table name="t_order"/>
+            <table name="t_order_item"/>
+        </tables>
+    </parser-result>
     
     <parser-result sql-case-id="select_distinct_with_sum" >
         <tables>
@@ -623,8 +630,8 @@
             <table-token start-index="61" table-name="t_order" length="7" />
         </tokens>
     </parser-result>
-    
-     <parser-result sql-case-id="select_distinct_with_single_count_group_by" >
+
+    <parser-result sql-case-id="select_distinct_with_single_count_group_by" >
          <tables>
             <table name="t_order" />
         </tables>
