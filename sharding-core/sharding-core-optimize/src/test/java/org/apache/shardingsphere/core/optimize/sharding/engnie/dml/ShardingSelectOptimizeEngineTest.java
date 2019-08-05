@@ -19,13 +19,17 @@ package org.apache.shardingsphere.core.optimize.sharding.engnie.dml;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Range;
+import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingConditions;
+import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.SelectItems;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemsSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.item.ShorthandSelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.WhereSegment;
@@ -203,4 +207,32 @@ public final class ShardingSelectOptimizeEngineTest {
         result.setOwner(new TableSegment(0, 0, "tbl"));
         return result;
     }
+
+    @Test
+    public void assertOptimizeWithStar() {
+        when(shardingTableMetaData.get("tbl")).thenReturn(getTableMetaData());
+        selectStatement.setSelectItems(getSelectItemsSegment());
+        selectStatement.getTables().add(new TableSegment(0, 0, "tbl"));
+
+        SelectItems selectItems = new ShardingSelectOptimizeEngine().optimize(shardingRule, shardingTableMetaData, "", Collections.emptyList(), selectStatement).getSelectItems();
+        assertThat(selectItems.getOwnerTableColumnsMap().size(), is(1));
+    }
+
+    private SelectItemsSegment getSelectItemsSegment() {
+        TableSegment owner = mock(TableSegment.class);
+        when(owner.getAlias()).thenReturn(Optional.<String>absent());
+        when(owner.getTableName()).thenReturn("tbl");
+        ShorthandSelectItemSegment shorthandSelectItemSegment = new ShorthandSelectItemSegment(0, 0, "tbl.*");
+        shorthandSelectItemSegment.setOwner(owner);
+        SelectItemsSegment selectItemsSegment = new SelectItemsSegment(0, 0, false);
+        selectItemsSegment.getSelectItems().add(shorthandSelectItemSegment);
+        return selectItemsSegment;
+    }
+
+    private TableMetaData getTableMetaData() {
+        ColumnMetaData idColumnMetaData = new ColumnMetaData("id", "int", true);
+        ColumnMetaData nameColumnMetaData = new ColumnMetaData("user_id", "int", false);
+        return new TableMetaData(Arrays.asList(idColumnMetaData, nameColumnMetaData), Arrays.asList("id", "user_id"));
+    }
+
 }
