@@ -220,7 +220,6 @@ public final class ShardingSelectOptimizeEngineTest {
 
     private SelectItemsSegment getSelectItemsSegment() {
         TableSegment owner = mock(TableSegment.class);
-        when(owner.getAlias()).thenReturn(Optional.<String>absent());
         when(owner.getTableName()).thenReturn("tbl");
         ShorthandSelectItemSegment shorthandSelectItemSegment = new ShorthandSelectItemSegment(0, 0, "tbl.*");
         shorthandSelectItemSegment.setOwner(owner);
