@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.shardingsphere.core.parse.integrate.jaxb.selectitem;
 
 import lombok.Getter;
@@ -37,8 +38,8 @@ public final class ExpectedSelectItems {
     @XmlAttribute
     private boolean distinctRow = false;
 
-    @XmlElementWrapper(name = "select-item-segments")
-    @XmlElement(name = "select-item-segment")
+    @XmlElementWrapper(name = "shorthand-select-items")
+    @XmlElement(name = "shorthand-select-item")
     private Collection<ExpectedShorthandSelectItem> expectedShorthandSelectItems = new LinkedList<>();
 
     @XmlElementWrapper(name ="aggregation-select-items")
@@ -57,10 +58,14 @@ public final class ExpectedSelectItems {
     @XmlElement(name = "expression-item")
     private Collection<ExpectedExpressionItem> expectedExpressionItems = new LinkedList<>();
 
+    @XmlElementWrapper(name = "top-select-items")
+    @XmlElement(name = "top-select-item")
+    private Collection<ExpectedTopSelectItem> expectedTopSelectItems = new LinkedList<>();
+
     public int getSize(){
         return expectedAggregationItems.size() + expectedShorthandSelectItems.size()
                 + expectedAggregationDistinctItems.size() + expectedColumnSelectItems.size()
-                + expectedExpressionItems.size();
+                + expectedExpressionItems.size() + expectedTopSelectItems.size();
     }
 
     public <T extends ExpectedSelectItem> Collection<ExpectedSelectItem> findExpectedSelectItems(final Class<T> expectedSelectItemType) {
@@ -78,6 +83,9 @@ public final class ExpectedSelectItems {
             result.addAll(expectedAggregationDistinctItems);
         }
         if (expectedSelectItemType.equals(ExpectedExpressionItem.class)) {
+            result.addAll(expectedExpressionItems);
+        }
+        if (expectedSelectItemType.equals(ExpectedTopSelectItem.class)) {
             result.addAll(expectedExpressionItems);
         }
         return result;

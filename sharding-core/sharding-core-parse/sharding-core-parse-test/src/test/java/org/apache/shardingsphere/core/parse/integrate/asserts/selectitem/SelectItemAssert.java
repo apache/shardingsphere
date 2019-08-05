@@ -21,11 +21,13 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.integrate.asserts.SQLStatementAssertMessage;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.selectitem.*;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.*;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.top.TopSegment;
+import org.apache.shardingsphere.test.sql.SQLCaseType;
+
 import java.util.Collection;
 import java.util.LinkedList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 /**
  *  Select item assert.
@@ -34,6 +36,8 @@ import static org.junit.Assert.assertTrue;
  */
 @RequiredArgsConstructor
 public final class SelectItemAssert {
+
+    private final SQLCaseType sqlCaseType;
 
     private final SQLStatementAssertMessage assertMessage;
 
@@ -57,20 +61,25 @@ public final class SelectItemAssert {
             if (each instanceof ExpressionSelectItemSegment) {
                 expectedBaseItems = expectedSelectItems.findExpectedSelectItems(ExpectedExpressionItem.class);
             }
-            assertSelectItem(each, expectedBaseItems);
+            if (each instanceof TopSegment && SQLCaseType.Literal.equals(sqlCaseType)) {
+                expectedBaseItems = expectedSelectItems.findExpectedSelectItems(ExpectedTopSelectItem.class);
+            }
+            if (!expectedBaseItems.isEmpty()) {
+                assertSelectItem(each, expectedBaseItems);
+            }
         }
     }
 
     private void assertSelectItem(final SelectItemSegment actual, final Collection<ExpectedSelectItem> expected) {
-        boolean findSelectItem = false;
         String actualText = actual.getText();
+        String expectedText = "";
         for (ExpectedSelectItem each: expected) {
             if(actualText.equals(each.getText())) {
-                findSelectItem = true;
+                expectedText = each.getText();
                 break;
             }
         }
-        assertTrue(findSelectItem);
+        assertThat(assertMessage.getFullAssertMessage("selectItem text assert error: "),actualText,is(expectedText));
     }
 }
 

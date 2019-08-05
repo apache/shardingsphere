@@ -43,7 +43,7 @@ public class ExpectedTableSegment {
     private QuoteCharacter quoteCharacter = QuoteCharacter.NONE;
 
     @XmlElement(name = "schema-segment")
-    private ExpectedSchemaSegment expectedSchemaSegment;
+    private ExpectedSchemaSegment expectedSchemaSegment = new ExpectedSchemaSegment();
 
     @XmlAttribute
     private String alias;

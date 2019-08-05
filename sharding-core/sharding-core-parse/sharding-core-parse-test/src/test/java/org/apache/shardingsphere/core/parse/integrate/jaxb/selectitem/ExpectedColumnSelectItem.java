@@ -40,6 +40,6 @@ public final class ExpectedColumnSelectItem extends  ExpectedBaseSelectItem{
     private QuoteCharacter quoteCharacter = QuoteCharacter.NONE;
 
     @XmlElement(name = "table-segment")
-    private ExpectedTableSegment expectedTableSegment = new ExpectedTableSegment();
+    private ExpectedTableSegment owner = new ExpectedTableSegment();
 
 }

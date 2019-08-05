@@ -14,20 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.shardingsphere.core.parse.integrate.jaxb.selectitem;
 
 import lombok.Getter;
 import lombok.Setter;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElementWrapper;
 
+import javax.xml.bind.annotation.*;
 
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class ExpectedExpressionItem extends ExpectedBaseSelectItem {
-    @XmlAttribute
-    private String alias;
+public final class ExpectedTopSelectItem extends ExpectedBaseSelectItem {
+
+    @XmlElement(name = "row-number-value-segment")
+    private ExpectedRowNumberValueSegment top;
+
+    @XmlAttribute(name = "row-number-alias")
+    private String rowNumberAlias;
 }

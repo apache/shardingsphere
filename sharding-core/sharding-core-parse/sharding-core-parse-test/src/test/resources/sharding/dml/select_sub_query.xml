@@ -32,6 +32,13 @@
                 </condition>
             </and-condition>
         </sharding-conditions>
+        <select-items start-index="24" stop-index="26">
+            <shorthand-select-items>
+                <shorthand-select-item start-index="24" stop-index="26" text="o.*">
+                    <table-segment start-index="24" stop-index="24" name="o" />
+                </shorthand-select-item>
+            </shorthand-select-items>
+        </select-items>
     </parser-result>
     
     <!-- TODO cannot pass,add later 
@@ -66,6 +73,11 @@
         <order-by-columns>
             <order-by-column name="order_id" order-direction="DESC" />
         </order-by-columns>
+        <select-items start-index="45" stop-index="45">
+            <shorthand-select-items>
+                <shorthand-select-item start-index="45" text="*" stop-index="45" />
+            </shorthand-select-items>
+        </select-items>
     </parser-result>
     
     <parser-result sql-case-id="select_sub_query_with_group_by">
@@ -75,9 +87,11 @@
         <tokens>
             <table-token start-index="64" table-name="t_order_item" length="12" />
         </tokens>
-        <aggregation-select-items>
-            <aggregation-select-item type="COUNT" inner-expression="(1)" alias="order_items_count" />
-        </aggregation-select-items>
+        <select-items start-index="50" stop-index="57">
+            <column-select-items>
+                <column-select-item start-index="50" stop-index="57" text="order_id" name="order_id" />
+            </column-select-items>
+        </select-items>
         <group-by-columns>
             <group-by-column name="order_id" order-direction="ASC" />
         </group-by-columns>

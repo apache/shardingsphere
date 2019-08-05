@@ -79,7 +79,7 @@ public final class ShardingSQLStatementAssert {
         orderByAssert = new OrderByAssert(assertMessage);
         paginationAssert = new PaginationAssert(sqlCaseType, assertMessage);
         alterTableAssert = new AlterTableAssert(assertMessage);
-        selectItemAssert = new SelectItemAssert(assertMessage);
+        selectItemAssert = new SelectItemAssert(sqlCaseType, assertMessage);
     }
     
     /**
