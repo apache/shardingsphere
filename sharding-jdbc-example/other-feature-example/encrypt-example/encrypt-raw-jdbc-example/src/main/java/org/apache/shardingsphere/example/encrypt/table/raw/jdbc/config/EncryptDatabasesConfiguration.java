@@ -17,26 +17,46 @@
 
 package org.apache.shardingsphere.example.encrypt.table.raw.jdbc.config;
 
-import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
-import org.apache.shardingsphere.api.config.encryptor.EncryptorRuleConfiguration;
+import org.apache.shardingsphere.api.config.encrypt.EncryptColumnRuleConfiguration;
+import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
+import org.apache.shardingsphere.api.config.encrypt.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.example.common.DataSourceUtil;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.shardingjdbc.api.EncryptDataSourceFactory;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 public class EncryptDatabasesConfiguration implements ExampleConfiguration {
 
     @Override
     public DataSource getDataSource() {
+        
         EncryptRuleConfiguration encryptRuleConfiguration = new EncryptRuleConfiguration();
         Properties properties = new Properties();
         properties.setProperty("aes.key.value", "123456");
-        EncryptorRuleConfiguration aesRuleConfiguration = new EncryptorRuleConfiguration("AES", "t_user.user_name", properties);
-        EncryptorRuleConfiguration testRuleConfiguration = new EncryptorRuleConfiguration("assistedTest", "t_user.pwd", "t_user.assisted_query_pwd", properties);
-        encryptRuleConfiguration.getEncryptorRuleConfigs().put("name_encryptor", aesRuleConfiguration);
-        encryptRuleConfiguration.getEncryptorRuleConfigs().put("pwd_encryptor", testRuleConfiguration);
-        return EncryptDataSourceFactory.createDataSource(DataSourceUtil.createDataSource("demo_ds"), encryptRuleConfiguration);
+        properties.setProperty("query.with.cipher.column", "true");
+        EncryptorRuleConfiguration aesRuleConfiguration = new EncryptorRuleConfiguration("aes", properties);
+        EncryptColumnRuleConfiguration columnConfigAes = new EncryptColumnRuleConfiguration("user_name_plain", "user_name", "", "name_encryptor");
+        Map<String, EncryptColumnRuleConfiguration> columns = new HashMap<>();
+        EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration(columns);
+        columns.put("user_name", columnConfigAes);
+        encryptRuleConfiguration.getEncryptors().put("name_encryptor", aesRuleConfiguration);
+        encryptRuleConfiguration.getTables().put("t_user", tableConfig);
+        EncryptorRuleConfiguration testRuleConfiguration = new EncryptorRuleConfiguration("assistedTest", properties);
+        EncryptColumnRuleConfiguration columnConfigTest = new EncryptColumnRuleConfiguration("", "pwd", "assisted_query_pwd", "pwd_encryptor");
+        columns.put("pwd", columnConfigTest);
+        tableConfig.getColumns().putAll(columns);
+        encryptRuleConfiguration.getEncryptors().put("pwd_encryptor", testRuleConfiguration);
+        try {
+            return EncryptDataSourceFactory.createDataSource(DataSourceUtil.createDataSource("demo_ds"), encryptRuleConfiguration, properties);
+        } catch (final SQLException ex) {
+            ex.printStackTrace();
+            return null;
+        }
     }
 }

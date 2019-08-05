@@ -28,8 +28,21 @@
     </bean:properties>
     
     <encrypt:data-source id="encryptDataSource" data-source-name="ds" >
-        <encrypt:encryptor-rule id="pwd_encryptor" type="assistedTest" qualified-columns="t_user.pwd" assisted-query-columns="t_user.assisted_query_pwd" />
-        <encrypt:encryptor-rule id="name_encryptor" type="AES" qualified-columns="t_user.user_name" props-ref="props" />
+        <encrypt:encrypt-rule>
+            <encrypt:tables>
+                <encrypt:table name="t_user">
+                    <encrypt:column logic-column="user_name" plain-column="user_name_plain" cipher-column="user_name" encryptor-ref="name_encryptor" />
+                    <encrypt:column logic-column="pwd" cipher-column="pwd" assisted-query-column="assisted_query_pwd" encryptor-ref="pwd_encryptor"/>
+                </encrypt:table>
+            </encrypt:tables>
+            <encrypt:encryptors>
+                <encrypt:encryptor id="name_encryptor" type="AES" props-ref="props"/>
+                <encrypt:encryptor id="pwd_encryptor" type="assistedTest" />
+            </encrypt:encryptors>
+        </encrypt:encrypt-rule>
+        <encrypt:props>
+            <prop key="query.with.cipher.column">true</prop>
+        </encrypt:props>
     </encrypt:data-source>
     
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">

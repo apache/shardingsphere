@@ -14,11 +14,17 @@ dataSource: !!com.zaxxer.hikari.HikariDataSource
 
 encryptRule:
   encryptors:
-    order_encryptor:
+    status_encryptor:
       type: aes
-      qualifiedColumns: t_order.status
       props:
         aes.key.value: 123456
+  tables:
+    t_order:
+      columns:
+        status:
+          cipherColumn: status
+          encryptor: status_encryptor
 
 props:
+  query.with.cipher.column: true
   sql.show: true
