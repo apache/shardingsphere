@@ -77,7 +77,8 @@ public final class ComplexRoutingEngineTest {
         shardingCondition.getRouteValues().add(shardingValue2);
         shardingConditions.add(shardingCondition);
         ShardingSelectOptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(new SelectStatement(), shardingConditions, Collections.<EncryptCondition>emptyList(),
-                new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<String, Collection<String>>emptyMap()),
+                new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
+                new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<String, Collection<String>>emptyMap()),
                 new Pagination(null, null, Collections.emptyList()));
         ComplexRoutingEngine complexRoutingEngine = new ComplexRoutingEngine(shardingRule, Arrays.asList("t_order", "t_order_item"), optimizedStatement);
         RoutingResult routingResult = complexRoutingEngine.route();
@@ -100,7 +101,8 @@ public final class ComplexRoutingEngineTest {
         shardingCondition.getRouteValues().add(shardingValue2);
         shardingConditions.add(shardingCondition);
         ShardingSelectOptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(new SelectStatement(), shardingConditions, Collections.<EncryptCondition>emptyList(),
-                new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<String, Collection<String>>emptyMap()),
+                new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
+                new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<String, Collection<String>>emptyMap()),
                 new Pagination(null, null, Collections.emptyList()));
         ComplexRoutingEngine complexRoutingEngine = new ComplexRoutingEngine(shardingRule, Arrays.asList("t_order", "t_config"), optimizedStatement);
         RoutingResult routingResult = complexRoutingEngine.route();
