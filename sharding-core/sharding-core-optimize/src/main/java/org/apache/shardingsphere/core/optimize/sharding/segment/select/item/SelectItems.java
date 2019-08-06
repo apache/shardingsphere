@@ -27,11 +27,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Select items.
  *
  * @author zhangliang
+ * @author sunbufu
  */
 @RequiredArgsConstructor
 @Getter
@@ -46,6 +48,8 @@ public final class SelectItems {
     private final boolean distinctRow;
     
     private final Collection<SelectItem> items;
+
+    private final Map<String, Collection<String>> ownerTableColumnsMap;
     
     /**
      * Judge is unqualified shorthand item or not.
@@ -115,9 +119,16 @@ public final class SelectItems {
     public List<String> getColumnLabels() {
         List<String> result = new ArrayList<>(items.size());
         for (SelectItem each : items) {
-            // TODO read * from metadata
             if (!(each instanceof ShorthandSelectItem)) {
                 result.add(each.getColumnLabel());
+            } else {
+                if (((ShorthandSelectItem) each).getOwner().isPresent()) {
+                    result.addAll(ownerTableColumnsMap.get(((ShorthandSelectItem) each).getOwner().get()));
+                } else {
+                    for (Collection<String> tableColumns : ownerTableColumnsMap.values()) {
+                        result.addAll(tableColumns);
+                    }
+                }
             }
         }
         return result;

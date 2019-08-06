@@ -410,6 +410,10 @@
         <assertion expected-data-file="select_distinct_with_star.xml" />
     </dql-test-case>
 
+    <dql-test-case sql-case-id="select_distinct_with_owner_star">
+        <assertion expected-data-file="select_distinct_with_owner_star.xml" />
+    </dql-test-case>
+
     <dql-test-case sql-case-id="select_distinct_with_sum">
         <assertion expected-data-file="select_distinct_with_sum.xml" />
     </dql-test-case>

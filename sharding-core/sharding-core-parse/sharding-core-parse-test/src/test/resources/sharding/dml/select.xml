@@ -699,6 +699,24 @@
             </shorthand-select-items>
         </select-items>
     </parser-result>
+
+    <parser-result sql-case-id="select_distinct_with_owner_star">
+        <tables>
+            <table name="t_order"/>
+            <table name="t_order_item"/>
+        </tables>
+        <order-by-columns>
+            <order-by-column owner="t_order" name="order_id" order-direction="ASC" />
+        </order-by-columns>
+        <select-items start-index="16" stop-index="47" distinctRow="true">
+            <shorthand-select-items>
+                <shorthand-select-item start-index="16" stop-index="24" text="t_order.*" />
+            </shorthand-select-items>
+            <column-select-items>
+                <column-select-item start-index="27" stop-index="47" text="t_order_item.order_id" />
+            </column-select-items>
+        </select-items>
+    </parser-result>
     
     <parser-result sql-case-id="select_distinct_with_sum" >
         <tables>
@@ -756,8 +774,8 @@
             <table-token start-index="61" table-name="t_order" length="7" />
         </tokens>
     </parser-result>
-    
-     <parser-result sql-case-id="select_distinct_with_single_count_group_by" >
+
+    <parser-result sql-case-id="select_distinct_with_single_count_group_by" >
          <tables>
             <table name="t_order" />
         </tables>
