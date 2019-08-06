@@ -34,6 +34,7 @@ import org.apache.shardingsphere.core.optimize.sharding.segment.select.orderby.O
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.pagination.Pagination;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.junit.Before;
@@ -43,7 +44,6 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -77,7 +77,7 @@ public final class LimitDecoratorMergedResultTest {
     public void assertNextForSkipAll() throws SQLException {
         OptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(new SelectStatement(), Collections.<ShardingCondition>emptyList(), Collections.<EncryptCondition>emptyList(),
                 new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
-                new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<String, Collection<String>>emptyMap()), 
+                new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<TableSegment>emptyList(), null), 
                 new Pagination(new NumberLiteralLimitValueSegment(0, 0, Integer.MAX_VALUE), null, Collections.emptyList()));
         SQLRouteResult routeResult = new SQLRouteResult(optimizedStatement);
         mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), routeResult, queryResults);
@@ -89,7 +89,7 @@ public final class LimitDecoratorMergedResultTest {
     public void assertNextWithoutRowCount() throws SQLException {
         OptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(new SelectStatement(), Collections.<ShardingCondition>emptyList(), Collections.<EncryptCondition>emptyList(),
                 new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
-                new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<String, Collection<String>>emptyMap()), 
+                new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<TableSegment>emptyList(), null), 
                 new Pagination(new NumberLiteralLimitValueSegment(0, 0, 2), null, Collections.emptyList()));
         SQLRouteResult routeResult = new SQLRouteResult(optimizedStatement);
         mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), routeResult, queryResults);
@@ -104,7 +104,7 @@ public final class LimitDecoratorMergedResultTest {
     public void assertNextWithRowCount() throws SQLException {
         OptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(new SelectStatement(), Collections.<ShardingCondition>emptyList(), Collections.<EncryptCondition>emptyList(),
                 new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
-                new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<String, Collection<String>>emptyMap()),
+                new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<TableSegment>emptyList(), null),
                 new Pagination(new NumberLiteralLimitValueSegment(0, 0, 2), new NumberLiteralLimitValueSegment(0, 0, 2), Collections.emptyList()));
         SQLRouteResult routeResult = new SQLRouteResult(optimizedStatement);
         mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), routeResult, queryResults);

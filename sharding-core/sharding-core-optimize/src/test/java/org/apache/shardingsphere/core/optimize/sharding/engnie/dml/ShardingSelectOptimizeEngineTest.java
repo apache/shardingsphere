@@ -207,31 +207,31 @@ public final class ShardingSelectOptimizeEngineTest {
         result.setOwner(new TableSegment(0, 0, "tbl"));
         return result;
     }
-
+    
     @Test
-    public void assertOptimizeWithStar() {
-        when(shardingTableMetaData.get("tbl")).thenReturn(getTableMetaData());
-        selectStatement.setSelectItems(getSelectItemsSegment());
+    public void assertOptimizeWithShorthandItems() {
+        when(shardingTableMetaData.get("tbl")).thenReturn(createTableMetaData());
+        selectStatement.setSelectItems(createSelectItemsSegment());
         selectStatement.getTables().add(new TableSegment(0, 0, "tbl"));
-
         SelectItems selectItems = new ShardingSelectOptimizeEngine().optimize(shardingRule, shardingTableMetaData, "", Collections.emptyList(), selectStatement).getSelectItems();
-        assertThat(selectItems.getOwnerTableColumnsMap().size(), is(1));
+        assertThat(selectItems.getColumnLabels().size(), is(2));
+        assertThat(selectItems.getColumnLabels().get(0), is("id"));
+        assertThat(selectItems.getColumnLabels().get(1), is("user_id"));
     }
-
-    private SelectItemsSegment getSelectItemsSegment() {
+    
+    private SelectItemsSegment createSelectItemsSegment() {
         TableSegment owner = mock(TableSegment.class);
         when(owner.getTableName()).thenReturn("tbl");
         ShorthandSelectItemSegment shorthandSelectItemSegment = new ShorthandSelectItemSegment(0, 0, "tbl.*");
         shorthandSelectItemSegment.setOwner(owner);
-        SelectItemsSegment selectItemsSegment = new SelectItemsSegment(0, 0, false);
-        selectItemsSegment.getSelectItems().add(shorthandSelectItemSegment);
-        return selectItemsSegment;
+        SelectItemsSegment result = new SelectItemsSegment(0, 0, false);
+        result.getSelectItems().add(shorthandSelectItemSegment);
+        return result;
     }
-
-    private TableMetaData getTableMetaData() {
+    
+    private TableMetaData createTableMetaData() {
         ColumnMetaData idColumnMetaData = new ColumnMetaData("id", "int", true);
         ColumnMetaData nameColumnMetaData = new ColumnMetaData("user_id", "int", false);
         return new TableMetaData(Arrays.asList(idColumnMetaData, nameColumnMetaData), Arrays.asList("id", "user_id"));
     }
-
 }

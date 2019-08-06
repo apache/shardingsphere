@@ -22,12 +22,14 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Select items.
@@ -38,7 +40,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Getter
 @Setter
-@ToString(exclude = "ownerTableColumnsMap")
+@ToString(exclude = "shardingTableMetaData")
 public final class SelectItems {
     
     private final int startIndex;
@@ -48,8 +50,10 @@ public final class SelectItems {
     private final boolean distinctRow;
     
     private final Collection<SelectItem> items;
-
-    private final Map<String, Collection<String>> ownerTableColumnsMap;
+    
+    private final Collection<TableSegment> tables;
+    
+    private final ShardingTableMetaData shardingTableMetaData;
     
     /**
      * Judge is unqualified shorthand item or not.
@@ -120,7 +124,7 @@ public final class SelectItems {
         List<String> result = new ArrayList<>(items.size());
         for (SelectItem each : items) {
             if (each instanceof ShorthandSelectItem) {
-                result.addAll(getColumnLabels((ShorthandSelectItem) each));
+                result.addAll(getShorthandColumnLabels((ShorthandSelectItem) each));
             } else {
                 result.add(each.getColumnLabel());
             }
@@ -128,13 +132,23 @@ public final class SelectItems {
         return result;
     }
     
-    private Collection<String> getColumnLabels(final ShorthandSelectItem shorthandSelectItem) {
-        Collection<String> result = new LinkedList<>();
-        if (shorthandSelectItem.getOwner().isPresent()) {
-            return ownerTableColumnsMap.get(shorthandSelectItem.getOwner().get());
+    private Collection<String> getShorthandColumnLabels(final ShorthandSelectItem shorthandSelectItem) {
+        return shorthandSelectItem.getOwner().isPresent() ? getQualifiedShorthandColumnLabels(shorthandSelectItem.getOwner().get()) : getUnqualifiedShorthandColumnLabels();
+    }
+    
+    private Collection<String> getQualifiedShorthandColumnLabels(final String owner) {
+        for (TableSegment each : tables) {
+            if (owner.equalsIgnoreCase(each.getAlias().or(each.getTableName()))) {
+                return shardingTableMetaData.get(each.getTableName()).getColumns().keySet();
+            }
         }
-        for (Collection<String> each : ownerTableColumnsMap.values()) {
-            result.addAll(each);
+        return Collections.emptyList();
+    }
+    
+    private Collection<String> getUnqualifiedShorthandColumnLabels() {
+        Collection<String> result = new LinkedList<>();
+        for (TableSegment each : tables) {
+            result.addAll(shardingTableMetaData.get(each.getTableName()).getColumns().keySet());
         }
         return result;
     }

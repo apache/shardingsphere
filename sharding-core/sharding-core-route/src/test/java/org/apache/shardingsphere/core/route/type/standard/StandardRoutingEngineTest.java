@@ -29,6 +29,7 @@ import org.apache.shardingsphere.core.optimize.sharding.segment.select.orderby.O
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.pagination.Pagination;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
+import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
@@ -40,7 +41,6 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -69,7 +69,7 @@ public final class StandardRoutingEngineTest {
         standardRoutingEngine = new StandardRoutingEngine(
                 shardingRule, "t_order", new ShardingSelectOptimizedStatement(new SelectStatement(), shardingConditions, Collections.<EncryptCondition>emptyList(), 
                 new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
-                new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<String, Collection<String>>emptyMap()),
+                new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<TableSegment>emptyList(), null),
                 new Pagination(null, null, Collections.emptyList())));
     }
     

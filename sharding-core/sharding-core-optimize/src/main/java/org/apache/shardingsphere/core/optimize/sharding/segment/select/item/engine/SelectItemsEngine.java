@@ -21,7 +21,6 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.optimize.api.segment.Table;
 import org.apache.shardingsphere.core.optimize.api.segment.Tables;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.groupby.GroupBy;
@@ -38,13 +37,10 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrd
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.TextOrderByItemSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
 
 /**
  * Select items engine.
@@ -72,21 +68,10 @@ public final class SelectItemsEngine {
         SelectItemsSegment selectItemsSegment = selectStatement.getSelectItems();
         Collection<SelectItem> items = getSelectItemList(sql, selectItemsSegment);
         SelectItems result = new SelectItems(
-                selectItemsSegment.getStartIndex(), selectItemsSegment.getStopIndex(), selectItemsSegment.isDistinctRow(), items, getOwnerTableColumnsMap(selectStatement.getTables()));
+                selectItemsSegment.getStartIndex(), selectItemsSegment.getStopIndex(), selectItemsSegment.isDistinctRow(), items, selectStatement.getTables(), shardingTableMetaData);
         Tables tables = new Tables(selectStatement);
         result.getItems().addAll(getDerivedGroupByColumns(tables, items, groupBy));
         result.getItems().addAll(getDerivedOrderByColumns(tables, items, orderBy));
-        return result;
-    }
-    
-    private Map<String, Collection<String>> getOwnerTableColumnsMap(final Collection<TableSegment> tables) {
-        Map<String, Collection<String>> result = new HashMap<>(tables.size(), 1);
-        for (TableSegment each : tables) {
-            TableMetaData tableMetaData = shardingTableMetaData.get(each.getTableName());
-            if (null != tableMetaData) {
-                result.put(each.getAlias().or(each.getTableName()), tableMetaData.getColumns().keySet());
-            }
-        }
         return result;
     }
     

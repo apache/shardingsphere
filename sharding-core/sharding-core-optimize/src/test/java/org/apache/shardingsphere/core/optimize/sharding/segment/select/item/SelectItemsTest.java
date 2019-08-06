@@ -17,12 +17,16 @@
 
 package org.apache.shardingsphere.core.optimize.sharding.segment.select.item;
 
+import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
+import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.parse.core.constant.AggregationType;
+import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,176 +34,179 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class SelectItemsTest {
-
+public final class SelectItemsTest {
+    
     @Test
     public void assertUnqualifiedShorthandItemWithEmptyItems() {
-        SelectItems selectItems = new SelectItems(0, 0, true, Collections.<SelectItem>emptySet(), Collections.<String, Collection<String>>emptyMap());
+        SelectItems selectItems = new SelectItems(0, 0, true, Collections.<SelectItem>emptySet(), Collections.<TableSegment>emptyList(), createShardingTableMetaData());
         assertFalse(selectItems.isUnqualifiedShorthandItem());
     }
-
+    
     @Test
     public void assertUnqualifiedShorthandItemWithWrongSelectItem() {
-        SelectItems selectItems = new SelectItems(0, 0, true, Collections.singleton((SelectItem) getColumnSelectItem()), Collections.<String, Collection<String>>emptyMap());
+        SelectItems selectItems = new SelectItems(0, 0, true, Collections.singleton((SelectItem) getColumnSelectItem()), Collections.<TableSegment>emptyList(), createShardingTableMetaData());
         assertFalse(selectItems.isUnqualifiedShorthandItem());
     }
-
+    
     @Test
     public void assertUnqualifiedShorthandItemWithWrongShortSelectItem() {
-        SelectItems selectItems = new SelectItems(0, 0, true, Collections.singleton((SelectItem) getShorthandSelectItem()), Collections.<String, Collection<String>>emptyMap());
+        SelectItems selectItems = new SelectItems(0, 0, true, Collections.singleton((SelectItem) getShorthandSelectItem()), Collections.<TableSegment>emptyList(), createShardingTableMetaData());
         assertFalse(selectItems.isUnqualifiedShorthandItem());
     }
-
+    
     @Test
     public void assertUnqualifiedShorthandItem() {
         SelectItem selectItem = new ShorthandSelectItem(null);
-        SelectItems selectItems = new SelectItems(0, 0, true, Collections.singleton(selectItem), Collections.<String, Collection<String>>emptyMap());
+        SelectItems selectItems = new SelectItems(0, 0, true, Collections.singleton(selectItem), Collections.<TableSegment>emptyList(), createShardingTableMetaData());
         assertTrue(selectItems.isUnqualifiedShorthandItem());
     }
-
+    
     @Test
     public void assertFindAliasWithOutAlias() {
-        SelectItems selectItems = new SelectItems(0, 0, true, Collections.<SelectItem>emptyList(), Collections.<String, Collection<String>>emptyMap());
+        SelectItems selectItems = new SelectItems(0, 0, true, Collections.<SelectItem>emptyList(), Collections.<TableSegment>emptyList(), createShardingTableMetaData());
         assertFalse(selectItems.findAlias("").isPresent());
     }
-
+    
     @Test
     public void assertFindAlias() {
         SelectItem selectItem = getColumnSelectItemWithAlias();
-        SelectItems selectItems = new SelectItems(0, 0, true, Collections.singleton(selectItem), Collections.<String, Collection<String>>emptyMap());
+        SelectItems selectItems = new SelectItems(0, 0, true, Collections.singleton(selectItem), Collections.<TableSegment>emptyList(), createShardingTableMetaData());
         assertTrue(selectItems.findAlias(selectItem.getExpression()).isPresent());
     }
-
+    
     @Test
     public void assertGetAggregationSelectItems() {
         SelectItem aggregationSelectItem = getAggregationSelectItem();
-        List<AggregationSelectItem> items = new SelectItems(0, 0, true, Arrays.asList(aggregationSelectItem, getColumnSelectItem()),
-            Collections.<String, Collection<String>>emptyMap()).getAggregationSelectItems();
+        List<AggregationSelectItem> items = new SelectItems(0, 0, true, 
+                Arrays.asList(aggregationSelectItem, getColumnSelectItem()), Collections.<TableSegment>emptyList(), createShardingTableMetaData()).getAggregationSelectItems();
         assertTrue(items.contains(aggregationSelectItem));
         assertEquals(items.size(), 1);
     }
-
+    
     @Test
     public void assertGetAggregationDistinctSelectItems() {
         SelectItem aggregationDistinctSelectItem = getAggregationDistinctSelectItem();
-        List<AggregationDistinctSelectItem> items = new SelectItems(0, 0, true, Arrays.asList(aggregationDistinctSelectItem, getColumnSelectItem()),
-            Collections.<String, Collection<String>>emptyMap()).getAggregationDistinctSelectItems();
+        List<AggregationDistinctSelectItem> items = new SelectItems(0, 0, true, 
+                Arrays.asList(aggregationDistinctSelectItem, getColumnSelectItem()), Collections.<TableSegment>emptyList(), createShardingTableMetaData()).getAggregationDistinctSelectItems();
         assertTrue(items.contains(aggregationDistinctSelectItem));
         assertEquals(items.size(), 1);
     }
-
+    
     @Test
     public void assertGetColumnLabelWithShorthandSelectItem() {
         SelectItem selectItem = getShorthandSelectItem();
-        List<String> columnLabels = new SelectItems(0, 0, true, Collections.singletonList(selectItem), getTableColumnsMap()).getColumnLabels();
+        List<String> columnLabels = new SelectItems(
+                0, 0, true, Collections.singletonList(selectItem), Collections.singletonList(new TableSegment(0, 0, "table")), createShardingTableMetaData()).getColumnLabels();
         assertEquals(columnLabels, Arrays.asList("id", "name"));
     }
-
+    
     @Test
     public void assertGetColumnLabelWithShorthandSelectItem2() {
         SelectItem selectItem = getShorthandSelectItemWithOutOwner();
-        List<String> columnLabels = new SelectItems(0, 0, true, Collections.singletonList(selectItem), getTableColumnsMap()).getColumnLabels();
+        List<String> columnLabels = new SelectItems(
+                0, 0, true, Collections.singletonList(selectItem), Collections.singletonList(new TableSegment(0, 0, "table")), createShardingTableMetaData()).getColumnLabels();
         assertEquals(columnLabels, Arrays.asList("id", "name"));
     }
-
+    
     @Test
     public void assertGetColumnLabelsWithCommonSelectItem() {
         SelectItem selectItem = getColumnSelectItem();
-        List<String> columnLabels = new SelectItems(0, 0, true, Collections.singletonList(selectItem), Collections.<String, Collection<String>>emptyMap()).getColumnLabels();
+        List<String> columnLabels = new SelectItems(0, 0, true, Collections.singletonList(selectItem), Collections.<TableSegment>emptyList(), createShardingTableMetaData()).getColumnLabels();
         assertTrue(columnLabels.contains(selectItem.getColumnLabel()));
     }
-
+    
     @Test
     public void assertGetColumnLabelsWithCommonSelectItemAlias() {
         SelectItem selectItem = getColumnSelectItemWithAlias();
-        List<String> columnLabels = new SelectItems(0, 0, true, Collections.singletonList(selectItem), Collections.<String, Collection<String>>emptyMap()).getColumnLabels();
+        List<String> columnLabels = new SelectItems(0, 0, true, Collections.singletonList(selectItem), Collections.<TableSegment>emptyList(), createShardingTableMetaData()).getColumnLabels();
         assertTrue(columnLabels.contains(selectItem.getAlias().or("")));
     }
-
+    
     @Test
     public void assertGetColumnLabelsWithExpressionSelectItem() {
         SelectItem selectItem = getExpressionSelectItem();
-        List<String> columnLabels = new SelectItems(0, 0, true, Collections.singletonList(selectItem), Collections.<String, Collection<String>>emptyMap()).getColumnLabels();
+        List<String> columnLabels = new SelectItems(0, 0, true, Collections.singletonList(selectItem), Collections.<TableSegment>emptyList(), createShardingTableMetaData()).getColumnLabels();
         assertTrue(columnLabels.contains(selectItem.getColumnLabel()));
     }
-
+    
     @Test
     public void assertGetColumnLabelsWithExpressionSelectItemAlias() {
         SelectItem selectItem = getExpressionSelectItemWithAlias();
-        List<String> columnLabels = new SelectItems(0, 0, true, Collections.singletonList(selectItem), Collections.<String, Collection<String>>emptyMap()).getColumnLabels();
+        List<String> columnLabels = new SelectItems(0, 0, true, Collections.singletonList(selectItem), Collections.<TableSegment>emptyList(), createShardingTableMetaData()).getColumnLabels();
         assertTrue(columnLabels.contains(selectItem.getAlias().or("")));
     }
-
+    
     @Test
     public void assertGetColumnLabelsWithDerivedSelectItem() {
         SelectItem selectItem = getDerivedSelectItem();
-        List<String> columnLabels = new SelectItems(0, 0, true, Collections.singletonList(selectItem), Collections.<String, Collection<String>>emptyMap()).getColumnLabels();
+        List<String> columnLabels = new SelectItems(0, 0, true, Collections.singletonList(selectItem), Collections.<TableSegment>emptyList(), createShardingTableMetaData()).getColumnLabels();
         assertTrue(columnLabels.contains(selectItem.getColumnLabel()));
     }
-
+    
     @Test
     public void assertGetColumnLabelsWithDerivedSelectItemAlias() {
         SelectItem selectItem = getDerivedSelectItemWithAlias();
-        List<String> columnLabels = new SelectItems(0, 0, true, Collections.singletonList(selectItem), Collections.<String, Collection<String>>emptyMap()).getColumnLabels();
+        List<String> columnLabels = new SelectItems(0, 0, true, Collections.singletonList(selectItem), Collections.<TableSegment>emptyList(), createShardingTableMetaData()).getColumnLabels();
         assertTrue(columnLabels.contains(selectItem.getAlias().or("")));
     }
-
+    
     @Test
     public void assertGetColumnLabelsWithAggregationSelectItem() {
         SelectItem selectItem = getAggregationSelectItem();
-        List<String> columnLabels = new SelectItems(0, 0, true, Collections.singletonList(selectItem), Collections.<String, Collection<String>>emptyMap()).getColumnLabels();
+        List<String> columnLabels = new SelectItems(0, 0, true, Collections.singletonList(selectItem), Collections.<TableSegment>emptyList(), createShardingTableMetaData()).getColumnLabels();
         assertTrue(columnLabels.contains(selectItem.getColumnLabel()));
     }
-
+    
     @Test
     public void assertGetColumnLabelsWithAggregationDistinctSelectItem() {
         SelectItem selectItem = getAggregationDistinctSelectItem();
-        List<String> columnLabels = new SelectItems(0, 0, true, Collections.singletonList(selectItem), Collections.<String, Collection<String>>emptyMap()).getColumnLabels();
+        List<String> columnLabels = new SelectItems(0, 0, true, Collections.singletonList(selectItem), Collections.<TableSegment>emptyList(), createShardingTableMetaData()).getColumnLabels();
         assertTrue(columnLabels.contains(selectItem.getColumnLabel()));
     }
-
-    private Map<String, Collection<String>> getTableColumnsMap() {
-        return Collections.singletonMap("table", (Collection<String>) (Arrays.asList("id", "name")));
+    
+    private ShardingTableMetaData createShardingTableMetaData() {
+        Map<String, TableMetaData> tables = new HashMap<>(1, 1);
+        tables.put("table", new TableMetaData(Arrays.asList(new ColumnMetaData("id", "number", true), new ColumnMetaData("name", "varchar", false)), Collections.<String>emptyList()));
+        return new ShardingTableMetaData(tables);
     }
-
+    
     private ShorthandSelectItem getShorthandSelectItem() {
         return new ShorthandSelectItem("table");
     }
-
+    
     private ShorthandSelectItem getShorthandSelectItemWithOutOwner() {
         return new ShorthandSelectItem(null);
     }
-
+    
     private ColumnSelectItem getColumnSelectItem() {
         return new ColumnSelectItem("table", "name", null);
     }
-
+    
     private ColumnSelectItem getColumnSelectItemWithAlias() {
         return new ColumnSelectItem("table", "name", "n");
     }
-
+    
     private ExpressionSelectItem getExpressionSelectItem() {
         return new ExpressionSelectItem("table.name", null);
     }
-
+    
     private ExpressionSelectItem getExpressionSelectItemWithAlias() {
         return new ExpressionSelectItem("table.name", "n");
     }
-
+    
     private DerivedSelectItem getDerivedSelectItem() {
         return new DerivedSelectItem("table.name", null);
     }
-
+    
     private DerivedSelectItem getDerivedSelectItemWithAlias() {
         return new DerivedSelectItem("table.name", "n");
     }
-
+    
     private AggregationSelectItem getAggregationSelectItem() {
         return new AggregationSelectItem(AggregationType.COUNT, "(column)", "c");
     }
-
+    
     private AggregationDistinctSelectItem getAggregationDistinctSelectItem() {
         return new AggregationDistinctSelectItem(0, 0, AggregationType.COUNT, "(DISTINCT column)", "c", "column");
     }
-
 }
