@@ -14,45 +14,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.shardingsphere.core.parse.integrate.jaxb.selectitem;
 
-package org.apache.shardingsphere.core.optimize.sharding.segment.select.item;
-
-import com.google.common.base.Optional;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import lombok.Setter;
+import org.apache.shardingsphere.core.parse.core.constant.QuoteCharacter;
 
-/**
- * Common select item.
- *
- * @author zhangliang
- * @author sunbufu
- */
-@RequiredArgsConstructor
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+
 @Getter
-@EqualsAndHashCode
-@ToString
-public final class ColumnSelectItem implements SelectItem {
+@Setter
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class ExpectedColumnSelectItem extends  ExpectedBaseSelectItem{
 
-    private final String owner;
+    @XmlAttribute
+    private String alias;
 
-    private final String name;
+    @XmlAttribute
+    private String name;
 
-    private final String alias;
+    @XmlAttribute
+    private QuoteCharacter quoteCharacter = QuoteCharacter.NONE;
 
-    @Override
-    public String getExpression() {
-        return null == owner ? name : owner + "." + name;
-    }
+    @XmlElement(name = "table-segment")
+    private ExpectedTableSegment owner = new ExpectedTableSegment();
 
-    @Override
-    public String getColumnLabel() {
-        return getAlias().or(name);
-    }
-
-    @Override
-    public Optional<String> getAlias() {
-        return Optional.fromNullable(alias);
-    }
 }

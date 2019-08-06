@@ -15,44 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.sharding.segment.select.item;
+package org.apache.shardingsphere.core.parse.integrate.jaxb.selectitem;
 
-import com.google.common.base.Optional;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import lombok.Setter;
+import org.apache.shardingsphere.core.parse.core.constant.QuoteCharacter;
 
-/**
- * Common select item.
- *
- * @author zhangliang
- * @author sunbufu
- */
-@RequiredArgsConstructor
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+
 @Getter
-@EqualsAndHashCode
-@ToString
-public final class ColumnSelectItem implements SelectItem {
+@Setter
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class ExpectedSchemaSegment {
 
-    private final String owner;
+    @XmlAttribute(name = "start-index")
+    private Integer startIndex;
 
-    private final String name;
+    @XmlAttribute(name = "stop-index")
+    private Integer stopIndex;
 
-    private final String alias;
+    @XmlAttribute
+    private String name;
 
-    @Override
-    public String getExpression() {
-        return null == owner ? name : owner + "." + name;
-    }
-
-    @Override
-    public String getColumnLabel() {
-        return getAlias().or(name);
-    }
-
-    @Override
-    public Optional<String> getAlias() {
-        return Optional.fromNullable(alias);
-    }
+    private QuoteCharacter quoteCharacter = QuoteCharacter.NONE;
 }

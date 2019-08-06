@@ -33,6 +33,13 @@
                 </condition>
             </and-condition>
         </sharding-conditions>
+        <select-items start-index="7" stop-index="9">
+            <shorthand-select-items>
+                <shorthand-select-item start-index="7" stop-index="9" text="i.*">
+                    <table-segment start-index="7" stop-index="7" name="i" />
+                </shorthand-select-item>
+            </shorthand-select-items>
+        </select-items>
     </parser-result>
     
     <parser-result sql-case-id="select_inner_join_related_with_name" parameters="1000">
@@ -55,6 +62,13 @@
                 </condition>
             </and-condition>
         </sharding-conditions>
+        <select-items start-index="7" stop-index="20">
+            <shorthand-select-items>
+                <shorthand-select-item start-index="7" stop-index="20" text="t_order_item.*">
+                    <table-segment start-index="7" stop-index="18" name="t_order_item" />
+                </shorthand-select-item>
+            </shorthand-select-items>
+        </select-items>
     </parser-result>
     
     <parser-result sql-case-id="select_join_using" parameters="1000">
@@ -73,5 +87,12 @@
                 </condition>
             </and-condition>
         </sharding-conditions>
+        <select-items start-index="7" stop-index="9">
+            <shorthand-select-items>
+                <shorthand-select-item start-index="7" stop-index="9" text="i.*">
+                    <table-segment start-index="7" stop-index="7" name="i" />
+                </shorthand-select-item>
+            </shorthand-select-items>
+        </select-items>
     </parser-result>
 </parser-result-sets>

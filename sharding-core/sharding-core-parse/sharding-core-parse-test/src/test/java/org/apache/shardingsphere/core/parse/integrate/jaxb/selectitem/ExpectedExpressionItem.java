@@ -14,45 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.shardingsphere.core.parse.integrate.jaxb.selectitem;
 
-package org.apache.shardingsphere.core.optimize.sharding.segment.select.item;
-
-import com.google.common.base.Optional;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import lombok.Setter;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 
-/**
- * Common select item.
- *
- * @author zhangliang
- * @author sunbufu
- */
-@RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode
-@ToString
-public final class ColumnSelectItem implements SelectItem {
-
-    private final String owner;
-
-    private final String name;
-
-    private final String alias;
-
-    @Override
-    public String getExpression() {
-        return null == owner ? name : owner + "." + name;
-    }
-
-    @Override
-    public String getColumnLabel() {
-        return getAlias().or(name);
-    }
-
-    @Override
-    public Optional<String> getAlias() {
-        return Optional.fromNullable(alias);
-    }
+@Setter
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class ExpectedExpressionItem extends ExpectedBaseSelectItem {
+    @XmlAttribute
+    private String alias;
 }
