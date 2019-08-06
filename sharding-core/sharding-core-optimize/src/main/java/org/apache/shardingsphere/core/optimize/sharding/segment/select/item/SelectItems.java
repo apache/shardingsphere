@@ -38,7 +38,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Getter
 @Setter
-@ToString
+@ToString(exclude = "ownerTableColumnsMap")
 public final class SelectItems {
     
     private final int startIndex;
