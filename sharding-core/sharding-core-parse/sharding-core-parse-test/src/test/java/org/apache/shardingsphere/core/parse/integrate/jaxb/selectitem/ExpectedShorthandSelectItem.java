@@ -27,7 +27,7 @@ import javax.xml.bind.annotation.XmlElement;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ExpectedShorthandSelectItem extends ExpectedBaseSelectItem {
+public final class ExpectedShorthandSelectItem extends ExpectedBaseSelectItem {
 
     @XmlElement(name = "table-segment")
     private ExpectedTableSegment owner = new ExpectedTableSegment();

@@ -28,7 +28,7 @@ import javax.xml.bind.annotation.XmlElement;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ExpectedTableSegment {
+public final class ExpectedTableSegment {
 
     @XmlAttribute(name = "start-index")
     protected Integer startIndex;

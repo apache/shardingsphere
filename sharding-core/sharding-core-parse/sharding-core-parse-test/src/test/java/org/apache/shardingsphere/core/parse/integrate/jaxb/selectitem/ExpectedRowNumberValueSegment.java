@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 public final class ExpectedRowNumberValueSegment {
 
     @XmlAttribute(name = "parameter-index")
-    private Integer parameterIndex;
+    protected Integer parameterIndex;
 
     @XmlAttribute(name = "start-index")
     private Integer startIndex;
