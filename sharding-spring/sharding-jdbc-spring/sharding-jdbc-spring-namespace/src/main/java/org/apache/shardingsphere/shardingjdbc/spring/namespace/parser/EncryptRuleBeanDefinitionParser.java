@@ -29,15 +29,13 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.ManagedMap;
+import org.springframework.beans.factory.xml.BeanDefinitionParserDelegate;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
-import static org.springframework.beans.factory.xml.BeanDefinitionParserDelegate.ID_ATTRIBUTE;
-import static org.springframework.beans.factory.xml.BeanDefinitionParserDelegate.NAME_ATTRIBUTE;
 
 /**
  * Encrypt rule parser for spring namespace.
@@ -65,7 +63,7 @@ public final class EncryptRuleBeanDefinitionParser {
         List<Element> encryptorRuleElements = DomUtils.getChildElementsByTagName(encryptorsRuleElement, EncryptDataSourceBeanDefinitionParserTag.ENCRYPTOR_CONFIG_TAG);
         Map<String, BeanDefinition> result = new ManagedMap<>(encryptorRuleElements.size());
         for (Element each : encryptorRuleElements) {
-            result.put(each.getAttribute(ID_ATTRIBUTE), parseEncryptorRuleConfiguration(each));
+            result.put(each.getAttribute(BeanDefinitionParserDelegate.ID_ATTRIBUTE), parseEncryptorRuleConfiguration(each));
         }
         return result;
     }
@@ -91,7 +89,7 @@ public final class EncryptRuleBeanDefinitionParser {
         List<Element> encryptTableElements = DomUtils.getChildElementsByTagName(encryptTablesElement, EncryptDataSourceBeanDefinitionParserTag.TABLE_CONFIG_TAG);
         Map<String, BeanDefinition> result = new ManagedMap<>(encryptTableElements.size());
         for (Element each : encryptTableElements) {
-            result.put(each.getAttribute(NAME_ATTRIBUTE), parseEncryptTableConfiguration(each));
+            result.put(each.getAttribute(BeanDefinitionParserDelegate.NAME_ATTRIBUTE), parseEncryptTableConfiguration(each));
         }
         return result;
     }

@@ -27,7 +27,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class ExpectedAggregationDistinctItem extends ExpectedAggregationItem{
+public final class ExpectedAggregationDistinctItem extends ExpectedAggregationItem {
 
     @XmlAttribute
     private String distinctExpression;

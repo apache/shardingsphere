@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata;
 
+import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.core.rule.ShardingDataSourceNames;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -45,14 +46,12 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.google.common.base.Optional;
-
 @RunWith(MockitoJUnitRunner.class)
 public final class CachedDatabaseMetaDataTest {
     
-    private final String DATASOURCE_NAME = "ds";
+    private static final String DATA_SOURCE_NAME = "ds";
     
-    private final String TABLE_NAME = "table";
+    private static final String TABLE_NAME = "table";
     
     @Mock
     private DataSource dataSource;
@@ -72,7 +71,7 @@ public final class CachedDatabaseMetaDataTest {
     
     @Before
     public void setUp() throws SQLException {
-        dataSourceMap.put(DATASOURCE_NAME, dataSource);
+        dataSourceMap.put(DATA_SOURCE_NAME, dataSource);
         when(dataSource.getConnection()).thenReturn(connection);
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         when(resultSet.getMetaData()).thenReturn(mock(ResultSetMetaData.class));
@@ -82,11 +81,11 @@ public final class CachedDatabaseMetaDataTest {
     private ShardingRule mockShardingRule() {
         ShardingRule result = mock(ShardingRule.class);
         ShardingDataSourceNames shardingDataSourceNames = mock(ShardingDataSourceNames.class);
-        when(shardingDataSourceNames.getRandomDataSourceName()).thenReturn(DATASOURCE_NAME);
-        when(shardingDataSourceNames.getRawMasterDataSourceName(DATASOURCE_NAME)).thenReturn(DATASOURCE_NAME);
+        when(shardingDataSourceNames.getRandomDataSourceName()).thenReturn(DATA_SOURCE_NAME);
+        when(shardingDataSourceNames.getRawMasterDataSourceName(DATA_SOURCE_NAME)).thenReturn(DATA_SOURCE_NAME);
         when(result.getShardingDataSourceNames()).thenReturn(shardingDataSourceNames);
-        when(result.findTableRule(TABLE_NAME)).thenReturn(Optional.of(new TableRule(DATASOURCE_NAME, TABLE_NAME)));
-        when(result.getDataNode(TABLE_NAME)).thenReturn(new DataNode(DATASOURCE_NAME, TABLE_NAME));
+        when(result.findTableRule(TABLE_NAME)).thenReturn(Optional.of(new TableRule(DATA_SOURCE_NAME, TABLE_NAME)));
+        when(result.getDataNode(TABLE_NAME)).thenReturn(new DataNode(DATA_SOURCE_NAME, TABLE_NAME));
         return result;
     }
     

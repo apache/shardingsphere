@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.shardingsphere.core.parse.integrate.jaxb.selectitem;
 
 import lombok.Getter;
@@ -27,14 +28,13 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ExpectedBaseSelectItem implements ExpectedSelectItem {
-
+    
     @XmlAttribute(name = "start-index")
-    protected Integer startIndex;
-
+    private Integer startIndex;
+    
     @XmlAttribute(name = "stop-index")
-    protected Integer stopIndex;
-
+    private Integer stopIndex;
+    
     @XmlAttribute
-    protected String text;
-
+    private String text;
 }

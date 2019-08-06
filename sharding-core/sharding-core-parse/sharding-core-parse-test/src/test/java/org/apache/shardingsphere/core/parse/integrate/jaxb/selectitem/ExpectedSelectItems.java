@@ -20,11 +20,11 @@ package org.apache.shardingsphere.core.parse.integrate.jaxb.selectitem;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlAttribute;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -32,46 +32,58 @@ import java.util.LinkedList;
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class ExpectedSelectItems {
-
+    
     @XmlAttribute(name = "start-index")
     private Integer startIndex;
-
+    
     @XmlAttribute(name = "stop-index")
     private Integer stopIndex;
-
+    
     @XmlAttribute
-    private boolean distinctRow = false;
-
+    private boolean distinctRow;
+    
     @XmlElementWrapper(name = "shorthand-select-items")
     @XmlElement(name = "shorthand-select-item")
     private Collection<ExpectedShorthandSelectItem> expectedShorthandSelectItems = new LinkedList<>();
-
-    @XmlElementWrapper(name ="aggregation-select-items")
+    
+    @XmlElementWrapper(name = "aggregation-select-items")
     @XmlElement(name = "aggregation-select-item")
     private Collection<ExpectedAggregationItem> expectedAggregationItems = new LinkedList<>();
-
+    
     @XmlElementWrapper(name = "aggregation-distinct-select-items")
     @XmlElement(name = "aggregation-distinct-select-item")
     private Collection<ExpectedAggregationDistinctItem> expectedAggregationDistinctItems = new LinkedList<>();
-
+    
     @XmlElementWrapper(name = "column-select-items")
     @XmlElement(name = "column-select-item")
     private Collection<ExpectedColumnSelectItem> expectedColumnSelectItems = new LinkedList<>();
-
+    
     @XmlElementWrapper(name = "expression-items")
     @XmlElement(name = "expression-item")
     private Collection<ExpectedExpressionItem> expectedExpressionItems = new LinkedList<>();
-
+    
     @XmlElementWrapper(name = "top-select-items")
     @XmlElement(name = "top-select-item")
     private Collection<ExpectedTopSelectItem> expectedTopSelectItems = new LinkedList<>();
-
-    public int getSize(){
+    
+    /**
+     * Get size.
+     * 
+     * @return size
+     */
+    public int getSize() {
         return expectedAggregationItems.size() + expectedShorthandSelectItems.size()
                 + expectedAggregationDistinctItems.size() + expectedColumnSelectItems.size()
                 + expectedExpressionItems.size() + expectedTopSelectItems.size();
     }
-
+    
+    /**
+     * Find expected select items.
+     * 
+     * @param expectedSelectItemType expected select item type
+     * @param <T> type of select item type
+     * @return expected select items
+     */
     public <T extends ExpectedSelectItem> Collection<ExpectedSelectItem> findExpectedSelectItems(final Class<T> expectedSelectItemType) {
         Collection<ExpectedSelectItem> result = new LinkedList<>();
         if (expectedSelectItemType.equals(ExpectedShorthandSelectItem.class)) {
@@ -94,5 +106,4 @@ public final class ExpectedSelectItems {
         }
         return result;
     }
-
 }

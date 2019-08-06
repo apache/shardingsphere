@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.shardingsphere.core.parse.integrate.jaxb.selectitem;
 
 import lombok.Getter;
@@ -29,22 +30,22 @@ import javax.xml.bind.annotation.XmlElement;
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class ExpectedTableSegment {
-
+    
     @XmlAttribute(name = "start-index")
-    protected Integer startIndex;
-
+    private Integer startIndex;
+    
     @XmlAttribute(name = "stop-index")
     private Integer stopIndex;
-
+    
     @XmlAttribute
     private String name;
-
+    
     @XmlAttribute
     private QuoteCharacter quoteCharacter = QuoteCharacter.NONE;
-
+    
     @XmlElement(name = "schema-segment")
     private ExpectedSchemaSegment expectedSchemaSegment = new ExpectedSchemaSegment();
-
+    
     @XmlAttribute
     private String alias;
 }

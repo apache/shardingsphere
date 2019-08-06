@@ -32,46 +32,46 @@ public class SelectItemsTest {
 
     @Test
     public void assertUnqualifiedShorthandItemWithEmptyItems() {
-        SelectItems selectItems = new SelectItems(0, 0,true, Collections.<SelectItem>emptySet());
+        SelectItems selectItems = new SelectItems(0, 0, true, Collections.<SelectItem>emptySet());
         assertFalse(selectItems.isUnqualifiedShorthandItem());
     }
 
     @Test
     public void assertUnqualifiedShorthandItemWithWrongSelectItem() {
-        SelectItems selectItems = new SelectItems(0, 0,true, Collections.singleton((SelectItem) getColumnSelectItem()));
+        SelectItems selectItems = new SelectItems(0, 0, true, Collections.singleton((SelectItem) getColumnSelectItem()));
         assertFalse(selectItems.isUnqualifiedShorthandItem());
     }
 
     @Test
     public void assertUnqualifiedShorthandItemWithWrongShortSelectItem() {
-        SelectItems selectItems = new SelectItems(0, 0,true, Collections.singleton((SelectItem) getShorthandSelectItem()));
+        SelectItems selectItems = new SelectItems(0, 0, true, Collections.singleton((SelectItem) getShorthandSelectItem()));
         assertFalse(selectItems.isUnqualifiedShorthandItem());
     }
 
     @Test
     public void assertUnqualifiedShorthandItem() {
         SelectItem selectItem = new ShorthandSelectItem(null);
-        SelectItems selectItems = new SelectItems(0, 0,true, Collections.singleton(selectItem));
+        SelectItems selectItems = new SelectItems(0, 0, true, Collections.singleton(selectItem));
         assertTrue(selectItems.isUnqualifiedShorthandItem());
     }
 
     @Test
     public void assertFindAliasWithOutAlias() {
-        SelectItems selectItems = new SelectItems(0, 0,true, Collections.<SelectItem>emptyList());
+        SelectItems selectItems = new SelectItems(0, 0, true, Collections.<SelectItem>emptyList());
         assertFalse(selectItems.findAlias("").isPresent());
     }
 
     @Test
     public void assertFindAlias() {
         SelectItem selectItem = getColumnSelectItemWithAlias();
-        SelectItems selectItems = new SelectItems(0, 0,true, Collections.singleton(selectItem));
+        SelectItems selectItems = new SelectItems(0, 0, true, Collections.singleton(selectItem));
         assertTrue(selectItems.findAlias(selectItem.getExpression()).isPresent());
     }
 
     @Test
     public void assertGetAggregationSelectItems() {
         SelectItem aggregationSelectItem = getAggregationSelectItem();
-        List<AggregationSelectItem> items = new SelectItems(0, 0,true, Arrays.asList(aggregationSelectItem, getColumnSelectItem())).getAggregationSelectItems();
+        List<AggregationSelectItem> items = new SelectItems(0, 0, true, Arrays.asList(aggregationSelectItem, getColumnSelectItem())).getAggregationSelectItems();
         assertTrue(items.contains(aggregationSelectItem));
         assertEquals(items.size(), 1);
     }
@@ -79,7 +79,7 @@ public class SelectItemsTest {
     @Test
     public void assertGetAggregationDistinctSelectItems() {
         SelectItem aggregationDistinctSelectItem = getAggregationDistinctSelectItem();
-        List<AggregationDistinctSelectItem> items = new SelectItems(0, 0,true, Arrays.asList(aggregationDistinctSelectItem, getColumnSelectItem())).getAggregationDistinctSelectItems();
+        List<AggregationDistinctSelectItem> items = new SelectItems(0, 0, true, Arrays.asList(aggregationDistinctSelectItem, getColumnSelectItem())).getAggregationDistinctSelectItems();
         assertTrue(items.contains(aggregationDistinctSelectItem));
         assertEquals(items.size(), 1);
     }
@@ -87,63 +87,63 @@ public class SelectItemsTest {
     @Test
     public void assertGetColumnLabelWithShorthandSelectItem() {
         SelectItem selectItem = getShorthandSelectItem();
-        List<String> columnLabels = new SelectItems(0, 0,true, Collections.singletonList(selectItem)).getColumnLabels();
+        List<String> columnLabels = new SelectItems(0, 0, true, Collections.singletonList(selectItem)).getColumnLabels();
         assertTrue(columnLabels.isEmpty());
     }
 
     @Test
     public void assertGetColumnLabelsWithCommonSelectItem() {
         SelectItem selectItem = getColumnSelectItem();
-        List<String> columnLabels = new SelectItems(0, 0,true, Collections.singletonList(selectItem)).getColumnLabels();
+        List<String> columnLabels = new SelectItems(0, 0, true, Collections.singletonList(selectItem)).getColumnLabels();
         assertTrue(columnLabels.contains(selectItem.getColumnLabel()));
     }
 
     @Test
     public void assertGetColumnLabelsWithCommonSelectItemAlias() {
         SelectItem selectItem = getColumnSelectItemWithAlias();
-        List<String> columnLabels = new SelectItems(0, 0,true, Collections.singletonList(selectItem)).getColumnLabels();
+        List<String> columnLabels = new SelectItems(0, 0, true, Collections.singletonList(selectItem)).getColumnLabels();
         assertTrue(columnLabels.contains(selectItem.getAlias().or("")));
     }
 
     @Test
     public void assertGetColumnLabelsWithExpressionSelectItem() {
         SelectItem selectItem = getExpressionSelectItem();
-        List<String> columnLabels = new SelectItems(0, 0,true, Collections.singletonList(selectItem)).getColumnLabels();
+        List<String> columnLabels = new SelectItems(0, 0, true, Collections.singletonList(selectItem)).getColumnLabels();
         assertTrue(columnLabels.contains(selectItem.getColumnLabel()));
     }
 
     @Test
     public void assertGetColumnLabelsWithExpressionSelectItemAlias() {
         SelectItem selectItem = getExpressionSelectItemWithAlias();
-        List<String> columnLabels = new SelectItems(0, 0,true, Collections.singletonList(selectItem)).getColumnLabels();
+        List<String> columnLabels = new SelectItems(0, 0, true, Collections.singletonList(selectItem)).getColumnLabels();
         assertTrue(columnLabels.contains(selectItem.getAlias().or("")));
     }
 
     @Test
     public void assertGetColumnLabelsWithDerivedSelectItem() {
         SelectItem selectItem = getDerivedSelectItem();
-        List<String> columnLabels = new SelectItems(0, 0,true, Collections.singletonList(selectItem)).getColumnLabels();
+        List<String> columnLabels = new SelectItems(0, 0, true, Collections.singletonList(selectItem)).getColumnLabels();
         assertTrue(columnLabels.contains(selectItem.getColumnLabel()));
     }
 
     @Test
     public void assertGetColumnLabelsWithDerivedSelectItemAlias() {
         SelectItem selectItem = getDerivedSelectItemWithAlias();
-        List<String> columnLabels = new SelectItems(0, 0,true, Collections.singletonList(selectItem)).getColumnLabels();
+        List<String> columnLabels = new SelectItems(0, 0, true, Collections.singletonList(selectItem)).getColumnLabels();
         assertTrue(columnLabels.contains(selectItem.getAlias().or("")));
     }
 
     @Test
     public void assertGetColumnLabelsWithAggregationSelectItem() {
         SelectItem selectItem = getAggregationSelectItem();
-        List<String> columnLabels = new SelectItems(0, 0,true, Collections.singletonList(selectItem)).getColumnLabels();
+        List<String> columnLabels = new SelectItems(0, 0, true, Collections.singletonList(selectItem)).getColumnLabels();
         assertTrue(columnLabels.contains(selectItem.getColumnLabel()));
     }
 
     @Test
     public void assertGetColumnLabelsWithAggregationDistinctSelectItem() {
         SelectItem selectItem = getAggregationDistinctSelectItem();
-        List<String> columnLabels = new SelectItems(0, 0,true, Collections.singletonList(selectItem)).getColumnLabels();
+        List<String> columnLabels = new SelectItems(0, 0, true, Collections.singletonList(selectItem)).getColumnLabels();
         assertTrue(columnLabels.contains(selectItem.getColumnLabel()));
     }
 

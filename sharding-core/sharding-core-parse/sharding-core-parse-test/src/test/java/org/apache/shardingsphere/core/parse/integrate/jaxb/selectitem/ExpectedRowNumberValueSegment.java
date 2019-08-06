@@ -28,17 +28,16 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class ExpectedRowNumberValueSegment {
-
+    
     @XmlAttribute(name = "parameter-index")
-    protected Integer parameterIndex;
-
+    private Integer parameterIndex;
+    
     @XmlAttribute(name = "start-index")
     private Integer startIndex;
-
+    
     @XmlAttribute(name = "stop-index")
     private Integer stopIndex;
-
+    
     @XmlAttribute(name = "bound-opened")
-    private boolean boundOpened = false;
-
+    private boolean boundOpened;
 }

@@ -19,13 +19,27 @@ package org.apache.shardingsphere.core.parse.integrate.asserts.selectitem;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.integrate.asserts.SQLStatementAssertMessage;
-import org.apache.shardingsphere.core.parse.integrate.jaxb.selectitem.*;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.item.*;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.selectitem.ExpectedAggregationDistinctItem;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.selectitem.ExpectedAggregationItem;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.selectitem.ExpectedColumnSelectItem;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.selectitem.ExpectedExpressionItem;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.selectitem.ExpectedSelectItem;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.selectitem.ExpectedSelectItems;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.selectitem.ExpectedShorthandSelectItem;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.selectitem.ExpectedTopSelectItem;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.item.AggregationDistinctSelectItemSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.item.AggregationSelectItemSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.item.ColumnSelectItemSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.item.ExpressionSelectItemSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemsSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.item.ShorthandSelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.top.TopSegment;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 
 import java.util.Collection;
 import java.util.LinkedList;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -41,7 +55,7 @@ public final class SelectItemAssert {
 
     private final SQLStatementAssertMessage assertMessage;
 
-    public void assertSelectItems(final SelectItemsSegment actual, final ExpectedSelectItems expectedSelectItems){
+    public void assertSelectItems(final SelectItemsSegment actual, final ExpectedSelectItems expectedSelectItems) {
         Collection<SelectItemSegment> actualItems = actual.getSelectItems();
         assertThat(assertMessage.getFullAssertMessage("Select items size error: "), actualItems.size(), is(expectedSelectItems.getSize()));
         Collection<ExpectedSelectItem> expectedBaseItems = new LinkedList<>();
@@ -74,12 +88,12 @@ public final class SelectItemAssert {
         String actualText = actual.getText();
         String expectedText = "";
         for (ExpectedSelectItem each: expected) {
-            if(actualText.equals(each.getText())) {
+            if (actualText.equals(each.getText())) {
                 expectedText = each.getText();
                 break;
             }
         }
-        assertThat(assertMessage.getFullAssertMessage("selectItem text assert error: "),actualText,is(expectedText));
+        assertThat(assertMessage.getFullAssertMessage("selectItem text assert error: "), actualText, is(expectedText));
     }
 }
 

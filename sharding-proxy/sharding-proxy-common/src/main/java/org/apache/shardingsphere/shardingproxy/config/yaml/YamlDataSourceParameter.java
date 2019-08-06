@@ -50,5 +50,5 @@ public final class YamlDataSourceParameter {
     
     private long maintenanceIntervalMilliseconds = 30 * 1000;
 
-    private boolean readOnly = false;
+    private boolean readOnly;
 }
