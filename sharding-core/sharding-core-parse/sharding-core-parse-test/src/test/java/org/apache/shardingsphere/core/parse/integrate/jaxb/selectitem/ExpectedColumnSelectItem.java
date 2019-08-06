@@ -15,40 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.config.yaml;
+package org.apache.shardingsphere.core.parse.integrate.jaxb.selectitem;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.core.parse.core.constant.QuoteCharacter;
 
-/**
- * Data source parameters for YAML.
- *
- * @author zhangyonglun
- * @author panjuan
- */
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+
 @Getter
 @Setter
-@EqualsAndHashCode
-public final class YamlDataSourceParameter {
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class ExpectedColumnSelectItem extends ExpectedBaseSelectItem {
     
-    private String url;
+    @XmlAttribute
+    private String alias;
     
-    private String username;
+    @XmlAttribute
+    private String name;
     
-    private String password;
+    @XmlAttribute
+    private QuoteCharacter quoteCharacter = QuoteCharacter.NONE;
     
-    private long connectionTimeoutMilliseconds = 30 * 1000;
-    
-    private long idleTimeoutMilliseconds = 60 * 1000;
-    
-    private long maxLifetimeMilliseconds;
-    
-    private int maxPoolSize = 50;
-    
-    private int minPoolSize = 1;
-    
-    private long maintenanceIntervalMilliseconds = 30 * 1000;
-
-    private boolean readOnly;
+    @XmlElement(name = "table-segment")
+    private ExpectedTableSegment owner = new ExpectedTableSegment();
 }

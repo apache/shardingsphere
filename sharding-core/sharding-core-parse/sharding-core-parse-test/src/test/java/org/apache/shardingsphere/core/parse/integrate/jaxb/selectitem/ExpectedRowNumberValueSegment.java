@@ -15,40 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.config.yaml;
+package org.apache.shardingsphere.core.parse.integrate.jaxb.selectitem;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
-/**
- * Data source parameters for YAML.
- *
- * @author zhangyonglun
- * @author panjuan
- */
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+
 @Getter
 @Setter
-@EqualsAndHashCode
-public final class YamlDataSourceParameter {
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class ExpectedRowNumberValueSegment {
     
-    private String url;
+    @XmlAttribute(name = "parameter-index")
+    private Integer parameterIndex;
     
-    private String username;
+    @XmlAttribute(name = "start-index")
+    private Integer startIndex;
     
-    private String password;
+    @XmlAttribute(name = "stop-index")
+    private Integer stopIndex;
     
-    private long connectionTimeoutMilliseconds = 30 * 1000;
-    
-    private long idleTimeoutMilliseconds = 60 * 1000;
-    
-    private long maxLifetimeMilliseconds;
-    
-    private int maxPoolSize = 50;
-    
-    private int minPoolSize = 1;
-    
-    private long maintenanceIntervalMilliseconds = 30 * 1000;
-
-    private boolean readOnly;
+    @XmlAttribute(name = "bound-opened")
+    private boolean boundOpened;
 }

@@ -15,40 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.config.yaml;
+package org.apache.shardingsphere.core.parse.integrate.jaxb.selectitem;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-
-/**
- * Data source parameters for YAML.
- *
- * @author zhangyonglun
- * @author panjuan
- */
-@Getter
-@Setter
-@EqualsAndHashCode
-public final class YamlDataSourceParameter {
+public interface ExpectedSelectItem {
     
-    private String url;
-    
-    private String username;
-    
-    private String password;
-    
-    private long connectionTimeoutMilliseconds = 30 * 1000;
-    
-    private long idleTimeoutMilliseconds = 60 * 1000;
-    
-    private long maxLifetimeMilliseconds;
-    
-    private int maxPoolSize = 50;
-    
-    private int minPoolSize = 1;
-    
-    private long maintenanceIntervalMilliseconds = 30 * 1000;
-
-    private boolean readOnly;
+    /**
+     * Get text.
+     * 
+     * @return text
+     */
+    String getText();
 }

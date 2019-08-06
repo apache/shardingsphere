@@ -983,8 +983,8 @@ public final class ShardingSQLRewriteEngineTest {
         when(insertColumns.getAllColumnNames()).thenReturn(Arrays.asList("name", "plain", "id", "query"));
         ShardingInsertOptimizedStatement optimizedStatement = new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), insertColumns, 
                 Collections.singletonList(new InsertValue(Collections.<ExpressionSegment>singletonList(new LiteralExpressionSegment(33, 34, 10)))), null);
-        ExpressionSegment[] expressionSegments = 
-                {new LiteralExpressionSegment(0, 0, 10), new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 10)};
+        ExpressionSegment[] expressionSegments = {
+                new LiteralExpressionSegment(0, 0, 10), new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 10)};
         InsertOptimizeResultUnit unit = optimizedStatement.createUnit(expressionSegments, new Object[0], 0);
         optimizedStatement.addUnit(unit);
         optimizedStatement.getUnits().get(0).getDataNodes().add(new DataNode("db0.table_1"));

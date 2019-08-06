@@ -27,6 +27,11 @@
         <order-by-columns>
             <order-by-column owner="o" name="order_id" order-direction="ASC" />
         </order-by-columns>
+        <select-items start-index="7" stop-index="31">
+            <expression-items>
+                <expression-item text="o.order_id+1*2asexp" />
+            </expression-items>
+        </select-items>
     </parser-result>
     
     <parser-result sql-case-id="select_with_date_function">
@@ -39,6 +44,11 @@
         <order-by-columns>
             <order-by-column name="DATE(i.creation_date)" order-direction="DESC" />
         </order-by-columns>
+        <select-items start-index="7" stop-index="44">
+            <expression-items>
+                <expression-item text="DATE(i.creation_date)" start-index="7" stop-index="27" />
+            </expression-items>
+        </select-items>
     </parser-result>
     
     <parser-result sql-case-id="select_with_regexp" parameters="'init', 1, 2">
@@ -56,5 +66,10 @@
                 </condition>
             </and-condition>
         </sharding-conditions>
+        <select-items start-index="7" stop-index="7">
+            <shorthand-select-items>
+                <shorthand-select-item text="*" start-index="7" stop-index="7" />
+            </shorthand-select-items>
+        </select-items>
     </parser-result>
 </parser-result-sets>

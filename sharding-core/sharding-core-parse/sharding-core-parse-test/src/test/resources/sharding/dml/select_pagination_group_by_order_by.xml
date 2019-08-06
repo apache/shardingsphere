@@ -38,6 +38,13 @@
                 </condition>
             </and-condition>
         </sharding-conditions>
+        <select-items start-index="7" stop-index="15">
+            <column-select-items>
+                <column-select-item start-index="7" stop-index="7" text="i.user_id" name="user_id">
+                    <table-segment start-index="7" stop-index="7" name="i" />
+                </column-select-item>
+            </column-select-items>
+        </select-items>
         <group-by-columns>
             <group-by-column name="item_id" owner="i" order-direction="ASC" />
         </group-by-columns>
@@ -69,6 +76,13 @@
                 </condition>
             </and-condition>
         </sharding-conditions>
+        <select-items start-index="7" stop-index="15">
+            <column-select-items>
+                <column-select-item start-index="7" stop-index="7" text="i.user_id" name="user_id">
+                    <table-segment start-index="7" stop-index="7" name="i" />
+                </column-select-item>
+            </column-select-items>
+        </select-items>
         <group-by-columns>
             <group-by-column name="user_id" owner="i" order-direction="ASC" />
         </group-by-columns>
@@ -100,6 +114,17 @@
                 </condition>
             </and-condition>
         </sharding-conditions>
+        <select-items start-index="22" stop-index="158">
+            <top-select-items>
+                <top-select-item start-index="22" stop-index="70" row-number-alias="rownum_" text="TOP3row_number()OVER(ORDERBYi.item_idDESC)" />
+            </top-select-items>
+            <column-select-items>
+                <column-select-item start-index="84" stop-index="84" text="i.item_id" />
+                <column-select-item start-index="95" stop-index="95" text="o.order_id" />
+                <column-select-item start-index="119" stop-index="119" text="o.status" />
+                <column-select-item start-index="139" stop-index="139" text="o.user_id" />
+            </column-select-items>
+        </select-items>
         <group-by-columns>
             <group-by-column name="item_id" owner="i" order-direction="ASC" />
         </group-by-columns>
@@ -131,6 +156,17 @@
                 </condition>
             </and-condition>
         </sharding-conditions>
+        <select-items start-index="22" stop-index="160">
+            <top-select-items>
+                <top-select-item start-index="22" stop-index="72" row-number-alias="rownum_" text="TOP(3)row_number()OVER(ORDERBYi.item_idDESC)" />
+            </top-select-items>
+            <column-select-items>
+                <column-select-item start-index="86" stop-index="86" text="i.item_id" />
+                <column-select-item start-index="97" stop-index="97" text="o.order_id" />
+                <column-select-item start-index="121" stop-index="121" text="o.status" />
+                <column-select-item start-index="141" stop-index="141" text="o.user_id" />
+            </column-select-items>
+        </select-items>
         <group-by-columns>
             <group-by-column name="item_id" owner="i" order-direction="ASC" />
         </group-by-columns>
@@ -162,6 +198,17 @@
                 </condition>
             </and-condition>
         </sharding-conditions>
+        <select-items start-index="22" stop-index="158">
+            <top-select-items>
+                <top-select-item start-index="22" stop-index="70" row-number-alias="rownum_" text="TOP3row_number()OVER(ORDERBYi.item_idDESC)" />
+            </top-select-items>
+            <column-select-items>
+                <column-select-item start-index="84" stop-index="84" text="i.item_id" />
+                <column-select-item start-index="95" stop-index="95" text="o.order_id" />
+                <column-select-item start-index="119" stop-index="119" text="o.status" />
+                <column-select-item start-index="139" stop-index="139" text="o.user_id" />
+            </column-select-items>
+        </select-items>
         <group-by-columns>
             <group-by-column name="user_id" owner="i" order-direction="ASC" />
         </group-by-columns>
@@ -193,6 +240,19 @@
                 </condition>
             </and-condition>
         </sharding-conditions>
+        <select-items start-index="22" stop-index="160">
+            <top-select-items>
+                <top-select-item start-index="22" stop-index="72" row-number-alias="rownum_" text="TOP(3)row_number()OVER(ORDERBYi.item_idDESC)">
+                    <row-number-value-segment parameter-index="0" start-index="27" stop-index="27" />
+                </top-select-item>
+            </top-select-items>
+            <column-select-items>
+                <column-select-item start-index="86" stop-index="86" text="i.item_id" />
+                <column-select-item start-index="97" stop-index="97" text="o.order_id" />
+                <column-select-item start-index="121" stop-index="121" text="o.status" />
+                <column-select-item start-index="141" stop-index="141" text="o.user_id" />
+            </column-select-items>
+        </select-items>
         <group-by-columns>
             <group-by-column name="user_id" owner="i" order-direction="ASC" />
         </group-by-columns>
@@ -224,6 +284,19 @@
                 </condition>
             </and-condition>
         </sharding-conditions>
+        <select-items start-index="58" stop-index="139">
+            <column-select-items>
+                <column-select-item text="order0_.order_id" start-index="58" stop-index="64">
+                    <table-segment start-index="58" stop-index="64" name="order0_" />
+                </column-select-item>
+                <column-select-item text="order0_.status" start-index="88" stop-index="94">
+                    <table-segment start-index="88" stop-index="94" name="order0_" />
+                </column-select-item>
+                <column-select-item text="order0_.user_id" start-index="114" stop-index="120">
+                    <table-segment start-index="114" stop-index="120" name="order0_" />
+                </column-select-item>
+            </column-select-items>
+        </select-items>
         <group-by-columns>
             <group-by-column name="item_id" owner="i" order-direction="ASC" />
         </group-by-columns>
@@ -255,6 +328,19 @@
                 </condition>
             </and-condition>
         </sharding-conditions>
+        <select-items start-index="58" stop-index="139">
+            <column-select-items>
+                <column-select-item text="order0_.order_id" start-index="58" stop-index="64">
+                    <table-segment start-index="58" stop-index="64" name="order0_" />
+                </column-select-item>
+                <column-select-item text="order0_.status" start-index="88" stop-index="94">
+                    <table-segment start-index="88" stop-index="94" name="order0_" />
+                </column-select-item>
+                <column-select-item text="order0_.user_id" start-index="114" stop-index="120">
+                    <table-segment start-index="114" stop-index="120" name="order0_" />
+                </column-select-item>
+            </column-select-items>
+        </select-items>
         <group-by-columns>
             <group-by-column name="user_id" owner="i" order-direction="ASC" />
         </group-by-columns>

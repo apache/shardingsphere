@@ -42,17 +42,17 @@ public final class ColumnSelectItem implements SelectItem {
     private final String alias;
 
     @Override
-    public final String getExpression() {
+    public String getExpression() {
         return null == owner ? name : owner + "." + name;
     }
 
     @Override
-    public final String getColumnLabel() {
+    public String getColumnLabel() {
         return getAlias().or(name);
     }
 
     @Override
-    public final Optional<String> getAlias() {
+    public Optional<String> getAlias() {
         return Optional.fromNullable(alias);
     }
 }
