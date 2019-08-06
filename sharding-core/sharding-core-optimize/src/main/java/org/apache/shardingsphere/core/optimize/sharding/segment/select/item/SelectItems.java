@@ -119,17 +119,22 @@ public final class SelectItems {
     public List<String> getColumnLabels() {
         List<String> result = new ArrayList<>(items.size());
         for (SelectItem each : items) {
-            if (!(each instanceof ShorthandSelectItem)) {
-                result.add(each.getColumnLabel());
+            if (each instanceof ShorthandSelectItem) {
+                result.addAll(getColumnLabels((ShorthandSelectItem) each));
             } else {
-                if (((ShorthandSelectItem) each).getOwner().isPresent()) {
-                    result.addAll(ownerTableColumnsMap.get(((ShorthandSelectItem) each).getOwner().get()));
-                } else {
-                    for (Collection<String> tableColumns : ownerTableColumnsMap.values()) {
-                        result.addAll(tableColumns);
-                    }
-                }
+                result.add(each.getColumnLabel());
             }
+        }
+        return result;
+    }
+    
+    private Collection<String> getColumnLabels(final ShorthandSelectItem shorthandSelectItem) {
+        Collection<String> result = new LinkedList<>();
+        if (shorthandSelectItem.getOwner().isPresent()) {
+            return ownerTableColumnsMap.get(shorthandSelectItem.getOwner().get());
+        }
+        for (Collection<String> each : ownerTableColumnsMap.values()) {
+            result.addAll(each);
         }
         return result;
     }
