@@ -101,10 +101,7 @@ select
     ;
 
 callStatement
-    : CALL identifier_
-      (
-        LP_ (identifier_ | expr)? RP_
-      )?
+    : CALL identifier_ (LP_ (identifier_ | expr)? RP_)?
     ;
 
 doStatement
@@ -153,12 +150,10 @@ loadDataStatement
       (PARTITION LP_ identifier_ (COMMA_ identifier_)* RP_ )?
       (CHARACTER SET identifier_)?
       (
-        (FIELDS | COLUMNS)
-        selectFieldsInto_+
+        (FIELDS | COLUMNS) selectFieldsInto_+
       )?
       (
-        LINES
-          selectLinesInto_+
+        LINES selectLinesInto_+
       )?
       (
         IGNORE numberLiterals (LINES | ROWS)
