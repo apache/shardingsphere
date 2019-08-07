@@ -1120,3 +1120,78 @@ REDO_BUFFER_SIZE
     : R E D O UL_ B U F F E R UL_ S I Z E
     ;
 
+HANDLER
+    : H A N D L E R
+    ;
+
+PREV
+    : P R E V
+    ;
+
+ORGANIZATION
+    : O R G A N I Z A T I O N
+    ;
+
+DEFINITION
+    : D E F I N I T I O N
+    ;
+
+DESCRIPTION
+    : D E S C R I P T I O N
+    ;
+
+REFERENCE
+    : R E F E R E N C E
+    ;
+
+FOLLOWS
+    : F O L L O W S
+    ;
+
+PRECEDES
+    : P R E C E D E S
+    ;
+
+IMPORT
+    : I M P O R T
+    ;
+
+LOAD
+    : L O A D
+    ;
+
+CONCURRENT
+    : C O N C U R R E N T
+    ;
+
+INFILE
+    : I N F I L E
+    ;
+
+LINES
+    : L I N E S
+    ;
+
+STARTING
+    : S T A R T I N G
+    ;
+
+TERMINATED
+    : T E R M I N A T E D
+    ;    
+
+OPTIONALLY
+    : O P T I O N A L L Y
+    ;
+
+ENCLOSED
+    : E N C L O S E D
+    ;
+
+ESCAPED
+    : E S C A P E D
+    ;
+
+XML
+    : X M L
+    ;
