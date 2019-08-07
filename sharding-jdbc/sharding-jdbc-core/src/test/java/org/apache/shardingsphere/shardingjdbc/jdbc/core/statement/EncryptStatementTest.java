@@ -50,6 +50,8 @@ public final class EncryptStatementTest extends AbstractEncryptJDBCDatabaseAndTa
     
     private static final String SELECT_SQL_WITH_PLAIN = "select id, pwd from t_encrypt where pwd = 'plainValue'";
     
+    private static final String SELECT_SQL_WITH_CIPHER = "select id, pwd from t_encrypt where pwd = 'plainValue'";
+    
     private static final String SELECT_SQL_TO_ASSERT = "select id, cipher_pwd, plain_pwd from t_encrypt";
     
     @Test
@@ -122,26 +124,41 @@ public final class EncryptStatementTest extends AbstractEncryptJDBCDatabaseAndTa
     
     @Test
     public void assertSelectWithMetaData() throws SQLException {
-        try (Statement statement = getEncryptConnection().createStatement()) {
+        try (Statement statement = getEncryptConnectionWithProps().createStatement()) {
             ResultSetMetaData metaData = statement.executeQuery(SELECT_SQL_WITH_STAR).getMetaData();
             assertThat(metaData.getColumnCount(), is(3));
             for (int i = 0; i < metaData.getColumnCount(); i++) {
                 assertThat(metaData.getColumnLabel(1), is("id"));
-                assertThat(metaData.getColumnLabel(2), is("pwd"));
-                assertThat(metaData.getColumnLabel(3), is("plain_pwd"));
+                assertThat(metaData.getColumnLabel(2), is("cipher_pwd"));
+                assertThat(metaData.getColumnLabel(3), is("pwd"));
             }
         }
     }
     
     @Test
     public void assertSelectWithPlainColumn() throws SQLException {
-        try (Statement statement = getEncryptConnectionWithProps().createStatement()) {
-            ResultSet resultSet = statement.executeQuery(SELECT_SQL_WITH_PLAIN);
+        try (Statement statement = getEncryptConnection().createStatement()) {
+            ResultSet resultSet = statement.executeQuery(SELECT_SQL_WITH_CIPHER);
             int count = 1;
             List<Object> ids = Arrays.asList((Object) 1, 5);
             while (resultSet.next()) {
                 assertThat(resultSet.getObject("id"), is(ids.get(count - 1)));
                 assertThat(resultSet.getObject("pwd"), is((Object) "decryptValue"));
+                count += 1;
+            }
+            assertThat(count - 1, is(ids.size()));
+        }
+    }
+    
+    @Test
+    public void assertSelectWithCipherColumn() throws SQLException {
+        try (Statement statement = getEncryptConnection().createStatement()) {
+            ResultSet resultSet = statement.executeQuery(SELECT_SQL_WITH_PLAIN);
+            int count = 1;
+            List<Object> ids = Arrays.asList((Object) 1, 5);
+            while (resultSet.next()) {
+                assertThat(resultSet.getObject("id"), is(ids.get(count - 1)));
+                assertThat(resultSet.getObject("pwd"), is((Object) "plainValue"));
                 count += 1;
             }
             assertThat(count - 1, is(ids.size()));
