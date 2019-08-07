@@ -136,7 +136,7 @@ public final class EncryptStatementTest extends AbstractEncryptJDBCDatabaseAndTa
     }
     
     @Test
-    public void assertSelectWithPlainColumn() throws SQLException {
+    public void assertSelectWithCipherColumn() throws SQLException {
         try (Statement statement = getEncryptConnection().createStatement()) {
             ResultSet resultSet = statement.executeQuery(SELECT_SQL_WITH_CIPHER);
             int count = 1;
@@ -151,8 +151,8 @@ public final class EncryptStatementTest extends AbstractEncryptJDBCDatabaseAndTa
     }
     
     @Test
-    public void assertSelectWithCipherColumn() throws SQLException {
-        try (Statement statement = getEncryptConnection().createStatement()) {
+    public void assertSelectWithPlainColumn() throws SQLException {
+        try (Statement statement = getEncryptConnectionWithProps().createStatement()) {
             ResultSet resultSet = statement.executeQuery(SELECT_SQL_WITH_PLAIN);
             int count = 1;
             List<Object> ids = Arrays.asList((Object) 1, 5);
