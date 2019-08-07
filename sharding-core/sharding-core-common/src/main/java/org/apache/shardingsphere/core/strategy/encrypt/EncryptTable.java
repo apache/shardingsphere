@@ -198,4 +198,22 @@ public final class EncryptTable {
             }
         });
     }
+    
+    /**
+     * Get logic and plain columns.
+     *
+     * @return logic and plain columns
+     */
+    public Map<String, String> getLogicAndPlainColumns() {
+        return Maps.transformValues(columns, new Function<EncryptColumn, String>() {
+            
+            @Override
+            public String apply(final EncryptColumn input) {
+                if (input.getPlainColumn().isPresent()) {
+                    return input.getPlainColumn().get();
+                }
+                throw new ShardingException("Plain column is null.");
+            }
+        });
+    }
 }

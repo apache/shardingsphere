@@ -267,6 +267,19 @@ public final class EncryptRule implements BaseRule {
     }
     
     /**
+     * Get logic and plain columns.
+     *
+     * @param logicTable logic table 
+     * @return logic and plain columns
+     */
+    public Map<String, String> getLogicAndPlainColumns(final String logicTable) {
+        if (!tables.containsKey(logicTable)) {
+            return Collections.emptyMap();
+        }
+        return tables.get(logicTable).getLogicAndPlainColumns();
+    }
+    
+    /**
      * Get encrypt assisted column values.
      *
      * @param logicTable logic table
