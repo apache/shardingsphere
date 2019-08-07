@@ -17,8 +17,8 @@
 
 <dataset>
     <metadata>
-        <column name="COUNT(DISTINCT &quot;order_id&quot;)" />
-        <column name="SUM(DISTINCT &quot;order_id&quot;)" />
+        <column name="COUNT(DISTINCT order_id)" />
+        <column name="SUM(DISTINCT order_id)" />
     </metadata>
     <row values="2, 2001" />
 </dataset>

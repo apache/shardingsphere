@@ -155,10 +155,6 @@ TRANSLATE
     : T R A N S L A T E
     ;
 
-SQL
-    : S Q L
-    ;
-
 MERGE
     : M E R G E
     ;
@@ -277,10 +273,6 @@ JAVA
 
 LEVELS
     : L E V E L S
-    ;
-
-LOCAL
-    : L O C A L
     ;
 
 MAXVALUE

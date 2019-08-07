@@ -17,14 +17,18 @@
 
 grammar DDLStatement;
 
-import Symbol, Keyword, MySQLKeyword, Literals, BaseRule;
+import Symbol, Keyword, MySQLKeyword, Literals, BaseRule, DMLStatement;
 
 createTable
     : CREATE createTableSpecification_? TABLE tableNotExistClause_ tableName (createDefinitionClause_ | createLikeClause_)
     ;
 
 createIndex
-    : CREATE createIndexSpecification_ INDEX indexName indexType_? ON tableName
+    : CREATE createIndexSpecification_ INDEX indexName indexType_? ON tableName keyParts_ indexOption_? 
+    (
+        ALGORITHM EQ_? (DEFAULT | INPLACE | COPY) 
+        | LOCK EQ_? (DEFAULT | NONE | SHARED | EXCLUSIVE)
+    )*
     ;
 
 alterTable
@@ -37,6 +41,10 @@ dropTable
 
 dropIndex
     : DROP INDEX dropIndexSpecification_? indexName (ON tableName)?
+    (
+        ALGORITHM EQ_? (DEFAULT | INPLACE | COPY) 
+        | LOCK EQ_? (DEFAULT | NONE | SHARED | EXCLUSIVE)
+    )*
     ;
 
 truncateTable
@@ -86,6 +94,137 @@ alterEvent
 
 dropEvent
     :  DROP EVENT (IF EXISTS)? eventName
+    ;
+
+createFunction
+    : CREATE ownerStatement?
+    FUNCTION functionName
+      LP_ (identifier_ dataType)? (COMMA_ identifier_ dataType)* RP_
+      RETURNS dataType
+      routineOption_*
+    routineBody
+    ;
+
+alterFunction
+    : ALTER FUNCTION functionName routineOption_*
+    ;
+
+dropFunction
+    : DROP FUNCTION (IF EXISTS) functionName
+    ;
+
+createProcedure
+    : CREATE ownerStatement?
+    PROCEDURE functionName
+      LP_ procedureParameter_? (COMMA_ procedureParameter_)* RP_
+      routineOption_*
+    routineBody
+    ;
+
+alterProcedure
+    : ALTER PROCEDURE functionName routineOption_*
+    ;
+
+dropProcedure
+    : DROP PROCEDURE (IF EXISTS)? functionName
+    ;
+
+createServer
+    : CREATE SERVER serverName
+    FOREIGN DATA WRAPPER wrapperName
+    OPTIONS LP_ serverOption_ (COMMA_ serverOption_)* RP_
+    ;
+
+alterServer
+    : ALTER SERVER serverName OPTIONS
+      LP_ serverOption_ (COMMA_ serverOption_)* RP_
+    ;
+
+dropServer
+    : DROP SERVER (IF EXISTS)? serverName
+    ;
+
+createView
+    : CREATE (OR REPLACE)?
+      (
+        ALGORITHM EQ_ (UNDEFINED | MERGE | TEMPTABLE)
+      )?
+      ownerStatement?
+      (SQL SECURITY (DEFINER | INVOKER))?
+      VIEW viewName (LP_ identifier_ (COMMA_ identifier_)* RP_)? AS select
+      (WITH (CASCADED | LOCAL)? CHECK OPTION)?
+    ;
+
+alterView
+    : ALTER
+      (
+        ALGORITHM EQ_ (UNDEFINED | MERGE | TEMPTABLE)
+      )?
+      ownerStatement?
+      (SQL SECURITY (DEFINER | INVOKER))?
+      VIEW viewName (LP_ identifier_ (COMMA_ identifier_)* RP_)? AS select
+      (WITH (CASCADED | LOCAL)? CHECK OPTION)?
+    ;
+
+dropView
+    : DROP VIEW (IF EXISTS)?
+      viewName (COMMA_ viewName)* (RESTRICT | CASCADE)?
+    ;
+
+createTablespaceInnodb
+    : CREATE TABLESPACE identifier_
+      ADD DATAFILE STRING_
+      (FILE_BLOCK_SIZE EQ_ fileSizeLiteral_)?
+      (ENGINE EQ_? STRING_)?
+    ;
+
+createTablespaceNdb
+    : CREATE TABLESPACE identifier_
+      ADD DATAFILE STRING_
+      USE LOGFILE GROUP identifier_
+      (EXTENT_SIZE EQ_? fileSizeLiteral_)?
+      (INITIAL_SIZE EQ_? fileSizeLiteral_)?
+      (AUTOEXTEND_SIZE EQ_? fileSizeLiteral_)?
+      (MAX_SIZE EQ_? fileSizeLiteral_)?
+      (NODEGROUP EQ_? identifier_)?
+      WAIT?
+      (COMMENT EQ_? STRING_)?
+      ENGINE EQ_? identifier_
+    ;
+
+alterTablespace
+    : ALTER TABLESPACE identifier_
+      (ADD | DROP) DATAFILE STRING_
+      (INITIAL_SIZE EQ_ fileSizeLiteral_)?
+      WAIT?
+      ENGINE EQ_? identifier_
+    ;
+
+dropTablespace
+    : DROP TABLESPACE identifier_ (ENGINE EQ_? identifier_)?
+    ;
+
+createLogfileGroup
+    : CREATE LOGFILE GROUP identifier_
+      ADD UNDOFILE STRING_
+      (INITIAL_SIZE EQ_? fileSizeLiteral_)?
+      (UNDO_BUFFER_SIZE EQ_? fileSizeLiteral_)?
+      (REDO_BUFFER_SIZE EQ_? fileSizeLiteral_)?
+      (NODEGROUP EQ_? identifier_)?
+      WAIT?
+      (COMMENT EQ_? STRING_)?
+      ENGINE EQ_? identifier_
+    ;
+
+alterLogfileGroup
+    : ALTER LOGFILE GROUP identifier_
+      ADD UNDOFILE STRING_
+      (INITIAL_SIZE EQ_? fileSizeLiteral_)?
+      WAIT? ENGINE EQ_? identifier_
+    ;
+
+dropLogfileGroup
+    : DROP LOGFILE GROUP identifier_ ENGINE EQ_ identifier_
     ;
 
 createTableSpecification_
@@ -165,7 +304,11 @@ keyPart_
     ;
 
 indexOption_
-    : KEY_BLOCK_SIZE EQ_? NUMBER_ | indexType_ | WITH PARSER identifier_ | COMMENT STRING_ | VISIBLE | INVISIBLE
+    : KEY_BLOCK_SIZE EQ_? NUMBER_ 
+    | indexType_ 
+    | WITH PARSER identifier_ 
+    | COMMENT STRING_ 
+    | (VISIBLE | INVISIBLE)
     ;
 
 constraintDefinition_
@@ -396,4 +539,33 @@ timestampValue
 
 routineBody
     :  'not support'
+    ;
+
+serverOption_
+    : HOST STRING_
+    | DATABASE STRING_
+    | USER STRING_
+    | PASSWORD STRING_
+    | SOCKET STRING_
+    | OWNER STRING_
+    | PORT numberLiterals 
+    ;
+
+routineOption_
+    : COMMENT STRING_                                       
+    | LANGUAGE SQL                                              
+    | NOT? DETERMINISTIC                                          
+    | (
+        CONTAINS SQL | NO SQL | READS SQL DATA
+        | MODIFIES SQL DATA
+      )                                                           
+    | SQL SECURITY (DEFINER | INVOKER)                    
+    ;
+
+procedureParameter_
+    : ( IN | OUT | INOUT ) identifier_ dataType
+    ;
+
+fileSizeLiteral_
+    : numberLiterals ('K'|'M'|'G'|'T') | numberLiterals
     ;

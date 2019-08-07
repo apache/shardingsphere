@@ -38,10 +38,10 @@
     
     <parser-result sql-case-id="insert_with_now_function" parameters="1, 1, 'init'">
         <tables>
-            <table name="t_order" />
+            <table name="t_order_item" />
         </tables>
         <tokens>
-            <table-token start-index="12" table-name="t_order" length="7" />
+            <table-token start-index="12" table-name="t_order" length="12" />
         </tokens>
         <sharding-conditions>
             <and-condition>

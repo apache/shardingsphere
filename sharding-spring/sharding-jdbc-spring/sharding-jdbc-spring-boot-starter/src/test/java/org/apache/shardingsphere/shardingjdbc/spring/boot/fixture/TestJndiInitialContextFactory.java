@@ -30,20 +30,18 @@ public final class TestJndiInitialContextFactory implements InitialContextFactor
     private static JndiContext context;
     
     @Override
-    public Context getInitialContext(final Hashtable<?, ?> environment) throws NamingException {
+    public Context getInitialContext(final Hashtable<?, ?> environment) {
         return getContext();
     }
     
+    /**
+     * Bind.
+     * 
+     * @param name bind
+     * @param obj object
+     */
     public static void bind(final String name, final Object obj) {
-        try {
-            getContext().bind(name, obj);
-        } catch (NamingException ex) {
-            throw new IllegalStateException(ex);
-        }
-    }
-    
-    public static void clearAll() {
-        getContext().clearAll();
+        getContext().bind(name, obj);
     }
     
     private static JndiContext getContext() {
@@ -66,24 +64,18 @@ public final class TestJndiInitialContextFactory implements InitialContextFactor
         }
         
         @Override
-        public void bind(final String name, final Object obj) throws NamingException {
+        public void bind(final String name, final Object obj) {
             this.bindings.put(name, obj);
         }
         
         @Override
-        public Object lookup(final String name) throws NamingException {
+        public Object lookup(final String name) {
             return this.bindings.get(name);
         }
         
         @Override
-        public Hashtable<?, ?> getEnvironment() throws NamingException {
+        public Hashtable<?, ?> getEnvironment() {
             return new Hashtable<>();
         }
-        
-        public void clearAll() {
-            this.bindings.clear();
-        }
-        
     }
-    
 }
