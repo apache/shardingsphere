@@ -31,6 +31,7 @@
     <modules>
         <module>transaction-base-seata-raw-jdbc-example</module>
         <module>transaction-base-seata-spring-boot-example</module>
+        <module>transaction-base-seata-spring-namespace-example</module>
     </modules>
     
     <dependencies>
