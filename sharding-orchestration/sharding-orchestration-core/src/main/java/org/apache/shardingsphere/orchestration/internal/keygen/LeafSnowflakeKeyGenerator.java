@@ -117,11 +117,11 @@ public final class LeafSnowflakeKeyGenerator implements ShardingKeyGenerator {
     private void initializeLeafSnowflakeKeyGeneratorIfNeed() {
         if (needToBeInitialized()) {
             leafRegistryCenter = initializeRegistryCenter();
-            initializeTimeNodeIfNeed();
-            initializeCurrentMaxWorkIdNodeIfNeed();
-            workId = initializeWorkIdNodeIfNeed();
+            initializeTimeNodeIfNeed(leafRegistryCenter);
+            initializeCurrentMaxWorkIdNodeIfNeed(leafRegistryCenter);
+            workId = initializeWorkIdNodeIfNeed(leafRegistryCenter);
             maxTolerateTimeDifference = initializeMaxTolerateTimeDifference();
-            scheduledUpdateTimeNode();
+            scheduledUpdateTimeNode(leafRegistryCenter);
         }
     }
 
@@ -190,7 +190,7 @@ public final class LeafSnowflakeKeyGenerator implements ShardingKeyGenerator {
     }
 
     @SneakyThrows
-    private void initializeTimeNodeIfNeed() {
+    private void initializeTimeNodeIfNeed(final RegistryCenter leafRegistryCenter) {
         String serviceId = getServiceId();
         if (leafRegistryCenter.isExisted(serviceId + TIME_NODE)) {
             String lastTimeInRegistryCenter = leafRegistryCenter.getDirectly(serviceId + TIME_NODE);
@@ -207,14 +207,14 @@ public final class LeafSnowflakeKeyGenerator implements ShardingKeyGenerator {
     }
 
     @SneakyThrows
-    private void initializeCurrentMaxWorkIdNodeIfNeed() {
+    private void initializeCurrentMaxWorkIdNodeIfNeed(final RegistryCenter leafRegistryCenter) {
         if (!leafRegistryCenter.isExisted(PARENT_NODE + CURRENT_MAX_WORK_ID_NODE)) {
             leafRegistryCenter.persist(PARENT_NODE + CURRENT_MAX_WORK_ID_NODE, "0");
         }
     }
 
     @SneakyThrows
-    private Long initializeWorkIdNodeIfNeed() {
+    private Long initializeWorkIdNodeIfNeed(final RegistryCenter leafRegistryCenter) {
         String serviceId = getServiceId();
         if (leafRegistryCenter.isExisted(serviceId + WORK_ID_NODE)) {
             String workIdInString = leafRegistryCenter.getDirectly(serviceId + WORK_ID_NODE);
@@ -240,7 +240,7 @@ public final class LeafSnowflakeKeyGenerator implements ShardingKeyGenerator {
     }
 
     @SneakyThrows
-    private void scheduledUpdateTimeNode() {
+    private void scheduledUpdateTimeNode(final RegistryCenter leafRegistryCenter) {
         final String serviceId = getServiceId();
         Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
             @Override
