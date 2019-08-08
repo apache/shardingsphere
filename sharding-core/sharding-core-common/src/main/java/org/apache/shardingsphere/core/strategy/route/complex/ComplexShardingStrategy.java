@@ -71,7 +71,9 @@ public final class ComplexShardingStrategy implements ShardingStrategy {
         }
         Collection<String> shardingResult = shardingAlgorithm.doSharding(availableTargetNames, new ComplexKeysShardingValue(logicTableName, columnShardingValues, columnRangeValues));
         Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        result.addAll(shardingResult);
+        if (null != shardingResult) {
+            result.addAll(shardingResult);
+        }
         return result;
     }
 }

@@ -29,21 +29,22 @@ import org.apache.shardingsphere.core.util.InlineExpressionParser;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeSet;
 
 /**
  * Standard sharding strategy.
- * 
+ *
  * @author zhangliang
  */
 public final class InlineShardingStrategy implements ShardingStrategy {
-    
+
     private final String shardingColumn;
-    
+
     private final Closure<?> closure;
-    
+
     public InlineShardingStrategy(final InlineShardingStrategyConfiguration inlineShardingStrategyConfig) {
         Preconditions.checkNotNull(inlineShardingStrategyConfig.getShardingColumn(), "Sharding column cannot be null.");
         Preconditions.checkNotNull(inlineShardingStrategyConfig.getAlgorithmExpression(), "Sharding algorithm expression cannot be null.");
@@ -51,17 +52,23 @@ public final class InlineShardingStrategy implements ShardingStrategy {
         String algorithmExpression = InlineExpressionParser.handlePlaceHolder(inlineShardingStrategyConfig.getAlgorithmExpression().trim());
         closure = new InlineExpressionParser(algorithmExpression).evaluateClosure();
     }
-    
+
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<RouteValue> shardingValues) {
-        RouteValue shardingValue = shardingValues.iterator().next();
-        Preconditions.checkState(shardingValue instanceof ListRouteValue, "Inline strategy cannot support range sharding.");
-        Collection<String> shardingResult = doSharding((ListRouteValue) shardingValue);
-        Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        result.addAll(shardingResult);
-        return result;
+        if (!shardingValues.isEmpty()) {
+            RouteValue shardingValue = shardingValues.iterator().next();
+            Preconditions.checkState(shardingValue instanceof ListRouteValue,
+                "Inline strategy cannot support range sharding.");
+            Collection<String> shardingResult = doSharding((ListRouteValue) shardingValue);
+            Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+            if (null != shardingResult) {
+                result.addAll(shardingResult);
+            }
+            return result;
+        }
+        return Collections.emptySet();
     }
-    
+
     private Collection<String> doSharding(final ListRouteValue shardingValue) {
         Collection<String> result = new LinkedList<>();
         for (PreciseShardingValue<?> each : transferToPreciseShardingValues(shardingValue)) {
@@ -69,7 +76,7 @@ public final class InlineShardingStrategy implements ShardingStrategy {
         }
         return result;
     }
-    
+
     @SuppressWarnings("unchecked")
     private List<PreciseShardingValue> transferToPreciseShardingValues(final ListRouteValue<?> shardingValue) {
         List<PreciseShardingValue> result = new ArrayList<>(shardingValue.getValues().size());
@@ -78,14 +85,14 @@ public final class InlineShardingStrategy implements ShardingStrategy {
         }
         return result;
     }
-    
+
     private String execute(final PreciseShardingValue shardingValue) {
         Closure<?> result = closure.rehydrate(new Expando(), null, null);
         result.setResolveStrategy(Closure.DELEGATE_ONLY);
         result.setProperty(shardingValue.getColumnName(), shardingValue.getValue());
         return result.call().toString();
     }
-    
+
     @Override
     public Collection<String> getShardingColumns() {
         Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);

@@ -47,9 +47,8 @@ public final class DatabaseHintRoutingEngine implements RoutingEngine {
     @Override
     public RoutingResult route() {
         Collection<Comparable<?>> shardingValues = HintManager.getDatabaseShardingValues();
-        Preconditions.checkState(!shardingValues.isEmpty());
-        Collection<String> routingDataSources;
-        routingDataSources = databaseShardingStrategy.doSharding(dataSourceNames, Collections.<RouteValue>singletonList(new ListRouteValue<>("", "", shardingValues)));
+        Collection<String> routingDataSources = databaseShardingStrategy.doSharding(dataSourceNames,
+            Collections.<RouteValue>singletonList(new ListRouteValue<>("", "", shardingValues)));
         Preconditions.checkState(!routingDataSources.isEmpty(), "no database route info");
         RoutingResult result = new RoutingResult();
         for (String each : routingDataSources) {

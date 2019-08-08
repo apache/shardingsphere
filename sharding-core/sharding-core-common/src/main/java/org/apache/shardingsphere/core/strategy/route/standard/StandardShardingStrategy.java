@@ -29,22 +29,23 @@ import org.apache.shardingsphere.core.strategy.route.value.RangeRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.TreeSet;
 
 /**
  * Standard sharding strategy.
- * 
+ *
  * @author zhangliang
  */
 public final class StandardShardingStrategy implements ShardingStrategy {
-    
+
     private final String shardingColumn;
-    
+
     private final PreciseShardingAlgorithm preciseShardingAlgorithm;
-    
+
     private final RangeShardingAlgorithm rangeShardingAlgorithm;
-    
+
     public StandardShardingStrategy(final StandardShardingStrategyConfiguration standardShardingStrategyConfig) {
         Preconditions.checkNotNull(standardShardingStrategyConfig.getShardingColumn(), "Sharding column cannot be null.");
         Preconditions.checkNotNull(standardShardingStrategyConfig.getPreciseShardingAlgorithm(), "precise sharding algorithm cannot be null.");
@@ -52,26 +53,32 @@ public final class StandardShardingStrategy implements ShardingStrategy {
         preciseShardingAlgorithm = standardShardingStrategyConfig.getPreciseShardingAlgorithm();
         rangeShardingAlgorithm = standardShardingStrategyConfig.getRangeShardingAlgorithm();
     }
-    
+
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<RouteValue> shardingValues) {
-        RouteValue shardingValue = shardingValues.iterator().next();
-        Collection<String> shardingResult = shardingValue instanceof ListRouteValue
-                ? doSharding(availableTargetNames, (ListRouteValue) shardingValue) : doSharding(availableTargetNames, (RangeRouteValue) shardingValue);
-        Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        result.addAll(shardingResult);
-        return result;
+        if (!shardingValues.isEmpty()) {
+            RouteValue shardingValue = shardingValues.iterator().next();
+            Collection<String> shardingResult = shardingValue instanceof ListRouteValue
+                ? doSharding(availableTargetNames, (ListRouteValue) shardingValue) : doSharding(availableTargetNames,
+                (RangeRouteValue) shardingValue);
+            Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+            if (null != shardingResult) {
+                result.addAll(shardingResult);
+            }
+            return result;
+        }
+        return Collections.emptySet();
     }
-    
+
     @SuppressWarnings("unchecked")
     private Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeRouteValue<?> shardingValue) {
         if (null == rangeShardingAlgorithm) {
             throw new UnsupportedOperationException("Cannot find range sharding strategy in sharding rule.");
         }
-        return rangeShardingAlgorithm.doSharding(availableTargetNames, 
+        return rangeShardingAlgorithm.doSharding(availableTargetNames,
                 new RangeShardingValue(shardingValue.getTableName(), shardingValue.getColumnName(), shardingValue.getValueRange()));
     }
-    
+
     @SuppressWarnings("unchecked")
     private Collection<String> doSharding(final Collection<String> availableTargetNames, final ListRouteValue<?> shardingValue) {
         Collection<String> result = new LinkedList<>();
@@ -83,7 +90,7 @@ public final class StandardShardingStrategy implements ShardingStrategy {
         }
         return result;
     }
-    
+
     @Override
     public Collection<String> getShardingColumns() {
         Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);

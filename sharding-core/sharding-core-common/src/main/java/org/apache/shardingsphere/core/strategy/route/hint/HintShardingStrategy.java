@@ -54,7 +54,9 @@ public final class HintShardingStrategy implements ShardingStrategy {
         Collection<String> shardingResult = shardingAlgorithm.doSharding(availableTargetNames, 
                 new HintShardingValue(shardingValue.getTableName(), shardingValue.getColumnName(), shardingValue.getValues()));
         Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        result.addAll(shardingResult);
+        if (null != shardingResult) {
+            result.addAll(shardingResult);
+        }
         return result;
     }
 }
