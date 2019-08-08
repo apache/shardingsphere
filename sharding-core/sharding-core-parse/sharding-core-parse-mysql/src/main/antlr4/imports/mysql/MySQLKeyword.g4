@@ -1195,3 +1195,7 @@ ESCAPED
 XML
     : X M L
     ;
+
+UNDO
+    : U N D O
+    ;

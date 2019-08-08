@@ -109,10 +109,7 @@ doStatement
     ;
 
 handlerStatement
-    : handlerOpenStatement
-    | handlerReadIndexStatement
-    | handlerReadStatement
-    | handlerCloseStatement
+    : handlerOpenStatement | handlerReadIndexStatement | handlerReadStatement | handlerCloseStatement
     ;
 
 handlerOpenStatement
@@ -120,17 +117,13 @@ handlerOpenStatement
     ;
 
 handlerReadIndexStatement
-    : HANDLER tableName READ identifier_
-      (
-        comparisonOperator LP_ identifier_ RP_
-        | (FIRST | NEXT | PREV | LAST)
-      )
-      (WHERE expr)? (LIMIT numberLiterals)?
+    : HANDLER tableName READ identifier_ ( comparisonOperator LP_ identifier_ RP_ | (FIRST | NEXT | PREV | LAST) ) 
+    (WHERE expr)? (LIMIT numberLiterals)?
     ;
 
 handlerReadStatement
     : HANDLER tableName READ (FIRST | NEXT)
-      (WHERE expr)? (LIMIT numberLiterals)?
+    (WHERE expr)? (LIMIT numberLiterals)?
     ;
 
 handlerCloseStatement
@@ -143,29 +136,23 @@ importStatement
 
 loadDataStatement
     : LOAD DATA
-      (LOW_PRIORITY | CONCURRENT)?
-      LOCAL? INFILE STRING_
+      (LOW_PRIORITY | CONCURRENT)? LOCAL? 
+      INFILE STRING_
       (REPLACE | IGNORE)?
       INTO TABLE tableName
       (PARTITION LP_ identifier_ (COMMA_ identifier_)* RP_ )?
       (CHARACTER SET identifier_)?
-      (
-        (FIELDS | COLUMNS) selectFieldsInto_+
-      )?
-      (
-        LINES selectLinesInto_+
-      )?
-      (
-        IGNORE numberLiterals (LINES | ROWS)
-      )?
+      ( (FIELDS | COLUMNS) selectFieldsInto_+ )?
+      ( LINES selectLinesInto_+ )?
+      ( IGNORE numberLiterals (LINES | ROWS) )?
       ( LP_ identifier_ (COMMA_ identifier_)* RP_ )?
       (setAssignmentsClause)?
     ;
 
 loadXmlStatement
     : LOAD XML
-      (LOW_PRIORITY | CONCURRENT)?
-      LOCAL? INFILE STRING_
+      (LOW_PRIORITY | CONCURRENT)? LOCAL? 
+      INFILE STRING_
       (REPLACE | IGNORE)?
       INTO TABLE tableName
       (CHARACTER SET identifier_)?
@@ -298,12 +285,9 @@ subquery
     ;
 
 selectLinesInto_
-    : STARTING BY STRING_
-    | TERMINATED BY STRING_
+    : STARTING BY STRING_ | TERMINATED BY STRING_
     ;
 
 selectFieldsInto_
-    : TERMINATED BY STRING_
-    | OPTIONALLY? ENCLOSED BY STRING_
-    | ESCAPED BY STRING_
+    : TERMINATED BY STRING_ | OPTIONALLY? ENCLOSED BY STRING_ | ESCAPED BY STRING_
     ;
