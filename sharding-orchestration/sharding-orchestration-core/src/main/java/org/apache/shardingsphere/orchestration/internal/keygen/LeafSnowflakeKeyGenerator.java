@@ -52,7 +52,7 @@ public final class LeafSnowflakeKeyGenerator implements ShardingKeyGenerator {
 
     private static final long TIMESTAMP_LEFT_SHIFT_BITS = WORKER_ID_LEFT_SHIFT_BITS + WORKER_ID_BITS;
 
-    private static final int MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS = 10;
+    private static final int MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS = 10000;
 
     private static final String SERVICE_ID_REGULAR_PATTERN = "^((?!/).)*$";
 
@@ -116,11 +116,11 @@ public final class LeafSnowflakeKeyGenerator implements ShardingKeyGenerator {
     @SneakyThrows
     private void initializeLeafSnowflakeKeyGeneratorIfNeed() {
         if (needToBeInitialized()) {
+            maxTolerateTimeDifference = initializeMaxTolerateTimeDifference();
             leafRegistryCenter = initializeRegistryCenter();
-            initializeTimeNodeIfNeed(leafRegistryCenter);
+            initializeTimeNodeIfNeed(maxTolerateTimeDifference, leafRegistryCenter);
             initializeCurrentMaxWorkIdNodeIfNeed(leafRegistryCenter);
             workId = initializeWorkIdNodeIfNeed(leafRegistryCenter);
-            maxTolerateTimeDifference = initializeMaxTolerateTimeDifference();
             scheduledUpdateTimeNode(leafRegistryCenter);
         }
     }
@@ -190,19 +190,19 @@ public final class LeafSnowflakeKeyGenerator implements ShardingKeyGenerator {
     }
 
     @SneakyThrows
-    private void initializeTimeNodeIfNeed(final RegistryCenter leafRegistryCenter) {
+    private void initializeTimeNodeIfNeed(final long maxTolerateTimeDifference, final RegistryCenter leafRegistryCenter) {
         String serviceId = getServiceId();
-        if (leafRegistryCenter.isExisted(serviceId + TIME_NODE)) {
-            String lastTimeInRegistryCenter = leafRegistryCenter.getDirectly(serviceId + TIME_NODE);
+        if (leafRegistryCenter.isExisted(PARENT_NODE + serviceId + TIME_NODE)) {
+            String lastTimeInRegistryCenter = leafRegistryCenter.getDirectly(PARENT_NODE + serviceId + TIME_NODE);
             long currentTime = timeService.getCurrentMillis();
-            long timeDifference = currentTime - Long.parseLong(lastTimeInRegistryCenter);
-            if (timeDifference < 0) {
+            long timeDifference = Long.parseLong(lastTimeInRegistryCenter) - currentTime;
+            if (timeDifference > 0) {
                 Preconditions.checkState(timeDifference < maxTolerateTimeDifference,
                         "Clock is moving backwards, last time is %d milliseconds, current time is %d milliseconds", lastMilliseconds, currentTime);
                 Thread.sleep(timeDifference);
             }
         } else {
-            leafRegistryCenter.persist(serviceId + TIME_NODE, String.valueOf(timeService.getCurrentMillis()));
+            leafRegistryCenter.persist(PARENT_NODE + serviceId + TIME_NODE, String.valueOf(timeService.getCurrentMillis()));
         }
     }
 
@@ -216,13 +216,13 @@ public final class LeafSnowflakeKeyGenerator implements ShardingKeyGenerator {
     @SneakyThrows
     private Long initializeWorkIdNodeIfNeed(final RegistryCenter leafRegistryCenter) {
         String serviceId = getServiceId();
-        if (leafRegistryCenter.isExisted(serviceId + WORK_ID_NODE)) {
-            String workIdInString = leafRegistryCenter.getDirectly(serviceId + WORK_ID_NODE);
+        if (leafRegistryCenter.isExisted(PARENT_NODE + serviceId + WORK_ID_NODE)) {
+            String workIdInString = leafRegistryCenter.getDirectly(PARENT_NODE + serviceId + WORK_ID_NODE);
             Long result = Long.parseLong(workIdInString);
             return result;
         } else {
             Long result = updateCurrentMaxWorkIdInRegisterCenter();
-            leafRegistryCenter.persist(serviceId + WORK_ID_NODE, String.valueOf(result));
+            leafRegistryCenter.persist(PARENT_NODE + serviceId + WORK_ID_NODE, String.valueOf(result));
             return result;
         }
     }
@@ -252,7 +252,7 @@ public final class LeafSnowflakeKeyGenerator implements ShardingKeyGenerator {
         }).scheduleWithFixedDelay(new Runnable() {
             @Override
             public void run() {
-                updateNewData(leafRegistryCenter, serviceId + TIME_NODE);
+                updateNewData(leafRegistryCenter, PARENT_NODE + serviceId + TIME_NODE);
             }
         }, 1L, 3L, TimeUnit.SECONDS);
     }
