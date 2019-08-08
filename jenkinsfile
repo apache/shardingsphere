@@ -21,6 +21,9 @@ pipeline {
     agent  {
         label 'xenial'
     }
+    environment {
+        CI_PULL_REQUEST = $ghprbPullId
+    }
     options {
         buildDiscarder(logRotator(
             numToKeepStr: '60',
