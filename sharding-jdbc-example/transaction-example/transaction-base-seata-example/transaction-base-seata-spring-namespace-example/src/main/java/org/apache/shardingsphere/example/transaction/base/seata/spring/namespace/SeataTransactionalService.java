@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.transaction.saga.spring.boot;
+package org.apache.shardingsphere.example.transaction.base.seata.spring.namespace;
 
-import org.apache.shardingsphere.example.common.jpa.service.JPACommonService;
+import org.apache.shardingsphere.example.common.mybatis.service.SpringPojoService;
 import org.apache.shardingsphere.transaction.annotation.ShardingTransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,13 +25,21 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
-public class SagaTransactionalService {
+public class SeataTransactionalService {
     
-    private final JPACommonService jpaCommonService;
+    private final SpringPojoService springPojoService;
     
     @Autowired
-    public SagaTransactionalService(final JPACommonService jpaCommonService) {
-        this.jpaCommonService = jpaCommonService;
+    public SeataTransactionalService(final SpringPojoService jpaCommonService) {
+        this.springPojoService = jpaCommonService;
+    }
+    
+    public void initEnvironment() {
+        springPojoService.initEnvironment();
+    }
+    
+    public void cleanEnvironment() {
+        springPojoService.cleanEnvironment();
     }
     
     /**
@@ -40,7 +48,7 @@ public class SagaTransactionalService {
     @ShardingTransactionType(TransactionType.BASE)
     @Transactional
     public void processSuccess() {
-        jpaCommonService.processSuccess();
+        springPojoService.processSuccess();
     }
     
     /**
@@ -49,10 +57,10 @@ public class SagaTransactionalService {
     @ShardingTransactionType(TransactionType.BASE)
     @Transactional
     public void processFailure() {
-        jpaCommonService.processFailure();
+        springPojoService.processFailure();
     }
     
     public void printData() {
-        jpaCommonService.printData();
+        springPojoService.printData();
     }
 }
