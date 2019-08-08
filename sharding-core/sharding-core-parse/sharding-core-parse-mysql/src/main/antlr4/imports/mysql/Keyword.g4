@@ -495,3 +495,19 @@ CASCADED
 LOCAL
     : L O C A L
     ;
+
+CLOSE
+    : C L O S E
+    ;
+
+OPEN
+    : O P E N
+    ;
+
+NEXT
+    : N E X T
+    ;
+
+NAME
+    : N A M E
+    ;
