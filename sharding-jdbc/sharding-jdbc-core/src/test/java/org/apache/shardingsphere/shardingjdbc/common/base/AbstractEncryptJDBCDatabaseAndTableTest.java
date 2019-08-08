@@ -61,7 +61,7 @@ public abstract class AbstractEncryptJDBCDatabaseAndTableTest extends AbstractSQ
     private static Properties createProperties() {
         Properties result = new Properties();
         result.put(ShardingPropertiesConstant.SQL_SHOW.getKey(), true);
-        result.put(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN, false);
+        result.put(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN.getKey(), false);
         return result;
     }
     

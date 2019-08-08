@@ -25,13 +25,13 @@ import lombok.Getter;
  * @author panjuan
  */
 @Getter
-public final class SelectCipherItemToken extends SQLToken implements Substitutable {
+public final class SelectEncryptItemToken extends SQLToken implements Substitutable {
     
     private final int stopIndex;
     
     private final String selectItemName;
     
-    public SelectCipherItemToken(final int startIndex, final int stopIndex, final String selectItemName) {
+    public SelectEncryptItemToken(final int startIndex, final int stopIndex, final String selectItemName) {
         super(startIndex);
         this.stopIndex = stopIndex;
         this.selectItemName = selectItemName;

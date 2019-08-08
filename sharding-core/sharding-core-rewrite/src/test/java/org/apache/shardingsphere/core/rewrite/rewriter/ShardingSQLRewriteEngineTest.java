@@ -901,7 +901,7 @@ public final class ShardingSQLRewriteEngineTest {
     @Test
     public void assertRewriteSelectInWithShardingEncryptorWithPlain() {
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(createSQLRouteResultForSelectInWithShardingEncryptor(), "SELECT id FROM table_z WHERE id in (3,5)", Collections.emptyList(), false);
-        assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(), is("SELECT cipher FROM table_z WHERE plain IN ('3', '5')"));
+        assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(), is("SELECT plain FROM table_z WHERE plain IN ('3', '5')"));
     }
     
     private SQLRouteResult createSQLRouteResultForSelectInWithShardingEncryptor() {
@@ -1030,7 +1030,7 @@ public final class ShardingSQLRewriteEngineTest {
     public void assertRewriteSelectEqualWithShardingEncryptorWithPlain() {
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(
                 createSQLRouteResultForSelectEqualWithShardingEncryptor(), "SELECT id FROM table_z WHERE id=? AND name=?", Arrays.<Object>asList(1, "x"), false);
-        assertThat(rewriteEngine.generateSQL().getSql(), is("SELECT cipher FROM table_z WHERE plain = ? AND name=?"));
+        assertThat(rewriteEngine.generateSQL().getSql(), is("SELECT plain FROM table_z WHERE plain = ? AND name=?"));
         assertThat(getParameterBuilder(rewriteEngine).getParameters().get(0), is((Object) 1));
     }
     
@@ -1062,7 +1062,7 @@ public final class ShardingSQLRewriteEngineTest {
     public void assertRewriteSelectInWithShardingEncryptorWithParameterWithPlain() {
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(
                 createSQLRouteResultForSelectInWithShardingEncryptorWithParameter(), "SELECT id FROM table_z WHERE id in (?, ?) or id = 3", Arrays.<Object>asList(1, 2), false);
-        assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(), is("SELECT cipher FROM table_z WHERE plain IN (?, ?) or plain = '3'"));
+        assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(), is("SELECT plain FROM table_z WHERE plain IN (?, ?) or plain = '3'"));
         assertThat(getParameterBuilder(rewriteEngine).getParameters().get(0), is((Object) 1));
         assertThat(getParameterBuilder(rewriteEngine).getParameters().get(1), is((Object) 2));
     }
