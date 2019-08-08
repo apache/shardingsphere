@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.transaction.saga.spring.boot;
+package org.apache.shardingsphere.example.transaction.base.seata.spring.boot;
 
 import org.apache.shardingsphere.example.common.jpa.service.JPACommonService;
 import org.apache.shardingsphere.transaction.annotation.ShardingTransactionType;
@@ -25,12 +25,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
-public class SagaTransactionalService {
+public class SeataTransactionalService {
     
     private final JPACommonService jpaCommonService;
     
     @Autowired
-    public SagaTransactionalService(final JPACommonService jpaCommonService) {
+    public SeataTransactionalService(final JPACommonService jpaCommonService) {
         this.jpaCommonService = jpaCommonService;
     }
     
