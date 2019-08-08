@@ -22,7 +22,7 @@ pipeline {
         label 'xenial'
     }
     environment {
-        CI_PULL_REQUEST = $ghprbPullId
+        CI_PULL_REQUEST = '$ghprbPullId'
     }
     options {
         buildDiscarder(logRotator(
