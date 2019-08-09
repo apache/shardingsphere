@@ -17,27 +17,22 @@ weight = 1
          shardingRuleConfig.getBroadcastTables().add("t_config");
          shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "ds${user_id % 2}"));
          shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new ModuloShardingTableAlgorithm()));
-         return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig);
+         return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new Properties());
      }
      
      private static KeyGeneratorConfiguration getKeyGeneratorConfiguration() {
-             KeyGeneratorConfiguration result = new KeyGeneratorConfiguration();
-             result.setColumn("order_id");
-             return result;
+         KeyGeneratorConfiguration result = new KeyGeneratorConfiguration("SNOWFLAKE", "order_id");
+         return result;
      }
      
      TableRuleConfiguration getOrderTableRuleConfiguration() {
-         TableRuleConfiguration result = new TableRuleConfiguration();
-         result.setLogicTable("t_order");
-         result.setActualDataNodes("ds${0..1}.t_order${0..1}");
+         TableRuleConfiguration result = new TableRuleConfiguration("t_order", "ds${0..1}.t_order${0..1}");
          result.setKeyGeneratorConfig(getKeyGeneratorConfiguration());
          return result;
      }
      
      TableRuleConfiguration getOrderItemTableRuleConfiguration() {
-         TableRuleConfiguration result = new TableRuleConfiguration();
-         result.setLogicTable("t_order_item");
-         result.setActualDataNodes("ds${0..1}.t_order_item${0..1}");
+         TableRuleConfiguration result = new TableRuleConfiguration("t_order_item", "ds${0..1}.t_order_item${0..1}");
          return result;
      }
      
@@ -104,23 +99,18 @@ weight = 1
     }
     
     private static KeyGeneratorConfiguration getKeyGeneratorConfiguration() {
-                 KeyGeneratorConfiguration result = new KeyGeneratorConfiguration();
-                 result.setColumn("order_id");
-                 return result;
+        KeyGeneratorConfiguration result = new KeyGeneratorConfiguration("SNOWFLAKE", "order_id");
+        return result;
     }
     
     TableRuleConfiguration getOrderTableRuleConfiguration() {
-        TableRuleConfiguration result = new TableRuleConfiguration();
-        result.setLogicTable("t_order");
-        result.setActualDataNodes("ds_${0..1}.t_order_${[0, 1]}");
+        TableRuleConfiguration result = new TableRuleConfiguration("t_order", "ds_${0..1}.t_order_${[0, 1]}");
         result.setKeyGeneratorConfig(getKeyGeneratorConfiguration());
         return result;
     }
     
     TableRuleConfiguration getOrderItemTableRuleConfiguration() {
-        TableRuleConfiguration result = new TableRuleConfiguration();
-        result.setLogicTable("t_order_item");
-        result.setActualDataNodes("ds_${0..1}.t_order_item_${[0, 1]}");
+        TableRuleConfiguration result = new TableRuleConfiguration("t_order_item", "ds_${0..1}.t_order_item_${[0, 1]}");
         return result;
     }
     
