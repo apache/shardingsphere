@@ -21,9 +21,6 @@ pipeline {
     agent  {
         label 'xenial'
     }
-    environment {
-        CI_PULL_REQUEST = '$ghprbPullId'
-    }
     options {
         buildDiscarder(logRotator(
             numToKeepStr: '60',
@@ -51,7 +48,6 @@ pipeline {
                     ssBuildBadge.setStatus('running')
                     try {
                         sh '''
-                        export CI_PULL_REQUEST=$ghprbPullId
                         mvn clean verify cobertura:cobertura coveralls:report -DrepoToken=${COVERALLS_REPO_TOKEN} -Prelease
                         '''
                         ssBuildBadge.setStatus('passing')
