@@ -2,7 +2,8 @@
 
 ### API Changes
 
-1. Optimize and delete API and configuration item of sharding logicIndex.
+1. Optimize and delete API and configuration item of sharding logic index.
+1. Update the API of encryption to support the encrypted and plain data coexistence.
 
 ### New Features
 
