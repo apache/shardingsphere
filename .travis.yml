@@ -12,6 +12,6 @@ jdk:
 before_script:
   - echo "MAVEN_OPTS='-Xmx1024m -XX:MaxPermSize=256m'" > ~/.mavenrc
 script:
-  - mvn clean install cobertura:cobertura coveralls:report -DrepoToken="${COVERALLS_REPO_TOKEN}" -Dmaven.javadoc.skip=true
+  - mvn clean install -Dmaven.javadoc.skip=true
 
 install: travis_wait 30 mvn install --quiet
