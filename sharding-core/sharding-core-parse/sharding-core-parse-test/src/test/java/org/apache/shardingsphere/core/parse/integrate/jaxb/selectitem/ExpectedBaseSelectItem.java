@@ -15,30 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.token.pojo;
+package org.apache.shardingsphere.core.parse.integrate.jaxb.selectitem;
 
 import lombok.Getter;
+import lombok.Setter;
 
-/**
- * Insert cipher item token.
- *
- * @author panjuan
- */
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+
 @Getter
-public final class SelectCipherItemToken extends SQLToken implements Substitutable {
+@Setter
+@XmlAccessorType(XmlAccessType.FIELD)
+public class ExpectedBaseSelectItem implements ExpectedSelectItem {
     
-    private final int stopIndex;
+    @XmlAttribute(name = "start-index")
+    private Integer startIndex;
     
-    private final String selectItemName;
+    @XmlAttribute(name = "stop-index")
+    private Integer stopIndex;
     
-    public SelectCipherItemToken(final int startIndex, final int stopIndex, final String selectItemName) {
-        super(startIndex);
-        this.stopIndex = stopIndex;
-        this.selectItemName = selectItemName;
-    }
-    
-    @Override
-    public String toString() {
-        return selectItemName;
-    }
+    @XmlAttribute
+    private String text;
 }

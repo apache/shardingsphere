@@ -22,10 +22,12 @@ import org.apache.shardingsphere.core.parse.integrate.asserts.groupby.GroupByAss
 import org.apache.shardingsphere.core.parse.integrate.asserts.index.IndexAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.orderby.OrderByAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.pagination.PaginationAssert;
+import org.apache.shardingsphere.core.parse.integrate.asserts.selectitem.SelectItemAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.table.AlterTableAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.table.TableAssert;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.ShardingParserResultSetRegistry;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.root.ParserResult;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.LimitSegment;
@@ -63,6 +65,8 @@ public final class ShardingSQLStatementAssert {
     private final PaginationAssert paginationAssert;
     
     private final AlterTableAssert alterTableAssert;
+
+    private final SelectItemAssert selectItemAssert;
     
     public ShardingSQLStatementAssert(final SQLStatement actual, final String sqlCaseId, final SQLCaseType sqlCaseType) {
         SQLStatementAssertMessage assertMessage = new SQLStatementAssertMessage(
@@ -75,6 +79,7 @@ public final class ShardingSQLStatementAssert {
         orderByAssert = new OrderByAssert(assertMessage);
         paginationAssert = new PaginationAssert(sqlCaseType, assertMessage);
         alterTableAssert = new AlterTableAssert(assertMessage);
+        selectItemAssert = new SelectItemAssert(sqlCaseType, assertMessage);
     }
     
     /**
@@ -96,9 +101,10 @@ public final class ShardingSQLStatementAssert {
     
     private void assertSelectStatement(final SelectStatement actual) {
         // TODO do select items assert
-//        Optional<SelectItemsSegment> selectItemsSegment = actual.findSQLSegment(SelectItemsSegment.class);
-//        if (selectItemsSegment.isPresent()) {
-//        }
+        Optional<SelectItemsSegment> selectItemsSegment = actual.findSQLSegment(SelectItemsSegment.class);
+        if (selectItemsSegment.isPresent()) {
+            selectItemAssert.assertSelectItems(selectItemsSegment.get(), expected.getSelectItems());
+        }
         Optional<GroupBySegment> groupBySegment = actual.findSQLSegment(GroupBySegment.class);
         if (groupBySegment.isPresent()) {
             groupByAssert.assertGroupByItems(groupBySegment.get().getGroupByItems(), expected.getGroupByColumns());

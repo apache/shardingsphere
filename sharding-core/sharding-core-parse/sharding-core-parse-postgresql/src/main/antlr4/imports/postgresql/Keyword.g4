@@ -463,8 +463,20 @@ CALL
     : C A L L
     ;
 
+INSTANCE
+    : I N S T A N C E
+    ;
+
 PRESERVE
     : P R E S E R V E
+    ;
+
+DO
+    : D O
+    ;
+
+DEFINER
+    : D E F I N E R
     ;
 
 CURRENT_USER
@@ -482,6 +494,18 @@ CASCADED
 
 LOCAL
     : L O C A L
+    ;
+
+CLOSE
+    : C L O S E
+    ;
+
+OPEN
+    : O P E N
+    ;
+
+NEXT
+    : N E X T
     ;
 
 NAME

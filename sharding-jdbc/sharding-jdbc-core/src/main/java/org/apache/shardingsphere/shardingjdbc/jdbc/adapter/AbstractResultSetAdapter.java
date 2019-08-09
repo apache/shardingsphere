@@ -20,6 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.adapter;
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.Getter;
+import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteCallback;
@@ -42,6 +43,7 @@ import java.util.Map;
  * Adapter for {@code ResultSet}.
  * 
  * @author zhangliang
+ * @author panjuan
  */
 public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperationResultSet {
     
@@ -70,13 +72,25 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     
     @Override
     public final ResultSetMetaData getMetaData() throws SQLException {
-        return new ShardingResultSetMetaData(resultSets.get(0).getMetaData(), getShardingRule(), sqlRouteResult.getOptimizedStatement());
+        return new ShardingResultSetMetaData(resultSets.get(0).getMetaData(), getShardingRule(), sqlRouteResult.getOptimizedStatement(), logicAndActualColumns);
     }
     
     private Map<String, String> createLogicAndActualColumns() {
+        return isQueryWithCipherColumn() ? createLogicAndCipherColumns() : createLogicAndPlainColumns();
+    }
+    
+    private Map<String, String> createLogicAndCipherColumns() {
         Map<String, String> result = new LinkedHashMap<>();
         for (String each : sqlRouteResult.getOptimizedStatement().getTables().getTableNames()) {
             result.putAll(getShardingRule().getEncryptRule().getLogicAndCipherColumns(each));
+        }
+        return result;
+    }
+    
+    private Map<String, String> createLogicAndPlainColumns() {
+        Map<String, String> result = new LinkedHashMap<>();
+        for (String each : sqlRouteResult.getOptimizedStatement().getTables().getTableNames()) {
+            result.putAll(getShardingRule().getEncryptRule().getLogicAndPlainColumns(each));
         }
         return result;
     }
@@ -85,6 +99,12 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
         return statement instanceof ShardingPreparedStatement 
                 ? ((ShardingPreparedStatement) statement).getConnection().getRuntimeContext().getRule() 
                 : ((ShardingStatement) statement).getConnection().getRuntimeContext().getRule();
+    }
+    
+    private boolean isQueryWithCipherColumn() {
+        return statement instanceof ShardingPreparedStatement
+                ? ((ShardingPreparedStatement) statement).getConnection().getRuntimeContext().getProps().<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN)
+                : ((ShardingStatement) statement).getConnection().getRuntimeContext().getProps().<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
     }
     
     @Override

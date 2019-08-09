@@ -22,8 +22,7 @@
     </dml-test-case>
     
     <dml-test-case sql-case-id="insert_with_now_function">
-       <assertion parameters="1:int, 1:int, insert:String" expected-data-file="insert_for_order_1.xml" />
-       <assertion parameters="2:int, 2:int, insert:String" expected-data-file="insert_for_order_2.xml" />
+        <assertion parameters="1:int, 1:int, 1:int" expected-data-file="insert_with_now_function.xml" />
     </dml-test-case>
     
     <dml-test-case sql-case-id="insert_without_parameters">

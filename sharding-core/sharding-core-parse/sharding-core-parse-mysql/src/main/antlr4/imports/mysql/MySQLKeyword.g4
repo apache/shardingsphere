@@ -1120,12 +1120,20 @@ REDO_BUFFER_SIZE
     : R E D O UL_ B U F F E R UL_ S I Z E
     ;
 
-DEFINITION
-    : D E F I N I T I O N
+HANDLER
+    : H A N D L E R
+    ;
+
+PREV
+    : P R E V
     ;
 
 ORGANIZATION
     : O R G A N I Z A T I O N
+    ;
+
+DEFINITION
+    : D E F I N I T I O N
     ;
 
 DESCRIPTION
@@ -1136,10 +1144,6 @@ REFERENCE
     : R E F E R E N C E
     ;
 
-SYSTEM
-    : S Y S T E M
-    ;
-
 FOLLOWS
     : F O L L O W S
     ;
@@ -1148,22 +1152,50 @@ PRECEDES
     : P R E C E D E S
     ;
 
-BEFORE
-    : B E F O R E
+IMPORT
+    : I M P O R T
     ;
 
-EACH
-    : E A C H
+LOAD
+    : L O A D
     ;
 
-DEFINER
-    : D E F I N E R
+CONCURRENT
+    : C O N C U R R E N T
     ;
 
-DO
-    : D O
+INFILE
+    : I N F I L E
     ;
 
-INSTANCE
-    : I N S T A N C E
+LINES
+    : L I N E S
+    ;
+
+STARTING
+    : S T A R T I N G
+    ;
+
+TERMINATED
+    : T E R M I N A T E D
+    ;    
+
+OPTIONALLY
+    : O P T I O N A L L Y
+    ;
+
+ENCLOSED
+    : E N C L O S E D
+    ;
+
+ESCAPED
+    : E S C A P E D
+    ;
+
+XML
+    : X M L
+    ;
+
+UNDO
+    : U N D O
     ;

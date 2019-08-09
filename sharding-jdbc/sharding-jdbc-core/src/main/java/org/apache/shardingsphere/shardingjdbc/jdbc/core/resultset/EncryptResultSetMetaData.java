@@ -25,7 +25,6 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.WrapperAdapter;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -45,19 +44,12 @@ public final class EncryptResultSetMetaData extends WrapperAdapter implements Re
     
     private final Map<String, String> logicAndActualColumns;
     
-    public EncryptResultSetMetaData(final ResultSetMetaData resultSetMetaData, final EncryptRule encryptRule, final OptimizedStatement optimizedStatement) {
+    public EncryptResultSetMetaData(final ResultSetMetaData resultSetMetaData, 
+                                    final EncryptRule encryptRule, final OptimizedStatement optimizedStatement, final Map<String, String> logicAndActualColumns) {
         this.resultSetMetaData = resultSetMetaData;
         this.encryptRule = encryptRule;
         this.optimizedStatement = optimizedStatement;
-        logicAndActualColumns = createLogicAndActualColumns();
-    }
-    
-    private Map<String, String> createLogicAndActualColumns() {
-        Map<String, String> result = new LinkedHashMap<>();
-        for (String each : optimizedStatement.getTables().getTableNames()) {
-            result.putAll(encryptRule.getLogicAndCipherColumns(each));
-        }
-        return result;
+        this.logicAndActualColumns = logicAndActualColumns;
     }
     
     @Override

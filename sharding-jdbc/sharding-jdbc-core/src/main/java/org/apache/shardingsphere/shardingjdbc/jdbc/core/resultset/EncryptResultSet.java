@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
+import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.execute.sql.execute.result.StreamQueryResult;
 import org.apache.shardingsphere.core.merge.dql.iterator.IteratorStreamMergedResult;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.rule.EncryptRule;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.EncryptRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationResultSet;
 
 import java.io.InputStream;
@@ -63,20 +65,32 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     private final Map<String, String> logicAndActualColumns;
     
-    public EncryptResultSet(final EncryptRule encryptRule, final OptimizedStatement optimizedStatement, final Statement encryptStatement, final ResultSet resultSet) {
-        this.encryptRule = encryptRule;
+    public EncryptResultSet(final EncryptRuntimeContext encryptRuntimeContext, final OptimizedStatement optimizedStatement, final Statement encryptStatement, final ResultSet resultSet) {
+        this.encryptRule = encryptRuntimeContext.getRule();
         this.optimizedStatement = optimizedStatement;
         this.encryptStatement = encryptStatement;
         originalResultSet = resultSet;
         QueryResult queryResult = new StreamQueryResult(resultSet, encryptRule);
         this.resultSet = new IteratorStreamMergedResult(Collections.singletonList(queryResult));
-        logicAndActualColumns = createLogicAndActualColumns();
+        logicAndActualColumns = createLogicAndActualColumns(encryptRuntimeContext.getProps().<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN));
     }
     
-    private Map<String, String> createLogicAndActualColumns() {
+    private Map<String, String> createLogicAndActualColumns(final boolean isQueryWithCipherColumn) {
+        return isQueryWithCipherColumn ? createLogicAndCipherColumns() : createLogicAndPlainColumns();
+    }
+    
+    private Map<String, String> createLogicAndCipherColumns() {
         Map<String, String> result = new LinkedHashMap<>();
         for (String each : optimizedStatement.getTables().getTableNames()) {
             result.putAll(encryptRule.getLogicAndCipherColumns(each));
+        }
+        return result;
+    }
+    
+    private Map<String, String> createLogicAndPlainColumns() {
+        Map<String, String> result = new LinkedHashMap<>();
+        for (String each : optimizedStatement.getTables().getTableNames()) {
+            result.putAll(encryptRule.getLogicAndPlainColumns(each));
         }
         return result;
     }
@@ -357,7 +371,7 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     @Override
     public ResultSetMetaData getMetaData() throws SQLException {
-        return new EncryptResultSetMetaData(originalResultSet.getMetaData(), encryptRule, optimizedStatement);
+        return new EncryptResultSetMetaData(originalResultSet.getMetaData(), encryptRule, optimizedStatement, logicAndActualColumns);
     }
     
     @Override

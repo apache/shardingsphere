@@ -60,17 +60,17 @@ public abstract class BaseDMLIT extends SingleIT {
         super(sqlCaseId, path, assertion, shardingRuleType, databaseTypeEnvironment, caseType);
         dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(getShardingRuleType()), getDataSourceMap());
     }
-
+    
     @BeforeClass
     public static void initDatabasesAndTables() {
         createDatabasesAndTables();
     }
-
+    
     @AfterClass
     public static void destroyDatabasesAndTables() {
         dropDatabases();
     }
-
+    
     @Before
     public void insertData() throws SQLException, ParseException {
         if (getDatabaseTypeEnvironment().isEnabled()) {
@@ -123,7 +123,9 @@ public abstract class BaseDMLIT extends SingleIT {
             int index = 1;
             for (String each : expectedDatSetRows.get(count).getValues()) {
                 if (Types.DATE == actualResultSet.getMetaData().getColumnType(index)) {
-                    assertThat(new SimpleDateFormat("yyyy-MM-dd").format(actualResultSet.getDate(index)), is(each));
+                    if (!getNotVerifyFlag().equals(each)) {
+                        assertThat(new SimpleDateFormat("yyyy-MM-dd").format(actualResultSet.getDate(index)), is(each));
+                    }
                 } else {
                     assertThat(String.valueOf(actualResultSet.getObject(index)), is(each));
                 }

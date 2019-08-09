@@ -26,7 +26,6 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.WrapperAdapter;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -47,19 +46,12 @@ public final class ShardingResultSetMetaData extends WrapperAdapter implements R
     
     private final Map<String, String> logicAndActualColumns;
     
-    public ShardingResultSetMetaData(final ResultSetMetaData resultSetMetaData, final ShardingRule shardingRule, final OptimizedStatement optimizedStatement) {
+    public ShardingResultSetMetaData(final ResultSetMetaData resultSetMetaData, 
+                                     final ShardingRule shardingRule, final OptimizedStatement optimizedStatement, final Map<String, String> logicAndActualColumns) {
         this.resultSetMetaData = resultSetMetaData;
         this.shardingRule = shardingRule;
         this.optimizedStatement = optimizedStatement;
-        logicAndActualColumns = createLogicAndActualColumns();
-    }
-    
-    private Map<String, String> createLogicAndActualColumns() {
-        Map<String, String> result = new LinkedHashMap<>();
-        for (String each : optimizedStatement.getTables().getTableNames()) {
-            result.putAll(shardingRule.getEncryptRule().getLogicAndCipherColumns(each));
-        }
-        return result;
+        this.logicAndActualColumns = logicAndActualColumns;
     }
     
     @Override
