@@ -36,6 +36,7 @@
     </parser-result>
     -->
     
+    <!-- TODO do not support ORDER BY or ORDER BY in subquery for now, add later
     <parser-result sql-case-id="select_sub_query_with_order_by">
         <tables>
             <table name="t_order"/>
@@ -72,4 +73,5 @@
             <group-by-column name="order_id" order-direction="ASC" />
         </group-by-columns>
     </parser-result>
+    -->
 </parser-result-sets>
