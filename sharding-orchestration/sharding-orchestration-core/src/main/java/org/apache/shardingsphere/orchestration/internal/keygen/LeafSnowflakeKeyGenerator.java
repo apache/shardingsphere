@@ -66,6 +66,8 @@ public final class LeafSnowflakeKeyGenerator implements ShardingKeyGenerator {
 
     private static final String CURRENT_MAX_WORK_ID_NODE = "/current-max-work-id";
 
+    private static final String CURRENT_MAX_WORK_ID_DIRECTORY = PARENT_NODE + CURRENT_MAX_WORK_ID_NODE;
+
     private static final String WORK_ID_NODE = "/work-id";
 
     private static final String SLANTING_BAR = "/";
@@ -181,19 +183,27 @@ public final class LeafSnowflakeKeyGenerator implements ShardingKeyGenerator {
         return result;
     }
 
-    private String getServiceId() {
+    private String getTimeDirectoryWithServiceId() {
         String serviceId = properties.getProperty("serviceId");
         Preconditions.checkArgument(!Strings.isNullOrEmpty(serviceId));
         Preconditions.checkArgument(serviceId.matches(SERVICE_ID_REGULAR_PATTERN));
-        String result = SLANTING_BAR + serviceId;
+        String result = PARENT_NODE + SLANTING_BAR + serviceId + TIME_NODE;
+        return result;
+    }
+
+    private String getWorkIdDirectoryWithServiceId() {
+        String serviceId = properties.getProperty("serviceId");
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(serviceId));
+        Preconditions.checkArgument(serviceId.matches(SERVICE_ID_REGULAR_PATTERN));
+        String result = PARENT_NODE + SLANTING_BAR + serviceId + WORK_ID_NODE;
         return result;
     }
 
     @SneakyThrows
     private void initializeTimeNodeIfNeed(final long maxTolerateTimeDifference, final RegistryCenter leafRegistryCenter) {
-        String serviceId = getServiceId();
-        if (leafRegistryCenter.isExisted(PARENT_NODE + serviceId + TIME_NODE)) {
-            String lastTimeInRegistryCenter = leafRegistryCenter.getDirectly(PARENT_NODE + serviceId + TIME_NODE);
+        String timeDirectory = getTimeDirectoryWithServiceId();
+        if (leafRegistryCenter.isExisted(timeDirectory)) {
+            String lastTimeInRegistryCenter = leafRegistryCenter.getDirectly(timeDirectory);
             long currentTime = timeService.getCurrentMillis();
             long timeDifference = Long.parseLong(lastTimeInRegistryCenter) - currentTime;
             if (timeDifference > 0) {
@@ -202,46 +212,46 @@ public final class LeafSnowflakeKeyGenerator implements ShardingKeyGenerator {
                 Thread.sleep(timeDifference);
             }
         } else {
-            leafRegistryCenter.persist(PARENT_NODE + serviceId + TIME_NODE, String.valueOf(timeService.getCurrentMillis()));
+            leafRegistryCenter.persist(timeDirectory, String.valueOf(timeService.getCurrentMillis()));
         }
     }
 
     @SneakyThrows
     private void initializeCurrentMaxWorkIdNodeIfNeed(final RegistryCenter leafRegistryCenter) {
-        if (!leafRegistryCenter.isExisted(PARENT_NODE + CURRENT_MAX_WORK_ID_NODE)) {
-            leafRegistryCenter.persist(PARENT_NODE + CURRENT_MAX_WORK_ID_NODE, "0");
+        if (!leafRegistryCenter.isExisted(CURRENT_MAX_WORK_ID_DIRECTORY)) {
+            leafRegistryCenter.persist(CURRENT_MAX_WORK_ID_DIRECTORY, "0");
         }
     }
 
     @SneakyThrows
     private Long initializeWorkIdNodeIfNeed(final RegistryCenter leafRegistryCenter) {
-        String serviceId = getServiceId();
-        if (leafRegistryCenter.isExisted(PARENT_NODE + serviceId + WORK_ID_NODE)) {
-            String workIdInString = leafRegistryCenter.getDirectly(PARENT_NODE + serviceId + WORK_ID_NODE);
+        String workIdDirectory = getWorkIdDirectoryWithServiceId();
+        if (leafRegistryCenter.isExisted(workIdDirectory)) {
+            String workIdInString = leafRegistryCenter.getDirectly(workIdDirectory);
             Long result = Long.parseLong(workIdInString);
             return result;
         } else {
             Long result = updateCurrentMaxWorkIdInRegisterCenter();
-            leafRegistryCenter.persist(PARENT_NODE + serviceId + WORK_ID_NODE, String.valueOf(result));
+            leafRegistryCenter.persist(workIdDirectory, String.valueOf(result));
             return result;
         }
     }
 
     @SneakyThrows
     private long updateCurrentMaxWorkIdInRegisterCenter() {
-        leafRegistryCenter.initLock(PARENT_NODE + CURRENT_MAX_WORK_ID_NODE);
+        leafRegistryCenter.initLock(CURRENT_MAX_WORK_ID_DIRECTORY);
         boolean lockIsAcquired = leafRegistryCenter.tryLock();
         Preconditions.checkState(lockIsAcquired, "Try lock fail");
-        String id = leafRegistryCenter.getDirectly(PARENT_NODE + CURRENT_MAX_WORK_ID_NODE);
+        String id = leafRegistryCenter.getDirectly(CURRENT_MAX_WORK_ID_DIRECTORY);
         long result = Long.parseLong(id);
-        leafRegistryCenter.persist(PARENT_NODE + CURRENT_MAX_WORK_ID_NODE, String.valueOf(result++));
+        leafRegistryCenter.persist(CURRENT_MAX_WORK_ID_DIRECTORY, String.valueOf(result++));
         leafRegistryCenter.tryRelease();
         return result;
     }
 
     @SneakyThrows
     private void scheduledUpdateTimeNode(final RegistryCenter leafRegistryCenter) {
-        final String serviceId = getServiceId();
+        final String timeDirectory = getTimeDirectoryWithServiceId();
         Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
             @Override
             public Thread newThread(final Runnable r) {
@@ -252,7 +262,7 @@ public final class LeafSnowflakeKeyGenerator implements ShardingKeyGenerator {
         }).scheduleWithFixedDelay(new Runnable() {
             @Override
             public void run() {
-                updateNewData(leafRegistryCenter, PARENT_NODE + serviceId + TIME_NODE);
+                updateNewData(leafRegistryCenter, timeDirectory);
             }
         }, 1L, 3L, TimeUnit.SECONDS);
     }
