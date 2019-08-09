@@ -39,6 +39,7 @@
     </sqlset>
     <sqlset db-types="MySQL">
         <user-create>
+            <sql>FLUSH PRIVILEGES</sql>
             <sql>CREATE USER user_dev@localhost</sql>
             <sql>GRANT select,update,insert,delete on master.* to user_dev@localhost</sql>
         </user-create>
