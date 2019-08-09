@@ -406,6 +406,8 @@ encryptRule:
           cipherColumn: #存储密文的字段
           assistedQueryColumn: #辅助查询字段，针对ShardingQueryAssistedEncryptor类型的加解密器进行辅助查询
           encryptor: #加密器名字
+  props:
+    query.with.cipher.column: true #是否使用密文列查询
 ```
 
 ## 全局配置项说明
