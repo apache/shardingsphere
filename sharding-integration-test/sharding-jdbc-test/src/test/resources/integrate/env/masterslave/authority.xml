@@ -39,7 +39,6 @@
     </sqlset>
     <sqlset db-types="MySQL">
         <user-create>
-            <sql>FLUSH PRIVILEGES</sql>
             <sql>CREATE USER user_dev@localhost</sql>
             <sql>GRANT select,update,insert,delete on master.* to user_dev@localhost</sql>
         </user-create>
@@ -47,6 +46,7 @@
             <sql>DROP USER user_dev@localhost</sql>
             <sql>DROP USER user_dev_new@localhost</sql>
             <sql>DROP USER user_dev@127.0.0.1</sql>
+            <sql>FLUSH PRIVILEGES</sql>
         </user-drop>
     </sqlset>
     <sqlset db-types="Oracle">
