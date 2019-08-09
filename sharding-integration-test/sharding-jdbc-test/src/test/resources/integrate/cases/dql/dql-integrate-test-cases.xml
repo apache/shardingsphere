@@ -401,7 +401,11 @@
     <dql-test-case sql-case-id="select_distinct_with_single_column">
         <assertion expected-data-file="select_distinct_with_single_column.xml" />
     </dql-test-case>
-    
+
+    <dql-test-case sql-case-id="select_distinct_with_owner_column">
+        <assertion expected-data-file="select_distinct_with_owner_column.xml" />
+    </dql-test-case>
+
     <dql-test-case sql-case-id="select_distinct_with_multi_column">
         <assertion expected-data-file="select_distinct_with_multi_column.xml" />
     </dql-test-case>
