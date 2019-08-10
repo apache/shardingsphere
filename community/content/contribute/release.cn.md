@@ -343,7 +343,7 @@ Hello ShardingSphere Community,
 This is a call for vote to release Apache ShardingSphere (Incubating) version ${RELEASE.VERSION}
 
 Release notes:
-https://github.com/apache/incubator-shardingsphere/releases/edit/xxxxxxxxxxxxxxxxxxxxxxx
+https://github.com/apache/incubator-shardingsphere/blob/dev/RELEASE-NOTES.md
 
 The release candidates:
 https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/${RELEASE.VERSION}/
@@ -436,7 +436,7 @@ ShardingSphere community vote and result thread:
 https://lists.apache.org/thread.html/xxxxxxxxxxxxxxxxxxxxxxx
 
 Release notes:
-https://github.com/apache/incubator-shardingsphere/releases/edit/xxxxxxxxxxxxxxxxxxxxxxx
+https://github.com/apache/incubator-shardingsphere/blob/dev/RELEASE-NOTES.md
 
 The release candidates:
 https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/${RELEASE.VERSION}/
@@ -545,7 +545,7 @@ Therefore, at current stage, we prefer to focus on its increment instead of a to
 
 Download Links: https://shardingsphere.apache.org/document/current/en/downloads/
 
-Release Notes: https://github.com/apache/incubator-shardingsphere/releases/tag/${RELEASE.VERSION}/
+Release Notes: https://github.com/apache/incubator-shardingsphere/blob/dev/RELEASE-NOTES.md
 
 Website: https://shardingsphere.apache.org/
 
