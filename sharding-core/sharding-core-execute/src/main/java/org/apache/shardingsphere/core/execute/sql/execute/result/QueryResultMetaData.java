@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.core.execute.sql.execute.result;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -26,8 +28,7 @@ import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.ArrayList;
 
 /**
  * Query result meta data.
@@ -42,8 +43,8 @@ public final class QueryResultMetaData {
     private final ShardingRule shardingRule;
     
     private final EncryptRule encryptRule;
-    
-    private final Map<String, Integer> columnLabelAndIndexes;
+
+    private final Multimap<String, Integer> columnLabelAndIndexes;
     
     @SneakyThrows
     public QueryResultMetaData(final ResultSetMetaData resultSetMetaData, final ShardingRule shardingRule) {
@@ -70,8 +71,8 @@ public final class QueryResultMetaData {
     }
     
     @SneakyThrows
-    private Map<String, Integer> getColumnLabelAndIndexMap() {
-        Map<String, Integer> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+    private Multimap<String, Integer> getColumnLabelAndIndexMap() {
+        Multimap<String, Integer> result = HashMultimap.create();
         for (int columnIndex = resultSetMetaData.getColumnCount(); columnIndex > 0; columnIndex--) {
             result.put(resultSetMetaData.getColumnLabel(columnIndex), columnIndex);
         }
@@ -117,7 +118,7 @@ public final class QueryResultMetaData {
      * @return column name
      */
     public Integer getColumnIndex(final String columnLabel) {
-        return columnLabelAndIndexes.get(columnLabel);
+        return new ArrayList<>(columnLabelAndIndexes.get(columnLabel)).get(0);
     }
     
     /**

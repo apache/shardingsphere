@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.execute.sql.execute.result;
 
 import com.google.common.base.Optional;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -39,27 +40,28 @@ import java.util.Calendar;
  * @author yangyi
  */
 public final class StreamQueryResult implements QueryResult {
-    
-    private final QueryResultMetaData metaData;
+
+    @Getter
+    private final QueryResultMetaData queryResultMetaData;
     
     private final ResultSet resultSet;
     
     @SneakyThrows
     public StreamQueryResult(final ResultSet resultSet, final ShardingRule shardingRule) {
         this.resultSet = resultSet;
-        metaData = new QueryResultMetaData(resultSet.getMetaData(), shardingRule);
+        queryResultMetaData = new QueryResultMetaData(resultSet.getMetaData(), shardingRule);
     }
     
     @SneakyThrows
     public StreamQueryResult(final ResultSet resultSet, final EncryptRule encryptRule) {
         this.resultSet = resultSet;
-        metaData = new QueryResultMetaData(resultSet.getMetaData(), encryptRule);
+        queryResultMetaData = new QueryResultMetaData(resultSet.getMetaData(), encryptRule);
     }
     
     @SneakyThrows
     public StreamQueryResult(final ResultSet resultSet) {
         this.resultSet = resultSet;
-        metaData = new QueryResultMetaData(resultSet.getMetaData());
+        queryResultMetaData = new QueryResultMetaData(resultSet.getMetaData());
     }
     
     @Override
@@ -74,7 +76,7 @@ public final class StreamQueryResult implements QueryResult {
     
     @Override
     public Object getValue(final String columnLabel, final Class<?> type) throws SQLException {
-        return decrypt(columnLabel, QueryResultUtil.getValue(resultSet, metaData.getColumnIndex(columnLabel)));
+        return decrypt(columnLabel, QueryResultUtil.getValue(resultSet, queryResultMetaData.getColumnIndex(columnLabel)));
     }
     
     @Override
@@ -142,27 +144,27 @@ public final class StreamQueryResult implements QueryResult {
     
     @Override
     public boolean isCaseSensitive(final int columnIndex) {
-        return metaData.isCaseSensitive(columnIndex);
+        return queryResultMetaData.isCaseSensitive(columnIndex);
     }
     
     @Override
     public int getColumnCount() {
-        return metaData.getColumnCount();
+        return queryResultMetaData.getColumnCount();
     }
     
     @Override
     public String getColumnLabel(final int columnIndex) {
-        return metaData.getColumnLabel(columnIndex);
+        return queryResultMetaData.getColumnLabel(columnIndex);
     }
     
     @SneakyThrows
     private Object decrypt(final String columnLabel, final Object value) {
-        return decrypt(metaData.getColumnIndex(columnLabel), value);
+        return decrypt(queryResultMetaData.getColumnIndex(columnLabel), value);
     }
     
     @SneakyThrows
     private Object decrypt(final int columnIndex, final Object value) {
-        Optional<ShardingEncryptor> shardingEncryptor = metaData.getShardingEncryptor(columnIndex);
+        Optional<ShardingEncryptor> shardingEncryptor = queryResultMetaData.getShardingEncryptor(columnIndex);
         return shardingEncryptor.isPresent() ? shardingEncryptor.get().decrypt(getCiphertext(value)) : value;
     }
     
