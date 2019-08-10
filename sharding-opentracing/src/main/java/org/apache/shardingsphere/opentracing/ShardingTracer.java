@@ -18,17 +18,23 @@
 package org.apache.shardingsphere.opentracing;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.exception.ShardingException;
+import org.apache.shardingsphere.opentracing.spi.ShardingTracerGenerator;
+import org.apache.shardingsphere.opentracing.spi.ShardingTracerGeneratorServiceLoader;
+
+import java.util.Properties;
 
 /**
  * Sharding tracer object container.
  *
  * @author gaohongtao
  * @author wangkai
+ * @author liya
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingTracer {
@@ -57,6 +63,30 @@ public final class ShardingTracer {
         if (!GlobalTracer.isRegistered()) {
             GlobalTracer.register(tracer);
         }
+    }
+
+    /**
+     * Initialize sharding tracer by SPI with properties.
+     *
+     * @param tracerGeneratorType type of tracerGenerator
+     * @param properties properties of tracerGenerator
+     */
+    public static void init(final String tracerGeneratorType, final Properties properties) {
+        if (Strings.isNullOrEmpty(tracerGeneratorType)) {
+            return;
+        }
+        ShardingTracerGeneratorServiceLoader serviceLoader = new ShardingTracerGeneratorServiceLoader();
+        ShardingTracerGenerator shardingTracerGenerator = serviceLoader.newService(tracerGeneratorType, properties);
+        ShardingTracer.init(shardingTracerGenerator.generate());
+    }
+
+    /**
+     * Initialize sharding tracer by SPI.
+     *
+     * @param tracerGeneratorType type of tracerGenerator
+     */
+    public static void init(final String tracerGeneratorType) {
+        init(tracerGeneratorType, new Properties());
     }
     
     /**

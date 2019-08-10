@@ -15,32 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.config.yaml;
+package org.apache.shardingsphere.opentracing.yaml.config;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.core.yaml.config.YamlConfiguration;
-import org.apache.shardingsphere.core.yaml.config.common.YamlAuthenticationConfiguration;
-import org.apache.shardingsphere.opentracing.yaml.config.YamlOpenTracingConfiguration;
-import org.apache.shardingsphere.orchestration.yaml.config.YamlOrchestrationConfiguration;
 
 import java.util.Properties;
 
 /**
- * Server configuration for YAML.
- * 
- * @author chenqingyang
- * @author panjuan
+ * OpenTracing configuration for yaml.
+ *
+ * @author liya
  */
 @Getter
 @Setter
-public final class YamlProxyServerConfiguration implements YamlConfiguration {
-    
-    private YamlAuthenticationConfiguration authentication;
-    
-    private YamlOrchestrationConfiguration orchestration;
+public class YamlOpenTracingConfiguration implements YamlConfiguration {
 
-    private YamlOpenTracingConfiguration opentracing;
-    
+    private String type;
+
     private Properties props = new Properties();
 }

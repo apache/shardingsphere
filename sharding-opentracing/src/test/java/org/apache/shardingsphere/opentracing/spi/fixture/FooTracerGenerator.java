@@ -15,32 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.config.yaml;
+package org.apache.shardingsphere.opentracing.spi.fixture;
 
+import io.opentracing.Tracer;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.core.yaml.config.YamlConfiguration;
-import org.apache.shardingsphere.core.yaml.config.common.YamlAuthenticationConfiguration;
-import org.apache.shardingsphere.opentracing.yaml.config.YamlOpenTracingConfiguration;
-import org.apache.shardingsphere.orchestration.yaml.config.YamlOrchestrationConfiguration;
+import org.apache.shardingsphere.opentracing.fixture.FooTracer;
+import org.apache.shardingsphere.opentracing.spi.ShardingTracerGenerator;
 
 import java.util.Properties;
 
-/**
- * Server configuration for YAML.
- * 
- * @author chenqingyang
- * @author panjuan
- */
-@Getter
-@Setter
-public final class YamlProxyServerConfiguration implements YamlConfiguration {
-    
-    private YamlAuthenticationConfiguration authentication;
-    
-    private YamlOrchestrationConfiguration orchestration;
+public final class FooTracerGenerator implements ShardingTracerGenerator {
 
-    private YamlOpenTracingConfiguration opentracing;
-    
-    private Properties props = new Properties();
+    @Getter
+    @Setter
+    private Properties properties = new Properties();
+
+    @Getter
+    private String type = "foo";
+
+    @Override
+    public Tracer generate() {
+        return new FooTracer();
+    }
 }

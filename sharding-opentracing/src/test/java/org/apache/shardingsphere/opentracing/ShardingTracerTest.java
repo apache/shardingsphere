@@ -28,6 +28,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.isA;
@@ -62,15 +63,31 @@ public final class ShardingTracerTest {
     @Test
     public void assertTracer() {
         ShardingTracer.init();
+        assertTracerValid();
+    }
+
+    private void assertTracerValid() {
         assertThat((GlobalTracer) ShardingTracer.get(), isA(GlobalTracer.class));
         assertTrue(GlobalTracer.isRegistered());
         assertThat(ShardingTracer.get(), is(ShardingTracer.get()));
     }
-    
+
     @Test(expected = ShardingException.class)
     public void assertTracerClassError() {
         System.setProperty("org.apache.shardingsphere.opentracing.tracer.class", "com.foo.FooTracer");
         ShardingTracer.init();
+    }
+
+    @Test
+    public void assertInitWithType() {
+        ShardingTracer.init("foo");
+        assertTracerValid();
+    }
+
+    @Test
+    public void assertInitWithTypeAndProperties() {
+        ShardingTracer.init("foo", new Properties());
+        assertTracerValid();
     }
     
     @SneakyThrows

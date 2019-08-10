@@ -32,6 +32,7 @@ import org.apache.shardingsphere.core.yaml.swapper.impl.MasterSlaveRuleConfigura
 import org.apache.shardingsphere.core.yaml.swapper.impl.ShardingRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.opentracing.ShardingTracer;
 import org.apache.shardingsphere.orchestration.internal.registry.ShardingOrchestrationFacade;
+import org.apache.shardingsphere.opentracing.yaml.config.YamlOpenTracingConfiguration;
 import org.apache.shardingsphere.orchestration.yaml.swapper.OrchestrationConfigurationYamlSwapper;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.config.ShardingConfiguration;
@@ -58,6 +59,7 @@ import java.util.Properties;
  * @author wangkai
  * @author panjuan
  * @author sunbufu
+ * @author liya
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Bootstrap {
@@ -75,7 +77,7 @@ public final class Bootstrap {
         logRuleConfigurationMap(getRuleConfiguration(shardingConfig.getRuleConfigurationMap()).values());
         int port = getPort(args);
         if (null == shardingConfig.getServerConfiguration().getOrchestration()) {
-            startWithoutRegistryCenter(shardingConfig.getRuleConfigurationMap(), shardingConfig.getServerConfiguration().getAuthentication(), shardingConfig.getServerConfiguration().getProps(), port);
+            startWithoutRegistryCenter(shardingConfig.getServerConfiguration(), shardingConfig.getRuleConfigurationMap(), port);
         } else {
             startWithRegistryCenter(shardingConfig.getServerConfiguration(), shardingConfig.getRuleConfigurationMap().keySet(), shardingConfig.getRuleConfigurationMap(), port);
         }
@@ -92,14 +94,16 @@ public final class Bootstrap {
         }
     }
     
-    private static void startWithoutRegistryCenter(final Map<String, YamlProxyRuleConfiguration> ruleConfigs,
-                                                   final YamlAuthenticationConfiguration authentication, final Properties prop, final int port) {
-        Authentication authenticationConfiguration = getAuthentication(authentication);
+    private static void startWithoutRegistryCenter(final YamlProxyServerConfiguration serverConfig,
+                                                   final Map<String, YamlProxyRuleConfiguration> ruleConfigs,
+                                                   final int port) {
+        Authentication authenticationConfiguration = getAuthentication(serverConfig.getAuthentication());
+        Properties prop = serverConfig.getProps();
         ConfigurationLogger.log(authenticationConfiguration);
         ConfigurationLogger.log(prop);
         ShardingProxyContext.getInstance().init(authenticationConfiguration, prop);
         LogicSchemas.getInstance().init(getDataSourceParameterMap(ruleConfigs), getRuleConfiguration(ruleConfigs));
-        initOpenTracing();
+        initOpenTracing(serverConfig.getOpentracing());
         ShardingProxy.getInstance().start(port);
     }
     
@@ -114,7 +118,7 @@ public final class Bootstrap {
             initShardingOrchestrationFacade(serverConfig, ruleConfigs, shardingOrchestrationFacade);
             ShardingProxyContext.getInstance().init(authentication, properties);
             LogicSchemas.getInstance().init(shardingSchemaNames, getSchemaDataSourceParameterMap(shardingOrchestrationFacade), getSchemaRules(shardingOrchestrationFacade), true);
-            initOpenTracing();
+            initOpenTracing(serverConfig.getOpentracing());
             ShardingProxy.getInstance().start(port);
         }
     }
@@ -151,12 +155,16 @@ public final class Bootstrap {
         }
     }
     
-    private static void initOpenTracing() {
+    private static void initOpenTracing(final YamlOpenTracingConfiguration opentracingConfiguration) {
         if (ShardingProxyContext.getInstance().getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.PROXY_OPENTRACING_ENABLED)) {
-            ShardingTracer.init();
+            if (null == opentracingConfiguration) {
+                ShardingTracer.init();
+            } else {
+                ShardingTracer.init(opentracingConfiguration.getType(), opentracingConfiguration.getProps());
+            }
         }
     }
-    
+
     private static Map<String, Map<String, DataSourceConfiguration>> getDataSourceConfigurationMap(final Map<String, YamlProxyRuleConfiguration> ruleConfigs) {
         Map<String, Map<String, DataSourceConfiguration>> result = new LinkedHashMap<>();
         for (Entry<String, YamlProxyRuleConfiguration> entry : ruleConfigs.entrySet()) {
