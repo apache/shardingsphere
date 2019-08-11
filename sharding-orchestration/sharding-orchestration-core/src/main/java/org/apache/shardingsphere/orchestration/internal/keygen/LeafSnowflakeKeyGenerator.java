@@ -72,8 +72,7 @@ public final class LeafSnowflakeKeyGenerator implements ShardingKeyGenerator {
 
     private static final String SLANTING_BAR = "/";
 
-    @Setter
-    private static TimeService timeService = new TimeService();
+    private static final TimeService timeService = new TimeService();
 
     @Getter
     @Setter
@@ -208,11 +207,12 @@ public final class LeafSnowflakeKeyGenerator implements ShardingKeyGenerator {
             long timeDifference = Long.parseLong(lastTimeInRegistryCenter) - currentTime;
             if (timeDifference > 0) {
                 Preconditions.checkState(timeDifference < maxTolerateTimeDifference,
-                        "Clock is moving backwards, last time is %d milliseconds, current time is %d milliseconds", lastMilliseconds, currentTime);
+                        "Clock is moving backwards, last time is %d milliseconds, current time is %d milliseconds", lastTimeInRegistryCenter, currentTime);
                 Thread.sleep(timeDifference);
             }
         } else {
-            leafRegistryCenter.persist(timeDirectory, String.valueOf(timeService.getCurrentMillis()));
+            long currentTime = timeService.getCurrentMillis();
+            leafRegistryCenter.persist(timeDirectory, String.valueOf(currentTime));
         }
     }
 
@@ -269,11 +269,11 @@ public final class LeafSnowflakeKeyGenerator implements ShardingKeyGenerator {
 
     @SneakyThrows
     private void updateNewData(final RegistryCenter leafRegistryCenter, final String path) {
-        if (System.currentTimeMillis() < lastUpdateTime) {
+        if (timeService.getCurrentMillis() < lastUpdateTime) {
             return;
         }
         leafRegistryCenter.persist(path, String.valueOf(timeService.getCurrentMillis()));
-        lastUpdateTime = System.currentTimeMillis();
+        lastUpdateTime = timeService.getCurrentMillis();
     }
 
     private void vibrateSequenceOffset() {

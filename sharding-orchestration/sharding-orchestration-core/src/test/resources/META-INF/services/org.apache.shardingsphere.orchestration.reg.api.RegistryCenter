@@ -20,3 +20,4 @@ org.apache.shardingsphere.orchestration.internal.registry.fixture.SecondTestRegi
 org.apache.shardingsphere.orchestration.internal.registry.fixture.ThirdTestRegistryCenter
 org.apache.shardingsphere.orchestration.internal.registry.fixture.ForthTestRegistryCenter
 org.apache.shardingsphere.orchestration.internal.registry.fixture.FifthTestRegistryCenter
+org.apache.shardingsphere.integration.registry.CuratorZookeeperRegistryCenter
