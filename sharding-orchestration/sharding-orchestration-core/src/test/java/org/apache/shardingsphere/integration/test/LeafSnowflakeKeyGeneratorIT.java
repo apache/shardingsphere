@@ -45,7 +45,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 @FixMethodOrder(value = MethodSorters.NAME_ASCENDING)
-public final class LeafSnowflakeKeyGeneratorTest {
+public final class LeafSnowflakeKeyGeneratorIT {
 
     private LeafSnowflakeKeyGenerator leafSnowflakeKeyGenerator = new LeafSnowflakeKeyGenerator();
 
