@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.execute.sql.execute.result;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.execute.sql.execute.row.QueryRow;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.AggregationDistinctSelectItem;
@@ -33,7 +32,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Set;
 
 /**
@@ -45,9 +43,9 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     
     private final AggregationDistinctQueryMetaData metaData;
         
-    private AggregationDistinctQueryResult(final Multimap<String, Integer> columnLabelAndIndexMap, final List<Boolean> columnCaseSensitive, final Iterator<QueryRow> resultData,
+    private AggregationDistinctQueryResult(final QueryResultMetaData queryResultMetaData, final List<Boolean> columnCaseSensitive, final Iterator<QueryRow> resultData,
         final AggregationDistinctQueryMetaData distinctQueryMetaData) {
-        super(columnLabelAndIndexMap, columnCaseSensitive, resultData);
+        super(queryResultMetaData, columnCaseSensitive, resultData);
         metaData = distinctQueryMetaData;
     }
     
@@ -60,7 +58,7 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
                 return input.getDistinctColumnLabel();
             }
         }));
-        metaData = new AggregationDistinctQueryMetaData(aggregationDistinctSelectItems, getColumnLabelAndIndexMap());
+        metaData = new AggregationDistinctQueryMetaData(aggregationDistinctSelectItems, getQueryResultMetaData());
     }
     
     /**
@@ -76,7 +74,7 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
             public DistinctQueryResult apply(final QueryRow input) {
                 Set<QueryRow> resultData = new LinkedHashSet<>();
                 resultData.add(input);
-                return new AggregationDistinctQueryResult(getColumnLabelAndIndexMap(), getColumnCaseSensitive(), resultData.iterator(), metaData);
+                return new AggregationDistinctQueryResult(getQueryResultMetaData(), getColumnCaseSensitive(), resultData.iterator(), metaData);
             }
         }));
     }
@@ -134,19 +132,13 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     }
     
     @Override
-    public int getColumnCount() {
-        return getColumnLabelAndIndexMap().size();
-    }
-    
-    @Override
     public String getColumnLabel(final int columnIndex) throws SQLException {
         if (metaData.isAggregationDistinctColumnIndex(columnIndex)) {
             return metaData.getAggregationDistinctColumnLabel(columnIndex);
         }
-        for (Entry<String, Integer> entry : getColumnLabelAndIndexMap().entries()) {
-            if (columnIndex == entry.getValue()) {
-                return entry.getKey();
-            }
+        String columnLabel = getQueryResultMetaData().getColumnLabel(columnIndex);
+        if (null != columnLabel) {
+            return columnLabel;
         }
         throw new SQLException("Column index out of range", "9999");
     }

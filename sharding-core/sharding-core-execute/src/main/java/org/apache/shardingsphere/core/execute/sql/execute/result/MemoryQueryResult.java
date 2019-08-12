@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.execute.sql.execute.result;
 
 import com.google.common.base.Optional;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.execute.sql.execute.row.QueryRow;
 import org.apache.shardingsphere.core.rule.EncryptRule;
@@ -48,25 +49,26 @@ public final class MemoryQueryResult implements QueryResult {
     private final Iterator<QueryRow> resultData;
     
     private QueryRow currentRow;
-    
-    private final QueryResultMetaData metaData;
+
+    @Getter
+    private final QueryResultMetaData queryResultMetaData;
     
     @SneakyThrows
     public MemoryQueryResult(final ResultSet resultSet, final ShardingRule shardingRule) {
         resultData = getResultData(resultSet);
-        metaData = new QueryResultMetaData(resultSet.getMetaData(), shardingRule);
+        queryResultMetaData = new QueryResultMetaData(resultSet.getMetaData(), shardingRule);
     }
     
     @SneakyThrows
     public MemoryQueryResult(final ResultSet resultSet, final EncryptRule encryptRule) {
         resultData = getResultData(resultSet);
-        metaData = new QueryResultMetaData(resultSet.getMetaData(), encryptRule);
+        queryResultMetaData = new QueryResultMetaData(resultSet.getMetaData(), encryptRule);
     }
     
     @SneakyThrows
     public MemoryQueryResult(final ResultSet resultSet) {
         resultData = getResultData(resultSet);
-        metaData = new QueryResultMetaData(resultSet.getMetaData());
+        queryResultMetaData = new QueryResultMetaData(resultSet.getMetaData());
     }
         
     @SneakyThrows
@@ -99,7 +101,7 @@ public final class MemoryQueryResult implements QueryResult {
     
     @Override
     public Object getValue(final String columnLabel, final Class<?> type) {
-        return decrypt(columnLabel, currentRow.getColumnValue(metaData.getColumnIndex(columnLabel)));
+        return decrypt(columnLabel, currentRow.getColumnValue(queryResultMetaData.getColumnIndex(columnLabel)));
     }
     
     @Override
@@ -109,7 +111,7 @@ public final class MemoryQueryResult implements QueryResult {
     
     @Override
     public Object getCalendarValue(final String columnLabel, final Class<?> type, final Calendar calendar) {
-        return currentRow.getColumnValue(metaData.getColumnIndex(columnLabel));
+        return currentRow.getColumnValue(queryResultMetaData.getColumnIndex(columnLabel));
     }
     
     @Override
@@ -119,7 +121,7 @@ public final class MemoryQueryResult implements QueryResult {
     
     @Override
     public InputStream getInputStream(final String columnLabel, final String type) {
-        return getInputStream(currentRow.getColumnValue(metaData.getColumnIndex(columnLabel)));
+        return getInputStream(currentRow.getColumnValue(queryResultMetaData.getColumnIndex(columnLabel)));
     }
     
     @SneakyThrows
@@ -139,27 +141,27 @@ public final class MemoryQueryResult implements QueryResult {
     
     @Override
     public boolean isCaseSensitive(final int columnIndex) {
-        return metaData.isCaseSensitive(columnIndex);
+        return queryResultMetaData.isCaseSensitive(columnIndex);
     }
     
     @Override
     public int getColumnCount() {
-        return metaData.getColumnCount();
+        return queryResultMetaData.getColumnCount();
     }
     
     @Override
     public String getColumnLabel(final int columnIndex) {
-        return metaData.getColumnLabel(columnIndex);
+        return queryResultMetaData.getColumnLabel(columnIndex);
     }
     
     @SneakyThrows
     private Object decrypt(final String columnLabel, final Object value) {
-        return decrypt(metaData.getColumnIndex(columnLabel), value);
+        return decrypt(queryResultMetaData.getColumnIndex(columnLabel), value);
     }
     
     @SneakyThrows
     private Object decrypt(final int columnIndex, final Object value) {
-        Optional<ShardingEncryptor> shardingEncryptor = metaData.getShardingEncryptor(columnIndex);
+        Optional<ShardingEncryptor> shardingEncryptor = queryResultMetaData.getShardingEncryptor(columnIndex);
         return shardingEncryptor.isPresent() ? shardingEncryptor.get().decrypt(getCiphertext(value)) : value;
     }
     

@@ -17,9 +17,7 @@
 
 package org.apache.shardingsphere.core.execute.sql.execute.result;
 
-import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
 import lombok.SneakyThrows;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,15 +37,19 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class DistinctQueryResultTest {
     
     private DistinctQueryResult distinctQueryResult;
-    
+
+    private QueryResultMetaData queryResultMetaData;
+
     @Before
     public void setUp() {
+        queryResultMetaData = getQueryResultMetaData();
         Collection<QueryResult> queryResults = getQueryResults();
         List<String> distinctColumnLabels = Collections.singletonList("order_id");
         distinctQueryResult = new DistinctQueryResult(queryResults, distinctColumnLabels);
@@ -63,10 +65,20 @@ public class DistinctQueryResultTest {
             when(queryResult.getColumnLabel(1)).thenReturn("order_id");
             when(queryResult.getValue(1, Object.class)).thenReturn(10 * i);
             when(queryResult.isCaseSensitive(1)).thenReturn(true);
+            doReturn(queryResultMetaData).when(queryResult).getQueryResultMetaData();
             result.add(queryResult);
             result.add(queryResult);
         }
         return result;
+    }
+
+    @SneakyThrows
+    private QueryResultMetaData getQueryResultMetaData() {
+        QueryResultMetaData queryResultMetaData = mock(QueryResultMetaData.class);
+        when(queryResultMetaData.getColumnCount()).thenReturn(1);
+        when(queryResultMetaData.getColumnLabel(1)).thenReturn("order_id");
+        when(queryResultMetaData.getColumnIndex("order_id")).thenReturn(1);
+        return queryResultMetaData;
     }
     
     @Test
@@ -164,10 +176,8 @@ public class DistinctQueryResultTest {
     }
     
     @Test
-    public void assertGetColumnLabelAndIndexMap() {
-        Multimap<String, Integer> expected = HashMultimap.create();
-        expected.put("order_id", 1);
-        assertThat(distinctQueryResult.getColumnLabelAndIndexMap(), is(expected));
+    public void assertGetQueryResultMetaData() {
+        assertThat(distinctQueryResult.getQueryResultMetaData(), is(queryResultMetaData));
     }
     
     @Test
