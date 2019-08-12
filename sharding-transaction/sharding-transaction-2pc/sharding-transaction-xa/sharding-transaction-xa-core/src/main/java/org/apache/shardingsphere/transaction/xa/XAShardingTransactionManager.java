@@ -33,9 +33,9 @@ import javax.transaction.Status;
 import java.sql.Connection;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
+import javax.transaction.TransactionManager;
+import javax.transaction.Transaction;
 
 /**
  * Sharding transaction manager for XA.
@@ -47,14 +47,14 @@ public final class XAShardingTransactionManager implements ShardingTransactionMa
     private final Map<String, SingleXADataSource> singleXADataSourceMap = new HashMap<>();
     
     private final XATransactionManager xaTransactionManager = XATransactionManagerLoader.getInstance().getTransactionManager();
-    
-    private ThreadLocal<List<String>> enlistedXAResource = new ThreadLocal<List<String>>() {
-        @Override
-        public List<String> initialValue() {
-            return new LinkedList<>();
-        }
-    };
-    
+
+	// private ThreadLocal<List<String>> enlistedXAResource = new ThreadLocal<List<String>>() {
+	// @Override
+	// public List<String> initialValue() {
+	// return new LinkedList<>();
+	// }
+	// };
+
     @Override
     public void init(final DatabaseType databaseType, final Collection<ResourceDataSource> resourceDataSources) {
         for (ResourceDataSource each : resourceDataSources) {
@@ -83,11 +83,25 @@ public final class XAShardingTransactionManager implements ShardingTransactionMa
     @SneakyThrows
     @Override
     public Connection getConnection(final String dataSourceName) {
+		// XAShardingTransactionManager should not maintain the enlisted resources, because it cannot control the
+		// association/desociation of transactions. Consider the following scenario( A{REQUIRED} -> B{REQUIRES_NEW} ): <br />
+		// 0. TM begins a xa transaction(txA) for A;
+		// 1. A performs an insert operation in DataSource demo_ds;
+		// 2. A invokes service B, the propagation of B is REQUIRES_NEW, so TM begins a new xa transaction(txB) for B;
+		// 3. B performs an insert operation in the same DataSource demo_ds too;
+		// in this scenario, the XAResource should be enlisted to both txA and txB. In the existing implementation, the
+		// XAResource is only enlisted to txA, because when B get the connection, there is a dataSourceName associated with
+		// current thread.
+		//
+		// Since the XAShardingTransactionManager does not participate in the thread control of transaction, it should always
+		// dispatch the enlistment to the TM, the TM will decide if and how to enlist these xa resources.
+    	TransactionManager transactionManager = this.xaTransactionManager.getTransactionManager();
+    	Transaction transaction = transactionManager.getTransaction();
+		if (transaction == null) {
+			throw new IllegalStateException("XAShardingTransactionManager requires an XA transaction."); // should never happen
+		}
         SingleXAConnection singleXAConnection = singleXADataSourceMap.get(dataSourceName).getXAConnection();
-        if (!enlistedXAResource.get().contains(dataSourceName)) {
-            xaTransactionManager.enlistResource(singleXAConnection.getXAResource());
-            enlistedXAResource.get().add(dataSourceName);
-        }
+        transaction.enlistResource(singleXAConnection.getXAResource());
         return singleXAConnection.getConnection();
     }
     
@@ -99,23 +113,15 @@ public final class XAShardingTransactionManager implements ShardingTransactionMa
     
     @SneakyThrows
     @Override
-    public void commit() {
-        try {
-            xaTransactionManager.getTransactionManager().commit();
-        } finally {
-            enlistedXAResource.remove();
-        }
-    }
+	public void commit() {
+		xaTransactionManager.getTransactionManager().commit();
+	}
     
     @SneakyThrows
     @Override
-    public void rollback() {
-        try {
-            xaTransactionManager.getTransactionManager().rollback();
-        } finally {
-            enlistedXAResource.remove();
-        }
-    }
+	public void rollback() {
+		xaTransactionManager.getTransactionManager().rollback();
+	}
     
     @Override
     public void close() throws Exception {
@@ -124,6 +130,5 @@ public final class XAShardingTransactionManager implements ShardingTransactionMa
         }
         singleXADataSourceMap.clear();
         xaTransactionManager.close();
-        enlistedXAResource = null;
     }
 }
