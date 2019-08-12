@@ -21,6 +21,7 @@ import com.microsoft.sqlserver.jdbc.SQLServerXADataSource;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.h2.jdbcx.JdbcDataSource;
 import org.junit.Test;
+import org.mariadb.jdbc.MariaDbDataSource;
 import org.postgresql.xa.PGXADataSource;
 
 import javax.sql.XADataSource;
@@ -35,7 +36,13 @@ public final class XADataSourceFactoryTest {
         XADataSource xaDataSource = XADataSourceFactory.build(DatabaseTypes.getActualDatabaseType("H2"));
         assertThat(xaDataSource, instanceOf(JdbcDataSource.class));
     }
-    
+
+    @Test
+    public void assertCreateMariaDBXADataSource() {
+        XADataSource xaDataSource = XADataSourceFactory.build(DatabaseTypes.getActualDatabaseType("MariaDB"));
+        assertThat(xaDataSource, instanceOf(MariaDbDataSource.class));
+    }
+
     @Test
     public void assertCreatePGXADataSource() {
         XADataSource xaDataSource = XADataSourceFactory.build(DatabaseTypes.getActualDatabaseType("PostgreSQL"));
