@@ -176,7 +176,7 @@ public class DistinctQueryResultTest {
     }
     
     @Test
-    public void assertGetColumnLabelAndIndexMap() {
+    public void assertGetQueryResultMetaData() {
         assertThat(distinctQueryResult.getQueryResultMetaData(), is(queryResultMetaData));
     }
     
