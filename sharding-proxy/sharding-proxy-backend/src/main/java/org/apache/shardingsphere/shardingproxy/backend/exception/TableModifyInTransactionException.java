@@ -29,5 +29,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public final class TableModifyInTransactionException extends BackendException {
     
+    private static final long serialVersionUID = 5676889868293244575L;
+    
     private final String tableName;
 }

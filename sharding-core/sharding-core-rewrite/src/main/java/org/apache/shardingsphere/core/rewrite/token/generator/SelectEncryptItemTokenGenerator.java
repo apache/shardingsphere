@@ -61,10 +61,13 @@ public final class SelectEncryptItemTokenGenerator implements CollectionSQLToken
     
     private Collection<SelectEncryptItemToken> createSelectCipherItemTokens(final EncryptRule encryptRule, final OptimizedStatement optimizedStatement, final boolean isQueryWithCipherColumn) {
         Collection<SelectEncryptItemToken> result = new LinkedList<>();
-        SelectItemsSegment selectItemsSegment = optimizedStatement.getSQLStatement().findSQLSegment(SelectItemsSegment.class).get();
+        Optional<SelectItemsSegment> selectItemsSegment = optimizedStatement.getSQLStatement().findSQLSegment(SelectItemsSegment.class);
+        if (!selectItemsSegment.isPresent()) {
+            return Collections.emptyList();
+        }
         String tableName = optimizedStatement.getTables().getSingleTableName();
         Collection<String> logicColumns = encryptRule.getLogicColumns(tableName);
-        for (SelectItemSegment each : selectItemsSegment.getSelectItems()) {
+        for (SelectItemSegment each : selectItemsSegment.get().getSelectItems()) {
             if (isLogicColumn(each, logicColumns)) {
                 result.add(createSelectCipherItemToken(each, tableName, encryptRule, isQueryWithCipherColumn));
             }

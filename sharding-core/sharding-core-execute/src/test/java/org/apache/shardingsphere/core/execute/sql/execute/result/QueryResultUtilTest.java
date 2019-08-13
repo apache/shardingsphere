@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.execute.sql.execute.result;
 
 import lombok.SneakyThrows;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,6 +30,7 @@ import java.sql.Clob;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
@@ -43,7 +43,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class QueryResultUtilTest {
+public final class QueryResultUtilTest {
     
     @Mock
     private ResultSet resultSet;
@@ -52,14 +52,12 @@ public class QueryResultUtilTest {
     private ResultSetMetaData resultSetMetaData;
     
     @Before
-    @SneakyThrows
-    public void setUp() {
+    public void setUp() throws SQLException {
         when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
     }
     
     @Test
-    @SneakyThrows
-    public void assertGetValueByBit() {
+    public void assertGetValueByBit() throws SQLException {
         when(resultSetMetaData.getColumnType(1)).thenReturn(Types.BIT);
         byte[] bytes = {1};
         when(resultSet.getObject(1)).thenReturn(bytes);
@@ -67,128 +65,112 @@ public class QueryResultUtilTest {
     }
     
     @Test
-    @SneakyThrows
-    public void assertGetValueByBoolean() {
+    public void assertGetValueByBoolean() throws SQLException {
         when(resultSetMetaData.getColumnType(1)).thenReturn(Types.BOOLEAN);
         when(resultSet.getBoolean(1)).thenReturn(true);
         assertTrue((boolean) QueryResultUtil.getValue(resultSet, 1));
     }
     
     @Test
-    @SneakyThrows
-    public void assertGetValueByTinyint() {
+    public void assertGetValueByTinyint() throws SQLException {
         when(resultSetMetaData.getColumnType(1)).thenReturn(Types.TINYINT);
         when(resultSet.getByte(1)).thenReturn(Byte.MAX_VALUE);
         assertThat((byte) QueryResultUtil.getValue(resultSet, 1), is(Byte.MAX_VALUE));
     }
     
     @Test
-    @SneakyThrows
-    public void assertGetValueBySmallint() {
+    public void assertGetValueBySmallint() throws SQLException {
         when(resultSetMetaData.getColumnType(1)).thenReturn(Types.SMALLINT);
         when(resultSet.getShort(1)).thenReturn(Short.MAX_VALUE);
         assertThat((short) QueryResultUtil.getValue(resultSet, 1), is(Short.MAX_VALUE));
     }
     
     @Test
-    @SneakyThrows
-    public void assertGetValueByInteger() {
+    public void assertGetValueByInteger() throws SQLException {
         when(resultSetMetaData.getColumnType(1)).thenReturn(Types.INTEGER);
         when(resultSet.getInt(1)).thenReturn(Integer.MAX_VALUE);
         assertThat((int) QueryResultUtil.getValue(resultSet, 1), is(Integer.MAX_VALUE));
     }
     
     @Test
-    @SneakyThrows
-    public void assertGetValueByBigint() {
+    public void assertGetValueByBigint() throws SQLException {
         when(resultSetMetaData.getColumnType(1)).thenReturn(Types.BIGINT);
         when(resultSet.getLong(1)).thenReturn(Long.MAX_VALUE);
         assertThat((long) QueryResultUtil.getValue(resultSet, 1), is(Long.MAX_VALUE));
     }
     
     @Test
-    @SneakyThrows
-    public void assertGetValueByNumeric() {
+    public void assertGetValueByNumeric() throws SQLException {
         when(resultSetMetaData.getColumnType(1)).thenReturn(Types.NUMERIC);
         when(resultSet.getBigDecimal(1)).thenReturn(BigDecimal.TEN);
         assertThat((BigDecimal) QueryResultUtil.getValue(resultSet, 1), is(BigDecimal.TEN));
     }
     
     @Test
-    @SneakyThrows
-    public void assertGetValueByDecimal() {
+    public void assertGetValueByDecimal() throws SQLException {
         when(resultSetMetaData.getColumnType(1)).thenReturn(Types.DECIMAL);
         when(resultSet.getBigDecimal(1)).thenReturn(BigDecimal.TEN);
         assertThat((BigDecimal) QueryResultUtil.getValue(resultSet, 1), is(BigDecimal.TEN));
     }
     
     @Test
-    @SneakyThrows
-    public void assertGetValueByFloat() {
+    public void assertGetValueByFloat() throws SQLException {
         when(resultSetMetaData.getColumnType(1)).thenReturn(Types.FLOAT);
         when(resultSet.getDouble(1)).thenReturn(Double.MAX_VALUE);
         assertThat((double) QueryResultUtil.getValue(resultSet, 1), is(Double.MAX_VALUE));
     }
     
     @Test
-    @SneakyThrows
-    public void assertGetValueByDouble() {
+    public void assertGetValueByDouble() throws SQLException {
         when(resultSetMetaData.getColumnType(1)).thenReturn(Types.DOUBLE);
         when(resultSet.getDouble(1)).thenReturn(Double.MAX_VALUE);
         assertThat((double) QueryResultUtil.getValue(resultSet, 1), is(Double.MAX_VALUE));
     }
     
     @Test
-    @SneakyThrows
-    public void assertGetValueByChar() {
+    public void assertGetValueByChar() throws SQLException {
         when(resultSetMetaData.getColumnType(1)).thenReturn(Types.CHAR);
         when(resultSet.getString(1)).thenReturn("x");
         assertThat((String) QueryResultUtil.getValue(resultSet, 1), is("x"));
     }
     
     @Test
-    @SneakyThrows
-    public void assertGetValueByVarchar() {
+    public void assertGetValueByVarchar() throws SQLException {
         when(resultSetMetaData.getColumnType(1)).thenReturn(Types.VARCHAR);
         when(resultSet.getString(1)).thenReturn("xxxxx");
         assertThat((String) QueryResultUtil.getValue(resultSet, 1), is("xxxxx"));
     }
     
     @Test
-    @SneakyThrows
-    public void assertGetValueByLongVarchar() {
+    public void assertGetValueByLongVarchar() throws SQLException {
         when(resultSetMetaData.getColumnType(1)).thenReturn(Types.LONGVARCHAR);
         when(resultSet.getString(1)).thenReturn("xxxxx");
         assertThat((String) QueryResultUtil.getValue(resultSet, 1), is("xxxxx"));
     }
     
     @Test
-    @SneakyThrows
-    public void assertGetValueByBinary() {
+    public void assertGetValueByBinary() throws SQLException {
         when(resultSetMetaData.getColumnType(1)).thenReturn(Types.BINARY);
         when(resultSet.getBytes(1)).thenReturn("xxxxx".getBytes());
         assertThat((byte[]) QueryResultUtil.getValue(resultSet, 1), is("xxxxx".getBytes()));
     }
     
     @Test
-    @SneakyThrows
-    public void assertGetValueByVarBinary() {
+    public void assertGetValueByVarBinary() throws SQLException {
         when(resultSetMetaData.getColumnType(1)).thenReturn(Types.VARBINARY);
         when(resultSet.getBytes(1)).thenReturn("xxxxx".getBytes());
         assertThat((byte[]) QueryResultUtil.getValue(resultSet, 1), is("xxxxx".getBytes()));
     }
     
     @Test
-    @SneakyThrows
-    public void assertGetValueByLongVarBinary() {
+    public void assertGetValueByLongVarBinary() throws SQLException {
         when(resultSetMetaData.getColumnType(1)).thenReturn(Types.LONGVARBINARY);
         when(resultSet.getBytes(1)).thenReturn("xxxxx".getBytes());
         assertThat((byte[]) QueryResultUtil.getValue(resultSet, 1), is("xxxxx".getBytes()));
     }
     
     @Test
-    @SneakyThrows
-    public void assertGetValueByDate() {
+    public void assertGetValueByDate() throws SQLException {
         long currentTime = System.currentTimeMillis();
         when(resultSetMetaData.getColumnType(1)).thenReturn(Types.DATE);
         when(resultSet.getDate(1)).thenReturn(new Date(currentTime));
@@ -196,8 +178,7 @@ public class QueryResultUtilTest {
     }
     
     @Test
-    @SneakyThrows
-    public void assertGetValueByTime() {
+    public void assertGetValueByTime() throws SQLException {
         long currentTime = System.currentTimeMillis();
         when(resultSetMetaData.getColumnType(1)).thenReturn(Types.TIME);
         when(resultSet.getTime(1)).thenReturn(new Time(currentTime));
@@ -205,8 +186,7 @@ public class QueryResultUtilTest {
     }
     
     @Test
-    @SneakyThrows
-    public void assertGetValueByTimestamp() {
+    public void assertGetValueByTimestamp() throws SQLException {
         long currentTime = System.currentTimeMillis();
         when(resultSetMetaData.getColumnType(1)).thenReturn(Types.TIMESTAMP);
         when(resultSet.getTimestamp(1)).thenReturn(new Timestamp(currentTime));
@@ -223,8 +203,7 @@ public class QueryResultUtilTest {
     }
     
     @Test
-    @SneakyThrows
-    public void assertGetValueByBlob() {
+    public void assertGetValueByBlob() throws SQLException {
         Blob blob = mock(Blob.class);
         when(resultSetMetaData.getColumnType(1)).thenReturn(Types.BLOB);
         when(resultSet.getBlob(1)).thenReturn(blob);
@@ -232,8 +211,7 @@ public class QueryResultUtilTest {
     }
     
     @Test
-    @SneakyThrows
-    public void assertGetValueByOther() {
+    public void assertGetValueByOther() throws SQLException {
         Object object = new Object();
         when(resultSetMetaData.getColumnType(1)).thenReturn(Types.OTHER);
         when(resultSet.getObject(1)).thenReturn(object);
@@ -241,10 +219,8 @@ public class QueryResultUtilTest {
     }
     
     @Test
-    @SneakyThrows
-    public void assertNullResultValue() {
+    public void assertNullResultValue() throws SQLException {
         when(resultSet.getObject(1)).thenReturn(null);
         assertNull(QueryResultUtil.getValue(resultSet, 1));
     }
-    
 }

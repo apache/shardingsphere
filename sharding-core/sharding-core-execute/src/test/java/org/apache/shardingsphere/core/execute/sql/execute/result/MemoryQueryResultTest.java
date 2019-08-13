@@ -38,7 +38,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Calendar;
 
-import static org.hamcrest.core.Is.is;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -47,8 +47,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MemoryQueryResultTest {
-
+public final class MemoryQueryResultTest {
+    
+    private ShardingEncryptor shardingEncryptor = mock(ShardingEncryptor.class);
+    
     @SneakyThrows
     private ResultSet getResultSet() {
         ResultSet resultSet = mock(ResultSet.class);
@@ -58,7 +60,7 @@ public class MemoryQueryResultTest {
         doReturn(getResultSetMetaData()).when(resultSet).getMetaData();
         return resultSet;
     }
-
+    
     @SneakyThrows
     private ResultSetMetaData getResultSetMetaData() {
         ResultSetMetaData metaData = mock(ResultSetMetaData.class);
@@ -70,21 +72,19 @@ public class MemoryQueryResultTest {
         when(metaData.isCaseSensitive(1)).thenReturn(false);
         return metaData;
     }
-
-    private ShardingEncryptor shardingEncryptor = mock(ShardingEncryptor.class);
-
+    
     @Test
     public void assertConstructorWithShardingRule() {
         MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet(), getShardingRule());
         assertThat(queryResult.getQueryResultMetaData().getShardingEncryptor(1), is(Optional.fromNullable(shardingEncryptor)));
     }
-
+    
     @Test
     public void assertConstructorWithEncryptRule() {
         MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet(), getEncryptRule());
         assertThat(queryResult.getQueryResultMetaData().getShardingEncryptor(1), is(Optional.fromNullable(shardingEncryptor)));
     }
-
+    
     @Test(expected = SQLException.class)
     @SneakyThrows
     public void assertConstructorWithSqlException() {
@@ -92,48 +92,48 @@ public class MemoryQueryResultTest {
         when(resultSet.next()).thenThrow(new SQLException());
         new MemoryQueryResult(resultSet);
     }
-
+    
     private ShardingRule getShardingRule() {
-        ShardingRule shardingRule = mock(ShardingRule.class);
-        doReturn(getEncryptRule()).when(shardingRule).getEncryptRule();
-        doReturn(Optional.fromNullable(getTableRule())).when(shardingRule).findTableRuleByActualTable("order");
-        return shardingRule;
+        ShardingRule result = mock(ShardingRule.class);
+        doReturn(getEncryptRule()).when(result).getEncryptRule();
+        doReturn(Optional.fromNullable(getTableRule())).when(result).findTableRuleByActualTable("order");
+        return result;
     }
-
+    
     private TableRule getTableRule() {
-        TableRule tableRule = mock(TableRule.class);
-        when(tableRule.getLogicTable()).thenReturn("order");
-        return tableRule;
+        TableRule result = mock(TableRule.class);
+        when(result.getLogicTable()).thenReturn("order");
+        return result;
     }
-
+    
     private EncryptRule getEncryptRule() {
-        EncryptRule encryptRule = mock(EncryptRule.class);
-        when(encryptRule.getShardingEncryptor("order", "order_id")).thenReturn(Optional.fromNullable(shardingEncryptor));
-        when(encryptRule.isCipherColumn("order", "order_id")).thenReturn(false);
-        return encryptRule;
+        EncryptRule result = mock(EncryptRule.class);
+        when(result.getShardingEncryptor("order", "order_id")).thenReturn(Optional.fromNullable(shardingEncryptor));
+        when(result.isCipherColumn("order", "order_id")).thenReturn(false);
+        return result;
     }
-
+    
     @Test
     public void assertNext() {
         MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet());
         assertTrue(queryResult.next());
         assertFalse(queryResult.next());
     }
-
+    
     @Test
     public void assertGetValueWithColumnIndex() {
         MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet());
         queryResult.next();
         assertThat(queryResult.getValue(1, Integer.class), Is.<Object>is(1));
     }
-
+    
     @Test
     public void assertGetValueWithColumnLabel() {
         MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet());
         queryResult.next();
         assertThat(queryResult.getValue("order_id", Integer.class), Is.<Object>is(1));
     }
-
+    
     @Test
     public void assertGetValueWithShardingRule() {
         when(shardingEncryptor.decrypt("1")).thenReturn("1");
@@ -141,7 +141,7 @@ public class MemoryQueryResultTest {
         queryResult.next();
         assertThat(queryResult.getValue("order_id", Integer.class), Is.<Object>is("1"));
     }
-
+    
     @Test(expected = Exception.class)
     public void assertGetValueWithException() {
         ResultSet resultSet = getResultSetWithException();
@@ -149,7 +149,7 @@ public class MemoryQueryResultTest {
         queryResult.next();
         queryResult.getValue("order_id", Integer.class);
     }
-
+    
     @SneakyThrows
     private ResultSet getResultSetWithException() {
         ResultSet resultSet = mock(ResultSet.class);
@@ -159,7 +159,7 @@ public class MemoryQueryResultTest {
         doReturn(getResultSetMetaDataWithException()).when(resultSet).getMetaData();
         return resultSet;
     }
-
+    
     @SneakyThrows
     private ResultSetMetaData getResultSetMetaDataWithException() {
         ResultSetMetaData metaData = mock(ResultSetMetaData.class);
@@ -170,21 +170,21 @@ public class MemoryQueryResultTest {
         when(metaData.getTableName(1)).thenReturn("order");
         return metaData;
     }
-
+    
     @Test
     public void assertGetCalendarValueWithColumnIndex() {
         MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet());
         queryResult.next();
         assertThat(queryResult.getCalendarValue(1, Integer.class, Calendar.getInstance()), Is.<Object>is(1));
     }
-
+    
     @Test
     public void assertGetCalendarValueWithColumnLabel() {
         MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet());
         queryResult.next();
         assertThat(queryResult.getCalendarValue("order_id", Integer.class, Calendar.getInstance()), Is.<Object>is(1));
     }
-
+    
     @Test
     @SneakyThrows
     public void assertGetInputStreamWithColumnIndex() {
@@ -193,7 +193,7 @@ public class MemoryQueryResultTest {
         InputStream inputStream = queryResult.getInputStream(1, "Unicode");
         assertThat(inputStream.read(), is(getInputStream(1).read()));
     }
-
+    
     @Test
     @SneakyThrows
     public void assertGetInputStreamWithColumnLabel() {
@@ -202,7 +202,7 @@ public class MemoryQueryResultTest {
         InputStream inputStream = queryResult.getInputStream("order_id", "Unicode");
         assertThat(inputStream.read(), is(getInputStream(1).read()));
     }
-
+    
     @SneakyThrows
     private InputStream getInputStream(final Object value) {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -212,7 +212,7 @@ public class MemoryQueryResultTest {
         objectOutputStream.close();
         return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
     }
-
+    
     @Test
     public void assertWasNull() {
         MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet());
@@ -221,19 +221,19 @@ public class MemoryQueryResultTest {
         queryResult.next();
         assertTrue(queryResult.wasNull());
     }
-
+    
     @Test
     public void assertIsCaseSensitive() {
         MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet());
         assertFalse(queryResult.isCaseSensitive(1));
     }
-
+    
     @Test
     public void assertGetColumnCount() {
         MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet());
         assertThat(queryResult.getColumnCount(), is(1));
     }
-
+    
     @Test
     public void assertGetColumnLabel() {
         MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet());

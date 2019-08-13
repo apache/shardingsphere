@@ -40,7 +40,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class AggregationDistinctQueryResultTest {
+public final class AggregationDistinctQueryResultTest {
     
     private AggregationDistinctQueryResult aggregationDistinctQueryResult;
     

@@ -23,4 +23,6 @@ package org.apache.shardingsphere.shardingproxy.backend.exception;
  * @author zhangliang
  */
 public abstract class BackendException extends RuntimeException {
+    
+    private static final long serialVersionUID = -2361593557266150160L;
 }
