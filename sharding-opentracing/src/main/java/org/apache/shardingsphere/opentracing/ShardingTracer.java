@@ -72,9 +72,7 @@ public final class ShardingTracer {
      * @param properties properties of tracerGenerator
      */
     public static void init(final String tracerGeneratorType, final Properties properties) {
-        if (Strings.isNullOrEmpty(tracerGeneratorType)) {
-            return;
-        }
+        Preconditions.checkNotNull(tracerGeneratorType, "Can not find opentracing tracer generator implementation class via SPI");
         ShardingTracerGeneratorServiceLoader serviceLoader = new ShardingTracerGeneratorServiceLoader();
         ShardingTracerGenerator shardingTracerGenerator = serviceLoader.newService(tracerGeneratorType, properties);
         ShardingTracer.init(shardingTracerGenerator.generate());
