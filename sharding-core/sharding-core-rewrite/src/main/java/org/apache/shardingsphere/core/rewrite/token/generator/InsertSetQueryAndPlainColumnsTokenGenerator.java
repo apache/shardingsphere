@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
@@ -39,20 +40,13 @@ import java.util.List;
  */
 public final class InsertSetQueryAndPlainColumnsTokenGenerator implements OptionalSQLTokenGenerator<EncryptRule> {
     
-    private EncryptRule encryptRule;
-    
-    private InsertOptimizedStatement insertOptimizedStatement;
-    
-    private String tableName;
-    
     @Override
     public Optional<InsertSetQueryAndPlainColumnsToken> generateSQLToken(
             final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final EncryptRule encryptRule, final boolean isQueryWithCipherColumn) {
         if (!isNeedToGenerateSQLToken(optimizedStatement)) {
             return Optional.absent();
         }
-        initParameters(encryptRule, optimizedStatement);
-        return createInsertSetAddItemsToken();
+        return createInsertSetAddItemsToken((InsertOptimizedStatement) optimizedStatement, encryptRule);
     }
     
     private boolean isNeedToGenerateSQLToken(final OptimizedStatement optimizedStatement) {
@@ -60,31 +54,26 @@ public final class InsertSetQueryAndPlainColumnsTokenGenerator implements Option
         return optimizedStatement instanceof InsertOptimizedStatement && setAssignmentsSegment.isPresent();
     }
     
-    private void initParameters(final EncryptRule encryptRule, final OptimizedStatement optimizedStatement) {
-        this.encryptRule = encryptRule;
-        insertOptimizedStatement = (InsertOptimizedStatement) optimizedStatement;
-        tableName = optimizedStatement.getTables().getSingleTableName();
-    }
-    
-    private Optional<InsertSetQueryAndPlainColumnsToken> createInsertSetAddItemsToken() {
-        if (0 == encryptRule.getAssistedQueryAndPlainColumnCount(tableName)) {
+    private Optional<InsertSetQueryAndPlainColumnsToken> createInsertSetAddItemsToken(final InsertOptimizedStatement optimizedStatement, final EncryptRule encryptRule) {
+        if (0 == encryptRule.getAssistedQueryAndPlainColumnCount(optimizedStatement.getTables().getSingleTableName())) {
             return Optional.absent();
         }
-        List<String> assistedQueryAndPlainColumnNames = getAssistedQueryAndPlainColumnNames();
-        return Optional.of(new InsertSetQueryAndPlainColumnsToken(getStartIndex(), assistedQueryAndPlainColumnNames, getAssistedQueryAndPlainColumnValues(assistedQueryAndPlainColumnNames)));
+        List<String> assistedQueryAndPlainColumnNames = getAssistedQueryAndPlainColumnNames(optimizedStatement, encryptRule);
+        return Optional.of(new InsertSetQueryAndPlainColumnsToken(
+                getStartIndex(optimizedStatement), assistedQueryAndPlainColumnNames, getAssistedQueryAndPlainColumnValues(optimizedStatement, assistedQueryAndPlainColumnNames)));
     }
     
-    private List<String> getAssistedQueryAndPlainColumnNames() {
+    private List<String> getAssistedQueryAndPlainColumnNames(final InsertOptimizedStatement optimizedStatement, final EncryptRule encryptRule) {
         List<String> result = new LinkedList<>();
-        result.addAll(getAssistedQueryColumnNames());
-        result.addAll(getPlainColumnNames());
+        result.addAll(getAssistedQueryColumnNames(optimizedStatement, encryptRule));
+        result.addAll(getPlainColumnNames(optimizedStatement, encryptRule));
         return result;
     }
     
-    private List<String> getAssistedQueryColumnNames() {
+    private List<String> getAssistedQueryColumnNames(final InsertOptimizedStatement optimizedStatement, final EncryptRule encryptRule) {
         List<String> result = new LinkedList<>();
-        for (String each : insertOptimizedStatement.getInsertColumns().getRegularColumnNames()) {
-            Optional<String> assistedQueryColumn = encryptRule.getAssistedQueryColumn(tableName, each);
+        for (String each : optimizedStatement.getInsertColumns().getRegularColumnNames()) {
+            Optional<String> assistedQueryColumn = encryptRule.getAssistedQueryColumn(optimizedStatement.getTables().getSingleTableName(), each);
             if (assistedQueryColumn.isPresent()) {
                 result.add(assistedQueryColumn.get());
             }
@@ -92,10 +81,10 @@ public final class InsertSetQueryAndPlainColumnsTokenGenerator implements Option
         return result;
     }
     
-    private List<String> getPlainColumnNames() {
+    private List<String> getPlainColumnNames(final InsertOptimizedStatement optimizedStatement, final EncryptRule encryptRule) {
         List<String> result = new LinkedList<>();
-        for (String each : insertOptimizedStatement.getInsertColumns().getRegularColumnNames()) {
-            Optional<String> plainColumn = encryptRule.getPlainColumn(tableName, each);
+        for (String each : optimizedStatement.getInsertColumns().getRegularColumnNames()) {
+            Optional<String> plainColumn = encryptRule.getPlainColumn(optimizedStatement.getTables().getSingleTableName(), each);
             if (plainColumn.isPresent()) {
                 result.add(plainColumn.get());
             }
@@ -103,16 +92,17 @@ public final class InsertSetQueryAndPlainColumnsTokenGenerator implements Option
         return result;
     }
     
-    private int getStartIndex() {
-        SetAssignmentsSegment setAssignmentsSegment = insertOptimizedStatement.getSQLStatement().findSQLSegment(SetAssignmentsSegment.class).get();
-        List<AssignmentSegment> assignments = new ArrayList<>(setAssignmentsSegment.getAssignments());
+    private int getStartIndex(final InsertOptimizedStatement optimizedStatement) {
+        Optional<SetAssignmentsSegment> setAssignmentsSegment = optimizedStatement.getSQLStatement().findSQLSegment(SetAssignmentsSegment.class);
+        Preconditions.checkState(setAssignmentsSegment.isPresent());
+        List<AssignmentSegment> assignments = new ArrayList<>(setAssignmentsSegment.get().getAssignments());
         return assignments.get(assignments.size() - 1).getStopIndex() + 1;
     }
     
-    private List<ExpressionSegment> getAssistedQueryAndPlainColumnValues(final Collection<String> assistedQueryAndPlainColumnNames) {
+    private List<ExpressionSegment> getAssistedQueryAndPlainColumnValues(final InsertOptimizedStatement optimizedStatement, final Collection<String> assistedQueryAndPlainColumnNames) {
         List<ExpressionSegment> result = new LinkedList<>();
         for (String each : assistedQueryAndPlainColumnNames) {
-            result.add(insertOptimizedStatement.getUnits().get(0).getColumnSQLExpression(each));
+            result.add(optimizedStatement.getUnits().get(0).getColumnSQLExpression(each));
         }
         return result;
     }
