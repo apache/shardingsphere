@@ -53,8 +53,6 @@ public class DistinctQueryResult implements QueryResult {
     @Getter
     private final QueryResultMetaData queryResultMetaData;
     
-    private final List<Boolean> columnCaseSensitive;
-    
     private final Iterator<QueryRow> resultData;
     
     private QueryRow currentRow;
@@ -63,17 +61,7 @@ public class DistinctQueryResult implements QueryResult {
     public DistinctQueryResult(final Collection<QueryResult> queryResults, final List<String> distinctColumnLabels) {
         QueryResult firstQueryResult = queryResults.iterator().next();
         this.queryResultMetaData = firstQueryResult.getQueryResultMetaData();
-        this.columnCaseSensitive = getColumnCaseSensitive(firstQueryResult);
         resultData = getResultData(queryResults, distinctColumnLabels);
-    }
-    
-    @SneakyThrows
-    private List<Boolean> getColumnCaseSensitive(final QueryResult queryResult) {
-        List<Boolean> result = Lists.newArrayList(false);
-        for (int columnIndex = 1; columnIndex <= queryResult.getColumnCount(); columnIndex++) {
-            result.add(queryResult.isCaseSensitive(columnIndex));
-        }
-        return result;
     }
     
     @SneakyThrows
@@ -115,7 +103,8 @@ public class DistinctQueryResult implements QueryResult {
             public DistinctQueryResult apply(final QueryRow row) {
                 Set<QueryRow> resultData = new LinkedHashSet<>();
                 resultData.add(row);
-                return new DistinctQueryResult(queryResultMetaData, columnCaseSensitive, resultData.iterator());
+
+                return new DistinctQueryResult(queryResultMetaData, resultData.iterator());
             }
         }));
     }
@@ -177,7 +166,7 @@ public class DistinctQueryResult implements QueryResult {
     
     @Override
     public boolean isCaseSensitive(final int columnIndex) {
-        return columnCaseSensitive.get(columnIndex);
+        return queryResultMetaData.isCaseSensitive(columnIndex);
     }
     
     @Override

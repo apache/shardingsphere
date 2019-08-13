@@ -43,9 +43,9 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     
     private final AggregationDistinctQueryMetaData metaData;
         
-    private AggregationDistinctQueryResult(final QueryResultMetaData queryResultMetaData, final List<Boolean> columnCaseSensitive, final Iterator<QueryRow> resultData,
+    private AggregationDistinctQueryResult(final QueryResultMetaData queryResultMetaData, final Iterator<QueryRow> resultData,
         final AggregationDistinctQueryMetaData distinctQueryMetaData) {
-        super(queryResultMetaData, columnCaseSensitive, resultData);
+        super(queryResultMetaData, resultData);
         metaData = distinctQueryMetaData;
     }
     
@@ -74,7 +74,7 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
             public DistinctQueryResult apply(final QueryRow input) {
                 Set<QueryRow> resultData = new LinkedHashSet<>();
                 resultData.add(input);
-                return new AggregationDistinctQueryResult(getQueryResultMetaData(), getColumnCaseSensitive(), resultData.iterator(), metaData);
+                return new AggregationDistinctQueryResult(getQueryResultMetaData(), resultData.iterator(), metaData);
             }
         }));
     }

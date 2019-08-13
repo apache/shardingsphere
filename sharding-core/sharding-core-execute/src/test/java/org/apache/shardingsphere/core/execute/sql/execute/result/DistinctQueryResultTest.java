@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.execute.sql.execute.result;
 
-import com.google.common.collect.Lists;
 import lombok.SneakyThrows;
 import org.junit.Before;
 import org.junit.Test;
@@ -150,6 +149,7 @@ public class DistinctQueryResultTest {
     
     @Test
     public void assertIsCaseSensitive() {
+        when(queryResultMetaData.isCaseSensitive(1)).thenReturn(true);
         assertTrue(distinctQueryResult.isCaseSensitive(1));
     }
     
@@ -178,12 +178,6 @@ public class DistinctQueryResultTest {
     @Test
     public void assertGetQueryResultMetaData() {
         assertThat(distinctQueryResult.getQueryResultMetaData(), is(queryResultMetaData));
-    }
-    
-    @Test
-    public void assertGetColumnCaseSensitive() {
-        List<Boolean> expected = Lists.newArrayList(false, true);
-        assertThat(distinctQueryResult.getColumnCaseSensitive(), is(expected));
     }
     
     @Test
