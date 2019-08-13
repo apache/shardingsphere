@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one or more
   ~ contributor license agreements.  See the NOTICE file distributed with
@@ -16,12 +15,19 @@
   ~ limitations under the License.
   -->
 
-<sql-cases>
-    <!-- TODO cannot pass,add later
-    <sql-case id="select_sub_query_with_multiple_tables" value="SELECT t.* FROM (SELECT i.* FROM t_order o, t_order_item i WHERE o.order_id = i.order_id and o.order_id IN (?, ?)) t ORDER BY t.item_id" db-types="SQLServer,Oracle" />
-    -->
-    <!-- TODO do not support ORDER BY or ORDER BY in subquery for now, add later
-    <sql-case id="select_sub_query_with_order_by" value="SELECT COUNT(1) as orders_count FROM (SELECT * FROM t_order ORDER BY order_id desc) t" db-types="H2,MySQL,PostgreSQL,Oracle" />
-    <sql-case id="select_sub_query_with_group_by" value="SELECT COUNT(1) as order_items_count FROM (SELECT order_id FROM t_order_item GROUP BY order_id) t" db-types="H2,MySQL,PostgreSQL,Oracle" />
-    -->
-</sql-cases>
+<dataset>
+    <metadata>
+        <column name="orders_sum" />
+        <column name="key" />
+    </metadata>
+    <row values="10045, 10" />
+    <row values="11045, 11" />
+    <row values="12045, 12" />
+    <row values="13045, 13" />
+    <row values="14045, 14" />
+    <row values="15045, 15" />
+    <row values="16045, 16" />
+    <row values="17045, 17" />
+    <row values="18045, 18" />
+    <row values="19045, 19" />
+</dataset>

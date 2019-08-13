@@ -17,10 +17,9 @@
 
 <dataset>
     <metadata>
-        <column name="order_id" />
-        <column name="user_id" />
-        <column name="status" />
+        <column name="orders_sum" />
+        <column name="key" />
     </metadata>
-    <row values="1000, 10, init_slave" />
-    <row values="1001, 10, init_slave" />
+    <row values="10045, 10" />
+    <row values="11045, 11" />
 </dataset>

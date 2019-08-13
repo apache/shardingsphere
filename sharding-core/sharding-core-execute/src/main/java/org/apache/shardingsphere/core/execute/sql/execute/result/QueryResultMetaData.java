@@ -42,7 +42,7 @@ public final class QueryResultMetaData {
     private final ShardingRule shardingRule;
     
     private final EncryptRule encryptRule;
-    
+
     private final Map<String, Integer> columnLabelAndIndexes;
     
     @SneakyThrows

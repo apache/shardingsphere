@@ -41,10 +41,7 @@ dropTable
 
 dropIndex
     : DROP INDEX dropIndexSpecification_? indexName (ON tableName)?
-    (
-        ALGORITHM EQ_? (DEFAULT | INPLACE | COPY) 
-        | LOCK EQ_? (DEFAULT | NONE | SHARED | EXCLUSIVE)
-    )*
+    ( ALGORITHM EQ_? (DEFAULT | INPLACE | COPY) | LOCK EQ_? (DEFAULT | NONE | SHARED | EXCLUSIVE) )*
     ;
 
 truncateTable
@@ -69,22 +66,20 @@ alterInstance
     ;
 
 instanceAction
-    : ROTATE 'INNODB' MASTER KEY
-    | ROTATE BINLOG MASTER KEY
-    | RELOAD 'TLS' (NO ROLLBACK ON ERROR)?
+    : ROTATE 'INNODB' MASTER KEY | ROTATE BINLOG MASTER KEY | RELOAD 'TLS' (NO ROLLBACK ON ERROR)?
     ;
 
 createEvent
     : CREATE ownerStatement? EVENT (IF NOT EXISTS)? eventName
       ON SCHEDULE scheduleExpression_
-      (ON COMPLETION NOT? PRESERVE)? (ENABLE | DISABLE | DISABLE ON SLAVE)?
+      (ON COMPLETION NOT? PRESERVE)? 
+      (ENABLE | DISABLE | DISABLE ON SLAVE)?
       (COMMENT STRING_)?
       DO routineBody
     ;
 
 alterEvent
-    : ALTER ownerStatement?
-      EVENT eventName
+    : ALTER ownerStatement? EVENT eventName
       (ON SCHEDULE scheduleExpression_)?
       (ON COMPLETION NOT? PRESERVE)?
       (RENAME TO eventName)? (ENABLE | DISABLE | DISABLE ON SLAVE)?
@@ -98,11 +93,10 @@ dropEvent
 
 createFunction
     : CREATE ownerStatement?
-    FUNCTION functionName
-      LP_ (identifier_ dataType)? (COMMA_ identifier_ dataType)* RP_
+      FUNCTION functionName LP_ (identifier_ dataType)? (COMMA_ identifier_ dataType)* RP_
       RETURNS dataType
       routineOption_*
-    routineBody
+      routineBody
     ;
 
 alterFunction
@@ -115,10 +109,9 @@ dropFunction
 
 createProcedure
     : CREATE ownerStatement?
-    PROCEDURE functionName
-      LP_ procedureParameter_? (COMMA_ procedureParameter_)* RP_
+      PROCEDURE functionName LP_ procedureParameter_? (COMMA_ procedureParameter_)* RP_
       routineOption_*
-    routineBody
+      routineBody
     ;
 
 alterProcedure
@@ -131,8 +124,8 @@ dropProcedure
 
 createServer
     : CREATE SERVER serverName
-    FOREIGN DATA WRAPPER wrapperName
-    OPTIONS LP_ serverOption_ (COMMA_ serverOption_)* RP_
+      FOREIGN DATA WRAPPER wrapperName
+      OPTIONS LP_ serverOption_ (COMMA_ serverOption_)* RP_
     ;
 
 alterServer
@@ -146,23 +139,21 @@ dropServer
 
 createView
     : CREATE (OR REPLACE)?
-      (
-        ALGORITHM EQ_ (UNDEFINED | MERGE | TEMPTABLE)
-      )?
+      ( ALGORITHM EQ_ (UNDEFINED | MERGE | TEMPTABLE) )?
       ownerStatement?
       (SQL SECURITY (DEFINER | INVOKER))?
-      VIEW viewName (LP_ identifier_ (COMMA_ identifier_)* RP_)? AS select
+      VIEW viewName (LP_ identifier_ (COMMA_ identifier_)* RP_)? 
+      AS select
       (WITH (CASCADED | LOCAL)? CHECK OPTION)?
     ;
 
 alterView
     : ALTER
-      (
-        ALGORITHM EQ_ (UNDEFINED | MERGE | TEMPTABLE)
-      )?
+      ( ALGORITHM EQ_ (UNDEFINED | MERGE | TEMPTABLE) )?
       ownerStatement?
       (SQL SECURITY (DEFINER | INVOKER))?
-      VIEW viewName (LP_ identifier_ (COMMA_ identifier_)* RP_)? AS select
+      VIEW viewName (LP_ identifier_ (COMMA_ identifier_)* RP_)? 
+      AS select
       (WITH (CASCADED | LOCAL)? CHECK OPTION)?
     ;
 
@@ -172,14 +163,15 @@ dropView
     ;
 
 createTablespaceInnodb
-    : CREATE TABLESPACE identifier_
+    : CREATE (UNDO)? TABLESPACE identifier_
       ADD DATAFILE STRING_
       (FILE_BLOCK_SIZE EQ_ fileSizeLiteral_)?
+      (ENCRYPTION EQ_ ('Y' | 'N') )?
       (ENGINE EQ_? STRING_)?
     ;
 
 createTablespaceNdb
-    : CREATE TABLESPACE identifier_
+    : CREATE ( UNDO )? TABLESPACE identifier_
       ADD DATAFILE STRING_
       USE LOGFILE GROUP identifier_
       (EXTENT_SIZE EQ_? fileSizeLiteral_)?
@@ -520,21 +512,12 @@ ownerStatement
 scheduleExpression_
     : AT_ timestampValue (PLUS_ intervalExpression_)*
     | EVERY intervalExpression_
-        (
-          STARTS timestampValue
-          (PLUS_ intervalExpression_)*
-        )?
-        (
-          ENDS timestampValue
-          (PLUS_ intervalExpression_)*
-        )?     
+      (STARTS timestampValue (PLUS_ intervalExpression_)*)?
+      ( ENDS timestampValue (PLUS_ intervalExpression_)*)?     
     ;
 
 timestampValue
-    : CURRENT_TIMESTAMP
-    | stringLiterals
-    | numberLiterals
-    | expr
+    : CURRENT_TIMESTAMP | stringLiterals | numberLiterals | expr
     ;
 
 routineBody
@@ -555,10 +538,7 @@ routineOption_
     : COMMENT STRING_                                       
     | LANGUAGE SQL                                              
     | NOT? DETERMINISTIC                                          
-    | (
-        CONTAINS SQL | NO SQL | READS SQL DATA
-        | MODIFIES SQL DATA
-      )                                                           
+    | ( CONTAINS SQL | NO SQL | READS SQL DATA | MODIFIES SQL DATA)                                                           
     | SQL SECURITY (DEFINER | INVOKER)                    
     ;
 

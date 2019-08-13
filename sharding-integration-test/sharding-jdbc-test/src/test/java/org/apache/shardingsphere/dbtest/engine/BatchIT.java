@@ -194,7 +194,9 @@ public abstract class BatchIT extends BaseIT {
             int index = 1;
             for (String each : expectedDatSetRows.get(count).getValues()) {
                 if (Types.DATE == actualResultSet.getMetaData().getColumnType(index)) {
-                    assertThat(new SimpleDateFormat("yyyy-MM-dd").format(actualResultSet.getDate(index)), is(each));
+                    if (!getNotVerifyFlag().equals(each)) {
+                        assertThat(new SimpleDateFormat("yyyy-MM-dd").format(actualResultSet.getDate(index)), is(each));
+                    }
                 } else {
                     assertThat(String.valueOf(actualResultSet.getObject(index)), is(each));
                 }
