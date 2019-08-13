@@ -45,44 +45,44 @@ public final class UpdateEncryptColumnTokenGenerator implements CollectionSQLTok
     public Collection<EncryptColumnToken> generateSQLTokens(
             final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final EncryptRule encryptRule, final boolean isQueryWithCipherColumn) {
         return optimizedStatement.getSQLStatement() instanceof UpdateStatement 
-                ? createUpdateEncryptColumnTokens(encryptRule, parameterBuilder, optimizedStatement) : Collections.<EncryptColumnToken>emptyList();
+                ? createUpdateEncryptColumnTokens(parameterBuilder, encryptRule, optimizedStatement) : Collections.<EncryptColumnToken>emptyList();
     }
     
-    private Collection<EncryptColumnToken> createUpdateEncryptColumnTokens(final EncryptRule encryptRule, final ParameterBuilder parameterBuilder, final OptimizedStatement optimizedStatement) {
+    private Collection<EncryptColumnToken> createUpdateEncryptColumnTokens(final ParameterBuilder parameterBuilder, final EncryptRule encryptRule, final OptimizedStatement optimizedStatement) {
         Collection<EncryptColumnToken> result = new LinkedList<>();
         String tableName = optimizedStatement.getTables().getSingleTableName();
         for (AssignmentSegment each : ((UpdateStatement) optimizedStatement.getSQLStatement()).getSetAssignment().getAssignments()) {
             if (encryptRule.getShardingEncryptor(tableName, each.getColumn().getName()).isPresent()) {
-                result.add(createUpdateEncryptColumnToken(encryptRule, parameterBuilder, tableName, each));
+                result.add(createUpdateEncryptColumnToken(parameterBuilder, encryptRule, tableName, each));
             }
         }
         return result;
     }
     
-    private EncryptColumnToken createUpdateEncryptColumnToken(final EncryptRule encryptRule, 
-                                                              final ParameterBuilder parameterBuilder, final String tableName, final AssignmentSegment assignmentSegment) {
+    private EncryptColumnToken createUpdateEncryptColumnToken(final ParameterBuilder parameterBuilder, 
+                                                              final EncryptRule encryptRule, final String tableName, final AssignmentSegment assignmentSegment) {
         return assignmentSegment.getValue() instanceof ParameterMarkerExpressionSegment 
-                ? createUpdateEncryptParameterColumnToken(encryptRule, parameterBuilder, tableName, assignmentSegment) 
+                ? createUpdateEncryptParameterColumnToken(parameterBuilder, encryptRule, tableName, assignmentSegment) 
                 : createUpdateEncryptLiteralColumnToken(encryptRule, tableName, assignmentSegment);
     }
     
-    private EncryptColumnToken createUpdateEncryptParameterColumnToken(final EncryptRule encryptRule, 
-                                                                       final ParameterBuilder parameterBuilder, final String tableName, final AssignmentSegment assignmentSegment) {
+    private EncryptColumnToken createUpdateEncryptParameterColumnToken(final ParameterBuilder parameterBuilder, 
+                                                                       final EncryptRule encryptRule, final String tableName, final AssignmentSegment assignmentSegment) {
         UpdateEncryptParameterColumnToken result = new UpdateEncryptParameterColumnToken(assignmentSegment.getColumn().getStartIndex(), assignmentSegment.getStopIndex());
         Optional<String> plainColumn = encryptRule.getPlainColumn(tableName, assignmentSegment.getColumn().getName());
         if (plainColumn.isPresent()) {
             result.addUpdateColumn(plainColumn.get());
             result.addUpdateColumn(encryptRule.getCipherColumn(tableName, assignmentSegment.getColumn().getName()));
-            addCipherColumnValueToParameterBuilder(encryptRule, parameterBuilder, tableName, assignmentSegment);
+            addCipherColumnValueToParameterBuilder(parameterBuilder, encryptRule, tableName, assignmentSegment);
         } else {
             result.addUpdateColumn(encryptRule.getCipherColumn(tableName, assignmentSegment.getColumn().getName()));
-            setCipherColumnValueToParameterBuilder(encryptRule, parameterBuilder, tableName, assignmentSegment);
+            setCipherColumnValueToParameterBuilder(parameterBuilder, encryptRule, tableName, assignmentSegment);
         }
-        addAssistedQueryUpdateColumn(encryptRule, parameterBuilder, tableName, assignmentSegment, result);
+        addAssistedQueryUpdateColumn(parameterBuilder, encryptRule, tableName, assignmentSegment, result);
         return result;
     }
     
-    private void addCipherColumnValueToParameterBuilder(final EncryptRule encryptRule, final ParameterBuilder parameterBuilder, final String tableName, final AssignmentSegment assignmentSegment) {
+    private void addCipherColumnValueToParameterBuilder(final ParameterBuilder parameterBuilder, final EncryptRule encryptRule, final String tableName, final AssignmentSegment assignmentSegment) {
         int logicColumnValueIndex = ((ParameterMarkerExpressionSegment) assignmentSegment.getValue()).getParameterMarkerIndex();
         Object originalColumnValue = parameterBuilder.getOriginalParameters().get(logicColumnValueIndex);
         Object cipherColumnValue = encryptRule.getEncryptColumnValues(
@@ -90,7 +90,7 @@ public final class UpdateEncryptColumnTokenGenerator implements CollectionSQLTok
         ((BaseParameterBuilder) parameterBuilder).getAddedIndexAndParameters().put(logicColumnValueIndex + 1, cipherColumnValue);
     }
     
-    private void setCipherColumnValueToParameterBuilder(final EncryptRule encryptRule, final ParameterBuilder parameterBuilder, final String tableName, final AssignmentSegment assignmentSegment) {
+    private void setCipherColumnValueToParameterBuilder(final ParameterBuilder parameterBuilder, final EncryptRule encryptRule, final String tableName, final AssignmentSegment assignmentSegment) {
         int logicColumnValueIndex = ((ParameterMarkerExpressionSegment) assignmentSegment.getValue()).getParameterMarkerIndex();
         Object originalColumnValue = parameterBuilder.getOriginalParameters().get(logicColumnValueIndex);
         Object cipherColumnValue = encryptRule.getEncryptColumnValues(
@@ -98,17 +98,17 @@ public final class UpdateEncryptColumnTokenGenerator implements CollectionSQLTok
         ((BaseParameterBuilder) parameterBuilder).getReplacedIndexAndParameters().put(logicColumnValueIndex, cipherColumnValue);
     }
     
-    private void addAssistedQueryUpdateColumn(final EncryptRule encryptRule, final ParameterBuilder parameterBuilder, 
+    private void addAssistedQueryUpdateColumn(final ParameterBuilder parameterBuilder, final EncryptRule encryptRule,
                                               final String tableName, final AssignmentSegment assignmentSegment, final UpdateEncryptParameterColumnToken result) {
         Optional<String> assistedQueryColumn = encryptRule.getAssistedQueryColumn(tableName, assignmentSegment.getColumn().getName());
         if (assistedQueryColumn.isPresent()) {
             result.addUpdateColumn(assistedQueryColumn.get());
-            addAssistedQueryColumnValueToParameterBuilder(encryptRule, parameterBuilder, tableName, assignmentSegment);
+            addAssistedQueryColumnValueToParameterBuilder(parameterBuilder, encryptRule, tableName, assignmentSegment);
         }
     }
     
-    private void addAssistedQueryColumnValueToParameterBuilder(final EncryptRule encryptRule, 
-                                                               final ParameterBuilder parameterBuilder, final String tableName, final AssignmentSegment assignmentSegment) {
+    private void addAssistedQueryColumnValueToParameterBuilder(final ParameterBuilder parameterBuilder, 
+                                                               final EncryptRule encryptRule, final String tableName, final AssignmentSegment assignmentSegment) {
         int logicColumnValueIndex = ((ParameterMarkerExpressionSegment) assignmentSegment.getValue()).getParameterMarkerIndex();
         Object originalColumnValue = parameterBuilder.getOriginalParameters().get(logicColumnValueIndex);
         Object assistedQueryColumnValue = encryptRule.getEncryptAssistedColumnValues(
