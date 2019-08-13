@@ -19,14 +19,15 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.shardingjdbc.common.base.AbstractEncryptJDBCDatabaseAndTableTest;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -43,63 +44,62 @@ public final class EncryptStatementTest extends AbstractEncryptJDBCDatabaseAndTa
     
     private static final String UPDATE_SQL = "update t_encrypt set pwd ='f' where pwd = 'a'";
     
-    private static final String SELECT_SQL = "select * from t_encrypt where pwd = 'a' ";
+    private static final String SELECT_SQL = "select id, pwd from t_encrypt where pwd = 'a'";
     
-    private static final String SELECT_ALL_SQL = "select id, pwd from t_encrypt";
+    private static final String SELECT_SQL_WITH_STAR = "select * from t_encrypt where pwd = 'a'";
     
-    private EncryptConnection encryptConnection;
+    private static final String SELECT_SQL_WITH_PLAIN = "select id, pwd from t_encrypt where pwd = 'plainValue'";
     
-    @Before
-    public void setUp() {
-        encryptConnection = getEncryptDataSource().getConnection();
-    }
+    private static final String SELECT_SQL_WITH_CIPHER = "select id, pwd from t_encrypt where pwd = 'plainValue'";
+    
+    private static final String SELECT_SQL_TO_ASSERT = "select id, cipher_pwd, plain_pwd from t_encrypt";
     
     @Test
-    public void assertSqlShow() {
-        assertTrue(encryptConnection.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW));
+    public void assertSqlShow() throws SQLException {
+        assertTrue(getEncryptConnectionWithProps().getRuntimeContext().getProps().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW));
     }
     
     @Test
     public void assertInsertWithExecute() throws SQLException {
-        try (Statement statement = encryptConnection.createStatement()) {
+        try (Statement statement = getEncryptConnection().createStatement()) {
             statement.execute(INSERT_SQL);
         }
-        assertResultSet(3, 2, "encryptValue");
+        assertResultSet(3, 2, "encryptValue", "b");
     }
     
     @Test
     public void assertInsertWithExecuteWithGeneratedKey() throws SQLException {
-        try (Statement statement = encryptConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
+        try (Statement statement = getEncryptConnection().createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
             statement.execute(INSERT_GENERATED_KEY_SQL, Statement.RETURN_GENERATED_KEYS);
             ResultSet resultSet = statement.getGeneratedKeys();
             assertTrue(resultSet.next());
             assertThat(resultSet.getInt(1), is(6));
             assertFalse(resultSet.next());
         }
-        assertResultSet(3, 2, "encryptValue");
+        assertResultSet(3, 6, "encryptValue", "b");
     }
     
     @Test
     public void assertDeleteWithExecute() throws SQLException {
-        try (Statement statement = encryptConnection.createStatement()) {
+        try (Statement statement = getEncryptConnection().createStatement()) {
             statement.execute(DELETE_SQL);
         }
-        assertResultSet(1, 5, "encryptValue");
+        assertResultSet(1, 5, "encryptValue", "b");
     }
     
     @Test
     public void assertUpdateWithExecuteUpdate() throws SQLException {
         int result;
-        try (Statement statement = encryptConnection.createStatement()) {
+        try (Statement statement = getEncryptConnection().createStatement()) {
             result = statement.executeUpdate(UPDATE_SQL);
         }
         assertThat(result, is(2));
-        assertResultSet(2, 1, "encryptValue");
+        assertResultSet(2, 1, "encryptValue", "f");
     }
     
     @Test
     public void assertSelectWithExecuteQuery() throws SQLException {
-        try (Statement statement = encryptConnection.createStatement()) {
+        try (Statement statement = getEncryptConnection().createStatement()) {
             ResultSet resultSet = statement.executeQuery(SELECT_SQL);
             assertTrue(resultSet.next());
             assertThat(resultSet.getInt(1), is(1));
@@ -112,7 +112,7 @@ public final class EncryptStatementTest extends AbstractEncryptJDBCDatabaseAndTa
     
     @Test
     public void assertSelectWithExecuteWithProperties() throws SQLException {
-        try (Statement statement = encryptConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT)) {
+        try (Statement statement = getEncryptConnection().createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT)) {
             int[] columnIndexes = {1, 2};
             Boolean result = statement.execute(SELECT_SQL, columnIndexes);
             assertTrue(result);
@@ -122,14 +122,58 @@ public final class EncryptStatementTest extends AbstractEncryptJDBCDatabaseAndTa
         }
     }
     
-    private void assertResultSet(final int resultSetCount, final int id, final Object pwd) throws SQLException {
+    @Test
+    public void assertSelectWithMetaData() throws SQLException {
+        try (Statement statement = getEncryptConnectionWithProps().createStatement()) {
+            ResultSetMetaData metaData = statement.executeQuery(SELECT_SQL_WITH_STAR).getMetaData();
+            assertThat(metaData.getColumnCount(), is(3));
+            for (int i = 0; i < metaData.getColumnCount(); i++) {
+                assertThat(metaData.getColumnLabel(1), is("id"));
+                assertThat(metaData.getColumnLabel(2), is("cipher_pwd"));
+                assertThat(metaData.getColumnLabel(3), is("pwd"));
+            }
+        }
+    }
+    
+    @Test
+    public void assertSelectWithCipherColumn() throws SQLException {
+        try (Statement statement = getEncryptConnection().createStatement()) {
+            ResultSet resultSet = statement.executeQuery(SELECT_SQL_WITH_CIPHER);
+            int count = 1;
+            List<Object> ids = Arrays.asList((Object) 1, 5);
+            while (resultSet.next()) {
+                assertThat(resultSet.getObject("id"), is(ids.get(count - 1)));
+                assertThat(resultSet.getObject("pwd"), is((Object) "decryptValue"));
+                count += 1;
+            }
+            assertThat(count - 1, is(ids.size()));
+        }
+    }
+    
+    @Test
+    public void assertSelectWithPlainColumn() throws SQLException {
+        try (Statement statement = getEncryptConnectionWithProps().createStatement()) {
+            ResultSet resultSet = statement.executeQuery(SELECT_SQL_WITH_PLAIN);
+            int count = 1;
+            List<Object> ids = Arrays.asList((Object) 1, 5);
+            while (resultSet.next()) {
+                assertThat(resultSet.getObject("id"), is(ids.get(count - 1)));
+                assertThat(resultSet.getObject("pwd"), is((Object) "plainValue"));
+                count += 1;
+            }
+            assertThat(count - 1, is(ids.size()));
+        }
+    }
+    
+    private void assertResultSet(final int resultSetCount, final int id, final Object pwd, final Object plain) throws SQLException {
         try (Connection conn = getDatabaseTypeMap().values().iterator().next().values().iterator().next().getConnection();
              Statement stmt = conn.createStatement()) {
-            ResultSet resultSet = stmt.executeQuery(SELECT_ALL_SQL);
+            ResultSet resultSet = stmt.executeQuery(SELECT_SQL_TO_ASSERT);
             int count = 1;
             while (resultSet.next()) {
                 if (id == count) {
-                    assertThat(pwd, is(resultSet.getObject("pwd")));
+                    assertThat(resultSet.getObject("cipher_pwd"), is(pwd));
+                    assertThat(resultSet.getObject("plain_pwd"), is(plain));
                 }
                 count += 1;
             }

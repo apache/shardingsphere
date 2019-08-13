@@ -21,7 +21,9 @@ import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.TextOrderByItemSegment;
+import org.apache.shardingsphere.core.parse.core.constant.QuoteCharacter;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrderByItemSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.pojo.OrderByToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -47,10 +49,19 @@ public final class OrderByTokenGenerator implements OptionalSQLTokenGenerator<Sh
     
     private OrderByToken createOrderByToken(final ShardingSelectOptimizedStatement optimizedStatement) {
         OrderByToken result = new OrderByToken(optimizedStatement.getGroupBy().getLastIndex() + 1);
+        String columnLabel;
         for (OrderByItem each : optimizedStatement.getOrderBy().getItems()) {
-            String columnLabel = each.getSegment() instanceof TextOrderByItemSegment ? ((TextOrderByItemSegment) each.getSegment()).getText() : String.valueOf(each.getIndex());
+            if (each.getSegment() instanceof ColumnOrderByItemSegment) {
+                ColumnOrderByItemSegment columnOrderByItemSegment = (ColumnOrderByItemSegment) each.getSegment();
+                QuoteCharacter quoteCharacter = columnOrderByItemSegment.getColumn().getQuoteCharacter();
+                columnLabel = quoteCharacter.getStartDelimiter() + columnOrderByItemSegment.getText() + quoteCharacter.getEndDelimiter();
+            } else if (each.getSegment() instanceof ExpressionOrderByItemSegment) {
+                columnLabel = ((ExpressionOrderByItemSegment) each.getSegment()).getText();
+            } else {
+                columnLabel = String.valueOf(each.getIndex());
+            }
             result.getColumnLabels().add(columnLabel);
-            result.getOrderDirections().add(each.getSegment().getOrderDirection()); 
+            result.getOrderDirections().add(each.getSegment().getOrderDirection());
         }
         return result;
     }

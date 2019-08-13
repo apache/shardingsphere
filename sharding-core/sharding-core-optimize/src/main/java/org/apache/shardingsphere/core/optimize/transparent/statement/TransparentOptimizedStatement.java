@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.optimize.transparent.statement;
 
 import lombok.Getter;
+import lombok.ToString;
 import org.apache.shardingsphere.core.optimize.api.segment.Tables;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
@@ -27,6 +28,7 @@ import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
  *
  * @author zhangliang
  */
+@ToString(exclude = "sqlStatement")
 public final class TransparentOptimizedStatement implements OptimizedStatement {
     
     private final SQLStatement sqlStatement;

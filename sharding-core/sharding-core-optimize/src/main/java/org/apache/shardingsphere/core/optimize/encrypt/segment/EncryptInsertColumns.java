@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.optimize.encrypt.segment;
 
 import lombok.Getter;
+import lombok.ToString;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.api.segment.InsertColumns;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
@@ -33,29 +34,48 @@ import java.util.LinkedList;
  * Insert columns for encrypt.
  *
  * @author zhangliang
+ * @author panjuan
  */
+@ToString
 public final class EncryptInsertColumns implements InsertColumns {
     
-    private final Collection<String> assistedQueryColumnNames;
+    private final Collection<String> assistedQueryAndPlainColumnNames;
     
     @Getter
     private final Collection<String> regularColumnNames;
     
     public EncryptInsertColumns(final EncryptRule encryptRule, final ShardingTableMetaData shardingTableMetaData, final InsertStatement insertStatement) {
-        String tableName = insertStatement.getTable().getTableName();
-        assistedQueryColumnNames = encryptRule.getEncryptEngine().getAssistedQueryColumns(tableName);
-        regularColumnNames = insertStatement.useDefaultColumns() ? getRegularColumnNamesFromMetaData(shardingTableMetaData, tableName) : getColumnNamesFromSQLStatement(insertStatement);
+        assistedQueryAndPlainColumnNames = encryptRule.getAssistedQueryAndPlainColumns(insertStatement.getTable().getTableName());
+        regularColumnNames = insertStatement.useDefaultColumns() 
+                ? getRegularColumnNamesFromMetaData(encryptRule, shardingTableMetaData, insertStatement) : getColumnNamesFromSQLStatement(insertStatement);
     }
     
-    private Collection<String> getRegularColumnNamesFromMetaData(final ShardingTableMetaData shardingTableMetaData, final String tableName) {
-        Collection<String> allColumnNames = shardingTableMetaData.getAllColumnNames(tableName);
-        Collection<String> result = new LinkedHashSet<>(allColumnNames.size() - assistedQueryColumnNames.size());
+    private Collection<String> getRegularColumnNamesFromMetaData(final EncryptRule encryptRule, final ShardingTableMetaData shardingTableMetaData, final InsertStatement insertStatement) {
+        Collection<String> allColumnNames = shardingTableMetaData.getAllColumnNames(insertStatement.getTable().getTableName());
+        Collection<String> result = new LinkedHashSet<>(allColumnNames.size() - assistedQueryAndPlainColumnNames.size());
+        String tableName = insertStatement.getTable().getTableName();
         for (String each : allColumnNames) {
-            if (!assistedQueryColumnNames.contains(each)) {
+            if (isCipherColumn(encryptRule, tableName, each)) {
+                result.add(getLogicColumn(encryptRule, tableName, each));
+                continue;
+            }
+            if (!isAssistedQueryAndPlainColumns(each)) {
                 result.add(each);
             }
         }
         return result;
+    }
+    
+    private boolean isAssistedQueryAndPlainColumns(final String columnName) {
+        return assistedQueryAndPlainColumnNames.contains(columnName);
+    }
+    
+    private boolean isCipherColumn(final EncryptRule encryptRule, final String tableName, final String columnName) {
+        return encryptRule.getCipherColumns(tableName).contains(columnName);
+    }
+    
+    private String getLogicColumn(final EncryptRule encryptRule, final String tableName, final String columnName) {
+        return encryptRule.getLogicColumn(tableName, columnName);
     }
     
     private Collection<String> getColumnNamesFromSQLStatement(final InsertStatement insertStatement) {
@@ -73,9 +93,9 @@ public final class EncryptInsertColumns implements InsertColumns {
     
     @Override
     public Collection<String> getAllColumnNames() {
-        Collection<String> result = new LinkedHashSet<>(regularColumnNames.size() + assistedQueryColumnNames.size());
+        Collection<String> result = new LinkedHashSet<>(regularColumnNames.size() + assistedQueryAndPlainColumnNames.size());
         result.addAll(regularColumnNames);
-        result.addAll(assistedQueryColumnNames);
+        result.addAll(assistedQueryAndPlainColumnNames);
         return result;
     }
 }

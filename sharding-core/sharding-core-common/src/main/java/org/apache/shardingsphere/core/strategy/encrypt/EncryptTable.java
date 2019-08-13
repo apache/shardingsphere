@@ -22,11 +22,13 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import org.apache.shardingsphere.api.config.encrypt.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.api.config.encrypt.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.core.exception.ShardingException;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Encryptor strategy.
@@ -48,23 +50,62 @@ public final class EncryptTable {
     }
     
     /**
-     * Get sharding encryptor.
-     *
-     * @param logicColumnName column name
-     * @return optional of sharding encryptor
+     * Get logic column.
+     * 
+     * @param cipherColumn cipher column
+     * @return logic column
      */
-    public Optional<String> getShardingEncryptor(final String logicColumnName) { 
-        return columns.containsKey(logicColumnName) ? Optional.of(columns.get(logicColumnName).getEncryptor()) : Optional.<String>absent();
+    public String getLogicColumn(final String cipherColumn) {
+        for (Entry<String, EncryptColumn> entry : columns.entrySet()) {
+            if (entry.getValue().getCipherColumn().equals(cipherColumn)) {
+                return entry.getKey();
+            }
+        }
+        throw new ShardingException("Can not find logic column by %s.", cipherColumn);
     }
     
     /**
-     * Is has sharding query assisted encryptor or not.
+     * Get logic columns.
      *
-     * @return has sharding query assisted encryptor or not
+     * @return logic column
      */
-    public boolean isHasShardingQueryAssistedEncryptor() {
+    public Collection<String> getLogicColumns() {
+        return columns.keySet();        
+    }
+    
+    /**
+     * Get plain column.
+     * 
+     * @param logicColumn logic column name
+     * @return plain column
+     */
+    public Optional<String> getPlainColumn(final String logicColumn) {
+        return columns.keySet().contains(logicColumn) ? columns.get(logicColumn).getPlainColumn() : Optional.<String>absent();
+    }
+    
+    /**
+     * Get plain columns.
+     *
+     * @return plain columns
+     */
+    public Collection<String> getPlainColumns() {
+        Collection<String> result = new LinkedList<>();
         for (EncryptColumn each : columns.values()) {
-            if (each.getAssistedQueryColumn().isPresent()) {
+            if (each.getPlainColumn().isPresent()) {
+                result.add(each.getPlainColumn().get());
+            }
+        }
+        return result;
+    }
+    
+    /**
+     * Is has plain column or not.
+     *
+     * @return has plain column or not
+     */
+    public boolean isHasPlainColumn() {
+        for (EncryptColumn each : columns.values()) {
+            if (each.getPlainColumn().isPresent()) {
                 return true;
             }
         }
@@ -72,16 +113,36 @@ public final class EncryptTable {
     }
     
     /**
+     * Get cipher column.
+     *
+     * @param logicColumn logic column name
+     * @return cipher column
+     */
+    public String getCipherColumn(final String logicColumn) {
+        return columns.get(logicColumn).getCipherColumn();
+    }
+    
+    /**
+     * Get cipher columns.
+     *
+     * @return cipher columns
+     */
+    public Collection<String> getCipherColumns() {
+        Collection<String> result = new LinkedList<>();
+        for (EncryptColumn each : columns.values()) {
+            result.add(each.getCipherColumn());
+        }
+        return result;
+    }
+    
+    /**
      * Get assisted query column.
      *
-     * @param logicColumnName column name
+     * @param logicColumn column name
      * @return assisted query column
      */
-    public Optional<String> getAssistedQueryColumn(final String logicColumnName) {
-        if (!columns.containsKey(logicColumnName)) {
-            return Optional.absent();
-        }
-        return columns.get(logicColumnName).getAssistedQueryColumn();
+    public Optional<String> getAssistedQueryColumn(final String logicColumn) {
+        return columns.containsKey(logicColumn) ? columns.get(logicColumn).getAssistedQueryColumn() : Optional.<String>absent();
     }
     
     /**
@@ -100,22 +161,59 @@ public final class EncryptTable {
     }
     
     /**
-     * Get plain column.
-     * 
-     * @param logicColumnName logic column name
-     * @return plain column
+     * Is has query assisted column or not.
+     *
+     * @return has query assisted column or not
      */
-    public Optional<String> getPlainColumn(final String logicColumnName) {
-        return columns.get(logicColumnName).getPlainColumn();
+    public boolean isHasQueryAssistedColumn() {
+        for (EncryptColumn each : columns.values()) {
+            if (each.getAssistedQueryColumn().isPresent()) {
+                return true;
+            }
+        }
+        return false;
     }
     
     /**
-     * Get cipher column.
+     * Get sharding encryptor.
      *
-     * @param logicColumnName logic column name
-     * @return cipher column
+     * @param logicColumn column name
+     * @return optional of sharding encryptor
      */
-    public String getCipherColumn(final String logicColumnName) {
-        return columns.get(logicColumnName).getCipherColumn();
+    public Optional<String> getShardingEncryptor(final String logicColumn) {
+        return columns.containsKey(logicColumn) ? Optional.of(columns.get(logicColumn).getEncryptor()) : Optional.<String>absent();
+    }
+    
+    /**
+     * Get logic and cipher columns.
+     *
+     * @return logic and cipher columns
+     */
+    public Map<String, String> getLogicAndCipherColumns() {
+        return Maps.transformValues(columns, new Function<EncryptColumn, String>() {
+            
+            @Override
+            public String apply(final EncryptColumn input) {
+                return input.getCipherColumn();
+            }
+        });
+    }
+    
+    /**
+     * Get logic and plain columns.
+     *
+     * @return logic and plain columns
+     */
+    public Map<String, String> getLogicAndPlainColumns() {
+        return Maps.transformValues(columns, new Function<EncryptColumn, String>() {
+            
+            @Override
+            public String apply(final EncryptColumn input) {
+                if (input.getPlainColumn().isPresent()) {
+                    return input.getPlainColumn().get();
+                }
+                throw new ShardingException("Plain column is null.");
+            }
+        });
     }
 }

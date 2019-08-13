@@ -18,7 +18,7 @@
 
 <sql-cases>
     <sql-case id="insert_with_all_placeholders" value="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, ?)" />
-    <sql-case id="insert_with_now_function" value="INSERT INTO t_order (order_id, user_id, status,create_time) VALUES (?, ?, ?,now())" db-types="MySQL" />
+    <sql-case id="insert_with_now_function" value="INSERT INTO t_order_item (item_id, order_id, user_id, status, creation_date) VALUES (?, ?, ?, 'insert', now())" db-types="MySQL" />
     <sql-case id="insert_without_parameters" value="INSERT INTO t_order (order_id, user_id, status) VALUES (1, 1, 'insert')" />
     <sql-case id="insert_with_special_characters" value="INSERT INTO `t_order` (`order_id`, `user_id`, `status`) VALUES (1, 1, 'insert')" db-types="MySQL" />
     <sql-case id="insert_with_special_syntax" value="INSERT /*+ index(field1) */ INTO t_order (order_id, user_id, status) VALUES (1, 1, 'insert') RETURNING order_id" db-types="PostgreSQL" />

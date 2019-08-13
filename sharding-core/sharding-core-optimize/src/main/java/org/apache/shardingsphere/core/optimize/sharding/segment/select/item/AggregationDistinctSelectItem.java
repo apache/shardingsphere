@@ -28,10 +28,17 @@ import org.apache.shardingsphere.core.parse.core.constant.AggregationType;
 @Getter
 public final class AggregationDistinctSelectItem extends AggregationSelectItem {
     
+    private final int startIndex;
+    
+    private final int stopIndex;
+    
     private final String distinctInnerExpression;
     
-    public AggregationDistinctSelectItem(final AggregationType type, final String innerExpression, final String alias, final String distinctInnerExpression) {
+    public AggregationDistinctSelectItem(final int startIndex, final int stopIndex, 
+                                         final AggregationType type, final String innerExpression, final String alias, final String distinctInnerExpression) {
         super(type, innerExpression, alias);
+        this.startIndex = startIndex;
+        this.stopIndex = stopIndex;
         this.distinctInnerExpression = distinctInnerExpression;
     }
     

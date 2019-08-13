@@ -17,11 +17,14 @@
 
 package org.apache.shardingsphere.core.rewrite.token;
 
-import org.apache.shardingsphere.core.rewrite.token.generator.UpdateEncryptColumnTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.token.generator.InsertAssistedColumnsTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.token.generator.InsertSetAddAssistedColumnsTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.token.generator.InsertSetEncryptValueTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.token.generator.InsertCipherNameTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.token.generator.InsertQueryAndPlainNamesTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.token.generator.InsertSetCipherColumnTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.token.generator.InsertSetQueryAndPlainColumnsTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.token.generator.InsertValuesTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.SQLTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.token.generator.SelectEncryptItemTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.token.generator.UpdateEncryptColumnTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.WhereEncryptColumnTokenGenerator;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
@@ -38,11 +41,14 @@ public final class EncryptTokenGenerateEngine extends SQLTokenGenerateEngine<Enc
     private static final Collection<SQLTokenGenerator> SQL_TOKEN_GENERATORS = new LinkedList<>();
     
     static {
+        SQL_TOKEN_GENERATORS.add(new SelectEncryptItemTokenGenerator());
         SQL_TOKEN_GENERATORS.add(new UpdateEncryptColumnTokenGenerator());
         SQL_TOKEN_GENERATORS.add(new WhereEncryptColumnTokenGenerator());
-        SQL_TOKEN_GENERATORS.add(new InsertAssistedColumnsTokenGenerator());
-        SQL_TOKEN_GENERATORS.add(new InsertSetEncryptValueTokenGenerator());
-        SQL_TOKEN_GENERATORS.add(new InsertSetAddAssistedColumnsTokenGenerator());
+        SQL_TOKEN_GENERATORS.add(new InsertCipherNameTokenGenerator());
+        SQL_TOKEN_GENERATORS.add(new InsertQueryAndPlainNamesTokenGenerator());
+        SQL_TOKEN_GENERATORS.add(new InsertSetCipherColumnTokenGenerator());
+        SQL_TOKEN_GENERATORS.add(new InsertSetQueryAndPlainColumnsTokenGenerator());
+        SQL_TOKEN_GENERATORS.add(new InsertValuesTokenGenerator());
     }
     
     @Override

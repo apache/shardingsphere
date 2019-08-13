@@ -17,34 +17,64 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.ShardingConstant;
+import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.DerivedColumn;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.WrapperAdapter;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Sharding result set meta data.
  * 
  * @author zhangliang
+ * @author panjuan
  */
-@RequiredArgsConstructor
 public final class ShardingResultSetMetaData extends WrapperAdapter implements ResultSetMetaData {
     
     private final ResultSetMetaData resultSetMetaData;
     
     private final ShardingRule shardingRule;
     
+    private final OptimizedStatement optimizedStatement;
+    
+    private final Map<String, String> logicAndActualColumns;
+    
+    public ShardingResultSetMetaData(final ResultSetMetaData resultSetMetaData, 
+                                     final ShardingRule shardingRule, final OptimizedStatement optimizedStatement, final Map<String, String> logicAndActualColumns) {
+        this.resultSetMetaData = resultSetMetaData;
+        this.shardingRule = shardingRule;
+        this.optimizedStatement = optimizedStatement;
+        this.logicAndActualColumns = logicAndActualColumns;
+    }
+    
     @Override
     public int getColumnCount() throws SQLException {
+        return resultSetMetaData.getColumnCount() - getDerivedColumnCount();
+    }
+    
+    private int getDerivedColumnCount() throws SQLException {
         int result = 0;
+        Collection<String> assistedQueryColumns = getAssistedQueryColumns();
         for (int columnIndex = 1; columnIndex <= resultSetMetaData.getColumnCount(); columnIndex++) {
-            if (!DerivedColumn.isDerivedColumn(resultSetMetaData.getColumnLabel(columnIndex))) {
+            String columnLabel = resultSetMetaData.getColumnLabel(columnIndex);
+            if (DerivedColumn.isDerivedColumn(columnLabel) || assistedQueryColumns.contains(columnLabel)) {
                 result++;
             }
+        }
+        return result;
+    }
+    
+    private Collection<String> getAssistedQueryColumns() {
+        Collection<String> result = new LinkedList<>();
+        for (String each : optimizedStatement.getTables().getTableNames()) {
+            result.addAll(shardingRule.getEncryptRule().getAssistedQueryColumns(each));
         }
         return result;
     }
@@ -86,12 +116,23 @@ public final class ShardingResultSetMetaData extends WrapperAdapter implements R
     
     @Override
     public String getColumnLabel(final int column) throws SQLException {
-        return resultSetMetaData.getColumnLabel(column);
+        String result = resultSetMetaData.getColumnLabel(column);
+        return logicAndActualColumns.values().contains(result) ? getLogicColumn(result) : result;
     }
     
     @Override
     public String getColumnName(final int column) throws SQLException {
-        return resultSetMetaData.getColumnName(column);
+        String result = resultSetMetaData.getColumnName(column);
+        return logicAndActualColumns.values().contains(result) ? getLogicColumn(result) : result;
+    }
+    
+    private String getLogicColumn(final String actualColumn) throws SQLException {
+        for (Entry<String, String> entry : logicAndActualColumns.entrySet()) {
+            if (entry.getValue().contains(actualColumn)) {
+                return entry.getKey();
+            }
+        }
+        throw new SQLException(String.format("Can not get logic column by %s.", actualColumn));
     }
     
     @Override

@@ -41,19 +41,27 @@
 #  encryptors:
 #    encryptor_aes:
 #      type: aes
-#      qualifiedColumns: t_encrypt.pwd
 #      props:
 #        aes.key.value: 123456abc
 #    encryptor_md5:
-#          type: md5
-#          qualifiedColumns: t_encrypt.name
+#      type: md5
+#  tables:
+#    t_encrypt:
+#      columns:
+#        user_id:
+#          plainColumn: user_plain
+#          cipherColumn: user_cipher
+#          encryptor: encryptor_aes
+#        order_id:
+#          cipherColumn: order_encrypt
+#          encryptor: encryptor_md5
 
 ######################################################################################################
 #
 # If you want to connect to MySQL, you should manually copy MySQL driver to lib directory.
 #
 ######################################################################################################
-
+#
 #schemaName: encrypt_db
 #
 #dataSource:
@@ -64,14 +72,22 @@
 #  idleTimeoutMilliseconds: 60000
 #  maxLifetimeMilliseconds: 1800000
 #  maxPoolSize: 50
-#  
+#
 #encryptRule:
 #  encryptors:
 #    encryptor_aes:
 #      type: aes
-#      qualifiedColumns: t_encrypt.pwd
 #      props:
 #        aes.key.value: 123456abc
 #    encryptor_md5:
-#          type: md5
-#          qualifiedColumns: t_encrypt.name
+#      type: md5
+#  tables:
+#    t_encrypt:
+#      columns:
+#        user_id:
+#          plainColumn: user_plain
+#          cipherColumn: user_cipher
+#          encryptor: encryptor_aes
+#        order_id:
+#          cipherColumn: order_cipher
+#          encryptor: encryptor_md5

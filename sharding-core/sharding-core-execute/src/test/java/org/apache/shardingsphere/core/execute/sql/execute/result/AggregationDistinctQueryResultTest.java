@@ -36,6 +36,7 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -65,18 +66,36 @@ public class AggregationDistinctQueryResultTest {
             when(queryResult.getValue(3, Object.class)).thenReturn(10 * i);
             when(queryResult.getValue(4, Object.class)).thenReturn(10 * i);
             when(queryResult.getValue(5, Object.class)).thenReturn(10 * i);
+            doReturn(getQueryResultMetaData()).when(queryResult).getQueryResultMetaData();
             result.add(queryResult);
             result.add(queryResult);
         }
         return result;
     }
+
+    @SneakyThrows
+    private QueryResultMetaData getQueryResultMetaData() {
+        QueryResultMetaData queryResultMetaData = mock(QueryResultMetaData.class);
+        when(queryResultMetaData.getColumnCount()).thenReturn(5);
+        when(queryResultMetaData.getColumnLabel(1)).thenReturn("order_id");
+        when(queryResultMetaData.getColumnLabel(2)).thenReturn("c");
+        when(queryResultMetaData.getColumnLabel(3)).thenReturn("a");
+        when(queryResultMetaData.getColumnLabel(4)).thenReturn("AVG_DERIVED_COUNT_0");
+        when(queryResultMetaData.getColumnLabel(5)).thenReturn("AVG_DERIVED_SUM_0");
+        when(queryResultMetaData.getColumnIndex("order_id")).thenReturn(1);
+        when(queryResultMetaData.getColumnIndex("c")).thenReturn(2);
+        when(queryResultMetaData.getColumnIndex("a")).thenReturn(3);
+        when(queryResultMetaData.getColumnIndex("AVG_DERIVED_COUNT_0")).thenReturn(4);
+        when(queryResultMetaData.getColumnIndex("AVG_DERIVED_SUM_0")).thenReturn(5);
+        return queryResultMetaData;
+    }
     
     private List<AggregationDistinctSelectItem> getAggregationDistinctSelectItems() {
         List<AggregationDistinctSelectItem> result = new LinkedList<>();
-        AggregationDistinctSelectItem distinctCountSelectItem = new AggregationDistinctSelectItem(AggregationType.COUNT, "(DISTINCT order_id)", "c", "order_id");
-        AggregationDistinctSelectItem distinctAvgSelectItem = new AggregationDistinctSelectItem(AggregationType.AVG, "(DISTINCT order_id)", "a", "order_id");
-        distinctAvgSelectItem.getDerivedAggregationItems().add(new AggregationDistinctSelectItem(AggregationType.COUNT, "(DISTINCT order_id)", "AVG_DERIVED_COUNT_0", "order_id"));
-        distinctAvgSelectItem.getDerivedAggregationItems().add(new AggregationDistinctSelectItem(AggregationType.SUM, "(DISTINCT order_id)", "AVG_DERIVED_SUM_0", "order_id"));
+        AggregationDistinctSelectItem distinctCountSelectItem = new AggregationDistinctSelectItem(0, 0, AggregationType.COUNT, "(DISTINCT order_id)", "c", "order_id");
+        AggregationDistinctSelectItem distinctAvgSelectItem = new AggregationDistinctSelectItem(0, 0, AggregationType.AVG, "(DISTINCT order_id)", "a", "order_id");
+        distinctAvgSelectItem.getDerivedAggregationItems().add(new AggregationDistinctSelectItem(0, 0, AggregationType.COUNT, "(DISTINCT order_id)", "AVG_DERIVED_COUNT_0", "order_id"));
+        distinctAvgSelectItem.getDerivedAggregationItems().add(new AggregationDistinctSelectItem(0, 0, AggregationType.SUM, "(DISTINCT order_id)", "AVG_DERIVED_SUM_0", "order_id"));
         result.add(distinctCountSelectItem);
         result.add(distinctAvgSelectItem);
         return result;

@@ -24,6 +24,7 @@ import org.apache.shardingsphere.core.parse.integrate.jaxb.groupby.ExpectedGroup
 import org.apache.shardingsphere.core.parse.integrate.jaxb.insert.ExpectedInsertColumnsAndValues;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.orderby.ExpectedOrderByColumn;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.pagination.ExpectedPaginationValue;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.selectitem.ExpectedSelectItems;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.table.ExpectedAlterTable;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.table.ExpectedTable;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.token.ExpectedTokens;
@@ -84,6 +85,9 @@ public final class ParserResult {
     
     @XmlAttribute(name = "auto-commit")
     private boolean autoCommit;
+
+    @XmlElement(name = "select-items")
+    private ExpectedSelectItems selectItems = new ExpectedSelectItems();
     
     /**
      * Get parameters.

@@ -17,19 +17,18 @@
 
 package org.apache.shardingsphere.core.rewrite.token;
 
-import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.optimize.encrypt.segment.condition.EncryptCondition;
 import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.groupby.GroupBy;
+import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.SelectItem;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.SelectItems;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.orderby.OrderBy;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.pagination.Pagination;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.item.AggregationDistinctSelectItemSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemsSegment;
+import org.apache.shardingsphere.core.parse.core.constant.AggregationType;
+import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SQLToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SelectItemPrefixToken;
@@ -45,7 +44,6 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public final class SQLTokenGenerateEngineTest {
     
@@ -60,23 +58,10 @@ public final class SQLTokenGenerateEngineTest {
     @Before
     public void setUp() {
         SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getAllSQLSegments().add(createSelectItemsSegment());
+        SelectItems selectItems = new SelectItems(1, 20, false, 
+                Collections.<SelectItem>singletonList(new AggregationDistinctSelectItem(1, 2, AggregationType.COUNT, "(DISTINCT id)", "c", "id")), Collections.<TableSegment>emptyList(), null);
         optimizedStatement = new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), Collections.<EncryptCondition>emptyList(), 
-                new GroupBy(Collections.<OrderByItem>emptyList(), 1), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
-                new SelectItems(Collections.<SelectItem>emptyList(), false, 0), new Pagination(null, null, Collections.emptyList()));
-    }
-    
-    private SelectItemsSegment createSelectItemsSegment() {
-        SelectItemsSegment selectItemsSegment = mock(SelectItemsSegment.class);
-        when(selectItemsSegment.getStartIndex()).thenReturn(1);
-        when(selectItemsSegment.getSelectItems()).thenReturn(Collections.<SelectItemSegment>emptyList());
-        AggregationDistinctSelectItemSegment distinctSelectItemSegment = mock(AggregationDistinctSelectItemSegment.class);
-        when(distinctSelectItemSegment.getDistinctExpression()).thenReturn("COUNT(DISTINCT id)");
-        when(distinctSelectItemSegment.getAlias()).thenReturn(Optional.of("c"));
-        when(distinctSelectItemSegment.getStartIndex()).thenReturn(1);
-        when(distinctSelectItemSegment.getStopIndex()).thenReturn(2);
-        when(selectItemsSegment.findSelectItemSegments(AggregationDistinctSelectItemSegment.class)).thenReturn(Collections.singletonList(distinctSelectItemSegment));
-        return selectItemsSegment;
+                new GroupBy(Collections.<OrderByItem>emptyList(), 1), new OrderBy(Collections.<OrderByItem>emptyList(), false), selectItems, new Pagination(null, null, Collections.emptyList()));
     }
     
     @SuppressWarnings("unchecked")

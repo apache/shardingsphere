@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.optimize.sharding.statement.dml;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
+import lombok.ToString;
 import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
 import org.apache.shardingsphere.core.optimize.api.segment.Tables;
 import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
@@ -43,6 +44,7 @@ import java.util.List;
  * @author zhangliang
  */
 @Getter
+@ToString(callSuper = true)
 public final class ShardingInsertOptimizedStatement extends ShardingConditionOptimizedStatement implements InsertOptimizedStatement {
     
     private final Tables tables;

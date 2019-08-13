@@ -48,7 +48,7 @@ shardingRule:
         type: SNOWFLAKE
         column: id
         props:
-          worker.id: 123
+          worker.id: 123 
   bindingTables:
     - table_x, table_y
   encryptRule:
@@ -61,13 +61,14 @@ shardingRule:
       table_z:
         columns:
           id:
-            cipherColumn: id
+            cipherColumn: cipher
+            plainColumn: plain
             encryptor: z_encryptor
       table_k:
         columns:
           id:
-            cipherColumn: id
-            assistedQueryColumn: query_id
+            cipherColumn: cipher
+            assistedQueryColumn: query
             encryptor: k_encryptor
           id1:
             cipherColumn: id1
@@ -76,6 +77,7 @@ shardingRule:
       table_w:
         columns:
           name:
-            cipherColumn: name
-            assistedQueryColumn: query_name
+            plainColumn: plain
+            cipherColumn: cipher
+            assistedQueryColumn: query
             encryptor: k_encryptor                      

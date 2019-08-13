@@ -63,9 +63,11 @@ public class OrchestrationSpringBootEncryptTest {
         BasicDataSource embedDataSource = (BasicDataSource) encryptDataSource.getDataSource();
         assertThat(embedDataSource.getMaxTotal(), is(100));
         assertThat(embedDataSource.getUsername(), is("sa"));
-        EncryptRuleConfiguration encryptRuleConfig = encryptDataSource.getEncryptRule().getEncryptRuleConfig();
+        EncryptRuleConfiguration encryptRuleConfig = encryptDataSource.getRuntimeContext().getRule().getRuleConfiguration();
         assertThat(encryptRuleConfig.getEncryptors().size(), is(1));
         assertTrue(encryptRuleConfig.getEncryptors().containsKey("order_encrypt"));
         assertThat(encryptRuleConfig.getEncryptors().get("order_encrypt").getType(), is("aes"));
+        assertThat(encryptRuleConfig.getTables().size(), is(1));
+        assertThat(encryptRuleConfig.getTables().get("t_order").getColumns().get("order_id").getCipherColumn(), is("cipher_order_id"));
     }
 }

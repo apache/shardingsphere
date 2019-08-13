@@ -23,7 +23,6 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
@@ -67,17 +66,27 @@ public final class SQLUtilTest {
     }
     
     @Test
+    public void assertGetExactlyValueUsingNull() {
+        assertNull(SQLUtil.getExactlyValue(null));
+    }
+    
+    @Test
     public void assertGetExactlyExpressionUsingAndReturningNull() {
         assertNull(SQLUtil.getExactlyExpression(null));
     }
     
     @Test
-    public void testGetExactlyExpressionUsingAndReturningEmptyString() {
-        assertEquals("", SQLUtil.getExactlyExpression(""));
+    public void assertGetExactlyExpressionUsingAndReturningEmptyString() {
+        assertThat(SQLUtil.getExactlyExpression(""), is(""));
     }
     
     @Test
-    public void assertGetExactlyValueUsingNull() {
-        assertNull(SQLUtil.getExactlyValue(null));
+    public void assertGetExactlyExpression() {
+        assertThat(SQLUtil.getExactlyExpression("((a + b*c))"), is("((a+b*c))"));
+    }
+    
+    @Test
+    public void assertGetExpressionWithoutOutsideParentheses() {
+        assertThat(SQLUtil.getExpressionWithoutOutsideParentheses("((a + b*c))"), is("a + b*c"));
     }
 }

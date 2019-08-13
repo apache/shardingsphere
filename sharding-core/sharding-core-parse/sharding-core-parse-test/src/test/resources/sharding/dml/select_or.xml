@@ -36,6 +36,11 @@
                 </condition>
             </and-condition>
         </sharding-conditions>
+        <select-items start-index="7" stop-index="7">
+            <shorthand-select-items>
+                <shorthand-select-item text="*" start-index="7" stop-index="7" />
+            </shorthand-select-items>
+        </select-items>
     </parser-result>
     
     <parser-result sql-case-id="select_or_with_different_sharding_columns" parameters="1, 2">
@@ -57,6 +62,11 @@
                 </condition>
             </and-condition>
         </sharding-conditions>
+        <select-items start-index="7" stop-index="7">
+            <shorthand-select-items>
+                <shorthand-select-item text="*" start-index="7" stop-index="7" />
+            </shorthand-select-items>
+        </select-items>
     </parser-result>
     
     <parser-result sql-case-id="select_or_with_none_sharding_columns" parameters="1, 'init'">
@@ -71,6 +81,11 @@
                 <value index="1" literal="init" type="varchar" />
             </condition>
         </encrypt-conditions>
+        <select-items start-index="7" stop-index="7">
+            <shorthand-select-items>
+                <shorthand-select-item text="*" start-index="7" stop-index="7" />
+            </shorthand-select-items>
+        </select-items>
     </parser-result>
     
     <parser-result sql-case-id="select_or_mix_and_for_simple_pattern" parameters="1, 'init', 3">
@@ -100,6 +115,11 @@
                 <value index="1" literal="init" type="varchar" />
             </condition>
         </encrypt-conditions>
+        <select-items start-index="7" stop-index="7">
+            <shorthand-select-items>
+                <shorthand-select-item text="*" start-index="7" stop-index="7" />
+            </shorthand-select-items>
+        </select-items>
     </parser-result>
     
     <parser-result sql-case-id="select_or_mix_and_for_complex_pattern" parameters="'init', 1, 2, 3, 4">
@@ -148,6 +168,11 @@
                 <value index="0" literal="init" type="varchar" />
             </condition>
         </encrypt-conditions>
+        <select-items start-index="7" stop-index="7">
+            <shorthand-select-items>
+                <shorthand-select-item text="*" start-index="7" stop-index="7" />
+            </shorthand-select-items>
+        </select-items>
     </parser-result>
     
     <parser-result sql-case-id="select_or_mix_and_with_binding_tables" parameters="1, 2, 3">
@@ -177,6 +202,13 @@
                 </condition>
             </and-condition>
         </sharding-conditions>
+        <select-items start-index="7" stop-index="9">
+            <shorthand-select-items>
+                <shorthand-select-item text="i.*" start-index="7" stop-index="9">
+                    <table-segment name="i" />
+                </shorthand-select-item>
+            </shorthand-select-items>
+        </select-items>
     </parser-result>
     
     <parser-result sql-case-id="select_or_mix_and_with_binding_and_broadcast_tables" parameters="1, 2, 3, 'init'">
@@ -212,5 +244,12 @@
                 <value index="3" literal="init" type="varchar" />
             </condition>
         </encrypt-conditions>
+        <select-items start-index="7" stop-index="9">
+            <shorthand-select-items>
+                <shorthand-select-item text="i.*" start-index="7" stop-index="9">
+                    <table-segment name="i" />
+                </shorthand-select-item>
+            </shorthand-select-items>
+        </select-items>
     </parser-result>
 </parser-result-sets>

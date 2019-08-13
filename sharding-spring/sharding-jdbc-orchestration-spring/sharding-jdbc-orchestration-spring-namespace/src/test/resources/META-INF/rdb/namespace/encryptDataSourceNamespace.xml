@@ -47,6 +47,7 @@
         </encrypt:encrypt-rule>
         <encrypt:props>
             <prop key="sql.show">${sql_show}</prop>
+            <prop key="query.with.cipher.column">false</prop>
         </encrypt:props>
     </encrypt:data-source>
 </beans>

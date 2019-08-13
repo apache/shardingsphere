@@ -21,7 +21,7 @@ import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -63,13 +63,13 @@ public final class SQLLogger {
      * 
      * @param logicSQL logic SQL
      * @param showSimple whether show SQL in simple style
-     * @param sqlStatement SQL statement
+     * @param optimizedStatement optimized statement
      * @param routeUnits route units
      */
-    public static void logSQL(final String logicSQL, final boolean showSimple, final SQLStatement sqlStatement, final Collection<RouteUnit> routeUnits) {
+    public static void logSQL(final String logicSQL, final boolean showSimple, final OptimizedStatement optimizedStatement, final Collection<RouteUnit> routeUnits) {
         log("Rule Type: sharding");
         log("Logic SQL: {}", logicSQL);
-        log("SQLStatement: {}", sqlStatement);
+        log("SQLStatement: {}", optimizedStatement);
         if (showSimple) {
             logSimpleMode(routeUnits);
         } else {

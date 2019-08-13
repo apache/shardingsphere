@@ -82,7 +82,7 @@ public final class OrchestrationShardingDataSourceTest {
     @Test
     public void assertRenewRule() {
         shardingDataSource.renew(new ShardingRuleChangedEvent(ShardingConstant.LOGIC_SCHEMA_NAME, getShardingRuleConfig()));
-        assertThat(shardingDataSource.getDataSource().getShardingContext().getShardingRule().getTableRules().size(), is(1));
+        assertThat(shardingDataSource.getDataSource().getRuntimeContext().getRule().getTableRules().size(), is(1));
     }
     
     private ShardingRuleConfiguration getShardingRuleConfig() {
@@ -119,7 +119,7 @@ public final class OrchestrationShardingDataSourceTest {
     @Test
     public void assertRenewProperties() {
         shardingDataSource.renew(getPropertiesChangedEvent());
-        assertThat(shardingDataSource.getDataSource().getShardingContext().getShardingProperties().getProps().getProperty("sql.show"), is("true"));
+        assertThat(shardingDataSource.getDataSource().getRuntimeContext().getProps().getProps().getProperty("sql.show"), is("true"));
     }
     
     private PropertiesChangedEvent getPropertiesChangedEvent() {
@@ -131,7 +131,7 @@ public final class OrchestrationShardingDataSourceTest {
     @Test
     public void assertRenewDisabledState() {
         shardingDataSource.renew(getDisabledStateChangedEvent());
-        assertThat(shardingDataSource.getDataSource().getShardingContext().getShardingRule().getMasterSlaveRules().iterator().next().getSlaveDataSourceNames().size(), is(0));
+        assertThat(shardingDataSource.getDataSource().getRuntimeContext().getRule().getMasterSlaveRules().iterator().next().getSlaveDataSourceNames().size(), is(0));
     }
     
     private DisabledStateChangedEvent getDisabledStateChangedEvent() {

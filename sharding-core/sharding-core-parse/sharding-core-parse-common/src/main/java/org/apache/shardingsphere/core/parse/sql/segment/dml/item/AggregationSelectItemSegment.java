@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.parse.sql.segment.dml.item;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.core.constant.AggregationType;
 import org.apache.shardingsphere.core.parse.sql.segment.generic.AliasAvailable;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
@@ -29,7 +28,6 @@ import org.apache.shardingsphere.core.parse.util.SQLUtil;
  * 
  * @author zhangliang
  */
-@RequiredArgsConstructor
 @Getter
 public class AggregationSelectItemSegment implements SelectItemSegment, AliasAvailable {
     
@@ -44,6 +42,14 @@ public class AggregationSelectItemSegment implements SelectItemSegment, AliasAva
     private final int innerExpressionStartIndex;
     
     private String alias;
+    
+    public AggregationSelectItemSegment(final int startIndex, final int stopIndex, final String text, final AggregationType type, final int innerExpressionStartIndex) {
+        this.startIndex = startIndex;
+        this.stopIndex = stopIndex;
+        this.text = SQLUtil.getExpressionWithoutOutsideParentheses(text);
+        this.type = type;
+        this.innerExpressionStartIndex = innerExpressionStartIndex;
+    }
     
     @Override
     public final Optional<String> getAlias() {

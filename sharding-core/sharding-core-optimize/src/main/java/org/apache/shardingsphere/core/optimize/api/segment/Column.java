@@ -39,14 +39,11 @@ public final class Column {
     
     @Override
     public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
+        if (obj instanceof Column) {
+            Column column = (Column) obj;
+            return Objects.equal(name.toUpperCase(), column.getName().toUpperCase()) && Objects.equal(tableName.toUpperCase(), column.getTableName().toUpperCase());
         }
-        if (null == obj || getClass() != obj.getClass()) {
-            return false;
-        }
-        Column column = (Column) obj;
-        return Objects.equal(this.name.toUpperCase(), column.name.toUpperCase()) && Objects.equal(this.tableName.toUpperCase(), column.tableName.toUpperCase()); 
+        return false;
     }
     
     @Override

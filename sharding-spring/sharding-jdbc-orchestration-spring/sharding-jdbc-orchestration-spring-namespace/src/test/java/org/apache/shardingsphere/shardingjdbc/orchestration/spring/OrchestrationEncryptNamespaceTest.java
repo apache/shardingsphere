@@ -33,6 +33,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -55,13 +56,16 @@ public class OrchestrationEncryptNamespaceTest extends AbstractJUnit4SpringConte
     private EncryptRule getEncryptRule() {
         OrchestrationSpringEncryptDataSource encryptDataSource = (OrchestrationSpringEncryptDataSource) applicationContext.getBean("encryptDataSourceOrchestration");
         EncryptDataSource dataSource = (EncryptDataSource) FieldValueUtil.getFieldValue(encryptDataSource, "dataSource", true);
-        return dataSource.getEncryptRule();
+        return dataSource.getRuntimeContext().getRule();
     }
     
     private void assertEncryptRule(final EncryptRule encryptRule) {
-        assertNotNull(encryptRule.getEncryptRuleConfig());
-        EncryptRuleConfiguration ruleConfiguration = encryptRule.getEncryptRuleConfig();
+        assertNotNull(encryptRule.getRuleConfiguration());
+        EncryptRuleConfiguration ruleConfiguration = encryptRule.getRuleConfiguration();
         assertThat(ruleConfiguration.getEncryptors().size(), is(2));
+        assertThat(ruleConfiguration.getTables().size(), is(1));
+        assertThat(ruleConfiguration.getTables().get("t_order").getColumns().get("user_id").getCipherColumn(), is("user_encrypt"));
+        assertThat(ruleConfiguration.getTables().get("t_order").getColumns().get("order_id").getPlainColumn(), is("order_decrypt"));
         EncryptorRuleConfiguration encryptorRule = ruleConfiguration.getEncryptors().get("encryptor_md5");
         assertNotNull(encryptorRule);
         assertThat(encryptorRule.getType(), is("MD5"));
@@ -73,12 +77,14 @@ public class OrchestrationEncryptNamespaceTest extends AbstractJUnit4SpringConte
     @Test
     public void assertProperties() {
         boolean showSQL = getShardingProperties("encryptDataSourceOrchestration").getValue(ShardingPropertiesConstant.SQL_SHOW);
+        boolean queryWithCipherColumn = getShardingProperties("encryptDataSourceOrchestration").getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
         assertTrue(showSQL);
+        assertFalse(queryWithCipherColumn);
     }
     
     private ShardingProperties getShardingProperties(final String encryptDatasourceName) {
         OrchestrationSpringEncryptDataSource encryptDataSource = applicationContext.getBean(encryptDatasourceName, OrchestrationSpringEncryptDataSource.class);
         EncryptDataSource dataSource = (EncryptDataSource) FieldValueUtil.getFieldValue(encryptDataSource, "dataSource", true);
-        return dataSource.getShardingProperties();
+        return dataSource.getRuntimeContext().getProps();
     }
 }

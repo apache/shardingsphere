@@ -52,7 +52,7 @@ import java.util.TreeSet;
 @Getter
 public class ShardingRule implements BaseRule {
     
-    private final ShardingRuleConfiguration shardingRuleConfig;
+    private final ShardingRuleConfiguration ruleConfiguration;
     
     private final ShardingDataSourceNames shardingDataSourceNames;
     
@@ -75,7 +75,7 @@ public class ShardingRule implements BaseRule {
     public ShardingRule(final ShardingRuleConfiguration shardingRuleConfig, final Collection<String> dataSourceNames) {
         Preconditions.checkArgument(null != shardingRuleConfig, "ShardingRuleConfig cannot be null.");
         Preconditions.checkArgument(null != dataSourceNames && !dataSourceNames.isEmpty(), "Data sources cannot be empty.");
-        this.shardingRuleConfig = shardingRuleConfig;
+        this.ruleConfiguration = shardingRuleConfig;
         shardingDataSourceNames = new ShardingDataSourceNames(shardingRuleConfig, dataSourceNames);
         tableRules = createTableRules(shardingRuleConfig);
         bindingTableRules = createBindingTableRules(shardingRuleConfig.getBindingTableGroups());
@@ -139,7 +139,7 @@ public class ShardingRule implements BaseRule {
     }
     
     private EncryptRule createEncryptRule(final EncryptRuleConfiguration encryptRuleConfig) {
-        return null == encryptRuleConfig ? new EncryptRule() : new EncryptRule(shardingRuleConfig.getEncryptRuleConfig());
+        return null == encryptRuleConfig ? new EncryptRule() : new EncryptRule(ruleConfiguration.getEncryptRuleConfig());
     }
     
     /**

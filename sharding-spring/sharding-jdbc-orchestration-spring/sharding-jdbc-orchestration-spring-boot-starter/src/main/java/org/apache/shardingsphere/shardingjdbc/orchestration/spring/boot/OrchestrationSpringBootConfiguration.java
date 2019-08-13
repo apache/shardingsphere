@@ -24,6 +24,8 @@ import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.constant.ShardingConstant;
 import org.apache.shardingsphere.core.exception.ShardingException;
+import org.apache.shardingsphere.core.rule.EncryptRule;
+import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.util.InlineExpressionParser;
 import org.apache.shardingsphere.core.yaml.swapper.impl.EncryptRuleConfigurationYamlSwapper;
@@ -84,15 +86,15 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     
     private final Map<String, DataSource> dataSourceMap = new LinkedHashMap<>();
     
-    private final SpringBootShardingRuleConfigurationProperties shardingProperties;
+    private final SpringBootShardingRuleConfigurationProperties shardingRule;
     
-    private final SpringBootMasterSlaveRuleConfigurationProperties masterSlaveProperties;
+    private final SpringBootMasterSlaveRuleConfigurationProperties masterSlaveRule;
     
-    private final SpringBootEncryptRuleConfigurationProperties encryptProperties;
+    private final SpringBootEncryptRuleConfigurationProperties encryptRule;
     
-    private final SpringBootPropertiesConfigurationProperties propProperties;
+    private final SpringBootPropertiesConfigurationProperties props;
     
-    private final SpringBootOrchestrationConfigurationProperties orchestrationProperties;
+    private final SpringBootOrchestrationConfigurationProperties orchestrationRule;
     
     private final OrchestrationConfigurationYamlSwapper orchestrationSwapper = new OrchestrationConfigurationYamlSwapper();
     
@@ -104,38 +106,11 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     @Bean
     public OrchestrationConfiguration orchestrationConfiguration() {
         Preconditions.checkState(isValidOrchestrationConfiguration(), "The orchestration configuration is invalid, please configure orchestration name");
-        return orchestrationSwapper.swap(orchestrationProperties);
+        return orchestrationSwapper.swap(orchestrationRule);
     }
     
     private boolean isValidOrchestrationConfiguration() {
-        return !Strings.isNullOrEmpty(orchestrationProperties.getName());
-    }
-    
-    /**
-     * Get orchestration encrypt data source bean by local configuration.
-     *
-     * @param orchestrationConfiguration orchestration configuration
-     * @return orchestration encrypt data source bean
-     */
-    @Bean
-    @Conditional(LocalEncryptRuleCondition.class)
-    public DataSource encryptDataSourceByLocal(final OrchestrationConfiguration orchestrationConfiguration) {
-        EncryptRuleConfiguration encryptRuleConfig = new EncryptRuleConfigurationYamlSwapper().swap(encryptProperties);
-        return new OrchestrationEncryptDataSource(new EncryptDataSource(dataSourceMap.values().iterator().next(), encryptRuleConfig, propProperties.getProps()), orchestrationConfiguration);
-    }
-    
-    /**
-     * Get orchestration master-slave data source bean by local configuration.
-     *
-     * @param orchestrationConfiguration orchestration configuration
-     * @return orchestration master-slave data source bean
-     * @throws SQLException SQL exception
-     */
-    @Bean
-    @Conditional(LocalMasterSlaveRuleCondition.class)
-    public DataSource masterSlaveDataSourceByLocal(final OrchestrationConfiguration orchestrationConfiguration) throws SQLException {
-        MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfigurationYamlSwapper().swap(masterSlaveProperties);
-        return new OrchestrationMasterSlaveDataSource(new MasterSlaveDataSource(dataSourceMap, masterSlaveRuleConfig, propProperties.getProps()), orchestrationConfiguration);
+        return !Strings.isNullOrEmpty(orchestrationRule.getName());
     }
     
     /**
@@ -148,8 +123,37 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     @Bean
     @Conditional(LocalShardingRuleCondition.class)
     public DataSource shardingDataSourceByLocal(final OrchestrationConfiguration orchestrationConfiguration) throws SQLException {
-        ShardingRule shardingRule = new ShardingRule(new ShardingRuleConfigurationYamlSwapper().swap(shardingProperties), dataSourceMap.keySet());
-        return new OrchestrationShardingDataSource(new ShardingDataSource(dataSourceMap, shardingRule, propProperties.getProps()), orchestrationConfiguration);
+        ShardingRule shardingRule = new ShardingRule(new ShardingRuleConfigurationYamlSwapper().swap(this.shardingRule), dataSourceMap.keySet());
+        return new OrchestrationShardingDataSource(new ShardingDataSource(dataSourceMap, shardingRule, props.getProps()), orchestrationConfiguration);
+    }
+    
+    /**
+     * Get orchestration master-slave data source bean by local configuration.
+     *
+     * @param orchestrationConfiguration orchestration configuration
+     * @return orchestration master-slave data source bean
+     * @throws SQLException SQL exception
+     */
+    @Bean
+    @Conditional(LocalMasterSlaveRuleCondition.class)
+    public DataSource masterSlaveDataSourceByLocal(final OrchestrationConfiguration orchestrationConfiguration) throws SQLException {
+        MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfigurationYamlSwapper().swap(masterSlaveRule);
+        return new OrchestrationMasterSlaveDataSource(new MasterSlaveDataSource(dataSourceMap, new MasterSlaveRule(masterSlaveRuleConfig), props.getProps()), orchestrationConfiguration);
+    }
+    
+    /**
+     * Get orchestration encrypt data source bean by local configuration.
+     *
+     * @param orchestrationConfiguration orchestration configuration
+     * @return orchestration encrypt data source bean
+     * @throws SQLException SQL exception
+     */
+    @Bean
+    @Conditional(LocalEncryptRuleCondition.class)
+    public DataSource encryptDataSourceByLocal(final OrchestrationConfiguration orchestrationConfiguration) throws SQLException {
+        EncryptRuleConfiguration encryptRuleConfig = new EncryptRuleConfigurationYamlSwapper().swap(encryptRule);
+        return new OrchestrationEncryptDataSource(
+                new EncryptDataSource(dataSourceMap.values().iterator().next(), new EncryptRule(encryptRuleConfig), props.getProps()), orchestrationConfiguration);
     }
     
     /**

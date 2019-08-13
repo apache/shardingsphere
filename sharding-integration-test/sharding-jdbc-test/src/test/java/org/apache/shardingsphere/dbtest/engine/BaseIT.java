@@ -53,6 +53,8 @@ import java.util.TimeZone;
 @Getter(AccessLevel.PROTECTED)
 public abstract class BaseIT {
     
+    private static String notVerifyFlag = "NOT_VERIFY";
+    
     private static IntegrateTestEnvironment integrateTestEnvironment = IntegrateTestEnvironment.getInstance();
     
     private static IntegrateTestCasesLoader integrateTestCasesLoader = IntegrateTestCasesLoader.getInstance();
@@ -83,6 +85,10 @@ public abstract class BaseIT {
             dataSource = null;
             instanceDataSourceMap = null;
         }
+    }
+    
+    protected static String getNotVerifyFlag() {
+        return notVerifyFlag;
     }
     
     protected final String getExpectedDataFile(final String path, final String shardingRuleType, final DatabaseType databaseType, final String expectedDataFile) {
@@ -212,7 +218,7 @@ public abstract class BaseIT {
     @After
     public void tearDown() {
         if (dataSource instanceof ShardingDataSource) {
-            ((ShardingDataSource) dataSource).getShardingContext().getExecuteEngine().close();
+            ((ShardingDataSource) dataSource).getRuntimeContext().getExecuteEngine().close();
         }
     }
 }

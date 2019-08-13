@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.optimize.sharding.segment.condition;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 import java.util.List;
 
@@ -30,6 +31,7 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 @Getter
+@ToString
 public final class ShardingConditions {
     
     private final List<ShardingCondition> conditions;

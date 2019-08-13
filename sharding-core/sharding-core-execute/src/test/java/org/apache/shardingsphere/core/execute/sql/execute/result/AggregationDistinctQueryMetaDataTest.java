@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.execute.sql.execute.result;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.AggregationSelectItem;
@@ -32,16 +33,18 @@ import java.util.LinkedList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class AggregationDistinctQueryMetaDataTest {
 
-    private AggregationDistinctQueryMetaData distinctQueryMetaData; 
-    
+    private AggregationDistinctQueryMetaData distinctQueryMetaData;
+
     @Before
     public void setUp() {
         Collection<AggregationDistinctSelectItem> aggregationDistinctSelectItems = new LinkedList<>();
-        AggregationDistinctSelectItem distinctCountSelectItem = new AggregationDistinctSelectItem(AggregationType.COUNT, "(DISTINCT order_id)", "c", "order_id");
-        AggregationDistinctSelectItem distinctAvgSelectItem = new AggregationDistinctSelectItem(AggregationType.AVG, "(DISTINCT order_id)", "a", "order_id");
+        AggregationDistinctSelectItem distinctCountSelectItem = new AggregationDistinctSelectItem(0, 0, AggregationType.COUNT, "(DISTINCT order_id)", "c", "order_id");
+        AggregationDistinctSelectItem distinctAvgSelectItem = new AggregationDistinctSelectItem(0, 0, AggregationType.AVG, "(DISTINCT order_id)", "a", "order_id");
         distinctAvgSelectItem.getDerivedAggregationItems().add(new AggregationSelectItem(AggregationType.COUNT, "(DISTINCT order_id)", "AVG_DERIVED_COUNT_0"));
         distinctAvgSelectItem.getDerivedAggregationItems().add(new AggregationSelectItem(AggregationType.SUM, "(DISTINCT order_id)", "AVG_DERIVED_SUM_0"));
         aggregationDistinctSelectItems.add(distinctCountSelectItem);
@@ -51,61 +54,76 @@ public class AggregationDistinctQueryMetaDataTest {
         columnLabelAndIndexMap.put("a", 2);
         columnLabelAndIndexMap.put("AVG_DERIVED_COUNT_0", 3);
         columnLabelAndIndexMap.put("AVG_DERIVED_SUM_0", 4);
-        distinctQueryMetaData = new AggregationDistinctQueryMetaData(aggregationDistinctSelectItems, columnLabelAndIndexMap);
+        distinctQueryMetaData = new AggregationDistinctQueryMetaData(aggregationDistinctSelectItems, getQueryResultMetaData());
     }
-    
+
+    @SneakyThrows
+    private QueryResultMetaData getQueryResultMetaData() {
+        QueryResultMetaData queryResultMetaData = mock(QueryResultMetaData.class);
+        when(queryResultMetaData.getColumnCount()).thenReturn(4);
+        when(queryResultMetaData.getColumnLabel(1)).thenReturn("c");
+        when(queryResultMetaData.getColumnLabel(2)).thenReturn("a");
+        when(queryResultMetaData.getColumnLabel(3)).thenReturn("AVG_DERIVED_COUNT_0");
+        when(queryResultMetaData.getColumnLabel(4)).thenReturn("AVG_DERIVED_SUM_0");
+        when(queryResultMetaData.getColumnIndex("c")).thenReturn(1);
+        when(queryResultMetaData.getColumnIndex("a")).thenReturn(2);
+        when(queryResultMetaData.getColumnIndex("AVG_DERIVED_COUNT_0")).thenReturn(3);
+        when(queryResultMetaData.getColumnIndex("AVG_DERIVED_SUM_0")).thenReturn(4);
+        return queryResultMetaData;
+    }
+
     @Test
     public void assertIsAggregationDistinctColumnIndex() {
         assertTrue(distinctQueryMetaData.isAggregationDistinctColumnIndex(1));
     }
-    
+
     @Test
     public void assertIsAggregationDistinctColumnLabel() {
         assertTrue(distinctQueryMetaData.isAggregationDistinctColumnLabel("c"));
     }
-    
+
     @Test
     public void assertGetAggregationType() {
         AggregationType actual = distinctQueryMetaData.getAggregationType(2);
         assertThat(actual, is(AggregationType.AVG));
     }
-    
+
     @Test
     public void assertIsDerivedCountColumnIndex() {
         assertTrue(distinctQueryMetaData.isDerivedCountColumnIndex(3));
     }
-    
+
     @Test
     public void assertIsDerivedSumColumnIndex() {
         assertTrue(distinctQueryMetaData.isDerivedSumColumnIndex(4));
     }
-    
+
     @Test
     public void assertGetAggregationDistinctColumnIndexByColumnLabel() {
         int actual = distinctQueryMetaData.getAggregationDistinctColumnIndex("a");
         assertThat(actual, is(2));
     }
-    
+
     @Test(expected = ShardingException.class)
     public void assertGetAggregationDistinctColumnIndexByColumnLabelWithException() {
         int actual = distinctQueryMetaData.getAggregationDistinctColumnIndex("f");
         assertThat(actual, is(2));
     }
-    
+
     @Test
     public void assertGetAggregationDistinctColumnIndexBySumIndex() {
         int actual = distinctQueryMetaData.getAggregationDistinctColumnIndex(4);
         assertThat(actual, is(2));
     }
-    
+
     @Test(expected = ShardingException.class)
     public void assertGetAggregationDistinctColumnIndexBySumIndexWithException() {
         int actual = distinctQueryMetaData.getAggregationDistinctColumnIndex(0);
         assertThat(actual, is(2));
     }
-    
+
     @Test
-    public void assertGetAggregationDistinctColumnLabel() { 
+    public void assertGetAggregationDistinctColumnLabel() {
         String actual = distinctQueryMetaData.getAggregationDistinctColumnLabel(1);
         assertThat(actual, is("c"));
     }

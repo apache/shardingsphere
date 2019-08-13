@@ -55,17 +55,18 @@ public class AggregationSelectItem implements SelectItem {
     public final String getExpression() {
         return SQLUtil.getExactlyValue(type.name() + innerExpression);
     }
-    
+
     @Override
     public final Optional<String> getAlias() {
         return Optional.fromNullable(alias);
     }
-    
+
     /**
      * Get column label.
      *
      * @return column label
      */
+    @Override
     public String getColumnLabel() {
         return getAlias().or(getExpression());
     }
