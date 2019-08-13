@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.merge.fixture;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
+import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResultMetaData;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -205,7 +206,17 @@ public final class TestQueryResult implements QueryResult {
     public boolean isCaseSensitive(final int columnIndex) throws SQLException {
         return resultSet.getMetaData().isCaseSensitive(columnIndex);
     }
-    
+
+    @Override
+    public QueryResultMetaData getQueryResultMetaData() {
+        try {
+            return new QueryResultMetaData(resultSet.getMetaData());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     @Override
     public int getColumnCount() throws SQLException {
         return resultSet.getMetaData().getColumnCount();
