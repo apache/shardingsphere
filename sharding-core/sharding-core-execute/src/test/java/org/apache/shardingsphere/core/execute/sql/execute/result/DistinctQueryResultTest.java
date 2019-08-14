@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.core.execute.sql.execute.result;
 
 import com.google.common.collect.Lists;
-import lombok.SneakyThrows;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.sql.SQLException;
@@ -44,19 +44,26 @@ import static org.mockito.Mockito.when;
 public class DistinctQueryResultTest {
     
     private DistinctQueryResult distinctQueryResult;
-
+    
     private QueryResultMetaData queryResultMetaData;
-
+    
     @Before
-    public void setUp() {
+    public void setUp() throws SQLException {
         queryResultMetaData = getQueryResultMetaData();
         Collection<QueryResult> queryResults = getQueryResults();
         List<String> distinctColumnLabels = Collections.singletonList("order_id");
         distinctQueryResult = new DistinctQueryResult(queryResults, distinctColumnLabels);
     }
     
-    @SneakyThrows
-    private Collection<QueryResult> getQueryResults() {
+    private QueryResultMetaData getQueryResultMetaData() {
+        QueryResultMetaData result = mock(QueryResultMetaData.class);
+        when(result.getColumnCount()).thenReturn(1);
+        when(result.getColumnLabel(1)).thenReturn("order_id");
+        when(result.getColumnIndex("order_id")).thenReturn(1);
+        return result;
+    }
+    
+    private Collection<QueryResult> getQueryResults() throws SQLException {
         Collection<QueryResult> result = new LinkedList<>();
         for (int i = 1; i <= 2; i++) {
             QueryResult queryResult = mock(QueryResult.class);
@@ -70,15 +77,6 @@ public class DistinctQueryResultTest {
             result.add(queryResult);
         }
         return result;
-    }
-
-    @SneakyThrows
-    private QueryResultMetaData getQueryResultMetaData() {
-        QueryResultMetaData queryResultMetaData = mock(QueryResultMetaData.class);
-        when(queryResultMetaData.getColumnCount()).thenReturn(1);
-        when(queryResultMetaData.getColumnLabel(1)).thenReturn("order_id");
-        when(queryResultMetaData.getColumnIndex("order_id")).thenReturn(1);
-        return queryResultMetaData;
     }
     
     @Test
@@ -120,14 +118,12 @@ public class DistinctQueryResultTest {
     }
     
     @Test
-    @SneakyThrows
-    public void assertGetInputStreamByColumnIndex() {
+    public void assertGetInputStreamByColumnIndex() throws IOException {
         distinctQueryResult.next();
         assertThat(distinctQueryResult.getInputStream(1, "Unicode").read(), is(getInputStream(10).read()));
     }
     
-    @SneakyThrows
-    private InputStream getInputStream(final Object value) {
+    private InputStream getInputStream(final Object value) throws IOException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
         objectOutputStream.writeObject(value);
@@ -137,8 +133,7 @@ public class DistinctQueryResultTest {
     }
     
     @Test
-    @SneakyThrows
-    public void assertGetInputStreamByColumnLabel() {
+    public void assertGetInputStreamByColumnLabel() throws IOException {
         distinctQueryResult.next();
         assertThat(distinctQueryResult.getInputStream("order_id", "Unicode").read(), is(getInputStream(10).read()));
     }
@@ -159,14 +154,12 @@ public class DistinctQueryResultTest {
     }
     
     @Test
-    @SneakyThrows
-    public void assertGetColumnLabel() {
+    public void assertGetColumnLabel() throws SQLException {
         assertThat(distinctQueryResult.getColumnLabel(1), is("order_id"));
     }
     
     @Test(expected = SQLException.class)
-    @SneakyThrows
-    public void assertGetColumnLabelWithException() {
+    public void assertGetColumnLabelWithException() throws SQLException {
         assertThat(distinctQueryResult.getColumnLabel(2), is("order_id"));
     }
     
@@ -198,8 +191,7 @@ public class DistinctQueryResultTest {
     }
     
     @Test(expected = SQLException.class)
-    @SneakyThrows
-    public void assertGetColumnLabelAndIndexMapWithException() {
+    public void assertGetColumnLabelAndIndexMapWithException() throws SQLException {
         QueryResult queryResult = mock(QueryResult.class);
         when(queryResult.next()).thenReturn(true).thenReturn(false);
         when(queryResult.getColumnCount()).thenThrow(SQLException.class);
@@ -212,8 +204,7 @@ public class DistinctQueryResultTest {
     }
     
     @Test(expected = SQLException.class)
-    @SneakyThrows
-    public void assertGetResultDataWithException() {
+    public void assertGetResultDataWithException() throws SQLException {
         QueryResult queryResult = mock(QueryResult.class);
         when(queryResult.next()).thenThrow(SQLException.class);
         when(queryResult.getColumnCount()).thenReturn(1);
