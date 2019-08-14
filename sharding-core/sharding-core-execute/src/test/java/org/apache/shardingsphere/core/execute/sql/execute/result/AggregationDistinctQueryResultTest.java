@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.execute.sql.execute.result;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.parse.core.constant.AggregationType;
 import org.junit.Before;
@@ -25,6 +24,7 @@ import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.sql.SQLException;
@@ -45,12 +45,11 @@ public final class AggregationDistinctQueryResultTest {
     private AggregationDistinctQueryResult aggregationDistinctQueryResult;
     
     @Before
-    public void setUp() {
+    public void setUp() throws SQLException {
         aggregationDistinctQueryResult = new AggregationDistinctQueryResult(getQueryResults(), getAggregationDistinctSelectItems());
     }
     
-    @SneakyThrows
-    private Collection<QueryResult> getQueryResults() {
+    private Collection<QueryResult> getQueryResults() throws SQLException {
         Collection<QueryResult> result = new LinkedList<>();
         for (int i = 1; i <= 2; i++) {
             QueryResult queryResult = mock(QueryResult.class);
@@ -73,21 +72,20 @@ public final class AggregationDistinctQueryResultTest {
         return result;
     }
 
-    @SneakyThrows
-    private QueryResultMetaData getQueryResultMetaData() {
-        QueryResultMetaData queryResultMetaData = mock(QueryResultMetaData.class);
-        when(queryResultMetaData.getColumnCount()).thenReturn(5);
-        when(queryResultMetaData.getColumnLabel(1)).thenReturn("order_id");
-        when(queryResultMetaData.getColumnLabel(2)).thenReturn("c");
-        when(queryResultMetaData.getColumnLabel(3)).thenReturn("a");
-        when(queryResultMetaData.getColumnLabel(4)).thenReturn("AVG_DERIVED_COUNT_0");
-        when(queryResultMetaData.getColumnLabel(5)).thenReturn("AVG_DERIVED_SUM_0");
-        when(queryResultMetaData.getColumnIndex("order_id")).thenReturn(1);
-        when(queryResultMetaData.getColumnIndex("c")).thenReturn(2);
-        when(queryResultMetaData.getColumnIndex("a")).thenReturn(3);
-        when(queryResultMetaData.getColumnIndex("AVG_DERIVED_COUNT_0")).thenReturn(4);
-        when(queryResultMetaData.getColumnIndex("AVG_DERIVED_SUM_0")).thenReturn(5);
-        return queryResultMetaData;
+    private QueryResultMetaData getQueryResultMetaData() throws SQLException {
+        QueryResultMetaData result = mock(QueryResultMetaData.class);
+        when(result.getColumnCount()).thenReturn(5);
+        when(result.getColumnLabel(1)).thenReturn("order_id");
+        when(result.getColumnLabel(2)).thenReturn("c");
+        when(result.getColumnLabel(3)).thenReturn("a");
+        when(result.getColumnLabel(4)).thenReturn("AVG_DERIVED_COUNT_0");
+        when(result.getColumnLabel(5)).thenReturn("AVG_DERIVED_SUM_0");
+        when(result.getColumnIndex("order_id")).thenReturn(1);
+        when(result.getColumnIndex("c")).thenReturn(2);
+        when(result.getColumnIndex("a")).thenReturn(3);
+        when(result.getColumnIndex("AVG_DERIVED_COUNT_0")).thenReturn(4);
+        when(result.getColumnIndex("AVG_DERIVED_SUM_0")).thenReturn(5);
+        return result;
     }
     
     private List<AggregationDistinctSelectItem> getAggregationDistinctSelectItems() {
@@ -102,7 +100,7 @@ public final class AggregationDistinctQueryResultTest {
     }
     
     @Test
-    public void assertDivide() {
+    public void assertDivide() throws SQLException {
         List<DistinctQueryResult> actual = aggregationDistinctQueryResult.divide();
         assertThat(actual.size(), is(2));
         assertThat(actual.iterator().next().getColumnCount(), is((Object) 5));
@@ -138,15 +136,13 @@ public final class AggregationDistinctQueryResultTest {
     }
     
     @Test
-    @SneakyThrows
-    public void assertGetInputStreamByColumnIndex() {
+    public void assertGetInputStreamByColumnIndex() throws IOException {
         aggregationDistinctQueryResult.next();
         assertThat(aggregationDistinctQueryResult.getInputStream(1, "Unicode").read(), is(getInputStream(10).read()));
     }
     
     @Test
-    @SneakyThrows 
-    public void assertGetInputStreamByColumnLabel() {
+    public void assertGetInputStreamByColumnLabel() throws IOException {
         aggregationDistinctQueryResult.next();
         assertThat(aggregationDistinctQueryResult.getInputStream("order_id", "Unicode").read(), is(getInputStream(10).read()));
     }
@@ -156,8 +152,7 @@ public final class AggregationDistinctQueryResultTest {
         assertTrue(aggregationDistinctQueryResult.wasNull());
     }
     
-    @SneakyThrows
-    private InputStream getInputStream(final Object value) {
+    private InputStream getInputStream(final Object value) throws IOException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
         objectOutputStream.writeObject(value);
@@ -167,20 +162,18 @@ public final class AggregationDistinctQueryResultTest {
     }
     
     @Test
-    public void assertGetColumnCount() {
+    public void assertGetColumnCount() throws SQLException {
         assertThat(aggregationDistinctQueryResult.getColumnCount(), is(5));
     }
     
     @Test
-    @SneakyThrows
-    public void assertGetColumnLabel() {
+    public void assertGetColumnLabel() throws SQLException {
         assertThat(aggregationDistinctQueryResult.getColumnLabel(3), is("a"));
         assertThat(aggregationDistinctQueryResult.getColumnLabel(1), is("order_id"));
     }
     
     @Test(expected = SQLException.class)
-    @SneakyThrows
-    public void assertGetColumnLabelWithException() {
+    public void assertGetColumnLabelWithException() throws SQLException {
         assertThat(aggregationDistinctQueryResult.getColumnLabel(6), is("order_id"));
     }
     

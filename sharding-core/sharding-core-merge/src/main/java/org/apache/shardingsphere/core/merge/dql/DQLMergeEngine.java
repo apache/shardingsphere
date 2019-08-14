@@ -72,7 +72,7 @@ public final class DQLMergeEngine implements MergeEngine {
         columnLabelIndexMap = getColumnLabelIndexMap(this.queryResults.get(0));
     }
     
-    private List<QueryResult> getRealQueryResults(final List<QueryResult> queryResults) {
+    private List<QueryResult> getRealQueryResults(final List<QueryResult> queryResults) throws SQLException {
         List<QueryResult> result = queryResults;
         if (1 == result.size()) {
             return result;

@@ -97,7 +97,7 @@ public final class ProxySQLExecuteCallback extends SQLExecuteCallback<ExecuteRes
         return result;
     }
     
-    private QueryResult createQueryResult(final ResultSet resultSet, final ConnectionMode connectionMode) {
+    private QueryResult createQueryResult(final ResultSet resultSet, final ConnectionMode connectionMode) throws SQLException {
         LogicSchema logicSchema = backendConnection.getLogicSchema();
         if (logicSchema instanceof ShardingSchema) {
             ShardingRule shardingRule = logicSchema.getShardingRule();

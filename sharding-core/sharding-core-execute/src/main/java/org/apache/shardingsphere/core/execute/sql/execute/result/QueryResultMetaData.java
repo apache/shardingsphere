@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.execute.sql.execute.result;
 
 import com.google.common.base.Optional;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
@@ -45,32 +44,28 @@ public final class QueryResultMetaData {
 
     private final Map<String, Integer> columnLabelAndIndexes;
     
-    @SneakyThrows
-    public QueryResultMetaData(final ResultSetMetaData resultSetMetaData, final ShardingRule shardingRule) {
+    public QueryResultMetaData(final ResultSetMetaData resultSetMetaData, final ShardingRule shardingRule) throws SQLException {
         this.resultSetMetaData = resultSetMetaData;
         this.shardingRule = shardingRule;
         this.encryptRule = shardingRule.getEncryptRule();
         columnLabelAndIndexes = getColumnLabelAndIndexMap();
     }
     
-    @SneakyThrows
-    public QueryResultMetaData(final ResultSetMetaData resultSetMetaData, final EncryptRule encryptRule) {
+    public QueryResultMetaData(final ResultSetMetaData resultSetMetaData, final EncryptRule encryptRule) throws SQLException {
         this.resultSetMetaData = resultSetMetaData;
         this.shardingRule = null;
         this.encryptRule = encryptRule;
         columnLabelAndIndexes = getColumnLabelAndIndexMap();
     }
     
-    @SneakyThrows
-    public QueryResultMetaData(final ResultSetMetaData resultSetMetaData) {
+    public QueryResultMetaData(final ResultSetMetaData resultSetMetaData) throws SQLException {
         this.resultSetMetaData = resultSetMetaData;
         this.shardingRule = null;
         this.encryptRule = new EncryptRule();
         columnLabelAndIndexes = getColumnLabelAndIndexMap();
     }
     
-    @SneakyThrows
-    private Map<String, Integer> getColumnLabelAndIndexMap() {
+    private Map<String, Integer> getColumnLabelAndIndexMap() throws SQLException {
         Map<String, Integer> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         for (int columnIndex = resultSetMetaData.getColumnCount(); columnIndex > 0; columnIndex--) {
             result.put(resultSetMetaData.getColumnLabel(columnIndex), columnIndex);
@@ -82,9 +77,9 @@ public final class QueryResultMetaData {
      * Get column count.
      * 
      * @return column count
+     * @throws SQLException SQL exception
      */
-    @SneakyThrows
-    public int getColumnCount() {
+    public int getColumnCount() throws SQLException {
         return resultSetMetaData.getColumnCount();
     }
     
@@ -93,9 +88,9 @@ public final class QueryResultMetaData {
      * 
      * @param columnIndex column index
      * @return column label
+     * @throws SQLException SQL exception
      */
-    @SneakyThrows
-    public String getColumnLabel(final int columnIndex) {
+    public String getColumnLabel(final int columnIndex) throws SQLException {
         return resultSetMetaData.getColumnLabel(columnIndex);
     }
     
@@ -104,9 +99,9 @@ public final class QueryResultMetaData {
      * 
      * @param columnIndex column index
      * @return column name
+     * @throws SQLException SQL exception
      */
-    @SneakyThrows
-    public String getColumnName(final int columnIndex) {
+    public String getColumnName(final int columnIndex) throws SQLException {
         return resultSetMetaData.getColumnName(columnIndex);
     }
     
@@ -125,9 +120,9 @@ public final class QueryResultMetaData {
      *
      * @param columnIndex column index
      * @return true if column is case sensitive, otherwise false
+     * @throws SQLException SQL exception
      */
-    @SneakyThrows
-    public boolean isCaseSensitive(final int columnIndex) {
+    public boolean isCaseSensitive(final int columnIndex) throws SQLException {
         return resultSetMetaData.isCaseSensitive(columnIndex);
     }
     
@@ -135,10 +130,10 @@ public final class QueryResultMetaData {
      * Get sharding encryptor.
      * 
      * @param columnIndex column index
-     * @return sharding encryptor optional
+     * @return sharding encryptor
+     * @throws SQLException SQL exception
      */
-    @SneakyThrows
-    public Optional<ShardingEncryptor> getShardingEncryptor(final int columnIndex) {
+    public Optional<ShardingEncryptor> getShardingEncryptor(final int columnIndex) throws SQLException {
         String logicTable = getTableName(columnIndex);
         return encryptRule.getShardingEncryptor(logicTable, getLogicColumn(logicTable, columnIndex));
     }
@@ -152,8 +147,7 @@ public final class QueryResultMetaData {
         return tableRule.isPresent() ? tableRule.get().getLogicTable() : actualTableName;
     }
     
-    @SneakyThrows
-    private String getLogicColumn(final String tableName, final int columnIndex) {
+    private String getLogicColumn(final String tableName, final int columnIndex) throws SQLException {
         String columnLabel = resultSetMetaData.getColumnName(columnIndex);
         return encryptRule.isCipherColumn(tableName, columnLabel) ? encryptRule.getLogicColumn(tableName, columnLabel) : columnLabel;
     }

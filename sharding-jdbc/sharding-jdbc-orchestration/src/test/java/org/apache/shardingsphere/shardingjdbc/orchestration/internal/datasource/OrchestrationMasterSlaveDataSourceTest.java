@@ -140,7 +140,7 @@ public final class OrchestrationMasterSlaveDataSourceTest {
     }
     
     @Test
-    public void assertGetConnection() {
+    public void assertGetConnection() throws SQLException {
         assertThat(masterSlaveDataSource.getConnection("root", "root"), instanceOf(Connection.class));
     }
     

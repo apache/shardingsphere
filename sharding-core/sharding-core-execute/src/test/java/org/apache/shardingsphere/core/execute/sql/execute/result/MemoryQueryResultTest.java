@@ -49,38 +49,16 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class MemoryQueryResultTest {
     
-    private ShardingEncryptor shardingEncryptor = mock(ShardingEncryptor.class);
-    
-    @SneakyThrows
-    private ResultSet getResultSet() {
-        ResultSet resultSet = mock(ResultSet.class);
-        when(resultSet.next()).thenReturn(true).thenReturn(false);
-        when(resultSet.getInt(1)).thenReturn(1);
-        when(resultSet.wasNull()).thenReturn(false);
-        doReturn(getResultSetMetaData()).when(resultSet).getMetaData();
-        return resultSet;
-    }
-    
-    @SneakyThrows
-    private ResultSetMetaData getResultSetMetaData() {
-        ResultSetMetaData metaData = mock(ResultSetMetaData.class);
-        when(metaData.getColumnCount()).thenReturn(1);
-        when(metaData.getColumnLabel(1)).thenReturn("order_id");
-        when(metaData.getColumnName(1)).thenReturn("order_id");
-        when(metaData.getColumnType(1)).thenReturn(Types.INTEGER);
-        when(metaData.getTableName(1)).thenReturn("order");
-        when(metaData.isCaseSensitive(1)).thenReturn(false);
-        return metaData;
-    }
+    private final ShardingEncryptor shardingEncryptor = mock(ShardingEncryptor.class);
     
     @Test
-    public void assertConstructorWithShardingRule() {
+    public void assertConstructorWithShardingRule() throws SQLException {
         MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet(), getShardingRule());
         assertThat(queryResult.getQueryResultMetaData().getShardingEncryptor(1), is(Optional.fromNullable(shardingEncryptor)));
     }
     
     @Test
-    public void assertConstructorWithEncryptRule() {
+    public void assertConstructorWithEncryptRule() throws SQLException {
         MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet(), getEncryptRule());
         assertThat(queryResult.getQueryResultMetaData().getShardingEncryptor(1), is(Optional.fromNullable(shardingEncryptor)));
     }
@@ -114,28 +92,28 @@ public final class MemoryQueryResultTest {
     }
     
     @Test
-    public void assertNext() {
+    public void assertNext() throws SQLException {
         MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet());
         assertTrue(queryResult.next());
         assertFalse(queryResult.next());
     }
     
     @Test
-    public void assertGetValueWithColumnIndex() {
+    public void assertGetValueWithColumnIndex() throws SQLException {
         MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet());
         queryResult.next();
         assertThat(queryResult.getValue(1, Integer.class), Is.<Object>is(1));
     }
     
     @Test
-    public void assertGetValueWithColumnLabel() {
+    public void assertGetValueWithColumnLabel() throws SQLException {
         MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet());
         queryResult.next();
         assertThat(queryResult.getValue("order_id", Integer.class), Is.<Object>is(1));
     }
     
     @Test
-    public void assertGetValueWithShardingRule() {
+    public void assertGetValueWithShardingRule() throws SQLException {
         when(shardingEncryptor.decrypt("1")).thenReturn("1");
         MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet(), getShardingRule());
         queryResult.next();
@@ -143,7 +121,7 @@ public final class MemoryQueryResultTest {
     }
     
     @Test(expected = Exception.class)
-    public void assertGetValueWithException() {
+    public void assertGetValueWithException() throws SQLException {
         ResultSet resultSet = getResultSetWithException();
         MemoryQueryResult queryResult = new MemoryQueryResult(resultSet);
         queryResult.next();
@@ -172,14 +150,14 @@ public final class MemoryQueryResultTest {
     }
     
     @Test
-    public void assertGetCalendarValueWithColumnIndex() {
+    public void assertGetCalendarValueWithColumnIndex() throws SQLException {
         MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet());
         queryResult.next();
         assertThat(queryResult.getCalendarValue(1, Integer.class, Calendar.getInstance()), Is.<Object>is(1));
     }
     
     @Test
-    public void assertGetCalendarValueWithColumnLabel() {
+    public void assertGetCalendarValueWithColumnLabel() throws SQLException {
         MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet());
         queryResult.next();
         assertThat(queryResult.getCalendarValue("order_id", Integer.class, Calendar.getInstance()), Is.<Object>is(1));
@@ -214,7 +192,7 @@ public final class MemoryQueryResultTest {
     }
     
     @Test
-    public void assertWasNull() {
+    public void assertWasNull() throws SQLException {
         MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet());
         queryResult.next();
         assertFalse(queryResult.wasNull());
@@ -223,20 +201,40 @@ public final class MemoryQueryResultTest {
     }
     
     @Test
-    public void assertIsCaseSensitive() {
+    public void assertIsCaseSensitive() throws SQLException {
         MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet());
         assertFalse(queryResult.isCaseSensitive(1));
     }
     
     @Test
-    public void assertGetColumnCount() {
+    public void assertGetColumnCount() throws SQLException {
         MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet());
         assertThat(queryResult.getColumnCount(), is(1));
     }
     
     @Test
-    public void assertGetColumnLabel() {
+    public void assertGetColumnLabel() throws SQLException {
         MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet());
         assertThat(queryResult.getColumnLabel(1), is("order_id"));
+    }
+    
+    private ResultSet getResultSet() throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        when(result.next()).thenReturn(true).thenReturn(false);
+        when(result.getInt(1)).thenReturn(1);
+        when(result.wasNull()).thenReturn(false);
+        doReturn(getResultSetMetaData()).when(result).getMetaData();
+        return result;
+    }
+    
+    private ResultSetMetaData getResultSetMetaData() throws SQLException {
+        ResultSetMetaData result = mock(ResultSetMetaData.class);
+        when(result.getColumnCount()).thenReturn(1);
+        when(result.getColumnLabel(1)).thenReturn("order_id");
+        when(result.getColumnName(1)).thenReturn("order_id");
+        when(result.getColumnType(1)).thenReturn(Types.INTEGER);
+        when(result.getTableName(1)).thenReturn("order");
+        when(result.isCaseSensitive(1)).thenReturn(false);
+        return result;
     }
 }

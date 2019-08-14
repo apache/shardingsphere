@@ -51,17 +51,17 @@ public final class EncryptConnection extends AbstractUnsupportedOperationConnect
     }
     
     @Override
-    public Statement createStatement() {
+    public Statement createStatement() throws SQLException {
         return new EncryptStatement(this);
     }
     
     @Override
-    public Statement createStatement(final int resultSetType, final int resultSetConcurrency) {
+    public Statement createStatement(final int resultSetType, final int resultSetConcurrency) throws SQLException {
         return new EncryptStatement(this, resultSetType, resultSetConcurrency);
     }
     
     @Override
-    public Statement createStatement(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) {
+    public Statement createStatement(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) throws SQLException {
         return new EncryptStatement(this, resultSetType, resultSetConcurrency, resultSetHoldability);
     }
     

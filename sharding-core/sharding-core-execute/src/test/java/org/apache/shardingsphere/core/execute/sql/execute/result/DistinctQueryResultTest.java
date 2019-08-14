@@ -70,7 +70,7 @@ public final class DistinctQueryResultTest {
         return result;
     }
     
-    private QueryResultMetaData getQueryResultMetaData() {
+    private QueryResultMetaData getQueryResultMetaData() throws SQLException {
         QueryResultMetaData result = mock(QueryResultMetaData.class);
         when(result.getColumnCount()).thenReturn(1);
         when(result.getColumnLabel(1)).thenReturn("order_id");
@@ -79,7 +79,7 @@ public final class DistinctQueryResultTest {
     }
     
     @Test
-    public void assertDivide() {
+    public void assertDivide() throws SQLException {
         List<DistinctQueryResult> actual = distinctQueryResult.divide();
         assertThat(actual.size(), is(2));
         assertThat(actual.iterator().next().getColumnCount(), is((Object) 1));
@@ -143,13 +143,13 @@ public final class DistinctQueryResultTest {
     }
     
     @Test
-    public void assertIsCaseSensitive() {
+    public void assertIsCaseSensitive() throws SQLException {
         when(queryResultMetaData.isCaseSensitive(1)).thenReturn(true);
         assertTrue(distinctQueryResult.isCaseSensitive(1));
     }
     
     @Test
-    public void assertGetColumnCount() {
+    public void assertGetColumnCount() throws SQLException {
         assertThat(distinctQueryResult.getColumnCount(), is(1));
     }
     

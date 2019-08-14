@@ -74,17 +74,17 @@ public final class QueryResultMetaDataTest {
     }
     
     @Test
-    public void assertGetColumnCount() {
+    public void assertGetColumnCount() throws SQLException {
         assertThat(queryResultMetaData.getColumnCount(), is(1));
     }
     
     @Test
-    public void assertGetColumnLabel() {
+    public void assertGetColumnLabel() throws SQLException {
         assertThat(queryResultMetaData.getColumnLabel(1), is("label"));
     }
     
     @Test
-    public void assertGetColumnName() {
+    public void assertGetColumnName() throws SQLException {
         assertThat(queryResultMetaData.getColumnName(1), is("column"));
     }
     
@@ -94,12 +94,12 @@ public final class QueryResultMetaDataTest {
     }
     
     @Test
-    public void assertIsCaseSensitive() {
+    public void assertIsCaseSensitive() throws SQLException {
         assertFalse(queryResultMetaData.isCaseSensitive(1));
     }
     
     @Test
-    public void assertGetShardingEncryptor() {
+    public void assertGetShardingEncryptor() throws SQLException {
         assertTrue(queryResultMetaData.getShardingEncryptor(1).isPresent());
         assertThat(queryResultMetaData.getShardingEncryptor(1).get(), is(shardingEncryptor));
     }
