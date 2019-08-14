@@ -304,7 +304,7 @@ specialFunction_
     ;
 
 groupConcatFunction_
-    : GROUP_CONCAT LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? (orderByClause (SEPARATOR expr)?)? RP_
+    : GROUP_CONCAT LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? (orderByClause)? (SEPARATOR expr)? RP_
     ;
 
 windowFunction_
