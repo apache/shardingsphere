@@ -46,10 +46,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class StreamQueryResultTest {
+public final class StreamQueryResultTest {
     
-    private ShardingEncryptor shardingEncryptor = mock(ShardingEncryptor.class);
-    
+    private final ShardingEncryptor shardingEncryptor = mock(ShardingEncryptor.class);
+
     @Test
     public void assertConstructorWithShardingRule() throws SQLException {
         StreamQueryResult queryResult = new StreamQueryResult(getResultSet(), getShardingRule());
@@ -60,6 +60,26 @@ public class StreamQueryResultTest {
     public void assertConstructorWithEncryptRule() throws SQLException {
         StreamQueryResult queryResult = new StreamQueryResult(getResultSet(), getEncryptRule());
         assertThat(queryResult.getQueryResultMetaData().getShardingEncryptor(1), is(Optional.fromNullable(shardingEncryptor)));
+    }
+    
+    private ShardingRule getShardingRule() {
+        ShardingRule result = mock(ShardingRule.class);
+        doReturn(getEncryptRule()).when(result).getEncryptRule();
+        doReturn(Optional.fromNullable(getTableRule())).when(result).findTableRuleByActualTable("order");
+        return result;
+    }
+    
+    private TableRule getTableRule() {
+        TableRule result = mock(TableRule.class);
+        when(result.getLogicTable()).thenReturn("order");
+        return result;
+    }
+    
+    private EncryptRule getEncryptRule() {
+        EncryptRule result = mock(EncryptRule.class);
+        when(result.getShardingEncryptor("order", "order_id")).thenReturn(Optional.fromNullable(shardingEncryptor));
+        when(result.isCipherColumn("order", "order_id")).thenReturn(false);
+        return result;
     }
     
     @Test
@@ -120,12 +140,12 @@ public class StreamQueryResultTest {
     
     @Test
     public void assertGetCalendarValueWithColumnIndexAndDate() throws SQLException {
-        ResultSet resultSet = getResultSet();
+        ResultSet result = getResultSet();
         Calendar calendar = Calendar.getInstance();
-        StreamQueryResult queryResult = new StreamQueryResult(resultSet);
+        StreamQueryResult queryResult = new StreamQueryResult(result);
         queryResult.next();
         queryResult.getCalendarValue(1, Date.class, calendar);
-        verify(resultSet).getDate(1, calendar);
+        verify(result).getDate(1, calendar);
     }
     
     @Test
@@ -201,6 +221,7 @@ public class StreamQueryResultTest {
         verify(resultSet).getAsciiStream(1);
     }
     
+    @SuppressWarnings("deprecation")
     @Test
     public void assertGetInputStreamWithColumnIndexAndUnicode() throws SQLException {
         ResultSet resultSet = getResultSet();
@@ -288,42 +309,22 @@ public class StreamQueryResultTest {
     }
     
     private ResultSet getResultSet() throws SQLException {
-        ResultSet result = mock(ResultSet.class);
-        when(result.next()).thenReturn(true).thenReturn(false);
-        when(result.getInt(1)).thenReturn(1);
-        when(result.wasNull()).thenReturn(false).thenReturn(true);
-        doReturn(getResultSetMetaData()).when(result).getMetaData();
-        return result;
+        ResultSet resultSet = mock(ResultSet.class);
+        when(resultSet.next()).thenReturn(true).thenReturn(false);
+        when(resultSet.getInt(1)).thenReturn(1);
+        when(resultSet.wasNull()).thenReturn(false).thenReturn(true);
+        doReturn(getResultSetMetaData()).when(resultSet).getMetaData();
+        return resultSet;
     }
     
     private ResultSetMetaData getResultSetMetaData() throws SQLException {
-        ResultSetMetaData result = mock(ResultSetMetaData.class);
-        when(result.getColumnCount()).thenReturn(1);
-        when(result.getColumnLabel(1)).thenReturn("order_id");
-        when(result.getColumnName(1)).thenReturn("order_id");
-        when(result.getColumnType(1)).thenReturn(Types.INTEGER);
-        when(result.getTableName(1)).thenReturn("order");
-        when(result.isCaseSensitive(1)).thenReturn(false);
-        return result;
-    }
-    
-    private ShardingRule getShardingRule() {
-        ShardingRule result = mock(ShardingRule.class);
-        doReturn(getEncryptRule()).when(result).getEncryptRule();
-        doReturn(Optional.fromNullable(getTableRule())).when(result).findTableRuleByActualTable("order");
-        return result;
-    }
-    
-    private TableRule getTableRule() {
-        TableRule result = mock(TableRule.class);
-        when(result.getLogicTable()).thenReturn("order");
-        return result;
-    }
-    
-    private EncryptRule getEncryptRule() {
-        EncryptRule result = mock(EncryptRule.class);
-        when(result.getShardingEncryptor("order", "order_id")).thenReturn(Optional.fromNullable(shardingEncryptor));
-        when(result.isCipherColumn("order", "order_id")).thenReturn(false);
-        return result;
+        ResultSetMetaData metaData = mock(ResultSetMetaData.class);
+        when(metaData.getColumnCount()).thenReturn(1);
+        when(metaData.getColumnLabel(1)).thenReturn("order_id");
+        when(metaData.getColumnName(1)).thenReturn("order_id");
+        when(metaData.getColumnType(1)).thenReturn(Types.INTEGER);
+        when(metaData.getTableName(1)).thenReturn("order");
+        when(metaData.isCaseSensitive(1)).thenReturn(false);
+        return metaData;
     }
 }

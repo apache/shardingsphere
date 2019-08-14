@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.execute.sql.execute.result;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.execute.sql.execute.row.QueryRow;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.parse.core.constant.AggregationType;
@@ -43,14 +42,12 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     
     private final AggregationDistinctQueryMetaData metaData;
         
-    private AggregationDistinctQueryResult(final QueryResultMetaData queryResultMetaData, final List<Boolean> columnCaseSensitive, final Iterator<QueryRow> resultData,
-        final AggregationDistinctQueryMetaData distinctQueryMetaData) {
-        super(queryResultMetaData, columnCaseSensitive, resultData);
+    private AggregationDistinctQueryResult(final QueryResultMetaData queryResultMetaData, final Iterator<QueryRow> resultData, final AggregationDistinctQueryMetaData distinctQueryMetaData) {
+        super(queryResultMetaData, resultData);
         metaData = distinctQueryMetaData;
     }
     
-    @SneakyThrows
-    public AggregationDistinctQueryResult(final Collection<QueryResult> queryResults, final List<AggregationDistinctSelectItem> aggregationDistinctSelectItems) {
+    public AggregationDistinctQueryResult(final Collection<QueryResult> queryResults, final List<AggregationDistinctSelectItem> aggregationDistinctSelectItems) throws SQLException {
         super(queryResults, Lists.transform(aggregationDistinctSelectItems, new Function<AggregationDistinctSelectItem, String>() {
     
             @Override
@@ -74,7 +71,7 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
             public DistinctQueryResult apply(final QueryRow input) {
                 Set<QueryRow> resultData = new LinkedHashSet<>();
                 resultData.add(input);
-                return new AggregationDistinctQueryResult(getQueryResultMetaData(), getColumnCaseSensitive(), resultData.iterator(), metaData);
+                return new AggregationDistinctQueryResult(getQueryResultMetaData(), resultData.iterator(), metaData);
             }
         }));
     }

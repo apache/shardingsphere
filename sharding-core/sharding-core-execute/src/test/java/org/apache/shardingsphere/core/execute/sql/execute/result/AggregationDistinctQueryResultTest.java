@@ -40,7 +40,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class AggregationDistinctQueryResultTest {
+public final class AggregationDistinctQueryResultTest {
     
     private AggregationDistinctQueryResult aggregationDistinctQueryResult;
     
@@ -71,8 +71,8 @@ public class AggregationDistinctQueryResultTest {
         }
         return result;
     }
-    
-    private QueryResultMetaData getQueryResultMetaData() {
+
+    private QueryResultMetaData getQueryResultMetaData() throws SQLException {
         QueryResultMetaData result = mock(QueryResultMetaData.class);
         when(result.getColumnCount()).thenReturn(5);
         when(result.getColumnLabel(1)).thenReturn("order_id");
@@ -100,7 +100,7 @@ public class AggregationDistinctQueryResultTest {
     }
     
     @Test
-    public void assertDivide() {
+    public void assertDivide() throws SQLException {
         List<DistinctQueryResult> actual = aggregationDistinctQueryResult.divide();
         assertThat(actual.size(), is(2));
         assertThat(actual.iterator().next().getColumnCount(), is((Object) 5));
@@ -162,7 +162,7 @@ public class AggregationDistinctQueryResultTest {
     }
     
     @Test
-    public void assertGetColumnCount() {
+    public void assertGetColumnCount() throws SQLException {
         assertThat(aggregationDistinctQueryResult.getColumnCount(), is(5));
     }
     

@@ -26,6 +26,7 @@ import org.apache.shardingsphere.core.parse.core.constant.AggregationType;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -35,12 +36,12 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class AggregationDistinctQueryMetaDataTest {
+public final class AggregationDistinctQueryMetaDataTest {
     
     private AggregationDistinctQueryMetaData distinctQueryMetaData;
     
     @Before
-    public void setUp() {
+    public void setUp() throws SQLException {
         Collection<AggregationDistinctSelectItem> aggregationDistinctSelectItems = new LinkedList<>();
         AggregationDistinctSelectItem distinctCountSelectItem = new AggregationDistinctSelectItem(0, 0, AggregationType.COUNT, "(DISTINCT order_id)", "c", "order_id");
         AggregationDistinctSelectItem distinctAvgSelectItem = new AggregationDistinctSelectItem(0, 0, AggregationType.AVG, "(DISTINCT order_id)", "a", "order_id");
@@ -56,7 +57,7 @@ public class AggregationDistinctQueryMetaDataTest {
         distinctQueryMetaData = new AggregationDistinctQueryMetaData(aggregationDistinctSelectItems, getQueryResultMetaData());
     }
     
-    private QueryResultMetaData getQueryResultMetaData() {
+    private QueryResultMetaData getQueryResultMetaData() throws SQLException {
         QueryResultMetaData result = mock(QueryResultMetaData.class);
         when(result.getColumnCount()).thenReturn(4);
         when(result.getColumnLabel(1)).thenReturn("c");

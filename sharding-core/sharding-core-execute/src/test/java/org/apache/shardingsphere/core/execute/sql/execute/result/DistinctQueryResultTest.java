@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.execute.sql.execute.result;
 
-import com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -41,7 +40,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class DistinctQueryResultTest {
+public final class DistinctQueryResultTest {
     
     private DistinctQueryResult distinctQueryResult;
     
@@ -53,14 +52,6 @@ public class DistinctQueryResultTest {
         Collection<QueryResult> queryResults = getQueryResults();
         List<String> distinctColumnLabels = Collections.singletonList("order_id");
         distinctQueryResult = new DistinctQueryResult(queryResults, distinctColumnLabels);
-    }
-    
-    private QueryResultMetaData getQueryResultMetaData() {
-        QueryResultMetaData result = mock(QueryResultMetaData.class);
-        when(result.getColumnCount()).thenReturn(1);
-        when(result.getColumnLabel(1)).thenReturn("order_id");
-        when(result.getColumnIndex("order_id")).thenReturn(1);
-        return result;
     }
     
     private Collection<QueryResult> getQueryResults() throws SQLException {
@@ -79,8 +70,16 @@ public class DistinctQueryResultTest {
         return result;
     }
     
+    private QueryResultMetaData getQueryResultMetaData() throws SQLException {
+        QueryResultMetaData result = mock(QueryResultMetaData.class);
+        when(result.getColumnCount()).thenReturn(1);
+        when(result.getColumnLabel(1)).thenReturn("order_id");
+        when(result.getColumnIndex("order_id")).thenReturn(1);
+        return result;
+    }
+    
     @Test
-    public void assertDivide() {
+    public void assertDivide() throws SQLException {
         List<DistinctQueryResult> actual = distinctQueryResult.divide();
         assertThat(actual.size(), is(2));
         assertThat(actual.iterator().next().getColumnCount(), is((Object) 1));
@@ -144,12 +143,13 @@ public class DistinctQueryResultTest {
     }
     
     @Test
-    public void assertIsCaseSensitive() {
+    public void assertIsCaseSensitive() throws SQLException {
+        when(queryResultMetaData.isCaseSensitive(1)).thenReturn(true);
         assertTrue(distinctQueryResult.isCaseSensitive(1));
     }
     
     @Test
-    public void assertGetColumnCount() {
+    public void assertGetColumnCount() throws SQLException {
         assertThat(distinctQueryResult.getColumnCount(), is(1));
     }
     
@@ -171,12 +171,6 @@ public class DistinctQueryResultTest {
     @Test
     public void assertGetQueryResultMetaData() {
         assertThat(distinctQueryResult.getQueryResultMetaData(), is(queryResultMetaData));
-    }
-    
-    @Test
-    public void assertGetColumnCaseSensitive() {
-        List<Boolean> expected = Lists.newArrayList(false, true);
-        assertThat(distinctQueryResult.getColumnCaseSensitive(), is(expected));
     }
     
     @Test

@@ -38,20 +38,13 @@ import java.util.Map;
  */
 public final class InsertCipherNameTokenGenerator implements CollectionSQLTokenGenerator<EncryptRule> {
     
-    private EncryptRule encryptRule;
-    
-    private InsertOptimizedStatement insertOptimizedStatement;
-    
-    private String tableName;
-    
     @Override
     public Collection<InsertCipherNameToken> generateSQLTokens(final OptimizedStatement optimizedStatement,
                                                                final ParameterBuilder parameterBuilder, final EncryptRule rule, final boolean isQueryWithCipherColumn) {
         if (!isNeedToGenerateSQLToken(optimizedStatement)) {
             return Collections.emptyList();
         }
-        initParameters(optimizedStatement, rule);
-        return createInsertColumnTokens();
+        return createInsertColumnTokens((InsertOptimizedStatement) optimizedStatement, rule);
     }
     
     private boolean isNeedToGenerateSQLToken(final OptimizedStatement optimizedStatement) {
@@ -59,17 +52,14 @@ public final class InsertCipherNameTokenGenerator implements CollectionSQLTokenG
         return optimizedStatement instanceof InsertOptimizedStatement && insertColumnsSegment.isPresent() && !insertColumnsSegment.get().getColumns().isEmpty();
     }
     
-    private void initParameters(final OptimizedStatement optimizedStatement, final EncryptRule encryptRule) {
-        this.encryptRule = encryptRule;
-        this.insertOptimizedStatement = (InsertOptimizedStatement) optimizedStatement;
-        tableName = insertOptimizedStatement.getTables().getSingleTableName();
-    }
-    
-    private Collection<InsertCipherNameToken> createInsertColumnTokens() {
-        InsertColumnsSegment segment = insertOptimizedStatement.getSQLStatement().findSQLSegment(InsertColumnsSegment.class).get();
-        Map<String, String> logicAndCipherColumns = encryptRule.getLogicAndCipherColumns(tableName);
+    private Collection<InsertCipherNameToken> createInsertColumnTokens(final InsertOptimizedStatement optimizedStatement, final EncryptRule encryptRule) {
+        Optional<InsertColumnsSegment> insertColumnsSegment = optimizedStatement.getSQLStatement().findSQLSegment(InsertColumnsSegment.class);
+        if (!insertColumnsSegment.isPresent()) {
+            return Collections.emptyList();
+        }
+        Map<String, String> logicAndCipherColumns = encryptRule.getLogicAndCipherColumns(optimizedStatement.getTables().getSingleTableName());
         Collection<InsertCipherNameToken> result = new LinkedList<>();
-        for (ColumnSegment each : segment.getColumns()) {
+        for (ColumnSegment each : insertColumnsSegment.get().getColumns()) {
             if (logicAndCipherColumns.keySet().contains(each.getName())) {
                 result.add(new InsertCipherNameToken(each.getStartIndex(), each.getStopIndex(), logicAndCipherColumns.get(each.getName())));
             }

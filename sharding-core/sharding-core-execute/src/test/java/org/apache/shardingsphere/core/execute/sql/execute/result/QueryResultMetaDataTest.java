@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.execute.sql.execute.result;
 
 import com.google.common.base.Optional;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
@@ -33,20 +32,20 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class QueryResultMetaDataTest {
+public final class QueryResultMetaDataTest {
     
     private QueryResultMetaData queryResultMetaData;
     
     private ShardingEncryptor shardingEncryptor;
     
     @Before
-    @SneakyThrows
-    public void setUp() {
+    public void setUp() throws SQLException {
         ResultSetMetaData resultSetMetaData = getResultMetaData();
         ShardingRule shardingRule = getShardingRule();
         queryResultMetaData = new QueryResultMetaData(resultSetMetaData, shardingRule);
@@ -75,17 +74,17 @@ public class QueryResultMetaDataTest {
     }
     
     @Test
-    public void assertGetColumnCount() {
+    public void assertGetColumnCount() throws SQLException {
         assertThat(queryResultMetaData.getColumnCount(), is(1));
     }
     
     @Test
-    public void assertGetColumnLabel() {
+    public void assertGetColumnLabel() throws SQLException {
         assertThat(queryResultMetaData.getColumnLabel(1), is("label"));
     }
     
     @Test
-    public void assertGetColumnName() {
+    public void assertGetColumnName() throws SQLException {
         assertThat(queryResultMetaData.getColumnName(1), is("column"));
     }
     
@@ -95,12 +94,13 @@ public class QueryResultMetaDataTest {
     }
     
     @Test
-    public void assertIsCaseSensitive() {
+    public void assertIsCaseSensitive() throws SQLException {
         assertFalse(queryResultMetaData.isCaseSensitive(1));
     }
     
     @Test
-    public void assertGetShardingEncryptor() {
+    public void assertGetShardingEncryptor() throws SQLException {
+        assertTrue(queryResultMetaData.getShardingEncryptor(1).isPresent());
         assertThat(queryResultMetaData.getShardingEncryptor(1).get(), is(shardingEncryptor));
     }
 }

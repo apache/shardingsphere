@@ -29,5 +29,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public abstract class ShardingCTLException extends RuntimeException {
     
+    private static final long serialVersionUID = -9206948159895184071L;
+    
     private final String shardingCTL;
 }

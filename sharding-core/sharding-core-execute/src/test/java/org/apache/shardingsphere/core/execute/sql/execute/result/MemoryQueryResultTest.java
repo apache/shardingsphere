@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.execute.sql.execute.result;
 
 import com.google.common.base.Optional;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
@@ -29,7 +30,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.sql.ResultSet;
@@ -47,9 +47,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MemoryQueryResultTest {
+public final class MemoryQueryResultTest {
     
-    private ShardingEncryptor shardingEncryptor = mock(ShardingEncryptor.class);
+    private final ShardingEncryptor shardingEncryptor = mock(ShardingEncryptor.class);
     
     @Test
     public void assertConstructorWithShardingRule() throws SQLException {
@@ -64,7 +64,8 @@ public class MemoryQueryResultTest {
     }
     
     @Test(expected = SQLException.class)
-    public void assertConstructorWithSqlException() throws SQLException {
+    @SneakyThrows
+    public void assertConstructorWithSqlException() {
         ResultSet resultSet = getResultSet();
         when(resultSet.next()).thenThrow(new SQLException());
         new MemoryQueryResult(resultSet);
@@ -121,29 +122,31 @@ public class MemoryQueryResultTest {
     
     @Test(expected = Exception.class)
     public void assertGetValueWithException() throws SQLException {
-        ResultSet result = getResultSetWithException();
-        MemoryQueryResult queryResult = new MemoryQueryResult(result);
+        ResultSet resultSet = getResultSetWithException();
+        MemoryQueryResult queryResult = new MemoryQueryResult(resultSet);
         queryResult.next();
         queryResult.getValue("order_id", Integer.class);
     }
     
-    private ResultSet getResultSetWithException() throws SQLException {
-        ResultSet result = mock(ResultSet.class);
-        when(result.next()).thenReturn(true).thenReturn(false);
-        when(result.getInt(1)).thenReturn(1);
-        when(result.wasNull()).thenReturn(false);
-        doReturn(getResultSetMetaDataWithException()).when(result).getMetaData();
-        return result;
+    @SneakyThrows
+    private ResultSet getResultSetWithException() {
+        ResultSet resultSet = mock(ResultSet.class);
+        when(resultSet.next()).thenReturn(true).thenReturn(false);
+        when(resultSet.getInt(1)).thenReturn(1);
+        when(resultSet.wasNull()).thenReturn(false);
+        doReturn(getResultSetMetaDataWithException()).when(resultSet).getMetaData();
+        return resultSet;
     }
     
-    private ResultSetMetaData getResultSetMetaDataWithException() throws SQLException {
-        ResultSetMetaData result = mock(ResultSetMetaData.class);
-        when(result.getColumnCount()).thenReturn(1);
-        when(result.getColumnLabel(1)).thenReturn("order_id");
-        when(result.getColumnName(1)).thenThrow(new SQLException());
-        when(result.getColumnType(1)).thenReturn(Types.INTEGER);
-        when(result.getTableName(1)).thenReturn("order");
-        return result;
+    @SneakyThrows
+    private ResultSetMetaData getResultSetMetaDataWithException() {
+        ResultSetMetaData metaData = mock(ResultSetMetaData.class);
+        when(metaData.getColumnCount()).thenReturn(1);
+        when(metaData.getColumnLabel(1)).thenReturn("order_id");
+        when(metaData.getColumnName(1)).thenThrow(new SQLException());
+        when(metaData.getColumnType(1)).thenReturn(Types.INTEGER);
+        when(metaData.getTableName(1)).thenReturn("order");
+        return metaData;
     }
     
     @Test
@@ -161,7 +164,8 @@ public class MemoryQueryResultTest {
     }
     
     @Test
-    public void assertGetInputStreamWithColumnIndex() throws SQLException, IOException {
+    @SneakyThrows
+    public void assertGetInputStreamWithColumnIndex() {
         MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet());
         queryResult.next();
         InputStream inputStream = queryResult.getInputStream(1, "Unicode");
@@ -169,20 +173,22 @@ public class MemoryQueryResultTest {
     }
     
     @Test
-    public void assertGetInputStreamWithColumnLabel() throws SQLException, IOException {
+    @SneakyThrows
+    public void assertGetInputStreamWithColumnLabel() {
         MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet());
         queryResult.next();
         InputStream inputStream = queryResult.getInputStream("order_id", "Unicode");
         assertThat(inputStream.read(), is(getInputStream(1).read()));
     }
     
-    private InputStream getInputStream(final Object value) throws IOException {
-        ByteArrayOutputStream result = new ByteArrayOutputStream();
-        ObjectOutputStream objectOutputStream = new ObjectOutputStream(result);
+    @SneakyThrows
+    private InputStream getInputStream(final Object value) {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
         objectOutputStream.writeObject(value);
         objectOutputStream.flush();
         objectOutputStream.close();
-        return new ByteArrayInputStream(result.toByteArray());
+        return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
     }
     
     @Test

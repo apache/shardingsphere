@@ -37,31 +37,27 @@ import java.util.Collection;
  */
 public final class InsertValuesTokenGenerator implements OptionalSQLTokenGenerator<EncryptRule> {
     
-    private InsertOptimizedStatement insertOptimizedStatement;
-    
-    private Collection<InsertValuesSegment> insertValuesSegments;
-    
     @Override
     public Optional<InsertValuesToken> generateSQLToken(final OptimizedStatement optimizedStatement, 
                                                         final ParameterBuilder parameterBuilder, final EncryptRule encryptRule, final boolean isQueryWithCipherColumn) {
         Collection<InsertValuesSegment> insertValuesSegments = optimizedStatement.getSQLStatement().findSQLSegments(InsertValuesSegment.class);
-        if (!isNeedToGenerateSQLToken(optimizedStatement, insertValuesSegments)) {
-            return Optional.absent();
-        }
-        initParameters(optimizedStatement, insertValuesSegments);
-        return Optional.of(createInsertValuesToken());
+        return isNeedToGenerateSQLToken(optimizedStatement, insertValuesSegments)
+                ? Optional.of(createInsertValuesToken((InsertOptimizedStatement) optimizedStatement, insertValuesSegments)) : Optional.<InsertValuesToken>absent();
     }
     
     private boolean isNeedToGenerateSQLToken(final OptimizedStatement optimizedStatement, final Collection<InsertValuesSegment> insertValuesSegments) {
         return optimizedStatement.getSQLStatement() instanceof InsertStatement && !insertValuesSegments.isEmpty();
     }
     
-    private void initParameters(final OptimizedStatement optimizedStatement, final Collection<InsertValuesSegment> insertValuesSegments) {
-        insertOptimizedStatement = (InsertOptimizedStatement) optimizedStatement;
-        this.insertValuesSegments = insertValuesSegments;
+    private InsertValuesToken createInsertValuesToken(final InsertOptimizedStatement optimizedStatement, final Collection<InsertValuesSegment> insertValuesSegments) {
+        InsertValuesToken result = new InsertValuesToken(getStartIndex(insertValuesSegments), getStopIndex(insertValuesSegments));
+        for (InsertOptimizeResultUnit each : optimizedStatement.getUnits()) {
+            result.addInsertValueToken(Arrays.asList(each.getValues()), each.getDataNodes());
+        }
+        return result;
     }
     
-    private int getStartIndex() {
+    private int getStartIndex(final Collection<InsertValuesSegment> insertValuesSegments) {
         int result = insertValuesSegments.iterator().next().getStartIndex();
         for (InsertValuesSegment each : insertValuesSegments) {
             result = result > each.getStartIndex() ? each.getStartIndex() : result;
@@ -69,18 +65,10 @@ public final class InsertValuesTokenGenerator implements OptionalSQLTokenGenerat
         return result;
     }
     
-    private int getStopIndex() {
+    private int getStopIndex(final Collection<InsertValuesSegment> insertValuesSegments) {
         int result = insertValuesSegments.iterator().next().getStopIndex();
         for (InsertValuesSegment each : insertValuesSegments) {
             result = result < each.getStopIndex() ? each.getStopIndex() : result;
-        }
-        return result;
-    }
-    
-    private InsertValuesToken createInsertValuesToken() {
-        InsertValuesToken result = new InsertValuesToken(getStartIndex(), getStopIndex());
-        for (InsertOptimizeResultUnit each : insertOptimizedStatement.getUnits()) {
-            result.addInsertValueToken(Arrays.asList(each.getValues()), each.getDataNodes());
         }
         return result;
     }

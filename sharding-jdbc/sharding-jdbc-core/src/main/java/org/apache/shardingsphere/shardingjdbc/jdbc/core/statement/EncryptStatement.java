@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.encrypt.EncryptOptimizeEngineFactory;
@@ -50,20 +49,17 @@ public final class EncryptStatement extends AbstractUnsupportedOperationStatemen
     
     private EncryptResultSet resultSet;
     
-    @SneakyThrows
-    public EncryptStatement(final EncryptConnection connection) {
+    public EncryptStatement(final EncryptConnection connection) throws SQLException {
         statement = connection.getConnection().createStatement();
         this.connection = connection;
     }
     
-    @SneakyThrows
-    public EncryptStatement(final EncryptConnection connection, final int resultSetType, final int resultSetConcurrency) {
+    public EncryptStatement(final EncryptConnection connection, final int resultSetType, final int resultSetConcurrency) throws SQLException {
         statement = connection.getConnection().createStatement(resultSetType, resultSetConcurrency);
         this.connection = connection;
     }
     
-    @SneakyThrows
-    public EncryptStatement(final EncryptConnection connection, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) {
+    public EncryptStatement(final EncryptConnection connection, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) throws SQLException {
         statement = connection.getConnection().createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);
         this.connection = connection;
     }

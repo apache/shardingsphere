@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.execute.sql.execute.result;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
@@ -46,20 +45,17 @@ public final class StreamQueryResult implements QueryResult {
     
     private final ResultSet resultSet;
     
-    @SneakyThrows
-    public StreamQueryResult(final ResultSet resultSet, final ShardingRule shardingRule) {
+    public StreamQueryResult(final ResultSet resultSet, final ShardingRule shardingRule) throws SQLException {
         this.resultSet = resultSet;
         queryResultMetaData = new QueryResultMetaData(resultSet.getMetaData(), shardingRule);
     }
     
-    @SneakyThrows
-    public StreamQueryResult(final ResultSet resultSet, final EncryptRule encryptRule) {
+    public StreamQueryResult(final ResultSet resultSet, final EncryptRule encryptRule) throws SQLException {
         this.resultSet = resultSet;
         queryResultMetaData = new QueryResultMetaData(resultSet.getMetaData(), encryptRule);
     }
     
-    @SneakyThrows
-    public StreamQueryResult(final ResultSet resultSet) {
+    public StreamQueryResult(final ResultSet resultSet) throws SQLException {
         this.resultSet = resultSet;
         queryResultMetaData = new QueryResultMetaData(resultSet.getMetaData());
     }
@@ -143,27 +139,25 @@ public final class StreamQueryResult implements QueryResult {
     }
     
     @Override
-    public boolean isCaseSensitive(final int columnIndex) {
+    public boolean isCaseSensitive(final int columnIndex) throws SQLException {
         return queryResultMetaData.isCaseSensitive(columnIndex);
     }
     
     @Override
-    public int getColumnCount() {
+    public int getColumnCount() throws SQLException {
         return queryResultMetaData.getColumnCount();
     }
     
     @Override
-    public String getColumnLabel(final int columnIndex) {
+    public String getColumnLabel(final int columnIndex) throws SQLException {
         return queryResultMetaData.getColumnLabel(columnIndex);
     }
     
-    @SneakyThrows
-    private Object decrypt(final String columnLabel, final Object value) {
+    private Object decrypt(final String columnLabel, final Object value) throws SQLException {
         return decrypt(queryResultMetaData.getColumnIndex(columnLabel), value);
     }
     
-    @SneakyThrows
-    private Object decrypt(final int columnIndex, final Object value) {
+    private Object decrypt(final int columnIndex, final Object value) throws SQLException {
         Optional<ShardingEncryptor> shardingEncryptor = queryResultMetaData.getShardingEncryptor(columnIndex);
         return shardingEncryptor.isPresent() ? shardingEncryptor.get().decrypt(getCiphertext(value)) : value;
     }

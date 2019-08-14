@@ -44,6 +44,7 @@ import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
 import java.lang.reflect.Field;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -65,7 +66,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class XAShardingTransactionManagerTest {
     
-    private XAShardingTransactionManager xaShardingTransactionManager = new XAShardingTransactionManager();
+    private final XAShardingTransactionManager xaShardingTransactionManager = new XAShardingTransactionManager();
     
     @Mock
     private XATransactionManager xaTransactionManager;
@@ -120,7 +121,7 @@ public final class XAShardingTransactionManagerTest {
     }
     
     @Test
-    public void assertGetConnection() {
+    public void assertGetConnection() throws SQLException {
         setCachedSingleXADataSourceMap("ds1");
         Connection actual = xaShardingTransactionManager.getConnection("ds1");
         assertThat(actual, instanceOf(Connection.class));
@@ -128,7 +129,7 @@ public final class XAShardingTransactionManagerTest {
     }
     
     @Test
-    public void assertGetConnectionWithoutEnlist() {
+    public void assertGetConnectionWithoutEnlist() throws SQLException {
         setCachedSingleXADataSourceMap("ds1");
         Connection actual = xaShardingTransactionManager.getConnection("ds1");
         assertThat(actual, instanceOf(Connection.class));
@@ -161,8 +162,7 @@ public final class XAShardingTransactionManagerTest {
         field.set(xaShardingTransactionManager, createMockSingleXADataSourceMap(datasourceName));
     }
     
-    @SneakyThrows
-    private Map<String, SingleXADataSource> createMockSingleXADataSourceMap(final String datasourceName) {
+    private Map<String, SingleXADataSource> createMockSingleXADataSourceMap(final String datasourceName) throws SQLException {
         SingleXADataSource singleXADataSource = mock(SingleXADataSource.class);
         SingleXAConnection singleXAConnection = mock(SingleXAConnection.class);
         XADataSource xaDataSource = mock(XADataSource.class);
