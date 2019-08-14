@@ -24,6 +24,8 @@ package org.apache.shardingsphere.shardingproxy.backend.text.sctl.exception;
  */
 public final class UnsupportedShardingCTLTypeException extends ShardingCTLException {
     
+    private static final long serialVersionUID = -3549135462598846858L;
+    
     public UnsupportedShardingCTLTypeException(final String shardingCTL) {
         super(shardingCTL);
     }

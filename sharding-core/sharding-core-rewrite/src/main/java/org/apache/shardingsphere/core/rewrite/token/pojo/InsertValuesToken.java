@@ -52,7 +52,7 @@ public final class InsertValuesToken extends SQLToken implements Substitutable, 
      * Add insert value token.
      * 
      * @param columnValues column values
-     * @param dataNodes data nodtes
+     * @param dataNodes data nodes
      */
     public void addInsertValueToken(final List<ExpressionSegment> columnValues, final List<DataNode> dataNodes) {
         insertValueTokens.add(new InsertValueToken(columnValues, dataNodes));

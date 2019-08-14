@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
 import com.google.common.base.Optional;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.merge.MergedResult;
 import org.apache.shardingsphere.core.optimize.api.segment.Tables;
@@ -69,7 +68,7 @@ public final class ShardingResultSetTest {
     private ShardingResultSet shardingResultSet;
     
     @Before
-    public void setUp() {
+    public void setUp() throws SQLException {
         mergeResultSet = mock(MergedResult.class);
         shardingResultSet = new ShardingResultSet(getResultSets(), mergeResultSet, getShardingStatement(), createSQLRouteResult());
     }
@@ -84,8 +83,7 @@ public final class ShardingResultSetTest {
         return result;
     }
     
-    @SneakyThrows
-    private List<ResultSet> getResultSets() {
+    private List<ResultSet> getResultSets() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
         when(resultSetMetaData.getTableName(anyInt())).thenReturn("test");

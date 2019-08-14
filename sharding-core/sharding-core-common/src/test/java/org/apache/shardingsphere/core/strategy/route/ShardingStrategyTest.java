@@ -61,10 +61,8 @@ public final class ShardingStrategyTest {
     @Test
     public void assertDoShardingForMultipleKeys() {
         ComplexShardingStrategy strategy = new ComplexShardingStrategy(new ComplexShardingStrategyConfiguration("column1, column2", new ComplexKeysShardingAlgorithmFixture()));
-        List<RouteValue> routeValues = Lists.<RouteValue>newArrayList(
-            new ListRouteValue<>("column1", "logicTable", Collections.singletonList(1)),
-            new RangeRouteValue<>("column2", "logicTable", Range.open(1, 3))
-        );
+        List<RouteValue> routeValues = Lists.newArrayList(
+                new ListRouteValue<>("column1", "logicTable", Collections.singletonList(1)), new RangeRouteValue<>("column2", "logicTable", Range.open(1, 3)));
         assertThat(strategy.doSharding(targets, routeValues), is((Collection<String>) Sets.newHashSet("1", "2", "3")));
     }
 }

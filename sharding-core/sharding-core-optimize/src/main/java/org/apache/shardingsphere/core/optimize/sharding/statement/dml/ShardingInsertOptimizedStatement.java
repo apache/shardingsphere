@@ -75,8 +75,7 @@ public final class ShardingInsertOptimizedStatement extends ShardingConditionOpt
      * @return insert optimize result unit
      */
     public InsertOptimizeResultUnit createUnit(final ExpressionSegment[] insertValues, final Object[] parameters, final int startIndexOfAppendedParameters) {
-        InsertOptimizeResultUnit result = new InsertOptimizeResultUnit(insertColumns.getAllColumnNames(), insertValues, parameters, startIndexOfAppendedParameters);
-        return result;
+        return new InsertOptimizeResultUnit(insertColumns.getAllColumnNames(), insertValues, parameters, startIndexOfAppendedParameters);
     }
 
     /**

@@ -29,5 +29,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public final class UnknownDatabaseException extends BackendException {
     
+    private static final long serialVersionUID = 6442120909016308638L;
+    
     private final String databaseName;
 }

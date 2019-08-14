@@ -30,6 +30,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -53,26 +54,22 @@ public final class MemoryQueryResult implements QueryResult {
     @Getter
     private final QueryResultMetaData queryResultMetaData;
     
-    @SneakyThrows
-    public MemoryQueryResult(final ResultSet resultSet, final ShardingRule shardingRule) {
+    public MemoryQueryResult(final ResultSet resultSet, final ShardingRule shardingRule) throws SQLException {
         resultData = getResultData(resultSet);
         queryResultMetaData = new QueryResultMetaData(resultSet.getMetaData(), shardingRule);
     }
     
-    @SneakyThrows
-    public MemoryQueryResult(final ResultSet resultSet, final EncryptRule encryptRule) {
+    public MemoryQueryResult(final ResultSet resultSet, final EncryptRule encryptRule) throws SQLException {
         resultData = getResultData(resultSet);
         queryResultMetaData = new QueryResultMetaData(resultSet.getMetaData(), encryptRule);
     }
     
-    @SneakyThrows
-    public MemoryQueryResult(final ResultSet resultSet) {
+    public MemoryQueryResult(final ResultSet resultSet) throws SQLException {
         resultData = getResultData(resultSet);
         queryResultMetaData = new QueryResultMetaData(resultSet.getMetaData());
     }
         
-    @SneakyThrows
-    private Iterator<QueryRow> getResultData(final ResultSet resultSet) {
+    private Iterator<QueryRow> getResultData(final ResultSet resultSet) throws SQLException {
         Collection<QueryRow> result = new LinkedList<>();
         while (resultSet.next()) {
             List<Object> rowData = new ArrayList<>(resultSet.getMetaData().getColumnCount());
@@ -95,12 +92,12 @@ public final class MemoryQueryResult implements QueryResult {
     }
     
     @Override
-    public Object getValue(final int columnIndex, final Class<?> type) {
+    public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
         return decrypt(columnIndex, currentRow.getColumnValue(columnIndex));
     }
     
     @Override
-    public Object getValue(final String columnLabel, final Class<?> type) {
+    public Object getValue(final String columnLabel, final Class<?> type) throws SQLException {
         return decrypt(columnLabel, currentRow.getColumnValue(queryResultMetaData.getColumnIndex(columnLabel)));
     }
     
@@ -140,27 +137,25 @@ public final class MemoryQueryResult implements QueryResult {
     }
     
     @Override
-    public boolean isCaseSensitive(final int columnIndex) {
+    public boolean isCaseSensitive(final int columnIndex) throws SQLException {
         return queryResultMetaData.isCaseSensitive(columnIndex);
     }
     
     @Override
-    public int getColumnCount() {
+    public int getColumnCount() throws SQLException {
         return queryResultMetaData.getColumnCount();
     }
     
     @Override
-    public String getColumnLabel(final int columnIndex) {
+    public String getColumnLabel(final int columnIndex) throws SQLException {
         return queryResultMetaData.getColumnLabel(columnIndex);
     }
     
-    @SneakyThrows
-    private Object decrypt(final String columnLabel, final Object value) {
+    private Object decrypt(final String columnLabel, final Object value) throws SQLException {
         return decrypt(queryResultMetaData.getColumnIndex(columnLabel), value);
     }
     
-    @SneakyThrows
-    private Object decrypt(final int columnIndex, final Object value) {
+    private Object decrypt(final int columnIndex, final Object value) throws SQLException {
         Optional<ShardingEncryptor> shardingEncryptor = queryResultMetaData.getShardingEncryptor(columnIndex);
         return shardingEncryptor.isPresent() ? shardingEncryptor.get().decrypt(getCiphertext(value)) : value;
     }

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
 import com.google.common.collect.Lists;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.junit.Before;
 import org.junit.Test;
@@ -82,8 +81,7 @@ public class DatabaseMetaDataResultSetTest {
         databaseMetaDataResultSet = new DatabaseMetaDataResultSet(mockResultSet(), mockShardingRule());
     }
     
-    @SneakyThrows
-    private void mockResultSetMetaData() {
+    private void mockResultSetMetaData() throws SQLException {
         when(resultSetMetaData.getColumnCount()).thenReturn(6);
         when(resultSetMetaData.getColumnLabel(1)).thenReturn(TABLE_NAME_COLUMN_LABEL);
         when(resultSetMetaData.getColumnLabel(2)).thenReturn(NON_TABLE_NAME_COLUMN_LABEL);
@@ -93,8 +91,7 @@ public class DatabaseMetaDataResultSetTest {
         when(resultSetMetaData.getColumnLabel(6)).thenReturn(INDEX_NAME_COLUMN_LABEL);
     }
     
-    @SneakyThrows
-    private ResultSet mockResultSet() {
+    private ResultSet mockResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.getMetaData()).thenReturn(resultSetMetaData);
         when(result.getString(1)).thenReturn(ACTUAL_TABLE_NAME, ACTUAL_TABLE_NAME);
