@@ -84,6 +84,7 @@ public final class ResultSetUtilTest {
         assertThat((java.sql.Date) ResultSetUtil.convertValue(now, java.sql.Date.class), is(now));
         assertThat((Time) ResultSetUtil.convertValue(now, Time.class), is(now));
         assertThat((Timestamp) ResultSetUtil.convertValue(now, Timestamp.class), is(new Timestamp(now.getTime())));
+        assertThat((String) ResultSetUtil.convertValue(now, String.class), is(now.toString()));
     }
     
     @Test

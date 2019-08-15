@@ -48,7 +48,7 @@ replaceSpecification_
     ;
 
 update
-    : UPDATE updateSpecification_ tableReferences setAssignmentsClause whereClause?
+    : UPDATE updateSpecification_ tableReferences setAssignmentsClause whereClause? orderByClause? limitClause?
     ;
 
 updateSpecification_
@@ -175,7 +175,7 @@ unionClause_
     ;
 
 selectClause
-    : SELECT selectSpecification_* selectItems fromClause? whereClause? groupByClause? havingClause? windowClause_? orderByClause? limitClause?
+    : SELECT selectSpecification_* selectItems fromClause? whereClause? groupByClause? havingClause? windowClause_? orderByClause? limitClause? selectIntoExpression_? lockClause?
     ;
 
 selectSpecification_
@@ -290,4 +290,13 @@ selectLinesInto_
 
 selectFieldsInto_
     : TERMINATED BY STRING_ | OPTIONALLY? ENCLOSED BY STRING_ | ESCAPED BY STRING_
+    ;
+
+selectIntoExpression_
+    : INTO identifier_ (COMMA_ identifier_ )* | INTO DUMPFILE STRING_
+    | (INTO OUTFILE STRING_ (CHARACTER SET IDENTIFIER_)?((FIELDS | COLUMNS) selectFieldsInto_+)? (LINES selectLinesInto_+)?)
+    ;
+
+lockClause
+    : FOR UPDATE | LOCK IN SHARE MODE
     ;
