@@ -19,29 +19,28 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere.example</groupId>
         <artifactId>transaction-example</artifactId>
         <version>4.0.0-RC2-SNAPSHOT</version>
     </parent>
-    <artifactId>transaction-base-seata-example</artifactId>
-    <packaging>pom</packaging>
+    <modelVersion>4.0.0</modelVersion>
     
-    <modules>
-        <module>transaction-base-seata-raw-jdbc-example</module>
-        <module>transaction-base-seata-spring-boot-example</module>
-        <module>transaction-base-seata-spring-namespace-example</module>
-    </modules>
+    <artifactId>transaction-base-seata-raw-jdbc-example</artifactId>
     
     <dependencies>
         <dependency>
-            <groupId>io.seata</groupId>
-            <artifactId>seata-rm-datasource</artifactId>
+            <groupId>org.apache.shardingsphere.example</groupId>
+            <artifactId>repository-jdbc</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>io.seata</groupId>
-            <artifactId>seata-tm</artifactId>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>sharding-jdbc-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>sharding-transaction-base-seata-at</artifactId>
         </dependency>
     </dependencies>
 </project>
