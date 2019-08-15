@@ -13,7 +13,5 @@
 
     <modules>
         <module>transaction-xa-raw-jdbc-example</module>
-        <module>transaction-xa-spring-namespace-example</module>
-        <module>transaction-xa-spring-boot-example</module>
     </modules>
 </project>
