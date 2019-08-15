@@ -78,11 +78,6 @@
                 <version>${project.parent.version}</version>
             </dependency>
             <dependency>
-                <groupId>io.shardingsphere</groupId>
-                <artifactId>sharding-transaction-base-saga</artifactId>
-                <version>${sharding-sphere.spi.impl.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>sharding-transaction-base-seata-at</artifactId>
                 <version>${project.parent.version}</version>
