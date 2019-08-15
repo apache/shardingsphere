@@ -125,6 +125,8 @@ public final class ResultSetUtil {
                 return new Time(date.getTime());
             case "java.sql.Timestamp":
                 return new Timestamp(date.getTime());
+            case "java.lang.String":
+                return date.toString();
             default:
                 throw new ShardingException("Unsupported Date type:%s", convertType);
         }
