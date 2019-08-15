@@ -150,23 +150,26 @@ public final class QueryResultUtilTest {
     
     @Test
     public void assertGetValueByBinary() throws SQLException {
+        Blob blob = mock(Blob.class);
         when(resultSetMetaData.getColumnType(1)).thenReturn(Types.BINARY);
-        when(resultSet.getBytes(1)).thenReturn("xxxxx".getBytes());
-        assertThat((byte[]) QueryResultUtil.getValue(resultSet, 1), is("xxxxx".getBytes()));
+        when(resultSet.getBlob(1)).thenReturn(blob);
+        assertThat((Blob) QueryResultUtil.getValue(resultSet, 1), is(blob));
     }
     
     @Test
     public void assertGetValueByVarBinary() throws SQLException {
+        Blob blob = mock(Blob.class);
         when(resultSetMetaData.getColumnType(1)).thenReturn(Types.VARBINARY);
-        when(resultSet.getBytes(1)).thenReturn("xxxxx".getBytes());
-        assertThat((byte[]) QueryResultUtil.getValue(resultSet, 1), is("xxxxx".getBytes()));
+        when(resultSet.getBlob(1)).thenReturn(blob);
+        assertThat((Blob) QueryResultUtil.getValue(resultSet, 1), is(blob));
     }
     
     @Test
     public void assertGetValueByLongVarBinary() throws SQLException {
+        Blob blob = mock(Blob.class);
         when(resultSetMetaData.getColumnType(1)).thenReturn(Types.LONGVARBINARY);
-        when(resultSet.getBytes(1)).thenReturn("xxxxx".getBytes());
-        assertThat((byte[]) QueryResultUtil.getValue(resultSet, 1), is("xxxxx".getBytes()));
+        when(resultSet.getBlob(1)).thenReturn(blob);
+        assertThat((Blob) QueryResultUtil.getValue(resultSet, 1), is(blob));
     }
     
     @Test
