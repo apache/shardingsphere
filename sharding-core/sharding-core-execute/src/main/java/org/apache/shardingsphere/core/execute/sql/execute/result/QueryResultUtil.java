@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.core.execute.sql.execute.result;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -27,7 +30,8 @@ import java.sql.Types;
  *
  * @author yangyi
  */
-public class QueryResultUtil {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class QueryResultUtil {
     
     /**
      * Get value.
@@ -42,15 +46,7 @@ public class QueryResultUtil {
         return resultSet.wasNull() ? null : result;
     }
     
-    /**
-     * Get value by column type.
-     *
-     * @param resultSet result set
-     * @param columnIndex column index
-     * @return column value
-     * @throws SQLException SQL exception
-     */
-    public static Object getValueByColumnType(final ResultSet resultSet, final int columnIndex) throws SQLException {
+    private static Object getValueByColumnType(final ResultSet resultSet, final int columnIndex) throws SQLException {
         ResultSetMetaData metaData = resultSet.getMetaData();
         switch (metaData.getColumnType(columnIndex)) {
             case Types.BOOLEAN:
