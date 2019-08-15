@@ -48,16 +48,16 @@ import static org.mockito.Mockito.doAnswer;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ConfigurationLoggerTest {
-
+    
     @Mock
     private Logger log;
-
+    
     @Before
     public void setLog() throws NoSuchFieldException, IllegalAccessException {
         Field field = ConfigurationLogger.class.getDeclaredField("log");
         setFinalStatic(field, log);
     }
-
+    
     private static void setFinalStatic(final Field field, final Object newValue)
         throws NoSuchFieldException, IllegalAccessException {
         field.setAccessible(true);
@@ -66,10 +66,10 @@ public class ConfigurationLoggerTest {
         modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
         field.set(null, newValue);
     }
-
+    
     private void assertEqualsWithLogInfo(final String base, final String yamlStr) {
         doAnswer(new Answer() {
-
+            
             @Override
             public Void answer(final InvocationOnMock invocationOnMock) {
                 Assert.assertEquals(base, invocationOnMock.getArgument(1));
@@ -78,7 +78,7 @@ public class ConfigurationLoggerTest {
             }
         }).when(log).info(anyString(), anyString(), anyString());
     }
-
+    
     @Test
     public void logPropsConfiguration() {
         String yamlStr =
@@ -86,36 +86,36 @@ public class ConfigurationLoggerTest {
         assertEqualsWithLogInfo(Properties.class.getSimpleName(), yamlStr);
         ConfigurationLogger.log(getProperties());
     }
-
+    
     private Properties getProperties() {
-        Properties properties = new Properties();
-        properties.put("masterDataSourceName", "master_ds");
-        properties.put("slaveDataSourceNames", Arrays.asList("slave_ds_0", "slave_ds_1"));
-        return properties;
+        Properties result = new Properties();
+        result.put("masterDataSourceName", "master_ds");
+        result.put("slaveDataSourceNames", Arrays.asList("slave_ds_0", "slave_ds_1"));
+        return result;
     }
-
+    
     @Test
     public void logEncryptRuleConfiguration() {
-        String yamlStr = "encryptors:\n" + "  encryptor_aes:\n" + "    props:\n" + "      aes.key.value: 123456abc\n" + "    type: aes\n" 
-                + "tables:\n" + "  t_encrypt:\n" + "    columns:\n" + "      user_id:\n" + "        assistedQueryColumn: user_assisted\n" 
-                + "        cipherColumn: user_encrypt\n" + "        encryptor: encryptor_aes\n" + "        plainColumn: user_decrypt\n";
+        String yamlStr = "encryptors:\n" + "  encryptor_aes:\n" + "    props:\n" + "      aes.key.value: 123456abc\n" + "    type: aes\n"
+            + "tables:\n" + "  t_encrypt:\n" + "    columns:\n" + "      user_id:\n" + "        assistedQueryColumn: user_assisted\n"
+            + "        cipherColumn: user_encrypt\n" + "        encryptor: encryptor_aes\n" + "        plainColumn: user_decrypt\n";
         assertEqualsWithLogInfo(EncryptRuleConfiguration.class.getSimpleName(), yamlStr);
         ConfigurationLogger.log(getEncryptRuleConfiguration());
     }
-
+    
     private EncryptRuleConfiguration getEncryptRuleConfiguration() {
-        EncryptRuleConfiguration encryptRuleConfiguration = new EncryptRuleConfiguration();
+        EncryptRuleConfiguration result = new EncryptRuleConfiguration();
         Properties properties = new Properties();
         properties.put("aes.key.value", "123456abc");
         EncryptorRuleConfiguration encryptorRuleConfiguration =
             new EncryptorRuleConfiguration("aes", properties);
-        encryptRuleConfiguration.getEncryptors().put("encryptor_aes", encryptorRuleConfiguration);
-        EncryptTableRuleConfiguration tableRuleConfiguration = 
-                new EncryptTableRuleConfiguration(Collections.singletonMap("user_id", new EncryptColumnRuleConfiguration("user_decrypt", "user_encrypt", "user_assisted", "encryptor_aes")));
-        encryptRuleConfiguration.getTables().put("t_encrypt", tableRuleConfiguration);
-        return encryptRuleConfiguration;
+        result.getEncryptors().put("encryptor_aes", encryptorRuleConfiguration);
+        EncryptTableRuleConfiguration tableRuleConfiguration =
+            new EncryptTableRuleConfiguration(Collections.singletonMap("user_id", new EncryptColumnRuleConfiguration("user_decrypt", "user_encrypt", "user_assisted", "encryptor_aes")));
+        result.getTables().put("t_encrypt", tableRuleConfiguration);
+        return result;
     }
-
+    
     @Test
     public void logShardingRuleConfiguration() {
         String yamlStr =
@@ -123,14 +123,14 @@ public class ConfigurationLoggerTest {
         assertEqualsWithLogInfo(ShardingRuleConfiguration.class.getSimpleName(), yamlStr);
         ConfigurationLogger.log(getShardingRuleConfiguration());
     }
-
+    
     private ShardingRuleConfiguration getShardingRuleConfiguration() {
-        ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
+        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         TableRuleConfiguration tableRuleConfiguration = new TableRuleConfiguration("user", "ds_${0}.user_${0..1}");
-        shardingRuleConfiguration.getTableRuleConfigs().add(tableRuleConfiguration);
-        return shardingRuleConfiguration;
+        result.getTableRuleConfigs().add(tableRuleConfiguration);
+        return result;
     }
-
+    
     @Test
     public void logMasterSlaveRuleConfiguration() {
         String yamlStr = "masterDataSourceName: master_ds\n" + "name: ms_ds\n" + "slaveDataSourceNames:\n"
@@ -138,16 +138,16 @@ public class ConfigurationLoggerTest {
         assertEqualsWithLogInfo(MasterSlaveRuleConfiguration.class.getSimpleName(), yamlStr);
         ConfigurationLogger.log(getMasterSlaveRuleConfiguration());
     }
-
+    
     private MasterSlaveRuleConfiguration getMasterSlaveRuleConfiguration() {
         return new MasterSlaveRuleConfiguration("ms_ds", "master_ds", Arrays.asList("slave_ds_0", "slave_ds_1"));
     }
-
+    
     @Test
     public void logRuleConfigurationWithEncryptRuleConfiguration() {
-        String yamlStr = "encryptors:\n" + "  encryptor_aes:\n" + "    props:\n" + "      aes.key.value: 123456abc\n" + "    type: aes\n" 
-                + "tables:\n" + "  t_encrypt:\n" + "    columns:\n" + "      user_id:\n" + "        assistedQueryColumn: user_assisted\n" 
-                + "        cipherColumn: user_encrypt\n" + "        encryptor: encryptor_aes\n" + "        plainColumn: user_decrypt\n";
+        String yamlStr = "encryptors:\n" + "  encryptor_aes:\n" + "    props:\n" + "      aes.key.value: 123456abc\n" + "    type: aes\n"
+            + "tables:\n" + "  t_encrypt:\n" + "    columns:\n" + "      user_id:\n" + "        assistedQueryColumn: user_assisted\n"
+            + "        cipherColumn: user_encrypt\n" + "        encryptor: encryptor_aes\n" + "        plainColumn: user_decrypt\n";
         assertEqualsWithLogInfo(EncryptRuleConfiguration.class.getSimpleName(), yamlStr);
         ConfigurationLogger.log((RuleConfiguration) getEncryptRuleConfiguration());
     }
@@ -167,20 +167,20 @@ public class ConfigurationLoggerTest {
         assertEqualsWithLogInfo(MasterSlaveRuleConfiguration.class.getSimpleName(), yamlStr);
         ConfigurationLogger.log((RuleConfiguration) getMasterSlaveRuleConfiguration());
     }
-
+    
     @Test
     public void logAuthenticationConfiguration() {
         String yamlStr = "users:\n" + "  root:\n" + "    authorizedSchemas: sharding_db\n" + "    password: '123456'\n";
         assertEqualsWithLogInfo(Authentication.class.getSimpleName(), yamlStr);
         ConfigurationLogger.log(getAuthentication());
     }
-
+    
     private Authentication getAuthentication() {
-        Authentication authentication = new Authentication();
-        authentication.getUsers().put("root", new ProxyUser("123456", Collections.singletonList("sharding_db")));
-        return authentication;
+        Authentication result = new Authentication();
+        result.getUsers().put("root", new ProxyUser("123456", Collections.singletonList("sharding_db")));
+        return result;
     }
-
+    
     @Test
     public void log() {
         String base = "base";
