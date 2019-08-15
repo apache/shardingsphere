@@ -62,8 +62,8 @@ public final class LeafSnowflakeKeyGeneratorTest {
         properties.setProperty("maxTimeDifference", "5000");
         properties.setProperty("registryCenterType", "ForthTestRegistryCenter");
         leafSnowflakeKeyGenerator.setProperties(properties);
-        leafSnowflakeKeyGenerator.setTimeService(new FixedTimeService(1));
-        //setStaticFinalField(leafSnowflakeKeyGenerator,"timeService",new FixedTimeService(1));
+        //leafSnowflakeKeyGenerator.setTimeService(new FixedTimeService(1));
+        setStaticFinalField(leafSnowflakeKeyGenerator,"timeService",new FixedTimeService(1));
         List<Comparable<?>> expected = Arrays.<Comparable<?>>asList(4198401L, 4198402L, 8392704L, 8392705L, 12587009L, 12587010L, 16781312L, 16781313L, 20975617L, 20975618L);
         List<Comparable<?>> actual = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
@@ -81,8 +81,8 @@ public final class LeafSnowflakeKeyGeneratorTest {
         properties.setProperty("maxTimeDifference", "5000");
         properties.setProperty("registryCenterType", "ForthTestRegistryCenter");
         leafSnowflakeKeyGenerator.setProperties(properties);
-        leafSnowflakeKeyGenerator.setTimeService(new FixedTimeService(1));
-        //setStaticFinalField(leafSnowflakeKeyGenerator,"timeService",new FixedTimeService(1));
+        //leafSnowflakeKeyGenerator.setTimeService(new FixedTimeService(1));
+        setStaticFinalField(leafSnowflakeKeyGenerator,"timeService",new FixedTimeService(1));
         List<Comparable<?>> expected = Arrays.<Comparable<?>>asList(4198401L);
         List<Comparable<?>> actual = new ArrayList<>();
         actual.add(leafSnowflakeKeyGenerator.generateKey());

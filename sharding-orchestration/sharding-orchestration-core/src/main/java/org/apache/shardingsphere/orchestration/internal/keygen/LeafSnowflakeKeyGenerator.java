@@ -71,10 +71,11 @@ public final class LeafSnowflakeKeyGenerator implements ShardingKeyGenerator {
     private static final String WORK_ID_NODE = "/work-id";
 
     private static final String SLANTING_BAR = "/";
-    //private static final TimeService timeService = new TimeService();
 
-    @Setter
-    private static TimeService timeService = new TimeService();
+    private static final TimeService timeService = new TimeService();
+
+    //@Setter
+    //private static TimeService timeService = new TimeService();
 
     @Getter
     @Setter
