@@ -73,10 +73,6 @@ public class QueryResultUtil {
             case Types.VARCHAR:
             case Types.LONGVARCHAR:
                 return resultSet.getString(columnIndex);
-            case Types.BINARY:
-            case Types.VARBINARY:
-            case Types.LONGVARBINARY:
-                return resultSet.getBytes(columnIndex);
             case Types.DATE:
                 return resultSet.getDate(columnIndex);
             case Types.TIME:
@@ -86,6 +82,9 @@ public class QueryResultUtil {
             case Types.CLOB:
                 return resultSet.getClob(columnIndex);
             case Types.BLOB:
+            case Types.BINARY:
+            case Types.VARBINARY:
+            case Types.LONGVARBINARY:
                 return resultSet.getBlob(columnIndex);
             default:
                 return resultSet.getObject(columnIndex);
