@@ -1,6 +1,6 @@
 # [ShardingSphere - Distributed Database Middleware Ecosphere](https://shardingsphere.apache.org/)
 
-Official website: https://shardingsphere.apache.org/
+**Official website: https://shardingsphere.apache.org/**
 
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 [![Gitter](https://badges.gitter.im/shardingsphere/shardingsphere.svg)](https://gitter.im/shardingsphere/Lobby)
@@ -18,7 +18,6 @@ Official website: https://shardingsphere.apache.org/
 ## Document
 
 [![EN doc](https://img.shields.io/badge/document-English-blue.svg)](https://shardingsphere.apache.org/document/current/en/overview/)
-
 [![CN doc](https://img.shields.io/badge/文档-中文版-blue.svg)](https://shardingsphere.apache.org/document/current/cn/overview/)
 
 ## Overview
