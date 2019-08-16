@@ -25,6 +25,12 @@ SQL解析的接口用于规定用于解析SQL的ANTLR语法文件。
 
 有关SQL解析介绍，请参考[SQL解析](/cn/features/sharding/principle/parse/)。
 
+### 数据库协议
+
+数据库协议的接口用于Sharding-Proxy解析与适配访问数据库的协议。
+
+主要接口是`DatabaseProtocolFrontendEngine`，其内置实现类有`MySQLProtocolFrontendEngine`和`PostgreSQLProtocolFrontendEngine`。
+
 ### 数据脱敏
 
 数据脱敏的接口用于规定加解密器的加密、解密、类型获取、属性设置等方式。

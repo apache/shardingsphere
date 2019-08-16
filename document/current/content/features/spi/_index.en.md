@@ -16,9 +16,16 @@ This chapter has provided all the Apache ShardingSphere functional modules that 
 ### SQL Passing
 
 SQL parsing interface is used to regulate ANTLR file for SQL parse.
+
 Its main interface is `SQLParserEntry`, in which the built-in implementations of the former one include `MySQLParserEntry`, `PostgreSQLParserEntry`, `SQLServerParserEntry` and `OracleParserEntry`.
 
 Please refer to [SQL Parsing](/en/features/sharding/principle/parse/) for the introduction of SQL parsing.
+
+### Database Protocol
+
+Database protocol interface is used to regulate parse and adapter protocol of database access for Sharding-Proxy.
+
+Its main interface is `DatabaseProtocolFrontendEngine`, in which the built-in implementations of the former one include `MySQLProtocolFrontendEngine` and `PostgreSQLProtocolFrontendEngine`.
 
 ### Data Masking
 
