@@ -10,10 +10,9 @@
     </parent>
     <artifactId>transaction-example</artifactId>
     <packaging>pom</packaging>
-
+    
     <modules>
         <module>transaction-2pc-xa-raw-jdbc-example</module>
         <module>transaction-base-seata-raw-jdbc-example</module>
     </modules>
-
 </project>

@@ -8,9 +8,9 @@
         <artifactId>example-common</artifactId>
         <version>4.0.0-RC2-SNAPSHOT</version>
     </parent>
-
+    
     <artifactId>config-utility</artifactId>
-
+    
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>

@@ -9,7 +9,7 @@
         <version>4.0.0-RC2-SNAPSHOT</version>
     </parent>
     <artifactId>sharding-raw-jdbc-example</artifactId>
-
+    
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere.example</groupId>

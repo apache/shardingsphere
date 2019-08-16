@@ -10,7 +10,7 @@
     </parent>
     <artifactId>example-common</artifactId>
     <packaging>pom</packaging>
-
+    
     <modules>
         <module>repository-api</module>
         <module>repository-jpa</module>

@@ -9,7 +9,7 @@
         <version>4.0.0-RC2-SNAPSHOT</version>
     </parent>
     <artifactId>orchestration-raw-jdbc-example</artifactId>
-
+    
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere.example</groupId>
@@ -21,7 +21,7 @@
             <artifactId>config-utility</artifactId>
             <version>${project.version}</version>
         </dependency>
-
+        
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>sharding-jdbc-orchestration</artifactId>

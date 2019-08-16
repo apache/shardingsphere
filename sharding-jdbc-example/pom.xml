@@ -10,10 +10,10 @@
     </parent>
     <artifactId>sharding-jdbc-example</artifactId>
     <packaging>pom</packaging>
-
+    
     <modules>
-        <module>orchestration-example</module>
         <module>sharding-example</module>
+        <module>orchestration-example</module>
         <module>transaction-example</module>
         <module>other-feature-example</module>
     </modules>

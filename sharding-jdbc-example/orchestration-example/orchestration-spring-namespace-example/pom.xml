@@ -9,7 +9,7 @@
         <version>4.0.0-RC2-SNAPSHOT</version>
     </parent>
     <artifactId>orchestration-spring-namespace-example</artifactId>
-
+    
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere.example</groupId>
@@ -37,7 +37,7 @@
             <!--<groupId>io.shardingsphere</groupId>-->
             <!--<artifactId>sharding-orchestration-reg-etcd</artifactId>-->
         <!--</dependency>-->
-
+        
         <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjweaver</artifactId>
@@ -50,7 +50,7 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-tx</artifactId>
         </dependency>
-
+        
         <dependency>
             <groupId>org.mybatis</groupId>
             <artifactId>mybatis</artifactId>

@@ -27,6 +27,7 @@
     </parent>
     <artifactId>broadcast-table-example</artifactId>
     <packaging>pom</packaging>
+    
     <modules>
         <module>broadcast-table-raw-jdbc-example</module>
         <module>broadcast-table-spring-boot-example</module>

@@ -10,11 +10,10 @@
     </parent>
     <artifactId>orchestration-example</artifactId>
     <packaging>pom</packaging>
-
+    
     <modules>
         <module>orchestration-raw-jdbc-example</module>
         <module>orchestration-spring-boot-example</module>
         <module>orchestration-spring-namespace-example</module>
     </modules>
-
 </project>

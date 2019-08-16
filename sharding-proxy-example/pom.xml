@@ -10,7 +10,7 @@
     </parent>
     <artifactId>sharding-proxy-example</artifactId>
     <packaging>pom</packaging>
-
+    
     <modules>
         <module>sharding-proxy-boot-mybatis-example</module>
     </modules>

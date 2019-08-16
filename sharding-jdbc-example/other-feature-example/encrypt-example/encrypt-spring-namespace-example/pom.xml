@@ -37,7 +37,7 @@
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>sharding-jdbc-spring-namespace</artifactId>
         </dependency>
-    
+        
         <dependency>
             <groupId>org.mybatis</groupId>
             <artifactId>mybatis</artifactId>
@@ -51,5 +51,4 @@
             <artifactId>spring-jdbc</artifactId>
         </dependency>
     </dependencies>
-    
 </project>

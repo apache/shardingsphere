@@ -6,6 +6,7 @@
     <groupId>org.apache.shardingsphere.example</groupId>
     <artifactId>shardingsphere-example</artifactId>
     <version>4.0.0-RC2-SNAPSHOT</version>
+    
     <modules>
         <module>example-common</module>
         <module>sharding-jdbc-example</module>

@@ -10,7 +10,7 @@
     </parent>
     <artifactId>sharding-example</artifactId>
     <packaging>pom</packaging>
-
+    
     <modules>
         <module>sharding-raw-jdbc-example</module>
         <module>sharding-spring-boot-jpa-example</module>

@@ -9,5 +9,4 @@
         <version>4.0.0-RC2-SNAPSHOT</version>
     </parent>
     <artifactId>repository-api</artifactId>
-
 </project>
