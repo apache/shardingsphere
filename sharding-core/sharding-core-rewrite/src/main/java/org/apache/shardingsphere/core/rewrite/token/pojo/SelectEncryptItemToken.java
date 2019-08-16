@@ -29,16 +29,23 @@ public final class SelectEncryptItemToken extends SQLToken implements Substituta
     
     private final int stopIndex;
     
-    private final String selectItemName;
+    private final String columnName;
     
-    public SelectEncryptItemToken(final int startIndex, final int stopIndex, final String selectItemName) {
+    private final String owner;
+    
+    public SelectEncryptItemToken(final int startIndex, final int stopIndex, final String columnName, final String owner) {
         super(startIndex);
         this.stopIndex = stopIndex;
-        this.selectItemName = selectItemName;
+        this.columnName = columnName;
+        this.owner = owner;
+    }
+    
+    public SelectEncryptItemToken(final int startIndex, final int stopIndex, final String columnName) {
+        this(startIndex, stopIndex, columnName, null);
     }
     
     @Override
     public String toString() {
-        return selectItemName;
+        return null == owner ? columnName : String.format("%s.%s", owner, columnName);
     }
 }
