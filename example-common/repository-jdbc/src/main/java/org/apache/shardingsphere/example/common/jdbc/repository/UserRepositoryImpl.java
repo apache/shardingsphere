@@ -106,9 +106,9 @@ public final class UserRepositoryImpl implements UserRepository {
              ResultSet resultSet = preparedStatement.executeQuery()) {
             while (resultSet.next()) {
                 User user = new User();
-                user.setUserId(resultSet.getInt(1));
-                user.setUserName(resultSet.getString(2));
-                user.setPwd(resultSet.getString(3));
+                user.setUserId(resultSet.getInt("user_id"));
+                user.setUserName(resultSet.getString("user_name"));
+                user.setPwd(resultSet.getString("pwd"));
                 result.add(user);
             }
         } catch (final SQLException ignored) {
