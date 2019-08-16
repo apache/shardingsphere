@@ -27,7 +27,7 @@ git clone https://github.com/apache/incubator-shardingsphere.git
 cd incubator-shardingsphere && git checkout 4.0.0-RC1
 
 ## install the dependencies
-mvn clean install
+mvn clean install -Prelease
 ```
 
 2.download and install [shardingsphere-spi-impl](https://github.com/OpenSharding/shardingsphere-spi-impl): 
