@@ -43,7 +43,7 @@ public final class ColumnExtractor implements OptionalSQLSegmentExtractor {
     
     private ColumnSegment getColumnSegment(final ParserRuleContext columnNode) {
         ParserRuleContext nameNode = ExtractorUtils.getFirstChildNode(columnNode, RuleName.NAME);
-        ColumnSegment result = new ColumnSegment(columnNode.getStart().getStartIndex(), columnNode.getStart().getStopIndex(), nameNode.getText());
+        ColumnSegment result = new ColumnSegment(columnNode.getStart().getStartIndex(), columnNode.getStop().getStopIndex(), nameNode.getText());
         Optional<ParserRuleContext> ownerNode = ExtractorUtils.findFirstChildNodeNoneRecursive(columnNode, RuleName.OWNER);
         if (ownerNode.isPresent()) {
             result.setOwner(new TableSegment(ownerNode.get().getStart().getStartIndex(), ownerNode.get().getStop().getStopIndex(), ownerNode.get().getText()));
