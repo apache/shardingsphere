@@ -17,41 +17,54 @@
 
 package org.apache.shardingsphere.example.common.repository;
 
+import java.sql.SQLException;
 import java.util.List;
 
 public interface CommonRepository<T, P> {
     
     /**
      * Create table if not exist.
+     * 
+     * @throws SQLException SQL exception
      */
-    void createTableIfNotExists();
+    void createTableIfNotExists() throws SQLException;
     
     /**
      * Drop table.
+     * 
+     * @throws SQLException SQL exception
      */
-    void dropTable();
+    void dropTable() throws SQLException;
     
     /**
      * Truncate table.
+     * 
+     * @throws SQLException SQL exception
      */
-    void truncateTable();
+    void truncateTable() throws SQLException;
     
     /**
-     * insert one entity.
+     * insert data.
+     * 
      * @param entity entity
      * @return count or primary key
+     * @throws SQLException SQL exception
      */
-    Long insert(T entity);
+    Long insert(T entity) throws SQLException;
     
     /**
-     * Do delete.
-     * @param key key
+     * Delete data.
+     * 
+     * @param primaryKey primaryKey
+     * @throws SQLException SQL exception
      */
-    void delete(P key);
+    void delete(P primaryKey) throws SQLException;
     
     /**
-     * select all.
-     * @return list of entity
+     * Select all data.
+     * 
+     * @return all data
+     * @throws SQLException SQL exception
      */
-    List<T> selectAll();
+    List<T> selectAll() throws SQLException;
 }

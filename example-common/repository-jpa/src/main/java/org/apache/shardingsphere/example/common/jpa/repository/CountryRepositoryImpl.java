@@ -30,38 +30,38 @@ import java.util.List;
 @Repository
 @Transactional
 public class CountryRepositoryImpl implements CountryRepository {
-
+    
     @PersistenceContext
     private EntityManager entityManager;
-
+    
     @Override
     public void createTableIfNotExists() {
         throw new UnsupportedOperationException("createTableIfNotExists for JPA");
     }
-
+    
     @Override
     public void dropTable() {
         throw new UnsupportedOperationException("truncateTable for JPA");
     }
-
+    
     @Override
     public void truncateTable() {
         throw new UnsupportedOperationException("dropTable for JPA");
     }
-
+    
     @Override
     public Long insert(final Country country) {
         entityManager.persist(country);
         return 1L;
     }
-
+    
     @Override
     public void delete(final String code) {
         Query query = entityManager.createQuery("DELETE FROM CountryEntity o WHERE o.code = ?1");
         query.setParameter(1, code);
         query.executeUpdate();
     }
-
+    
     @Override
     @SuppressWarnings("unchecked")
     public List<Country> selectAll() {

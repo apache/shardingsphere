@@ -24,10 +24,11 @@ import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlEncryptDataSourceFact
 
 import javax.sql.DataSource;
 import java.io.File;
+import java.sql.SQLException;
 
 public class YamlConfigurationExample {
-
-    public static void main(final String[] args) {
+    
+    public static void main(final String[] args) throws SQLException {
         DataSource dataSource = YamlEncryptDataSourceFactory.createDataSource(getFile());
         CommonService userService = getUserService(dataSource);
         userService.initEnvironment();
@@ -38,7 +39,7 @@ public class YamlConfigurationExample {
     private static File getFile() {
         return new File(Thread.currentThread().getClass().getResource("/META-INF/encrypt-databases.yaml").getFile());
     }
-
+    
     private static CommonService getUserService(final DataSource dataSource) {
         return new UserServiceImpl(new UserRepositoryImpl(dataSource));
     }

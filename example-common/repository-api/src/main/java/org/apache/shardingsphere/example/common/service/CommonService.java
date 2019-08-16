@@ -17,16 +17,42 @@
 
 package org.apache.shardingsphere.example.common.service;
 
+import java.sql.SQLException;
+
 public interface CommonService {
     
-    void initEnvironment();
+    /**
+     * Initialize environment.
+     * 
+     * @throws SQLException SQL exception
+     */
+    void initEnvironment() throws SQLException;
     
-    void cleanEnvironment();
+    /**
+     * Clean environment.
+     * 
+     * @throws SQLException SQL exception
+     */
+    void cleanEnvironment() throws SQLException;
     
-    void processSuccess();
+    /**
+     * Process success.
+     * 
+     * @throws SQLException SQL exception
+     */
+    void processSuccess() throws SQLException;
     
-    void processFailure();
+    /**
+     * Process failure.
+     * 
+     * @throws SQLException SQL exception
+     */
+    void processFailure() throws SQLException;
     
-    void printData();
-    
+    /**
+     * Print data.
+     * 
+     * @throws SQLException SQL exception
+     */
+    void printData() throws SQLException;
 }

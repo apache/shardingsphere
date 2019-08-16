@@ -29,7 +29,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 public class YamlConfigurationExample {
-
+    
     public static void main(final String[] args) throws SQLException, IOException {
         DataSource dataSource = YamlShardingDataSourceFactory.createDataSource(getFile());
         CommonService countryService = getCountryService(dataSource);
@@ -41,7 +41,7 @@ public class YamlConfigurationExample {
     private static File getFile() {
         return new File(Thread.currentThread().getClass().getResource("/META-INF/sharding-databases.yaml").getFile());
     }
-
+    
     private static CommonService getCountryService(final DataSource dataSource) {
         return new SportsmanServiceImpl(new CountryRepositoryImpl(dataSource), new SportsmanRepositoryImpl(dataSource));
     }

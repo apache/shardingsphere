@@ -25,13 +25,15 @@ import org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfigurati
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 
+import java.sql.SQLException;
+
 @ComponentScan("org.apache.shardingsphere.example.common.jpa")
 @EntityScan(basePackages = "org.apache.shardingsphere.example.common.jpa.entity")
 @SpringBootApplication(exclude = JtaAutoConfiguration.class)
 public class SpringBootExample {
-
-    public static void main(final String[] args) {
-        // TODO :Because of assistedQueryColumns, we need to consider the DDL of encrypt module. Now JPA examples can not run well.
+    
+    public static void main(final String[] args) throws SQLException {
+        // TODO: Because of assistedQueryColumns, we need to consider the DDL of encrypt module. Now JPA examples can not run well.
         try (ConfigurableApplicationContext applicationContext = SpringApplication.run(SpringBootExample.class, args)) {
             JPAUserService userService = applicationContext.getBean(JPAUserService.class);
             userService.processSuccess();

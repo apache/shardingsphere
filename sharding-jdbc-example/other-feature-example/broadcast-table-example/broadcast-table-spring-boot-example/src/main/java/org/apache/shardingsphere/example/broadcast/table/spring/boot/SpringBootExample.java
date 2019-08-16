@@ -25,12 +25,14 @@ import org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfigurati
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 
+import java.sql.SQLException;
+
 @ComponentScan("org.apache.shardingsphere.example.common.jpa")
 @EntityScan(basePackages = "org.apache.shardingsphere.example.common.jpa.entity")
 @SpringBootApplication(exclude = JtaAutoConfiguration.class)
 public class SpringBootExample {
-
-    public static void main(final String[] args) {
+    
+    public static void main(final String[] args) throws SQLException {
         try (ConfigurableApplicationContext applicationContext = SpringApplication.run(SpringBootExample.class, args)) {
             JPACountryService countryService = applicationContext.getBean(JPACountryService.class);
             countryService.processSuccess();

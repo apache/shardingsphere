@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,7 +39,7 @@ public class SpringPojoServiceImpl implements SpringPojoService {
     private OrderItemRepository orderItemRepository;
 
     @Override
-    public void initEnvironment() {
+    public void initEnvironment() throws SQLException {
         orderRepository.createTableIfNotExists();
         orderItemRepository.createTableIfNotExists();
         orderRepository.truncateTable();
@@ -46,14 +47,14 @@ public class SpringPojoServiceImpl implements SpringPojoService {
     }
 
     @Override
-    public void cleanEnvironment() {
+    public void cleanEnvironment() throws SQLException {
         orderRepository.dropTable();
         orderItemRepository.dropTable();
     }
     
     @Override
     @Transactional
-    public void processSuccess() {
+    public void processSuccess() throws SQLException {
         System.out.println("-------------- Process Success Begin ---------------");
         List<Long> orderIds = insertData();
         printData();
@@ -64,14 +65,14 @@ public class SpringPojoServiceImpl implements SpringPojoService {
     
     @Override
     @Transactional
-    public void processFailure() {
+    public void processFailure() throws SQLException {
         System.out.println("-------------- Process Failure Begin ---------------");
         insertData();
         System.out.println("-------------- Process Failure Finish --------------");
         throw new RuntimeException("Exception occur for transaction test.");
     }
 
-    private List<Long> insertData() {
+    private List<Long> insertData() throws SQLException {
         System.out.println("---------------------------- Insert Data ----------------------------");
         List<Long> result = new ArrayList<>(10);
         for (int i = 1; i <= 10; i++) {
@@ -89,7 +90,7 @@ public class SpringPojoServiceImpl implements SpringPojoService {
         return result;
     }
 
-    private void deleteData(final List<Long> orderIds) {
+    private void deleteData(final List<Long> orderIds) throws SQLException {
         System.out.println("---------------------------- Delete Data ----------------------------");
         for (Long each : orderIds) {
             orderRepository.delete(each);
@@ -98,7 +99,7 @@ public class SpringPojoServiceImpl implements SpringPojoService {
     }
     
     @Override
-    public void printData() {
+    public void printData() throws SQLException {
         System.out.println("---------------------------- Print Order Data -----------------------");
         for (Object each : orderRepository.selectAll()) {
             System.out.println(each);

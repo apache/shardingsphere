@@ -20,6 +20,7 @@ package org.apache.shardingsphere.example.common.jdbc.repository;
 import org.apache.shardingsphere.example.common.entity.Order;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.List;
 
 public final class RangeOrderRepositoryImpl extends OrderRepositoryImpl {
@@ -29,7 +30,7 @@ public final class RangeOrderRepositoryImpl extends OrderRepositoryImpl {
     }
     
     @Override
-    public List<Order> selectAll() {
+    public List<Order> selectAll() throws SQLException {
         String sql = "SELECT * FROM t_order WHERE order_id BETWEEN 200000000000000000 AND 400000000000000000";
         return getOrders(sql);
     }

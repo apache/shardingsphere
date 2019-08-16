@@ -106,7 +106,7 @@ public class YamlConfigurationTransactionExample {
         return order.getOrderId();
     }
     
-    private static void truncateTable(final DataSource dataSource) {
+    private static void truncateTable(final DataSource dataSource) throws SQLException {
         OrderRepositoryImpl orderRepository = new OrderRepositoryImpl(dataSource);
         orderRepository.truncateTable();
     }

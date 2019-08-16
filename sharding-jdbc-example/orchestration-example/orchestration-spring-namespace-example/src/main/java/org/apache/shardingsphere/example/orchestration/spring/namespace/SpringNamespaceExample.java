@@ -23,6 +23,8 @@ import org.apache.shardingsphere.example.type.ShardingType;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import java.sql.SQLException;
+
 public class SpringNamespaceExample {
     
     private static ShardingType shardingType = ShardingType.SHARDING_DATABASES_AND_TABLES;
@@ -35,7 +37,7 @@ public class SpringNamespaceExample {
     private static RegistryCenterType registryCenterType = RegistryCenterType.ZOOKEEPER;
 //    private static RegistryCenterType registryCenterType = RegistryCenterType.ETCD;
     
-    public static void main(final String[] args) {
+    public static void main(final String[] args) throws SQLException {
         try (ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext(getApplicationFile())) {
             SpringPojoService commonService = applicationContext.getBean(SpringPojoService.class);
             commonService.initEnvironment();

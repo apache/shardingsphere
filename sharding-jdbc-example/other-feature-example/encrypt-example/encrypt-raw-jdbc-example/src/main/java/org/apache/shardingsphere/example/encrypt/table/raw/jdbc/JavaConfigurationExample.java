@@ -27,17 +27,18 @@ import org.apache.shardingsphere.example.common.service.CommonService;
 import org.apache.shardingsphere.example.encrypt.table.raw.jdbc.config.EncryptDatabasesConfiguration;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 
 public class JavaConfigurationExample {
-
-    public static void main(final String[] args) {
+    
+    public static void main(final String[] args) throws SQLException {
         DataSource dataSource = new EncryptDatabasesConfiguration().getDataSource();
         CommonService userService = getUserService(dataSource);
         userService.initEnvironment();
         userService.processSuccess();
         userService.cleanEnvironment();
     }
-
+    
     private static CommonService getUserService(final DataSource dataSource) {
         return new UserServiceImpl(new UserRepositoryImpl(dataSource));
     }

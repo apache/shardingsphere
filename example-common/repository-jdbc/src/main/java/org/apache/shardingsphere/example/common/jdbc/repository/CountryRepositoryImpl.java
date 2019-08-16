@@ -30,76 +30,69 @@ import java.util.LinkedList;
 import java.util.List;
 
 public final class CountryRepositoryImpl implements CountryRepository {
-
+    
     private final DataSource dataSource;
-
+    
     public CountryRepositoryImpl(final DataSource dataSource) {
         this.dataSource = dataSource;
     }
-
+    
     @Override
-    public void createTableIfNotExists() {
+    public void createTableIfNotExists() throws SQLException {
         String sql = "CREATE TABLE IF NOT EXISTS t_country (code VARCHAR(50), name VARCHAR(50), language VARCHAR(50), PRIMARY KEY (code))";
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.executeUpdate(sql);
-        } catch (final SQLException ignored) {
         }
     }
-
+    
     @Override
-    public void dropTable() {
+    public void dropTable() throws SQLException {
         String sql = "DROP TABLE t_country";
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.executeUpdate(sql);
-        } catch (final SQLException ignored) {
         }
     }
-
+    
     @Override
-    public void truncateTable() {
+    public void truncateTable() throws SQLException {
         String sql = "TRUNCATE TABLE t_country";
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.executeUpdate(sql);
-        } catch (final SQLException ignored) {
         }
     }
-
+    
     @Override
-    public Long insert(final Country country) {
+    public Long insert(final Country country) throws SQLException {
         String sql = "INSERT INTO t_country (code, name, language) VALUES (?, ?, ?)";
-        int result = 0;
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, country.getCode());
             preparedStatement.setString(2, country.getName());
             preparedStatement.setString(3, country.getLanguage());
-            result = preparedStatement.executeUpdate();
-        } catch (final SQLException ignored) {
+            return new Integer(preparedStatement.executeUpdate()).longValue();
         }
-        return (long) result;
     }
-
+    
     @Override
-    public void delete(final String code) {
+    public void delete(final String code) throws SQLException {
         String sql = "DELETE FROM t_country WHERE code =?";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, code);
             preparedStatement.executeUpdate();
-        } catch (final SQLException ignored) {
         }
     }
-
+    
     @Override
-    public List<Country> selectAll() {
+    public List<Country> selectAll() throws SQLException {
         String sql = "SELECT * FROM t_country";
         return getCountries(sql);
     }
-
-    private List<Country> getCountries(final String sql) {
+    
+    private List<Country> getCountries(final String sql) throws SQLException {
         List<Country> result = new LinkedList<>();
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -111,7 +104,6 @@ public final class CountryRepositoryImpl implements CountryRepository {
                 country.setLanguage(resultSet.getString(3));
                 result.add(country);
             }
-        } catch (final SQLException ignored) {
         }
         return result;
     }

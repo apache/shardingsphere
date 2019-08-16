@@ -30,47 +30,44 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class SportsmanRepositoryImpl implements SportsmanRepository {
-
+    
     private final DataSource dataSource;
-
+    
     public SportsmanRepositoryImpl(final DataSource dataSource) {
         this.dataSource = dataSource;
     }
-
+    
     @Override
-    public void createTableIfNotExists() {
+    public void createTableIfNotExists() throws SQLException {
         String sql = "CREATE TABLE IF NOT EXISTS t_sportsman (id BIGINT NOT NULL AUTO_INCREMENT, name VARCHAR(200), country_code VARCHAR(50), PRIMARY KEY (id))";
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.executeUpdate(sql);
-        } catch (final SQLException ignored) {
         }
     }
-
+    
     @Override
-    public void dropTable() {
+    public void dropTable() throws SQLException {
         String sql = "DROP TABLE t_sportsman";
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.executeUpdate(sql);
-        } catch (final SQLException ignored) {
         }
     }
-
+    
     @Override
-    public void truncateTable() {
+    public void truncateTable() throws SQLException {
         String sql = "TRUNCATE TABLE t_sportsman";
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.executeUpdate(sql);
-        } catch (final SQLException ignored) {
         }
     }
-
+    
     @Override
-    public Long insert(final Sportsman sportsman) {
+    public Long insert(final Sportsman sportsman) throws SQLException {
         String sql = "INSERT INTO t_sportsman (name,country_code) VALUES ( ?, ?)";
-        int result = 0;
+        int result;
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, sportsman.getName());
@@ -81,29 +78,27 @@ public class SportsmanRepositoryImpl implements SportsmanRepository {
                     sportsman.setId(resultSet.getLong(1));
                 }
             }
-        } catch (final SQLException ignored) {
         }
         return (long) result;
     }
-
+    
     @Override
-    public void delete(final Long id) {
+    public void delete(final Long id) throws SQLException {
         String sql = "DELETE FROM t_sportsman WHERE id=?";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setLong(1, id);
             preparedStatement.executeUpdate();
-        } catch (final SQLException ignored) {
         }
     }
-
+    
     @Override
-    public List<Sportsman> selectAll() {
+    public List<Sportsman> selectAll() throws SQLException {
         String sql = "SELECT s.id,s.name,s.country_code,c.name,c.language FROM t_sportsman s left join t_country c on s.country_code=c.code";
         return getSportsmen(sql);
     }
-
-    private List<Sportsman> getSportsmen(final String sql) {
+    
+    private List<Sportsman> getSportsmen(final String sql) throws SQLException {
         List<Sportsman> result = new LinkedList<>();
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -117,33 +112,32 @@ public class SportsmanRepositoryImpl implements SportsmanRepository {
                 sportsman.setCountryLanguage(resultSet.getString(5));
                 result.add(sportsman);
             }
-        } catch (final SQLException ignored) {
         }
         return result;
     }
 
     private class SportsmanExtend extends Sportsman {
-
+        
         private String countryName;
-
+        
         private String countryLanguage;
-
+        
         public String getCountryName() {
             return countryName;
         }
-
+        
         public void setCountryName(final String countryName) {
             this.countryName = countryName;
         }
-
+        
         public String getCountryLanguage() {
             return countryLanguage;
         }
-
+        
         public void setCountryLanguage(final String countryLanguage) {
             this.countryLanguage = countryLanguage;
         }
-
+        
         @Override
         public String toString() {
             return String.format("id: %s, name: %s, countryCode: %s, countryName: %s, countryLanguage: %s", getId(), getName(), getCountryCode(), countryName, countryLanguage);

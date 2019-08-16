@@ -23,6 +23,7 @@ import org.apache.shardingsphere.example.common.repository.CountryRepository;
 import org.apache.shardingsphere.example.common.repository.SportsmanRepository;
 import org.apache.shardingsphere.example.common.service.CommonService;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -41,7 +42,7 @@ public class SportsmanServiceImpl implements CommonService {
     }
     
     @Override
-    public void initEnvironment() {
+    public void initEnvironment() throws SQLException {
         countryRepository.createTableIfNotExists();
         sportsmanRepository.createTableIfNotExists();
         countryRepository.truncateTable();
@@ -49,13 +50,13 @@ public class SportsmanServiceImpl implements CommonService {
     }
     
     @Override
-    public void cleanEnvironment() {
+    public void cleanEnvironment() throws SQLException {
         countryRepository.dropTable();
         sportsmanRepository.dropTable();
     }
     
     @Override
-    public void processSuccess() {
+    public void processSuccess() throws SQLException {
         System.out.println("-------------- Process Success Begin ---------------");
         InsertResult insertResult = insertData();
         printData();
@@ -64,7 +65,7 @@ public class SportsmanServiceImpl implements CommonService {
         System.out.println("-------------- Process Success Finish --------------");
     }
     
-    private void deleteData(final InsertResult insertResult) {
+    private void deleteData(final InsertResult insertResult) throws SQLException {
         System.out.println("---------------------------- Delete Data ----------------------------");
         for (String each : insertResult.getCountryCodes()) {
             countryRepository.delete(each);
@@ -75,21 +76,21 @@ public class SportsmanServiceImpl implements CommonService {
     }
     
     @Override
-    public void processFailure() {
+    public void processFailure() throws SQLException {
         System.out.println("-------------- Process Failure Begin ---------------");
         insertData();
         System.out.println("-------------- Process Failure Finish --------------");
         throw new RuntimeException("Exception occur for transaction test.");
     }
     
-    private InsertResult insertData() {
+    private InsertResult insertData() throws SQLException {
         System.out.println("---------------------------- Insert Data ----------------------------");
         List<String> countryCodes = insertCountry();
         List<Long> sportsmanIds = insertSportman(countryCodes);
         return new InsertResult(countryCodes, sportsmanIds);
     }
     
-    private List<Long> insertSportman(final List<String> countryCodes) {
+    private List<Long> insertSportman(final List<String> countryCodes) throws SQLException {
         List<Long> result = new ArrayList<>(countryCodes.size());
         int index = 0;
         for (String countryCode : countryCodes) {
@@ -102,7 +103,7 @@ public class SportsmanServiceImpl implements CommonService {
         return result;
     }
     
-    private List<String> insertCountry() {
+    private List<String> insertCountry() throws SQLException {
         Set<String> result = new LinkedHashSet<>();
         for (Locale each : Locale.getAvailableLocales()) {
             if (result.contains(each.getCountry()) || each.getCountry().isEmpty()) {
@@ -122,7 +123,7 @@ public class SportsmanServiceImpl implements CommonService {
     }
     
     @Override
-    public void printData() {
+    public void printData() throws SQLException {
         System.out.println("---------------------------- Print Country Data -------------------");
         for (Object each : countryRepository.selectAll()) {
             System.out.println(each);

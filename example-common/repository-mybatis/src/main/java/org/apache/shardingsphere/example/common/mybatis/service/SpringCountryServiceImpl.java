@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -36,19 +37,19 @@ public class SpringCountryServiceImpl implements SpringCountryService {
     private CountryRepository countryRepository;
 
     @Override
-    public void initEnvironment() {
+    public void initEnvironment() throws SQLException {
         countryRepository.createTableIfNotExists();
         countryRepository.truncateTable();
     }
 
     @Override
-    public void cleanEnvironment() {
+    public void cleanEnvironment() throws SQLException {
         countryRepository.dropTable();
     }
 
     @Override
     @Transactional
-    public void processSuccess() {
+    public void processSuccess() throws SQLException {
         System.out.println("-------------- Process Success Begin ---------------");
         List<String> countryCodes = insertData();
         printData();
@@ -59,7 +60,7 @@ public class SpringCountryServiceImpl implements SpringCountryService {
 
     @Override
     @Transactional
-    public void processFailure() {
+    public void processFailure() throws SQLException {
         System.out.println("-------------- Process Failure Begin ---------------");
         insertData();
         System.out.println("-------------- Process Failure Finish --------------");
@@ -67,21 +68,21 @@ public class SpringCountryServiceImpl implements SpringCountryService {
     }
 
     @Override
-    public void printData() {
+    public void printData() throws SQLException {
         System.out.println("---------------------------- Print Country Data -------------------");
         for (Object each : countryRepository.selectAll()) {
             System.out.println(each);
         }
     }
 
-    private void deleteData(final List<String> countryCodes) {
+    private void deleteData(final List<String> countryCodes) throws SQLException {
         System.out.println("---------------------------- Delete Data ----------------------------");
         for (String each: countryCodes) {
             countryRepository.delete(each);
         }
     }
 
-    private List<String> insertData() {
+    private List<String> insertData() throws SQLException {
         System.out.println("---------------------------- Insert Data ----------------------------");
         Set<String> result = new LinkedHashSet<>();
         for (Locale each : Locale.getAvailableLocales()) {

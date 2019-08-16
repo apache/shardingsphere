@@ -21,11 +21,13 @@ import org.apache.shardingsphere.example.common.mybatis.service.SpringCountrySer
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import java.sql.SQLException;
+
 public class SpringNamespaceExample {
     
     private static final String CONFIG_FILE = "META-INF/application-sharding-databases.xml";
-
-    public static void main(final String[] args) {
+    
+    public static void main(final String[] args) throws SQLException {
         try (ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext(CONFIG_FILE)) {
             SpringCountryService countryService = applicationContext.getBean(SpringCountryService.class);
             countryService.initEnvironment();

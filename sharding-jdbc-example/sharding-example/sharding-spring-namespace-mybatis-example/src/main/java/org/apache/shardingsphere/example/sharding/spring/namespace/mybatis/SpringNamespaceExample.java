@@ -21,6 +21,8 @@ import org.apache.shardingsphere.example.common.mybatis.service.SpringPojoServic
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import java.sql.SQLException;
+
 public class SpringNamespaceExample {
     
     private static final String CONFIG_FILE = "META-INF/application-sharding-databases.xml";
@@ -29,7 +31,7 @@ public class SpringNamespaceExample {
 //    private static final String CONFIG_FILE = "META-INF/application-master-slave.xml";
 //    private static final String CONFIG_FILE = "META-INF/application-sharding-master-slave.xml";
     
-    public static void main(final String[] args) {
+    public static void main(final String[] args) throws SQLException {
         try (ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext(CONFIG_FILE)) {
             SpringPojoService commonService = applicationContext.getBean(SpringPojoService.class);
             commonService.initEnvironment();

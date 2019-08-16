@@ -38,38 +38,35 @@ public final class UserRepositoryImpl implements UserRepository {
     }
     
     @Override
-    public void createTableIfNotExists() {
+    public void createTableIfNotExists() throws SQLException {
         String sql = "CREATE TABLE IF NOT EXISTS t_user "
                 + "(user_id INT NOT NULL AUTO_INCREMENT, user_name VARCHAR(200), user_name_plain VARCHAR(200), pwd VARCHAR(200), assisted_query_pwd VARCHAR(200), PRIMARY KEY (user_id))";
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.executeUpdate(sql);
-        } catch (final SQLException ignored) {
         }
     }
     
     @Override
-    public void dropTable() {
+    public void dropTable() throws SQLException {
         String sql = "DROP TABLE t_user";
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.executeUpdate(sql);
-        } catch (final SQLException ignored) {
         }
     }
     
     @Override
-    public void truncateTable() {
+    public void truncateTable() throws SQLException {
         String sql = "TRUNCATE TABLE t_user";
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.executeUpdate(sql);
-        } catch (final SQLException ignored) {
         }
     }
     
     @Override
-    public Long insert(final User entity) {
+    public Long insert(final User entity) throws SQLException {
         String sql = "INSERT INTO t_user (user_id, user_name, pwd) VALUES (?, ?, ?)";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -77,30 +74,27 @@ public final class UserRepositoryImpl implements UserRepository {
             preparedStatement.setString(2, entity.getUserName());
             preparedStatement.setString(3, entity.getPwd());
             preparedStatement.executeUpdate();
-            
-        } catch (final SQLException ignored) {
         }
         return (long) entity.getUserId();
     }
     
     @Override
-    public void delete(final Long id) {
+    public void delete(final Long id) throws SQLException {
         String sql = "DELETE FROM t_user WHERE user_id=?";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setLong(1, id);
             preparedStatement.executeUpdate();
-        } catch (final SQLException ignored) {
         }
     }
     
     @Override
-    public List<User> selectAll() {
+    public List<User> selectAll() throws SQLException {
         String sql = "SELECT * FROM t_user";
         return getUsers(sql);
     }
     
-    private List<User> getUsers(final String sql) {
+    private List<User> getUsers(final String sql) throws SQLException {
         List<User> result = new LinkedList<>();
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -112,7 +106,6 @@ public final class UserRepositoryImpl implements UserRepository {
                 user.setPwd(resultSet.getString("pwd"));
                 result.add(user);
             }
-        } catch (final SQLException ignored) {
         }
         return result;
     }

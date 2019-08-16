@@ -23,6 +23,7 @@ import org.apache.shardingsphere.example.common.repository.OrderItemRepository;
 import org.apache.shardingsphere.example.common.repository.OrderRepository;
 import org.apache.shardingsphere.example.common.service.CommonService;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,7 +39,7 @@ public final class CommonServiceImpl implements CommonService {
     }
 
     @Override
-    public void initEnvironment() {
+    public void initEnvironment() throws SQLException {
         orderRepository.createTableIfNotExists();
         orderItemRepository.createTableIfNotExists();
         orderRepository.truncateTable();
@@ -46,13 +47,13 @@ public final class CommonServiceImpl implements CommonService {
     }
 
     @Override
-    public void cleanEnvironment() {
+    public void cleanEnvironment() throws SQLException {
         orderRepository.dropTable();
         orderItemRepository.dropTable();
     }
 
     @Override
-    public void processSuccess() {
+    public void processSuccess() throws SQLException {
         System.out.println("-------------- Process Success Begin ---------------");
         List<Long> orderIds = insertData();
         printData();
@@ -62,14 +63,14 @@ public final class CommonServiceImpl implements CommonService {
     }
 
     @Override
-    public void processFailure() {
+    public void processFailure() throws SQLException {
         System.out.println("-------------- Process Failure Begin ---------------");
         insertData();
         System.out.println("-------------- Process Failure Finish --------------");
         throw new RuntimeException("Exception occur for transaction test.");
     }
 
-    private List<Long> insertData() {
+    private List<Long> insertData() throws SQLException {
         System.out.println("---------------------------- Insert Data ----------------------------");
         List<Long> result = new ArrayList<>(10);
         for (int i = 1; i <= 10; i++) {
@@ -87,7 +88,7 @@ public final class CommonServiceImpl implements CommonService {
         return result;
     }
 
-    private void deleteData(final List<Long> orderIds) {
+    private void deleteData(final List<Long> orderIds) throws SQLException {
         System.out.println("---------------------------- Delete Data ----------------------------");
         for (Long each : orderIds) {
             orderRepository.delete(each);
@@ -96,7 +97,7 @@ public final class CommonServiceImpl implements CommonService {
     }
 
     @Override
-    public void printData() {
+    public void printData() throws SQLException {
         System.out.println("---------------------------- Print Order Data -----------------------");
         for (Object each : orderRepository.selectAll()) {
             System.out.println(each);

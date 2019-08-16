@@ -31,7 +31,7 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 
 public class JavaConfigurationExample {
-
+    
     public static void main(final String[] args) throws SQLException {
         DataSource dataSource = new ShardingDatabasesConfiguration().getDataSource();
         CommonService countryService = getCountryService(dataSource);
@@ -39,7 +39,7 @@ public class JavaConfigurationExample {
         countryService.processSuccess();
         countryService.cleanEnvironment();
     }
-
+    
     private static CommonService getCountryService(final DataSource dataSource) {
         return new SportsmanServiceImpl(new CountryRepositoryImpl(dataSource), new SportsmanRepositoryImpl(dataSource));
     }

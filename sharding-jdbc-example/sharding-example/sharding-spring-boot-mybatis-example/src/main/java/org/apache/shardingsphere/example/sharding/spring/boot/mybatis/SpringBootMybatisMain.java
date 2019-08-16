@@ -26,12 +26,14 @@ import org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfigurati
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 
+import java.sql.SQLException;
+
 @ComponentScan("org.apache.shardingsphere.example.common.mybatis")
 @MapperScan(basePackages = "org.apache.shardingsphere.example.common.mybatis.repository")
 @SpringBootApplication(exclude = JtaAutoConfiguration.class)
 public class SpringBootMybatisMain {
     
-    public static void main(final String[] args) {
+    public static void main(final String[] args) throws SQLException {
         try (ConfigurableApplicationContext applicationContext = SpringApplication.run(SpringBootMybatisMain.class, args)) {
             CommonService commonService = applicationContext.getBean(SpringPojoService.class);
             commonService.initEnvironment();

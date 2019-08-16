@@ -25,6 +25,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 
+import java.sql.SQLException;
+
 /*
  * 1. Copy resources/conf/*.yaml to sharding-proxy conf folder and overwrite original file.
  *    If you want to use master-slave, please select config-master_slave.yaml
@@ -36,13 +38,13 @@ import org.springframework.context.annotation.ComponentScan;
 @SpringBootApplication
 public class SpringBootStarterExample {
     
-    public static void main(final String[] args) {
+    public static void main(final String[] args) throws SQLException {
         try (ConfigurableApplicationContext applicationContext = SpringApplication.run(SpringBootStarterExample.class, args)) {
             process(applicationContext);
         }
     }
     
-    private static void process(final ConfigurableApplicationContext applicationContext) {
+    private static void process(final ConfigurableApplicationContext applicationContext) throws SQLException {
         CommonService commonService = getCommonService(applicationContext);
         commonService.initEnvironment();
         commonService.processSuccess();

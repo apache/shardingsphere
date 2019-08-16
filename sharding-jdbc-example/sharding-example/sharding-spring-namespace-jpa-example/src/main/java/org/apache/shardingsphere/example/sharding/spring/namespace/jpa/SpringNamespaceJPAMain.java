@@ -21,6 +21,8 @@ import org.apache.shardingsphere.example.common.jpa.service.JPACommonService;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import java.sql.SQLException;
+
 public class SpringNamespaceJPAMain {
     
     private static final String CONFIG_FILE = "META-INF/application-sharding-databases.xml";
@@ -28,8 +30,8 @@ public class SpringNamespaceJPAMain {
 //    private static final String CONFIG_FILE = "META-INF/application-sharding-databases-tables.xml";
 //    private static final String CONFIG_FILE = "META-INF/application-master-slave.xml";
 //    private static final String CONFIG_FILE = "META-INF/application-sharding-master-slave.xml";
-
-    public static void main(final String[] args) {
+    
+    public static void main(final String[] args) throws SQLException {
         try (ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext(CONFIG_FILE)) {
             JPACommonService commonService = applicationContext.getBean(JPACommonService.class);
             commonService.processSuccess();

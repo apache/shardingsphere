@@ -38,37 +38,34 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
     
     @Override
-    public void createTableIfNotExists() {
+    public void createTableIfNotExists() throws SQLException {
         String sql = "CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT NOT NULL AUTO_INCREMENT, user_id INT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id))";
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.executeUpdate(sql);
-        } catch (final SQLException ignored) {
         }
     }
     
     @Override
-    public void dropTable() {
+    public void dropTable() throws SQLException {
         String sql = "DROP TABLE t_order";
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.executeUpdate(sql);
-        } catch (final SQLException ignored) {
         }
     }
     
     @Override
-    public void truncateTable() {
+    public void truncateTable() throws SQLException {
         String sql = "TRUNCATE TABLE t_order";
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.executeUpdate(sql);
-        } catch (final SQLException ignored) {
         }
     }
     
     @Override
-    public Long insert(final Order order) {
+    public Long insert(final Order order) throws SQLException {
         String sql = "INSERT INTO t_order (user_id, status) VALUES (?, ?)";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -80,29 +77,27 @@ public class OrderRepositoryImpl implements OrderRepository {
                     order.setOrderId(resultSet.getLong(1));
                 }
             }
-        } catch (final SQLException ignored) {
         }
         return order.getOrderId();
     }
     
     @Override
-    public void delete(final Long orderId) {
+    public void delete(final Long orderId) throws SQLException {
         String sql = "DELETE FROM t_order WHERE order_id=?";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setLong(1, orderId);
             preparedStatement.executeUpdate();
-        } catch (final SQLException ignored) {
         }
     }
     
     @Override
-    public List<Order> selectAll() {
+    public List<Order> selectAll() throws SQLException {
         String sql = "SELECT * FROM t_order";
         return getOrders(sql);
     }
     
-    protected List<Order> getOrders(final String sql) {
+    protected List<Order> getOrders(final String sql) throws SQLException {
         List<Order> result = new LinkedList<>();
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -114,7 +109,6 @@ public class OrderRepositoryImpl implements OrderRepository {
                 order.setStatus(resultSet.getString(3));
                 result.add(order);
             }
-        } catch (final SQLException ignored) {
         }
         return result;
     }
