@@ -1199,3 +1199,15 @@ XML
 UNDO
     : U N D O
     ;
+
+DUMPFILE
+    : D U M P F I L E
+    ;
+
+OUTFILE
+    : O U T F I L E
+    ;
+
+SHARE
+    : S H A R E
+    ;

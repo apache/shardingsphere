@@ -116,9 +116,9 @@ public final class DatabaseTest {
         ColumnMetaData nameColumnMetaData = new ColumnMetaData("user_id", "int", false);
         ShardingTableMetaData shardingTableMetaData = mock(ShardingTableMetaData.class);
         when(shardingTableMetaData.get("tbl_pagination")).thenReturn(new TableMetaData(Arrays.asList(idColumnMetaData, nameColumnMetaData), Arrays.asList("id", "user_id")));
-        ShardingMetaData shardingMetaData = mock(ShardingMetaData.class);
-        when(shardingMetaData.getTable()).thenReturn(shardingTableMetaData);
-        return shardingMetaData;
+        ShardingMetaData result = mock(ShardingMetaData.class);
+        when(result.getTable()).thenReturn(shardingTableMetaData);
+        return result;
     }
     
     @Test
