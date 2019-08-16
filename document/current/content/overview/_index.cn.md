@@ -113,6 +113,6 @@ ShardingSphere是多接入端共同组成的生态圈。
 * 可视化链路追踪
 * 弹性伸缩(规划中)
 
-## 规划线路图
+## 项目状态
 
-![Roadmap](https://shardingsphere.apache.org/document/current/img/shardingsphere-roadmap_cn.png)
+![Status](https://shardingsphere.apache.org/document/current/img/shardingsphere-status_cn.png)
