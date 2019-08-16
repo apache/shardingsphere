@@ -68,7 +68,8 @@ public class JavaConfigurationExample {
         ExampleConfiguration configuration;
         switch (shardingType) {
             case SHARDING_DATABASES_AND_TABLES:
-                configuration = loadConfigFromRegCenter ? new CloudShardingDatabasesAndTablesConfiguration(registryCenterConfig) : new LocalShardingDatabasesAndTablesConfiguration(registryCenterConfig);
+                configuration = loadConfigFromRegCenter
+                        ? new CloudShardingDatabasesAndTablesConfiguration(registryCenterConfig) : new LocalShardingDatabasesAndTablesConfiguration(registryCenterConfig);
                 break;
             case MASTER_SLAVE:
                 configuration = loadConfigFromRegCenter ? new CloudMasterSlaveConfiguration(registryCenterConfig) : new LocalMasterSlaveConfiguration(registryCenterConfig);

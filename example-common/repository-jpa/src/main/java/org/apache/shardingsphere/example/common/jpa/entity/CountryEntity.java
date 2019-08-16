@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.example.common.jpa.entity;
 
 import org.apache.shardingsphere.example.common.entity.Country;
-import org.springframework.context.annotation.Primary;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

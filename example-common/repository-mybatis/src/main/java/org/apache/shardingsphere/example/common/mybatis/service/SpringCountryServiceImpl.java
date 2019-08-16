@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.example.common.mybatis.service;
 
 import org.apache.shardingsphere.example.common.entity.Country;
-import org.apache.shardingsphere.example.common.mybatis.repository.MybatisCountryRepository;
 import org.apache.shardingsphere.example.common.repository.CountryRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
