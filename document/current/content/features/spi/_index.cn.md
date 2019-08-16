@@ -17,19 +17,34 @@ Apache ShardingSphere之所以采用SPI方式进行扩展，是出于整体架�
 如无特殊需求，用户可以使用Apache ShardingSphere提供的内置实现，并通过简单配置即可实现相应功能；高级用户则可以参考各个功能模块的接口进行自定义实现。
 我们非常欢迎大家将您的实现类反馈至[开源社区](https://github.com/apache/incubator-shardingsphere/pulls)，让更多用户从中收益。
 
+### SQL解析
+
+SQL解析的接口用于规定用于解析SQL的ANTLR语法文件。
+
+主要接口是`SQLParserEntry`，其内置实现类有`MySQLParserEntry`, `PostgreSQLParserEntry`, `SQLServerParserEntry`和`OracleParserEntry`。
+
+有关SQL解析介绍，请参考[SQL解析](/cn/features/sharding/principle/parse/)。
+
 ### 数据脱敏
 
 数据脱敏的接口用于规定加解密器的加密、解密、类型获取、属性设置等方式。
+
 主要接口有两个：`ShardingEncryptor`和`ShardingQueryAssistedEncryptor`，其中`ShardingEncryptor`的内置实现类有`AESShardingEncryptor`和`MD5ShardingEncryptor`。
+
 有关加解密介绍，请参考[数据脱敏](/cn/features/orchestration/encrypt/)。
 
 ### 分布式主键
 
 分布式主键的接口主要用于规定如何生成全局性的自增、类型获取、属性设置等。
+
 主要接口为`ShardingKeyGenerator`，其内置实现类有`UUIDShardingKeyGenerator`和`SnowflakeShardingKeyGenerator`。
+
 有关自增主键的介绍，请参考[分布式主键](/cn/features/sharding/other-features/key-generator/)。
 
 ### 注册中心
 
 注册中心的接口主要用于规定注册中心初始化、存取数据、更新数据、监控等行为。
-主要接口为`RegistryCenter`，其内置实现类有Zookeeper, ETCD。相关介绍请参考[注册中心](/cn/features/orchestration/supported-registry-repo/)。
+
+主要接口为`RegistryCenter`，其内置实现类有Zookeeper, ETCD。
+
+相关介绍请参考[注册中心](/cn/features/orchestration/supported-registry-repo/)。
