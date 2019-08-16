@@ -22,7 +22,7 @@
 ## 概述
 
 ShardingSphere是一套开源的分布式数据库中间件解决方案组成的生态圈，它由Sharding-JDBC、Sharding-Proxy和Sharding-Sidecar（计划中）这3款相互独立的产品组成。
-他们均提供标准化的数据分片、分布式事务和数据库治理功能，可适用于如Java同构、异构语言、容器、云原生等各种多样化的应用场景。
+他们均提供标准化的数据分片、分布式事务和数据库治理功能，可适用于如Java同构、异构语言、云原生等各种多样化的应用场景。
 
 ShardingSphere定位为关系型数据库中间件，旨在充分合理地在分布式的场景下利用关系型数据库的计算和存储能力，而并非实现一个全新的关系型数据库。
 它与NoSQL和NewSQL是并存而非互斥的关系。NoSQL和NewSQL作为新技术探索的前沿，放眼未来，拥抱变化，是非常值得推荐的。反之，也可以用另一种思路看待问题，放眼未来，关注不变的东西，进而抓住事物本质。
@@ -31,7 +31,7 @@ ShardingSphere定位为关系型数据库中间件，旨在充分合理地在分
 ShardingSphere目前已经进入[Apache孵化器](http://incubator.apache.org/projects/shardingsphere.html)，
 欢迎通过[shardingsphere的dev邮件列表](mailto:dev@shardingsphere.apache.org)与我们讨论。
 
-__目前所有的可用发布都是进入Apache孵化器之前的发布版本，Apache官方发布将从4.0.0版本开始。__
+__Apache官方发布从4.0.0版本开始。__
 
 ![ShardingSphere Scope](https://shardingsphere.apache.org//document/current/img/shardingsphere-scope_cn.png)
 
@@ -61,9 +61,9 @@ __目前所有的可用发布都是进入Apache孵化器之前的发布版本，
 
 ![Sharding-Proxy Architecture](https://shardingsphere.apache.org//document/current/img/sharding-proxy-brief_v2.png)
 
-### Sharding-Sidecar（TBD）
+### Sharding-Sidecar（TODO）
 
-定位为Kubernetes或Mesos的云原生数据库代理，以DaemonSet的形式代理所有对数据库的访问。
+定位为Kubernetes的云原生数据库代理，以Sidecar的形式代理所有对数据库的访问。
 通过无中心、零侵入的方案提供与数据库交互的的啮合层，即Database Mesh，又可称数据库网格。
 
 Database Mesh的关注重点在于如何将分布式的数据访问应用与数据库有机串联起来，它更加关注的是交互，是将杂乱无章的应用与数据库之间的交互有效的梳理。
