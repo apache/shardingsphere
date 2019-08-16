@@ -75,6 +75,6 @@ public final class FieldUtil {
         modifiers.setAccessible(true);
         modifiers.setInt(timeServiceField, timeServiceField.getModifiers() & ~Modifier.FINAL);
         timeServiceField.set(target,fieldValue);
-        //modifiers.setInt(timeServiceField, timeServiceField.getModifiers() & ~Modifier.FINAL);
+        modifiers.setInt(timeServiceField, timeServiceField.getModifiers() & ~Modifier.FINAL);
     }
 }
