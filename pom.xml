@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.shardingsphere.example</groupId>
-    <artifactId>sharding-sphere-example</artifactId>
+    <artifactId>shardingsphere-example</artifactId>
     <version>4.0.0-RC2-SNAPSHOT</version>
     <modules>
         <module>example-common</module>
@@ -19,8 +19,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.locale>zh_CN</project.build.locale>
         
-        <sharding-sphere.version>4.0.0-RC2-SNAPSHOT</sharding-sphere.version>
-        <sharding-sphere.spi.impl.version>4.0.0-RC2-SNAPSHOT</sharding-sphere.spi.impl.version>
+        <shardingsphere.version>4.0.0-RC2-SNAPSHOT</shardingsphere.version>
+        <shardingsphere.spi.impl.version>4.0.0-RC2-SNAPSHOT</shardingsphere.spi.impl.version>
     
         <aspectjweaver.version>1.8.9</aspectjweaver.version>
         <spring-framework.version>4.3.20.RELEASE</spring-framework.version>
@@ -55,62 +55,62 @@
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>sharding-core-api</artifactId>
-                <version>${sharding-sphere.version}</version>
+                <version>${shardingsphere.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>sharding-jdbc-core</artifactId>
-                <version>${sharding-sphere.version}</version>
+                <version>${shardingsphere.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>sharding-jdbc-orchestration</artifactId>
-                <version>${sharding-sphere.version}</version>
+                <version>${shardingsphere.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>sharding-transaction-core</artifactId>
-                <version>${sharding-sphere.version}</version>
+                <version>${shardingsphere.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>sharding-transaction-xa-core</artifactId>
-                <version>${project.parent.version}</version>
+                <version>${shardingsphere.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>sharding-transaction-base-seata-at</artifactId>
-                <version>${project.parent.version}</version>
+                <version>${shardingsphere.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>sharding-jdbc-spring-boot-starter</artifactId>
-                <version>${sharding-sphere.version}</version>
+                <version>${shardingsphere.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>sharding-jdbc-orchestration-spring-boot-starter</artifactId>
-                <version>${sharding-sphere.version}</version>
+                <version>${shardingsphere.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>sharding-jdbc-spring-namespace</artifactId>
-                <version>${sharding-sphere.version}</version>
+                <version>${shardingsphere.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>sharding-jdbc-orchestration-spring-namespace</artifactId>
-                <version>${sharding-sphere.version}</version>
+                <version>${shardingsphere.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
-                <version>${sharding-sphere.version}</version>
+                <version>${shardingsphere.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.shardingsphere</groupId>
                 <artifactId>sharding-orchestration-reg-etcd</artifactId>
-                <version>${sharding-sphere.spi.impl.version}</version>
+                <version>${shardingsphere.spi.impl.version}</version>
             </dependency>
     
             <dependency>

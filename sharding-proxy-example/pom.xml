@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere.example</groupId>
-        <artifactId>sharding-sphere-example</artifactId>
+        <artifactId>shardingsphere-example</artifactId>
         <version>4.0.0-RC2-SNAPSHOT</version>
     </parent>
     <artifactId>sharding-proxy-example</artifactId>
