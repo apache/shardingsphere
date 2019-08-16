@@ -113,7 +113,6 @@ public final class UserRepositoryImpl implements UserRepository {
                 result.add(user);
             }
         } catch (final SQLException ignored) {
-            System.out.println(ignored);
         }
         return result;
     }

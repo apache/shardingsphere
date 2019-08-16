@@ -30,16 +30,16 @@ import java.util.Locale;
 import java.util.Set;
 
 public class SportsmanServiceImpl implements CommonService {
-
+    
     private final CountryRepository countryRepository;
-
+    
     private final SportsmanRepository sportsmanRepository;
-
+    
     public SportsmanServiceImpl(final CountryRepository countryRepository, final SportsmanRepository sportsmanRepository) {
         this.countryRepository = countryRepository;
         this.sportsmanRepository = sportsmanRepository;
     }
-
+    
     @Override
     public void initEnvironment() {
         countryRepository.createTableIfNotExists();
@@ -47,13 +47,13 @@ public class SportsmanServiceImpl implements CommonService {
         countryRepository.truncateTable();
         sportsmanRepository.truncateTable();
     }
-
+    
     @Override
     public void cleanEnvironment() {
         countryRepository.dropTable();
         sportsmanRepository.dropTable();
     }
-
+    
     @Override
     public void processSuccess() {
         System.out.println("-------------- Process Success Begin ---------------");
@@ -63,7 +63,7 @@ public class SportsmanServiceImpl implements CommonService {
         printData();
         System.out.println("-------------- Process Success Finish --------------");
     }
-
+    
     private void deleteData(final InsertResult insertResult) {
         System.out.println("---------------------------- Delete Data ----------------------------");
         for (String each : insertResult.getCountryCodes()) {
@@ -73,7 +73,7 @@ public class SportsmanServiceImpl implements CommonService {
             sportsmanRepository.delete(each);
         }
     }
-
+    
     @Override
     public void processFailure() {
         System.out.println("-------------- Process Failure Begin ---------------");
@@ -81,14 +81,14 @@ public class SportsmanServiceImpl implements CommonService {
         System.out.println("-------------- Process Failure Finish --------------");
         throw new RuntimeException("Exception occur for transaction test.");
     }
-
+    
     private InsertResult insertData() {
         System.out.println("---------------------------- Insert Data ----------------------------");
         List<String> countryCodes = insertCountry();
         List<Long> sportsmanIds = insertSportman(countryCodes);
         return new InsertResult(countryCodes, sportsmanIds);
     }
-
+    
     private List<Long> insertSportman(final List<String> countryCodes) {
         List<Long> result = new ArrayList<>(countryCodes.size());
         int index = 0;
@@ -101,7 +101,7 @@ public class SportsmanServiceImpl implements CommonService {
         }
         return result;
     }
-
+    
     private List<String> insertCountry() {
         Set<String> result = new LinkedHashSet<>();
         for (Locale each : Locale.getAvailableLocales()) {
@@ -120,7 +120,7 @@ public class SportsmanServiceImpl implements CommonService {
         }
         return new ArrayList<>(result);
     }
-
+    
     @Override
     public void printData() {
         System.out.println("---------------------------- Print Country Data -------------------");
@@ -132,22 +132,22 @@ public class SportsmanServiceImpl implements CommonService {
             System.out.println(each);
         }
     }
-
+    
     private class InsertResult {
-
+        
         private final List<String> countryCodes;
-
+        
         private final List<Long> sportsmanIds;
-
+        
         InsertResult(final List<String> countryCodes, final List<Long> sportsmanIds) {
             this.countryCodes = countryCodes;
             this.sportsmanIds = sportsmanIds;
         }
-
+        
         public List<Long> getSportsmanIds() {
             return sportsmanIds;
         }
-
+        
         public List<String> getCountryCodes() {
             return countryCodes;
         }
