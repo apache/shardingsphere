@@ -19,7 +19,7 @@ SQL parsing interface is used to regulate ANTLR file for SQL parse.
 
 Its main interface is `SQLParserEntry`, in which the built-in implementations of the former one include `MySQLParserEntry`, `PostgreSQLParserEntry`, `SQLServerParserEntry` and `OracleParserEntry`.
 
-Please refer to [SQL Parsing](/en/features/sharding/principle/parse/) for the introduction of SQL parsing.
+Please refer to [SQL Parsing](/en/features/sharding/principle/parse/) for the introduction.
 
 ### Database Protocol
 
@@ -33,7 +33,7 @@ Data masking interface is used to regulate the encryption, decryption, access ty
 
 There are mainly two interfaces, `ShardingEncryptor` and `ShardingQueryAssistedEncryptor`, in which the built-in implementations of the former one include `AESShardingEncryptor` and `MD5ShardingEncryptor`. 
 
-Please refer to [Data Masking](/en/features/orchestration/encrypt/) for the introduction of encryption.
+Please refer to [Data Masking](/en/features/orchestration/encrypt/) for the introduction.
 
 ### Distributed Primary Key
 
@@ -42,6 +42,14 @@ The distributed primary key interface is to regulate how to generate overall aut
 Its main interface is `ShardingKeyGenerator`, built-in implementation types are `UUIDShardingKeyGenerator` and `SnowflakeShardingKeyGenerator`.
 
 Please refer to [Distributed Primary Key](/en/features/sharding/other-features/key-generator/) for the introduction.
+
+### Distributed Transaction
+
+The distributed transaction interface is to regulate how to adapter distributed transaction to local transaction API.
+
+Its main interface is `ShardingTransactionManager`，built-in implementation types are `XAShardingTransactionManager` and `SeataATShardingTransactionManager`.
+
+Please refer to [Distributed Transaction](/en/features/transaction/) for the introduction.
 
 ### Registry Center
 

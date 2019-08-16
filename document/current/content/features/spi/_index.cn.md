@@ -45,7 +45,15 @@ SQL解析的接口用于规定用于解析SQL的ANTLR语法文件。
 
 主要接口为`ShardingKeyGenerator`，其内置实现类有`UUIDShardingKeyGenerator`和`SnowflakeShardingKeyGenerator`。
 
-有关自增主键的介绍，请参考[分布式主键](/cn/features/sharding/other-features/key-generator/)。
+有分布式主键的介绍，请参考[分布式主键](/cn/features/sharding/other-features/key-generator/)。
+
+### 分布式事务
+
+分布式事务的接口主要用于规定如何将分布式事务适配为本地事务接口。
+
+主要接口为`ShardingTransactionManager`，其内置实现类有`XAShardingTransactionManager`和`SeataATShardingTransactionManager`。
+
+有关分布式事务的介绍，请参考[分布式事务](/cn/features/transaction/)。
 
 ### 注册中心
 
