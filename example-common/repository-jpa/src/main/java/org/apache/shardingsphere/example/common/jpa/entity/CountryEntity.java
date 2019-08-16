@@ -26,21 +26,21 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "t_country")
-public class CountryEntity extends Country {
-
+public final class CountryEntity extends Country {
+    
     @Id
     @Column(name = "code")
     @Override
     public String getCode() {
         return super.getCode();
     }
-
+    
     @Column(name = "name")
     @Override
     public String getName() {
         return super.getName();
     }
-
+    
     @Column(name = "language")
     @Override
     public String getLanguage() {

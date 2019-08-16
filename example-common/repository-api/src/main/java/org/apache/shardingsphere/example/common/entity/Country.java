@@ -20,39 +20,39 @@ package org.apache.shardingsphere.example.common.entity;
 import java.io.Serializable;
 
 public class Country implements Serializable {
-
+    
     private static final long serialVersionUID = 4522167390518926493L;
-
+    
     private String code;
-
+    
     private String name;
-
+    
     private String language;
-
+    
     public String getCode() {
         return code;
     }
-
+    
     public void setCode(final String code) {
         this.code = code;
     }
-
+    
     public String getName() {
         return name;
     }
-
+    
     public void setName(final String name) {
         this.name = name;
     }
-
+    
     public String getLanguage() {
         return language;
     }
-
+    
     public void setLanguage(final String language) {
         this.language = language;
     }
-
+    
     @Override
     public String toString() {
         return String.format("code: %s, name: %s, language: %s", code, name, language);

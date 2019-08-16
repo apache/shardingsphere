@@ -21,7 +21,7 @@ import com.zaxxer.hikari.HikariDataSource;
 
 import javax.sql.DataSource;
 
-public class DataSourceUtil {
+public final class DataSourceUtil {
     
     private static final String HOST = "localhost";
     

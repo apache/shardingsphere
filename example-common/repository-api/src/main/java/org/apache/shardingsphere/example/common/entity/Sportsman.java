@@ -20,39 +20,39 @@ package org.apache.shardingsphere.example.common.entity;
 import java.io.Serializable;
 
 public class Sportsman implements Serializable {
-
+    
     private static final long serialVersionUID = 663834407582725508L;
-
+    
     private long id;
-
+    
     private String name;
-
+    
     private String countryCode;
-
+    
     public long getId() {
         return id;
     }
-
+    
     public void setId(final long id) {
         this.id = id;
     }
-
+    
     public String getName() {
         return name;
     }
-
+    
     public void setName(final String name) {
         this.name = name;
     }
-
+    
     public String getCountryCode() {
         return countryCode;
     }
-
+    
     public void setCountryCode(final String countryCode) {
         this.countryCode = countryCode;
     }
-
+    
     @Override
     public String toString() {
         return String.format("id: %s, name: %s, countryCode: %s", id, name, countryCode);
