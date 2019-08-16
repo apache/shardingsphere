@@ -20,8 +20,8 @@ Through a decentralized and zero-cost solution, it provides a mesh layer interac
 |                         | *Sharding-JDBC* | *Sharding-Proxy*     | *Sharding-Sidecar* |
 | :---------------------- | :-------------- | :------------------- | :----------------- |
 | Database                | Any             | MySQL                | `MySQL`            |
-| Connections Cost Number | High            | Low                  | `High`             |
-| Heterogeneous Language  | Java Only       | Any                  | `Any`              |
+| Connections Count Cost  | High            | Low                  | `High`             |
+| Supported Languages     | Java Only       | Any                  | `Any`              |
 | Performance             | Low loss        | Relatively High loss | `Low loss`         |
 | Decentralization        | Yes             | No                   | `Yes`              |
 | Static Entry            | No              | Yes                  | `No`               |
