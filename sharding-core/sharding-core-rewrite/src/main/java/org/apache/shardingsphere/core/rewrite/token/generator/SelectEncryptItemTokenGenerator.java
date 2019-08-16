@@ -22,6 +22,7 @@ import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.ColumnSelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemsSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SelectEncryptItemToken;
@@ -79,12 +80,21 @@ public final class SelectEncryptItemTokenGenerator implements CollectionSQLToken
         return each instanceof ColumnSelectItemSegment && logicColumns.contains(((ColumnSelectItemSegment) each).getName());
     }
     
-    private SelectEncryptItemToken createSelectCipherItemToken(final SelectItemSegment each, final String tableName, final EncryptRule encryptRule, final boolean isQueryWithCipherColumn) {
-        String columnName = ((ColumnSelectItemSegment) each).getName();
+    private SelectEncryptItemToken createSelectCipherItemToken(final SelectItemSegment selectItemSegment, 
+                                                               final String tableName, final EncryptRule encryptRule, final boolean isQueryWithCipherColumn) {
+        String columnName = ((ColumnSelectItemSegment) selectItemSegment).getName();
         Optional<String> plainColumn = encryptRule.getPlainColumn(tableName, columnName);
         if (!isQueryWithCipherColumn && plainColumn.isPresent()) {
-            return new SelectEncryptItemToken(each.getStartIndex(), each.getStopIndex(), plainColumn.get());
+            return createSelectEncryptItemToken(selectItemSegment, plainColumn.get());
         }
-        return new SelectEncryptItemToken(each.getStartIndex(), each.getStopIndex(), encryptRule.getCipherColumn(tableName, columnName));
+        return createSelectEncryptItemToken(selectItemSegment, encryptRule.getCipherColumn(tableName, columnName));
+    }
+    
+    private SelectEncryptItemToken createSelectEncryptItemToken(final SelectItemSegment selectItemSegment, final String columnName) {
+        Optional<TableSegment> owner = ((ColumnSelectItemSegment) selectItemSegment).getOwner();
+        if (owner.isPresent()) {
+            return new SelectEncryptItemToken(selectItemSegment.getStartIndex(), selectItemSegment.getStopIndex(), columnName, owner.get().getTableName());
+        }
+        return new SelectEncryptItemToken(selectItemSegment.getStartIndex(), selectItemSegment.getStopIndex(), columnName);
     }
 }
