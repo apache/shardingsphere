@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.parse.sql.segment.dml.expr.complex;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 /**
  * Common expression segment.
@@ -27,6 +28,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
+@ToString
 public final class CommonExpressionSegment implements ComplexExpressionSegment {
     
     private final int startIndex;

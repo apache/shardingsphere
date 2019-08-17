@@ -34,9 +34,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author zhangliang
  * @author panjuan
  */
+@Getter
 public final class ShardingTableMetaData {
     
-    @Getter
     private final Map<String, TableMetaData> tables;
     
     public ShardingTableMetaData(final Map<String, TableMetaData> tables) {
