@@ -115,9 +115,9 @@ Architects can adjust the system architecture to the most applicable one to curr
 * Tracing & Observability
 * Elastic scaling out (Planing)
 
-## Roadmap
+## Project Status
 
-![Roadmap](https://shardingsphere.apache.org//document/current/img/shardingsphere-roadmap_en.png)
+![Status](https://shardingsphere.apache.org/document/current/img/shardingsphere-status_en.png)
 
 ## How to Build
 
