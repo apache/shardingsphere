@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.integration.test;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.integration.util.EmbedTestingServer;
 import org.apache.shardingsphere.orchestration.internal.keygen.LeafSegmentKeyGenerator;
+import org.hamcrest.CoreMatchers;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -33,7 +33,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class LeafSegmentKeyGeneratorIT {
@@ -60,12 +59,11 @@ public final class LeafSegmentKeyGeneratorIT {
         for (int i = 0; i < 10; i++) {
             actual.add(leafSegmentKeyGenerator.generateKey());
         }
-        assertThat(actual, is(expected));
+        assertThat(actual, CoreMatchers.is(expected));
     }
 
     @Test
-    @SneakyThrows
-    public void assertGenerateKeyWithMultipleThreads() {
+    public void assertGenerateKeyWithMultipleThreads() throws Exception {
         int threadNumber = Runtime.getRuntime().availableProcessors() << 1;
         ExecutorService executor = Executors.newFixedThreadPool(threadNumber);
         Properties properties = new Properties();
@@ -86,12 +84,11 @@ public final class LeafSegmentKeyGeneratorIT {
                 }
             }).get());
         }
-        assertThat(actual.size(), is(taskNumber));
+        assertThat(actual.size(), CoreMatchers.is(taskNumber));
     }
 
     @Test
-    @SneakyThrows
-    public void assertGenerateKeyWithDigest() {
+    public void assertGenerateKeyWithDigest() throws Exception {
         int threadNumber = Runtime.getRuntime().availableProcessors() << 1;
         ExecutorService executor = Executors.newFixedThreadPool(threadNumber);
         Properties properties = new Properties();
@@ -112,12 +109,11 @@ public final class LeafSegmentKeyGeneratorIT {
                 }
             }).get());
         }
-        assertThat(actual.size(), is(taskNumber));
+        assertThat(actual.size(), CoreMatchers.is(taskNumber));
     }
 
     @Test
-    @SneakyThrows
-    public void assertGenerateKeyWithDefaultStep() {
+    public void assertGenerateKeyWithDefaultStep() throws Exception {
         int threadNumber = Runtime.getRuntime().availableProcessors() << 1;
         ExecutorService executor = Executors.newFixedThreadPool(threadNumber);
         Properties properties = new Properties();
@@ -137,12 +133,11 @@ public final class LeafSegmentKeyGeneratorIT {
                 }
             }).get());
         }
-        assertThat(actual.size(), is(taskNumber));
+        assertThat(actual.size(), CoreMatchers.is(taskNumber));
     }
 
     @Test
-    @SneakyThrows
-    public void assertGenerateKeyWithDefaultInitialValue() {
+    public void assertGenerateKeyWithDefaultInitialValue() throws Exception {
         int threadNumber = Runtime.getRuntime().availableProcessors() << 1;
         ExecutorService executor = Executors.newFixedThreadPool(threadNumber);
         Properties properties = new Properties();
@@ -162,7 +157,7 @@ public final class LeafSegmentKeyGeneratorIT {
                 }
             }).get());
         }
-        assertThat(actual.size(), is(taskNumber));
+        assertThat(actual.size(), CoreMatchers.is(taskNumber));
     }
 
 }

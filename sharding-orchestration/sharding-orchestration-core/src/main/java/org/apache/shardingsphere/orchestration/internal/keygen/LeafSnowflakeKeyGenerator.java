@@ -72,7 +72,7 @@ public final class LeafSnowflakeKeyGenerator implements ShardingKeyGenerator {
 
     private static final String SLANTING_BAR = "/";
 
-    private static TimeService timeService = new TimeService();
+    private final TimeService timeService = new TimeService();
 
     @Getter
     @Setter

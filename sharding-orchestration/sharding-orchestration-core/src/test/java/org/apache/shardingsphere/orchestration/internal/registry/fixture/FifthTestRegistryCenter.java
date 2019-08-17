@@ -40,18 +40,11 @@ public final class FifthTestRegistryCenter implements RegistryCenter {
 
     private ReentrantLock lock = new ReentrantLock();
 
-    private static final String PARENT_NODE = "/leaf_snowflake";
-
-    private static final String TIME_NODE = "/time";
-
-    private static final String CURRENT_MAX_WORK_ID_NODE = "/current-max-work-id";
-
-    private static final String WORK_ID_NODE = "/work-id";
     @Override
     public void init(final RegistryCenterConfiguration config) {
-        keys.put("/leaf_snowflake/specialService/time",String.valueOf(System.currentTimeMillis()));
-        keys.put("/leaf_snowflake/specialService/work-id","1");
-        keys.put("/leaf_snowflake/current-max-work-id","1");
+        keys.put("/leaf_snowflake/specialService/time", String.valueOf(System.currentTimeMillis()));
+        keys.put("/leaf_snowflake/specialService/work-id", "1");
+        keys.put("/leaf_snowflake/current-max-work-id", "1");
     }
     
     @Override

@@ -27,7 +27,7 @@ public final class PreviousTimeService extends TimeService {
 
     @Override
     public long getCurrentMillis() {
-        long result = System.currentTimeMillis()-timeDifference;
+        long result = System.currentTimeMillis() - timeDifference;
         return result;
     }
 }

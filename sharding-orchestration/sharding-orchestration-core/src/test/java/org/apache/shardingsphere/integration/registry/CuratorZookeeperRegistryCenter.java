@@ -277,10 +277,11 @@ public final class CuratorZookeeperRegistryCenter implements RegistryCenter {
         CloseableUtils.closeQuietly(client);
     }
     
-    /* TODO 等待500ms, cache先关闭再关闭client, 否则会抛异常
-     * 因为异步处理, 可能会导致client先关闭而cache还未关闭结束.
-     * 等待Curator新版本解决这个bug.
-     * BUG地址：https://issues.apache.org/jira/browse/CURATOR-157
+    /*
+     * TODO waits for 500 ms. Cache closes the client first and then closes the client. Otherwise, an exception will be thrown.
+     * Because of asynchronous processing, it may lead to client closing first and cache not closing yet.
+     * Wait for a new version of Curator to fix this bug.
+     * BUG address: https://issues.apache.org/jira/browse/CURATOR-157
      */
     private void waitForCacheClose() {
         try {

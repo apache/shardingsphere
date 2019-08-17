@@ -65,16 +65,15 @@ public final class FieldUtil {
      * @param target target to be settled
      * @param fieldName field name to be settled
      * @param fieldValue field value to be settled
-     * @return field value
      */
     @SneakyThrows
-    public static void setStaticFinalField(final Object target, final String fieldName, final Object fieldValue){
+    public static void setStaticFinalField(final Object target, final String fieldName, final Object fieldValue) {
         Field timeServiceField = target.getClass().getDeclaredField(fieldName);
         timeServiceField.setAccessible(true);
         Field modifiers = timeServiceField.getClass().getDeclaredField("modifiers");
         modifiers.setAccessible(true);
         modifiers.setInt(timeServiceField, timeServiceField.getModifiers() & ~Modifier.FINAL);
-        timeServiceField.set(target,fieldValue);
+        timeServiceField.set(target, fieldValue);
         modifiers.setInt(timeServiceField, timeServiceField.getModifiers() & ~Modifier.FINAL);
     }
 }
