@@ -46,11 +46,11 @@ public final class ShardingDropIndexOptimizeEngine implements ShardingOptimizeEn
         return new ShardingDropIndexOptimizedStatement(sqlStatement, tables, getTableNames(shardingTableMetaData, sqlStatement, tables));
     }
     
-    // TODO simplify from tables
     private Collection<String> getTableNames(final ShardingTableMetaData shardingTableMetaData, final DropIndexStatement sqlStatement, final Tables tables) {
-        if (!tables.isEmpty()) {
-            return Collections.singletonList(tables.getSingleTableName());
-        }
+        return tables.isEmpty() ? getTableNames(shardingTableMetaData, sqlStatement) : Collections.singletonList(tables.getSingleTableName());
+    }
+    
+    private Collection<String> getTableNames(final ShardingTableMetaData shardingTableMetaData, final DropIndexStatement sqlStatement) {
         Collection<String> result = new LinkedList<>();
         for (IndexSegment each : sqlStatement.getIndexes()) {
             Optional<String> tableName = shardingTableMetaData.getLogicTableName(each.getName());
