@@ -48,7 +48,7 @@ pipeline {
                     ssBuildBadge.setStatus('running')
                     try {
                         sh '''
-                        mvn clean verify cobertura:cobertura coveralls:report -DrepoToken=${COVERALLS_REPO_TOKEN} -Prelease
+                        mvn clean verify cobertura:cobertura coveralls:report -DrepoToken=${COVERALLS_REPO_TOKEN} -DpullRequest=${ghprbPullLink} -Prelease
                         '''
                         ssBuildBadge.setStatus('passing')
                     } catch (Exception err) {
