@@ -71,7 +71,7 @@ public final class ShardingInsertColumns implements InsertColumns {
     }
     
     private boolean isGenerateKeyFromMetaData(final Collection<String> allColumnNames, final int columnValueSize) {
-        return null != generateKeyColumnName && allColumnNames.size() - assistedQueryAndPlainColumnNames.size() != columnValueSize;
+        return null != generateKeyColumnName && allColumnNames.size() - assistedQueryAndPlainColumnNames.size() > columnValueSize;
     }
     
     private Collection<String> getRegularColumnNamesFromSQLStatement(final InsertStatement insertStatement) {
@@ -83,7 +83,7 @@ public final class ShardingInsertColumns implements InsertColumns {
     }
     
     private boolean isGenerateKeyFromSQLStatement(final InsertStatement insertStatement) {
-        return null != generateKeyColumnName && !insertStatement.getColumns().isEmpty() && insertStatement.getColumns().size() != insertStatement.getValueSize();
+        return null != generateKeyColumnName && !insertStatement.getColumns().isEmpty() && insertStatement.getColumns().size() > insertStatement.getValueSize();
     }
     
     @Override
