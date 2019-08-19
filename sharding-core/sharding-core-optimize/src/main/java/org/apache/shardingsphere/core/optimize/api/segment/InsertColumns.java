@@ -32,15 +32,4 @@ public interface InsertColumns {
      * @return regular column names
      */
     Collection<String> getRegularColumnNames();
-    
-    /**
-     * Get all column names.
-     *
-     * <p>
-     *     Include regular column names and derived column names with same sequence with insert values.
-     * </p>
-     *
-     * @return all column names
-     */
-    Collection<String> getAllColumnNames();
 }

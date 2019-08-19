@@ -93,7 +93,6 @@ public final class MergeEngineFactoryTest {
     public void assertNewInstanceWithOtherStatement() throws SQLException {
         ShardingInsertColumns insertColumns = mock(ShardingInsertColumns.class);
         when(insertColumns.getRegularColumnNames()).thenReturn(Collections.<String>emptySet());
-        when(insertColumns.getAllColumnNames()).thenReturn(Collections.<String>emptySet());
         SQLRouteResult routeResult = new SQLRouteResult(
                 new ShardingInsertOptimizedStatement(new InsertStatement(), Collections.<ShardingCondition>emptyList(), insertColumns, Collections.<InsertValue>emptyList(), null), 
                 new EncryptTransparentOptimizedStatement(new InsertStatement()));

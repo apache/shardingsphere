@@ -61,12 +61,4 @@ public final class EncryptInsertColumns implements InsertColumns {
         }
         return result;
     }
-    
-    @Override
-    public Collection<String> getAllColumnNames() {
-        Collection<String> result = new LinkedHashSet<>(regularColumnNames.size() + assistedQueryAndPlainColumnNames.size());
-        result.addAll(regularColumnNames);
-        result.addAll(assistedQueryAndPlainColumnNames);
-        return result;
-    }
 }

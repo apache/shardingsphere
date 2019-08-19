@@ -35,6 +35,7 @@ import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -69,13 +70,19 @@ public final class ShardingInsertOptimizedStatement extends ShardingConditionOpt
     /**
      * Create insert optimize unit.
      *
+     * @param generateKeyColumnName generate key column name
+     * @param derivedColumnNames derived column names
      * @param insertValues insert values
      * @param parameters SQL parameters
      * @param startIndexOfAppendedParameters start index of appended parameters
      * @return insert optimize result unit
      */
-    public InsertOptimizeResultUnit createUnit(final ExpressionSegment[] insertValues, final Object[] parameters, final int startIndexOfAppendedParameters) {
-        return new InsertOptimizeResultUnit(insertColumns.getAllColumnNames(), insertValues, parameters, startIndexOfAppendedParameters);
+    public InsertOptimizeResultUnit createUnit(final String generateKeyColumnName, final Collection<String> derivedColumnNames, 
+                                               final ExpressionSegment[] insertValues, final Object[] parameters, final int startIndexOfAppendedParameters) {
+        Collection<String> allColumnNames = new LinkedHashSet<>(insertColumns.getRegularColumnNames());
+        allColumnNames.add(generateKeyColumnName);
+        allColumnNames.addAll(derivedColumnNames);
+        return new InsertOptimizeResultUnit(allColumnNames, insertValues, parameters, startIndexOfAppendedParameters);
     }
 
     /**

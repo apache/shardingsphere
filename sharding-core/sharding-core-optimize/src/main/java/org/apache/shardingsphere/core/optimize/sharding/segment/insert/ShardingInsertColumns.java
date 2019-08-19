@@ -85,15 +85,4 @@ public final class ShardingInsertColumns implements InsertColumns {
     private boolean isGenerateKeyFromSQLStatement(final InsertStatement insertStatement) {
         return null != generateKeyColumnName && !insertStatement.getColumns().isEmpty() && insertStatement.getColumns().size() > insertStatement.getValueSize();
     }
-    
-    @Override
-    public Collection<String> getAllColumnNames() {
-        Collection<String> result = new LinkedHashSet<>(regularColumnNames.size() + assistedQueryAndPlainColumnNames.size() + 1);
-        result.addAll(regularColumnNames);
-        if (null != generateKeyColumnName && !regularColumnNames.contains(generateKeyColumnName)) {
-            result.add(generateKeyColumnName);
-        }
-        result.addAll(assistedQueryAndPlainColumnNames);
-        return result;
-    }
 }

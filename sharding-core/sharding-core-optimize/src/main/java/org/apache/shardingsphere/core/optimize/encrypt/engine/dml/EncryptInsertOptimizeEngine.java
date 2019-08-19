@@ -48,7 +48,8 @@ public final class EncryptInsertOptimizeEngine implements EncryptOptimizeEngine<
         int parametersCount = 0;
         for (InsertValue each : result.getValues()) {
             Object[] currentParameters = each.getParameters(parameters, parametersCount, derivedColumnsCount);
-            InsertOptimizeResultUnit unit = result.addUnit(each.getValues(derivedColumnsCount), currentParameters, each.getParametersCount());
+            Collection<String> encryptDerivedColumnNames = encryptRule.getAssistedQueryAndPlainColumns(sqlStatement.getTable().getTableName());
+            InsertOptimizeResultUnit unit = result.addUnit(encryptDerivedColumnNames, each.getValues(derivedColumnsCount), currentParameters, each.getParametersCount());
             if (encryptRule.isHasQueryAssistedColumn(sqlStatement.getTable().getTableName())) {
                 fillAssistedQueryUnit(encryptRule, Arrays.asList(currentParameters), sqlStatement.getTable().getTableName(), result.getInsertColumns().getRegularColumnNames(), unit);
             }
