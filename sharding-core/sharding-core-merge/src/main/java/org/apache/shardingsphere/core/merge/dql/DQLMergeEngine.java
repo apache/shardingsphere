@@ -57,7 +57,7 @@ public final class DQLMergeEngine implements MergeEngine {
     
     private final SQLRouteResult routeResult;
     
-    private final ShardingSelectOptimizedStatement optimizedStatement;
+    private final ShardingSelectOptimizedStatement shardingStatement;
     
     private final List<QueryResult> queryResults;
     
@@ -67,7 +67,7 @@ public final class DQLMergeEngine implements MergeEngine {
     public DQLMergeEngine(final DatabaseType databaseType, final SQLRouteResult routeResult, final List<QueryResult> queryResults) throws SQLException {
         this.databaseType = databaseType;
         this.routeResult = routeResult;
-        this.optimizedStatement = (ShardingSelectOptimizedStatement) routeResult.getShardingStatement();
+        this.shardingStatement = (ShardingSelectOptimizedStatement) routeResult.getShardingStatement();
         this.queryResults = getRealQueryResults(queryResults);
         columnLabelIndexMap = getColumnLabelIndexMap(this.queryResults.get(0));
     }
@@ -77,12 +77,12 @@ public final class DQLMergeEngine implements MergeEngine {
         if (1 == result.size()) {
             return result;
         }
-        List<AggregationDistinctSelectItem> aggregationDistinctSelectItems = optimizedStatement.getSelectItems().getAggregationDistinctSelectItems();
+        List<AggregationDistinctSelectItem> aggregationDistinctSelectItems = shardingStatement.getSelectItems().getAggregationDistinctSelectItems();
         if (!aggregationDistinctSelectItems.isEmpty()) {
             result = getDividedQueryResults(new AggregationDistinctQueryResult(queryResults, aggregationDistinctSelectItems));
         }
         if (isDistinctRowSelectItems()) {
-            result = getDividedQueryResults(new DistinctQueryResult(queryResults, optimizedStatement.getSelectItems().getColumnLabels()));
+            result = getDividedQueryResults(new DistinctQueryResult(queryResults, shardingStatement.getSelectItems().getColumnLabels()));
         }
         return result.isEmpty() ? queryResults : result;
     }
@@ -98,7 +98,7 @@ public final class DQLMergeEngine implements MergeEngine {
     }
     
     private boolean isDistinctRowSelectItems() {
-        return optimizedStatement.getSelectItems().isDistinctRow() && optimizedStatement.getGroupBy().getItems().isEmpty();
+        return shardingStatement.getSelectItems().isDistinctRow() && shardingStatement.getGroupBy().getItems().isEmpty();
     }
     
     private Map<String, Integer> getColumnLabelIndexMap(final QueryResult queryResult) throws SQLException {
@@ -114,23 +114,23 @@ public final class DQLMergeEngine implements MergeEngine {
         if (1 == queryResults.size()) {
             return new IteratorStreamMergedResult(queryResults);
         }
-        optimizedStatement.setIndexForItems(columnLabelIndexMap);
+        shardingStatement.setIndexForItems(columnLabelIndexMap);
         return decorate(build());
     }
     
     private MergedResult build() throws SQLException {
-        if (!optimizedStatement.getGroupBy().getItems().isEmpty() || !optimizedStatement.getSelectItems().getAggregationSelectItems().isEmpty()) {
+        if (!shardingStatement.getGroupBy().getItems().isEmpty() || !shardingStatement.getSelectItems().getAggregationSelectItems().isEmpty()) {
             return getGroupByMergedResult();
         }
-        if (!optimizedStatement.getOrderBy().getItems().isEmpty()) {
-            return new OrderByStreamMergedResult(queryResults, optimizedStatement.getOrderBy().getItems());
+        if (!shardingStatement.getOrderBy().getItems().isEmpty()) {
+            return new OrderByStreamMergedResult(queryResults, shardingStatement.getOrderBy().getItems());
         }
         return new IteratorStreamMergedResult(queryResults);
     }
     
     private MergedResult getGroupByMergedResult() throws SQLException {
-        return optimizedStatement.isSameGroupByAndOrderByItems()
-                ? new GroupByStreamMergedResult(columnLabelIndexMap, queryResults, optimizedStatement) : new GroupByMemoryMergedResult(columnLabelIndexMap, queryResults, optimizedStatement);
+        return shardingStatement.isSameGroupByAndOrderByItems()
+                ? new GroupByStreamMergedResult(columnLabelIndexMap, queryResults, shardingStatement) : new GroupByMemoryMergedResult(columnLabelIndexMap, queryResults, shardingStatement);
     }
     
     private MergedResult decorate(final MergedResult mergedResult) throws SQLException {

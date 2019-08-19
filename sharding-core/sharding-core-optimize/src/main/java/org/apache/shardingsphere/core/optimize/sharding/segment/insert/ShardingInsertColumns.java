@@ -58,11 +58,11 @@ public final class ShardingInsertColumns implements InsertColumns {
         Collection<String> result = new LinkedHashSet<>(allColumnNames.size() - assistedQueryAndPlainColumnNames.size());
         String tableName = insertStatement.getTable().getTableName();
         for (String each : allColumnNames) {
-            if (isCipherColumn(encryptRule, tableName, each)) {
-                result.add(getLogicColumn(encryptRule, tableName, each));
+            if (encryptRule.getCipherColumns(tableName).contains(each)) {
+                result.add(encryptRule.getLogicColumn(tableName, each));
                 continue;
             }
-            if (!isAssistedQueryAndPlainColumns(each)) {
+            if (!assistedQueryAndPlainColumnNames.contains(each)) {
                 result.add(each);
             }
         }
@@ -70,18 +70,6 @@ public final class ShardingInsertColumns implements InsertColumns {
             result.remove(generateKeyColumnName);
         }
         return result;
-    }
-    
-    private boolean isAssistedQueryAndPlainColumns(final String columnName) {
-        return assistedQueryAndPlainColumnNames.contains(columnName);
-    }
-    
-    private boolean isCipherColumn(final EncryptRule encryptRule, final String tableName, final String columnName) {
-        return encryptRule.getCipherColumns(tableName).contains(columnName);
-    }
-    
-    private String getLogicColumn(final EncryptRule encryptRule, final String tableName, final String columnName) {
-        return encryptRule.getLogicColumn(tableName, columnName);
     }
     
     private boolean isGenerateKeyFromMetaData(final Collection<String> allColumnNames, final int columnValueSize) {

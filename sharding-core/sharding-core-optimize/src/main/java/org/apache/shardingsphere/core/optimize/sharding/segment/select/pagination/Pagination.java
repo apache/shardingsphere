@@ -134,18 +134,18 @@ public final class Pagination {
     /**
      * Get revised row count.
      * 
-     * @param optimizedStatement optimized statement
+     * @param shardingStatement sharding optimized statement
      * @return revised row count
      */
-    public int getRevisedRowCount(final ShardingSelectOptimizedStatement optimizedStatement) {
-        if (isMaxRowCount(optimizedStatement)) {
+    public int getRevisedRowCount(final ShardingSelectOptimizedStatement shardingStatement) {
+        if (isMaxRowCount(shardingStatement)) {
             return Integer.MAX_VALUE;
         }
         return rowCountSegment instanceof LimitValueSegment ? actualOffset + actualRowCount : actualRowCount;
     }
     
-    private boolean isMaxRowCount(final ShardingSelectOptimizedStatement optimizedStatement) {
-        return (!optimizedStatement.getGroupBy().getItems().isEmpty()
-                || !optimizedStatement.getSelectItems().getAggregationSelectItems().isEmpty()) && !optimizedStatement.isSameGroupByAndOrderByItems();
+    private boolean isMaxRowCount(final ShardingSelectOptimizedStatement shardingStatement) {
+        return (!shardingStatement.getGroupBy().getItems().isEmpty()
+                || !shardingStatement.getSelectItems().getAggregationSelectItems().isEmpty()) && !shardingStatement.isSameGroupByAndOrderByItems();
     }
 }

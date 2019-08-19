@@ -23,6 +23,7 @@ import org.apache.shardingsphere.core.merge.MergedResult;
 import org.apache.shardingsphere.core.merge.dal.show.ShowTablesMergedResult;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.DerivedColumn;
+import org.apache.shardingsphere.core.optimize.sharding.statement.ShardingOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
@@ -88,9 +89,9 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         if (routeResult.getRouteUnits().isEmpty()) {
             return new UpdateResponse();
         }
-        OptimizedStatement optimizedStatement = routeResult.getShardingStatement();
-        if (isExecuteDDLInXATransaction(optimizedStatement.getSQLStatement())) {
-            return new ErrorResponse(new TableModifyInTransactionException(optimizedStatement.getTables().isSingleTable() ? optimizedStatement.getTables().getSingleTableName() : "unknown_table"));
+        ShardingOptimizedStatement shardingStatement = routeResult.getShardingStatement();
+        if (isExecuteDDLInXATransaction(shardingStatement.getSQLStatement())) {
+            return new ErrorResponse(new TableModifyInTransactionException(shardingStatement.getTables().isSingleTable() ? shardingStatement.getTables().getSingleTableName() : "unknown_table"));
         }
         response = executeEngine.execute(routeResult);
         if (logicSchema instanceof ShardingSchema) {
