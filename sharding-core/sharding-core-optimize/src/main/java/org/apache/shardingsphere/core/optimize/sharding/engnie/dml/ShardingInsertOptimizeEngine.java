@@ -53,7 +53,8 @@ public final class ShardingInsertOptimizeEngine implements ShardingOptimizeEngin
     public ShardingInsertOptimizedStatement optimize(final ShardingRule shardingRule,
                                                      final ShardingTableMetaData shardingTableMetaData, final String sql, final List<Object> parameters, final InsertStatement sqlStatement) {
         InsertClauseShardingConditionEngine shardingConditionEngine = new InsertClauseShardingConditionEngine(shardingRule);
-        ShardingInsertColumns insertColumns = new ShardingInsertColumns(shardingRule, shardingTableMetaData, sqlStatement);
+        Collection<String> derivedColumnNames = shardingRule.getEncryptRule().getAssistedQueryColumns(sqlStatement.getTable().getTableName());
+        ShardingInsertColumns insertColumns = new ShardingInsertColumns(shardingRule, shardingTableMetaData, sqlStatement, derivedColumnNames);
         InsertValueEngine insertValueEngine = new InsertValueEngine();
         Collection<InsertValue> insertValues = insertValueEngine.createInsertValues(sqlStatement);
         Optional<GeneratedKey> generatedKey = GeneratedKey.getGenerateKey(shardingRule, parameters, sqlStatement, insertColumns, insertValues);
