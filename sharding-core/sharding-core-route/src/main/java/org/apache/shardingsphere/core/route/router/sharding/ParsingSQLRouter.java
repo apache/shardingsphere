@@ -23,6 +23,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.optimize.encrypt.EncryptOptimizeEngineFactory;
+import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.ShardingOptimizeEngineFactory;
 import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingConditions;
@@ -83,7 +85,9 @@ public final class ParsingSQLRouter implements ShardingRouter {
         if (shardingStatement instanceof ShardingInsertOptimizedStatement) {
             setGeneratedValues((ShardingInsertOptimizedStatement) shardingStatement);
         }
-        SQLRouteResult result = new SQLRouteResult(shardingStatement);
+        EncryptOptimizedStatement encryptStatement = EncryptOptimizeEngineFactory.newInstance(sqlStatement)
+                .optimize(shardingRule.getEncryptRule(), shardingMetaData.getTable(), logicSQL, parameters, sqlStatement);
+        SQLRouteResult result = new SQLRouteResult(shardingStatement, encryptStatement);
         result.setRoutingResult(routingResult);
         return result;
     }

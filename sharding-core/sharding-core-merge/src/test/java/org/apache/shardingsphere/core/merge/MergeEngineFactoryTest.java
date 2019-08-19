@@ -25,6 +25,7 @@ import org.apache.shardingsphere.core.merge.dql.DQLMergeEngine;
 import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
 import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
 import org.apache.shardingsphere.core.optimize.encrypt.segment.condition.EncryptCondition;
+import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptTransparentOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.sharding.segment.insert.ShardingInsertColumns;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.groupby.GroupBy;
@@ -77,13 +78,14 @@ public final class MergeEngineFactoryTest {
         SQLRouteResult routeResult = new SQLRouteResult(
                 new ShardingSelectOptimizedStatement(new SelectStatement(), Collections.<ShardingCondition>emptyList(), Collections.<EncryptCondition>emptyList(), 
                         new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
-                        new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<TableSegment>emptyList(), null), new Pagination(null, null, Collections.emptyList())));
+                        new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<TableSegment>emptyList(), null), new Pagination(null, null, Collections.emptyList())), 
+                new EncryptTransparentOptimizedStatement(new SelectStatement()));
         assertThat(MergeEngineFactory.newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, routeResult, null, queryResults), instanceOf(DQLMergeEngine.class));
     }
     
     @Test
     public void assertNewInstanceWithDALStatement() throws SQLException {
-        SQLRouteResult routeResult = new SQLRouteResult(new ShardingTransparentOptimizedStatement(new DALStatement()));
+        SQLRouteResult routeResult = new SQLRouteResult(new ShardingTransparentOptimizedStatement(new DALStatement()), new EncryptTransparentOptimizedStatement(new DALStatement()));
         assertThat(MergeEngineFactory.newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, routeResult, null, queryResults), instanceOf(DALMergeEngine.class));
     }
     
@@ -93,7 +95,8 @@ public final class MergeEngineFactoryTest {
         when(insertColumns.getRegularColumnNames()).thenReturn(Collections.<String>emptySet());
         when(insertColumns.getAllColumnNames()).thenReturn(Collections.<String>emptySet());
         SQLRouteResult routeResult = new SQLRouteResult(
-                new ShardingInsertOptimizedStatement(new InsertStatement(), Collections.<ShardingCondition>emptyList(), insertColumns, Collections.<InsertValue>emptyList(), null));
+                new ShardingInsertOptimizedStatement(new InsertStatement(), Collections.<ShardingCondition>emptyList(), insertColumns, Collections.<InsertValue>emptyList(), null), 
+                new EncryptTransparentOptimizedStatement(new InsertStatement()));
         assertThat(MergeEngineFactory.newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, routeResult, null, queryResults), instanceOf(TransparentMergeEngine.class));
     }
 }

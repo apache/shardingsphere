@@ -55,7 +55,7 @@ public final class BaseParameterBuilder implements ParameterBuilder {
     
     private void setReplacedIndexAndParameters(final SQLRouteResult sqlRouteResult) {
         if (isNeedRewritePagination(sqlRouteResult)) {
-            Pagination pagination = ((ShardingSelectOptimizedStatement) sqlRouteResult.getOptimizedStatement()).getPagination();
+            Pagination pagination = ((ShardingSelectOptimizedStatement) sqlRouteResult.getShardingStatement()).getPagination();
             Optional<Integer> offsetParameterIndex = pagination.getOffsetParameterIndex();
             if (offsetParameterIndex.isPresent()) {
                 rewriteOffset(pagination, offsetParameterIndex.get());
@@ -68,8 +68,8 @@ public final class BaseParameterBuilder implements ParameterBuilder {
     }
     
     private boolean isNeedRewritePagination(final SQLRouteResult sqlRouteResult) {
-        return sqlRouteResult.getOptimizedStatement() instanceof ShardingSelectOptimizedStatement
-                && ((ShardingSelectOptimizedStatement) sqlRouteResult.getOptimizedStatement()).getPagination().isHasPagination() && !sqlRouteResult.getRoutingResult().isSingleRouting();
+        return sqlRouteResult.getShardingStatement() instanceof ShardingSelectOptimizedStatement
+                && ((ShardingSelectOptimizedStatement) sqlRouteResult.getShardingStatement()).getPagination().isHasPagination() && !sqlRouteResult.getRoutingResult().isSingleRouting();
     }
     
     private void rewriteOffset(final Pagination pagination, final int offsetParameterIndex) {
@@ -77,7 +77,7 @@ public final class BaseParameterBuilder implements ParameterBuilder {
     }
     
     private void rewriteRowCount(final Pagination pagination, final int rowCountParameterIndex, final SQLRouteResult sqlRouteResult) {
-        replacedIndexAndParameters.put(rowCountParameterIndex, pagination.getRevisedRowCount((ShardingSelectOptimizedStatement) sqlRouteResult.getOptimizedStatement()));
+        replacedIndexAndParameters.put(rowCountParameterIndex, pagination.getRevisedRowCount((ShardingSelectOptimizedStatement) sqlRouteResult.getShardingStatement()));
     }
     
     @Override

@@ -20,7 +20,8 @@ package org.apache.shardingsphere.core.route;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.sharding.statement.ShardingOptimizedStatement;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 
 import java.util.Collection;
@@ -38,7 +39,9 @@ import java.util.LinkedHashSet;
 @Setter
 public final class SQLRouteResult {
     
-    private final OptimizedStatement optimizedStatement;
+    private final ShardingOptimizedStatement shardingStatement;
+    
+    private final EncryptOptimizedStatement encryptStatement;
     
     private final Collection<RouteUnit> routeUnits = new LinkedHashSet<>();
     

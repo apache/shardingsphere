@@ -71,7 +71,7 @@ public abstract class BaseShardingEngine {
         result.getRouteUnits().addAll(HintManager.isDatabaseShardingOnly() ? convert(sql, clonedParameters, result) : rewriteAndConvert(sql, clonedParameters, result));
         if (shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW)) {
             boolean showSimple = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SIMPLE);
-            SQLLogger.logSQL(sql, showSimple, result.getOptimizedStatement(), result.getRouteUnits());
+            SQLLogger.logSQL(sql, showSimple, result.getShardingStatement(), result.getRouteUnits());
         }
         return result;
     }
@@ -108,7 +108,7 @@ public abstract class BaseShardingEngine {
         Collection<RouteUnit> result = new LinkedHashSet<>();
         for (RoutingUnit each : sqlRouteResult.getRoutingResult().getRoutingUnits()) {
             result.add(new RouteUnit(each.getDataSourceName(), 
-                    rewriteEngine.generateSQL(each, getLogicAndActualTables(each, sqlRouteResult.getOptimizedStatement().getTables().getTableNames()))));
+                    rewriteEngine.generateSQL(each, getLogicAndActualTables(each, sqlRouteResult.getShardingStatement().getTables().getTableNames()))));
         }
         return result;
     }

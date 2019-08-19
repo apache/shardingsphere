@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.rewrite.builder;
 
 import com.google.common.base.Optional;
+import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.pagination.Pagination;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
@@ -53,9 +54,10 @@ public final class BaseParameterBuilderTest {
         when(pagination.getOffsetParameterIndex()).thenReturn(Optional.of(2));
         when(pagination.getRowCountParameterIndex()).thenReturn(Optional.of(3));
         when(pagination.getRevisedRowCount(any(ShardingSelectOptimizedStatement.class))).thenReturn(6);
-        ShardingSelectOptimizedStatement optimizedStatement = mock(ShardingSelectOptimizedStatement.class);
-        when(optimizedStatement.getPagination()).thenReturn(pagination);
-        SQLRouteResult result = new SQLRouteResult(optimizedStatement);
+        ShardingSelectOptimizedStatement shardingStatement = mock(ShardingSelectOptimizedStatement.class);
+        when(shardingStatement.getPagination()).thenReturn(pagination);
+        EncryptOptimizedStatement encryptStatement = mock(EncryptOptimizedStatement.class);
+        SQLRouteResult result = new SQLRouteResult(shardingStatement, encryptStatement);
         result.setRoutingResult(new RoutingResult());
         return result;
     }

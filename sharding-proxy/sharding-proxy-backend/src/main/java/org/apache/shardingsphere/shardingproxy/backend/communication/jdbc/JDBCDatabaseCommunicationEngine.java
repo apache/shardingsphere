@@ -88,13 +88,13 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         if (routeResult.getRouteUnits().isEmpty()) {
             return new UpdateResponse();
         }
-        OptimizedStatement optimizedStatement = routeResult.getOptimizedStatement();
+        OptimizedStatement optimizedStatement = routeResult.getShardingStatement();
         if (isExecuteDDLInXATransaction(optimizedStatement.getSQLStatement())) {
             return new ErrorResponse(new TableModifyInTransactionException(optimizedStatement.getTables().isSingleTable() ? optimizedStatement.getTables().getSingleTableName() : "unknown_table"));
         }
         response = executeEngine.execute(routeResult);
         if (logicSchema instanceof ShardingSchema) {
-            logicSchema.refreshTableMetaData(routeResult.getOptimizedStatement());
+            logicSchema.refreshTableMetaData(routeResult.getShardingStatement());
         }
         return merge(routeResult);
     }
@@ -116,7 +116,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     }
     
     private void mergeUpdateCount(final SQLRouteResult routeResult) {
-        if (!isAllBroadcastTables(routeResult.getOptimizedStatement())) {
+        if (!isAllBroadcastTables(routeResult.getShardingStatement())) {
             ((UpdateResponse) response).mergeUpdateCount();
         }
     }
@@ -168,7 +168,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     private Collection<String> getAssistedQueryColumns(final SQLRouteResult routeResult) {
         Collection<String> result = new LinkedList<>();
         EncryptRule encryptRule = getEncryptRule();
-        for (String each : routeResult.getOptimizedStatement().getTables().getTableNames()) {
+        for (String each : routeResult.getShardingStatement().getTables().getTableNames()) {
             result.addAll(encryptRule.getAssistedQueryColumns(each));
         }
         return result;

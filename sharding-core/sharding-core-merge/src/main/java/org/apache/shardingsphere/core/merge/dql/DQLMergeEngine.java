@@ -67,7 +67,7 @@ public final class DQLMergeEngine implements MergeEngine {
     public DQLMergeEngine(final DatabaseType databaseType, final SQLRouteResult routeResult, final List<QueryResult> queryResults) throws SQLException {
         this.databaseType = databaseType;
         this.routeResult = routeResult;
-        this.optimizedStatement = (ShardingSelectOptimizedStatement) routeResult.getOptimizedStatement();
+        this.optimizedStatement = (ShardingSelectOptimizedStatement) routeResult.getShardingStatement();
         this.queryResults = getRealQueryResults(queryResults);
         columnLabelIndexMap = getColumnLabelIndexMap(this.queryResults.get(0));
     }
@@ -134,7 +134,7 @@ public final class DQLMergeEngine implements MergeEngine {
     }
     
     private MergedResult decorate(final MergedResult mergedResult) throws SQLException {
-        Pagination pagination = ((ShardingSelectOptimizedStatement) routeResult.getOptimizedStatement()).getPagination();
+        Pagination pagination = ((ShardingSelectOptimizedStatement) routeResult.getShardingStatement()).getPagination();
         if (!pagination.isHasPagination() || 1 == queryResults.size()) {
             return mergedResult;
         }

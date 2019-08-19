@@ -24,6 +24,7 @@ import org.apache.shardingsphere.core.merge.MergedResult;
 import org.apache.shardingsphere.core.merge.dql.DQLMergeEngine;
 import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
 import org.apache.shardingsphere.core.optimize.encrypt.segment.condition.EncryptCondition;
+import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptTransparentOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.groupby.GroupBy;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.AggregationSelectItem;
@@ -92,7 +93,7 @@ public final class GroupByMemoryMergedResultTest {
                 new GroupBy(Collections.singletonList(createOrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, OrderDirection.ASC))), 0),
                 new OrderBy(Collections.singletonList(createOrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.DESC, OrderDirection.ASC))), false),
                 selectItems, new Pagination(null, null, Collections.emptyList()));
-        routeResult = new SQLRouteResult(shardingStatement);
+        routeResult = new SQLRouteResult(shardingStatement, new EncryptTransparentOptimizedStatement(new SelectStatement()));
     }
     
     private ResultSet mockResultSet() throws SQLException {

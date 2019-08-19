@@ -67,7 +67,7 @@ public final class SQLRewriteEngine {
     public SQLRewriteEngine(final ShardingRule shardingRule, 
                             final SQLRouteResult sqlRouteResult, final String sql, final List<Object> parameters, final boolean isSingleRoute, final boolean isQueryWithCipherColumn) {
         baseRule = shardingRule;
-        this.optimizedStatement = encryptOptimizedStatement(shardingRule.getEncryptRule(), sqlRouteResult.getOptimizedStatement());
+        this.optimizedStatement = encryptOptimizedStatement(shardingRule.getEncryptRule(), sqlRouteResult.getShardingStatement());
         parameterBuilder = createParameterBuilder(parameters, sqlRouteResult);
         sqlTokens = createSQLTokens(isSingleRoute, isQueryWithCipherColumn);
         sqlBuilder = new SQLBuilder(sql, sqlTokens);
