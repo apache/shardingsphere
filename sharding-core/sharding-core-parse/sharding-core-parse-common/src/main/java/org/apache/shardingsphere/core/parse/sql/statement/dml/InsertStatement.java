@@ -20,6 +20,7 @@ package org.apache.shardingsphere.core.parse.sql.statement.dml;
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
@@ -64,6 +65,31 @@ public final class InsertStatement extends DMLStatement implements TableSegmentA
      */
     public boolean useDefaultColumns() {
         return columns.isEmpty() && null == setAssignment;
+    }
+    
+    /**
+     * Get column names.
+     *
+     * @return column names
+     */
+    public Collection<String> getColumnNames() {
+        return null == setAssignment ? getColumnNamesForInsertColumns() : getColumnNamesForSetAssignment();
+    }
+    
+    private Collection<String> getColumnNamesForInsertColumns() {
+        Collection<String> result = new LinkedList<>();
+        for (ColumnSegment each : columns) {
+            result.add(each.getName());
+        }
+        return result;
+    }
+    
+    private Collection<String> getColumnNamesForSetAssignment() {
+        Collection<String> result = new LinkedList<>();
+        for (AssignmentSegment each : setAssignment.getAssignments()) {
+            result.add(each.getColumn().getName());
+        }
+        return result;
     }
     
     /**

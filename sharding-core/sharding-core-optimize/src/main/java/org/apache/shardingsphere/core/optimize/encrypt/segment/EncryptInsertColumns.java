@@ -21,14 +21,11 @@ import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.api.segment.InsertColumns;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 
 /**
  * Insert columns for encrypt.
@@ -46,8 +43,7 @@ public final class EncryptInsertColumns implements InsertColumns {
     
     public EncryptInsertColumns(final EncryptRule encryptRule, final ShardingTableMetaData shardingTableMetaData, final InsertStatement insertStatement) {
         assistedQueryAndPlainColumnNames = encryptRule.getAssistedQueryAndPlainColumns(insertStatement.getTable().getTableName());
-        regularColumnNames = insertStatement.useDefaultColumns() 
-                ? getRegularColumnNamesFromMetaData(encryptRule, shardingTableMetaData, insertStatement) : getColumnNamesFromSQLStatement(insertStatement);
+        regularColumnNames = insertStatement.useDefaultColumns() ? getRegularColumnNamesFromMetaData(encryptRule, shardingTableMetaData, insertStatement) : insertStatement.getColumnNames();
     }
     
     private Collection<String> getRegularColumnNamesFromMetaData(final EncryptRule encryptRule, final ShardingTableMetaData shardingTableMetaData, final InsertStatement insertStatement) {
@@ -61,19 +57,6 @@ public final class EncryptInsertColumns implements InsertColumns {
             }
             if (!assistedQueryAndPlainColumnNames.contains(each)) {
                 result.add(each);
-            }
-        }
-        return result;
-    }
-    
-    private Collection<String> getColumnNamesFromSQLStatement(final InsertStatement insertStatement) {
-        Collection<String> result = new LinkedList<>();
-        for (ColumnSegment each : insertStatement.getColumns()) {
-            result.add(each.getName());
-        }
-        if (insertStatement.getSetAssignment().isPresent()) {
-            for (AssignmentSegment each : insertStatement.getSetAssignment().get().getAssignments()) {
-                result.add(each.getColumn().getName());
             }
         }
         return result;

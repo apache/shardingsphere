@@ -147,8 +147,6 @@ public final class ShardingInsertOptimizeEngineTest {
     private void initializeInsertSetWithPlaceholderWithQueryEncrypt() {
         insertSetStatementWithPlaceholderWithQueryEncrypt = new InsertStatement();
         insertSetStatementWithPlaceholderWithQueryEncrypt.setTable(new TableSegment(0, 0, "t_encrypt_query"));
-        insertSetStatementWithPlaceholderWithQueryEncrypt.getColumns().add(new ColumnSegment(0, 0, "user_id"));
-        insertSetStatementWithPlaceholderWithQueryEncrypt.getColumns().add(new ColumnSegment(0, 0, "status"));
     }
     
     private void initializeInsertSetWithoutPlaceholder() {
@@ -249,8 +247,6 @@ public final class ShardingInsertOptimizeEngineTest {
         assertThat(actual.getUnits().get(0).getParameters().length, is(4));
         assertThat(actual.getUnits().get(0).getParameters()[0], CoreMatchers.<Object>is(12));
         assertThat(actual.getUnits().get(0).getParameters()[1], CoreMatchers.<Object>is("a"));
-        assertThat(actual.getUnits().get(0).getParameters()[2], CoreMatchers.<Object>is(1));
-        assertThat(actual.getUnits().get(0).getParameters()[3], CoreMatchers.<Object>is(12));
     }
     
     @Test

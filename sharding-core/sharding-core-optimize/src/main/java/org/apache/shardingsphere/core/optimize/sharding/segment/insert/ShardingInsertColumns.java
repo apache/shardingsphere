@@ -21,8 +21,6 @@ import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.api.segment.InsertColumns;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -77,15 +75,7 @@ public final class ShardingInsertColumns implements InsertColumns {
     }
     
     private Collection<String> getRegularColumnNamesFromSQLStatement(final InsertStatement insertStatement) {
-        Collection<String> result = new LinkedHashSet<>(insertStatement.getColumns().size(), 1);
-        for (ColumnSegment each : insertStatement.getColumns()) {
-            result.add(each.getName());
-        }
-        if (insertStatement.getSetAssignment().isPresent()) {
-            for (AssignmentSegment each : insertStatement.getSetAssignment().get().getAssignments()) {
-                result.add(each.getColumn().getName());
-            }
-        }
+        Collection<String> result = new LinkedHashSet<>(insertStatement.getColumnNames());
         if (isGenerateKeyFromSQLStatement(insertStatement)) {
             result.remove(generateKeyColumnName);
         }
