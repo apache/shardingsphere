@@ -19,13 +19,13 @@ package org.apache.shardingsphere.core.optimize.sharding;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.core.optimize.api.engine.OptimizeEngine;
+import org.apache.shardingsphere.core.optimize.sharding.engnie.ShardingOptimizeEngine;
+import org.apache.shardingsphere.core.optimize.sharding.engnie.ShardingTransparentOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.sharding.engnie.ddl.ShardingDropIndexOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.sharding.engnie.dml.ShardingDeleteOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.sharding.engnie.dml.ShardingInsertOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.sharding.engnie.dml.ShardingSelectOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.sharding.engnie.dml.ShardingUpdateOptimizeEngine;
-import org.apache.shardingsphere.core.optimize.transparent.engine.TransparentOptimizeEngine;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.DeleteStatement;
@@ -47,9 +47,9 @@ public final class ShardingOptimizeEngineFactory {
      * Create sharding optimize engine instance.
      *
      * @param sqlStatement SQL statement
-     * @return optimize engine instance
+     * @return sharding optimize engine instance
      */
-    public static OptimizeEngine newInstance(final SQLStatement sqlStatement) {
+    public static ShardingOptimizeEngine newInstance(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof SelectStatement) {
             return new ShardingSelectOptimizeEngine();
         }
@@ -65,6 +65,6 @@ public final class ShardingOptimizeEngineFactory {
         if (sqlStatement instanceof DropIndexStatement) {
             return new ShardingDropIndexOptimizeEngine();
         }
-        return new TransparentOptimizeEngine();
+        return new ShardingTransparentOptimizeEngine();
     }
 }

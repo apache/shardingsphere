@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.transparent.engine;
+package org.apache.shardingsphere.core.optimize.encrypt.engine;
 
-import org.apache.shardingsphere.core.optimize.transparent.statement.TransparentOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptTransparentOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.DDLStatement;
 import org.junit.Test;
@@ -27,12 +27,12 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class TransparentOptimizeEngineTest {
+public final class EncryptTransparentOptimizeEngineTest {
     
     @Test
     public void assertOptimize() {
         SQLStatement sqlStatement = new DDLStatement();
-        TransparentOptimizedStatement actual = new TransparentOptimizeEngine().optimize(null, null, "", Collections.emptyList(), sqlStatement);
+        EncryptTransparentOptimizedStatement actual = new EncryptTransparentOptimizeEngine().optimize(null, null, "", Collections.emptyList(), sqlStatement);
         assertThat(actual.getSQLStatement(), is(sqlStatement));
     }
 }

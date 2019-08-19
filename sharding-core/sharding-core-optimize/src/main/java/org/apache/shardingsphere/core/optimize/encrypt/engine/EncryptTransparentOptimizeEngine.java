@@ -15,27 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.transparent.engine;
+package org.apache.shardingsphere.core.optimize.encrypt.engine;
 
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.optimize.api.engine.OptimizeEngine;
-import org.apache.shardingsphere.core.optimize.transparent.statement.TransparentOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptTransparentOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.rule.BaseRule;
+import org.apache.shardingsphere.core.rule.EncryptRule;
 
 import java.util.List;
 
 /**
- * Transparent optimize engine.
+ * Transparent optimize engine for encrypt.
  *
- * @author panjuan
  * @author zhangliang
  */
-public final class TransparentOptimizeEngine implements OptimizeEngine<BaseRule, SQLStatement> {
+public final class EncryptTransparentOptimizeEngine implements EncryptOptimizeEngine<SQLStatement> {
     
     @Override
-    public TransparentOptimizedStatement optimize(final BaseRule rule, 
-                                                  final ShardingTableMetaData shardingTableMetaData, final String sql, final List<Object> parameters, final SQLStatement sqlStatement) {
-        return new TransparentOptimizedStatement(sqlStatement);
+    public EncryptTransparentOptimizedStatement optimize(final EncryptRule rule,
+                                                         final ShardingTableMetaData shardingTableMetaData, final String sql, final List<Object> parameters, final SQLStatement sqlStatement) {
+        return new EncryptTransparentOptimizedStatement(sqlStatement);
     }
 }

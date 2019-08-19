@@ -19,10 +19,10 @@ package org.apache.shardingsphere.core.optimize.encrypt;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.core.optimize.api.engine.OptimizeEngine;
+import org.apache.shardingsphere.core.optimize.encrypt.engine.EncryptOptimizeEngine;
+import org.apache.shardingsphere.core.optimize.encrypt.engine.EncryptTransparentOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.encrypt.engine.dml.EncryptInsertOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.encrypt.engine.dml.EncryptWhereOptimizeEngine;
-import org.apache.shardingsphere.core.optimize.transparent.engine.TransparentOptimizeEngine;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
@@ -42,15 +42,15 @@ public final class EncryptOptimizeEngineFactory {
      * Create encrypt optimize engine instance.
      *
      * @param sqlStatement SQL statement
-     * @return optimize engine instance
+     * @return encrypt optimize engine instance
      */
-    public static OptimizeEngine newInstance(final SQLStatement sqlStatement) {
+    public static EncryptOptimizeEngine newInstance(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof InsertStatement) {
             return new EncryptInsertOptimizeEngine();
         }
         if (sqlStatement instanceof SelectStatement || sqlStatement instanceof UpdateStatement || sqlStatement instanceof DeleteStatement) {
             return new EncryptWhereOptimizeEngine();
         }
-        return new TransparentOptimizeEngine();
+        return new EncryptTransparentOptimizeEngine();
     }
 }
