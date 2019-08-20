@@ -54,6 +54,23 @@ public final class InsertStatementTest {
     }
     
     @Test
+    public void assertGetColumnNamesForInsertColumns() {
+        InsertStatement insertStatement = new InsertStatement();
+        insertStatement.getColumns().add(new ColumnSegment(0, 0, "col"));
+        assertThat(insertStatement.getColumnNames().size(), is(1));
+        assertThat(insertStatement.getColumnNames().iterator().next(), is("col"));
+    }
+    
+    @Test
+    public void assertGetColumnNamesForSetAssignment() {
+        InsertStatement insertStatement = new InsertStatement();
+        insertStatement.setSetAssignment(
+                new SetAssignmentsSegment(0, 0, Collections.singletonList(new AssignmentSegment(0, 0, new ColumnSegment(0, 0, "col"), new LiteralExpressionSegment(0, 0, 1)))));
+        assertThat(insertStatement.getColumnNames().size(), is(1));
+        assertThat(insertStatement.getColumnNames().iterator().next(), is("col"));
+    }
+    
+    @Test
     public void assertGetValueSizeWithValues() {
         InsertStatement insertStatement = new InsertStatement();
         insertStatement.getValues().add(new InsertValuesSegment(0, 0, Collections.<ExpressionSegment>singletonList(new LiteralExpressionSegment(0, 0, 1))));
