@@ -46,15 +46,16 @@ public final class EncryptInsertOptimizeEngine implements EncryptOptimizeEngine<
                 sqlStatement, new EncryptInsertColumns(encryptRule, shardingTableMetaData, sqlStatement), insertValueEngine.createInsertValues(sqlStatement));
         int derivedColumnsCount = encryptRule.getAssistedQueryAndPlainColumnCount(sqlStatement.getTable().getTableName());
         int parametersCount = 0;
+        Collection<String> columnNames = getColumnNames(shardingTableMetaData, sqlStatement);
         for (InsertValue each : result.getValues()) {
             Object[] currentParameters = each.getParameters(parameters, parametersCount, derivedColumnsCount);
             Collection<String> encryptDerivedColumnNames = encryptRule.getAssistedQueryAndPlainColumns(sqlStatement.getTable().getTableName());
             InsertOptimizeResultUnit unit = result.addUnit(encryptDerivedColumnNames, each.getValues(derivedColumnsCount), currentParameters, each.getParametersCount());
             if (encryptRule.isHasQueryAssistedColumn(sqlStatement.getTable().getTableName())) {
-                fillAssistedQueryUnit(encryptRule, Arrays.asList(currentParameters), sqlStatement.getTable().getTableName(), result.getInsertColumns().getRegularColumnNames(), unit);
+                fillAssistedQueryUnit(encryptRule, Arrays.asList(currentParameters), sqlStatement.getTable().getTableName(), columnNames, unit);
             }
             if (encryptRule.isHasPlainColumn(sqlStatement.getTable().getTableName())) {
-                fillPlainUnit(encryptRule, Arrays.asList(currentParameters), sqlStatement.getTable().getTableName(), result.getInsertColumns().getRegularColumnNames(), unit);
+                fillPlainUnit(encryptRule, Arrays.asList(currentParameters), sqlStatement.getTable().getTableName(), columnNames, unit);
             }
             parametersCount += each.getParametersCount();
         }
@@ -64,18 +65,27 @@ public final class EncryptInsertOptimizeEngine implements EncryptOptimizeEngine<
     private void fillAssistedQueryUnit(final EncryptRule encryptRule, final List<Object> parameters, 
                                        final String tableName, final Collection<String> columnNames, final InsertOptimizeResultUnit unit) {
         for (String each : columnNames) {
-            if (encryptRule.getAssistedQueryColumn(tableName, each).isPresent()) {
-                unit.addInsertValue((Comparable<?>) unit.getColumnValue(each), parameters);
+            if (encryptRule.isLogicColumn(tableName, each) || encryptRule.isCipherColumn(tableName, each)) {
+                String logicColumn = encryptRule.isLogicColumn(tableName, each) ? each : encryptRule.getLogicColumn(tableName, each);
+                if (encryptRule.getAssistedQueryColumn(tableName, logicColumn).isPresent()) {
+                    unit.addInsertValue((Comparable<?>) unit.getColumnValue(logicColumn), parameters);
+                }
             }
         }
     }
     
-    private void fillPlainUnit(final EncryptRule encryptRule, final List<Object> parameters,
-                                       final String tableName, final Collection<String> columnNames, final InsertOptimizeResultUnit unit) {
+    private void fillPlainUnit(final EncryptRule encryptRule, final List<Object> parameters, final String tableName, final Collection<String> columnNames, final InsertOptimizeResultUnit unit) {
         for (String each : columnNames) {
-            if (encryptRule.getPlainColumn(tableName, each).isPresent()) {
-                unit.addInsertValue((Comparable<?>) unit.getColumnValue(each), parameters);
+            if (encryptRule.isLogicColumn(tableName, each) || encryptRule.isCipherColumn(tableName, each)) {
+                String logicColumn = encryptRule.isLogicColumn(tableName, each) ? each : encryptRule.getLogicColumn(tableName, each);
+                if (encryptRule.getPlainColumn(tableName, logicColumn).isPresent()) {
+                    unit.addInsertValue((Comparable<?>) unit.getColumnValue(logicColumn), parameters);
+                }
             }
         }
+    }
+    
+    private Collection<String> getColumnNames(final ShardingTableMetaData shardingTableMetaData, final InsertStatement sqlStatement) {
+        return sqlStatement.useDefaultColumns() ? shardingTableMetaData.getAllColumnNames(sqlStatement.getTable().getTableName()) : sqlStatement.getColumnNames();
     }
 }

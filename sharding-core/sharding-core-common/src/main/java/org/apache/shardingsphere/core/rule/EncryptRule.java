@@ -104,6 +104,17 @@ public final class EncryptRule implements BaseRule {
     }
     
     /**
+     * Is logic column or not.
+     *
+     * @param logicTable logic table
+     * @param columnName column name
+     * @return is logic column or not
+     */
+    public boolean isLogicColumn(final String logicTable, final String columnName) {
+        return tables.get(logicTable).getLogicColumns().contains(columnName);
+    }
+    
+    /**
      * Get logic column.
      *
      * @param logicTable logic table
