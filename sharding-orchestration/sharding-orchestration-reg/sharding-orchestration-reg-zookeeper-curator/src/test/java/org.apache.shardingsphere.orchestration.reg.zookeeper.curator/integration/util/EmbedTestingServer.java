@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.util;
+package org.apache.shardingsphere.orchestration.reg.zookeeper.curator.integration.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
