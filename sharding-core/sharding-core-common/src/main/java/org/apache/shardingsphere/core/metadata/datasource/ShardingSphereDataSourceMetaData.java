@@ -31,15 +31,15 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Sharding data source meta data.
+ * ShardingSphere data source meta data.
  *
  * @author panjuan
  */
-public final class ShardingDataSourceMetaData {
+public final class ShardingSphereDataSourceMetaData {
     
     private final Map<String, DataSourceMetaData> dataSourceMetaDataMap;
     
-    public ShardingDataSourceMetaData(final Map<String, String> dataSourceURLs, final ShardingRule shardingRule, final DatabaseType databaseType) {
+    public ShardingSphereDataSourceMetaData(final Map<String, String> dataSourceURLs, final ShardingRule shardingRule, final DatabaseType databaseType) {
         dataSourceMetaDataMap = getDataSourceMetaDataMap(dataSourceURLs, shardingRule, databaseType);
     }
     

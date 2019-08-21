@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingproxy.backend.response.query;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
-import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSchema;
+import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShardingSchema;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;

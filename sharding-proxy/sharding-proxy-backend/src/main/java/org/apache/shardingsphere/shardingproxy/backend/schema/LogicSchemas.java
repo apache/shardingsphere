@@ -30,6 +30,10 @@ import org.apache.shardingsphere.orchestration.internal.eventbus.ShardingOrchest
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.SchemaAddedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.SchemaDeletedEvent;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recognizer.JDBCDriverURLRecognizerEngine;
+import org.apache.shardingsphere.shardingproxy.backend.schema.impl.EncryptSchema;
+import org.apache.shardingsphere.shardingproxy.backend.schema.impl.MasterSlaveSchema;
+import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShardingSchema;
+import org.apache.shardingsphere.shardingproxy.backend.schema.impl.TransparentSchema;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.shardingproxy.util.DataSourceConverter;
 import org.apache.shardingsphere.spi.database.DatabaseType;

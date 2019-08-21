@@ -24,7 +24,7 @@ import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.execute.ShardingExecuteEngine;
 import org.apache.shardingsphere.core.execute.ShardingExecuteGroup;
 import org.apache.shardingsphere.core.execute.ShardingGroupExecuteCallback;
-import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
+import org.apache.shardingsphere.core.metadata.datasource.ShardingSphereDataSourceMetaData;
 import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.rule.DataNode;
@@ -52,7 +52,7 @@ import java.util.Map.Entry;
 @RequiredArgsConstructor
 public final class TableMetaDataLoader {
     
-    private final ShardingDataSourceMetaData shardingDataSourceMetaData;
+    private final ShardingSphereDataSourceMetaData dataSourceMetaData;
     
     private final ShardingExecuteEngine executeEngine;
     
@@ -82,7 +82,7 @@ public final class TableMetaDataLoader {
             @Override
             public Collection<TableMetaData> execute(final Collection<DataNode> dataNodes, final boolean isTrunkThread, final Map<String, Object> shardingExecuteDataMap) throws SQLException {
                 String dataSourceName = dataNodes.iterator().next().getDataSourceName();
-                DataSourceMetaData dataSourceMetaData = shardingDataSourceMetaData.getActualDataSourceMetaData(dataSourceName);
+                DataSourceMetaData dataSourceMetaData = TableMetaDataLoader.this.dataSourceMetaData.getActualDataSourceMetaData(dataSourceName);
                 String catalog = null == dataSourceMetaData ? null : dataSourceMetaData.getSchemaName();
                 return load(shardingDataSourceNames.getRawMasterDataSourceName(dataSourceName), catalog, dataNodes);
             }

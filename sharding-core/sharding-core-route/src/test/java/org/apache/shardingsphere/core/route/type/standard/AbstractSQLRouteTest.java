@@ -23,7 +23,7 @@ import org.apache.shardingsphere.api.config.sharding.strategy.HintShardingStrate
 import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
+import org.apache.shardingsphere.core.metadata.datasource.ShardingSphereDataSourceMetaData;
 import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
@@ -48,7 +48,7 @@ public abstract class AbstractSQLRouteTest {
     
     protected final SQLRouteResult assertRoute(final String sql, final List<Object> parameters) {
         ShardingRule shardingRule = createShardingRule();
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(buildShardingDataSourceMetaData(), buildShardingTableMetaData());
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(buildDataSourceMetaData(), buildShardingTableMetaData());
         SQLParseEngine parseEngine = new SQLParseEngine(DatabaseTypes.getActualDatabaseType("MySQL"));
         PreparedStatementRoutingEngine engine = new PreparedStatementRoutingEngine(sql, shardingRule, metaData, DatabaseTypes.getActualDatabaseType("MySQL"), parseEngine);
         SQLRouteResult result = engine.route(parameters);
@@ -56,11 +56,11 @@ public abstract class AbstractSQLRouteTest {
         return result;
     }
     
-    private ShardingDataSourceMetaData buildShardingDataSourceMetaData() {
+    private ShardingSphereDataSourceMetaData buildDataSourceMetaData() {
         Map<String, String> shardingDataSourceURLs = new LinkedHashMap<>();
         shardingDataSourceURLs.put("ds_0", "jdbc:mysql://127.0.0.1:3306/actual_db");
         shardingDataSourceURLs.put("ds_1", "jdbc:mysql://127.0.0.1:3306/actual_db");
-        return new ShardingDataSourceMetaData(shardingDataSourceURLs, createShardingRule(), DatabaseTypes.getActualDatabaseType("MySQL"));
+        return new ShardingSphereDataSourceMetaData(shardingDataSourceURLs, createShardingRule(), DatabaseTypes.getActualDatabaseType("MySQL"));
     }
     
     private ShardingRule createShardingRule() {

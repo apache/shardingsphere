@@ -32,11 +32,11 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
-public class ShardingDataSourceMetaDataTest {
+public final class ShardingSphereDataSourceMetaDataTest {
     
-    private ShardingDataSourceMetaData masterSlaveShardingDataSourceMetaData;
+    private ShardingSphereDataSourceMetaData dataSourceMetaDataForMasterSlave;
     
-    private ShardingDataSourceMetaData shardingDataSourceMetaData;
+    private ShardingSphereDataSourceMetaData dataSourceMetaDataForSharding;
     
     @Before
     public void setUp() {
@@ -48,11 +48,11 @@ public class ShardingDataSourceMetaDataTest {
         masterSlaveShardingDataSourceURLs.put("slave_0", "jdbc:mysql://127.0.0.2:3306/slave_0");
         masterSlaveShardingDataSourceURLs.put("slave_1", "jdbc:mysql://127.0.0.2:3306/slave_1");
         masterSlaveShardingDataSourceURLs.put("slave_2", "jdbc:mysql://127.0.0.2:3307/slave_2");
-        masterSlaveShardingDataSourceMetaData = new ShardingDataSourceMetaData(masterSlaveShardingDataSourceURLs, getMasterSlaveShardingRule(), DatabaseTypes.getActualDatabaseType("MySQL"));
+        dataSourceMetaDataForMasterSlave = new ShardingSphereDataSourceMetaData(masterSlaveShardingDataSourceURLs, getMasterSlaveShardingRule(), DatabaseTypes.getActualDatabaseType("MySQL"));
         Map<String, String> shardingDataSourceURLs = new LinkedHashMap<>();
         shardingDataSourceURLs.put("ds_0", "jdbc:mysql://127.0.0.1:3306/db_0");
         shardingDataSourceURLs.put("ds_1", "jdbc:mysql://127.0.0.1:3306/db_1");
-        shardingDataSourceMetaData = new ShardingDataSourceMetaData(shardingDataSourceURLs, getShardingRule(), DatabaseTypes.getActualDatabaseType("MySQL"));
+        dataSourceMetaDataForSharding = new ShardingSphereDataSourceMetaData(shardingDataSourceURLs, getShardingRule(), DatabaseTypes.getActualDatabaseType("MySQL"));
     }
     
     private ShardingRule getMasterSlaveShardingRule() {
@@ -74,21 +74,21 @@ public class ShardingDataSourceMetaDataTest {
     
     @Test
     public void assertGetAllInstanceDataSourceNamesForMasterSlaveShardingRule() {
-        assertEquals(masterSlaveShardingDataSourceMetaData.getAllInstanceDataSourceNames(), Lists.newArrayList("ms_0", "ms_2"));
+        assertEquals(dataSourceMetaDataForMasterSlave.getAllInstanceDataSourceNames(), Lists.newArrayList("ms_0", "ms_2"));
     }
     
     @Test
     public void assertGetAllInstanceDataSourceNamesForShardingRule() {
-        assertEquals(shardingDataSourceMetaData.getAllInstanceDataSourceNames(), Lists.newArrayList("ds_1"));
+        assertEquals(dataSourceMetaDataForSharding.getAllInstanceDataSourceNames(), Lists.newArrayList("ds_1"));
     }
     
     @Test
     public void assertGetActualSchemaNameForMasterSlaveShardingRule() {
-        assertEquals(masterSlaveShardingDataSourceMetaData.getActualDataSourceMetaData("ms_0").getSchemaName(), "master_0");
+        assertEquals(dataSourceMetaDataForMasterSlave.getActualDataSourceMetaData("ms_0").getSchemaName(), "master_0");
     }
     
     @Test
     public void assertGetActualSchemaNameForShardingRule() {
-        assertEquals(shardingDataSourceMetaData.getActualDataSourceMetaData("ds_0").getSchemaName(), "db_0");
+        assertEquals(dataSourceMetaDataForSharding.getActualDataSourceMetaData("ds_0").getSchemaName(), "db_0");
     }
 }
