@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.orchestration.reg.zookeeper.curator.integration.test;
 
-import org.apache.shardingsphere.integration.util.EmbedTestingServer;
 import org.apache.shardingsphere.orchestration.internal.keygen.LeafSnowflakeKeyGenerator;
 import org.apache.shardingsphere.orchestration.internal.keygen.TimeService;
 import org.apache.shardingsphere.orchestration.internal.registry.RegistryCenterServiceLoader;
 import org.apache.shardingsphere.orchestration.reg.api.RegistryCenter;
 import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
+import org.apache.shardingsphere.orchestration.reg.zookeeper.curator.integration.util.EmbedTestingServer;
 import org.apache.shardingsphere.orchestration.reg.zookeeper.curator.integration.util.FieldUtil;
 import org.apache.shardingsphere.orchestration.reg.zookeeper.curator.integration.util.FixedTimeService;
 

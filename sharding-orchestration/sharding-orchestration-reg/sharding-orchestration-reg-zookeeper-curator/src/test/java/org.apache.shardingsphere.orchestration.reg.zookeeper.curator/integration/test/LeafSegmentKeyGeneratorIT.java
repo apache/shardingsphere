@@ -14,11 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.shardingsphere.orchestration.reg.zookeeper.curator.integration.test;
 
 import org.apache.shardingsphere.orchestration.internal.keygen.LeafSegmentKeyGenerator;
-
-import org.apache.shardingsphere.integration.util.EmbedTestingServer;
+import org.apache.shardingsphere.orchestration.reg.zookeeper.curator.integration.util.EmbedTestingServer;
 import org.hamcrest.CoreMatchers;
 import org.junit.BeforeClass;
 import org.junit.Test;
