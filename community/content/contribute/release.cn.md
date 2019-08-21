@@ -190,7 +190,7 @@ mvn release:perform -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=
 ```
 
 执行完该命令后，待发布版本会自动上传到Apache的临时筹备仓库(staging repository)。
-访问https://repository.apache.org/#stagingRepositories, 使用Apache的LDAP账户登录后，就会看到上传的版本。
+访问https://repository.apache.org/#stagingRepositories, 使用Apache的LDAP账户登录后，就会看到上传的版本，`Repository`列即为${STAGING.REPOSITORY}。
 点击`Close`来告诉Nexus这个构建已经完成，只有这样该版本才是可用的。
 如果电子签名等出现问题，`Close`会失败，可以通过`Activity`查看失败信息。
 
