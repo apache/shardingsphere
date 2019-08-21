@@ -20,20 +20,12 @@ package org.apache.shardingsphere.shardingproxy.backend.schema;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.api.config.RuleConfiguration;
-import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
-import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.orchestration.internal.eventbus.ShardingOrchestrationEventBus;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.SchemaAddedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.SchemaDeletedEvent;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recognizer.JDBCDriverURLRecognizerEngine;
-import org.apache.shardingsphere.shardingproxy.backend.schema.impl.EncryptSchema;
-import org.apache.shardingsphere.shardingproxy.backend.schema.impl.MasterSlaveSchema;
-import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShardingSchema;
-import org.apache.shardingsphere.shardingproxy.backend.schema.impl.TransparentSchema;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.shardingproxy.util.DataSourceConverter;
 import org.apache.shardingsphere.spi.database.DatabaseType;
@@ -54,7 +46,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author panjuan
  */
 @Getter
-@Slf4j
 public final class LogicSchemas {
     
     private static final LogicSchemas INSTANCE = new LogicSchemas();
@@ -106,27 +97,13 @@ public final class LogicSchemas {
     private void initSchemas(final Collection<String> localSchemaNames, final Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources, 
                              final Map<String, RuleConfiguration> schemaRules, final boolean isUsingRegistry) throws SQLException {
         if (schemaRules.isEmpty()) {
-            logicSchemas.put(schemaDataSources.keySet().iterator().next(), createLogicSchema(schemaDataSources.keySet().iterator().next(), schemaDataSources, null, isUsingRegistry));
+            logicSchemas.put(schemaDataSources.keySet().iterator().next(), LogicSchemaFactory.newInstance(schemaDataSources.keySet().iterator().next(), schemaDataSources, null, isUsingRegistry));
         }
         for (Entry<String, RuleConfiguration> entry : schemaRules.entrySet()) {
             if (localSchemaNames.isEmpty() || localSchemaNames.contains(entry.getKey())) {
-                logicSchemas.put(entry.getKey(), createLogicSchema(entry.getKey(), schemaDataSources, entry.getValue(), isUsingRegistry));
+                logicSchemas.put(entry.getKey(), LogicSchemaFactory.newInstance(entry.getKey(), schemaDataSources, entry.getValue(), isUsingRegistry));
             }
         }
-    }
-    
-    private LogicSchema createLogicSchema(final String schemaName, final Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources, 
-                                          final RuleConfiguration ruleConfiguration, final boolean isUsingRegistry) throws SQLException {
-        if (ruleConfiguration instanceof ShardingRuleConfiguration) {
-            return new ShardingSchema(schemaName, schemaDataSources.get(schemaName), (ShardingRuleConfiguration) ruleConfiguration, isUsingRegistry);
-        }
-        if (ruleConfiguration instanceof MasterSlaveRuleConfiguration) {
-            return new MasterSlaveSchema(schemaName, schemaDataSources.get(schemaName), (MasterSlaveRuleConfiguration) ruleConfiguration, isUsingRegistry);
-        }
-        if (ruleConfiguration instanceof EncryptRuleConfiguration) {
-            return new EncryptSchema(schemaName, schemaDataSources.get(schemaName), (EncryptRuleConfiguration) ruleConfiguration);
-        }
-        return new TransparentSchema(schemaName, schemaDataSources.get(schemaName));
     }
     
     /**
@@ -166,7 +143,7 @@ public final class LogicSchemas {
      */
     @Subscribe
     public synchronized void renew(final SchemaAddedEvent schemaAddedEvent) throws SQLException {
-        logicSchemas.put(schemaAddedEvent.getShardingSchemaName(), createLogicSchema(schemaAddedEvent.getShardingSchemaName(), 
+        logicSchemas.put(schemaAddedEvent.getShardingSchemaName(), LogicSchemaFactory.newInstance(schemaAddedEvent.getShardingSchemaName(), 
                 Collections.singletonMap(schemaAddedEvent.getShardingSchemaName(), DataSourceConverter.getDataSourceParameterMap(schemaAddedEvent.getDataSourceConfigurations())), 
                 schemaAddedEvent.getRuleConfiguration(), true));
     }

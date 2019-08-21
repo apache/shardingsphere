@@ -53,6 +53,12 @@ import java.util.Map.Entry;
 @RequiredArgsConstructor
 public final class TableMetaDataLoader {
     
+    private static final String COLUMN_NAME = "COLUMN_NAME";
+    
+    private static final String TYPE_NAME = "TYPE_NAME";
+    
+    private static final String INDEX_NAME = "INDEX_NAME";
+    
     private final DataSourceMetas dataSourceMetas;
     
     private final ShardingExecuteEngine executeEngine;
@@ -143,8 +149,8 @@ public final class TableMetaDataLoader {
         Collection<String> primaryKeys = getPrimaryKeys(connection, catalog, actualTableName);
         try (ResultSet resultSet = connection.getMetaData().getColumns(catalog, null, actualTableName, "%")) {
             while (resultSet.next()) {
-                String columnName = resultSet.getString("COLUMN_NAME");
-                String columnType = resultSet.getString("TYPE_NAME");
+                String columnName = resultSet.getString(COLUMN_NAME);
+                String columnType = resultSet.getString(TYPE_NAME);
                 result.add(new ColumnMetaData(columnName, columnType, primaryKeys.contains(columnName)));
             }
         }
@@ -155,7 +161,7 @@ public final class TableMetaDataLoader {
         Collection<String> result = new HashSet<>();
         try (ResultSet resultSet = connection.getMetaData().getPrimaryKeys(catalog, null, actualTableName)) {
             while (resultSet.next()) {
-                result.add(resultSet.getString("COLUMN_NAME"));
+                result.add(resultSet.getString(COLUMN_NAME));
             }
         }
         return result;
@@ -165,7 +171,7 @@ public final class TableMetaDataLoader {
         Collection<String> result = new HashSet<>();
         try (ResultSet resultSet = connection.getMetaData().getIndexInfo(catalog, catalog, actualTableName, false, false)) {
             while (resultSet.next()) {
-                Optional<String> logicIndex = getLogicIndex(resultSet.getString("INDEX_NAME"), actualTableName);
+                Optional<String> logicIndex = getLogicIndex(resultSet.getString(INDEX_NAME), actualTableName);
                 if (logicIndex.isPresent()) {
                     result.add(logicIndex.get());
                 }
@@ -176,17 +182,14 @@ public final class TableMetaDataLoader {
     
     private Optional<String> getLogicIndex(final String actualIndexName, final String actualTableName) {
         String indexNameSuffix = "_" + actualTableName;
-        if (actualIndexName.contains(indexNameSuffix)) {
-            return Optional.of(actualIndexName.replace(indexNameSuffix, ""));
-        }
-        return Optional.absent();
+        return actualIndexName.contains(indexNameSuffix) ? Optional.of(actualIndexName.replace(indexNameSuffix, "")) : Optional.<String>absent();
     }
     
     private void checkUniformed(final String logicTableName, final List<TableMetaData> actualTableMetaDataList) {
         if (!isCheckingMetaData) {
             return;
         }
-        final TableMetaData sample = actualTableMetaDataList.iterator().next();
+        TableMetaData sample = actualTableMetaDataList.iterator().next();
         for (TableMetaData each : actualTableMetaDataList) {
             if (!sample.equals(each)) {
                 throw new ShardingException("Cannot get uniformed table structure for `%s`. The different meta data of actual tables are as follows:\n%s\n%s.", logicTableName, sample, each);
