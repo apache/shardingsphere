@@ -17,18 +17,15 @@
 
 package org.apache.shardingsphere.core.metadata.datasource;
 
-import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.rule.MasterSlaveRule;
-import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.spi.database.DataSourceMetaData;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 import org.apache.shardingsphere.spi.database.MemorizedDataSourceMetaData;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * ShardingSphere data source meta data.
@@ -39,40 +36,16 @@ public final class ShardingSphereDataSourceMetaData {
     
     private final Map<String, DataSourceMetaData> dataSourceMetaDataMap;
     
-    public ShardingSphereDataSourceMetaData(final Map<String, String> dataSourceURLs, final ShardingRule shardingRule, final DatabaseType databaseType) {
-        dataSourceMetaDataMap = getDataSourceMetaDataMap(dataSourceURLs, shardingRule, databaseType);
+    public ShardingSphereDataSourceMetaData(final Map<String, String> dataSourceURLs, final DatabaseType databaseType) {
+        dataSourceMetaDataMap = getDataSourceMetaDataMap(dataSourceURLs, databaseType);
     }
     
-    private Map<String, DataSourceMetaData> getDataSourceMetaDataMap(final Map<String, String> dataSourceURLs, final ShardingRule shardingRule, final DatabaseType databaseType) {
-        Map<String, DataSourceMetaData> dataSourceMetaData = getDataSourceMetaDataMapForSharding(dataSourceURLs, databaseType);
-        return shardingRule.getMasterSlaveRules().isEmpty() ? dataSourceMetaData : getDataSourceMetaDataMapForMasterSlave(shardingRule, dataSourceMetaData);
-    }
-    
-    private Map<String, DataSourceMetaData> getDataSourceMetaDataMapForSharding(final Map<String, String> dataSourceURLs, final DatabaseType databaseType) {
-        Map<String, DataSourceMetaData> result = new ConcurrentHashMap<>(dataSourceURLs.size(), 1);
+    private Map<String, DataSourceMetaData> getDataSourceMetaDataMap(final Map<String, String> dataSourceURLs, final DatabaseType databaseType) {
+        Map<String, DataSourceMetaData> result = new HashMap<>(dataSourceURLs.size(), 1);
         for (Entry<String, String> entry : dataSourceURLs.entrySet()) {
             result.put(entry.getKey(), databaseType.getDataSourceMetaData(entry.getValue()));
         }
         return result;
-    }
-    
-    private Map<String, DataSourceMetaData> getDataSourceMetaDataMapForMasterSlave(final ShardingRule shardingRule, final Map<String, DataSourceMetaData> dataSourceMetaDataMap) {
-        Map<String, DataSourceMetaData> result = new ConcurrentHashMap<>(dataSourceMetaDataMap);
-        for (Entry<String, DataSourceMetaData> entry : dataSourceMetaDataMap.entrySet()) {
-            Optional<MasterSlaveRule> masterSlaveRule = shardingRule.findMasterSlaveRule(entry.getKey());
-            if (masterSlaveRule.isPresent() && masterSlaveRule.get().getMasterDataSourceName().equals(entry.getKey())) {
-                reviseMasterSlaveMetaData(result, entry.getValue(), masterSlaveRule.get());
-            }
-        }
-        return result;
-    }
-    
-    private void reviseMasterSlaveMetaData(final Map<String, DataSourceMetaData> dataSourceMetaDataMap, final DataSourceMetaData masterSlaveDataSourceMetaData, final MasterSlaveRule masterSlaveRule) {
-        dataSourceMetaDataMap.put(masterSlaveRule.getName(), masterSlaveDataSourceMetaData);
-        dataSourceMetaDataMap.remove(masterSlaveRule.getMasterDataSourceName());
-        for (String each : masterSlaveRule.getSlaveDataSourceNames()) {
-            dataSourceMetaDataMap.remove(each);
-        }
     }
     
     /**
@@ -108,10 +81,10 @@ public final class ShardingSphereDataSourceMetaData {
     /**
      * Get data source meta data.
      * 
-     * @param actualDataSourceName actual data source name
-     * @return actual data source meta data
+     * @param dataSourceName data source name
+     * @return data source meta data
      */
-    public DataSourceMetaData getActualDataSourceMetaData(final String actualDataSourceName) {
-        return dataSourceMetaDataMap.get(actualDataSourceName);
+    public DataSourceMetaData getDataSourceMetaData(final String dataSourceName) {
+        return dataSourceMetaDataMap.get(dataSourceName);
     }
 }

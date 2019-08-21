@@ -82,7 +82,7 @@ public final class TableMetaDataLoader {
             @Override
             public Collection<TableMetaData> execute(final Collection<DataNode> dataNodes, final boolean isTrunkThread, final Map<String, Object> shardingExecuteDataMap) throws SQLException {
                 String dataSourceName = dataNodes.iterator().next().getDataSourceName();
-                DataSourceMetaData dataSourceMetaData = TableMetaDataLoader.this.dataSourceMetaData.getActualDataSourceMetaData(dataSourceName);
+                DataSourceMetaData dataSourceMetaData = TableMetaDataLoader.this.dataSourceMetaData.getDataSourceMetaData(dataSourceName);
                 String catalog = null == dataSourceMetaData ? null : dataSourceMetaData.getSchemaName();
                 return load(shardingDataSourceNames.getRawMasterDataSourceName(dataSourceName), catalog, dataNodes);
             }

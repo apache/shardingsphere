@@ -60,7 +60,7 @@ public abstract class AbstractSQLRouteTest {
         Map<String, String> shardingDataSourceURLs = new LinkedHashMap<>();
         shardingDataSourceURLs.put("ds_0", "jdbc:mysql://127.0.0.1:3306/actual_db");
         shardingDataSourceURLs.put("ds_1", "jdbc:mysql://127.0.0.1:3306/actual_db");
-        return new ShardingSphereDataSourceMetaData(shardingDataSourceURLs, createShardingRule(), DatabaseTypes.getActualDatabaseType("MySQL"));
+        return new ShardingSphereDataSourceMetaData(shardingDataSourceURLs, DatabaseTypes.getActualDatabaseType("MySQL"));
     }
     
     private ShardingRule createShardingRule() {

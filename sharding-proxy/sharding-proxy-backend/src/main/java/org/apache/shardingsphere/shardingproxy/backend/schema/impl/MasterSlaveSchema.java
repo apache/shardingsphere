@@ -65,7 +65,7 @@ public final class MasterSlaveSchema extends LogicSchema {
     }
     
     private ShardingSphereMetaData createMetaData() {
-        ShardingSphereDataSourceMetaData dataSourceMetaData = new ShardingSphereDataSourceMetaData(getDataSourceURLs(getDataSources()), shardingRule, LogicSchemas.getInstance().getDatabaseType());
+        ShardingSphereDataSourceMetaData dataSourceMetaData = new ShardingSphereDataSourceMetaData(getDataSourceURLs(getDataSources()), LogicSchemas.getInstance().getDatabaseType());
         ShardingTableMetaData shardingTableMetaData = new ShardingTableMetaData(getTableMetaDataInitializer(dataSourceMetaData).load(shardingRule));
         return new ShardingSphereMetaData(dataSourceMetaData, shardingTableMetaData);
     }

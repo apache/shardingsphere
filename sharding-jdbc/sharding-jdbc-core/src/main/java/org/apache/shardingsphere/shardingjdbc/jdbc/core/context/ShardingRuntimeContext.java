@@ -69,7 +69,7 @@ public final class ShardingRuntimeContext extends AbstractRuntimeContext<Shardin
     }
     
     private ShardingSphereMetaData createMetaData(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType) throws SQLException {
-        ShardingSphereDataSourceMetaData dataSourceMetaData = new ShardingSphereDataSourceMetaData(getDataSourceURLs(dataSourceMap), shardingRule, databaseType);
+        ShardingSphereDataSourceMetaData dataSourceMetaData = new ShardingSphereDataSourceMetaData(getDataSourceURLs(dataSourceMap), databaseType);
         ShardingTableMetaData shardingTableMetaData = new ShardingTableMetaData(getTableMetaDataInitializer(dataSourceMap, dataSourceMetaData).load(shardingRule));
         return new ShardingSphereMetaData(dataSourceMetaData, shardingTableMetaData);
     }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.metadata.datasource;
+package org.apache.shardingsphere.core.metadata.datasource.exception;
 
 import org.apache.shardingsphere.core.exception.ShardingException;
 
