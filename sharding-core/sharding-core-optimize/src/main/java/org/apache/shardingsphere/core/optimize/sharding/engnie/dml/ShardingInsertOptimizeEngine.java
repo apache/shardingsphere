@@ -65,8 +65,7 @@ public final class ShardingInsertOptimizeEngine implements ShardingOptimizeEngin
             allColumnNames.add(generatedKey.get().getColumnName());
         }
         allColumnNames.addAll(shardingRule.getEncryptRule().getAssistedQueryAndPlainColumns(sqlStatement.getTable().getTableName()));
-        List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(
-                sqlStatement, parameters, allColumnNames, insertValues, generatedKey.orNull());
+        List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(sqlStatement, parameters, allColumnNames, insertValues, generatedKey.orNull());
         ShardingInsertOptimizedStatement result = new ShardingInsertOptimizedStatement(
                 sqlStatement, shardingConditions, insertColumns, insertValueEngine.createInsertValues(sqlStatement), generatedKey.orNull());
         String tableName = sqlStatement.getTable().getTableName();

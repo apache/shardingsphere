@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.context;
 import lombok.Getter;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.execute.metadata.TableMetaDataInitializer;
-import org.apache.shardingsphere.core.metadata.ShardingMetaData;
+import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -50,14 +50,14 @@ public final class ShardingRuntimeContext extends AbstractRuntimeContext<Shardin
     
     private final DatabaseMetaData cachedDatabaseMetaData;
     
-    private final ShardingMetaData metaData;
+    private final ShardingSphereMetaData metaData;
     
     private final ShardingTransactionManagerEngine shardingTransactionManagerEngine;
     
     public ShardingRuntimeContext(final Map<String, DataSource> dataSourceMap, final ShardingRule rule, final Properties props, final DatabaseType databaseType) throws SQLException {
         super(rule, props, databaseType);
         cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap, rule);
-        metaData = createShardingMetaData(dataSourceMap, rule, databaseType);
+        metaData = createMetaData(dataSourceMap, rule, databaseType);
         shardingTransactionManagerEngine = new ShardingTransactionManagerEngine();
         shardingTransactionManagerEngine.init(databaseType, dataSourceMap);
     }
@@ -68,10 +68,10 @@ public final class ShardingRuntimeContext extends AbstractRuntimeContext<Shardin
         }
     }
     
-    private ShardingMetaData createShardingMetaData(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType) throws SQLException {
+    private ShardingSphereMetaData createMetaData(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType) throws SQLException {
         ShardingDataSourceMetaData shardingDataSourceMetaData = new ShardingDataSourceMetaData(getDataSourceURLs(dataSourceMap), shardingRule, databaseType);
         ShardingTableMetaData shardingTableMetaData = new ShardingTableMetaData(getTableMetaDataInitializer(dataSourceMap, shardingDataSourceMetaData).load(shardingRule));
-        return new ShardingMetaData(shardingDataSourceMetaData, shardingTableMetaData);
+        return new ShardingSphereMetaData(shardingDataSourceMetaData, shardingTableMetaData);
     }
     
     private Map<String, String> getDataSourceURLs(final Map<String, DataSource> dataSourceMap) throws SQLException {

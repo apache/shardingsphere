@@ -21,7 +21,7 @@ import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
-import org.apache.shardingsphere.core.metadata.ShardingMetaData;
+import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
@@ -48,24 +48,24 @@ public final class MasterSlaveSchema extends LogicSchema {
     
     private final ShardingRule shardingRule;
     
-    private final ShardingMetaData metaData;
+    private final ShardingSphereMetaData metaData;
     
     public MasterSlaveSchema(final String name, final Map<String, YamlDataSourceParameter> dataSources, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final boolean isUsingRegistry) {
         super(name, dataSources);
         masterSlaveRule = createMasterSlaveRule(masterSlaveRuleConfig, isUsingRegistry);
         // TODO we should remove it after none-sharding parsingEngine completed.
         shardingRule = new ShardingRule(new ShardingRuleConfiguration(), getDataSources().keySet());
-        metaData = createShardingMetaData();
+        metaData = createMetaData();
     }
     
     private MasterSlaveRule createMasterSlaveRule(final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final boolean isUsingRegistry) {
         return isUsingRegistry ? new OrchestrationMasterSlaveRule(masterSlaveRuleConfig) : new MasterSlaveRule(masterSlaveRuleConfig);
     }
     
-    private ShardingMetaData createShardingMetaData() {
+    private ShardingSphereMetaData createMetaData() {
         ShardingDataSourceMetaData shardingDataSourceMetaData = new ShardingDataSourceMetaData(getDataSourceURLs(getDataSources()), shardingRule, LogicSchemas.getInstance().getDatabaseType());
         ShardingTableMetaData shardingTableMetaData = new ShardingTableMetaData(getTableMetaDataInitializer(shardingDataSourceMetaData).load(shardingRule));
-        return new ShardingMetaData(shardingDataSourceMetaData, shardingTableMetaData);
+        return new ShardingSphereMetaData(shardingDataSourceMetaData, shardingTableMetaData);
     }
     
     /**

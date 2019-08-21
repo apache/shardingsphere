@@ -22,7 +22,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.execute.metadata.TableMetaDataInitializer;
-import org.apache.shardingsphere.core.metadata.ShardingMetaData;
+import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.SQLParseEngine;
@@ -66,7 +66,7 @@ public abstract class LogicSchema {
      * 
      * @return sharding meta data.
      */
-    public abstract ShardingMetaData getMetaData();
+    public abstract ShardingSphereMetaData getMetaData();
     
     /**
      * Get Sharding rule.

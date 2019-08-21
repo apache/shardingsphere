@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
-import org.apache.shardingsphere.core.metadata.ShardingMetaData;
+import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.route.PreparedStatementRoutingEngine;
 import org.apache.shardingsphere.core.rule.EncryptRule;
@@ -55,7 +55,7 @@ public final class PreparedQueryShardingEngineTest extends BaseShardingEngineTes
         EncryptRule encryptRule = mock(EncryptRule.class);
         when(shardingRule.getEncryptRule()).thenReturn(encryptRule);
         shardingEngine = new PreparedQueryShardingEngine(
-                getSql(), shardingRule, getShardingProperties(), mock(ShardingMetaData.class), DatabaseTypes.getActualDatabaseType("MySQL"), mock(SQLParseEngine.class));
+                getSql(), shardingRule, getShardingProperties(), mock(ShardingSphereMetaData.class), DatabaseTypes.getActualDatabaseType("MySQL"), mock(SQLParseEngine.class));
         setRoutingEngine();
     }
     

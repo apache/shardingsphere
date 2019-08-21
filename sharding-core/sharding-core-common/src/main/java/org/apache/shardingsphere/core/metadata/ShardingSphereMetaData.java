@@ -23,13 +23,13 @@ import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMeta
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 
 /**
- * Sharding meta data.
+ * ShardingSphere meta data.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShardingMetaData {
+public final class ShardingSphereMetaData {
     
     private final ShardingDataSourceMetaData dataSource;
     

@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
-import org.apache.shardingsphere.core.metadata.ShardingMetaData;
+import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.rule.EncryptRule;
@@ -42,7 +42,7 @@ import java.util.Map;
 @Getter
 public final class EncryptSchema extends LogicSchema {
     
-    private final ShardingMetaData metaData;
+    private final ShardingSphereMetaData metaData;
     
     private final ShardingRule shardingRule;
     
@@ -52,13 +52,13 @@ public final class EncryptSchema extends LogicSchema {
         super(name, dataSources);
         encryptRule = new EncryptRule(encryptRuleConfiguration);
         shardingRule = new ShardingRule(new ShardingRuleConfiguration(), getDataSources().keySet());
-        metaData = createShardingMetaData();
+        metaData = createMetaData();
     }
     
-    private ShardingMetaData createShardingMetaData() {
+    private ShardingSphereMetaData createMetaData() {
         ShardingDataSourceMetaData shardingDataSourceMetaData = new ShardingDataSourceMetaData(getDataSourceURLs(getDataSources()), shardingRule, LogicSchemas.getInstance().getDatabaseType());
         ShardingTableMetaData shardingTableMetaData = new ShardingTableMetaData(getTableMetaDataInitializer(shardingDataSourceMetaData).load(shardingRule));
-        return new ShardingMetaData(shardingDataSourceMetaData, shardingTableMetaData);
+        return new ShardingSphereMetaData(shardingDataSourceMetaData, shardingTableMetaData);
     }
     
     /**

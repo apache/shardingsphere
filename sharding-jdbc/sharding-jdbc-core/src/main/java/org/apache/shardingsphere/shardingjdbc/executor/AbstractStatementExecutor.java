@@ -130,7 +130,7 @@ public class AbstractStatementExecutor {
     @SuppressWarnings("unchecked")
     protected final <T> List<T> executeCallback(final SQLExecuteCallback<T> executeCallback) throws SQLException {
         List<T> result = sqlExecuteTemplate.executeGroup((Collection) executeGroups, executeCallback);
-        refreshShardingMetaDataIfNeeded(connection.getRuntimeContext(), optimizedStatement);
+        refreshMetaDataIfNeeded(connection.getRuntimeContext(), optimizedStatement);
         return result;
     }
     
@@ -158,7 +158,7 @@ public class AbstractStatementExecutor {
         }
     }
     
-    private void refreshShardingMetaDataIfNeeded(final ShardingRuntimeContext runtimeContext, final OptimizedStatement optimizedStatement) {
+    private void refreshMetaDataIfNeeded(final ShardingRuntimeContext runtimeContext, final OptimizedStatement optimizedStatement) {
         if (null == optimizedStatement) {
             return;
         }

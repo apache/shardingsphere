@@ -22,7 +22,7 @@ import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.HintShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
-import org.apache.shardingsphere.core.metadata.ShardingMetaData;
+import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
@@ -48,9 +48,9 @@ public abstract class AbstractSQLRouteTest {
     
     protected final SQLRouteResult assertRoute(final String sql, final List<Object> parameters) {
         ShardingRule shardingRule = createShardingRule();
-        ShardingMetaData shardingMetaData = new ShardingMetaData(buildShardingDataSourceMetaData(), buildShardingTableMetaData());
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(buildShardingDataSourceMetaData(), buildShardingTableMetaData());
         SQLParseEngine parseEngine = new SQLParseEngine(DatabaseTypes.getActualDatabaseType("MySQL"));
-        PreparedStatementRoutingEngine engine = new PreparedStatementRoutingEngine(sql, shardingRule, shardingMetaData, DatabaseTypes.getActualDatabaseType("MySQL"), parseEngine);
+        PreparedStatementRoutingEngine engine = new PreparedStatementRoutingEngine(sql, shardingRule, metaData, DatabaseTypes.getActualDatabaseType("MySQL"), parseEngine);
         SQLRouteResult result = engine.route(parameters);
         assertThat(result.getRoutingResult().getRoutingUnits().size(), is(1));
         return result;
