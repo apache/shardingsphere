@@ -190,7 +190,7 @@ mvn release:perform -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=
 ```
 
 执行完该命令后，待发布版本会自动上传到Apache的临时筹备仓库(staging repository)。
-访问https://repository.apache.org/#stagingRepositories, 使用Apache的LDAP账户登录后，就会看到上传的版本。
+访问https://repository.apache.org/#stagingRepositories, 使用Apache的LDAP账户登录后，就会看到上传的版本，`Repository`列的内容即为${STAGING.REPOSITORY}。
 点击`Close`来告诉Nexus这个构建已经完成，只有这样该版本才是可用的。
 如果电子签名等出现问题，`Close`会失败，可以通过`Activity`查看失败信息。
 
@@ -330,9 +330,12 @@ gpg --verify apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-proxy-
 
 1. ShardingSphere社区投票模板
 
+注意： 在社区投票过程中，需要邀请所有mentor参加投票。
+
 标题：
+
 ```
-[VOTE]: Release Apache ShardingSphere (Incubating) ${RELEASE.VERSION}
+[VOTE] Release Apache ShardingSphere (Incubating) ${RELEASE.VERSION}
 ```
 
 正文：
@@ -349,7 +352,7 @@ The release candidates:
 https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/${RELEASE.VERSION}/
 
 Maven 2 staging repository:
-https://repository.apache.org/content/repositories/staging/org/apache/shardingsphere/
+https://repository.apache.org/content/repositories/${STAGING.REPOSITORY}/org/apache/shardingsphere/
 
 Git tag for the release:
 https://github.com/apache/incubator-shardingsphere/tree/${RELEASE.VERSION}/
@@ -390,11 +393,35 @@ Checklist for reference:
 [ ] No compiled archives bundled in source archive.
 ```
 
-2. Apache社区投票邮件模板：
+2. 宣布投票结果模板：
+
+正文：
+
+```
+The vote to release Apache ShardingSphere (Incubating) ${RELEASE.VERSION} has passed.
+
+7 PPMC member +1 votes:
+
+xxx (mentor)
+xxx
+xxx (mentor)
+xxx
+xxx
+xxx (mentor)
+xxx
+
+1 community +1 vote:
+xxx
+
+Thank you everyone for taking the time to review the release and help us. 
+```
+
+3. Apache社区投票邮件模板：
 
 标题：
+
 ```
-[VOTE]: Release Apache ShardingSphere (Incubating) ${RELEASE.VERSION}
+[VOTE] Release Apache ShardingSphere (Incubating) ${RELEASE.VERSION}
 ```
 
 正文：
@@ -442,7 +469,7 @@ The release candidates:
 https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/${RELEASE.VERSION}/
 
 Maven 2 staging repository:
-https://repository.apache.org/content/repositories/staging/org/apache/shardingsphere/
+https://repository.apache.org/content/repositories/${STAGING.REPOSITORY}/org/apache/shardingsphere/
 
 Git tag for the release:
 https://github.com/apache/incubator-shardingsphere/tree/${RELEASE.VERSION}
@@ -484,7 +511,7 @@ Checklist for reference:
 [ ] No compiled archives bundled in source archive.
 ```
 
-3. 宣布投票结果模板：
+4. 宣布投票结果模板：
 
 正文：
 

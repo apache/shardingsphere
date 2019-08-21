@@ -192,7 +192,7 @@ mvn release:perform -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=
 ```
 
 After that command is executed, the version to be released will be uploaded to Apache staging repository automatically. 
-Visit [https://repository.apache.org/#stagingRepositories](https://repository.apache.org/#stagingRepositories) and use Apache LDAP account to log in; then you can see the uploaded version. 
+Visit [https://repository.apache.org/#stagingRepositories](https://repository.apache.org/#stagingRepositories) and use Apache LDAP account to log in; then you can see the uploaded version, the content of `Repository` column is the ${STAGING.REPOSITORY}. 
 Click `Close` to tell Nexus that the construction is finished, because only in this way, this version can be usable. 
 If there is any problem in gpg signature, `Close` will fail, but you can see the failure information through `Activity`.
 
@@ -337,10 +337,12 @@ After at least 72 hours and with at least 3 `+1 binding` votes (only IPMC's vote
 
 1. ShardingSphere Community Vote Template
 
+NOTE: Must invite all mentors to vote during the community vote.
+
 Title:
 
 ```
-[VOTE]: Release Apache ShardingSphere (Incubating) ${RELEASE.VERSION}
+[VOTE] Release Apache ShardingSphere (Incubating) ${RELEASE.VERSION}
 
 ```
 
@@ -358,7 +360,7 @@ The release candidates:
 https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/${RELEASE.VERSION}/
 
 Maven 2 staging repository:
-https://repository.apache.org/content/repositories/staging/org/apache/shardingsphere/
+https://repository.apache.org/content/repositories/${STAGING.REPOSITORY}/org/apache/shardingsphere/
 
 Git tag for the release:
 https://github.com/apache/incubator-shardingsphere/tree/${RELEASE.VERSION}
@@ -399,12 +401,35 @@ Checklist for reference:
 [ ] No compiled archives bundled in source archive.
 ```
 
-2. Apache Community Vote Template:
+2. Announce the vote result:
+
+Body:
+
+```
+The vote to release Apache ShardingSphere (Incubating) ${RELEASE.VERSION} has passed.
+
+7 PPMC member +1 votes:
+
+xxx (mentor)
+xxx
+xxx (mentor)
+xxx
+xxx
+xxx (mentor)
+xxx
+
+1 community +1 vote:
+xxx
+
+Thank you everyone for taking the time to review the release and help us. 
+```
+
+3. Apache Community Vote Template:
 
 Title:
 
 ```
-[VOTE]: Release Apache ShardingSphere (Incubating) ${RELEASE.VERSION}
+[VOTE] Release Apache ShardingSphere (Incubating) ${RELEASE.VERSION}
 
 ```
 
@@ -452,7 +477,7 @@ The release candidates:
 https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/${RELEASE.VERSION}/
 
 Maven 2 staging repository:
-https://repository.apache.org/content/repositories/staging/org/apache/shardingsphere/
+https://repository.apache.org/content/repositories/${STAGING.REPOSITORY}/org/apache/shardingsphere/
 
 Git tag for the release:
 https://github.com/apache/incubator-shardingsphere/tree/${RELEASE.VERSION}
@@ -494,7 +519,7 @@ Checklist for reference:
 [ ] No compiled archives bundled in source archive.
 ```
 
-3. Announce the vote result:
+4. Announce the vote result:
 
 Body:
 
