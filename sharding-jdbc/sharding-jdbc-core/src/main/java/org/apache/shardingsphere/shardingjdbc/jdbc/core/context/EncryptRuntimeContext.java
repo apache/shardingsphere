@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.context;
 
-import com.google.common.base.Optional;
 import lombok.Getter;
 import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.metadata.table.sharding.ShardingTableMetaData;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 
@@ -37,7 +35,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 
 /**
  * Runtime context for encrypt.
@@ -59,7 +56,7 @@ public final class EncryptRuntimeContext extends AbstractRuntimeContext<EncryptR
         try (Connection connection = dataSource.getConnection()) {
             for (String each : encryptRule.getEncryptTableNames()) {
                 if (isTableExist(connection, each)) {
-                    tables.put(each, new ShardingTableMetaData(getColumnMetaDataList(connection, each), getLogicIndexes(connection, each)));
+                    tables.put(each, new TableMetaData(getColumnMetaDataList(connection, each)));
                 }
             }
         }
@@ -93,26 +90,5 @@ public final class EncryptRuntimeContext extends AbstractRuntimeContext<EncryptR
             }
         }
         return result;
-    }
-    
-    private Set<String> getLogicIndexes(final Connection connection, final String actualTableName) throws SQLException {
-        Set<String> result = new HashSet<>();
-        try (ResultSet resultSet = connection.getMetaData().getIndexInfo(connection.getCatalog(), connection.getCatalog(), actualTableName, false, false)) {
-            while (resultSet.next()) {
-                Optional<String> logicIndex = getLogicIndex(resultSet.getString("INDEX_NAME"), actualTableName);
-                if (logicIndex.isPresent()) {
-                    result.add(logicIndex.get());
-                }
-            }
-        }
-        return result;
-    }
-    
-    private Optional<String> getLogicIndex(final String actualIndexName, final String actualTableName) {
-        String indexNameSuffix = "_" + actualTableName;
-        if (actualIndexName.contains(indexNameSuffix)) {
-            return Optional.of(actualIndexName.replace(indexNameSuffix, ""));
-        }
-        return Optional.absent();
     }
 }
