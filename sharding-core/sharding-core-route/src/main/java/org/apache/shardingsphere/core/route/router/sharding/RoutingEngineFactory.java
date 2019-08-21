@@ -36,7 +36,7 @@ import org.apache.shardingsphere.core.parse.sql.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
 import org.apache.shardingsphere.core.route.type.broadcast.DataSourceGroupBroadcastRoutingEngine;
 import org.apache.shardingsphere.core.route.type.broadcast.DatabaseBroadcastRoutingEngine;
-import org.apache.shardingsphere.core.route.type.broadcast.InstanceBroadcastRoutingEngine;
+import org.apache.shardingsphere.core.route.type.broadcast.MasterInstanceBroadcastRoutingEngine;
 import org.apache.shardingsphere.core.route.type.broadcast.TableBroadcastRoutingEngine;
 import org.apache.shardingsphere.core.route.type.complex.ComplexRoutingEngine;
 import org.apache.shardingsphere.core.route.type.defaultdb.DefaultDatabaseRoutingEngine;
@@ -107,7 +107,7 @@ public final class RoutingEngineFactory {
     
     private static RoutingEngine getDCLRoutingEngine(final ShardingRule shardingRule, final OptimizedStatement optimizedStatement, final ShardingSphereDataSourceMetaData dataSourceMetaData) {
         return isGrantForSingleTable(optimizedStatement) 
-                ? new TableBroadcastRoutingEngine(shardingRule, optimizedStatement) : new InstanceBroadcastRoutingEngine(shardingRule, dataSourceMetaData);
+                ? new TableBroadcastRoutingEngine(shardingRule, optimizedStatement) : new MasterInstanceBroadcastRoutingEngine(shardingRule, dataSourceMetaData);
     }
     
     private static boolean isGrantForSingleTable(final OptimizedStatement optimizedStatement) {

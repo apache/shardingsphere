@@ -17,20 +17,22 @@
 
 package org.apache.shardingsphere.core.route.type.broadcast;
 
+import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingSphereDataSourceMetaData;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
+import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Broadcast routing engine for instance databases.
+ * Broadcast routing engine for master instance of databases.
  * 
  * @author panjuan
  */
 @RequiredArgsConstructor
-public final class InstanceBroadcastRoutingEngine implements RoutingEngine {
+public final class MasterInstanceBroadcastRoutingEngine implements RoutingEngine {
     
     private final ShardingRule shardingRule;
     
@@ -41,7 +43,10 @@ public final class InstanceBroadcastRoutingEngine implements RoutingEngine {
         RoutingResult result = new RoutingResult();
         for (String each : shardingRule.getShardingDataSourceNames().getDataSourceNames()) {
             if (dataSourceMetaData.getAllInstanceDataSourceNames().contains(each)) {
-                result.getRoutingUnits().add(new RoutingUnit(each));
+                Optional<MasterSlaveRule> masterSlaveRule = shardingRule.findMasterSlaveRule(each);
+                if (!masterSlaveRule.isPresent() || masterSlaveRule.get().getMasterDataSourceName().equals(each)) {
+                    result.getRoutingUnits().add(new RoutingUnit(each));
+                }
             }
         }
         return result;
