@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.metadata;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetas;
-import org.apache.shardingsphere.core.metadata.table.ShardingSphereTableMetaData;
+import org.apache.shardingsphere.core.metadata.table.TableMetas;
 
 /**
  * ShardingSphere meta data.
@@ -33,5 +33,5 @@ public final class ShardingSphereMetaData {
     
     private final DataSourceMetas dataSources;
     
-    private final ShardingSphereTableMetaData tables;
+    private final TableMetas tables;
 }

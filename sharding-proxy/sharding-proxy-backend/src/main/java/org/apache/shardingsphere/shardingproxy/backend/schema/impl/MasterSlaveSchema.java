@@ -23,7 +23,7 @@ import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfigura
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetas;
-import org.apache.shardingsphere.core.metadata.table.ShardingSphereTableMetaData;
+import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.util.ConfigurationLogger;
@@ -66,8 +66,8 @@ public final class MasterSlaveSchema extends LogicSchema {
     
     private ShardingSphereMetaData createMetaData() {
         DataSourceMetas dataSourceMetas = new DataSourceMetas(getDataSourceURLs(getDataSources()), LogicSchemas.getInstance().getDatabaseType());
-        ShardingSphereTableMetaData tableMetaData = new ShardingSphereTableMetaData(getTableMetaDataInitializer(dataSourceMetas).load(shardingRule));
-        return new ShardingSphereMetaData(dataSourceMetas, tableMetaData);
+        TableMetas tableMetas = new TableMetas(getTableMetaDataInitializer(dataSourceMetas).load(shardingRule));
+        return new ShardingSphereMetaData(dataSourceMetas, tableMetas);
     }
     
     /**

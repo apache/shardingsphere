@@ -27,18 +27,18 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * ShardingSphere table meta data.
+ * Table metas.
  *
  * @author panjuan
  * @author zhaojun
  * @author zhangliang
  * @author panjuan
  */
-public final class ShardingSphereTableMetaData {
+public final class TableMetas {
     
     private final Map<String, TableMetaData> tables;
     
-    public ShardingSphereTableMetaData(final Map<String, TableMetaData> tables) {
+    public TableMetas(final Map<String, TableMetaData> tables) {
         this.tables = new ConcurrentHashMap<>(tables);
     }
     

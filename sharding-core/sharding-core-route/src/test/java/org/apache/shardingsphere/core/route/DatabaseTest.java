@@ -25,7 +25,7 @@ import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStra
 import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.core.metadata.table.ShardingSphereTableMetaData;
+import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.metadata.table.impl.ColumnMetaData;
 import org.apache.shardingsphere.core.metadata.table.impl.TableMetaData;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
@@ -90,10 +90,10 @@ public final class DatabaseTest {
     private ShardingSphereMetaData getMetaDataForAllRoutingSQL() {
         ColumnMetaData idColumnMetaData = new ColumnMetaData("id", "int", true);
         ColumnMetaData nameColumnMetaData = new ColumnMetaData("user_id", "int", false);
-        ShardingSphereTableMetaData tableMetaData = mock(ShardingSphereTableMetaData.class);
-        when(tableMetaData.get("tesT")).thenReturn(new TableMetaData(Arrays.asList(idColumnMetaData, nameColumnMetaData), Arrays.asList("id", "user_id")));
+        TableMetas tableMetas = mock(TableMetas.class);
+        when(tableMetas.get("tesT")).thenReturn(new TableMetaData(Arrays.asList(idColumnMetaData, nameColumnMetaData), Arrays.asList("id", "user_id")));
         ShardingSphereMetaData result = mock(ShardingSphereMetaData.class);
-        when(result.getTables()).thenReturn(tableMetaData);
+        when(result.getTables()).thenReturn(tableMetas);
         return result;
     }
     
@@ -114,10 +114,10 @@ public final class DatabaseTest {
     private ShardingSphereMetaData getMetaDataForPagination() {
         ColumnMetaData idColumnMetaData = new ColumnMetaData("id", "int", true);
         ColumnMetaData nameColumnMetaData = new ColumnMetaData("user_id", "int", false);
-        ShardingSphereTableMetaData tableMetaData = mock(ShardingSphereTableMetaData.class);
-        when(tableMetaData.get("tbl_pagination")).thenReturn(new TableMetaData(Arrays.asList(idColumnMetaData, nameColumnMetaData), Arrays.asList("id", "user_id")));
+        TableMetas tableMetas = mock(TableMetas.class);
+        when(tableMetas.get("tbl_pagination")).thenReturn(new TableMetaData(Arrays.asList(idColumnMetaData, nameColumnMetaData), Arrays.asList("id", "user_id")));
         ShardingSphereMetaData result = mock(ShardingSphereMetaData.class);
-        when(result.getTables()).thenReturn(tableMetaData);
+        when(result.getTables()).thenReturn(tableMetas);
         return result;
     }
     
@@ -135,7 +135,7 @@ public final class DatabaseTest {
         ShardingRule rule = new ShardingRule(shardingRuleConfig, dataSourceMap.keySet());
         String originSQL = "select city_id from t_user where city_id in (?,?) limit 5,10";
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-        when(metaData.getTables()).thenReturn(mock(ShardingSphereTableMetaData.class));
+        when(metaData.getTables()).thenReturn(mock(TableMetas.class));
         SQLParseEngine parseEngine = new SQLParseEngine(DatabaseTypes.getActualDatabaseType("MySQL"));
         SQLRouteResult actual = new PreparedStatementRoutingEngine(originSQL, rule, metaData, DatabaseTypes.getActualDatabaseType("MySQL"), parseEngine).route(Lists.<Object>newArrayList(13, 173));
         assertThat(((ShardingSelectOptimizedStatement) actual.getShardingStatement()).getPagination().getActualOffset(), is(5));

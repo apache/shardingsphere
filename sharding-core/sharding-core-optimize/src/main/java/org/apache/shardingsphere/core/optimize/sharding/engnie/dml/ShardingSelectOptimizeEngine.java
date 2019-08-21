@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.optimize.sharding.engnie.dml;
 
-import org.apache.shardingsphere.core.metadata.table.ShardingSphereTableMetaData;
+import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.optimize.encrypt.segment.condition.EncryptCondition;
 import org.apache.shardingsphere.core.optimize.encrypt.segment.condition.engine.WhereClauseEncryptConditionEngine;
 import org.apache.shardingsphere.core.optimize.sharding.engnie.ShardingOptimizeEngine;
@@ -48,12 +48,12 @@ public final class ShardingSelectOptimizeEngine implements ShardingOptimizeEngin
     
     @Override
     public ShardingSelectOptimizedStatement optimize(final ShardingRule shardingRule,
-                                                     final ShardingSphereTableMetaData tableMetaData, final String sql, final List<Object> parameters, final SelectStatement sqlStatement) {
-        WhereClauseShardingConditionEngine shardingConditionEngine = new WhereClauseShardingConditionEngine(shardingRule, tableMetaData);
-        WhereClauseEncryptConditionEngine encryptConditionEngine = new WhereClauseEncryptConditionEngine(shardingRule.getEncryptRule(), tableMetaData);
+                                                     final TableMetas tableMetas, final String sql, final List<Object> parameters, final SelectStatement sqlStatement) {
+        WhereClauseShardingConditionEngine shardingConditionEngine = new WhereClauseShardingConditionEngine(shardingRule, tableMetas);
+        WhereClauseEncryptConditionEngine encryptConditionEngine = new WhereClauseEncryptConditionEngine(shardingRule.getEncryptRule(), tableMetas);
         GroupByEngine groupByEngine = new GroupByEngine();
         OrderByEngine orderByEngine = new OrderByEngine();
-        SelectItemsEngine selectItemsEngine = new SelectItemsEngine(tableMetaData);
+        SelectItemsEngine selectItemsEngine = new SelectItemsEngine(tableMetas);
         PaginationEngine paginationEngine = new PaginationEngine();
         List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(sqlStatement, parameters);
         List<EncryptCondition> encryptConditions = encryptConditionEngine.createEncryptConditions(sqlStatement);

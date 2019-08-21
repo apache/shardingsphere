@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.optimize.sharding.engnie;
 
-import org.apache.shardingsphere.core.metadata.table.ShardingSphereTableMetaData;
+import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.optimize.api.engine.OptimizeEngine;
 import org.apache.shardingsphere.core.optimize.sharding.statement.ShardingOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
@@ -35,5 +35,5 @@ import java.util.List;
 public interface ShardingOptimizeEngine<T extends SQLStatement> extends OptimizeEngine<ShardingRule, T> {
     
     @Override
-    ShardingOptimizedStatement optimize(ShardingRule shardingRule, ShardingSphereTableMetaData tableMetaData, String sql, List<Object> parameters, T sqlStatement);
+    ShardingOptimizedStatement optimize(ShardingRule shardingRule, TableMetas tableMetas, String sql, List<Object> parameters, T sqlStatement);
 }

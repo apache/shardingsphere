@@ -22,7 +22,7 @@ import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesCons
 import org.apache.shardingsphere.core.execute.metadata.TableMetaDataInitializer;
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetas;
-import org.apache.shardingsphere.core.metadata.table.ShardingSphereTableMetaData;
+import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata.CachedDatabaseMetaData;
 import org.apache.shardingsphere.shardingjdbc.jdbc.metadata.JDBCTableMetaDataConnectionManager;
@@ -70,8 +70,8 @@ public final class ShardingRuntimeContext extends AbstractRuntimeContext<Shardin
     
     private ShardingSphereMetaData createMetaData(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType) throws SQLException {
         DataSourceMetas dataSourceMetas = new DataSourceMetas(getDataSourceURLs(dataSourceMap), databaseType);
-        ShardingSphereTableMetaData tableMetaData = new ShardingSphereTableMetaData(getTableMetaDataInitializer(dataSourceMap, dataSourceMetas).load(shardingRule));
-        return new ShardingSphereMetaData(dataSourceMetas, tableMetaData);
+        TableMetas tableMetas = new TableMetas(getTableMetaDataInitializer(dataSourceMap, dataSourceMetas).load(shardingRule));
+        return new ShardingSphereMetaData(dataSourceMetas, tableMetas);
     }
     
     private Map<String, String> getDataSourceURLs(final Map<String, DataSource> dataSourceMap) throws SQLException {

@@ -27,7 +27,7 @@ import org.apache.shardingsphere.core.merge.dal.show.ShowIndexMergedResult;
 import org.apache.shardingsphere.core.merge.dal.show.ShowOtherMergedResult;
 import org.apache.shardingsphere.core.merge.dal.show.ShowTableStatusMergedResult;
 import org.apache.shardingsphere.core.merge.dal.show.ShowTablesMergedResult;
-import org.apache.shardingsphere.core.metadata.table.ShardingSphereTableMetaData;
+import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.ShowCreateTableStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.ShowDatabasesStatement;
@@ -54,7 +54,7 @@ public final class DALMergeEngine implements MergeEngine {
     
     private final DALStatement dalStatement;
     
-    private final ShardingSphereTableMetaData tableMetaData;
+    private final TableMetas tableMetas;
     
     @Override
     public MergedResult merge() throws SQLException {
@@ -62,16 +62,16 @@ public final class DALMergeEngine implements MergeEngine {
             return new ShowDatabasesMergedResult();
         }
         if (dalStatement instanceof ShowTableStatusStatement) {
-            return new ShowTableStatusMergedResult(shardingRule, queryResults, tableMetaData);
+            return new ShowTableStatusMergedResult(shardingRule, queryResults, tableMetas);
         }
         if (dalStatement instanceof ShowTablesStatement) {
-            return new ShowTablesMergedResult(shardingRule, queryResults, tableMetaData);
+            return new ShowTablesMergedResult(shardingRule, queryResults, tableMetas);
         }
         if (dalStatement instanceof ShowCreateTableStatement) {
-            return new ShowCreateTableMergedResult(shardingRule, queryResults, tableMetaData);
+            return new ShowCreateTableMergedResult(shardingRule, queryResults, tableMetas);
         }
         if (dalStatement instanceof ShowIndexStatement) {
-            return new ShowIndexMergedResult(shardingRule, queryResults, tableMetaData);
+            return new ShowIndexMergedResult(shardingRule, queryResults, tableMetas);
         }
         return new ShowOtherMergedResult(queryResults.get(0));
     }

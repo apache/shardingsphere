@@ -21,7 +21,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Range;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.core.metadata.table.ShardingSphereTableMetaData;
+import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.optimize.api.segment.Column;
 import org.apache.shardingsphere.core.optimize.api.segment.Tables;
 import org.apache.shardingsphere.core.optimize.sharding.segment.condition.AlwaysFalseRouteValue;
@@ -58,7 +58,7 @@ public final class WhereClauseShardingConditionEngine {
     
     private final ShardingRule shardingRule;
     
-    private final ShardingSphereTableMetaData tableMetaData;
+    private final TableMetas tableMetas;
     
     /**
      * Create sharding conditions.
@@ -102,7 +102,7 @@ public final class WhereClauseShardingConditionEngine {
     private Map<Column, Collection<RouteValue>> createRouteValueMap(final Tables tables, final AndPredicate andPredicate, final List<Object> parameters) {
         Map<Column, Collection<RouteValue>> result = new HashMap<>();
         for (PredicateSegment each : andPredicate.getPredicates()) {
-            Optional<String> tableName = tables.findTableName(each.getColumn(), tableMetaData);
+            Optional<String> tableName = tables.findTableName(each.getColumn(), tableMetas);
             if (!tableName.isPresent() || !shardingRule.isShardingColumn(each.getColumn().getName(), tableName.get())) {
                 continue;
             }

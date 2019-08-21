@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.optimize.sharding.segment.insert;
 
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.shardingsphere.core.metadata.table.ShardingSphereTableMetaData;
+import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.optimize.api.segment.InsertColumns;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rule.EncryptRule;
@@ -43,15 +43,15 @@ public final class ShardingInsertColumns implements InsertColumns {
     private final Collection<String> regularColumnNames;
     
     public ShardingInsertColumns(
-            final ShardingRule shardingRule, final ShardingSphereTableMetaData tableMetaData, final InsertStatement insertStatement, final Collection<String> derivedColumnNames) {
+            final ShardingRule shardingRule, final TableMetas tableMetas, final InsertStatement insertStatement, final Collection<String> derivedColumnNames) {
         generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTable().getTableName()).orNull();
         regularColumnNames = insertStatement.useDefaultColumns() 
-                ? getRegularColumnNamesFromMetaData(shardingRule.getEncryptRule(), tableMetaData, insertStatement, derivedColumnNames) : getRegularColumnNamesFromSQLStatement(insertStatement);
+                ? getRegularColumnNamesFromMetaData(shardingRule.getEncryptRule(), tableMetas, insertStatement, derivedColumnNames) : getRegularColumnNamesFromSQLStatement(insertStatement);
     }
     
-    private Collection<String> getRegularColumnNamesFromMetaData(final EncryptRule encryptRule, 
-                                                                 final ShardingSphereTableMetaData tableMetaData, final InsertStatement insertStatement, final Collection<String> derivedColumnNames) {
-        Collection<String> allColumnNames = tableMetaData.getAllColumnNames(insertStatement.getTable().getTableName());
+    private Collection<String> getRegularColumnNamesFromMetaData(final EncryptRule encryptRule,
+                                                                 final TableMetas tableMetas, final InsertStatement insertStatement, final Collection<String> derivedColumnNames) {
+        Collection<String> allColumnNames = tableMetas.getAllColumnNames(insertStatement.getTable().getTableName());
         Collection<String> result = new LinkedHashSet<>(allColumnNames.size() - derivedColumnNames.size());
         String tableName = insertStatement.getTable().getTableName();
         for (String each : allColumnNames) {

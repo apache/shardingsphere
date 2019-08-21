@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.optimize.sharding.engnie.ddl;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.core.metadata.table.ShardingSphereTableMetaData;
+import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.optimize.api.segment.Tables;
 import org.apache.shardingsphere.core.optimize.sharding.engnie.ShardingOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.sharding.statement.ddl.ShardingDropIndexOptimizedStatement;
@@ -41,19 +41,19 @@ public final class ShardingDropIndexOptimizeEngine implements ShardingOptimizeEn
     
     @Override
     public ShardingDropIndexOptimizedStatement optimize(final ShardingRule shardingRule,
-                                                        final ShardingSphereTableMetaData tableMetaData, final String sql, final List<Object> parameters, final DropIndexStatement sqlStatement) {
+                                                        final TableMetas tableMetas, final String sql, final List<Object> parameters, final DropIndexStatement sqlStatement) {
         Tables tables = new Tables(sqlStatement);
-        return new ShardingDropIndexOptimizedStatement(sqlStatement, tables, getTableNames(tableMetaData, sqlStatement, tables));
+        return new ShardingDropIndexOptimizedStatement(sqlStatement, tables, getTableNames(tableMetas, sqlStatement, tables));
     }
     
-    private Collection<String> getTableNames(final ShardingSphereTableMetaData tableMetaData, final DropIndexStatement sqlStatement, final Tables tables) {
-        return tables.isEmpty() ? getTableNames(tableMetaData, sqlStatement) : Collections.singletonList(tables.getSingleTableName());
+    private Collection<String> getTableNames(final TableMetas tableMetas, final DropIndexStatement sqlStatement, final Tables tables) {
+        return tables.isEmpty() ? getTableNames(tableMetas, sqlStatement) : Collections.singletonList(tables.getSingleTableName());
     }
     
-    private Collection<String> getTableNames(final ShardingSphereTableMetaData tableMetaData, final DropIndexStatement sqlStatement) {
+    private Collection<String> getTableNames(final TableMetas tableMetas, final DropIndexStatement sqlStatement) {
         Collection<String> result = new LinkedList<>();
         for (IndexSegment each : sqlStatement.getIndexes()) {
-            Optional<String> tableName = tableMetaData.getLogicTableName(each.getName());
+            Optional<String> tableName = tableMetas.getLogicTableName(each.getName());
             Preconditions.checkState(tableName.isPresent(), "Cannot find table for index name `%s` from sharding rule.", each.getName());
             result.add(tableName.get());
         }
