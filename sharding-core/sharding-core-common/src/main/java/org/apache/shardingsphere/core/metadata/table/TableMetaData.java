@@ -15,27 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.metadata.table.impl;
+package org.apache.shardingsphere.core.metadata.table;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 /**
- * Column metadata.
+ * Table meta data.
  *
  * @author panjuan
  */
-@RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
 @ToString
-public final class ColumnMetaData {
+public class TableMetaData {
     
-    private final String columnName;
+    private final Map<String, ColumnMetaData> columns;
     
-    private final String dataType;
+    public TableMetaData(final Collection<ColumnMetaData> columnMetaDataList) {
+        columns = getColumns(columnMetaDataList);
+    }
     
-    private final boolean primaryKey;
+    private Map<String, ColumnMetaData> getColumns(final Collection<ColumnMetaData> columnMetaDataList) {
+        Map<String, ColumnMetaData> columns = new LinkedHashMap<>(columnMetaDataList.size(), 1);
+        for (ColumnMetaData each : columnMetaDataList) {
+            columns.put(each.getColumnName(), each);
+        }
+        return Collections.synchronizedMap(columns);
+    }
 }

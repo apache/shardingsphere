@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.core.optimize.sharding.segment.select.item;
 
+import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
+import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.metadata.table.impl.ColumnMetaData;
-import org.apache.shardingsphere.core.metadata.table.impl.TableMetaData;
+import org.apache.shardingsphere.core.metadata.table.sharding.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.core.constant.AggregationType;
 import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 import org.junit.Test;
@@ -166,7 +167,7 @@ public final class SelectItemsTest {
     
     private TableMetas createTableMetas() {
         Map<String, TableMetaData> tables = new HashMap<>(1, 1);
-        tables.put("table", new TableMetaData(Arrays.asList(new ColumnMetaData("id", "number", true), new ColumnMetaData("name", "varchar", false)), Collections.<String>emptyList()));
+        tables.put("table", new ShardingTableMetaData(Arrays.asList(new ColumnMetaData("id", "number", true), new ColumnMetaData("name", "varchar", false)), Collections.<String>emptyList()));
         return new TableMetas(tables);
     }
     

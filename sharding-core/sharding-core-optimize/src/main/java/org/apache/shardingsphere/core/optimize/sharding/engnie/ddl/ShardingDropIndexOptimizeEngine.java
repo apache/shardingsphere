@@ -20,6 +20,7 @@ package org.apache.shardingsphere.core.optimize.sharding.engnie.ddl;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
+import org.apache.shardingsphere.core.metadata.table.sharding.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.api.segment.Tables;
 import org.apache.shardingsphere.core.optimize.sharding.engnie.ShardingOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.sharding.statement.ddl.ShardingDropIndexOptimizedStatement;
@@ -53,10 +54,19 @@ public final class ShardingDropIndexOptimizeEngine implements ShardingOptimizeEn
     private Collection<String> getTableNames(final TableMetas tableMetas, final DropIndexStatement sqlStatement) {
         Collection<String> result = new LinkedList<>();
         for (IndexSegment each : sqlStatement.getIndexes()) {
-            Optional<String> tableName = tableMetas.getLogicTableName(each.getName());
+            Optional<String> tableName = findLogicTableName(tableMetas, each.getName());
             Preconditions.checkState(tableName.isPresent(), "Cannot find table for index name `%s` from sharding rule.", each.getName());
             result.add(tableName.get());
         }
         return result;
+    }
+    
+    private Optional<String> findLogicTableName(final TableMetas tableMetas, final String logicIndexName) {
+        for (String each : tableMetas.getAllTableNames()) {
+            if (tableMetas.get(each) instanceof ShardingTableMetaData && ((ShardingTableMetaData) tableMetas.get(each)).containsIndex(logicIndexName)) {
+                return Optional.of(each);
+            }
+        }
+        return Optional.absent();
     }
 }

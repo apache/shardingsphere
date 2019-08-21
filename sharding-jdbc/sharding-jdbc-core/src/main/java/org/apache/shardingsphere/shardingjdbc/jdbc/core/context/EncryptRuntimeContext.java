@@ -19,9 +19,10 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.context;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
+import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
+import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.metadata.table.impl.ColumnMetaData;
-import org.apache.shardingsphere.core.metadata.table.impl.TableMetaData;
+import org.apache.shardingsphere.core.metadata.table.sharding.ShardingTableMetaData;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 
@@ -58,7 +59,7 @@ public final class EncryptRuntimeContext extends AbstractRuntimeContext<EncryptR
         try (Connection connection = dataSource.getConnection()) {
             for (String each : encryptRule.getEncryptTableNames()) {
                 if (isTableExist(connection, each)) {
-                    tables.put(each, new TableMetaData(getColumnMetaDataList(connection, each), getLogicIndexes(connection, each)));
+                    tables.put(each, new ShardingTableMetaData(getColumnMetaDataList(connection, each), getLogicIndexes(connection, each)));
                 }
             }
         }

@@ -17,13 +17,9 @@
 
 package org.apache.shardingsphere.core.metadata.table;
 
-import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.metadata.table.impl.TableMetaData;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -102,17 +98,11 @@ public final class TableMetas {
     }
     
     /**
-     * Get logic table name.
+     * Get all table names.
      * 
-     * @param logicIndexName logic index name
-     * @return logic table name
+     * @return all table names
      */
-    public Optional<String> getLogicTableName(final String logicIndexName) {
-        for (Entry<String, TableMetaData> entry : tables.entrySet()) {
-            if (entry.getValue().getLogicIndexes().contains(logicIndexName)) {
-                return Optional.of(entry.getKey());
-            }
-        }
-        return Optional.absent();
+    public Collection<String> getAllTableNames() {
+        return tables.keySet();
     }
 }

@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.core.optimize.sharding.engnie.ddl;
 
-import com.google.common.base.Optional;
+import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
+import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
+import org.apache.shardingsphere.core.metadata.table.sharding.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.sharding.statement.ddl.ShardingDropIndexOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
@@ -27,30 +29,28 @@ import org.apache.shardingsphere.core.parse.sql.statement.ddl.DropIndexStatement
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class ShardingDropIndexOptimizeEngineTest {
     
     private DropIndexStatement dropIndexStatement;
     
-    @Mock
     private TableMetas tableMetas;
     
     @Before
     public void setUp() {
         dropIndexStatement = new DropIndexStatement();
         dropIndexStatement.getIndexes().add(new IndexSegment(0, 0, "idx"));
-        when(tableMetas.getLogicTableName("idx")).thenReturn(Optional.of("meta_tbl"));
+        Map<String, TableMetaData> tables = new HashMap<>(1, 1);
+        tables.put("meta_tbl", new ShardingTableMetaData(Collections.<ColumnMetaData>emptyList(), Collections.singletonList("idx")));
+        tableMetas = new TableMetas(tables);
     }
     
     @Test

@@ -23,7 +23,9 @@ import lombok.Getter;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetas;
+import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
+import org.apache.shardingsphere.core.metadata.table.sharding.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.AlterTableStatement;
@@ -149,19 +151,25 @@ public final class ShardingSchema extends LogicSchema {
         if (null == createIndexStatement.getIndex()) {
             return;
         }
-        getMetaData().getTables().get(optimizedStatement.getTables().getSingleTableName()).getLogicIndexes().add(createIndexStatement.getIndex().getName());
+        TableMetaData tableMetaData = getMetaData().getTables().get(optimizedStatement.getTables().getSingleTableName());
+        if (tableMetaData instanceof ShardingTableMetaData) {
+            ((ShardingTableMetaData) tableMetaData).getLogicIndexes().add(createIndexStatement.getIndex().getName());
+        }
     }
     
     private void refreshTableMetaDataForDropIndex(final OptimizedStatement optimizedStatement) {
         DropIndexStatement dropIndexStatement = (DropIndexStatement) optimizedStatement.getSQLStatement();
         Collection<String> indexNames = getIndexNames(dropIndexStatement);
         if (!optimizedStatement.getTables().isEmpty()) {
-            getMetaData().getTables().get(optimizedStatement.getTables().getSingleTableName()).getLogicIndexes().removeAll(indexNames);
+            TableMetaData tableMetaData = getMetaData().getTables().get(optimizedStatement.getTables().getSingleTableName());
+            if (tableMetaData instanceof ShardingTableMetaData) {
+                ((ShardingTableMetaData) tableMetaData).getLogicIndexes().removeAll(indexNames);
+            }
         }
         for (String each : indexNames) {
-            Optional<String> logicTableName = getMetaData().getTables().getLogicTableName(each);
+            Optional<String> logicTableName = findLogicTableName(getMetaData().getTables(), each);
             if (logicTableName.isPresent()) {
-                getMetaData().getTables().get(logicTableName.get()).getLogicIndexes().remove(each);
+                ((ShardingTableMetaData) getMetaData().getTables().get(optimizedStatement.getTables().getSingleTableName())).getLogicIndexes().remove(each);
             }
         }
     }
@@ -172,5 +180,14 @@ public final class ShardingSchema extends LogicSchema {
             result.add(each.getName());
         }
         return result;
+    }
+    
+    private Optional<String> findLogicTableName(final TableMetas tableMetas, final String logicIndexName) {
+        for (String each : tableMetas.getAllTableNames()) {
+            if (tableMetas.get(each) instanceof ShardingTableMetaData && ((ShardingTableMetaData) tableMetas.get(each)).containsIndex(logicIndexName)) {
+                return Optional.of(each);
+            }
+        }
+        return Optional.absent();
     }
 }

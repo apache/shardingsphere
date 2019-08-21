@@ -15,42 +15,41 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.metadata.table.impl;
+package org.apache.shardingsphere.core.metadata.table.sharding;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
+import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
+import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
- * Table metadata.
+ * Table meta data for sharding.
  *
- * @author panjuan
+ * @author zhangliang
  */
 @Getter
-@EqualsAndHashCode
-@ToString
-public final class TableMetaData {
-    
-    private final Map<String, ColumnMetaData> columns;
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
+public final class ShardingTableMetaData extends TableMetaData {
     
     private final Collection<String> logicIndexes;
     
-    public TableMetaData(final Collection<ColumnMetaData> columnMetaDataList, final Collection<String> logicIndexes) {
-        columns = getColumns(columnMetaDataList);
+    public ShardingTableMetaData(final Collection<ColumnMetaData> columnMetaDataList, final Collection<String> logicIndexes) {
+        super(columnMetaDataList);
         this.logicIndexes = new CopyOnWriteArraySet<>(logicIndexes);
     }
     
-    private Map<String, ColumnMetaData> getColumns(final Collection<ColumnMetaData> columnMetaDataList) {
-        Map<String, ColumnMetaData> columns = new LinkedHashMap<>(columnMetaDataList.size(), 1);
-        for (ColumnMetaData each : columnMetaDataList) {
-            columns.put(each.getColumnName(), each);
-        }
-        return Collections.synchronizedMap(columns);
+    /**
+     * Judge contains index or not.
+     * 
+     * @param logicIndexName logic index name
+     * @return contains index or not
+     */
+    public boolean containsIndex(final String logicIndexName) {
+        return logicIndexes.contains(logicIndexName);
     }
 }

@@ -25,8 +25,9 @@ import org.apache.shardingsphere.core.execute.ShardingExecuteEngine;
 import org.apache.shardingsphere.core.execute.ShardingExecuteGroup;
 import org.apache.shardingsphere.core.execute.ShardingGroupExecuteCallback;
 import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetas;
-import org.apache.shardingsphere.core.metadata.table.impl.ColumnMetaData;
-import org.apache.shardingsphere.core.metadata.table.impl.TableMetaData;
+import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
+import org.apache.shardingsphere.core.metadata.table.TableMetaData;
+import org.apache.shardingsphere.core.metadata.table.sharding.ShardingTableMetaData;
 import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.core.rule.ShardingDataSourceNames;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -133,9 +134,9 @@ public final class TableMetaDataLoader {
     
     private TableMetaData createTableMetaData(final Connection connection, final String catalog, final String actualTableName) throws SQLException {
         if (isTableExist(connection, catalog, actualTableName)) {
-            return new TableMetaData(getColumnMetaDataList(connection, catalog, actualTableName), getLogicIndexes(connection, catalog, actualTableName));
+            return new ShardingTableMetaData(getColumnMetaDataList(connection, catalog, actualTableName), getLogicIndexes(connection, catalog, actualTableName));
         }
-        return new TableMetaData(Collections.<ColumnMetaData>emptyList(), Collections.<String>emptySet());
+        return new ShardingTableMetaData(Collections.<ColumnMetaData>emptyList(), Collections.<String>emptySet());
     }
     
     private boolean isTableExist(final Connection connection, final String catalog, final String actualTableName) throws SQLException {

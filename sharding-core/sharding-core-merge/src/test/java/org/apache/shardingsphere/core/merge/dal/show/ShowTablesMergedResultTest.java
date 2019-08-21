@@ -24,9 +24,10 @@ import org.apache.shardingsphere.api.config.sharding.strategy.ComplexShardingStr
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.fixture.ComplexKeysShardingAlgorithmFixture;
 import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
+import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
+import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.metadata.table.impl.ColumnMetaData;
-import org.apache.shardingsphere.core.metadata.table.impl.TableMetaData;
+import org.apache.shardingsphere.core.metadata.table.sharding.ShardingTableMetaData;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.junit.Before;
 import org.junit.Test;
@@ -63,7 +64,7 @@ public final class ShowTablesMergedResultTest {
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
         shardingRule = new ShardingRule(shardingRuleConfig, Lists.newArrayList("ds"));
         Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(1, 1);
-        tableMetaDataMap.put("table", new TableMetaData(Collections.<ColumnMetaData>emptyList(), Collections.<String>emptySet()));
+        tableMetaDataMap.put("table", new ShardingTableMetaData(Collections.<ColumnMetaData>emptyList(), Collections.<String>emptySet()));
         tableMetas = new TableMetas(tableMetaDataMap);
         resultSet = mock(ResultSet.class);
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);

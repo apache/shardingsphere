@@ -19,9 +19,10 @@ package org.apache.shardingsphere.core.optimize.sharding.engnie.dml;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Range;
+import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
+import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.metadata.table.impl.ColumnMetaData;
-import org.apache.shardingsphere.core.metadata.table.impl.TableMetaData;
+import org.apache.shardingsphere.core.metadata.table.sharding.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingConditions;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.SelectItems;
@@ -232,6 +233,6 @@ public final class ShardingSelectOptimizeEngineTest {
     private TableMetaData createTableMetaData() {
         ColumnMetaData idColumnMetaData = new ColumnMetaData("id", "int", true);
         ColumnMetaData nameColumnMetaData = new ColumnMetaData("user_id", "int", false);
-        return new TableMetaData(Arrays.asList(idColumnMetaData, nameColumnMetaData), Arrays.asList("id", "user_id"));
+        return new ShardingTableMetaData(Arrays.asList(idColumnMetaData, nameColumnMetaData), Arrays.asList("id", "user_id"));
     }
 }
