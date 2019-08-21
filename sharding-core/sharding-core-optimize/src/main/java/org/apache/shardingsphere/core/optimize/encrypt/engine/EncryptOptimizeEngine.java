@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.optimize.encrypt.engine;
 
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.metadata.table.ShardingSphereTableMetaData;
 import org.apache.shardingsphere.core.optimize.api.engine.OptimizeEngine;
 import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
@@ -35,5 +35,5 @@ import java.util.List;
 public interface EncryptOptimizeEngine<T extends SQLStatement> extends OptimizeEngine<EncryptRule, T> {
     
     @Override
-    EncryptOptimizedStatement optimize(EncryptRule encryptRule, ShardingTableMetaData shardingTableMetaData, String sql, List<Object> parameters, T sqlStatement);
+    EncryptOptimizedStatement optimize(EncryptRule encryptRule, ShardingSphereTableMetaData tableMetaData, String sql, List<Object> parameters, T sqlStatement);
 }

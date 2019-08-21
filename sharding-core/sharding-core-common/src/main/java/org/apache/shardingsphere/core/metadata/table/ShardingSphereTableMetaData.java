@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.metadata.table;
 
 import com.google.common.base.Optional;
-import lombok.Getter;
+import org.apache.shardingsphere.core.metadata.table.impl.TableMetaData;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -27,19 +27,18 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Sharding table meta data.
+ * ShardingSphere table meta data.
  *
  * @author panjuan
  * @author zhaojun
  * @author zhangliang
  * @author panjuan
  */
-@Getter
-public final class ShardingTableMetaData {
+public final class ShardingSphereTableMetaData {
     
     private final Map<String, TableMetaData> tables;
     
-    public ShardingTableMetaData(final Map<String, TableMetaData> tables) {
+    public ShardingSphereTableMetaData(final Map<String, TableMetaData> tables) {
         this.tables = new ConcurrentHashMap<>(tables);
     }
     

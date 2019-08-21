@@ -24,9 +24,9 @@ import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStra
 import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingSphereDataSourceMetaData;
-import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.metadata.table.TableMetaData;
+import org.apache.shardingsphere.core.metadata.table.ShardingSphereTableMetaData;
+import org.apache.shardingsphere.core.metadata.table.impl.ColumnMetaData;
+import org.apache.shardingsphere.core.metadata.table.impl.TableMetaData;
 import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.route.PreparedStatementRoutingEngine;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
@@ -48,7 +48,7 @@ public abstract class AbstractSQLRouteTest {
     
     protected final SQLRouteResult assertRoute(final String sql, final List<Object> parameters) {
         ShardingRule shardingRule = createShardingRule();
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(buildDataSourceMetaData(), buildShardingTableMetaData());
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(buildDataSourceMetaData(), buildTableMetaData());
         SQLParseEngine parseEngine = new SQLParseEngine(DatabaseTypes.getActualDatabaseType("MySQL"));
         PreparedStatementRoutingEngine engine = new PreparedStatementRoutingEngine(sql, shardingRule, metaData, DatabaseTypes.getActualDatabaseType("MySQL"), parseEngine);
         SQLRouteResult result = engine.route(parameters);
@@ -111,13 +111,13 @@ public abstract class AbstractSQLRouteTest {
         return result;
     }
     
-    private ShardingTableMetaData buildShardingTableMetaData() {
+    private ShardingSphereTableMetaData buildTableMetaData() {
         Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(3, 1);
         tableMetaDataMap.put("t_order", new TableMetaData(Arrays.asList(new ColumnMetaData("order_id", "int", true), new ColumnMetaData("user_id", "int", false), 
                         new ColumnMetaData("status", "int", false)), Collections.<String>emptySet()));
         tableMetaDataMap.put("t_order_item", new TableMetaData(Arrays.asList(new ColumnMetaData("item_id", "int", true), new ColumnMetaData("order_id", "int", false),
                 new ColumnMetaData("user_id", "int", false), new ColumnMetaData("status", "varchar", false), 
                 new ColumnMetaData("c_date", "timestamp", false)), Collections.<String>emptySet()));
-        return new ShardingTableMetaData(tableMetaDataMap);
+        return new ShardingSphereTableMetaData(tableMetaDataMap);
     }
 }

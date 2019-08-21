@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.dal.DALMergeEngine;
 import org.apache.shardingsphere.core.merge.dql.DQLMergeEngine;
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.metadata.table.ShardingSphereTableMetaData;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
@@ -47,18 +47,18 @@ public final class MergeEngineFactory {
      * @param databaseType database type
      * @param shardingRule sharding rule
      * @param routeResult SQL route result
-     * @param shardingTableMetaData sharding table meta Data
+     * @param tableMetaData sharding table meta Data
      * @param queryResults query results
      * @return merge engine instance
      * @throws SQLException SQL exception
      */
     public static MergeEngine newInstance(final DatabaseType databaseType, final ShardingRule shardingRule,
-                                          final SQLRouteResult routeResult, final ShardingTableMetaData shardingTableMetaData, final List<QueryResult> queryResults) throws SQLException {
+                                          final SQLRouteResult routeResult, final ShardingSphereTableMetaData tableMetaData, final List<QueryResult> queryResults) throws SQLException {
         if (routeResult.getShardingStatement() instanceof ShardingSelectOptimizedStatement) {
             return new DQLMergeEngine(databaseType, routeResult, queryResults);
         } 
         if (routeResult.getShardingStatement().getSQLStatement() instanceof DALStatement) {
-            return new DALMergeEngine(shardingRule, queryResults, (DALStatement) routeResult.getShardingStatement().getSQLStatement(), shardingTableMetaData);
+            return new DALMergeEngine(shardingRule, queryResults, (DALStatement) routeResult.getShardingStatement().getSQLStatement(), tableMetaData);
         }
         return new TransparentMergeEngine(queryResults);
     }

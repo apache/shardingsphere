@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.optimize.encrypt.segment.condition.engine
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.metadata.table.ShardingSphereTableMetaData;
 import org.apache.shardingsphere.core.optimize.api.segment.Tables;
 import org.apache.shardingsphere.core.optimize.encrypt.segment.condition.EncryptCondition;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
@@ -52,7 +52,7 @@ public final class WhereClauseEncryptConditionEngine {
     
     private final EncryptRule encryptRule;
     
-    private final ShardingTableMetaData shardingTableMetaData;
+    private final ShardingSphereTableMetaData tableMetaData;
     
     /**
      * Create encrypt conditions.
@@ -96,7 +96,7 @@ public final class WhereClauseEncryptConditionEngine {
     }
     
     private Optional<EncryptCondition> createEncryptCondition(final PredicateSegment predicateSegment, final Tables tables) {
-        Optional<String> tableName = tables.findTableName(predicateSegment.getColumn(), shardingTableMetaData);
+        Optional<String> tableName = tables.findTableName(predicateSegment.getColumn(), tableMetaData);
         if (!tableName.isPresent() || !encryptRule.getShardingEncryptor(tableName.get(), predicateSegment.getColumn().getName()).isPresent()) {
             return Optional.absent();
         }

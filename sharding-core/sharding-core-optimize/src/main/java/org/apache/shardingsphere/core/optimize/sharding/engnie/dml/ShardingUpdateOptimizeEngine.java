@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.optimize.sharding.engnie.dml;
 
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.metadata.table.ShardingSphereTableMetaData;
 import org.apache.shardingsphere.core.optimize.encrypt.segment.condition.EncryptConditions;
 import org.apache.shardingsphere.core.optimize.encrypt.segment.condition.engine.WhereClauseEncryptConditionEngine;
 import org.apache.shardingsphere.core.optimize.sharding.engnie.ShardingOptimizeEngine;
@@ -37,10 +37,10 @@ import java.util.List;
 public final class ShardingUpdateOptimizeEngine implements ShardingOptimizeEngine<UpdateStatement> {
     
     @Override
-    public ShardingConditionOptimizedStatement optimize(final ShardingRule shardingRule, 
-                                                        final ShardingTableMetaData shardingTableMetaData, final String sql, final List<Object> parameters, final UpdateStatement sqlStatement) {
-        WhereClauseShardingConditionEngine shardingConditionEngine = new WhereClauseShardingConditionEngine(shardingRule, shardingTableMetaData);
-        WhereClauseEncryptConditionEngine encryptConditionEngine = new WhereClauseEncryptConditionEngine(shardingRule.getEncryptRule(), shardingTableMetaData);
+    public ShardingConditionOptimizedStatement optimize(final ShardingRule shardingRule,
+                                                        final ShardingSphereTableMetaData tableMetaData, final String sql, final List<Object> parameters, final UpdateStatement sqlStatement) {
+        WhereClauseShardingConditionEngine shardingConditionEngine = new WhereClauseShardingConditionEngine(shardingRule, tableMetaData);
+        WhereClauseEncryptConditionEngine encryptConditionEngine = new WhereClauseEncryptConditionEngine(shardingRule.getEncryptRule(), tableMetaData);
         return new ShardingConditionOptimizedStatement(sqlStatement,
                 new ShardingConditions(shardingConditionEngine.createShardingConditions(sqlStatement, parameters)),
                 new EncryptConditions(encryptConditionEngine.createEncryptConditions(sqlStatement)));

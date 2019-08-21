@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.optimize.sharding.engnie.dml;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.metadata.table.ShardingSphereTableMetaData;
 import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
 import org.apache.shardingsphere.core.optimize.sharding.engnie.ShardingOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingCondition;
@@ -51,10 +51,10 @@ public final class ShardingInsertOptimizeEngine implements ShardingOptimizeEngin
     
     @Override
     public ShardingInsertOptimizedStatement optimize(final ShardingRule shardingRule,
-                                                     final ShardingTableMetaData shardingTableMetaData, final String sql, final List<Object> parameters, final InsertStatement sqlStatement) {
+                                                     final ShardingSphereTableMetaData tableMetaData, final String sql, final List<Object> parameters, final InsertStatement sqlStatement) {
         InsertClauseShardingConditionEngine shardingConditionEngine = new InsertClauseShardingConditionEngine(shardingRule);
         Collection<String> derivedColumnNames = shardingRule.getEncryptRule().getAssistedQueryColumns(sqlStatement.getTable().getTableName());
-        ShardingInsertColumns insertColumns = new ShardingInsertColumns(shardingRule, shardingTableMetaData, sqlStatement, derivedColumnNames);
+        ShardingInsertColumns insertColumns = new ShardingInsertColumns(shardingRule, tableMetaData, sqlStatement, derivedColumnNames);
         InsertValueEngine insertValueEngine = new InsertValueEngine();
         Collection<InsertValue> insertValues = insertValueEngine.createInsertValues(sqlStatement);
         Optional<GeneratedKey> generatedKey = GeneratedKey.getGenerateKey(shardingRule, parameters, sqlStatement, insertColumns, insertValues);

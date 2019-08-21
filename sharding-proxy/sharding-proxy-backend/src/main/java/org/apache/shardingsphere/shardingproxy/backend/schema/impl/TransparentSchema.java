@@ -21,7 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingSphereDataSourceMetaData;
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.metadata.table.ShardingSphereTableMetaData;
 import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
@@ -56,7 +56,7 @@ public final class TransparentSchema extends LogicSchema {
     
     private ShardingSphereMetaData createMetaData() {
         ShardingSphereDataSourceMetaData dataSourceMetaData = new ShardingSphereDataSourceMetaData(getDataSourceURLs(getDataSources()), LogicSchemas.getInstance().getDatabaseType());
-        ShardingTableMetaData shardingTableMetaData = new ShardingTableMetaData(getTableMetaDataInitializer(dataSourceMetaData).load(shardingRule));
-        return new ShardingSphereMetaData(dataSourceMetaData, shardingTableMetaData);
+        ShardingSphereTableMetaData tableMetaData = new ShardingSphereTableMetaData(getTableMetaDataInitializer(dataSourceMetaData).load(shardingRule));
+        return new ShardingSphereMetaData(dataSourceMetaData, tableMetaData);
     }
 }

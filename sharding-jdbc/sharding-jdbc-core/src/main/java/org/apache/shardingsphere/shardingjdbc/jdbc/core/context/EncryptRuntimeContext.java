@@ -19,9 +19,9 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.context;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
-import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.metadata.table.TableMetaData;
+import org.apache.shardingsphere.core.metadata.table.ShardingSphereTableMetaData;
+import org.apache.shardingsphere.core.metadata.table.impl.ColumnMetaData;
+import org.apache.shardingsphere.core.metadata.table.impl.TableMetaData;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 
@@ -46,14 +46,14 @@ import java.util.Set;
 @Getter
 public final class EncryptRuntimeContext extends AbstractRuntimeContext<EncryptRule> {
     
-    private final ShardingTableMetaData metaData;
+    private final ShardingSphereTableMetaData metaData;
     
     public EncryptRuntimeContext(final DataSource dataSource, final EncryptRule rule, final Properties props, final DatabaseType databaseType) throws SQLException {
         super(rule, props, databaseType);
         metaData = createEncryptTableMetaData(dataSource, rule);
     }
     
-    private ShardingTableMetaData createEncryptTableMetaData(final DataSource dataSource, final EncryptRule encryptRule) throws SQLException {
+    private ShardingSphereTableMetaData createEncryptTableMetaData(final DataSource dataSource, final EncryptRule encryptRule) throws SQLException {
         Map<String, TableMetaData> tables = new LinkedHashMap<>();
         try (Connection connection = dataSource.getConnection()) {
             for (String each : encryptRule.getEncryptTableNames()) {
@@ -62,7 +62,7 @@ public final class EncryptRuntimeContext extends AbstractRuntimeContext<EncryptR
                 }
             }
         }
-        return new ShardingTableMetaData(tables);
+        return new ShardingSphereTableMetaData(tables);
     }
     
     private boolean isTableExist(final Connection connection, final String tableName) throws SQLException {

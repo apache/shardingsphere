@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.metadata.table;
+package org.apache.shardingsphere.core.metadata.table.impl;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

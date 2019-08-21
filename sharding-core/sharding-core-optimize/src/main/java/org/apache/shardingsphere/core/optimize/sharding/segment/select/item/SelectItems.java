@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.metadata.table.ShardingSphereTableMetaData;
 import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 
 import java.util.ArrayList;
@@ -40,7 +40,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Getter
 @Setter
-@ToString(exclude = "shardingTableMetaData")
+@ToString(exclude = "tableMetaData")
 public final class SelectItems {
     
     private final int startIndex;
@@ -53,7 +53,7 @@ public final class SelectItems {
     
     private final Collection<TableSegment> tables;
     
-    private final ShardingTableMetaData shardingTableMetaData;
+    private final ShardingSphereTableMetaData tableMetaData;
     
     /**
      * Judge is unqualified shorthand item or not.
@@ -139,7 +139,7 @@ public final class SelectItems {
     private Collection<String> getQualifiedShorthandColumnLabels(final String owner) {
         for (TableSegment each : tables) {
             if (owner.equalsIgnoreCase(each.getAlias().or(each.getTableName()))) {
-                return shardingTableMetaData.get(each.getTableName()).getColumns().keySet();
+                return tableMetaData.get(each.getTableName()).getColumns().keySet();
             }
         }
         return Collections.emptyList();
@@ -148,7 +148,7 @@ public final class SelectItems {
     private Collection<String> getUnqualifiedShorthandColumnLabels() {
         Collection<String> result = new LinkedList<>();
         for (TableSegment each : tables) {
-            result.addAll(shardingTableMetaData.get(each.getTableName()).getColumns().keySet());
+            result.addAll(tableMetaData.get(each.getTableName()).getColumns().keySet());
         }
         return result;
     }

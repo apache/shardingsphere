@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.optimize.encrypt.engine;
 
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.metadata.table.ShardingSphereTableMetaData;
 import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptTransparentOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.rule.EncryptRule;
@@ -33,7 +33,7 @@ public final class EncryptTransparentOptimizeEngine implements EncryptOptimizeEn
     
     @Override
     public EncryptTransparentOptimizedStatement optimize(final EncryptRule rule,
-                                                         final ShardingTableMetaData shardingTableMetaData, final String sql, final List<Object> parameters, final SQLStatement sqlStatement) {
+                                                         final ShardingSphereTableMetaData tableMetaData, final String sql, final List<Object> parameters, final SQLStatement sqlStatement) {
         return new EncryptTransparentOptimizedStatement(sqlStatement);
     }
 }

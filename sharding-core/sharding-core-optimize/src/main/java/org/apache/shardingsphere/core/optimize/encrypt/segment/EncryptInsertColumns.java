@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.optimize.encrypt.segment;
 
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.metadata.table.ShardingSphereTableMetaData;
 import org.apache.shardingsphere.core.optimize.api.segment.InsertColumns;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rule.EncryptRule;
@@ -41,13 +41,13 @@ public final class EncryptInsertColumns implements InsertColumns {
     @Getter
     private final Collection<String> regularColumnNames;
     
-    public EncryptInsertColumns(final EncryptRule encryptRule, final ShardingTableMetaData shardingTableMetaData, final InsertStatement insertStatement) {
+    public EncryptInsertColumns(final EncryptRule encryptRule, final ShardingSphereTableMetaData tableMetaData, final InsertStatement insertStatement) {
         assistedQueryAndPlainColumnNames = encryptRule.getAssistedQueryAndPlainColumns(insertStatement.getTable().getTableName());
-        regularColumnNames = insertStatement.useDefaultColumns() ? getRegularColumnNamesFromMetaData(encryptRule, shardingTableMetaData, insertStatement) : insertStatement.getColumnNames();
+        regularColumnNames = insertStatement.useDefaultColumns() ? getRegularColumnNamesFromMetaData(encryptRule, tableMetaData, insertStatement) : insertStatement.getColumnNames();
     }
     
-    private Collection<String> getRegularColumnNamesFromMetaData(final EncryptRule encryptRule, final ShardingTableMetaData shardingTableMetaData, final InsertStatement insertStatement) {
-        Collection<String> allColumnNames = shardingTableMetaData.getAllColumnNames(insertStatement.getTable().getTableName());
+    private Collection<String> getRegularColumnNamesFromMetaData(final EncryptRule encryptRule, final ShardingSphereTableMetaData tableMetaData, final InsertStatement insertStatement) {
+        Collection<String> allColumnNames = tableMetaData.getAllColumnNames(insertStatement.getTable().getTableName());
         Collection<String> result = new LinkedHashSet<>(allColumnNames.size() - assistedQueryAndPlainColumnNames.size());
         String tableName = insertStatement.getTable().getTableName();
         for (String each : allColumnNames) {

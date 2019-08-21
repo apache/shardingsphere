@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.optimize.sharding.segment.select.item.eng
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.metadata.table.ShardingSphereTableMetaData;
 import org.apache.shardingsphere.core.optimize.api.segment.Table;
 import org.apache.shardingsphere.core.optimize.api.segment.Tables;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.groupby.GroupBy;
@@ -51,7 +51,7 @@ import java.util.LinkedList;
 @RequiredArgsConstructor
 public final class SelectItemsEngine {
     
-    private final ShardingTableMetaData shardingTableMetaData;
+    private final ShardingSphereTableMetaData tableMetaData;
     
     private final SelectItemEngine selectItemEngine = new SelectItemEngine();
     
@@ -68,7 +68,7 @@ public final class SelectItemsEngine {
         SelectItemsSegment selectItemsSegment = selectStatement.getSelectItems();
         Collection<SelectItem> items = getSelectItemList(sql, selectItemsSegment);
         SelectItems result = new SelectItems(
-                selectItemsSegment.getStartIndex(), selectItemsSegment.getStopIndex(), selectItemsSegment.isDistinctRow(), items, selectStatement.getTables(), shardingTableMetaData);
+                selectItemsSegment.getStartIndex(), selectItemsSegment.getStopIndex(), selectItemsSegment.isDistinctRow(), items, selectStatement.getTables(), tableMetaData);
         Tables tables = new Tables(selectStatement);
         result.getItems().addAll(getDerivedGroupByColumns(tables, items, groupBy));
         result.getItems().addAll(getDerivedOrderByColumns(tables, items, orderBy));
@@ -172,7 +172,7 @@ public final class SelectItemsEngine {
     private boolean isSameSelectItem(final Tables tables, final ShorthandSelectItem shorthandSelectItem, final ColumnOrderByItemSegment orderItem) {
         Preconditions.checkState(shorthandSelectItem.getOwner().isPresent());
         Optional<Table> table = tables.find(shorthandSelectItem.getOwner().get());
-        return table.isPresent() && shardingTableMetaData.containsColumn(table.get().getName(), orderItem.getColumn().getName());
+        return table.isPresent() && tableMetaData.containsColumn(table.get().getName(), orderItem.getColumn().getName());
     }
     
     private boolean containsItemInSelectItems(final Collection<SelectItem> items, final OrderByItemSegment orderItem) {

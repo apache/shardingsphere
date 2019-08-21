@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.optimize.sharding.engnie;
 
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.metadata.table.ShardingSphereTableMetaData;
 import org.apache.shardingsphere.core.optimize.sharding.statement.ShardingTransparentOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -33,7 +33,7 @@ public final class ShardingTransparentOptimizeEngine implements ShardingOptimize
     
     @Override
     public ShardingTransparentOptimizedStatement optimize(final ShardingRule rule,
-                                                          final ShardingTableMetaData shardingTableMetaData, final String sql, final List<Object> parameters, final SQLStatement sqlStatement) {
+                                                          final ShardingSphereTableMetaData tableMetaData, final String sql, final List<Object> parameters, final SQLStatement sqlStatement) {
         return new ShardingTransparentOptimizedStatement(sqlStatement);
     }
 }

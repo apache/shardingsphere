@@ -21,7 +21,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.ToString;
 import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.metadata.table.ShardingSphereTableMetaData;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.generic.AliasAvailable;
 import org.apache.shardingsphere.core.parse.sql.segment.generic.TableAvailable;
@@ -142,10 +142,10 @@ public final class Tables {
      * Find table name.
      *
      * @param columnSegment column segment
-     * @param shardingTableMetaData sharding table meta data
+     * @param tableMetaData table meta data of ShardingSphere
      * @return table name
      */
-    public Optional<String> findTableName(final ColumnSegment columnSegment, final ShardingTableMetaData shardingTableMetaData) {
+    public Optional<String> findTableName(final ColumnSegment columnSegment, final ShardingSphereTableMetaData tableMetaData) {
         if (isSingleTable()) {
             return Optional.of(getSingleTableName());
         }
@@ -153,12 +153,12 @@ public final class Tables {
             Optional<Table> table = find(columnSegment.getOwner().get().getTableName());
             return table.isPresent() ? Optional.of(table.get().getName()) : Optional.<String>absent();
         }
-        return findTableNameFromMetaData(columnSegment.getName(), shardingTableMetaData);
+        return findTableNameFromMetaData(columnSegment.getName(), tableMetaData);
     }
     
-    private Optional<String> findTableNameFromMetaData(final String columnName, final ShardingTableMetaData shardingTableMetaData) {
+    private Optional<String> findTableNameFromMetaData(final String columnName, final ShardingSphereTableMetaData tableMetaData) {
         for (String each : getTableNames()) {
-            if (shardingTableMetaData.containsColumn(each, columnName)) {
+            if (tableMetaData.containsColumn(each, columnName)) {
                 return Optional.of(each);
             }
         }
