@@ -23,7 +23,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.core.metadata.datasource.ShardingSphereDataSourceMetaData;
+import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.core.metadata.table.ShardingSphereTableMetaData;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -58,9 +58,9 @@ public final class EncryptSchema extends LogicSchema {
     }
     
     private ShardingSphereMetaData createMetaData() {
-        ShardingSphereDataSourceMetaData dataSourceMetaData = new ShardingSphereDataSourceMetaData(getDataSourceURLs(getDataSources()), LogicSchemas.getInstance().getDatabaseType());
-        ShardingSphereTableMetaData tableMetaData = new ShardingSphereTableMetaData(getTableMetaDataInitializer(dataSourceMetaData).load(shardingRule));
-        return new ShardingSphereMetaData(dataSourceMetaData, tableMetaData);
+        DataSourceMetas dataSourceMetas = new DataSourceMetas(getDataSourceURLs(getDataSources()), LogicSchemas.getInstance().getDatabaseType());
+        ShardingSphereTableMetaData tableMetaData = new ShardingSphereTableMetaData(getTableMetaDataInitializer(dataSourceMetas).load(shardingRule));
+        return new ShardingSphereMetaData(dataSourceMetas, tableMetaData);
     }
     
     /**

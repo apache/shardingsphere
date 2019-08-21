@@ -84,7 +84,7 @@ public abstract class BaseShardingEngine {
         routingHook.start(sql);
         try {
             SQLRouteResult result = route(sql, clonedParameters);
-            routingHook.finishSuccess(result, metaData.getTable());
+            routingHook.finishSuccess(result, metaData.getTables());
             return result;
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {

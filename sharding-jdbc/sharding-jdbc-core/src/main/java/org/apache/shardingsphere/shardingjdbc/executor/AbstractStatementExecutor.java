@@ -177,17 +177,17 @@ public class AbstractStatementExecutor {
     
     private void refreshTableMetaDataForCreateTable(final ShardingRuntimeContext runtimeContext, final OptimizedStatement optimizedStatement) {
         String tableName = optimizedStatement.getTables().getSingleTableName();
-        runtimeContext.getMetaData().getTable().put(tableName, getTableMetaDataInitializer().load(tableName, runtimeContext.getRule()));
+        runtimeContext.getMetaData().getTables().put(tableName, getTableMetaDataInitializer().load(tableName, runtimeContext.getRule()));
     }
     
     private void refreshTableMetaDataForAlterTable(final ShardingRuntimeContext runtimeContext, final OptimizedStatement optimizedStatement) {
         String tableName = optimizedStatement.getTables().getSingleTableName();
-        runtimeContext.getMetaData().getTable().put(tableName, getTableMetaDataInitializer().load(tableName, runtimeContext.getRule()));
+        runtimeContext.getMetaData().getTables().put(tableName, getTableMetaDataInitializer().load(tableName, runtimeContext.getRule()));
     }
     
     private void refreshTableMetaDataForDropTable(final ShardingRuntimeContext runtimeContext, final OptimizedStatement optimizedStatement) {
         for (String each : optimizedStatement.getTables().getTableNames()) {
-            runtimeContext.getMetaData().getTable().remove(each);
+            runtimeContext.getMetaData().getTables().remove(each);
         }
     }
     
@@ -196,19 +196,19 @@ public class AbstractStatementExecutor {
         if (null == createIndexStatement.getIndex()) {
             return;
         }
-        runtimeContext.getMetaData().getTable().get(optimizedStatement.getTables().getSingleTableName()).getLogicIndexes().add(createIndexStatement.getIndex().getName());
+        runtimeContext.getMetaData().getTables().get(optimizedStatement.getTables().getSingleTableName()).getLogicIndexes().add(createIndexStatement.getIndex().getName());
     }
     
     private void refreshTableMetaDataForDropIndex(final ShardingRuntimeContext runtimeContext, final OptimizedStatement optimizedStatement) {
         DropIndexStatement dropIndexStatement = (DropIndexStatement) optimizedStatement.getSQLStatement();
         Collection<String> indexNames = getIndexNames(dropIndexStatement);
         if (!optimizedStatement.getTables().isEmpty()) {
-            runtimeContext.getMetaData().getTable().get(optimizedStatement.getTables().getSingleTableName()).getLogicIndexes().removeAll(indexNames);
+            runtimeContext.getMetaData().getTables().get(optimizedStatement.getTables().getSingleTableName()).getLogicIndexes().removeAll(indexNames);
         }
         for (String each : indexNames) {
-            Optional<String> logicTableName = runtimeContext.getMetaData().getTable().getLogicTableName(each);
+            Optional<String> logicTableName = runtimeContext.getMetaData().getTables().getLogicTableName(each);
             if (logicTableName.isPresent()) {
-                runtimeContext.getMetaData().getTable().get(logicTableName.get()).getLogicIndexes().remove(each);
+                runtimeContext.getMetaData().getTables().get(logicTableName.get()).getLogicIndexes().remove(each);
             }
         }
     }
@@ -223,7 +223,7 @@ public class AbstractStatementExecutor {
     
     private TableMetaDataInitializer getTableMetaDataInitializer() {
         ShardingProperties shardingProperties = connection.getRuntimeContext().getProps();
-        return new TableMetaDataInitializer(connection.getRuntimeContext().getMetaData().getDataSource(), 
+        return new TableMetaDataInitializer(connection.getRuntimeContext().getMetaData().getDataSources(), 
                 connection.getRuntimeContext().getExecuteEngine(), new JDBCTableMetaDataConnectionManager(connection.getDataSourceMap()),
                 shardingProperties.<Integer>getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY),
                 shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.CHECK_TABLE_METADATA_ENABLED));

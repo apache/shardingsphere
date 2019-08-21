@@ -22,7 +22,7 @@ import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.core.metadata.datasource.ShardingSphereDataSourceMetaData;
+import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.core.metadata.table.ShardingSphereTableMetaData;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.ddl.index.IndexSegment;
@@ -75,9 +75,9 @@ public final class ShardingSchema extends LogicSchema {
     }
     
     private ShardingSphereMetaData createMetaData() {
-        ShardingSphereDataSourceMetaData dataSourceMetaData = new ShardingSphereDataSourceMetaData(getDataSourceURLs(getDataSources()), LogicSchemas.getInstance().getDatabaseType());
-        ShardingSphereTableMetaData tableMetaData = new ShardingSphereTableMetaData(getTableMetaDataInitializer(dataSourceMetaData).load(shardingRule));
-        return new ShardingSphereMetaData(dataSourceMetaData, tableMetaData);
+        DataSourceMetas dataSourceMetas = new DataSourceMetas(getDataSourceURLs(getDataSources()), LogicSchemas.getInstance().getDatabaseType());
+        ShardingSphereTableMetaData tableMetaData = new ShardingSphereTableMetaData(getTableMetaDataInitializer(dataSourceMetas).load(shardingRule));
+        return new ShardingSphereMetaData(dataSourceMetas, tableMetaData);
     }
     
     /**
@@ -128,17 +128,17 @@ public final class ShardingSchema extends LogicSchema {
     
     private void refreshTableMetaDataForCreateTable(final OptimizedStatement optimizedStatement) {
         String tableName = optimizedStatement.getTables().getSingleTableName();
-        getMetaData().getTable().put(tableName, getTableMetaDataInitializer(metaData.getDataSource()).load(tableName, shardingRule));
+        getMetaData().getTables().put(tableName, getTableMetaDataInitializer(metaData.getDataSources()).load(tableName, shardingRule));
     }
     
     private void refreshTableMetaDataForAlterTable(final OptimizedStatement optimizedStatement) {
         String tableName = optimizedStatement.getTables().getSingleTableName();
-        getMetaData().getTable().put(tableName, getTableMetaDataInitializer(metaData.getDataSource()).load(tableName, shardingRule));
+        getMetaData().getTables().put(tableName, getTableMetaDataInitializer(metaData.getDataSources()).load(tableName, shardingRule));
     }
     
     private void refreshTableMetaDataForDropTable(final OptimizedStatement optimizedStatement) {
         for (String each : optimizedStatement.getTables().getTableNames()) {
-            getMetaData().getTable().remove(each);
+            getMetaData().getTables().remove(each);
         }
     }
     
@@ -147,19 +147,19 @@ public final class ShardingSchema extends LogicSchema {
         if (null == createIndexStatement.getIndex()) {
             return;
         }
-        getMetaData().getTable().get(optimizedStatement.getTables().getSingleTableName()).getLogicIndexes().add(createIndexStatement.getIndex().getName());
+        getMetaData().getTables().get(optimizedStatement.getTables().getSingleTableName()).getLogicIndexes().add(createIndexStatement.getIndex().getName());
     }
     
     private void refreshTableMetaDataForDropIndex(final OptimizedStatement optimizedStatement) {
         DropIndexStatement dropIndexStatement = (DropIndexStatement) optimizedStatement.getSQLStatement();
         Collection<String> indexNames = getIndexNames(dropIndexStatement);
         if (!optimizedStatement.getTables().isEmpty()) {
-            getMetaData().getTable().get(optimizedStatement.getTables().getSingleTableName()).getLogicIndexes().removeAll(indexNames);
+            getMetaData().getTables().get(optimizedStatement.getTables().getSingleTableName()).getLogicIndexes().removeAll(indexNames);
         }
         for (String each : indexNames) {
-            Optional<String> logicTableName = getMetaData().getTable().getLogicTableName(each);
+            Optional<String> logicTableName = getMetaData().getTables().getLogicTableName(each);
             if (logicTableName.isPresent()) {
-                getMetaData().getTable().get(logicTableName.get()).getLogicIndexes().remove(each);
+                getMetaData().getTables().get(logicTableName.get()).getLogicIndexes().remove(each);
             }
         }
     }

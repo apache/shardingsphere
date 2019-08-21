@@ -128,7 +128,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     
     private void setMergedResult(final SQLRouteResult routeResult) throws SQLException {
         mergedResult = MergeEngineFactory.newInstance(databaseType,
-                logicSchema.getShardingRule(), routeResult, logicSchema.getMetaData().getTable(), ((QueryResponse) response).getQueryResults()).merge();
+                logicSchema.getShardingRule(), routeResult, logicSchema.getMetaData().getTables(), ((QueryResponse) response).getQueryResults()).merge();
     }
     
     private void resetColumnLabelForShowTablesMergedResult() {

@@ -28,15 +28,15 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * ShardingSphere data source meta data.
+ * Data source metas.
  *
  * @author panjuan
  */
-public final class ShardingSphereDataSourceMetaData {
+public final class DataSourceMetas {
     
     private final Map<String, DataSourceMetaData> dataSourceMetaDataMap;
     
-    public ShardingSphereDataSourceMetaData(final Map<String, String> dataSourceURLs, final DatabaseType databaseType) {
+    public DataSourceMetas(final Map<String, String> dataSourceURLs, final DatabaseType databaseType) {
         dataSourceMetaDataMap = getDataSourceMetaDataMap(dataSourceURLs, databaseType);
     }
     

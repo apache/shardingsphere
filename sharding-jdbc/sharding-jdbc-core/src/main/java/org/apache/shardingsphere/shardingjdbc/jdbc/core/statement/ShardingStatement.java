@@ -91,7 +91,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
             shard(sql);
             initStatementExecutor();
             MergeEngine mergeEngine = MergeEngineFactory.newInstance(connection.getRuntimeContext().getDatabaseType(), 
-                    connection.getRuntimeContext().getRule(), sqlRouteResult, connection.getRuntimeContext().getMetaData().getTable(), statementExecutor.executeQuery());
+                    connection.getRuntimeContext().getRule(), sqlRouteResult, connection.getRuntimeContext().getMetaData().getTables(), statementExecutor.executeQuery());
             result = getResultSet(mergeEngine);
         } finally {
             currentResultSet = null;
@@ -118,7 +118,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
         }
         if (sqlRouteResult.getShardingStatement() instanceof ShardingSelectOptimizedStatement || sqlRouteResult.getShardingStatement().getSQLStatement() instanceof DALStatement) {
             MergeEngine mergeEngine = MergeEngineFactory.newInstance(connection.getRuntimeContext().getDatabaseType(),
-                    connection.getRuntimeContext().getRule(), sqlRouteResult, connection.getRuntimeContext().getMetaData().getTable(), queryResults);
+                    connection.getRuntimeContext().getRule(), sqlRouteResult, connection.getRuntimeContext().getMetaData().getTables(), queryResults);
             currentResultSet = getCurrentResultSet(resultSets, mergeEngine);
         }
         return currentResultSet;

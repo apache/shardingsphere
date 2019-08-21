@@ -72,13 +72,13 @@ public final class ParsingSQLRouter implements ShardingRouter {
     @SuppressWarnings("unchecked")
     @Override
     public SQLRouteResult route(final String logicSQL, final List<Object> parameters, final SQLStatement sqlStatement) {
-        ShardingOptimizedStatement shardingStatement = ShardingOptimizeEngineFactory.newInstance(sqlStatement).optimize(shardingRule, metaData.getTable(), logicSQL, parameters, sqlStatement);
+        ShardingOptimizedStatement shardingStatement = ShardingOptimizeEngineFactory.newInstance(sqlStatement).optimize(shardingRule, metaData.getTables(), logicSQL, parameters, sqlStatement);
         boolean needMergeShardingValues = isNeedMergeShardingValues(shardingStatement);
         if (shardingStatement instanceof ShardingConditionOptimizedStatement && needMergeShardingValues) {
             checkSubqueryShardingValues(shardingStatement, ((ShardingConditionOptimizedStatement) shardingStatement).getShardingConditions());
             mergeShardingConditions(((ShardingConditionOptimizedStatement) shardingStatement).getShardingConditions());
         }
-        RoutingResult routingResult = RoutingEngineFactory.newInstance(shardingRule, metaData.getDataSource(), shardingStatement).route();
+        RoutingResult routingResult = RoutingEngineFactory.newInstance(shardingRule, metaData.getDataSources(), shardingStatement).route();
         if (needMergeShardingValues) {
             Preconditions.checkState(1 == routingResult.getRoutingUnits().size(), "Must have one sharding with subquery.");
         }
@@ -86,7 +86,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
             setGeneratedValues((ShardingInsertOptimizedStatement) shardingStatement);
         }
         EncryptOptimizedStatement encryptStatement = EncryptOptimizeEngineFactory.newInstance(sqlStatement)
-                .optimize(shardingRule.getEncryptRule(), metaData.getTable(), logicSQL, parameters, sqlStatement);
+                .optimize(shardingRule.getEncryptRule(), metaData.getTables(), logicSQL, parameters, sqlStatement);
         SQLRouteResult result = new SQLRouteResult(shardingStatement, encryptStatement);
         result.setRoutingResult(routingResult);
         return result;

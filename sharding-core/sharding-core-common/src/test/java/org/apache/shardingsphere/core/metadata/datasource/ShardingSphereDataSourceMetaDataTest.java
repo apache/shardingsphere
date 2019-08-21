@@ -29,23 +29,23 @@ import static org.junit.Assert.assertEquals;
 
 public final class ShardingSphereDataSourceMetaDataTest {
     
-    private ShardingSphereDataSourceMetaData dataSourceMetaDataForSharding;
+    private DataSourceMetas dataSourceMetas;
     
     @Before
     public void setUp() {
         Map<String, String> dataSourceURLs = new LinkedHashMap<>();
         dataSourceURLs.put("ds_0", "jdbc:mysql://127.0.0.1:3306/db_0");
         dataSourceURLs.put("ds_1", "jdbc:mysql://127.0.0.1:3306/db_1");
-        dataSourceMetaDataForSharding = new ShardingSphereDataSourceMetaData(dataSourceURLs, DatabaseTypes.getActualDatabaseType("MySQL"));
+        dataSourceMetas = new DataSourceMetas(dataSourceURLs, DatabaseTypes.getActualDatabaseType("MySQL"));
     }
     
     @Test
     public void assertGetAllInstanceDataSourceNamesForShardingRule() {
-        assertEquals(dataSourceMetaDataForSharding.getAllInstanceDataSourceNames(), Lists.newArrayList("ds_1"));
+        assertEquals(dataSourceMetas.getAllInstanceDataSourceNames(), Lists.newArrayList("ds_1"));
     }
     
     @Test
     public void assertGetActualSchemaNameForShardingRule() {
-        assertEquals(dataSourceMetaDataForSharding.getDataSourceMetaData("ds_0").getSchemaName(), "db_0");
+        assertEquals(dataSourceMetas.getDataSourceMetaData("ds_0").getSchemaName(), "db_0");
     }
 }

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.execute.metadata.TableMetaDataInitializer;
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.core.metadata.datasource.ShardingSphereDataSourceMetaData;
+import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.parse.SQLParseEngineFactory;
@@ -93,10 +93,10 @@ public abstract class LogicSchema {
         return result;
     }
     
-    protected final TableMetaDataInitializer getTableMetaDataInitializer(final ShardingSphereDataSourceMetaData dataSourceMetaData) {
+    protected final TableMetaDataInitializer getTableMetaDataInitializer(final DataSourceMetas dataSourceMetas) {
         ShardingProperties shardingProperties = ShardingProxyContext.getInstance().getShardingProperties();
         return new TableMetaDataInitializer(
-                dataSourceMetaData, BackendExecutorContext.getInstance().getExecuteEngine(), new ProxyTableMetaDataConnectionManager(getBackendDataSource()),
+                dataSourceMetas, BackendExecutorContext.getInstance().getExecuteEngine(), new ProxyTableMetaDataConnectionManager(getBackendDataSource()),
                 shardingProperties.<Integer>getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY),
                 shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.CHECK_TABLE_METADATA_ENABLED));
     }

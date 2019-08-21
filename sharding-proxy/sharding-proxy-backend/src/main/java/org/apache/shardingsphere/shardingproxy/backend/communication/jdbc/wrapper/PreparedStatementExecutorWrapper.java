@@ -94,7 +94,7 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
         EncryptSchema encryptSchema = (EncryptSchema) logicSchema;
         SQLStatement sqlStatement = encryptSchema.getParseEngine().parse(sql, true);
         EncryptOptimizedStatement encryptStatement = EncryptOptimizeEngineFactory.newInstance(
-                sqlStatement).optimize(encryptSchema.getEncryptRule(), logicSchema.getMetaData().getTable(), sql, parameters, sqlStatement);
+                sqlStatement).optimize(encryptSchema.getEncryptRule(), logicSchema.getMetaData().getTables(), sql, parameters, sqlStatement);
         SQLRewriteEngine sqlRewriteEngine = new SQLRewriteEngine(encryptSchema.getEncryptRule(), 
                 encryptStatement, sql, parameters, ShardingProxyContext.getInstance().getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN));
         SQLRouteResult result = new SQLRouteResult(new ShardingTransparentOptimizedStatement(sqlStatement), encryptStatement);

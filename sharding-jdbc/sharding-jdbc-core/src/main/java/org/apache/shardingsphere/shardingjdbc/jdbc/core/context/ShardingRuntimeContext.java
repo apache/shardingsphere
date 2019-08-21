@@ -21,7 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.execute.metadata.TableMetaDataInitializer;
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.core.metadata.datasource.ShardingSphereDataSourceMetaData;
+import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.core.metadata.table.ShardingSphereTableMetaData;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata.CachedDatabaseMetaData;
@@ -69,9 +69,9 @@ public final class ShardingRuntimeContext extends AbstractRuntimeContext<Shardin
     }
     
     private ShardingSphereMetaData createMetaData(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType) throws SQLException {
-        ShardingSphereDataSourceMetaData dataSourceMetaData = new ShardingSphereDataSourceMetaData(getDataSourceURLs(dataSourceMap), databaseType);
-        ShardingSphereTableMetaData tableMetaData = new ShardingSphereTableMetaData(getTableMetaDataInitializer(dataSourceMap, dataSourceMetaData).load(shardingRule));
-        return new ShardingSphereMetaData(dataSourceMetaData, tableMetaData);
+        DataSourceMetas dataSourceMetas = new DataSourceMetas(getDataSourceURLs(dataSourceMap), databaseType);
+        ShardingSphereTableMetaData tableMetaData = new ShardingSphereTableMetaData(getTableMetaDataInitializer(dataSourceMap, dataSourceMetas).load(shardingRule));
+        return new ShardingSphereMetaData(dataSourceMetas, tableMetaData);
     }
     
     private Map<String, String> getDataSourceURLs(final Map<String, DataSource> dataSourceMap) throws SQLException {
@@ -88,8 +88,8 @@ public final class ShardingRuntimeContext extends AbstractRuntimeContext<Shardin
         }
     }
     
-    private TableMetaDataInitializer getTableMetaDataInitializer(final Map<String, DataSource> dataSourceMap, final ShardingSphereDataSourceMetaData dataSourceMetaData) {
-        return new TableMetaDataInitializer(dataSourceMetaData, getExecuteEngine(), new JDBCTableMetaDataConnectionManager(dataSourceMap),
+    private TableMetaDataInitializer getTableMetaDataInitializer(final Map<String, DataSource> dataSourceMap, final DataSourceMetas dataSourceMetas) {
+        return new TableMetaDataInitializer(dataSourceMetas, getExecuteEngine(), new JDBCTableMetaDataConnectionManager(dataSourceMap),
                 this.getProps().<Integer>getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY),
                 this.getProps().<Boolean>getValue(ShardingPropertiesConstant.CHECK_TABLE_METADATA_ENABLED));
     }

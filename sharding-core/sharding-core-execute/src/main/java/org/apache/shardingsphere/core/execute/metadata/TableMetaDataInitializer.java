@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.execute.metadata;
 import com.google.common.base.Optional;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.execute.ShardingExecuteEngine;
-import org.apache.shardingsphere.core.metadata.datasource.ShardingSphereDataSourceMetaData;
+import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.core.metadata.table.impl.TableMetaData;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
@@ -42,17 +42,17 @@ import java.util.Map;
  */
 public final class TableMetaDataInitializer {
     
-    private final ShardingSphereDataSourceMetaData dataSourceMetaData;
+    private final DataSourceMetas dataSourceMetas;
     
     private final TableMetaDataConnectionManager connectionManager;
     
     private final TableMetaDataLoader tableMetaDataLoader;
     
-    public TableMetaDataInitializer(final ShardingSphereDataSourceMetaData dataSourceMetaData, final ShardingExecuteEngine executeEngine,
+    public TableMetaDataInitializer(final DataSourceMetas dataSourceMetas, final ShardingExecuteEngine executeEngine,
                                     final TableMetaDataConnectionManager connectionManager, final int maxConnectionsSizePerQuery, final boolean isCheckingMetaData) {
-        this.dataSourceMetaData = dataSourceMetaData;
+        this.dataSourceMetas = dataSourceMetas;
         this.connectionManager = connectionManager;
-        tableMetaDataLoader = new TableMetaDataLoader(dataSourceMetaData, executeEngine, connectionManager, maxConnectionsSizePerQuery, isCheckingMetaData);
+        tableMetaDataLoader = new TableMetaDataLoader(dataSourceMetas, executeEngine, connectionManager, maxConnectionsSizePerQuery, isCheckingMetaData);
     }
     
     /**
@@ -102,7 +102,7 @@ public final class TableMetaDataInitializer {
     
     private Collection<String> getAllTableNames(final String dataSourceName) throws SQLException {
         Collection<String> result = new LinkedHashSet<>();
-        DataSourceMetaData dataSourceMetaData = this.dataSourceMetaData.getDataSourceMetaData(dataSourceName);
+        DataSourceMetaData dataSourceMetaData = this.dataSourceMetas.getDataSourceMetaData(dataSourceName);
         String catalog = null == dataSourceMetaData ? null : dataSourceMetaData.getSchemaName();
         try (Connection connection = connectionManager.getConnection(dataSourceName);
              ResultSet resultSet = connection.getMetaData().getTables(catalog, getCurrentSchemaName(connection), null, new String[]{"TABLE"})) {
