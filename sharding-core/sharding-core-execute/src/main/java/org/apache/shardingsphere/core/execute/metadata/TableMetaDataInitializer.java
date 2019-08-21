@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.execute.metadata;
 
 import com.google.common.base.Optional;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.execute.ShardingExecuteEngine;
 import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.core.metadata.table.impl.TableMetaData;
@@ -61,9 +60,9 @@ public final class TableMetaDataInitializer {
      * @param logicTableName logic table name
      * @param shardingRule sharding rule
      * @return table meta data
+     * @throws SQLException SQL exception
      */
-    @SneakyThrows
-    public TableMetaData load(final String logicTableName, final ShardingRule shardingRule) {
+    public TableMetaData load(final String logicTableName, final ShardingRule shardingRule) throws SQLException {
         return tableMetaDataLoader.load(logicTableName, shardingRule);
     }
     
@@ -72,9 +71,9 @@ public final class TableMetaDataInitializer {
      * 
      * @param shardingRule sharding rule
      * @return all table meta data
+     * @throws SQLException SQL exception
      */
-    @SneakyThrows
-    public Map<String, TableMetaData> load(final ShardingRule shardingRule) {
+    public Map<String, TableMetaData> load(final ShardingRule shardingRule) throws SQLException {
         Map<String, TableMetaData> result = new HashMap<>();
         result.putAll(loadShardingTables(shardingRule));
         result.putAll(loadDefaultTables(shardingRule));

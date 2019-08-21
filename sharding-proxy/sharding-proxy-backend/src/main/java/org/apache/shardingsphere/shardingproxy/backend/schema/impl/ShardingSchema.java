@@ -43,6 +43,7 @@ import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
@@ -64,7 +65,8 @@ public final class ShardingSchema extends LogicSchema {
     
     private final ShardingSphereMetaData metaData;
     
-    public ShardingSchema(final String name, final Map<String, YamlDataSourceParameter> dataSources, final ShardingRuleConfiguration shardingRuleConfig, final boolean isUsingRegistry) {
+    public ShardingSchema(
+            final String name, final Map<String, YamlDataSourceParameter> dataSources, final ShardingRuleConfiguration shardingRuleConfig, final boolean isUsingRegistry) throws SQLException {
         super(name, dataSources);
         shardingRule = createShardingRule(shardingRuleConfig, dataSources.keySet(), isUsingRegistry);
         metaData = createMetaData();
@@ -74,7 +76,7 @@ public final class ShardingSchema extends LogicSchema {
         return isUsingRegistry ? new OrchestrationShardingRule(shardingRuleConfig, dataSourceNames) : new ShardingRule(shardingRuleConfig, dataSourceNames);
     }
     
-    private ShardingSphereMetaData createMetaData() {
+    private ShardingSphereMetaData createMetaData() throws SQLException {
         DataSourceMetas dataSourceMetas = new DataSourceMetas(getDataSourceURLs(getDataSources()), LogicSchemas.getInstance().getDatabaseType());
         TableMetas tableMetas = new TableMetas(getTableMetaDataInitializer(dataSourceMetas).load(shardingRule));
         return new ShardingSphereMetaData(dataSourceMetas, tableMetas);
@@ -109,7 +111,7 @@ public final class ShardingSchema extends LogicSchema {
     }
     
     @Override
-    public void refreshTableMetaData(final OptimizedStatement optimizedStatement) {
+    public void refreshTableMetaData(final OptimizedStatement optimizedStatement) throws SQLException {
         if (null == optimizedStatement) {
             return;
         }
@@ -126,12 +128,12 @@ public final class ShardingSchema extends LogicSchema {
         }
     }
     
-    private void refreshTableMetaDataForCreateTable(final OptimizedStatement optimizedStatement) {
+    private void refreshTableMetaDataForCreateTable(final OptimizedStatement optimizedStatement) throws SQLException {
         String tableName = optimizedStatement.getTables().getSingleTableName();
         getMetaData().getTables().put(tableName, getTableMetaDataInitializer(metaData.getDataSources()).load(tableName, shardingRule));
     }
     
-    private void refreshTableMetaDataForAlterTable(final OptimizedStatement optimizedStatement) {
+    private void refreshTableMetaDataForAlterTable(final OptimizedStatement optimizedStatement) throws SQLException {
         String tableName = optimizedStatement.getTables().getSingleTableName();
         getMetaData().getTables().put(tableName, getTableMetaDataInitializer(metaData.getDataSources()).load(tableName, shardingRule));
     }

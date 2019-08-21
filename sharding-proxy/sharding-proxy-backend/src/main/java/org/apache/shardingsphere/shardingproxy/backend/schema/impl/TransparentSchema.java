@@ -28,6 +28,7 @@ import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 
+import java.sql.SQLException;
 import java.util.Map;
 
 /**
@@ -42,7 +43,7 @@ public final class TransparentSchema extends LogicSchema {
     
     private final ShardingRule shardingRule;
     
-    public TransparentSchema(final String name, final Map<String, YamlDataSourceParameter> dataSources) {
+    public TransparentSchema(final String name, final Map<String, YamlDataSourceParameter> dataSources) throws SQLException {
         super(name, dataSources);
         // TODO we should remove it after none-sharding parsingEngine completed.
         shardingRule = new ShardingRule(new ShardingRuleConfiguration(), getDataSources().keySet());
@@ -54,7 +55,7 @@ public final class TransparentSchema extends LogicSchema {
         return null;
     }
     
-    private ShardingSphereMetaData createMetaData() {
+    private ShardingSphereMetaData createMetaData() throws SQLException {
         DataSourceMetas dataSourceMetas = new DataSourceMetas(getDataSourceURLs(getDataSources()), LogicSchemas.getInstance().getDatabaseType());
         TableMetas tableMetas = new TableMetas(getTableMetaDataInitializer(dataSourceMetas).load(shardingRule));
         return new ShardingSphereMetaData(dataSourceMetas, tableMetas);

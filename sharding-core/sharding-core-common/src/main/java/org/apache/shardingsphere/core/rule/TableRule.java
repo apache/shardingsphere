@@ -182,7 +182,7 @@ public final class TableRule {
     /**
      * Get data node groups.
      *
-     * @return data node groups, key is data source name, value is tables belong to this data source
+     * @return data node groups, key is data source name, value is data nodes belong to this data source
      */
     public Map<String, List<DataNode>> getDataNodeGroups() {
         Map<String, List<DataNode>> result = new LinkedHashMap<>(actualDataNodes.size(), 1);

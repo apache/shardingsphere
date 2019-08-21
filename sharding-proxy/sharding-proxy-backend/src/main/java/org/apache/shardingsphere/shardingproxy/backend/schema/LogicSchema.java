@@ -36,6 +36,7 @@ import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParamet
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 import org.apache.shardingsphere.shardingproxy.util.DataSourceConverter;
 
+import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -119,7 +120,8 @@ public abstract class LogicSchema {
      * Refresh table meta data.
      * 
      * @param optimizedStatement optimized statement
+     * @throws SQLException SQL exception
      */
-    public void refreshTableMetaData(final OptimizedStatement optimizedStatement) {
+    public void refreshTableMetaData(final OptimizedStatement optimizedStatement) throws SQLException {
     }
 }

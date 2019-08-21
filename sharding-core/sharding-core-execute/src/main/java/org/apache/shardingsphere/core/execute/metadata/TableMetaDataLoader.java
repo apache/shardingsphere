@@ -30,6 +30,7 @@ import org.apache.shardingsphere.core.metadata.table.impl.TableMetaData;
 import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.core.rule.ShardingDataSourceNames;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.spi.database.DataSourceMetaData;
 
 import java.sql.Connection;
@@ -71,13 +72,13 @@ public final class TableMetaDataLoader {
      * @throws SQLException SQL exception
      */
     public TableMetaData load(final String logicTableName, final ShardingRule shardingRule) throws SQLException {
-        List<TableMetaData> actualTableMetaDataList = load(getDataNodeGroups(logicTableName, shardingRule), shardingRule.getShardingDataSourceNames());
+        List<TableMetaData> actualTableMetaDataList = load(getDataNodeGroups(shardingRule.getTableRule(logicTableName)), shardingRule.getShardingDataSourceNames());
         checkUniformed(logicTableName, actualTableMetaDataList);
         return actualTableMetaDataList.iterator().next();
     }
     
     private List<TableMetaData> load(final Map<String, List<DataNode>> dataNodeGroups, final ShardingDataSourceNames shardingDataSourceNames) throws SQLException {
-        return executeEngine.groupExecute(getDataNodeGroups(dataNodeGroups), new ShardingGroupExecuteCallback<DataNode, TableMetaData>() {
+        return executeEngine.groupExecute(getDataNodeExecuteGroups(dataNodeGroups), new ShardingGroupExecuteCallback<DataNode, TableMetaData>() {
             
             @Override
             public Collection<TableMetaData> execute(final Collection<DataNode> dataNodes, final boolean isTrunkThread, final Map<String, Object> shardingExecuteDataMap) throws SQLException {
@@ -99,24 +100,24 @@ public final class TableMetaDataLoader {
         return result;
     }
     
-    private Map<String, List<DataNode>> getDataNodeGroups(final String logicTableName, final ShardingRule shardingRule) {
-        Map<String, List<DataNode>> result = shardingRule.getTableRule(logicTableName).getDataNodeGroups();
-        if (isCheckingMetaData) {
-            return result;
-        }
-        String firstKey = result.keySet().iterator().next();
-        return Collections.singletonMap(firstKey, Collections.singletonList(result.get(firstKey).get(0)));
+    private Map<String, List<DataNode>> getDataNodeGroups(final TableRule tableRule) {
+        return isCheckingMetaData ? tableRule.getDataNodeGroups() : getFirstDataNodeWithGroups(tableRule);
     }
     
-    private Collection<ShardingExecuteGroup<DataNode>> getDataNodeGroups(final Map<String, List<DataNode>> dataNodeGroups) {
+    private Map<String, List<DataNode>> getFirstDataNodeWithGroups(final TableRule tableRule) {
+        DataNode firstDataNode = tableRule.getActualDataNodes().iterator().next();
+        return Collections.singletonMap(firstDataNode.getDataSourceName(), Collections.singletonList(firstDataNode));
+    }
+    
+    private Collection<ShardingExecuteGroup<DataNode>> getDataNodeExecuteGroups(final Map<String, List<DataNode>> dataNodeGroups) {
         Collection<ShardingExecuteGroup<DataNode>> result = new LinkedList<>();
         for (Entry<String, List<DataNode>> entry : dataNodeGroups.entrySet()) {
-            result.addAll(getDataNodeGroups(entry.getValue()));
+            result.addAll(getDataNodeExecuteGroups(entry.getValue()));
         }
         return result;
     }
     
-    private Collection<ShardingExecuteGroup<DataNode>> getDataNodeGroups(final List<DataNode> dataNodes) {
+    private Collection<ShardingExecuteGroup<DataNode>> getDataNodeExecuteGroups(final List<DataNode> dataNodes) {
         Collection<ShardingExecuteGroup<DataNode>> result = new LinkedList<>();
         for (List<DataNode> each : Lists.partition(dataNodes, Math.max(dataNodes.size() / maxConnectionsSizePerQuery, 1))) {
             result.add(new ShardingExecuteGroup<>(each));

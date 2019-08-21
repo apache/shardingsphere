@@ -44,6 +44,7 @@ import org.apache.shardingsphere.shardingproxy.frontend.bootstrap.ShardingProxy;
 import org.apache.shardingsphere.shardingproxy.util.DataSourceConverter;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -69,8 +70,9 @@ public final class Bootstrap {
      *
      * @param args startup arguments
      * @throws IOException IO exception
+     * @throws SQLException SQL exception
      */
-    public static void main(final String[] args) throws IOException {
+    public static void main(final String[] args) throws IOException, SQLException {
         ShardingConfiguration shardingConfig = new ShardingConfigurationLoader().load();
         logRuleConfigurationMap(getRuleConfiguration(shardingConfig.getRuleConfigurationMap()).values());
         int port = getPort(args);
@@ -93,7 +95,7 @@ public final class Bootstrap {
     }
     
     private static void startWithoutRegistryCenter(final Map<String, YamlProxyRuleConfiguration> ruleConfigs,
-                                                   final YamlAuthenticationConfiguration authentication, final Properties prop, final int port) {
+                                                   final YamlAuthenticationConfiguration authentication, final Properties prop, final int port) throws SQLException {
         Authentication authenticationConfiguration = getAuthentication(authentication);
         ConfigurationLogger.log(authenticationConfiguration);
         ConfigurationLogger.log(prop);
@@ -116,6 +118,8 @@ public final class Bootstrap {
             LogicSchemas.getInstance().init(shardingSchemaNames, getSchemaDataSourceParameterMap(shardingOrchestrationFacade), getSchemaRules(shardingOrchestrationFacade), true);
             initOpenTracing();
             ShardingProxy.getInstance().start(port);
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
     

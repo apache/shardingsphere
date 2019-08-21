@@ -158,7 +158,7 @@ public class AbstractStatementExecutor {
         }
     }
     
-    private void refreshMetaDataIfNeeded(final ShardingRuntimeContext runtimeContext, final OptimizedStatement optimizedStatement) {
+    private void refreshMetaDataIfNeeded(final ShardingRuntimeContext runtimeContext, final OptimizedStatement optimizedStatement) throws SQLException {
         if (null == optimizedStatement) {
             return;
         }
@@ -175,12 +175,12 @@ public class AbstractStatementExecutor {
         }
     }
     
-    private void refreshTableMetaDataForCreateTable(final ShardingRuntimeContext runtimeContext, final OptimizedStatement optimizedStatement) {
+    private void refreshTableMetaDataForCreateTable(final ShardingRuntimeContext runtimeContext, final OptimizedStatement optimizedStatement) throws SQLException {
         String tableName = optimizedStatement.getTables().getSingleTableName();
         runtimeContext.getMetaData().getTables().put(tableName, getTableMetaDataInitializer().load(tableName, runtimeContext.getRule()));
     }
     
-    private void refreshTableMetaDataForAlterTable(final ShardingRuntimeContext runtimeContext, final OptimizedStatement optimizedStatement) {
+    private void refreshTableMetaDataForAlterTable(final ShardingRuntimeContext runtimeContext, final OptimizedStatement optimizedStatement) throws SQLException {
         String tableName = optimizedStatement.getTables().getSingleTableName();
         runtimeContext.getMetaData().getTables().put(tableName, getTableMetaDataInitializer().load(tableName, runtimeContext.getRule()));
     }
