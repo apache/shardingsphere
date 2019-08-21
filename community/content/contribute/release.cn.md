@@ -330,9 +330,12 @@ gpg --verify apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-proxy-
 
 1. ShardingSphere社区投票模板
 
+注意： 在社区投票过程中，需要邀请所有mentor参加投票。
+
 标题：
+
 ```
-[VOTE]: Release Apache ShardingSphere (Incubating) ${RELEASE.VERSION}
+[VOTE] Release Apache ShardingSphere (Incubating) ${RELEASE.VERSION}
 ```
 
 正文：
@@ -349,7 +352,7 @@ The release candidates:
 https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/${RELEASE.VERSION}/
 
 Maven 2 staging repository:
-https://repository.apache.org/content/repositories/staging/org/apache/shardingsphere/
+https://repository.apache.org/content/repositories/${STAGING.REPOSITORY}/org/apache/shardingsphere/
 
 Git tag for the release:
 https://github.com/apache/incubator-shardingsphere/tree/${RELEASE.VERSION}/
@@ -390,11 +393,35 @@ Checklist for reference:
 [ ] No compiled archives bundled in source archive.
 ```
 
-2. Apache社区投票邮件模板：
+2. 宣布投票结果模板：
+
+正文：
+
+```
+The vote to release Apache ShardingSphere (Incubating) ${RELEASE.VERSION} has passed.
+
+7 PPMC member +1 votes:
+
+xxx (mentor)
+xxx
+xxx (mentor)
+xxx
+xxx
+xxx (mentor)
+xxx
+
+1 community +1 vote:
+xxx
+
+Thank you everyone for taking the time to review the release and help us. 
+```
+
+3. Apache社区投票邮件模板：
 
 标题：
+
 ```
-[VOTE]: Release Apache ShardingSphere (Incubating) ${RELEASE.VERSION}
+[VOTE] Release Apache ShardingSphere (Incubating) ${RELEASE.VERSION}
 ```
 
 正文：
@@ -442,7 +469,7 @@ The release candidates:
 https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/${RELEASE.VERSION}/
 
 Maven 2 staging repository:
-https://repository.apache.org/content/repositories/staging/org/apache/shardingsphere/
+https://repository.apache.org/content/repositories/${STAGING.REPOSITORY}/org/apache/shardingsphere/
 
 Git tag for the release:
 https://github.com/apache/incubator-shardingsphere/tree/${RELEASE.VERSION}
@@ -484,7 +511,7 @@ Checklist for reference:
 [ ] No compiled archives bundled in source archive.
 ```
 
-3. 宣布投票结果模板：
+4. 宣布投票结果模板：
 
 正文：
 
