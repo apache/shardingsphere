@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.sharding.segment.insert;
+package org.apache.shardingsphere.core.optimize.api.segment;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +30,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Insert optimize result.
+ * Optimized insert value.
  *
  * @author panjuan
  * @author zhangliang
@@ -38,7 +38,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Getter
 @ToString(exclude = "dataNodes")
-public final class InsertOptimizeResultUnit {
+public final class OptimizedInsertValue {
     
     private final List<String> columnNames;
     

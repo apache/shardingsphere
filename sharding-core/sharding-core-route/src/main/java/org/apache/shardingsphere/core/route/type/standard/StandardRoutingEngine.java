@@ -22,8 +22,8 @@ import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.exception.ShardingException;
+import org.apache.shardingsphere.core.optimize.api.segment.OptimizedInsertValue;
 import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimize.sharding.segment.insert.InsertOptimizeResultUnit;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingConditionOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingInsertOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
@@ -116,7 +116,7 @@ public final class StandardRoutingEngine implements RoutingEngine {
         for (ShardingCondition each : optimizedStatement.getShardingConditions().getConditions()) {
             Collection<DataNode> dataNodes = route(tableRule, getShardingValuesFromShardingConditions(shardingRule.getDatabaseShardingStrategy(tableRule).getShardingColumns(), each),
                     getShardingValuesFromShardingConditions(shardingRule.getTableShardingStrategy(tableRule).getShardingColumns(), each));
-            reviseInsertOptimizeResult(each, dataNodes);
+            reviseOptimizedInsertValue(each, dataNodes);
             result.addAll(dataNodes);
         }
         return result;
@@ -130,7 +130,7 @@ public final class StandardRoutingEngine implements RoutingEngine {
         Collection<DataNode> result = new LinkedList<>();
         for (ShardingCondition each : optimizedStatement.getShardingConditions().getConditions()) {
             Collection<DataNode> dataNodes = route(tableRule, getDatabaseShardingValues(tableRule, each), getTableShardingValues(tableRule, each));
-            reviseInsertOptimizeResult(each, dataNodes);
+            reviseOptimizedInsertValue(each, dataNodes);
             result.addAll(dataNodes);
         }
         return result;
@@ -214,20 +214,20 @@ public final class StandardRoutingEngine implements RoutingEngine {
         return result;
     }
     
-    private void reviseInsertOptimizeResult(final ShardingCondition shardingCondition, final Collection<DataNode> dataNodes) {
+    private void reviseOptimizedInsertValue(final ShardingCondition shardingCondition, final Collection<DataNode> dataNodes) {
         if (optimizedStatement instanceof ShardingInsertOptimizedStatement) {
-            for (InsertOptimizeResultUnit each : ((ShardingInsertOptimizedStatement) optimizedStatement).getUnits()) {
-                if (isQualifiedInsertOptimizeResultUnit(each, shardingCondition)) {
+            for (OptimizedInsertValue each : ((ShardingInsertOptimizedStatement) optimizedStatement).getOptimizedInsertValues()) {
+                if (isQualifiedOptimizedInsertValue(each, shardingCondition)) {
                     each.getDataNodes().addAll(dataNodes);
                 }
             }
         }
     }
     
-    private boolean isQualifiedInsertOptimizeResultUnit(final InsertOptimizeResultUnit unit, final ShardingCondition shardingCondition) {
+    private boolean isQualifiedOptimizedInsertValue(final OptimizedInsertValue optimizedInsertValue, final ShardingCondition shardingCondition) {
         for (RouteValue each : shardingCondition.getRouteValues()) {
-            Object columnValue = unit.getValue(each.getColumnName());
-            if (!columnValue.equals(((ListRouteValue) each).getValues().iterator().next())) {
+            Object value = optimizedInsertValue.getValue(each.getColumnName());
+            if (!value.equals(((ListRouteValue) each).getValues().iterator().next())) {
                 return false;
             }
         }

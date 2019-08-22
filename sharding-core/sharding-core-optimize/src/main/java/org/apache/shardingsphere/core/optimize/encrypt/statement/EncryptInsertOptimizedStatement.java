@@ -21,9 +21,9 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
+import org.apache.shardingsphere.core.optimize.api.segment.OptimizedInsertValue;
 import org.apache.shardingsphere.core.optimize.api.segment.Tables;
 import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.sharding.segment.insert.InsertOptimizeResultUnit;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
@@ -48,7 +48,7 @@ public final class EncryptInsertOptimizedStatement implements InsertOptimizedSta
     
     private final Collection<String> columnNames;
     
-    private final List<InsertOptimizeResultUnit> units = new LinkedList<>();
+    private final List<OptimizedInsertValue> optimizedInsertValues = new LinkedList<>();
     
     public EncryptInsertOptimizedStatement(final InsertStatement sqlStatement, final TableMetas tableMetas) {
         this.sqlStatement = sqlStatement;
@@ -57,20 +57,20 @@ public final class EncryptInsertOptimizedStatement implements InsertOptimizedSta
     }
     
     /**
-     * Add insert optimize result unit.
+     * Add optimized insert value.
      *
      * @param derivedColumnNames derived column names
      * @param valueExpressions value expressions
      * @param parameters SQL parameters
      * @param startIndexOfAppendedParameters start index of appended parameters
-     * @return insert optimize result unit
+     * @return optimized insert value
      */
-    public InsertOptimizeResultUnit addUnit(final Collection<String> derivedColumnNames, 
-                                            final ExpressionSegment[] valueExpressions, final Object[] parameters, final int startIndexOfAppendedParameters) {
+    public OptimizedInsertValue addOptimizedInsertValue(final Collection<String> derivedColumnNames,
+                                                        final ExpressionSegment[] valueExpressions, final Object[] parameters, final int startIndexOfAppendedParameters) {
         List<String> allColumnNames = new LinkedList<>(columnNames);
         allColumnNames.addAll(derivedColumnNames);
-        InsertOptimizeResultUnit result = new InsertOptimizeResultUnit(allColumnNames, valueExpressions, parameters, startIndexOfAppendedParameters);
-        units.add(result);
+        OptimizedInsertValue result = new OptimizedInsertValue(allColumnNames, valueExpressions, parameters, startIndexOfAppendedParameters);
+        optimizedInsertValues.add(result);
         return result;
     }
     

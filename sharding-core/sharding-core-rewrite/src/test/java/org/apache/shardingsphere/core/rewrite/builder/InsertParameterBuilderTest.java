@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.core.rewrite.builder;
 
+import org.apache.shardingsphere.core.optimize.api.segment.OptimizedInsertValue;
 import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.sharding.segment.insert.InsertOptimizeResultUnit;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.route.type.TableUnit;
 import org.apache.shardingsphere.core.rule.DataNode;
@@ -43,14 +43,14 @@ public final class InsertParameterBuilderTest {
     }
     
     private InsertOptimizedStatement createInsertOptimizedStatement() {
-        InsertOptimizeResultUnit unit1 = mock(InsertOptimizeResultUnit.class);
-        when(unit1.getParameters()).thenReturn(new Object[] {3, 4});
-        when(unit1.getDataNodes()).thenReturn(Collections.singletonList(new DataNode("db1.tb1")));
-        InsertOptimizeResultUnit unit2 = mock(InsertOptimizeResultUnit.class);
-        when(unit2.getParameters()).thenReturn(new Object[] {5, 6});
-        when(unit2.getDataNodes()).thenReturn(Collections.singletonList(new DataNode("db2.tb2")));
+        OptimizedInsertValue optimizedInsertValue1 = mock(OptimizedInsertValue.class);
+        when(optimizedInsertValue1.getParameters()).thenReturn(new Object[] {3, 4});
+        when(optimizedInsertValue1.getDataNodes()).thenReturn(Collections.singletonList(new DataNode("db1.tb1")));
+        OptimizedInsertValue optimizedInsertValue2 = mock(OptimizedInsertValue.class);
+        when(optimizedInsertValue2.getParameters()).thenReturn(new Object[] {5, 6});
+        when(optimizedInsertValue2.getDataNodes()).thenReturn(Collections.singletonList(new DataNode("db2.tb2")));
         InsertOptimizedStatement result = mock(InsertOptimizedStatement.class);
-        when(result.getUnits()).thenReturn(Arrays.asList(unit1, unit2));
+        when(result.getOptimizedInsertValues()).thenReturn(Arrays.asList(optimizedInsertValue1, optimizedInsertValue2));
         return result;
     }
     

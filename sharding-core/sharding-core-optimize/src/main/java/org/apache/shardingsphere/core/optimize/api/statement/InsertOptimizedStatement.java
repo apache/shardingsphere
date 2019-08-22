@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.optimize.api.statement;
 
-import org.apache.shardingsphere.core.optimize.sharding.segment.insert.InsertOptimizeResultUnit;
+import org.apache.shardingsphere.core.optimize.api.segment.OptimizedInsertValue;
 
 import java.util.List;
 
@@ -29,9 +29,9 @@ import java.util.List;
 public interface InsertOptimizedStatement extends OptimizedStatement {
     
     /**
-     * Get insert optimize result units.
+     * Get optimized insert values.
      * 
-     * @return insert optimize result units
+     * @return optimized insert values
      */
-    List<InsertOptimizeResultUnit> getUnits();
+    List<OptimizedInsertValue> getOptimizedInsertValues();
 }
