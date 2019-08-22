@@ -46,7 +46,7 @@ weight = 1
 
 ## 分布式事务
 
-Sharding-Proxy的分布式事务API同Sharding-JDBC保持一致，支持LOCAL，XA，BASE类型的事务。
+Sharding-Proxy接入的分布式事务API同Sharding-JDBC保持一致，支持LOCAL，XA，BASE类型的事务。
 
 ### XA事务
 
@@ -56,7 +56,19 @@ Sharding-Proxy原生支持XA事务，默认的事务管理器为Atomikos。
 
 ### BASE事务
 
-BASE实现并未打包到Sharding-Proxy中，使用时需要将实现了`ShardingTransactionManager`SPI的jar拷贝至conf/lib目录，然后切换事务类型为BASE。
+BASE目前没有打包到Sharding-Proxy中，使用时需要将实现了`ShardingTransactionManager`SPI的jar拷贝至conf/lib目录，然后切换事务类型为BASE。
+
+## SCTL (Sharding-Proxy control language)
+
+SCTL为Sharding-Proxy特有的控制语句，可以在运行时修改和查询Sharding-Proxy的状态，目前支持的语法为：
+
+| 语句                         | 说明                                                                            |
+|:-----------------------------|:-------------------------------------------------------------------------------|
+|sctl:set transaction_type=XX  | 修改当前TCP连接的事务类型, 支持LOCAL，XA，BASE。例：sctl:set transaction_type=XA |
+|sctl:show transaction_type    | 查询当前TCP连接的事务类型                                                       |
+|sctl:show cached_connections  | 查询当前TCP连接中缓存的物理数据库连接个数                                        |
+|sctl:explain SQL语句          | 查看逻辑SQL的执行计划，例：sctl:explain select * from t_order;                  |
+
 
 ## 注意事项
 
