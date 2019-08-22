@@ -27,7 +27,7 @@ import org.apache.shardingsphere.core.optimize.sharding.segment.condition.engine
 import org.apache.shardingsphere.core.optimize.sharding.segment.insert.GeneratedKey;
 import org.apache.shardingsphere.core.optimize.sharding.segment.insert.InsertOptimizeResultUnit;
 import org.apache.shardingsphere.core.optimize.sharding.segment.insert.ShardingInsertColumns;
-import org.apache.shardingsphere.core.optimize.sharding.segment.insert.value.InsertValueEngine;
+import org.apache.shardingsphere.core.optimize.sharding.segment.insert.value.InsertValuesFactory;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingInsertOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.OnDuplicateKeyColumnsSegment;
@@ -54,8 +54,7 @@ public final class ShardingInsertOptimizeEngine implements ShardingOptimizeEngin
                                                      final TableMetas tableMetas, final String sql, final List<Object> parameters, final InsertStatement sqlStatement) {
         InsertClauseShardingConditionEngine shardingConditionEngine = new InsertClauseShardingConditionEngine(shardingRule);
         ShardingInsertColumns insertColumns = new ShardingInsertColumns(shardingRule, tableMetas, sqlStatement);
-        InsertValueEngine insertValueEngine = new InsertValueEngine();
-        Collection<InsertValue> insertValues = insertValueEngine.createInsertValues(sqlStatement);
+        Collection<InsertValue> insertValues = InsertValuesFactory.createInsertValues(sqlStatement);
         Optional<GeneratedKey> generatedKey = GeneratedKey.getGenerateKey(shardingRule, parameters, sqlStatement, insertColumns, insertValues);
         boolean isGeneratedValue = generatedKey.isPresent() && generatedKey.get().isGenerated();
         Iterator<Comparable<?>> generatedValues = isGeneratedValue ? generatedKey.get().getGeneratedValues().iterator() : null;
@@ -66,7 +65,7 @@ public final class ShardingInsertOptimizeEngine implements ShardingOptimizeEngin
         allColumnNames.addAll(shardingRule.getEncryptRule().getAssistedQueryAndPlainColumns(sqlStatement.getTable().getTableName()));
         List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(sqlStatement, parameters, allColumnNames, insertValues, generatedKey.orNull());
         ShardingInsertOptimizedStatement result = new ShardingInsertOptimizedStatement(
-                sqlStatement, shardingConditions, insertColumns, insertValueEngine.createInsertValues(sqlStatement), generatedKey.orNull());
+                sqlStatement, shardingConditions, insertColumns, InsertValuesFactory.createInsertValues(sqlStatement), generatedKey.orNull());
         String tableName = sqlStatement.getTable().getTableName();
         checkDuplicateKeyForShardingKey(shardingRule, sqlStatement, tableName);
         int derivedColumnsCount = getDerivedColumnsCount(shardingRule, tableName, isGeneratedValue);

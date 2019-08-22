@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.core.optimize.sharding.segment.insert.value;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.InsertValuesSegment;
@@ -29,11 +31,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Insert value engine.
+ * Insert values factory.
  *
  * @author zhangliang
  */
-public final class InsertValueEngine {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class InsertValuesFactory {
     
     /**
      * Create insert values.
@@ -41,11 +44,11 @@ public final class InsertValueEngine {
      * @param insertStatement insert statement
      * @return insert values
      */
-    public Collection<InsertValue> createInsertValues(final InsertStatement insertStatement) {
-        return (insertStatement.getSetAssignment().isPresent()) ? getInsertValues(insertStatement.getSetAssignment().get()) : getInsertValues(insertStatement.getValues());
+    public static Collection<InsertValue> createInsertValues(final InsertStatement insertStatement) {
+        return insertStatement.getSetAssignment().isPresent() ? getInsertValues(insertStatement.getSetAssignment().get()) : getInsertValues(insertStatement.getValues());
     }
     
-    private Collection<InsertValue> getInsertValues(final SetAssignmentsSegment setAssignmentsSegment) {
+    private static Collection<InsertValue> getInsertValues(final SetAssignmentsSegment setAssignmentsSegment) {
         Collection<InsertValue> result = new LinkedList<>();
         List<ExpressionSegment> columnValues = new LinkedList<>();
         for (AssignmentSegment each : setAssignmentsSegment.getAssignments()) {
@@ -55,7 +58,7 @@ public final class InsertValueEngine {
         return result;
     }
     
-    private Collection<InsertValue> getInsertValues(final Collection<InsertValuesSegment> insertValuesSegments) {
+    private static Collection<InsertValue> getInsertValues(final Collection<InsertValuesSegment> insertValuesSegments) {
         Collection<InsertValue> result = new LinkedList<>();
         for (InsertValuesSegment each : insertValuesSegments) {
             result.add(new InsertValue(each.getValues()));

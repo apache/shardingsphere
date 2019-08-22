@@ -23,7 +23,7 @@ import org.apache.shardingsphere.core.optimize.encrypt.engine.EncryptOptimizeEng
 import org.apache.shardingsphere.core.optimize.encrypt.segment.EncryptInsertColumns;
 import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptInsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.segment.insert.InsertOptimizeResultUnit;
-import org.apache.shardingsphere.core.optimize.sharding.segment.insert.value.InsertValueEngine;
+import org.apache.shardingsphere.core.optimize.sharding.segment.insert.value.InsertValuesFactory;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
@@ -40,9 +40,8 @@ public final class EncryptInsertOptimizeEngine implements EncryptOptimizeEngine<
     
     @Override
     public EncryptInsertOptimizedStatement optimize(final EncryptRule encryptRule, final TableMetas tableMetas, final String sql, final List<Object> parameters, final InsertStatement sqlStatement) {
-        InsertValueEngine insertValueEngine = new InsertValueEngine();
         EncryptInsertOptimizedStatement result = new EncryptInsertOptimizedStatement(
-                sqlStatement, new EncryptInsertColumns(tableMetas, sqlStatement), insertValueEngine.createInsertValues(sqlStatement));
+                sqlStatement, new EncryptInsertColumns(tableMetas, sqlStatement), InsertValuesFactory.createInsertValues(sqlStatement));
         int derivedColumnsCount = encryptRule.getAssistedQueryAndPlainColumnCount(sqlStatement.getTable().getTableName());
         int parametersCount = 0;
         Collection<String> columnNames = getColumnNames(tableMetas, sqlStatement);

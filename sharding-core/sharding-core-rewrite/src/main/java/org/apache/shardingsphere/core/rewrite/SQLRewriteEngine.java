@@ -90,20 +90,20 @@ public final class SQLRewriteEngine {
     }
     
     private OptimizedStatement encryptOptimizedStatement(final EncryptRule encryptRule, final OptimizedStatement optimizedStatement) {
-        if (isNeededToEncrypt(encryptRule, optimizedStatement)) {
-            encryptInsertOptimizeResultUnit(encryptRule, optimizedStatement);
+        if (isEncryptWithInsert(encryptRule, optimizedStatement)) {
+            encryptInsertOptimizedStatement(encryptRule, (InsertOptimizedStatement) optimizedStatement);
         }
         return optimizedStatement;
     }
     
-    private boolean isNeededToEncrypt(final EncryptRule encryptRule, final OptimizedStatement optimizedStatement) {
+    private boolean isEncryptWithInsert(final EncryptRule encryptRule, final OptimizedStatement optimizedStatement) {
         return optimizedStatement instanceof InsertOptimizedStatement && !encryptRule.getEncryptTableNames().isEmpty();
     }
     
-    private void encryptInsertOptimizeResultUnit(final EncryptRule encryptRule, final OptimizedStatement optimizedStatement) {
-        for (InsertOptimizeResultUnit unit : ((InsertOptimizedStatement) optimizedStatement).getUnits()) {
-            for (String each : ((InsertOptimizedStatement) optimizedStatement).getInsertColumns().getRegularColumnNames()) {
-                encryptInsertOptimizeResult(encryptRule, unit, optimizedStatement.getTables().getSingleTableName(), each);
+    private void encryptInsertOptimizedStatement(final EncryptRule encryptRule, final InsertOptimizedStatement insertOptimizedStatement) {
+        for (InsertOptimizeResultUnit unit : insertOptimizedStatement.getUnits()) {
+            for (String each : insertOptimizedStatement.getInsertColumns().getRegularColumnNames()) {
+                encryptInsertOptimizeResult(encryptRule, unit, insertOptimizedStatement.getTables().getSingleTableName(), each);
             }
         }
     }
