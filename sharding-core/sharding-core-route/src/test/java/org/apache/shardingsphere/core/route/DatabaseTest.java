@@ -26,8 +26,8 @@ import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
+import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.metadata.table.sharding.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
 import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.route.fixture.HintShardingAlgorithmFixture;
@@ -91,7 +91,7 @@ public final class DatabaseTest {
         ColumnMetaData idColumnMetaData = new ColumnMetaData("id", "int", true);
         ColumnMetaData nameColumnMetaData = new ColumnMetaData("user_id", "int", false);
         TableMetas tableMetas = mock(TableMetas.class);
-        when(tableMetas.get("tesT")).thenReturn(new ShardingTableMetaData(Arrays.asList(idColumnMetaData, nameColumnMetaData), Arrays.asList("id", "user_id")));
+        when(tableMetas.get("tesT")).thenReturn(new TableMetaData(Arrays.asList(idColumnMetaData, nameColumnMetaData), Arrays.asList("id", "user_id")));
         ShardingSphereMetaData result = mock(ShardingSphereMetaData.class);
         when(result.getTables()).thenReturn(tableMetas);
         return result;
@@ -115,7 +115,7 @@ public final class DatabaseTest {
         ColumnMetaData idColumnMetaData = new ColumnMetaData("id", "int", true);
         ColumnMetaData nameColumnMetaData = new ColumnMetaData("user_id", "int", false);
         TableMetas tableMetas = mock(TableMetas.class);
-        when(tableMetas.get("tbl_pagination")).thenReturn(new ShardingTableMetaData(Arrays.asList(idColumnMetaData, nameColumnMetaData), Arrays.asList("id", "user_id")));
+        when(tableMetas.get("tbl_pagination")).thenReturn(new TableMetaData(Arrays.asList(idColumnMetaData, nameColumnMetaData), Arrays.asList("id", "user_id")));
         ShardingSphereMetaData result = mock(ShardingSphereMetaData.class);
         when(result.getTables()).thenReturn(tableMetas);
         return result;

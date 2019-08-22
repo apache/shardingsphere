@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.optimize.sharding.engnie.ddl;
 import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.metadata.table.sharding.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.sharding.statement.ddl.ShardingDropIndexOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
@@ -49,7 +48,7 @@ public final class ShardingDropIndexOptimizeEngineTest {
         dropIndexStatement = new DropIndexStatement();
         dropIndexStatement.getIndexes().add(new IndexSegment(0, 0, "idx"));
         Map<String, TableMetaData> tables = new HashMap<>(1, 1);
-        tables.put("meta_tbl", new ShardingTableMetaData(Collections.<ColumnMetaData>emptyList(), Collections.singletonList("idx")));
+        tables.put("meta_tbl", new TableMetaData(Collections.<ColumnMetaData>emptyList(), Collections.singletonList("idx")));
         tableMetas = new TableMetas(tables);
     }
     

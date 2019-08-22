@@ -34,7 +34,6 @@ import org.apache.shardingsphere.core.execute.sql.execute.SQLExecuteTemplate;
 import org.apache.shardingsphere.core.execute.sql.prepare.SQLExecutePrepareTemplate;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.metadata.table.sharding.ShardingTableMetaData;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.AlterTableStatement;
@@ -199,25 +198,20 @@ public class AbstractStatementExecutor {
         if (null == createIndexStatement.getIndex()) {
             return;
         }
-        TableMetaData tableMetaData = runtimeContext.getMetaData().getTables().get(optimizedStatement.getTables().getSingleTableName());
-        if (tableMetaData instanceof ShardingTableMetaData) {
-            ((ShardingTableMetaData) tableMetaData).getLogicIndexes().add(createIndexStatement.getIndex().getName());
-        }
+        runtimeContext.getMetaData().getTables().get(optimizedStatement.getTables().getSingleTableName()).getIndexes().add(createIndexStatement.getIndex().getName());
     }
     
     private void refreshTableMetaDataForDropIndex(final ShardingRuntimeContext runtimeContext, final OptimizedStatement optimizedStatement) {
         DropIndexStatement dropIndexStatement = (DropIndexStatement) optimizedStatement.getSQLStatement();
         Collection<String> indexNames = getIndexNames(dropIndexStatement);
+        TableMetaData tableMetaData = runtimeContext.getMetaData().getTables().get(optimizedStatement.getTables().getSingleTableName());
         if (!optimizedStatement.getTables().isEmpty()) {
-            TableMetaData tableMetaData = runtimeContext.getMetaData().getTables().get(optimizedStatement.getTables().getSingleTableName());
-            if (tableMetaData instanceof ShardingTableMetaData) {
-                ((ShardingTableMetaData) tableMetaData).getLogicIndexes().removeAll(indexNames);
-            }
+            tableMetaData.getIndexes().removeAll(indexNames);
         }
         for (String each : indexNames) {
             Optional<String> logicTableName = findLogicTableName(runtimeContext.getMetaData().getTables(), each);
             if (logicTableName.isPresent()) {
-                ((ShardingTableMetaData) runtimeContext.getMetaData().getTables().get(optimizedStatement.getTables().getSingleTableName())).getLogicIndexes().remove(each);
+                tableMetaData.getIndexes().remove(each);
             }
         }
     }
@@ -232,7 +226,7 @@ public class AbstractStatementExecutor {
     
     private Optional<String> findLogicTableName(final TableMetas tableMetas, final String logicIndexName) {
         for (String each : tableMetas.getAllTableNames()) {
-            if (tableMetas.get(each) instanceof ShardingTableMetaData && ((ShardingTableMetaData) tableMetas.get(each)).containsIndex(logicIndexName)) {
+            if (tableMetas.get(each).containsIndex(logicIndexName)) {
                 return Optional.of(each);
             }
         }

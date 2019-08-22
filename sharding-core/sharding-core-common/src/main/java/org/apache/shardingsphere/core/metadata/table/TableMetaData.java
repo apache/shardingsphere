@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * Table meta data.
@@ -34,12 +35,15 @@ import java.util.Map;
 @Getter
 @EqualsAndHashCode
 @ToString
-public class TableMetaData {
+public final class TableMetaData {
     
     private final Map<String, ColumnMetaData> columns;
     
-    public TableMetaData(final Collection<ColumnMetaData> columnMetaDataList) {
+    private final Collection<String> indexes;
+    
+    public TableMetaData(final Collection<ColumnMetaData> columnMetaDataList, final Collection<String> indexes) {
         columns = getColumns(columnMetaDataList);
+        this.indexes = new CopyOnWriteArraySet<>(indexes);
     }
     
     private Map<String, ColumnMetaData> getColumns(final Collection<ColumnMetaData> columnMetaDataList) {
@@ -48,5 +52,15 @@ public class TableMetaData {
             columns.put(each.getColumnName(), each);
         }
         return Collections.synchronizedMap(columns);
+    }
+    
+    /**
+     * Judge contains index or not.
+     *
+     * @param indexName index name
+     * @return contains index or not
+     */
+    public boolean containsIndex(final String indexName) {
+        return indexes.contains(indexName);
     }
 }

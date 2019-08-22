@@ -27,7 +27,6 @@ import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.metadata.table.sharding.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.route.PreparedStatementRoutingEngine;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
@@ -114,9 +113,9 @@ public abstract class AbstractSQLRouteTest {
     
     private TableMetas buildTableMetas() {
         Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(3, 1);
-        tableMetaDataMap.put("t_order", new ShardingTableMetaData(Arrays.asList(new ColumnMetaData("order_id", "int", true), new ColumnMetaData("user_id", "int", false), 
+        tableMetaDataMap.put("t_order", new TableMetaData(Arrays.asList(new ColumnMetaData("order_id", "int", true), new ColumnMetaData("user_id", "int", false), 
                         new ColumnMetaData("status", "int", false)), Collections.<String>emptySet()));
-        tableMetaDataMap.put("t_order_item", new ShardingTableMetaData(Arrays.asList(new ColumnMetaData("item_id", "int", true), new ColumnMetaData("order_id", "int", false),
+        tableMetaDataMap.put("t_order_item", new TableMetaData(Arrays.asList(new ColumnMetaData("item_id", "int", true), new ColumnMetaData("order_id", "int", false),
                 new ColumnMetaData("user_id", "int", false), new ColumnMetaData("status", "varchar", false), 
                 new ColumnMetaData("c_date", "timestamp", false)), Collections.<String>emptySet()));
         return new TableMetas(tableMetaDataMap);
