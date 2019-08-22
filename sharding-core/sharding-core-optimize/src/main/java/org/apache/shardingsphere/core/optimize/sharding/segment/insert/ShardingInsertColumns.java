@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.core.optimize.sharding.segment.insert;
 
+import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.optimize.api.segment.InsertColumns;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Collection;
@@ -37,51 +37,38 @@ import java.util.LinkedHashSet;
 @ToString
 public final class ShardingInsertColumns implements InsertColumns {
     
-    private final String generateKeyColumnName;
-    
     @Getter
     private final Collection<String> regularColumnNames;
     
-    public ShardingInsertColumns(
-            final ShardingRule shardingRule, final TableMetas tableMetas, final InsertStatement insertStatement, final Collection<String> derivedColumnNames) {
-        generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTable().getTableName()).orNull();
-        regularColumnNames = insertStatement.useDefaultColumns() 
-                ? getRegularColumnNamesFromMetaData(shardingRule.getEncryptRule(), tableMetas, insertStatement, derivedColumnNames) : getRegularColumnNamesFromSQLStatement(insertStatement);
+    public ShardingInsertColumns(final ShardingRule shardingRule, final TableMetas tableMetas, final InsertStatement insertStatement) {
+        regularColumnNames = insertStatement.useDefaultColumns()
+                ? getRegularColumnNamesFromMetaData(shardingRule, tableMetas, insertStatement) : getRegularColumnNamesFromSQLStatement(shardingRule, insertStatement);
     }
     
-    private Collection<String> getRegularColumnNamesFromMetaData(final EncryptRule encryptRule,
-                                                                 final TableMetas tableMetas, final InsertStatement insertStatement, final Collection<String> derivedColumnNames) {
+    private Collection<String> getRegularColumnNamesFromMetaData(final ShardingRule shardingRule, final TableMetas tableMetas, final InsertStatement insertStatement) {
         Collection<String> allColumnNames = tableMetas.getAllColumnNames(insertStatement.getTable().getTableName());
-        Collection<String> result = new LinkedHashSet<>(allColumnNames.size() - derivedColumnNames.size());
-        String tableName = insertStatement.getTable().getTableName();
-        for (String each : allColumnNames) {
-            if (encryptRule.getCipherColumns(tableName).contains(each)) {
-                result.add(encryptRule.getLogicColumn(tableName, each));
-                continue;
-            }
-            if (!derivedColumnNames.contains(each)) {
-                result.add(each);
-            }
-        }
-        if (isGenerateKeyFromMetaData(allColumnNames, derivedColumnNames, insertStatement.getValueSize())) {
-            result.remove(generateKeyColumnName);
+        Collection<String> result = new LinkedHashSet<>(allColumnNames);
+        Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTable().getTableName());
+        if (generateKeyColumnName.isPresent() && isUseDefaultGenerateKeyFromMetaData(allColumnNames, insertStatement.getValueSize())) {
+            result.remove(generateKeyColumnName.get());
         }
         return result;
     }
     
-    private boolean isGenerateKeyFromMetaData(final Collection<String> allColumnNames, final Collection<String> derivedColumnNames, final int columnValueSize) {
-        return null != generateKeyColumnName && allColumnNames.size() - derivedColumnNames.size() > columnValueSize;
+    private boolean isUseDefaultGenerateKeyFromMetaData(final Collection<String> allColumnNames, final int columnValueSize) {
+        return allColumnNames.size() > columnValueSize;
     }
     
-    private Collection<String> getRegularColumnNamesFromSQLStatement(final InsertStatement insertStatement) {
+    private Collection<String> getRegularColumnNamesFromSQLStatement(final ShardingRule shardingRule, final InsertStatement insertStatement) {
         Collection<String> result = new LinkedHashSet<>(insertStatement.getColumnNames());
-        if (isGenerateKeyFromSQLStatement(insertStatement)) {
-            result.remove(generateKeyColumnName);
+        Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTable().getTableName());
+        if (generateKeyColumnName.isPresent() && isUseDefaultGenerateKeyFromSQLStatement(insertStatement)) {
+            result.remove(generateKeyColumnName.get());
         }
         return result;
     }
     
-    private boolean isGenerateKeyFromSQLStatement(final InsertStatement insertStatement) {
-        return null != generateKeyColumnName && !insertStatement.getColumns().isEmpty() && insertStatement.getColumns().size() > insertStatement.getValueSize();
+    private boolean isUseDefaultGenerateKeyFromSQLStatement(final InsertStatement insertStatement) {
+        return !insertStatement.getColumns().isEmpty() && insertStatement.getColumns().size() > insertStatement.getValueSize();
     }
 }

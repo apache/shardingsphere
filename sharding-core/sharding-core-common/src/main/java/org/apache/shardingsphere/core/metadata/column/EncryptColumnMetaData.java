@@ -22,16 +22,26 @@ import lombok.Getter;
 import lombok.ToString;
 
 /**
- * Column meta data for sharding generated key.
+ * Column meta data for encrypt.
  *
  * @author zhangliang
  */
 @Getter
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public final class ShardingGeneratedKeyColumnMetaData extends ColumnMetaData {
+public final class EncryptColumnMetaData extends ColumnMetaData {
     
-    public ShardingGeneratedKeyColumnMetaData(final String name, final String dataType, final boolean primaryKey) {
+    private final String cipherColumnName;
+    
+    private final String plainColumnName;
+    
+    private final String assistedQueryColumnName;
+    
+    public EncryptColumnMetaData(final String name, final String dataType, final boolean primaryKey, 
+                                 final String cipherColumnName, final String plainColumnName, final String assistedQueryColumnName) {
         super(name, dataType, primaryKey);
+        this.cipherColumnName = cipherColumnName;
+        this.plainColumnName = plainColumnName;
+        this.assistedQueryColumnName = assistedQueryColumnName;
     }
 }

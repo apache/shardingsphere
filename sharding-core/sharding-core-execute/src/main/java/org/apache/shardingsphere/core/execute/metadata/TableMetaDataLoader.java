@@ -25,11 +25,12 @@ import org.apache.shardingsphere.core.execute.ShardingExecuteEngine;
 import org.apache.shardingsphere.core.execute.ShardingExecuteGroup;
 import org.apache.shardingsphere.core.execute.ShardingGroupExecuteCallback;
 import org.apache.shardingsphere.core.metadata.column.ColumnMetaData;
+import org.apache.shardingsphere.core.metadata.column.EncryptColumnMetaData;
 import org.apache.shardingsphere.core.metadata.column.ShardingGeneratedKeyColumnMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.rule.DataNode;
-import org.apache.shardingsphere.core.rule.ShardingDataSourceNames;
+import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.spi.database.DataSourceMetaData;
@@ -79,13 +80,13 @@ public final class TableMetaDataLoader {
      * @throws SQLException SQL exception
      */
     public TableMetaData load(final String logicTableName, final ShardingRule shardingRule) throws SQLException {
-        List<TableMetaData> actualTableMetaDataList = load(
-                getDataNodeGroups(shardingRule.getTableRule(logicTableName)), shardingRule.getShardingDataSourceNames(), shardingRule.findGenerateKeyColumnName(logicTableName).orNull());
+        List<TableMetaData> actualTableMetaDataList = load(getDataNodeGroups(shardingRule.getTableRule(logicTableName)), shardingRule, logicTableName);
         checkUniformed(logicTableName, actualTableMetaDataList);
         return actualTableMetaDataList.iterator().next();
     }
     
-    private List<TableMetaData> load(final Map<String, List<DataNode>> dataNodeGroups, final ShardingDataSourceNames shardingDataSourceNames, final String generateKeyColumnName) throws SQLException {
+    private List<TableMetaData> load(final Map<String, List<DataNode>> dataNodeGroups, final ShardingRule shardingRule, final String logicTableName) throws SQLException {
+        final String generateKeyColumnName = shardingRule.findGenerateKeyColumnName(logicTableName).orNull();
         return executeEngine.groupExecute(getDataNodeExecuteGroups(dataNodeGroups), new ShardingGroupExecuteCallback<DataNode, TableMetaData>() {
             
             @Override
@@ -93,16 +94,18 @@ public final class TableMetaDataLoader {
                 String dataSourceName = dataNodes.iterator().next().getDataSourceName();
                 DataSourceMetaData dataSourceMetaData = TableMetaDataLoader.this.dataSourceMetas.getDataSourceMetaData(dataSourceName);
                 String catalog = null == dataSourceMetaData ? null : dataSourceMetaData.getSchemaName();
-                return load(shardingDataSourceNames.getRawMasterDataSourceName(dataSourceName), catalog, dataNodes, generateKeyColumnName);
+                return load(shardingRule.getShardingDataSourceNames().getRawMasterDataSourceName(dataSourceName), 
+                        catalog, logicTableName, dataNodes, generateKeyColumnName, shardingRule.getEncryptRule());
             }
         });
     }
     
-    private Collection<TableMetaData> load(final String dataSourceName, final String catalog, final Collection<DataNode> dataNodes, final String generateKeyColumnName) throws SQLException {
+    private Collection<TableMetaData> load(final String dataSourceName, final String catalog, 
+                                           final String logicTableName, final Collection<DataNode> dataNodes, final String generateKeyColumnName, final EncryptRule encryptRule) throws SQLException {
         Collection<TableMetaData> result = new LinkedList<>();
         try (Connection connection = connectionManager.getConnection(dataSourceName)) {
             for (DataNode each : dataNodes) {
-                result.add(createTableMetaData(connection, catalog, each.getTableName(), generateKeyColumnName));
+                result.add(createTableMetaData(connection, catalog, logicTableName, each.getTableName(), generateKeyColumnName, encryptRule));
             }
         }
         return result;
@@ -133,9 +136,11 @@ public final class TableMetaDataLoader {
         return result;
     }
     
-    private TableMetaData createTableMetaData(final Connection connection, final String catalog, final String actualTableName, final String generateKeyColumnName) throws SQLException {
+    private TableMetaData createTableMetaData(final Connection connection, final String catalog, 
+                                              final String logicTableName, final String actualTableName, final String generateKeyColumnName, final EncryptRule encryptRule) throws SQLException {
         if (isTableExist(connection, catalog, actualTableName)) {
-            return new TableMetaData(getColumnMetaDataList(connection, catalog, actualTableName, generateKeyColumnName), getLogicIndexes(connection, catalog, actualTableName));
+            return new TableMetaData(
+                    getColumnMetaDataList(connection, catalog, logicTableName, actualTableName, generateKeyColumnName, encryptRule), getLogicIndexes(connection, catalog, actualTableName));
         }
         return new TableMetaData(Collections.<ColumnMetaData>emptyList(), Collections.<String>emptySet());
     }
@@ -146,17 +151,20 @@ public final class TableMetaDataLoader {
         }
     }
     
-    private List<ColumnMetaData> getColumnMetaDataList(final Connection connection, final String catalog, final String actualTableName, final String generateKeyColumnName) throws SQLException {
-        List<ColumnMetaData> result = new LinkedList<>();
+    private Collection<ColumnMetaData> getColumnMetaDataList(final Connection connection, final String catalog, final String logicTableName, final String actualTableName, 
+                                                       final String generateKeyColumnName, final EncryptRule encryptRule) throws SQLException {
+        Collection<ColumnMetaData> result = new LinkedList<>();
         Collection<String> primaryKeys = getPrimaryKeys(connection, catalog, actualTableName);
+        Collection<String> derivedColumns = encryptRule.getAssistedQueryAndPlainColumns(logicTableName);
         try (ResultSet resultSet = connection.getMetaData().getColumns(catalog, null, actualTableName, "%")) {
             while (resultSet.next()) {
                 String columnName = resultSet.getString(COLUMN_NAME);
                 String columnType = resultSet.getString(TYPE_NAME);
-                ColumnMetaData columnMetaData = columnName.equalsIgnoreCase(generateKeyColumnName)
-                        ? new ShardingGeneratedKeyColumnMetaData(columnName, columnType, primaryKeys.contains(columnName))
-                        : new ColumnMetaData(columnName, columnType, primaryKeys.contains(columnName));
-                result.add(columnMetaData);
+                boolean isPrimaryKey = primaryKeys.contains(columnName);
+                Optional<ColumnMetaData> columnMetaData = getColumnMetaData(logicTableName, columnName, columnType, isPrimaryKey, generateKeyColumnName, encryptRule, derivedColumns);
+                if (columnMetaData.isPresent()) {
+                    result.add(columnMetaData.get());
+                }
             }
         }
         return result;
@@ -170,6 +178,23 @@ public final class TableMetaDataLoader {
             }
         }
         return result;
+    }
+    
+    private Optional<ColumnMetaData> getColumnMetaData(final String logicTableName, final String columnName, final String columnType, final boolean isPrimaryKey,
+                                                       final String generateKeyColumnName, final EncryptRule encryptRule, final Collection<String> derivedColumns) {
+        if (derivedColumns.contains(columnName)) {
+            return Optional.absent();
+        }
+        if (encryptRule.isCipherColumn(logicTableName, columnName)) {
+            String logicColumnName = encryptRule.getLogicColumn(logicTableName, columnName);
+            String plainColumnName = encryptRule.getPlainColumn(logicTableName, logicColumnName).orNull();
+            String assistedQueryColumnName = encryptRule.getAssistedQueryColumn(logicTableName, logicColumnName).orNull();
+            return Optional.<ColumnMetaData>of(new EncryptColumnMetaData(logicColumnName, columnType, isPrimaryKey, columnName, plainColumnName, assistedQueryColumnName));
+        }
+        if (columnName.equalsIgnoreCase(generateKeyColumnName)) {
+            return Optional.<ColumnMetaData>of(new ShardingGeneratedKeyColumnMetaData(columnName, columnType, isPrimaryKey));
+        }
+        return Optional.of(new ColumnMetaData(columnName, columnType, isPrimaryKey));
     }
     
     private Collection<String> getLogicIndexes(final Connection connection, final String catalog, final String actualTableName) throws SQLException {
