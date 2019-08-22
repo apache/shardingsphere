@@ -22,12 +22,6 @@ weight = 4
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
 </dependency>
-
-<!--若使用etcd, 请下面Maven坐标-->
-<dependency>
-    <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>sharding-orchestration-reg-etcd</artifactId>
-</dependency>
 ```
 
 ### 基于Java编码的规则配置
@@ -37,7 +31,7 @@ weight = 4
     // ...
 
     // 配置注册中心
-    RegistryCenterConfiguration regConfig = new RegistryCenterConfiguration();
+    RegistryCenterConfiguration regConfig = new RegistryCenterConfiguration("zookeeper");
     regConfig.setServerLists("localhost:2181");
     regConfig.setNamespace("sharding-sphere-orchestration");
 
@@ -57,6 +51,7 @@ orchestration:
   name: orchestration-sharding-data-source
   overwrite: false
   registry:
+    type: zookeeper
     serverLists: localhost:2181
     namespace: sharding-sphere-orchestration
 ```
@@ -83,13 +78,6 @@ orchestration:
     <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
     <version>${sharding-sphere.version}</version>
 </dependency>
-
-<!--若使用etcd, 请加入下面Maven坐标-->
-<dependency>
-    <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>sharding-orchestration-reg-etcd</artifactId>
-    <version>${sharding-sphere.version}</version>
-</dependency>
 ```
 
 ```xml
@@ -106,13 +94,6 @@ orchestration:
     <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
     <version>${sharding-sphere.version}</version>
 </dependency>
-
-<!--若使用etcd, 请加入下面Maven坐标-->
-<dependency>
-    <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>sharding-orchestration-reg-etcd</artifactId>
-    <version>${sharding-sphere.version}</version>
-</dependency>
 ```
 
 ### 基于Spring boot的规则配置
@@ -120,6 +101,7 @@ orchestration:
 ```properties
 spring.shardingsphere.orchestration.name=orchestration-sharding-data-source
 spring.shardingsphere.orchestration.overwrite=false
+spring.shardingsphere.orchestration.registry.type=zookeeper
 spring.shardingsphere.orchestration.registry.server-lists=localhost:2181
 spring.shardingsphere.orchestration.registry.namespace=sharding-jdbc-orchestration
 ```
@@ -136,7 +118,7 @@ spring.shardingsphere.orchestration.registry.namespace=sharding-jdbc-orchestrati
                            http://shardingsphere.apache.org/schema/shardingsphere/orchestration
                            http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd">
      <import resource="namespace/shardingDataSourceNamespace.xml" />
-     <orchestraion:registry-center id="regCenter" server-lists="localhost:3181" namespace="orchestration-spring-namespace-test" operation-timeout-milliseconds="1000" max-retries="3" />
+     <orchestraion:registry-center id="regCenter" type="zookeeper" server-lists="localhost:3181" namespace="orchestration-spring-namespace-test" operation-timeout-milliseconds="1000" max-retries="3" />
      <orchestraion:sharding-data-source id="simpleShardingOrchestration" data-source-ref="simpleShardingDataSource" registry-center-ref="regCenter" />
 </beans>
 ```

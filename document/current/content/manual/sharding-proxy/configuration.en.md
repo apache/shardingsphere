@@ -333,6 +333,7 @@ orchestration:
   name: orchestration_ds
   overwrite: true
   registry:
+    type: zookeeper
     namespace: orchestration
     serverLists: localhost:2181
 ```

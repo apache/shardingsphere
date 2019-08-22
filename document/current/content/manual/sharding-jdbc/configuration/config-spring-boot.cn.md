@@ -235,6 +235,7 @@ spring.shardingsphere.sharding.broadcast-tables=t_config
 
 spring.shardingsphere.orchestration.name=spring_boot_ds_sharding
 spring.shardingsphere.orchestration.overwrite=true
+spring.shardingsphere.orchestration.registry.type=zookeeper
 spring.shardingsphere.orchestration.registry.namespace=orchestration-spring-boot-sharding-test
 spring.shardingsphere.orchestration.registry.server-lists=localhost:2181
 ```

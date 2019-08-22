@@ -715,6 +715,7 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/orchestration/
 | *Name*                             | *Type*    | *Description*                                                                   |
 | ---------------------------------- | --------- | ------------------------------------------------------------------------------- |
 | id                                 | Attribute | Spring Bean Id of registry center                                               |
+| type                               | Attribute | Registry center type. Example:zookeeper                                         |
 | server-lists                       | Attribute | Registry servers list, multiple split as comma. Example: host1:2181,host2:2181  |
 | namespace (?)                      | Attribute | Namespace of registry                                                           |
 | digest (?)                         | Attribute | Digest for registry. Default is not need digest                                 |
