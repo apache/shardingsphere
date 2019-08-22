@@ -421,7 +421,7 @@ It is the same with Sharding-JDBC configuration.
 #Omit configurations that are the same with Sharding-JDBC
 props:
   acceptor.size: #The thread number of accept connection; default to be 2 times of cpu core
-  proxy.transaction.enabled: #Whether to enable transaction; it only supports XA transactions, default not to enable
+  proxy.transaction.type: #Support LOCAL, XA, BASE; Default is LOCAL transaction, for BASE type you should copy ShardingTransactionManager associated jar to lib directory
   proxy.opentracing.enabled: #Whether to enable opentracing, default not to enable; refer to [APM](/en/features/orchestration/apm/) for more details
   check.table.metadata.enabled: #Whether to check metadata consistency of sharding table when it initializes; default value: false
 ```

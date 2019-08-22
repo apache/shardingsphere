@@ -422,9 +422,10 @@ encryptRule:
 #省略与Sharding-JDBC一致的配置属性
 props:
   acceptor.size: #用于设置接收客户端请求的工作线程个数，默认为CPU核数*2
-  proxy.transaction.enabled: #是否开启事务, 目前仅支持XA事务，默认为不开启
+  proxy.transaction.type: #默认为LOCAL事务，允许LOCAL，XA，BASE三个值，XA采用Atomikos作为事务管理器，BASE类型需要拷贝实现ShardingTransactionManager的接口的jar包至lib目录中
   proxy.opentracing.enabled: #是否开启链路追踪功能，默认为不开启。详情请参见[链路追踪](/cn/features/orchestration/apm/)
   check.table.metadata.enabled: #是否在启动时检查分表元数据一致性，默认值: false
+  proxy.frontend.flush.threshold: # 对于单个大查询,每多少个网络包返回一次
 ```
 
 ### 权限验证
