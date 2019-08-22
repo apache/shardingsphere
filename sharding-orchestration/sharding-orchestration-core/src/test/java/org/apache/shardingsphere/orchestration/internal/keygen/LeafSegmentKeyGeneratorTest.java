@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.orchestration.internal.keygen;
 
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 import java.util.Properties;
@@ -30,6 +29,8 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class LeafSegmentKeyGeneratorTest {
@@ -38,7 +39,7 @@ public final class LeafSegmentKeyGeneratorTest {
 
     @Test
     public void assertGetProperties() {
-        assertThat(leafSegmentKeyGenerator.getProperties().entrySet().size(), CoreMatchers.is(0));
+        assertThat(leafSegmentKeyGenerator.getProperties().entrySet().size(), is(0));
     }
 
     @Test
@@ -46,7 +47,7 @@ public final class LeafSegmentKeyGeneratorTest {
         Properties properties = new Properties();
         properties.setProperty("key1", "value1");
         leafSegmentKeyGenerator.setProperties(properties);
-        assertThat(leafSegmentKeyGenerator.getProperties().get("key1"), CoreMatchers.is((Object) "value1"));
+        assertThat(leafSegmentKeyGenerator.getProperties().get("key1"), is((Object) "value1"));
     }
 
     @Test
@@ -64,7 +65,7 @@ public final class LeafSegmentKeyGeneratorTest {
         for (int i = 0; i < 10; i++) {
             actual.add(leafSegmentKeyGenerator.generateKey());
         }
-        assertThat(actual, CoreMatchers.is(expected));
+        assertThat(actual, is(expected));
     }
 
     @Test
@@ -83,13 +84,14 @@ public final class LeafSegmentKeyGeneratorTest {
         int taskNumber = threadNumber << 2;
         for (int i = 0; i < taskNumber; i++) {
             actual.add(executor.submit(new Callable<Comparable<?>>() {
+
                 @Override
                 public Comparable<?> call() {
                     return leafSegmentKeyGenerator.generateKey();
                 }
             }).get());
         }
-        assertThat(actual.size(), CoreMatchers.is(taskNumber));
+        assertThat(actual.size(), is(taskNumber));
     }
 
     @Test
@@ -108,13 +110,14 @@ public final class LeafSegmentKeyGeneratorTest {
         int taskNumber = threadNumber << 2;
         for (int i = 0; i < taskNumber; i++) {
             actual.add(executor.submit(new Callable<Comparable<?>>() {
+
                 @Override
                 public Comparable<?> call() {
                     return leafSegmentKeyGenerator.generateKey();
                 }
             }).get());
         }
-        assertThat(actual.size(), CoreMatchers.is(taskNumber));
+        assertThat(actual.size(), is(taskNumber));
     }
 
     @Test
@@ -132,13 +135,14 @@ public final class LeafSegmentKeyGeneratorTest {
         int taskNumber = threadNumber << 2;
         for (int i = 0; i < taskNumber; i++) {
             actual.add(executor.submit(new Callable<Comparable<?>>() {
+
                 @Override
                 public Comparable<?> call() {
                     return leafSegmentKeyGenerator.generateKey();
                 }
             }).get());
         }
-        assertThat(actual.size(), CoreMatchers.is(taskNumber));
+        assertThat(actual.size(), is(taskNumber));
     }
 
     @Test
@@ -156,13 +160,14 @@ public final class LeafSegmentKeyGeneratorTest {
         Set<Comparable<?>> actual = new HashSet<>();
         for (int i = 0; i < taskNumber; i++) {
             actual.add(executor.submit(new Callable<Comparable<?>>() {
+
                 @Override
                 public Comparable<?> call() {
                     return leafSegmentKeyGenerator.generateKey();
                 }
             }).get());
         }
-        assertThat(actual.size(), CoreMatchers.is(taskNumber));
+        assertThat(actual.size(), is(taskNumber));
     }
 
     @Test(expected = IllegalArgumentException.class)

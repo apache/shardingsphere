@@ -20,7 +20,6 @@ package org.apache.shardingsphere.orchestration.internal.keygen;
 import org.apache.shardingsphere.orchestration.internal.keygen.fixture.FixedTimeService;
 import org.apache.shardingsphere.orchestration.internal.keygen.fixture.PreviousTimeService;
 import org.apache.shardingsphere.orchestration.util.FieldUtil;
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -33,6 +32,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class LeafSnowflakeKeyGeneratorTest {
@@ -41,7 +41,7 @@ public final class LeafSnowflakeKeyGeneratorTest {
 
     @Test
     public void assertGetProperties() {
-        assertThat(leafSnowflakeKeyGenerator.getProperties().entrySet().size(), CoreMatchers.is(0));
+        assertThat(leafSnowflakeKeyGenerator.getProperties().entrySet().size(), is(0));
     }
 
     @Test
@@ -49,7 +49,7 @@ public final class LeafSnowflakeKeyGeneratorTest {
         Properties properties = new Properties();
         properties.setProperty("key1", "value1");
         leafSnowflakeKeyGenerator.setProperties(properties);
-        assertThat(leafSnowflakeKeyGenerator.getProperties().get("key1"), CoreMatchers.is((Object) "value1"));
+        assertThat(leafSnowflakeKeyGenerator.getProperties().get("key1"), is((Object) "value1"));
     }
 
     @Test
@@ -66,7 +66,7 @@ public final class LeafSnowflakeKeyGeneratorTest {
         for (int i = 0; i < 10; i++) {
             actual.add(leafSnowflakeKeyGenerator.generateKey());
         }
-        assertThat(actual, CoreMatchers.is(expected));
+        assertThat(actual, is(expected));
     }
 
     @Test
@@ -81,7 +81,7 @@ public final class LeafSnowflakeKeyGeneratorTest {
         List<Comparable<?>> expected = Arrays.<Comparable<?>>asList(4198401L);
         List<Comparable<?>> actual = new ArrayList<>();
         actual.add(leafSnowflakeKeyGenerator.generateKey());
-        assertThat(actual, CoreMatchers.is(expected));
+        assertThat(actual, is(expected));
     }
 
     @Test(expected = IllegalStateException.class)
@@ -122,13 +122,14 @@ public final class LeafSnowflakeKeyGeneratorTest {
         int taskNumber = threadNumber << 2;
         for (int i = 0; i < taskNumber; i++) {
             actual.add(executor.submit(new Callable<Comparable<?>>() {
+
                 @Override
                 public Comparable<?> call() {
                     return leafSnowflakeKeyGenerator.generateKey();
                 }
             }).get());
         }
-        assertThat(actual.size(), CoreMatchers.is(taskNumber));
+        assertThat(actual.size(), is(taskNumber));
     }
 
     @Test
@@ -145,13 +146,14 @@ public final class LeafSnowflakeKeyGeneratorTest {
         int taskNumber = threadNumber << 2;
         for (int i = 0; i < taskNumber; i++) {
             actual.add(executor.submit(new Callable<Comparable<?>>() {
+
                 @Override
                 public Comparable<?> call() {
                     return leafSnowflakeKeyGenerator.generateKey();
                 }
             }).get());
         }
-        assertThat(actual.size(), CoreMatchers.is(taskNumber));
+        assertThat(actual.size(), is(taskNumber));
     }
 
     @Test
@@ -167,13 +169,14 @@ public final class LeafSnowflakeKeyGeneratorTest {
         int taskNumber = threadNumber << 2;
         for (int i = 0; i < taskNumber; i++) {
             actual.add(executor.submit(new Callable<Comparable<?>>() {
+
                 @Override
                 public Comparable<?> call() {
                     return leafSnowflakeKeyGenerator.generateKey();
                 }
             }).get());
         }
-        assertThat(actual.size(), CoreMatchers.is(taskNumber));
+        assertThat(actual.size(), is(taskNumber));
     }
 
     @Test(expected = IllegalArgumentException.class)
