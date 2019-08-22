@@ -253,6 +253,7 @@ public final class LeafSnowflakeKeyGenerator implements ShardingKeyGenerator {
     private void scheduledUpdateTimeNode(final RegistryCenter leafRegistryCenter) {
         final String timeDirectory = getTimeDirectoryWithServiceId();
         Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
+
             @Override
             public Thread newThread(final Runnable r) {
                 Thread thread = new Thread(r, "schedule-upload-time");
@@ -260,6 +261,7 @@ public final class LeafSnowflakeKeyGenerator implements ShardingKeyGenerator {
                 return thread;
             }
         }).scheduleWithFixedDelay(new Runnable() {
+
             @Override
             public void run() {
                 updateNewData(leafRegistryCenter, timeDirectory);
