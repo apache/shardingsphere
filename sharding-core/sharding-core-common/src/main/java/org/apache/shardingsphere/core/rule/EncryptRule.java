@@ -160,12 +160,12 @@ public final class EncryptRule implements BaseRule {
     }
     
     /**
-     * Is has plain column or not.
+     * Contains plain column or not.
      *
      * @param logicTable logic table name
-     * @return has plain column or not
+     * @return contains plain column or not
      */
-    public boolean isHasPlainColumn(final String logicTable) {
+    public boolean containsPlainColumn(final String logicTable) {
         return tables.containsKey(logicTable) && tables.get(logicTable).isHasPlainColumn();
     }
     
@@ -178,19 +178,6 @@ public final class EncryptRule implements BaseRule {
      */
     public String getCipherColumn(final String logicTable, final String logicColumn) {
         return tables.get(logicTable).getCipherColumn(logicColumn);
-    }
-    
-    /**
-     * Get cipher columns.
-     *
-     * @param logicTable logic table name
-     * @return cipher columns
-     */
-    public Collection<String> getCipherColumns(final String logicTable) {
-        if (!tables.containsKey(logicTable)) {
-            return Collections.emptyList();
-        }
-        return tables.get(logicTable).getCipherColumns();
     }
     
     /**
@@ -232,12 +219,12 @@ public final class EncryptRule implements BaseRule {
     }
     
     /**
-     * Is has query assisted column or not.
+     * Contains query assisted column or not.
      *
      * @param logicTable logic table name
-     * @return has query assisted column or not
+     * @return contains query assisted column or not
      */
-    public boolean isHasQueryAssistedColumn(final String logicTable) {
+    public boolean containsQueryAssistedColumn(final String logicTable) {
         return tables.containsKey(logicTable) && tables.get(logicTable).isHasQueryAssistedColumn();
     }
     

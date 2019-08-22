@@ -49,10 +49,10 @@ public final class EncryptInsertOptimizeEngine implements EncryptOptimizeEngine<
             ExpressionSegment[] valueExpressions = each.getValueExpressions(derivedColumnsCount);
             Object[] currentParameters = each.getParameters(parameters, parametersCount, derivedColumnsCount);
             InsertOptimizeResultUnit unit = result.addUnit(encryptDerivedColumnNames, valueExpressions, currentParameters, each.getParametersCount());
-            if (encryptRule.isHasQueryAssistedColumn(sqlStatement.getTable().getTableName())) {
+            if (encryptRule.containsQueryAssistedColumn(sqlStatement.getTable().getTableName())) {
                 fillAssistedQueryUnit(encryptRule, Arrays.asList(currentParameters), sqlStatement.getTable().getTableName(), columnNames, unit);
             }
-            if (encryptRule.isHasPlainColumn(sqlStatement.getTable().getTableName())) {
+            if (encryptRule.containsPlainColumn(sqlStatement.getTable().getTableName())) {
                 fillPlainUnit(encryptRule, Arrays.asList(currentParameters), sqlStatement.getTable().getTableName(), columnNames, unit);
             }
             parametersCount += each.getParametersCount();

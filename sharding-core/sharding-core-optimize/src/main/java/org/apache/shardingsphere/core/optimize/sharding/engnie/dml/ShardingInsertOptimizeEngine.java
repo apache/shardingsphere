@@ -80,10 +80,10 @@ public final class ShardingInsertOptimizeEngine implements ShardingOptimizeEngin
             if (isGeneratedValue) {
                 unit.addInsertValue(generatedValues.next(), Arrays.asList(currentParameters));
             }
-            if (shardingRule.getEncryptRule().isHasQueryAssistedColumn(tableName)) {
+            if (shardingRule.getEncryptRule().containsQueryAssistedColumn(tableName)) {
                 fillAssistedQueryUnit(shardingRule, tableName, insertColumns.getRegularColumnNames(), unit, Arrays.asList(currentParameters));
             }
-            if (shardingRule.getEncryptRule().isHasPlainColumn(tableName)) {
+            if (shardingRule.getEncryptRule().containsPlainColumn(tableName)) {
                 fillPlainUnit(shardingRule, tableName, insertColumns.getRegularColumnNames(), unit, Arrays.asList(currentParameters));
             }
             parametersCount += each.getParametersCount();
