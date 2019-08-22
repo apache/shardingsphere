@@ -20,6 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.context;
 import com.google.common.base.Optional;
 import lombok.Getter;
 import org.apache.shardingsphere.core.metadata.column.ColumnMetaData;
+import org.apache.shardingsphere.core.metadata.column.EncryptColumnMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.rule.EncryptRule;
@@ -46,11 +47,17 @@ import java.util.Set;
 @Getter
 public final class EncryptRuntimeContext extends AbstractRuntimeContext<EncryptRule> {
     
+    private static final String COLUMN_NAME = "COLUMN_NAME";
+    
+    private static final String TYPE_NAME = "TYPE_NAME";
+    
+    private static final String INDEX_NAME = "INDEX_NAME";
+    
     private final TableMetas tableMetas;
     
-    public EncryptRuntimeContext(final DataSource dataSource, final EncryptRule rule, final Properties props, final DatabaseType databaseType) throws SQLException {
-        super(rule, props, databaseType);
-        tableMetas = createEncryptTableMetas(dataSource, rule);
+    public EncryptRuntimeContext(final DataSource dataSource, final EncryptRule encryptRule, final Properties props, final DatabaseType databaseType) throws SQLException {
+        super(encryptRule, props, databaseType);
+        tableMetas = createEncryptTableMetas(dataSource, encryptRule);
     }
     
     private TableMetas createEncryptTableMetas(final DataSource dataSource, final EncryptRule encryptRule) throws SQLException {
@@ -58,7 +65,7 @@ public final class EncryptRuntimeContext extends AbstractRuntimeContext<EncryptR
         try (Connection connection = dataSource.getConnection()) {
             for (String each : encryptRule.getEncryptTableNames()) {
                 if (isTableExist(connection, each)) {
-                    tables.put(each, new TableMetaData(getColumnMetaDataList(connection, each), getLogicIndexes(connection, each)));
+                    tables.put(each, new TableMetaData(getColumnMetaDataList(connection, each, encryptRule), getIndexes(connection, each)));
                 }
             }
         }
@@ -71,47 +78,55 @@ public final class EncryptRuntimeContext extends AbstractRuntimeContext<EncryptR
         }
     }
     
-    private List<ColumnMetaData> getColumnMetaDataList(final Connection connection, final String tableName) throws SQLException {
+    private List<ColumnMetaData> getColumnMetaDataList(final Connection connection, final String tableName, final EncryptRule encryptRule) throws SQLException {
         List<ColumnMetaData> result = new LinkedList<>();
         Collection<String> primaryKeys = getPrimaryKeys(connection, tableName);
+        Collection<String> derivedColumns = encryptRule.getAssistedQueryAndPlainColumns(tableName);
         try (ResultSet resultSet = connection.getMetaData().getColumns(connection.getCatalog(), null, tableName, "%")) {
             while (resultSet.next()) {
-                String columnName = resultSet.getString("COLUMN_NAME");
-                String columnType = resultSet.getString("TYPE_NAME");
-                result.add(new ColumnMetaData(columnName, columnType, primaryKeys.contains(columnName)));
-            }
-        }
-        return result;
-    }
-    
-    private Collection<String> getPrimaryKeys(final Connection connection, final String tableName) throws SQLException {
-        Collection<String> result = new HashSet<>();
-        try (ResultSet resultSet = connection.getMetaData().getPrimaryKeys(connection.getCatalog(), null, tableName)) {
-            while (resultSet.next()) {
-                result.add(resultSet.getString("COLUMN_NAME"));
-            }
-        }
-        return result;
-    }
-    
-    private Set<String> getLogicIndexes(final Connection connection, final String actualTableName) throws SQLException {
-        Set<String> result = new HashSet<>();
-        try (ResultSet resultSet = connection.getMetaData().getIndexInfo(connection.getCatalog(), connection.getCatalog(), actualTableName, false, false)) {
-            while (resultSet.next()) {
-                Optional<String> logicIndex = getLogicIndex(resultSet.getString("INDEX_NAME"), actualTableName);
-                if (logicIndex.isPresent()) {
-                    result.add(logicIndex.get());
+                String columnName = resultSet.getString(COLUMN_NAME);
+                String columnType = resultSet.getString(TYPE_NAME);
+                boolean isPrimaryKey = primaryKeys.contains(columnName);
+                Optional<ColumnMetaData> columnMetaData = getColumnMetaData(tableName, columnName, columnType, isPrimaryKey, encryptRule, derivedColumns);
+                if (columnMetaData.isPresent()) {
+                    result.add(columnMetaData.get());
                 }
             }
         }
         return result;
     }
     
-    private Optional<String> getLogicIndex(final String actualIndexName, final String actualTableName) {
-        String indexNameSuffix = "_" + actualTableName;
-        if (actualIndexName.contains(indexNameSuffix)) {
-            return Optional.of(actualIndexName.replace(indexNameSuffix, ""));
+    private Optional<ColumnMetaData> getColumnMetaData(final String logicTableName, final String columnName, final String columnType, final boolean isPrimaryKey,
+                                                       final EncryptRule encryptRule, final Collection<String> derivedColumns) {
+        if (derivedColumns.contains(columnName)) {
+            return Optional.absent();
         }
-        return Optional.absent();
+        if (encryptRule.isCipherColumn(logicTableName, columnName)) {
+            String logicColumnName = encryptRule.getLogicColumn(logicTableName, columnName);
+            String plainColumnName = encryptRule.getPlainColumn(logicTableName, logicColumnName).orNull();
+            String assistedQueryColumnName = encryptRule.getAssistedQueryColumn(logicTableName, logicColumnName).orNull();
+            return Optional.<ColumnMetaData>of(new EncryptColumnMetaData(logicColumnName, columnType, isPrimaryKey, columnName, plainColumnName, assistedQueryColumnName));
+        }
+        return Optional.of(new ColumnMetaData(columnName, columnType, isPrimaryKey));
+    }
+    
+    private Collection<String> getPrimaryKeys(final Connection connection, final String tableName) throws SQLException {
+        Collection<String> result = new HashSet<>();
+        try (ResultSet resultSet = connection.getMetaData().getPrimaryKeys(connection.getCatalog(), null, tableName)) {
+            while (resultSet.next()) {
+                result.add(resultSet.getString(COLUMN_NAME));
+            }
+        }
+        return result;
+    }
+    
+    private Set<String> getIndexes(final Connection connection, final String tableName) throws SQLException {
+        Set<String> result = new HashSet<>();
+        try (ResultSet resultSet = connection.getMetaData().getIndexInfo(connection.getCatalog(), connection.getCatalog(), tableName, false, false)) {
+            while (resultSet.next()) {
+                result.add(resultSet.getString(INDEX_NAME));
+            }
+        }
+        return result;
     }
 }

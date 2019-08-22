@@ -42,7 +42,7 @@ public final class EncryptInsertOptimizeEngine implements EncryptOptimizeEngine<
     public EncryptInsertOptimizedStatement optimize(final EncryptRule encryptRule, final TableMetas tableMetas, final String sql, final List<Object> parameters, final InsertStatement sqlStatement) {
         InsertValueEngine insertValueEngine = new InsertValueEngine();
         EncryptInsertOptimizedStatement result = new EncryptInsertOptimizedStatement(
-                sqlStatement, new EncryptInsertColumns(encryptRule, tableMetas, sqlStatement), insertValueEngine.createInsertValues(sqlStatement));
+                sqlStatement, new EncryptInsertColumns(tableMetas, sqlStatement), insertValueEngine.createInsertValues(sqlStatement));
         int derivedColumnsCount = encryptRule.getAssistedQueryAndPlainColumnCount(sqlStatement.getTable().getTableName());
         int parametersCount = 0;
         Collection<String> columnNames = getColumnNames(tableMetas, sqlStatement);

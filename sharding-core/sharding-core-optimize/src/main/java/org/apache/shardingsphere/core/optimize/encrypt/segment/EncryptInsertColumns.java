@@ -22,7 +22,6 @@ import lombok.ToString;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.optimize.api.segment.InsertColumns;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.rule.EncryptRule;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -33,32 +32,13 @@ import java.util.LinkedHashSet;
  * @author zhangliang
  * @author panjuan
  */
+@Getter
 @ToString
 public final class EncryptInsertColumns implements InsertColumns {
     
-    private final Collection<String> assistedQueryAndPlainColumnNames;
-    
-    @Getter
     private final Collection<String> regularColumnNames;
     
-    public EncryptInsertColumns(final EncryptRule encryptRule, final TableMetas tableMetas, final InsertStatement insertStatement) {
-        assistedQueryAndPlainColumnNames = encryptRule.getAssistedQueryAndPlainColumns(insertStatement.getTable().getTableName());
-        regularColumnNames = insertStatement.useDefaultColumns() ? getRegularColumnNamesFromMetaData(encryptRule, tableMetas, insertStatement) : insertStatement.getColumnNames();
-    }
-    
-    private Collection<String> getRegularColumnNamesFromMetaData(final EncryptRule encryptRule, final TableMetas tableMetas, final InsertStatement insertStatement) {
-        Collection<String> allColumnNames = tableMetas.getAllColumnNames(insertStatement.getTable().getTableName());
-        Collection<String> result = new LinkedHashSet<>(allColumnNames.size() - assistedQueryAndPlainColumnNames.size());
-        String tableName = insertStatement.getTable().getTableName();
-        for (String each : allColumnNames) {
-            if (encryptRule.getCipherColumns(tableName).contains(each)) {
-                result.add(encryptRule.getLogicColumn(tableName, each));
-                continue;
-            }
-            if (!assistedQueryAndPlainColumnNames.contains(each)) {
-                result.add(each);
-            }
-        }
-        return result;
+    public EncryptInsertColumns(final TableMetas tableMetas, final InsertStatement insertStatement) {
+        regularColumnNames = insertStatement.useDefaultColumns() ? new LinkedHashSet<>(tableMetas.getAllColumnNames(insertStatement.getTable().getTableName())) : insertStatement.getColumnNames();
     }
 }
