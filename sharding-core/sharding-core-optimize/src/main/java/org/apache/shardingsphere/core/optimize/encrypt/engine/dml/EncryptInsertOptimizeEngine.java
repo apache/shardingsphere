@@ -24,6 +24,7 @@ import org.apache.shardingsphere.core.optimize.encrypt.segment.EncryptInsertColu
 import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptInsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.segment.insert.InsertOptimizeResultUnit;
 import org.apache.shardingsphere.core.optimize.sharding.segment.insert.value.InsertValuesFactory;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
@@ -40,15 +41,15 @@ public final class EncryptInsertOptimizeEngine implements EncryptOptimizeEngine<
     
     @Override
     public EncryptInsertOptimizedStatement optimize(final EncryptRule encryptRule, final TableMetas tableMetas, final String sql, final List<Object> parameters, final InsertStatement sqlStatement) {
-        EncryptInsertOptimizedStatement result = new EncryptInsertOptimizedStatement(
-                sqlStatement, new EncryptInsertColumns(tableMetas, sqlStatement), InsertValuesFactory.createInsertValues(sqlStatement));
+        EncryptInsertOptimizedStatement result = new EncryptInsertOptimizedStatement(sqlStatement, tableMetas, new EncryptInsertColumns(tableMetas, sqlStatement));
         int derivedColumnsCount = encryptRule.getAssistedQueryAndPlainColumnCount(sqlStatement.getTable().getTableName());
         int parametersCount = 0;
-        Collection<String> columnNames = getColumnNames(tableMetas, sqlStatement);
-        for (InsertValue each : result.getValues()) {
-            Object[] currentParameters = each.getParameters(parameters, parametersCount, derivedColumnsCount);
+        Collection<String> columnNames = sqlStatement.useDefaultColumns() ? tableMetas.getAllColumnNames(sqlStatement.getTable().getTableName()) : sqlStatement.getColumnNames();
+        for (InsertValue each : InsertValuesFactory.createInsertValues(sqlStatement)) {
             Collection<String> encryptDerivedColumnNames = encryptRule.getAssistedQueryAndPlainColumns(sqlStatement.getTable().getTableName());
-            InsertOptimizeResultUnit unit = result.addUnit(encryptDerivedColumnNames, each.getValues(derivedColumnsCount), currentParameters, each.getParametersCount());
+            ExpressionSegment[] valueExpressions = each.getValueExpressions(derivedColumnsCount);
+            Object[] currentParameters = each.getParameters(parameters, parametersCount, derivedColumnsCount);
+            InsertOptimizeResultUnit unit = result.addUnit(encryptDerivedColumnNames, valueExpressions, currentParameters, each.getParametersCount());
             if (encryptRule.isHasQueryAssistedColumn(sqlStatement.getTable().getTableName())) {
                 fillAssistedQueryUnit(encryptRule, Arrays.asList(currentParameters), sqlStatement.getTable().getTableName(), columnNames, unit);
             }
@@ -81,9 +82,5 @@ public final class EncryptInsertOptimizeEngine implements EncryptOptimizeEngine<
                 }
             }
         }
-    }
-    
-    private Collection<String> getColumnNames(final TableMetas tableMetas, final InsertStatement sqlStatement) {
-        return sqlStatement.useDefaultColumns() ? tableMetas.getAllColumnNames(sqlStatement.getTable().getTableName()) : sqlStatement.getColumnNames();
     }
 }

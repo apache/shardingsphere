@@ -20,13 +20,14 @@ package org.apache.shardingsphere.core.optimize.encrypt.statement;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
+import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.optimize.api.segment.Tables;
 import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.encrypt.segment.EncryptInsertColumns;
 import org.apache.shardingsphere.core.optimize.sharding.segment.insert.InsertOptimizeResultUnit;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -47,32 +48,33 @@ public final class EncryptInsertOptimizedStatement implements InsertOptimizedSta
     
     private final Tables tables;
     
-    private final EncryptInsertColumns insertColumns;
+    private final Collection<String> columnNames;
     
-    private final Collection<InsertValue> values;
+    private final EncryptInsertColumns insertColumns;
     
     private final List<InsertOptimizeResultUnit> units = new LinkedList<>();
     
-    public EncryptInsertOptimizedStatement(final SQLStatement sqlStatement, final EncryptInsertColumns insertColumns, final Collection<InsertValue> values) {
+    public EncryptInsertOptimizedStatement(final InsertStatement sqlStatement, final TableMetas tableMetas, final EncryptInsertColumns insertColumns) {
         this.sqlStatement = sqlStatement;
         tables = new Tables(sqlStatement);
+        columnNames = sqlStatement.useDefaultColumns() ? tableMetas.getAllColumnNames(sqlStatement.getTable().getTableName()) : sqlStatement.getColumnNames();
         this.insertColumns = insertColumns;
-        this.values = values;
     }
     
     /**
-     * Add insert optimize result uint.
+     * Add insert optimize result unit.
      *
      * @param derivedColumnNames derived column names
-     * @param insertValues insert values
+     * @param valueExpressions value expressions
      * @param parameters SQL parameters
      * @param startIndexOfAppendedParameters start index of appended parameters
      * @return insert optimize result unit
      */
-    public InsertOptimizeResultUnit addUnit(final Collection<String> derivedColumnNames, final ExpressionSegment[] insertValues, final Object[] parameters, final int startIndexOfAppendedParameters) {
-        Collection<String> allColumnNames = new LinkedHashSet<>(insertColumns.getRegularColumnNames());
+    public InsertOptimizeResultUnit addUnit(final Collection<String> derivedColumnNames, 
+                                            final ExpressionSegment[] valueExpressions, final Object[] parameters, final int startIndexOfAppendedParameters) {
+        Collection<String> allColumnNames = new LinkedHashSet<>(columnNames);
         allColumnNames.addAll(derivedColumnNames);
-        InsertOptimizeResultUnit result = new InsertOptimizeResultUnit(allColumnNames, insertValues, parameters, startIndexOfAppendedParameters);
+        InsertOptimizeResultUnit result = new InsertOptimizeResultUnit(allColumnNames, valueExpressions, parameters, startIndexOfAppendedParameters);
         units.add(result);
         return result;
     }

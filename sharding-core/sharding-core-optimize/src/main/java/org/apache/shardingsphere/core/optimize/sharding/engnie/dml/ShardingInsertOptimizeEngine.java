@@ -74,7 +74,8 @@ public final class ShardingInsertOptimizeEngine implements ShardingOptimizeEngin
             Object[] currentParameters = each.getParameters(parameters, parametersCount, derivedColumnsCount);
             String generateKeyColumnName = shardingRule.findGenerateKeyColumnName(sqlStatement.getTable().getTableName()).orNull();
             Collection<String> encryptDerivedColumnNames = shardingRule.getEncryptRule().getAssistedQueryAndPlainColumns(sqlStatement.getTable().getTableName());
-            InsertOptimizeResultUnit unit = result.createUnit(generateKeyColumnName, encryptDerivedColumnNames, each.getValues(derivedColumnsCount), currentParameters, each.getParametersCount());
+            InsertOptimizeResultUnit unit = result.createUnit(
+                    generateKeyColumnName, encryptDerivedColumnNames, each.getValueExpressions(derivedColumnsCount), currentParameters, each.getParametersCount());
             result.addUnit(unit);
             if (isGeneratedValue) {
                 unit.addInsertValue(generatedValues.next(), Arrays.asList(currentParameters));

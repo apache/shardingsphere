@@ -39,27 +39,12 @@ public final class InsertValue {
     private final Collection<ExpressionSegment> assignments;
     
     /**
-     * Get parameters count.
-     * 
-     * @return parameters count
-     */
-    public int getParametersCount() {
-        int result = 0;
-        for (ExpressionSegment each : assignments) {
-            if (each instanceof ParameterMarkerExpressionSegment) {
-                result++;
-            }
-        }
-        return result;
-    }
-    
-    /**
-     * Get values.
+     * Get value expressions.
      * 
      * @param derivedColumnsCount derived columns count
-     * @return values
+     * @return value expressions
      */
-    public ExpressionSegment[] getValues(final int derivedColumnsCount) {
+    public ExpressionSegment[] getValueExpressions(final int derivedColumnsCount) {
         ExpressionSegment[] result = new ExpressionSegment[assignments.size() + derivedColumnsCount];
         assignments.toArray(result);
         return result;
@@ -80,6 +65,21 @@ public final class InsertValue {
         }
         Object[] result = new Object[parametersCount + derivedColumnsCount];
         parameters.subList(parametersBeginIndex, parametersBeginIndex + parametersCount).toArray(result);
+        return result;
+    }
+    
+    /**
+     * Get parameters count.
+     *
+     * @return parameters count
+     */
+    public int getParametersCount() {
+        int result = 0;
+        for (ExpressionSegment each : assignments) {
+            if (each instanceof ParameterMarkerExpressionSegment) {
+                result++;
+            }
+        }
         return result;
     }
 }
