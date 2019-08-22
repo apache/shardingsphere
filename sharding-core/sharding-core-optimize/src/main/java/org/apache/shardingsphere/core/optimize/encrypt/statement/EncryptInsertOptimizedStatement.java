@@ -23,7 +23,6 @@ import lombok.ToString;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.optimize.api.segment.Tables;
 import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.encrypt.segment.EncryptInsertColumns;
 import org.apache.shardingsphere.core.optimize.sharding.segment.insert.InsertOptimizeResultUnit;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
@@ -50,15 +49,12 @@ public final class EncryptInsertOptimizedStatement implements InsertOptimizedSta
     
     private final Collection<String> columnNames;
     
-    private final EncryptInsertColumns insertColumns;
-    
     private final List<InsertOptimizeResultUnit> units = new LinkedList<>();
     
-    public EncryptInsertOptimizedStatement(final InsertStatement sqlStatement, final TableMetas tableMetas, final EncryptInsertColumns insertColumns) {
+    public EncryptInsertOptimizedStatement(final InsertStatement sqlStatement, final TableMetas tableMetas) {
         this.sqlStatement = sqlStatement;
         tables = new Tables(sqlStatement);
         columnNames = sqlStatement.useDefaultColumns() ? tableMetas.getAllColumnNames(sqlStatement.getTable().getTableName()) : sqlStatement.getColumnNames();
-        this.insertColumns = insertColumns;
     }
     
     /**

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.optimize.api.statement;
 
-import org.apache.shardingsphere.core.optimize.encrypt.segment.condition.EncryptConditions;
+import org.apache.shardingsphere.core.optimize.encrypt.condition.EncryptConditions;
 
 /**
  * Condition optimized statement.

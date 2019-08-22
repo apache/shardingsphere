@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.encrypt.segment.condition;
+package org.apache.shardingsphere.core.optimize.encrypt.condition;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

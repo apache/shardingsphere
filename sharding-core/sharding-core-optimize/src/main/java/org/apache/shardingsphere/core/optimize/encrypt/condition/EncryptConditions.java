@@ -15,30 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.encrypt.segment;
+package org.apache.shardingsphere.core.optimize.encrypt.condition;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.optimize.api.segment.InsertColumns;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 
-import java.util.Collection;
-import java.util.LinkedHashSet;
+import java.util.List;
 
 /**
- * Insert columns for encrypt.
+ * Encrypt conditions.
  *
  * @author zhangliang
- * @author panjuan
  */
+@RequiredArgsConstructor
 @Getter
 @ToString
-public final class EncryptInsertColumns implements InsertColumns {
+public final class EncryptConditions {
     
-    private final Collection<String> regularColumnNames;
-    
-    public EncryptInsertColumns(final TableMetas tableMetas, final InsertStatement insertStatement) {
-        regularColumnNames = insertStatement.useDefaultColumns() ? new LinkedHashSet<>(tableMetas.getAllColumnNames(insertStatement.getTable().getTableName())) : insertStatement.getColumnNames();
-    }
+    private final List<EncryptCondition> conditions;
 }
