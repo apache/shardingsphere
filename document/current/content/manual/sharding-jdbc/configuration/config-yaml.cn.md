@@ -391,13 +391,6 @@ props:
   acceptor.size: # accept连接的线程数量,默认为cpu核数2倍
   executor.size: #工作线程数量最大，默认值: 无限制
   max.connections.size.per.query: # 每个查询可以打开的最大连接数量,默认为1
-  proxy.frontend.flush.threshold: # proxy的服务时候,对于单个大查询,每多少个网络包返回一次
-  check.table.metadata.enabled: #是否在启动时检查分表元数据一致性，默认值: false
-  proxy.transaction.type: # 默认LOCAL,proxy的事务模型 允许LOCAL,XA,BASE三个值 LOCAL无分布式事务,XA则是采用atomikos实现的分布式事务 BASE目前尚未实现
-  proxy.opentracing.enabled: # 是否启用opentracing
-  proxy.backend.use.nio: # 是否采用netty的NIO机制连接后端数据库,默认False ,使用epoll机制
-  proxy.backend.max.connections: # 使用NIO而非epoll的话,proxy后台连接每个netty客户端允许的最大连接数量(注意不是数据库连接限制) 默认为8
-  proxy.backend.connection.timeout.seconds: #使用nio而非epoll的话,proxy后台连接的超时时间,默认60s
   check.table.metadata.enabled: # 是否在启动时候,检查sharing的表的实际元数据是否一致,默认False
   
 ### 读写分离
