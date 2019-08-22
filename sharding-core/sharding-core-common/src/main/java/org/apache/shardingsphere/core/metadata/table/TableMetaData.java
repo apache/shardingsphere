@@ -20,6 +20,7 @@ package org.apache.shardingsphere.core.metadata.table;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
+import org.apache.shardingsphere.core.metadata.column.ColumnMetaData;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -49,7 +50,7 @@ public final class TableMetaData {
     private Map<String, ColumnMetaData> getColumns(final Collection<ColumnMetaData> columnMetaDataList) {
         Map<String, ColumnMetaData> columns = new LinkedHashMap<>(columnMetaDataList.size(), 1);
         for (ColumnMetaData each : columnMetaDataList) {
-            columns.put(each.getColumnName(), each);
+            columns.put(each.getName(), each);
         }
         return Collections.synchronizedMap(columns);
     }

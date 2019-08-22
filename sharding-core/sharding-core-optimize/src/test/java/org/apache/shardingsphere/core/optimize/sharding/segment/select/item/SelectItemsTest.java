@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.optimize.sharding.segment.select.item;
 
-import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
+import org.apache.shardingsphere.core.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.parse.core.constant.AggregationType;

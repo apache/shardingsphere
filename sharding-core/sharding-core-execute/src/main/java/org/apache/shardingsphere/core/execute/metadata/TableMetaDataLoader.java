@@ -24,8 +24,9 @@ import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.execute.ShardingExecuteEngine;
 import org.apache.shardingsphere.core.execute.ShardingExecuteGroup;
 import org.apache.shardingsphere.core.execute.ShardingGroupExecuteCallback;
+import org.apache.shardingsphere.core.metadata.column.ColumnMetaData;
+import org.apache.shardingsphere.core.metadata.column.ShardingGeneratedKeyColumnMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetas;
-import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.core.rule.ShardingDataSourceNames;
@@ -78,12 +79,13 @@ public final class TableMetaDataLoader {
      * @throws SQLException SQL exception
      */
     public TableMetaData load(final String logicTableName, final ShardingRule shardingRule) throws SQLException {
-        List<TableMetaData> actualTableMetaDataList = load(getDataNodeGroups(shardingRule.getTableRule(logicTableName)), shardingRule.getShardingDataSourceNames());
+        List<TableMetaData> actualTableMetaDataList = load(
+                getDataNodeGroups(shardingRule.getTableRule(logicTableName)), shardingRule.getShardingDataSourceNames(), shardingRule.findGenerateKeyColumnName(logicTableName).orNull());
         checkUniformed(logicTableName, actualTableMetaDataList);
         return actualTableMetaDataList.iterator().next();
     }
     
-    private List<TableMetaData> load(final Map<String, List<DataNode>> dataNodeGroups, final ShardingDataSourceNames shardingDataSourceNames) throws SQLException {
+    private List<TableMetaData> load(final Map<String, List<DataNode>> dataNodeGroups, final ShardingDataSourceNames shardingDataSourceNames, final String generateKeyColumnName) throws SQLException {
         return executeEngine.groupExecute(getDataNodeExecuteGroups(dataNodeGroups), new ShardingGroupExecuteCallback<DataNode, TableMetaData>() {
             
             @Override
@@ -91,16 +93,16 @@ public final class TableMetaDataLoader {
                 String dataSourceName = dataNodes.iterator().next().getDataSourceName();
                 DataSourceMetaData dataSourceMetaData = TableMetaDataLoader.this.dataSourceMetas.getDataSourceMetaData(dataSourceName);
                 String catalog = null == dataSourceMetaData ? null : dataSourceMetaData.getSchemaName();
-                return load(shardingDataSourceNames.getRawMasterDataSourceName(dataSourceName), catalog, dataNodes);
+                return load(shardingDataSourceNames.getRawMasterDataSourceName(dataSourceName), catalog, dataNodes, generateKeyColumnName);
             }
         });
     }
     
-    private Collection<TableMetaData> load(final String dataSourceName, final String catalog, final Collection<DataNode> dataNodes) throws SQLException {
+    private Collection<TableMetaData> load(final String dataSourceName, final String catalog, final Collection<DataNode> dataNodes, final String generateKeyColumnName) throws SQLException {
         Collection<TableMetaData> result = new LinkedList<>();
         try (Connection connection = connectionManager.getConnection(dataSourceName)) {
             for (DataNode each : dataNodes) {
-                result.add(createTableMetaData(connection, catalog, each.getTableName()));
+                result.add(createTableMetaData(connection, catalog, each.getTableName(), generateKeyColumnName));
             }
         }
         return result;
@@ -131,9 +133,9 @@ public final class TableMetaDataLoader {
         return result;
     }
     
-    private TableMetaData createTableMetaData(final Connection connection, final String catalog, final String actualTableName) throws SQLException {
+    private TableMetaData createTableMetaData(final Connection connection, final String catalog, final String actualTableName, final String generateKeyColumnName) throws SQLException {
         if (isTableExist(connection, catalog, actualTableName)) {
-            return new TableMetaData(getColumnMetaDataList(connection, catalog, actualTableName), getLogicIndexes(connection, catalog, actualTableName));
+            return new TableMetaData(getColumnMetaDataList(connection, catalog, actualTableName, generateKeyColumnName), getLogicIndexes(connection, catalog, actualTableName));
         }
         return new TableMetaData(Collections.<ColumnMetaData>emptyList(), Collections.<String>emptySet());
     }
@@ -144,14 +146,17 @@ public final class TableMetaDataLoader {
         }
     }
     
-    private List<ColumnMetaData> getColumnMetaDataList(final Connection connection, final String catalog, final String actualTableName) throws SQLException {
+    private List<ColumnMetaData> getColumnMetaDataList(final Connection connection, final String catalog, final String actualTableName, final String generateKeyColumnName) throws SQLException {
         List<ColumnMetaData> result = new LinkedList<>();
         Collection<String> primaryKeys = getPrimaryKeys(connection, catalog, actualTableName);
         try (ResultSet resultSet = connection.getMetaData().getColumns(catalog, null, actualTableName, "%")) {
             while (resultSet.next()) {
                 String columnName = resultSet.getString(COLUMN_NAME);
                 String columnType = resultSet.getString(TYPE_NAME);
-                result.add(new ColumnMetaData(columnName, columnType, primaryKeys.contains(columnName)));
+                ColumnMetaData columnMetaData = columnName.equalsIgnoreCase(generateKeyColumnName)
+                        ? new ShardingGeneratedKeyColumnMetaData(columnName, columnType, primaryKeys.contains(columnName))
+                        : new ColumnMetaData(columnName, columnType, primaryKeys.contains(columnName));
+                result.add(columnMetaData);
             }
         }
         return result;

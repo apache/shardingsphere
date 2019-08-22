@@ -15,27 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.metadata.table;
+package org.apache.shardingsphere.core.metadata.column;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 /**
- * Column meta data.
+ * Column meta data for sharding generated key column.
  *
- * @author panjuan
+ * @author zhangliang
  */
-@RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode
-@ToString
-public final class ColumnMetaData {
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
+public final class ShardingGeneratedKeyColumnMetaData extends ColumnMetaData {
     
-    private final String columnName;
-    
-    private final String dataType;
-    
-    private final boolean primaryKey;
+    public ShardingGeneratedKeyColumnMetaData(final String name, final String dataType, final boolean primaryKey) {
+        super(name, dataType, primaryKey);
+    }
 }
