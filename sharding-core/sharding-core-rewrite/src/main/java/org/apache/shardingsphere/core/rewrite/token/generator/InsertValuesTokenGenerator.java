@@ -52,7 +52,7 @@ public final class InsertValuesTokenGenerator implements OptionalSQLTokenGenerat
     private InsertValuesToken createInsertValuesToken(final InsertOptimizedStatement optimizedStatement, final Collection<InsertValuesSegment> insertValuesSegments) {
         InsertValuesToken result = new InsertValuesToken(getStartIndex(insertValuesSegments), getStopIndex(insertValuesSegments));
         for (InsertOptimizeResultUnit each : optimizedStatement.getUnits()) {
-            result.addInsertValueToken(Arrays.asList(each.getValues()), each.getDataNodes());
+            result.addInsertValueToken(Arrays.asList(each.getValueExpressions()), each.getDataNodes());
         }
         return result;
     }

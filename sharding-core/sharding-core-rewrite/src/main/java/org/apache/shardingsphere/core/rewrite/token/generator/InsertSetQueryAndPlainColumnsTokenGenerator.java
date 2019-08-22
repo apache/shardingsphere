@@ -110,7 +110,7 @@ public final class InsertSetQueryAndPlainColumnsTokenGenerator implements Option
     private List<ExpressionSegment> getAssistedQueryAndPlainColumnValues(final InsertOptimizedStatement optimizedStatement, final Collection<String> assistedQueryAndPlainColumnNames) {
         List<ExpressionSegment> result = new LinkedList<>();
         for (String each : assistedQueryAndPlainColumnNames) {
-            result.add(optimizedStatement.getUnits().get(0).getColumnSQLExpression(each));
+            result.add(optimizedStatement.getUnits().get(0).getValueExpression(each));
         }
         return result;
     }

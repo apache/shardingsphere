@@ -22,7 +22,7 @@ import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
 import org.apache.shardingsphere.core.optimize.encrypt.engine.EncryptOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptInsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.segment.insert.InsertOptimizeResultUnit;
-import org.apache.shardingsphere.core.optimize.sharding.segment.insert.value.InsertValuesFactory;
+import org.apache.shardingsphere.core.optimize.sharding.segment.insert.InsertValuesFactory;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rule.EncryptRule;
@@ -66,7 +66,7 @@ public final class EncryptInsertOptimizeEngine implements EncryptOptimizeEngine<
             if (encryptRule.isLogicColumn(tableName, each) || encryptRule.isCipherColumn(tableName, each)) {
                 String logicColumn = encryptRule.isLogicColumn(tableName, each) ? each : encryptRule.getLogicColumn(tableName, each);
                 if (encryptRule.getAssistedQueryColumn(tableName, logicColumn).isPresent()) {
-                    unit.addInsertValue((Comparable<?>) unit.getColumnValue(logicColumn), parameters);
+                    unit.appendValue((Comparable<?>) unit.getValue(logicColumn), parameters);
                 }
             }
         }
@@ -77,7 +77,7 @@ public final class EncryptInsertOptimizeEngine implements EncryptOptimizeEngine<
             if (encryptRule.isLogicColumn(tableName, each) || encryptRule.isCipherColumn(tableName, each)) {
                 String logicColumn = encryptRule.isLogicColumn(tableName, each) ? each : encryptRule.getLogicColumn(tableName, each);
                 if (encryptRule.getPlainColumn(tableName, logicColumn).isPresent()) {
-                    unit.addInsertValue((Comparable<?>) unit.getColumnValue(logicColumn), parameters);
+                    unit.appendValue((Comparable<?>) unit.getValue(logicColumn), parameters);
                 }
             }
         }

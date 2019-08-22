@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.sharding.segment.insert.value;
+package org.apache.shardingsphere.core.optimize.sharding.segment.insert;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

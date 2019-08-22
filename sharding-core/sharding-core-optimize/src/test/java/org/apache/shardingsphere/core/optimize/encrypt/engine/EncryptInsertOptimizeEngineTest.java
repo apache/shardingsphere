@@ -117,10 +117,10 @@ public final class EncryptInsertOptimizeEngineTest {
         EncryptInsertOptimizedStatement actual = optimizeEngine.optimize(encryptRule, mock(TableMetas.class), "", parametersWithoutValues, insertStatement);
         assertThat(actual.getUnits().size(), is(1));
         assertThat(actual.getUnits().get(0).getParameters().length, is(0));
-        assertThat(actual.getUnits().get(0).getColumnValue("col1"), is((Object) 1));
-        assertThat(actual.getUnits().get(0).getColumnValue("col2"), is((Object) 2));
-        assertThat(actual.getUnits().get(0).getColumnValue("query1"), is((Object) 1));
-        assertThat(actual.getUnits().get(0).getColumnValue("query2"), is((Object) 2));
+        assertThat(actual.getUnits().get(0).getValue("col1"), is((Object) 1));
+        assertThat(actual.getUnits().get(0).getValue("col2"), is((Object) 2));
+        assertThat(actual.getUnits().get(0).getValue("query1"), is((Object) 1));
+        assertThat(actual.getUnits().get(0).getValue("query2"), is((Object) 2));
         
     }
     
@@ -140,8 +140,8 @@ public final class EncryptInsertOptimizeEngineTest {
         EncryptInsertOptimizedStatement actual = optimizeEngine.optimize(encryptRule, mock(TableMetas.class), "", parametersWithoutValues, insertStatement);
         assertThat(actual.getUnits().size(), is(1));
         assertThat(actual.getUnits().get(0).getParameters().length, is(0));
-        assertThat(actual.getUnits().get(0).getColumnValue("col1"), is((Object) 1));
-        assertThat(actual.getUnits().get(0).getColumnValue("col2"), is((Object) 2));
+        assertThat(actual.getUnits().get(0).getValue("col1"), is((Object) 1));
+        assertThat(actual.getUnits().get(0).getValue("col2"), is((Object) 2));
         
     }
     

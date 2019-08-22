@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.optimize.sharding.statement.dml;
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
 import org.apache.shardingsphere.core.optimize.api.segment.Tables;
 import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.encrypt.condition.EncryptCondition;
@@ -35,7 +34,6 @@ import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -52,21 +50,18 @@ public final class ShardingInsertOptimizedStatement extends ShardingConditionOpt
     
     private final ShardingInsertColumns insertColumns;
     
-    private final Collection<InsertValue> values;
-    
     private final GeneratedKey generatedKey;
     
     private final List<InsertOptimizeResultUnit> units = new LinkedList<>();
     
-    public ShardingInsertOptimizedStatement(final SQLStatement sqlStatement, final List<ShardingCondition> shardingConditions, 
-                                            final ShardingInsertColumns insertColumns, final Collection<InsertValue> values, final GeneratedKey generatedKey) {
+    public ShardingInsertOptimizedStatement(final SQLStatement sqlStatement, 
+                                            final List<ShardingCondition> shardingConditions, final ShardingInsertColumns insertColumns, final GeneratedKey generatedKey) {
         super(sqlStatement, new ShardingConditions(shardingConditions), new EncryptConditions(Collections.<EncryptCondition>emptyList()));
         tables = new Tables(sqlStatement);
         this.insertColumns = insertColumns;
-        this.values = values;
         this.generatedKey = generatedKey;
     }
-
+    
     /**
      * Create insert optimize unit.
      *
@@ -79,12 +74,12 @@ public final class ShardingInsertOptimizedStatement extends ShardingConditionOpt
      */
     public InsertOptimizeResultUnit createUnit(final String generateKeyColumnName, final Collection<String> derivedColumnNames, 
                                                final ExpressionSegment[] insertValues, final Object[] parameters, final int startIndexOfAppendedParameters) {
-        Collection<String> allColumnNames = new LinkedHashSet<>(insertColumns.getRegularColumnNames());
+        List<String> allColumnNames = new LinkedList<>(insertColumns.getRegularColumnNames());
         allColumnNames.add(generateKeyColumnName);
         allColumnNames.addAll(derivedColumnNames);
         return new InsertOptimizeResultUnit(allColumnNames, insertValues, parameters, startIndexOfAppendedParameters);
     }
-
+    
     /**
      * Add insert optimize result unit into units.
      *
@@ -93,7 +88,7 @@ public final class ShardingInsertOptimizedStatement extends ShardingConditionOpt
     public void addUnit(final InsertOptimizeResultUnit insertOptimizeResultUnit) {
         units.add(insertOptimizeResultUnit);
     }
-
+    
     /**
      * Get generated key.
      *

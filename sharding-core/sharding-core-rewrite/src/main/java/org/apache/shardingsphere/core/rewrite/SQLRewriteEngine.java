@@ -130,9 +130,9 @@ public final class SQLRewriteEngine {
         if (shardingEncryptor.get() instanceof ShardingQueryAssistedEncryptor) {
             Optional<String> assistedColumnName = encryptRule.getAssistedQueryColumn(tableName, columnName);
             Preconditions.checkArgument(assistedColumnName.isPresent(), "Can not find assisted query Column Name");
-            unit.setColumnValue(assistedColumnName.get(), ((ShardingQueryAssistedEncryptor) shardingEncryptor.get()).queryAssistedEncrypt(unit.getColumnValue(columnName).toString()));
+            unit.setValue(assistedColumnName.get(), ((ShardingQueryAssistedEncryptor) shardingEncryptor.get()).queryAssistedEncrypt(unit.getValue(columnName).toString()));
         }
-        unit.setColumnValue(columnName, shardingEncryptor.get().encrypt(unit.getColumnValue(columnName)));
+        unit.setValue(columnName, shardingEncryptor.get().encrypt(unit.getValue(columnName)));
     }
     
     private ParameterBuilder createParameterBuilder(final List<Object> parameters, final SQLRouteResult sqlRouteResult) {

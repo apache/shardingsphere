@@ -226,7 +226,7 @@ public final class StandardRoutingEngine implements RoutingEngine {
     
     private boolean isQualifiedInsertOptimizeResultUnit(final InsertOptimizeResultUnit unit, final ShardingCondition shardingCondition) {
         for (RouteValue each : shardingCondition.getRouteValues()) {
-            Object columnValue = unit.getColumnValue(each.getColumnName());
+            Object columnValue = unit.getValue(each.getColumnName());
             if (!columnValue.equals(((ListRouteValue) each).getValues().iterator().next())) {
                 return false;
             }

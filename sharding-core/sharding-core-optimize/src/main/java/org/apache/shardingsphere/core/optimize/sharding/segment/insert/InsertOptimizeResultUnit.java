@@ -26,8 +26,6 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralE
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.core.rule.DataNode;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -42,9 +40,9 @@ import java.util.List;
 @ToString(exclude = "dataNodes")
 public final class InsertOptimizeResultUnit {
     
-    private final Collection<String> columnNames;
+    private final List<String> columnNames;
     
-    private final ExpressionSegment[] values;
+    private final ExpressionSegment[] valueExpressions;
     
     private final Object[] parameters;
     
@@ -53,91 +51,85 @@ public final class InsertOptimizeResultUnit {
     private final List<DataNode> dataNodes = new LinkedList<>();
     
     /**
-     * Set column value.
+     * Get value.
      *
      * @param columnName column name
-     * @param columnValue column value
+     * @return value
      */
-    public void setColumnValue(final String columnName, final Object columnValue) {
-        ExpressionSegment expressionSegment = values[getColumnIndex(columnName)];
-        if (expressionSegment instanceof ParameterMarkerExpressionSegment) {
-            parameters[getParameterIndex(expressionSegment)] = columnValue;
-        } else {
-            values[getColumnIndex(columnName)] = new LiteralExpressionSegment(expressionSegment.getStartIndex(), expressionSegment.getStopIndex(), columnValue);
-        }
-    }
-    
-    private int getColumnIndex(final String columnName) {
-        return new ArrayList<>(columnNames).indexOf(columnName);
-    }
-    
-    private int getParameterIndex(final ExpressionSegment expressionSegment) {
-        int result = 0;
-        for (ExpressionSegment each : values) {
-            if (expressionSegment == each) {
-                return result;
-            } else if (each instanceof ParameterMarkerExpressionSegment) {
-                result++;
-            }
-        }
-        throw new ShardingException("Can not get parameter index.");
+    public Object getValue(final String columnName) {
+        ExpressionSegment valueExpression = valueExpressions[columnNames.indexOf(columnName)];
+        return valueExpression instanceof ParameterMarkerExpressionSegment ? parameters[getParameterIndex(valueExpression)] : ((LiteralExpressionSegment) valueExpression).getLiterals();
     }
     
     /**
-     * Get column value.
-     *
-     * @param columnName column name
-     * @return column value
-     */
-    public Object getColumnValue(final String columnName) {
-        ExpressionSegment expressionSegment = values[getColumnIndex(columnName)];
-        if (expressionSegment instanceof ParameterMarkerExpressionSegment) {
-            return parameters[getParameterIndex(expressionSegment)];
-        }
-        return ((LiteralExpressionSegment) expressionSegment).getLiterals();
-    }
-    
-    /**
-     * Get column sql expression.
+     * Get value expression.
      *
      * @param columnName column name
      * @return column sql expression
      */
-    public ExpressionSegment getColumnSQLExpression(final String columnName) {
-        return values[getColumnIndex(columnName)];
+    public ExpressionSegment getValueExpression(final String columnName) {
+        return valueExpressions[columnNames.indexOf(columnName)];
     }
     
     /**
-     * Add insert value.
+     * Append value.
      * 
-     * @param insertValue insert value
+     * @param value value
      * @param parameters SQL parameters
      */
-    public void addInsertValue(final Comparable<?> insertValue, final List<Object> parameters) {
+    public void appendValue(final Comparable<?> value, final List<Object> parameters) {
         if (parameters.isEmpty()) {
             // TODO fix start index and stop index
-            addColumnValue(new LiteralExpressionSegment(0, 0, insertValue));
+            appendValueExpression(new LiteralExpressionSegment(0, 0, value));
         } else {
             // TODO fix start index and stop index
-            addColumnValue(new ParameterMarkerExpressionSegment(0, 0, parameters.size() - 1));
-            addColumnParameter(insertValue);
+            appendValueExpression(new ParameterMarkerExpressionSegment(0, 0, parameters.size() - 1));
+            appendParameter(value);
         }
     }
     
-    private void addColumnValue(final ExpressionSegment expressionSegment) {
-        values[getCurrentIndex(values, 0)] = expressionSegment;
+    private void appendValueExpression(final ExpressionSegment expressionSegment) {
+        valueExpressions[getNullIndex(valueExpressions, 0)] = expressionSegment;
     }
     
-    private void addColumnParameter(final Object parameter) {
-        parameters[getCurrentIndex(parameters, startIndexOfAppendedParameters)] = parameter;
+    private void appendParameter(final Object parameter) {
+        parameters[getNullIndex(parameters, startIndexOfAppendedParameters)] = parameter;
     }
     
-    private int getCurrentIndex(final Object[] array, final int startIndex) {
+    private int getNullIndex(final Object[] array, final int startIndex) {
         for (int i = startIndex; i < array.length; i++) {
             if (null == array[i]) {
                 return i;
             }
         }
         throw new ShardingException("Index Out Of Bounds For InsertOptimizeResultUnit.");
+    }
+    
+    /**
+     * Set value.
+     *
+     * @param columnName column name
+     * @param value value
+     */
+    public void setValue(final String columnName, final Object value) {
+        ExpressionSegment expressionSegment = valueExpressions[columnNames.indexOf(columnName)];
+        if (expressionSegment instanceof ParameterMarkerExpressionSegment) {
+            parameters[getParameterIndex(expressionSegment)] = value;
+        } else {
+            valueExpressions[columnNames.indexOf(columnName)] = new LiteralExpressionSegment(expressionSegment.getStartIndex(), expressionSegment.getStopIndex(), value);
+        }
+    }
+    
+    private int getParameterIndex(final ExpressionSegment valueExpression) {
+        int result = 0;
+        for (ExpressionSegment each : valueExpressions) {
+            if (valueExpression == each) {
+                return result;
+            }
+            if (each instanceof ParameterMarkerExpressionSegment) {
+                result++;
+            }
+        }
+        throw new ShardingException("Can not get parameter index.");
     }
 }
