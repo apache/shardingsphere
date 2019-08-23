@@ -48,11 +48,8 @@ weight = 1
 
 ```java
      DataSource getMasterSlaveDataSource() throws SQLException {
-         MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration();
-         masterSlaveRuleConfig.setName("ds_master_slave");
-         masterSlaveRuleConfig.setMasterDataSourceName("ds_master");
-         masterSlaveRuleConfig.setSlaveDataSourceNames(Arrays.asList("ds_slave0", "ds_slave1"));
-         return MasterSlaveDataSourceFactory.createDataSource(createDataSourceMap(), masterSlaveRuleConfig, new LinkedHashMap<String, Object>(), new Properties());
+         MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration("ds_master_slave", "ds_master", Arrays.asList("ds_slave0", "ds_slave1"));
+         return MasterSlaveDataSourceFactory.createDataSource(createDataSourceMap(), masterSlaveRuleConfig, new Properties());
      }
      
      Map<String, DataSource> createDataSourceMap() {
@@ -80,6 +77,7 @@ weight = 1
         EncryptRuleConfiguration encryptRuleConfig = new EncryptRuleConfiguration();
         encryptRuleConfig.getEncryptors().put("aes", encryptorConfig);
         encryptRuleConfig.getTables().put("t_encrypt", tableConfig);
+        return encryptRuleConfig;
     }
 ```
 
@@ -95,7 +93,7 @@ weight = 1
         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new StandardShardingStrategyConfiguration("user_id", new PreciseModuloShardingDatabaseAlgorithm()));
         shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new PreciseModuloShardingTableAlgorithm()));
         shardingRuleConfig.setMasterSlaveRuleConfigs(getMasterSlaveRuleConfigurations());
-        return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new HashMap<String, Object>(), new Properties());
+        return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new Properties());
     }
     
     private static KeyGeneratorConfiguration getKeyGeneratorConfiguration() {
@@ -168,6 +166,7 @@ weight = 1
         EncryptRuleConfiguration encryptRuleConfig = new EncryptRuleConfiguration();
         encryptRuleConfig.getEncryptors().put("aes", encryptorConfig);
         encryptRuleConfig.getTables().put("t_order", tableConfig);
+		return encryptRuleConfig;
     }
     
     private static Map<String, DataSource> createDataSourceMap() {
