@@ -416,7 +416,6 @@ shardingRule:
         props: #属性配置, 注意：使用SNOWFLAKE算法，需要配置worker.id与max.tolerate.time.difference.milliseconds属性
           <property-name>: 属性名称
       
-      logic-index: #逻辑索引名称，对于分表的Oracle/PostgreSQL数据库中DROP INDEX XXX语句，需要通过配置逻辑索引名称定位所执行SQL的真实分表
   bindingTables: #绑定表规则列表
   - <logic_table_name1, logic_table_name2, ...> 
   - <logic_table_name3, logic_table_name4, ...>
