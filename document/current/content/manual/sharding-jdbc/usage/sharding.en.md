@@ -57,7 +57,7 @@ Sharding database and table of Sharding-JDBC configure descriptions according to
     // ...
     
     // Get data source
-    DataSource dataSource = ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig, new ConcurrentHashMap(), new Properties());
+    DataSource dataSource = ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig, new Properties());
 ```
 
 ### Rule Configuration Based on Yaml

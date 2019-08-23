@@ -57,7 +57,7 @@ Sharding-JDBC的分库分表通过规则配置描述，以下例子是根据user
     // ...
     
     // 获取数据源对象
-    DataSource dataSource = ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig, new ConcurrentHashMap(), new Properties());
+    DataSource dataSource = ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig, new Properties());
 ```
 
 ### 基于Yaml的规则配置

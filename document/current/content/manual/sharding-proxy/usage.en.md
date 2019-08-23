@@ -21,13 +21,6 @@ If users want to use the database orchestration function of Sharding-Proxy, they
 
 1. Sharding-Proxy has provided the registry center solution of Zookeeper in default. Users only need to follow [Configuration Rules](/en/manual/sharding-proxy/configuration/) to set the registry center and use it.
 
-### Etcd
-
-1. Delete `sharding-orchestration-reg-zookeeper-curator-${sharding-sphere.version}.jar` under the lib catalog of Sharding-Proxy.
-2. Download the jar package of [latest stable version](http://central.maven.org/maven2/io/shardingsphere/sharding-orchestration-reg-etcd/) of Etcd solution under Maven repository.
-3. Put the downloaded jar package to the lib catalog of Sharding-Proxy.
-4. Follow [Configuration Rules](/en/manual/sharding-proxy/configuration/) to set the registry center and use it.
-
 ### Other Third Party Registry Center
 
 1. Delete`sharding-orchestration-reg-zookeeper-curator-${sharding-sphere.version}.jar` under the lib catalog of Sharding-Proxy.
@@ -39,111 +32,27 @@ If users want to use the database orchestration function of Sharding-Proxy, they
 TODO
 
 ## Distributed Transactions
+Sharding-Proxy supports LOCAL, XA, BASE transactions, LOCAL transaction is default value, it is original transaction of relational database.
 
-Sharding-Proxy natively supports XA transactions and there is no need for extra configurations.
-
-### Configure Default Transaction Type
-
-Default transaction type can be configured in `server.yaml`, for example:
-
-```yaml
-proxy.transaction.type: XA
-```
-
-### Shift Running Transaction Type
-
-#### Command Line
-
-```shell
-postgres=# sctl: set transantcion_type=XA
-postgres=# sctl: show transaction_type
-```
-
-#### Native JDBC
-
-If users use JDBC-Driver method to connect Sharding-Proxy, users can send SQL transaction shift type of `sctl:set transaction_type=XA` after connection.
-
-#### Spring Note Method
-
-```java
-@ShardingTransactionType(TransactionType.LOCAL)
-@Transactional
-```
-
-Or
-
-```java
-@ShardingTransactionType(TransactionType.XA)
-@Transactional
-```
-
-To be noticed: `@ShardingTransactionType` needs to be used together with `@Transactional` of Spring, and then transactions will take effect.
-
-#### SpringBootStarter Usage
-
-Introduce Maven Dependency:
-
-```xml
-<dependency>
-    <groupId>io.shardingsphere</groupId>
-    <artifactId>sharding-transaction-jdbc-spring-boot-starter</artifactId>
-    <version>${shardingsphere-spi-impl.version}</version>
-</dependency>
-
-<dependency>
-    <groupId>org.aspectj</groupId>
-    <artifactId>aspectjweaver</artifactId>
-    <version>${aspectjweaver.version}</version>
-</dependency>
-<dependency>
-    <groupId>org.springframework</groupId>
-    <artifactId>spring-context-support</artifactId>
-    <version>${springframework.version}</version>
-</dependency>
-
-<aspectjweaver.version>1.8.9</aspectjweaver.version>
-<springframework.version>[4.3.6.RELEASE,5.0.0.M1)</springframework.version>
-```
-
-#### Spring Namespace Usage
-
-Introduce Maven Dependency:
-
-```xml
-<dependency>
-    <groupId>io.shardingsphere</groupId>
-    <artifactId>sharding-transaction-jdbc-spring</artifactId>
-    <version>${shardingsphere-spi-impl.version}</version>
-</dependency>
-
-<dependency>
-    <groupId>org.aspectj</groupId>
-    <artifactId>aspectjweaver</artifactId>
-    <version>${aspectjweaver.version}</version>
-</dependency>
-<dependency>
-    <groupId>org.springframework</groupId>
-    <artifactId>spring-context-support</artifactId>
-    <version>${springframework.version}</version>
-</dependency>
-
-<aspectjweaver.version>1.8.9</aspectjweaver.version>
-<springframework.version>[4.3.6.RELEASE,5.0.0.M1)</springframework.version>
-```
-
-Load section configuration information:
-
-```xml
-<import resource="classpath:META-INF/shardingTransaction.xml"/>
-```
-
-### Atomikos Parameter Configuration
+### XA transaction
 
 Default XA transaction manager of ShardingSphere is Atomikos. Users can customize Atomikos configuration items through adding `jta.properties` in conf catelog of Sharding-Proxy. Please refer to [Official Documents](https://www.atomikos.com/Documentation/JtaProperties) of Atomikos for detailed configurations.
 
 ### BASE Transaction
 
-Pack `sharding-transaction-base-spi-impl` module in [shardingsphere-spi-impl](en/shardingsphere-spi-impl) project; copy relevant jar packages to lib; switch the transaction type to`BASE`. The configuration of`saga.properties` is the same as that of JDBC.
+Since we have not pack the BASE implementation jar into Sharding-Proxy, you should copy relevant jar which implement `ShardingTransactionManager` SPI to `conf/lib`, then switch the transaction type
+ to `BASE`.
+ 
+## SCTL (Sharding-Proxy control language)
+
+SCTL supports modify and query the state of Sharing-Proxy at runtime. The current supported syntax is:
+
+| statement                         | function                                                                                  | example                            |
+|:----------------------------------|:------------------------------------------------------------------------------------------|:-----------------------------------|
+|sctl:set transaction_type=XX       | Modify transaction_type of the current TCP connection, supports LOCAL, XA, BASE           | sctl:set transaction_type=XA       |
+|sctl:show transaction_type         | Query the transaction type of the current TCP connection                                  | sctl:show transaction_type         |
+|sctl:show cached_connections       | Query the number of cached physical database connections in the current TCP connection    | sctl:show cached_connections       |
+|sctl:explain SQL                   | View the execution plan for logical SQL.                                                  |sctl:explain select * from t_order  |
 
 ## Notices
 
