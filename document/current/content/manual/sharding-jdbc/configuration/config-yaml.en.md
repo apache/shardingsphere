@@ -327,8 +327,7 @@ shardingRule:
         column: #Column name of key generator
         type: #Type of key generator, use default key generator if absent, and there are three types to choose, that is, SNOWFLAKE/UUID/LEAF_SEGMENT
         props: #Properties, Notice: when use SNOWFLAKE, `worker.id` and `max.tolerate.time.difference.milliseconds` for `SNOWFLAKE` need to be set         
-        
-      logicIndex: #Name if logic index. If use `DROP INDEX XXX` SQL in Oracle/PostgreSQL, This property needs to be set for finding the actual tables
+
   bindingTables: #Binding table rule configurations
   - <logic_table_name1, logic_table_name2, ...> 
   - <logic_table_name3, logic_table_name4, ...>

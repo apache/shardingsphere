@@ -385,7 +385,7 @@ shardingRule: # sharding的配置
       databaseStrategy: # 局部设置会覆盖全局设置,参考defaultDatabaseShardingStrategy
       tableStrategy: # 局部设置会覆盖全局设置,参考defaultTableStrategy
       keyGenerator: # 局部设置会覆盖全局设置,参考defaultKeyGenerator
-      logicIndex: # 逻辑索引名称 由于Oracle,PG这种数据库中,索引与表共用命名空间,如果接受到drop index语句,执行之前,会通过这个名称配置的确定对应的实际物理表名称
+
 props:
   sql.show: #是否开启SQL显示，默认值: false
   acceptor.size: # accept连接的线程数量,默认为cpu核数2倍

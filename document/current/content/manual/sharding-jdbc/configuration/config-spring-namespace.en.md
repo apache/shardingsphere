@@ -484,7 +484,6 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/sharding/shard
 | database-strategy-ref (?) | Attribute | Databases sharding strategy, use default databases sharding strategy if absent |
 | table-strategy-ref (?)    | Attribute | Tables sharding strategy, use default tables sharding strategy if absent |
 | key-generator (?)         | Attribute | Key generator, use default key generator if absent.          |
-| logic-index (?)           | Attribute | Name if logic index. If use `DROP INDEX XXX` SQL in Oracle/PostgreSQL, This property needs to be set for finding the actual tables |
 
 #### \<sharding:binding-table-rules />
 

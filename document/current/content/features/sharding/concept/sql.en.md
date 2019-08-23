@@ -45,7 +45,3 @@ In them, table `t_order` in the left end of FROM will be taken by ShardingSphere
 ## Broadcast Table
 
 It refers to tables that exist in all sharding database sources. Their structures and data are the same in each database. It can be applied to the small data volume scenario that needs to correlate with big data volume tables to query, dictionary table for example.
-
-## Logic Index
-
-Some databases (such as PostgreSQL/Oracle) do not allow indexes with an identical name existing in the same database; other databases (such as MySQL/SQLServer), however, only forbid indexes with an identical name existing in the same table. Logic index is used in the former situation where it requires to rewrite index names in the same database but not in the same table as `index name + table name`, and the previous index name becomes logic index.
