@@ -39,59 +39,59 @@ import java.util.concurrent.TimeUnit;
  * @author wangguangyuan
  */
 public final class LeafSnowflakeKeyGenerator implements ShardingKeyGenerator {
-
+    
     public static final long EPOCH;
-
+    
     private static final long SEQUENCE_BITS = 12L;
-
+    
     private static final long WORKER_ID_BITS = 10L;
-
+    
     private static final long SEQUENCE_MASK = (1 << SEQUENCE_BITS) - 1;
-
+    
     private static final long WORKER_ID_LEFT_SHIFT_BITS = SEQUENCE_BITS;
-
+    
     private static final long TIMESTAMP_LEFT_SHIFT_BITS = WORKER_ID_LEFT_SHIFT_BITS + WORKER_ID_BITS;
-
+    
     private static final int MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS = 10000;
-
+    
     private static final String SERVICE_ID_REGULAR_PATTERN = "^((?!/).)*$";
-
+    
     private static final String DEFAULT_NAMESPACE = "leaf_snowflake";
-
+    
     private static final String DEFAULT_REGISTRY_CENTER = "zookeeper";
-
+    
     private static final String PARENT_NODE = "/leaf_snowflake";
-
+    
     private static final String TIME_NODE = "/time";
-
+    
     private static final String CURRENT_MAX_WORK_ID_NODE = "/current-max-work-id";
-
+    
     private static final String CURRENT_MAX_WORK_ID_DIRECTORY = PARENT_NODE + CURRENT_MAX_WORK_ID_NODE;
-
+    
     private static final String WORK_ID_NODE = "/work-id";
-
+    
     private static final String SLANTING_BAR = "/";
-
+    
     private final TimeService timeService = new TimeService();
-
+    
     @Getter
     @Setter
     private Properties properties = new Properties();
-
+    
     private RegistryCenter leafRegistryCenter;
-
+    
     private byte sequenceOffset;
-
+    
     private long sequence;
-
+    
     private long lastMilliseconds;
-
+    
     private long workId;
-
+    
     private long lastUpdateTime;
-
+    
     private long maxTolerateTimeDifference;
-
+    
     static {
         Calendar calendar = Calendar.getInstance();
         calendar.set(2016, Calendar.NOVEMBER, 1);
@@ -101,19 +101,18 @@ public final class LeafSnowflakeKeyGenerator implements ShardingKeyGenerator {
         calendar.set(Calendar.MILLISECOND, 0);
         EPOCH = calendar.getTimeInMillis();
     }
-
+    
     @Override
     public String getType() {
         return "LEAF_SNOWFLAKE";
     }
-
+    
     @Override
     public synchronized Comparable<?> generateKey() {
         initializeLeafSnowflakeKeyGeneratorIfNeed();
-        Comparable<?> result = getKey();
-        return result;
+        return getKey();
     }
-
+    
     @SneakyThrows
     private void initializeLeafSnowflakeKeyGeneratorIfNeed() {
         if (needToBeInitialized()) {
@@ -125,7 +124,7 @@ public final class LeafSnowflakeKeyGenerator implements ShardingKeyGenerator {
             scheduledUpdateTimeNode(leafRegistryCenter);
         }
     }
-
+    
     private Comparable<?> getKey() {
         long currentMilliseconds = getCurrentMilliseconds();
         long sequence = getSequence(currentMilliseconds);
@@ -133,26 +132,26 @@ public final class LeafSnowflakeKeyGenerator implements ShardingKeyGenerator {
         updateLastMilliseconds(currentMilliseconds);
         return result;
     }
-
+    
     @SneakyThrows
     private long getCurrentMilliseconds() {
-        long currentMilliseconds = timeService.getCurrentMillis();
-        if (lastMilliseconds > currentMilliseconds) {
-            long timeDifferenceMilliseconds = lastMilliseconds - currentMilliseconds;
+        long result = timeService.getCurrentMillis();
+        if (lastMilliseconds > result) {
+            long timeDifferenceMilliseconds = lastMilliseconds - result;
             Preconditions.checkState(timeDifferenceMilliseconds < maxTolerateTimeDifference,
-                    "Clock is moving backwards, last time is %d milliseconds, current time is %d milliseconds", lastMilliseconds, currentMilliseconds);
+                    "Clock is moving backwards, last time is %d milliseconds, current time is %d milliseconds", lastMilliseconds, result);
             Thread.sleep(timeDifferenceMilliseconds);
-            currentMilliseconds = timeService.getCurrentMillis();
-        } else if (lastMilliseconds == currentMilliseconds) {
+            result = timeService.getCurrentMillis();
+        } else if (lastMilliseconds == result) {
             if (0L == ((sequence + 1) & SEQUENCE_MASK)) {
                 do {
-                    currentMilliseconds = timeService.getCurrentMillis();
-                } while (currentMilliseconds <= lastMilliseconds);
+                    result = timeService.getCurrentMillis();
+                } while (result <= lastMilliseconds);
             }
         }
-        return currentMilliseconds;
+        return result;
     }
-
+    
     private long getSequence(final long currentMilliseconds) {
         if (lastMilliseconds == currentMilliseconds) {
             sequence = (sequence + 1) & SEQUENCE_MASK;
@@ -162,42 +161,38 @@ public final class LeafSnowflakeKeyGenerator implements ShardingKeyGenerator {
         }
         return sequence;
     }
-
+    
     private Comparable<?> getSnowflakeId(final long currentMilliseconds, final long sequence) {
         return ((currentMilliseconds - EPOCH) << TIMESTAMP_LEFT_SHIFT_BITS) | (workId << WORKER_ID_LEFT_SHIFT_BITS) | sequence;
     }
-
+    
     private void updateLastMilliseconds(final long currentMilliseconds) {
         lastMilliseconds = currentMilliseconds;
     }
-
+    
     private boolean needToBeInitialized() {
-        boolean result = null == leafRegistryCenter || workId <= 0;
-        return result;
+        return null == leafRegistryCenter || workId <= 0;
     }
-
+    
     private RegistryCenter initializeRegistryCenter() {
         RegistryCenterConfiguration leafConfiguration = getRegistryCenterConfiguration();
-        RegistryCenter result = new RegistryCenterServiceLoader().load(leafConfiguration);
-        return result;
+        return new RegistryCenterServiceLoader().load(leafConfiguration);
     }
-
+    
     private String getTimeDirectoryWithServiceId() {
         String serviceId = properties.getProperty("serviceId");
         Preconditions.checkArgument(!Strings.isNullOrEmpty(serviceId));
         Preconditions.checkArgument(serviceId.matches(SERVICE_ID_REGULAR_PATTERN));
-        String result = PARENT_NODE + SLANTING_BAR + serviceId + TIME_NODE;
-        return result;
+        return PARENT_NODE + SLANTING_BAR + serviceId + TIME_NODE;
     }
-
+    
     private String getWorkIdDirectoryWithServiceId() {
         String serviceId = properties.getProperty("serviceId");
         Preconditions.checkArgument(!Strings.isNullOrEmpty(serviceId));
         Preconditions.checkArgument(serviceId.matches(SERVICE_ID_REGULAR_PATTERN));
-        String result = PARENT_NODE + SLANTING_BAR + serviceId + WORK_ID_NODE;
-        return result;
+        return PARENT_NODE + SLANTING_BAR + serviceId + WORK_ID_NODE;
     }
-
+    
     @SneakyThrows
     private void initializeTimeNodeIfNeed(final long maxTolerateTimeDifference, final RegistryCenter leafRegistryCenter) {
         String timeDirectory = getTimeDirectoryWithServiceId();
@@ -215,28 +210,27 @@ public final class LeafSnowflakeKeyGenerator implements ShardingKeyGenerator {
             leafRegistryCenter.persist(timeDirectory, String.valueOf(currentTime));
         }
     }
-
+    
     @SneakyThrows
     private void initializeCurrentMaxWorkIdNodeIfNeed(final RegistryCenter leafRegistryCenter) {
         if (!leafRegistryCenter.isExisted(CURRENT_MAX_WORK_ID_DIRECTORY)) {
             leafRegistryCenter.persist(CURRENT_MAX_WORK_ID_DIRECTORY, "0");
         }
     }
-
+    
     @SneakyThrows
     private Long initializeWorkIdNodeIfNeed(final RegistryCenter leafRegistryCenter) {
         String workIdDirectory = getWorkIdDirectoryWithServiceId();
         if (leafRegistryCenter.isExisted(workIdDirectory)) {
             String workIdInString = leafRegistryCenter.getDirectly(workIdDirectory);
-            Long result = Long.parseLong(workIdInString);
-            return result;
+            return Long.parseLong(workIdInString);
         } else {
             Long result = updateCurrentMaxWorkIdInRegisterCenter();
             leafRegistryCenter.persist(workIdDirectory, String.valueOf(result));
             return result;
         }
     }
-
+    
     @SneakyThrows
     private long updateCurrentMaxWorkIdInRegisterCenter() {
         leafRegistryCenter.initLock(CURRENT_MAX_WORK_ID_DIRECTORY);
@@ -248,15 +242,15 @@ public final class LeafSnowflakeKeyGenerator implements ShardingKeyGenerator {
         leafRegistryCenter.tryRelease();
         return result;
     }
-
+    
     @SneakyThrows
     private void scheduledUpdateTimeNode(final RegistryCenter leafRegistryCenter) {
         final String timeDirectory = getTimeDirectoryWithServiceId();
         Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
-
+            
             @Override
-            public Thread newThread(final Runnable r) {
-                Thread thread = new Thread(r, "schedule-upload-time");
+            public Thread newThread(final Runnable runnable) {
+                Thread thread = new Thread(runnable, "schedule-upload-time");
                 thread.setDaemon(true);
                 return thread;
             }
@@ -268,7 +262,7 @@ public final class LeafSnowflakeKeyGenerator implements ShardingKeyGenerator {
             }
         }, 1L, 3L, TimeUnit.SECONDS);
     }
-
+    
     @SneakyThrows
     private void updateNewData(final RegistryCenter leafRegistryCenter, final String path) {
         if (timeService.getCurrentMillis() < lastUpdateTime) {
@@ -277,33 +271,32 @@ public final class LeafSnowflakeKeyGenerator implements ShardingKeyGenerator {
         leafRegistryCenter.persist(path, String.valueOf(timeService.getCurrentMillis()));
         lastUpdateTime = timeService.getCurrentMillis();
     }
-
+    
     private void vibrateSequenceOffset() {
         sequenceOffset = (byte) (~sequenceOffset & 1);
     }
-
+    
     private long initializeMaxTolerateTimeDifference() {
         String maxTimeDifference = properties.getProperty("maxTimeDifference", String.valueOf(MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS));
         long result = Long.valueOf(maxTimeDifference);
         Preconditions.checkArgument(result >= 0L && result < Long.MAX_VALUE);
         return result;
     }
-
+    
     private RegistryCenterConfiguration getRegistryCenterConfiguration() {
         RegistryCenterConfiguration result = new RegistryCenterConfiguration(getRegistryCenterType(), properties);
         result.setNamespace(DEFAULT_NAMESPACE);
         result.setServerLists(getServerList());
         return result;
     }
-
+    
     private String getRegistryCenterType() {
         return properties.getProperty("registryCenterType", DEFAULT_REGISTRY_CENTER);
     }
-
+    
     private String getServerList() {
         String result = properties.getProperty("serverList");
         Preconditions.checkArgument(!Strings.isNullOrEmpty(result));
         return result;
     }
-
 }

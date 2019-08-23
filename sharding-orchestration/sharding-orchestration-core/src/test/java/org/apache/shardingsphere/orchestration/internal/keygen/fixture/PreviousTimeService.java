@@ -22,12 +22,11 @@ import org.apache.shardingsphere.orchestration.internal.keygen.TimeService;
 
 @RequiredArgsConstructor
 public final class PreviousTimeService extends TimeService {
-
+    
     private final int timeDifference;
-
+    
     @Override
     public long getCurrentMillis() {
-        long result = System.currentTimeMillis() - timeDifference;
-        return result;
+        return System.currentTimeMillis() - timeDifference;
     }
 }

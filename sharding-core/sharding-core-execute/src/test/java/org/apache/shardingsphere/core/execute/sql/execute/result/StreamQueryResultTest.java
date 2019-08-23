@@ -256,6 +256,7 @@ public final class StreamQueryResultTest {
         verify(resultSet).getAsciiStream("order_id");
     }
     
+    @SuppressWarnings("deprecation")
     @Test
     public void assertGetInputStreamWithColumnLabelAndUnicode() throws SQLException {
         ResultSet resultSet = getResultSet();

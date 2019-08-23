@@ -35,9 +35,9 @@ public final class ForthTestRegistryCenter implements RegistryCenter {
     @Getter
     @Setter
     private Properties properties = new Properties();
-
+    
     private Map<String, String> keys = new HashMap<>();
-
+    
     private ReentrantLock lock = new ReentrantLock();
     
     @Override
@@ -48,12 +48,12 @@ public final class ForthTestRegistryCenter implements RegistryCenter {
     public String get(final String key) {
         return "";
     }
-
+    
     @Override
     public String getDirectly(final String key) {
         return keys.get(key);
     }
-
+    
     @Override
     public boolean isExisted(final String key) {
         return keys.containsKey(key);
@@ -63,12 +63,12 @@ public final class ForthTestRegistryCenter implements RegistryCenter {
     public List<String> getChildrenKeys(final String key) {
         return Collections.emptyList();
     }
-
+    
     @Override
     public void persist(final String key, final String value) {
         keys.put(key, value);
     }
-
+    
     @Override
     public void update(final String key, final String value) {
         keys.put(key, value);
@@ -90,17 +90,17 @@ public final class ForthTestRegistryCenter implements RegistryCenter {
     public String getType() {
         return "ForthTestRegistryCenter";
     }
-
+    
     @Override
     public void initLock(final String key) {
         lock = new ReentrantLock();
     }
-
+    
     @Override
     public boolean tryLock() {
         return lock.tryLock();
     }
-
+    
     @Override
     public void tryRelease() {
         lock.unlock();

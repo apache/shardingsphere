@@ -24,6 +24,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
@@ -36,14 +37,14 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class LeafSnowflakeKeyGeneratorTest {
-
-    private LeafSnowflakeKeyGenerator leafSnowflakeKeyGenerator = new LeafSnowflakeKeyGenerator();
-
+    
+    private final LeafSnowflakeKeyGenerator leafSnowflakeKeyGenerator = new LeafSnowflakeKeyGenerator();
+    
     @Test
     public void assertGetProperties() {
         assertThat(leafSnowflakeKeyGenerator.getProperties().entrySet().size(), is(0));
     }
-
+    
     @Test
     public void assertSetProperties() {
         Properties properties = new Properties();
@@ -51,7 +52,7 @@ public final class LeafSnowflakeKeyGeneratorTest {
         leafSnowflakeKeyGenerator.setProperties(properties);
         assertThat(leafSnowflakeKeyGenerator.getProperties().get("key1"), is((Object) "value1"));
     }
-
+    
     @Test
     public void assertGenerateKeyWithSingleThread() {
         Properties properties = new Properties();
@@ -68,7 +69,7 @@ public final class LeafSnowflakeKeyGeneratorTest {
         }
         assertThat(actual, is(expected));
     }
-
+    
     @Test
     public void assertGenerateKeyWithFixedWorkId() {
         Properties properties = new Properties();
@@ -78,12 +79,12 @@ public final class LeafSnowflakeKeyGeneratorTest {
         properties.setProperty("registryCenterType", "ForthTestRegistryCenter");
         leafSnowflakeKeyGenerator.setProperties(properties);
         FieldUtil.setStaticFinalField(leafSnowflakeKeyGenerator, "timeService", new FixedTimeService(1));
-        List<Comparable<?>> expected = Arrays.<Comparable<?>>asList(4198401L);
+        List<Comparable<?>> expected = Collections.<Comparable<?>>singletonList(4198401L);
         List<Comparable<?>> actual = new ArrayList<>();
         actual.add(leafSnowflakeKeyGenerator.generateKey());
         assertThat(actual, is(expected));
     }
-
+    
     @Test(expected = IllegalStateException.class)
     public void generateKeyFailureWithTimeRollback() {
         Properties properties = new Properties();
@@ -95,7 +96,7 @@ public final class LeafSnowflakeKeyGeneratorTest {
         FieldUtil.setStaticFinalField(leafSnowflakeKeyGenerator, "timeService", new PreviousTimeService(15000));
         leafSnowflakeKeyGenerator.generateKey();
     }
-
+    
     @Test
     public void generateKeySuccessWithTimeRollback() {
         Properties properties = new Properties();
@@ -107,7 +108,7 @@ public final class LeafSnowflakeKeyGeneratorTest {
         FieldUtil.setStaticFinalField(leafSnowflakeKeyGenerator, "timeService", new PreviousTimeService(3000));
         leafSnowflakeKeyGenerator.generateKey();
     }
-
+    
     @Test
     public void assertGenerateKeyWithMultipleThreads() throws Exception {
         int threadNumber = Runtime.getRuntime().availableProcessors() << 1;
@@ -131,7 +132,7 @@ public final class LeafSnowflakeKeyGeneratorTest {
         }
         assertThat(actual.size(), is(taskNumber));
     }
-
+    
     @Test
     public void assertGenerateKeyWithDigest() throws Exception {
         int threadNumber = Runtime.getRuntime().availableProcessors() << 1;
@@ -155,7 +156,7 @@ public final class LeafSnowflakeKeyGeneratorTest {
         }
         assertThat(actual.size(), is(taskNumber));
     }
-
+    
     @Test
     public void assertGenerateKeyWithDefaultMaxTimeDifference() throws Exception {
         int threadNumber = Runtime.getRuntime().availableProcessors() << 1;
@@ -178,7 +179,7 @@ public final class LeafSnowflakeKeyGeneratorTest {
         }
         assertThat(actual.size(), is(taskNumber));
     }
-
+    
     @Test(expected = IllegalArgumentException.class)
     public void assertSetServerListFailureWhenNull() {
         Properties properties = new Properties();
@@ -188,7 +189,7 @@ public final class LeafSnowflakeKeyGeneratorTest {
         leafSnowflakeKeyGenerator.setProperties(properties);
         leafSnowflakeKeyGenerator.generateKey();
     }
-
+    
     @Test(expected = IllegalArgumentException.class)
     public void assertSetServerListFailureWhenArgumentEmpty() {
         Properties properties = new Properties();
@@ -209,7 +210,7 @@ public final class LeafSnowflakeKeyGeneratorTest {
         leafSnowflakeKeyGenerator.setProperties(properties);
         leafSnowflakeKeyGenerator.generateKey();
     }
-
+    
     @Test(expected = IllegalArgumentException.class)
     public void assertSetServiceIdFailureWhenArgumentEmpty() {
         Properties properties = new Properties();
@@ -220,7 +221,7 @@ public final class LeafSnowflakeKeyGeneratorTest {
         leafSnowflakeKeyGenerator.setProperties(properties);
         leafSnowflakeKeyGenerator.generateKey();
     }
-
+    
     @Test(expected = IllegalArgumentException.class)
     public void assertSetServiceIdFailureWithSlantingBar() {
         Properties properties = new Properties();
@@ -242,7 +243,7 @@ public final class LeafSnowflakeKeyGeneratorTest {
         leafSnowflakeKeyGenerator.setProperties(properties);
         leafSnowflakeKeyGenerator.generateKey();
     }
-
+    
     @Test(expected = IllegalArgumentException.class)
     public void assertSetMaxTimeDifferenceFailureWhenArgumentEmpty() {
         Properties properties = new Properties();
@@ -253,7 +254,7 @@ public final class LeafSnowflakeKeyGeneratorTest {
         leafSnowflakeKeyGenerator.setProperties(properties);
         leafSnowflakeKeyGenerator.generateKey();
     }
-
+    
     @Test
     public void assertSetMaxTimeDifferenceSuccessWhenNull() {
         Properties properties = new Properties();
@@ -263,7 +264,7 @@ public final class LeafSnowflakeKeyGeneratorTest {
         leafSnowflakeKeyGenerator.setProperties(properties);
         leafSnowflakeKeyGenerator.generateKey();
     }
-
+    
     @Test(expected = Exception.class)
     public void assertSetRegistryCenterTypeFailureWhenArgumentEmpty() {
         Properties properties = new Properties();
@@ -274,5 +275,4 @@ public final class LeafSnowflakeKeyGeneratorTest {
         leafSnowflakeKeyGenerator.setProperties(properties);
         leafSnowflakeKeyGenerator.generateKey();
     }
-
 }

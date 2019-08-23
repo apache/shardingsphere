@@ -19,7 +19,6 @@ package org.apache.shardingsphere.orchestration.zookeeper.curator.integration.te
 
 import org.apache.shardingsphere.orchestration.internal.keygen.LeafSegmentKeyGenerator;
 import org.apache.shardingsphere.orchestration.zookeeper.curator.integration.util.EmbedTestingServer;
-import org.hamcrest.CoreMatchers;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -42,14 +41,14 @@ import static org.junit.Assert.assertThat;
  * @author wangguangyuan
  */
 public final class LeafSegmentKeyGeneratorIT {
-
-    private LeafSegmentKeyGenerator leafSegmentKeyGenerator = new LeafSegmentKeyGenerator();
-
+    
+    private final LeafSegmentKeyGenerator leafSegmentKeyGenerator = new LeafSegmentKeyGenerator();
+    
     @BeforeClass
     public static void init() {
         EmbedTestingServer.start();
     }
-
+    
     @Test
     public void assertGenerateKeyWithSingleThread() {
         Properties properties = new Properties();
@@ -67,7 +66,7 @@ public final class LeafSegmentKeyGeneratorIT {
         }
         assertThat(actual, is(expected));
     }
-
+    
     @Test
     public void assertGenerateKeyWithMultipleThreads() throws Exception {
         int threadNumber = Runtime.getRuntime().availableProcessors() << 1;
@@ -93,7 +92,7 @@ public final class LeafSegmentKeyGeneratorIT {
         }
         assertThat(actual.size(), is(taskNumber));
     }
-
+    
     @Test
     public void assertGenerateKeyWithDigest() throws Exception {
         int threadNumber = Runtime.getRuntime().availableProcessors() << 1;
@@ -119,7 +118,7 @@ public final class LeafSegmentKeyGeneratorIT {
         }
         assertThat(actual.size(), is(taskNumber));
     }
-
+    
     @Test
     public void assertGenerateKeyWithDefaultStep() throws Exception {
         int threadNumber = Runtime.getRuntime().availableProcessors() << 1;
@@ -144,7 +143,7 @@ public final class LeafSegmentKeyGeneratorIT {
         }
         assertThat(actual.size(), is(taskNumber));
     }
-
+    
     @Test
     public void assertGenerateKeyWithDefaultInitialValue() throws Exception {
         int threadNumber = Runtime.getRuntime().availableProcessors() << 1;
@@ -169,5 +168,4 @@ public final class LeafSegmentKeyGeneratorIT {
         }
         assertThat(actual.size(), is(taskNumber));
     }
-
 }

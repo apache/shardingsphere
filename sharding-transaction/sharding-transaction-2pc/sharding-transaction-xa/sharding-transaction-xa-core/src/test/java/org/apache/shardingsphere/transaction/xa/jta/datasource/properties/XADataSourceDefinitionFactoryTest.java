@@ -18,7 +18,12 @@
 package org.apache.shardingsphere.transaction.xa.jta.datasource.properties;
 
 import org.apache.shardingsphere.core.database.DatabaseTypes;
-import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.*;
+import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.H2XADataSourceDefinition;
+import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.MariaDBXADataSourceDefinition;
+import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.MySQLXADataSourceDefinition;
+import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.OracleXADataSourceDefinition;
+import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.PostgreSQLXADataSourceDefinition;
+import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.SQLServerXADataSourceDefinition;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;

@@ -17,15 +17,23 @@
 
 package org.apache.shardingsphere.orchestration.zookeeper.curator.integration.util;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
-@RequiredArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class FieldUtil {
-
+    
+    /**
+     * Set static final field.
+     * 
+     * @param target target
+     * @param fieldName field name
+     * @param fieldValue field value
+     */
     @SneakyThrows
     public static void setStaticFinalField(final Object target, final String fieldName, final Object fieldValue) {
         Field timeServiceField = target.getClass().getDeclaredField(fieldName);

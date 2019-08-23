@@ -25,7 +25,6 @@ import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfigurati
 import org.apache.shardingsphere.orchestration.zookeeper.curator.integration.util.EmbedTestingServer;
 import org.apache.shardingsphere.orchestration.zookeeper.curator.integration.util.FieldUtil;
 import org.apache.shardingsphere.orchestration.zookeeper.curator.integration.util.FixedTimeService;
-import org.hamcrest.CoreMatchers;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -33,6 +32,7 @@ import org.junit.runners.MethodSorters;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
@@ -51,14 +51,14 @@ import static org.junit.Assert.assertThat;
  */
 @FixMethodOrder(value = MethodSorters.NAME_ASCENDING)
 public final class LeafSnowflakeKeyGeneratorIT {
-
-    private LeafSnowflakeKeyGenerator leafSnowflakeKeyGenerator = new LeafSnowflakeKeyGenerator();
-
+    
+    private final LeafSnowflakeKeyGenerator leafSnowflakeKeyGenerator = new LeafSnowflakeKeyGenerator();
+    
     @BeforeClass
     public static void init() {
         EmbedTestingServer.start();
     }
-
+    
     @Test
     public void assertGenerateKeyWithSingleThread() {
         Properties properties = new Properties();
@@ -75,7 +75,7 @@ public final class LeafSnowflakeKeyGeneratorIT {
         }
         assertThat(actual, is(expected));
     }
-
+    
     @Test
     public void assertGenerateKeyWithFixedWorkId() {
         Properties properties = new Properties();
@@ -85,12 +85,12 @@ public final class LeafSnowflakeKeyGeneratorIT {
         properties.setProperty("registryCenterType", "zookeeper");
         leafSnowflakeKeyGenerator.setProperties(properties);
         FieldUtil.setStaticFinalField(leafSnowflakeKeyGenerator, "timeService", new FixedTimeService(1));
-        List<Comparable<?>> expected = Arrays.<Comparable<?>>asList(4198401L);
+        List<Comparable<?>> expected = Collections.<Comparable<?>>singletonList(4198401L);
         List<Comparable<?>> actual = new ArrayList<>();
         actual.add(leafSnowflakeKeyGenerator.generateKey());
         assertThat(actual, is(expected));
     }
-
+    
     @Test
     public void assertGenerateKeyWithMultipleThreads() throws Exception {
         int threadNumber = Runtime.getRuntime().availableProcessors() << 1;
@@ -115,7 +115,7 @@ public final class LeafSnowflakeKeyGeneratorIT {
         }
         assertThat(actual.size(), is(taskNumber));
     }
-
+    
     @Test
     public void assertGenerateKeyWithDigest() throws Exception {
         int threadNumber = Runtime.getRuntime().availableProcessors() << 1;
@@ -140,7 +140,7 @@ public final class LeafSnowflakeKeyGeneratorIT {
         }
         assertThat(actual.size(), is(taskNumber));
     }
-
+    
     @Test
     public void assertGenerateKeyWithDefaultMaxTimeDifference() throws Exception {
         int threadNumber = Runtime.getRuntime().availableProcessors() << 1;
@@ -164,7 +164,7 @@ public final class LeafSnowflakeKeyGeneratorIT {
         }
         assertThat(actual.size(), is(taskNumber));
     }
-
+    
     @Test
     public void generateKeySuccessWithTimeRollback() {
         Properties properties = new Properties();
@@ -183,7 +183,7 @@ public final class LeafSnowflakeKeyGeneratorIT {
         leafSnowflakeKeyGenerator.generateKey();
         registryCenter.persist("/leaf_snowflake/specialService/time", String.valueOf(timeService.getCurrentMillis()));
     }
-
+    
     @Test(expected = IllegalStateException.class)
     public void generateKeyFailureWithTimeRollback() {
         Properties properties = new Properties();
@@ -202,5 +202,4 @@ public final class LeafSnowflakeKeyGeneratorIT {
         leafSnowflakeKeyGenerator.generateKey();
         registryCenter.persist("/leaf_snowflake/specialService/time", String.valueOf(timeService.getCurrentMillis()));
     }
-
 }

@@ -35,43 +35,43 @@ public final class FifthTestRegistryCenter implements RegistryCenter {
     @Getter
     @Setter
     private Properties properties = new Properties();
-
+    
     private Map<String, String> keys = new HashMap<>();
-
+    
     private ReentrantLock lock = new ReentrantLock();
-
+    
     @Override
     public void init(final RegistryCenterConfiguration config) {
         keys.put("/leaf_snowflake/specialService/time", String.valueOf(System.currentTimeMillis()));
         keys.put("/leaf_snowflake/specialService/work-id", "1");
         keys.put("/leaf_snowflake/current-max-work-id", "1");
     }
-    
+        
     @Override
     public String get(final String key) {
         return "";
     }
-
+    
     @Override
     public String getDirectly(final String key) {
         return keys.get(key);
     }
-
+    
     @Override
     public boolean isExisted(final String key) {
         return keys.containsKey(key);
     }
-    
+        
     @Override
     public List<String> getChildrenKeys(final String key) {
         return Collections.emptyList();
     }
-
+    
     @Override
     public void persist(final String key, final String value) {
         keys.put(key, value);
     }
-
+    
     @Override
     public void update(final String key, final String value) {
         keys.put(key, value);
@@ -93,17 +93,17 @@ public final class FifthTestRegistryCenter implements RegistryCenter {
     public String getType() {
         return "FifthTestRegistryCenter";
     }
-
+    
     @Override
     public void initLock(final String key) {
         lock = new ReentrantLock();
     }
-
+    
     @Override
     public boolean tryLock() {
         return lock.tryLock();
     }
-
+    
     @Override
     public void tryRelease() {
         lock.unlock();

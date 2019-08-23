@@ -65,7 +65,8 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     private final Map<String, String> logicAndActualColumns;
     
-    public EncryptResultSet(final EncryptRuntimeContext encryptRuntimeContext, final OptimizedStatement optimizedStatement, final Statement encryptStatement, final ResultSet resultSet) throws SQLException {
+    public EncryptResultSet(final EncryptRuntimeContext encryptRuntimeContext, 
+                            final OptimizedStatement optimizedStatement, final Statement encryptStatement, final ResultSet resultSet) throws SQLException {
         this.encryptRule = encryptRuntimeContext.getRule();
         this.optimizedStatement = optimizedStatement;
         this.encryptStatement = encryptStatement;

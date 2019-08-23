@@ -33,5 +33,3 @@
         <module>sharding-orchestration-zookeeper-curator-integration-test</module>
     </modules>
 </project>
-
-
