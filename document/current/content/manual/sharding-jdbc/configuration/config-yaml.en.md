@@ -351,12 +351,14 @@ shardingRule:
       masterDataSourceName: #more details can reference Read-write splitting part
       slaveDataSourceNames: #more details can reference Read-write splitting part
       loadBalanceAlgorithmType: #more details can reference Read-write splitting part
-      loadBalanceAlgorithmClassName: #more details can reference Read-write splitting part
+      props: #Properties configuration of load balance algorithm
+            <property-name>: #property key value pair
 
 props: #Properties
   sql.show: #To show SQLS or not, default value: false
   executor.size: #The number of working threads, default value: CPU count
   check.table.metadata.enabled: #To check the metadata consistency of all the tables or not, default value : false
+  max.connections.size.per.query: #The maximum connection number allocated by each query of each physical database. default value: 1
 ```
 
 ### Read-Write Split
@@ -371,13 +373,15 @@ masterSlaveRule:
     - <data_source_name1>
     - <data_source_name2>
     - <data_source_name_x>
-  loadBalanceAlgorithmClassName: #Slave database load balance algorithm class name; the class should implement MasterSlaveLoadBalanceAlgorithm interface and provide parameter-free constructor
   loadBalanceAlgorithmType: #Slave database load balance algorithm type; optional value, ROUND_ROBIN and RANDOM, can be omitted if `loadBalanceAlgorithmClassName` exists
+  props: #Properties configuration of load balance algorithm
+      <property-name>: #property key value pair
   
 props: #Property configuration
   sql.show: #Show SQL or not; default value: false
   executor.size: #Executing thread number; default value: CPU core number
   check.table.metadata.enabled: # Whether to check table metadata consistency when it initializes; default value: false
+  max.connections.size.per.query: #The maximum connection number allocated by each query of each physical database. default value: 1
 ```
 
 ### Data Masking
@@ -412,6 +416,7 @@ orchestration:
   name: #Orchestration instance name
   overwrite: #Whether to overwrite local configurations with registry center configurations; if it can, each initialization should refer to local configurations
   registry: #Registry center configuration
+    type: #Registry center type. Example:zookeeper
     serverLists: #The list of servers that connect to registry center, including IP and port number; use commas to seperate addresses, such as: host1:2181,host2:2181
     namespace: #Registry center namespace
     digest: #The token that connects to the registry center; default means there is no need for authentication

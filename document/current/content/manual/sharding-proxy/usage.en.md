@@ -21,13 +21,6 @@ If users want to use the database orchestration function of Sharding-Proxy, they
 
 1. Sharding-Proxy has provided the registry center solution of Zookeeper in default. Users only need to follow [Configuration Rules](/en/manual/sharding-proxy/configuration/) to set the registry center and use it.
 
-### Etcd
-
-1. Delete `sharding-orchestration-reg-zookeeper-curator-${sharding-sphere.version}.jar` under the lib catalog of Sharding-Proxy.
-2. Download the jar package of [latest stable version](http://central.maven.org/maven2/io/shardingsphere/sharding-orchestration-reg-etcd/) of Etcd solution under Maven repository.
-3. Put the downloaded jar package to the lib catalog of Sharding-Proxy.
-4. Follow [Configuration Rules](/en/manual/sharding-proxy/configuration/) to set the registry center and use it.
-
 ### Other Third Party Registry Center
 
 1. Delete`sharding-orchestration-reg-zookeeper-curator-${sharding-sphere.version}.jar` under the lib catalog of Sharding-Proxy.

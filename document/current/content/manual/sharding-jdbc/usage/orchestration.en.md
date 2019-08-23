@@ -21,12 +21,6 @@ Using orchestration requires designating a registry center, in which all the con
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
 </dependency>
-
-<!--If you want to use etcd, please use the artifactId below.-->
-<dependency>
-    <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>sharding-orchestration-reg-etcd</artifactId>
-</dependency>
 ```
 
 ### Rule Configuration Based on Java
@@ -36,7 +30,7 @@ Using orchestration requires designating a registry center, in which all the con
     // ...
 
     // Configure registry center
-    RegistryCenterConfiguration regConfig = new RegistryCenterConfiguration();
+    RegistryCenterConfiguration regConfig = new RegistryCenterConfiguration("zookeeper");
     regConfig.setServerLists("localhost:2181");
     regConfig.setNamespace("sharding-sphere-orchestration");
 
@@ -56,6 +50,7 @@ orchestration:
   name: orchestration-sharding-data-source
   overwrite: false
   registry:
+    type: zookeeper
     serverLists: localhost:2181
     namespace: sharding-sphere-orchestration
 ```
@@ -82,13 +77,6 @@ orchestration:
     <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
     <version>${sharding-sphere.version}</version>
 </dependency>
-
-<!--If you want to use etcd, please add the Maven below.-->
-<dependency>
-    <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>sharding-orchestration-reg-etcd</artifactId>
-    <version>${sharding-sphere.version}</version>
-</dependency>
 ```
 
 ```xml
@@ -105,13 +93,6 @@ orchestration:
     <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
     <version>${sharding-sphere.version}</version>
 </dependency>
-
-<!--If you want to use etcd, please add the Maven below.-->
-<dependency>
-    <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>sharding-orchestration-reg-etcd</artifactId>
-    <version>${sharding-sphere.version}</version>
-</dependency>
 ```
 
 ### Rule Configuration Based on Spring Boot
@@ -119,6 +100,7 @@ orchestration:
 ```properties
 spring.shardingsphere.orchestration.name=orchestration-sharding-data-source
 spring.shardingsphere.orchestration.overwrite=false
+spring.shardingsphere.orchestration.registry.type=zookeeper
 spring.shardingsphere.orchestration.registry.server-lists=localhost:2181
 spring.shardingsphere.orchestration.registry.namespace=sharding-jdbc-orchestration
 ```
@@ -135,7 +117,7 @@ spring.shardingsphere.orchestration.registry.namespace=sharding-jdbc-orchestrati
                            http://shardingsphere.apache.org/schema/shardingsphere/orchestration
                            http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd">
      <import resource="namespace/shardingDataSourceNamespace.xml" />
-     <orchestraion:registry-center id="regCenter" server-lists="localhost:3181" namespace="orchestration-spring-namespace-test" operation-timeout-milliseconds="1000" max-retries="3" />
+     <orchestraion:registry-center id="regCenter" type="zookeeper" server-lists="localhost:3181" namespace="orchestration-spring-namespace-test" operation-timeout-milliseconds="1000" max-retries="3" />
      <orchestraion:sharding-data-source id="simpleShardingOrchestration" data-source-ref="simpleShardingDataSource" registry-center-ref="regCenter" />
 </beans>
 ```
