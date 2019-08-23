@@ -18,3 +18,5 @@
 org.apache.shardingsphere.orchestration.internal.registry.fixture.FirstTestRegistryCenter
 org.apache.shardingsphere.orchestration.internal.registry.fixture.SecondTestRegistryCenter
 org.apache.shardingsphere.orchestration.internal.registry.fixture.ThirdTestRegistryCenter
+org.apache.shardingsphere.orchestration.internal.registry.fixture.ForthTestRegistryCenter
+org.apache.shardingsphere.orchestration.internal.registry.fixture.FifthTestRegistryCenter

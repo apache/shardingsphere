@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.orchestration.internal.keygen;
 
-import lombok.SneakyThrows;
 import org.junit.Test;
 
 import java.util.Properties;
@@ -69,8 +68,7 @@ public final class LeafSegmentKeyGeneratorTest {
     }
 
     @Test
-    @SneakyThrows
-    public void assertGenerateKeyWithMultipleThreads() {
+    public void assertGenerateKeyWithMultipleThreads() throws Exception {
         int threadNumber = Runtime.getRuntime().availableProcessors() << 1;
         ExecutorService executor = Executors.newFixedThreadPool(threadNumber);
         Properties properties = new Properties();
@@ -85,6 +83,7 @@ public final class LeafSegmentKeyGeneratorTest {
         int taskNumber = threadNumber << 2;
         for (int i = 0; i < taskNumber; i++) {
             actual.add(executor.submit(new Callable<Comparable<?>>() {
+
                 @Override
                 public Comparable<?> call() {
                     return leafSegmentKeyGenerator.generateKey();
@@ -95,8 +94,7 @@ public final class LeafSegmentKeyGeneratorTest {
     }
 
     @Test
-    @SneakyThrows
-    public void assertGenerateKeyWithDigest() {
+    public void assertGenerateKeyWithDigest() throws Exception {
         int threadNumber = Runtime.getRuntime().availableProcessors() << 1;
         ExecutorService executor = Executors.newFixedThreadPool(threadNumber);
         Properties properties = new Properties();
@@ -111,6 +109,7 @@ public final class LeafSegmentKeyGeneratorTest {
         int taskNumber = threadNumber << 2;
         for (int i = 0; i < taskNumber; i++) {
             actual.add(executor.submit(new Callable<Comparable<?>>() {
+
                 @Override
                 public Comparable<?> call() {
                     return leafSegmentKeyGenerator.generateKey();
@@ -121,8 +120,7 @@ public final class LeafSegmentKeyGeneratorTest {
     }
 
     @Test
-    @SneakyThrows
-    public void assertGenerateKeyWithDefaultStep() {
+    public void assertGenerateKeyWithDefaultStep() throws Exception {
         int threadNumber = Runtime.getRuntime().availableProcessors() << 1;
         ExecutorService executor = Executors.newFixedThreadPool(threadNumber);
         Properties properties = new Properties();
@@ -136,6 +134,7 @@ public final class LeafSegmentKeyGeneratorTest {
         int taskNumber = threadNumber << 2;
         for (int i = 0; i < taskNumber; i++) {
             actual.add(executor.submit(new Callable<Comparable<?>>() {
+
                 @Override
                 public Comparable<?> call() {
                     return leafSegmentKeyGenerator.generateKey();
@@ -146,8 +145,7 @@ public final class LeafSegmentKeyGeneratorTest {
     }
 
     @Test
-    @SneakyThrows
-    public void assertGenerateKeyWithDefaultInitialValue() {
+    public void assertGenerateKeyWithDefaultInitialValue() throws Exception {
         int threadNumber = Runtime.getRuntime().availableProcessors() << 1;
         ExecutorService executor = Executors.newFixedThreadPool(threadNumber);
         Properties properties = new Properties();
@@ -161,6 +159,7 @@ public final class LeafSegmentKeyGeneratorTest {
         Set<Comparable<?>> actual = new HashSet<>();
         for (int i = 0; i < taskNumber; i++) {
             actual.add(executor.submit(new Callable<Comparable<?>>() {
+
                 @Override
                 public Comparable<?> call() {
                     return leafSegmentKeyGenerator.generateKey();
