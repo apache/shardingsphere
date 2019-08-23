@@ -26,8 +26,6 @@ ShardingSphere默认的XA事务管理器为Atomikos，在项目的logs目录中�
 
 ## 2. 第三方BASE实现-Saga
 
-目前Apache/incubator-shardingsphere暂无BASE事务的实现，但是仍然可以使用第三方实现的Saga事务。
-
 项目地址: [shardingsphere-spi-impl](https://github.com/sharding-sphere/shardingsphere-spi-impl)
 
 文中涉及`${shardingsphere-spi-impl.version}` 的jar暂未发布到maven中央仓，因此需要您根据源码自行部署。
@@ -49,17 +47,17 @@ Saga事务管理器将以SPI的方式被Sharding-JDBC所加载。
 可以通过在项目的classpath中添加`saga.properties`来定制化Saga事务的配置项。
 配置项的属性及说明如下：
 
-| *属性名称*                                        | *默认值* | *说明*                         |
-| -------------------------------------------------| --------| -------------------------------|
-| saga.actuator.executor.size                      |    5    | Saga引擎所使用的线程池大小        |
-| saga.actuator.transaction.max.retries            |    5    | Saga引擎对失败SQL的最大重试次数   |
-| saga.actuator.compensation.max.retries           |    5    | Saga引擎对失败SQL的最大尝试补偿次数|
-| saga.actuator.transaction.retry.delay.milliseconds| 5000   | Saga引擎对失败SQL的重试间隔，单位毫秒|
-| saga.actuator.compensation.retry.delay.milliseconds| 3000  | Saga引擎对失败SQL的补偿间隔，单位毫秒|
-| saga.persistence.enabled                         |  false  | Saga引擎对快照及执行日志进行持久化  |
-| saga.actuator.recovery.policy                    | ForwardRecovery | Saga引擎对失败事务的补偿策略，ForwardRecovery为最大努力送达，BackwardRecovery为反向SQL补偿|
+| *属性名称*                                          | *默认值*        | *说明*                                |
+| ---------------------------------------------------|-----------------|---------------------------------------|
+| saga.actuator.executor.size                        |        5        | Saga引擎所使用的线程池大小              |
+| saga.actuator.transaction.max.retries              |        5        | Saga引擎对失败SQL的最大重试次数         |
+| saga.actuator.compensation.max.retries             |        5        | Saga引擎对失败SQL的最大尝试补偿次数     |
+| saga.actuator.transaction.retry.delay.milliseconds |       5000      | Saga引擎对失败SQL的重试间隔，单位毫秒   |
+| saga.actuator.compensation.retry.delay.milliseconds|       3000      | Saga引擎对失败SQL的补偿间隔，单位毫秒   |
+| saga.persistence.enabled                           |       false     | Saga引擎对快照及执行日志进行持久化      |
+| saga.actuator.recovery.policy                      | ForwardRecovery | Saga引擎对失败事务的补偿策略，ForwardRecovery为最大努力送达，BackwardRecovery为反向SQL补偿|
 
-### 2.3 Saga 快照及日志持久化
+### 2.3 Saga日志持久化
 
 当`saga.persistence.enabled`设置为`true`时，Saga引擎将会对事务的快照及执行日志进行持久化操作。
 持久化操作默认通过HikariCP链接池写入到MySQL、H2或PostgreSQL数据库中。
@@ -82,16 +80,6 @@ Saga事务管理器将以SPI的方式被Sharding-JDBC所加载。
 ```sql
 -- MySQL init table SQL
 
-CREATE TABLE IF NOT EXISTS saga_snapshot(
-  id BIGINT AUTO_INCREMENT PRIMARY KEY,
-  transaction_id VARCHAR(255) null,
-  snapshot_id int null,
-  revert_context VARCHAR(255) null,
-  transaction_context VARCHAR(255) null,
-  create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  INDEX transaction_snapshot_index(transaction_id, snapshot_id)
-)ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 CREATE TABLE IF NOT EXISTS saga_event(
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
   saga_id VARCHAR(255) null,
@@ -102,27 +90,18 @@ CREATE TABLE IF NOT EXISTS saga_event(
 )ENGINE=InnoDB DEFAULT CHARSET=utf8
 ```
 
-### 2.4 Saga 快照及日志持久化SPI定制
+### 2.4 Saga日志持久化SPI定制
 
-默认通过数据库来持久化快照和日志并不一定能够满足用户对业务和性能的需求。因此Saga引擎提供SPI允许用户定制化持久化部分。
+默认通过数据库来持久化日志并不一定能够满足用户对业务和性能的需求。因此Saga引擎提供SPI允许用户定制化持久化部分。
 当`saga.persistence.enabled`设置为`true`且Saga引擎监测到有持久化SPI时，Saga引擎将通过用户实现的SPI代替默认持久化进行持久化工作。
 用户只需要实现接口`io.shardingsphere.transaction.saga.persistence.SagaPersistence`即可实现持久化SPI。
-具体可参考项目`sharding-transaction-base-saga-persistence-jpa`，Maven引入：
-
-```xml
-<dependency>
-    <groupId>io.shardingsphere</groupId>
-    <artifactId>sharding-transaction-base-saga-persistence-jpa</artifactId>
-    <version>${shardingsphere-spi-impl.version}</version>
-</dependency>
-```
+具体可参考项目`sharding-transaction-base-saga-persistence-jpa`
 
 ### 2.5 Saga 注意事项
 * 反向SQL需要**主键**，请确保在表结构中定义**主键**。
 * 对于`INSERT`语句， 需要在SQL中显示插入**主键值**，如`INSERT INTO ${table_name} (id, value, ...) VALUES (11111, '', ....) (其中id为表主键)`。
-* 若需要自动生成主键，可使用ShardingSphere的分布式主键（分布式主键不能为联合主键）。
 
-## 3. 分布式事务接入端
+## 3. JDBC分布式事务接入端
 
 ShardingSphere的事务类型存放在`TransactionTypeHolder`的本地线程变量中，因此在数据库连接创建前修改此值，可以达到自由切换事务类型的效果。
 
