@@ -94,7 +94,7 @@ SELECT COUNT(*) FROM (SELECT * FROM t_order o WHERE o.id IN (SELECT id FROM t_or
 | TRUNCATE TABLE tbl_name                                                                     |                          |
 | CREATE INDEX idx_name ON tbl_name                                                           |                          |
 | DROP INDEX idx_name ON tbl_name                                                             |                          |
-| DROP INDEX idx_name                                                                         |TableRule中配置logic-index |
+| DROP INDEX idx_name                                                                         |                          |
 | SELECT DISTINCT * FROM tbl_name WHERE col1 = ?                                              |                          |
 | SELECT COUNT(DISTINCT col1) FROM tbl_name                                                   |                          |
 

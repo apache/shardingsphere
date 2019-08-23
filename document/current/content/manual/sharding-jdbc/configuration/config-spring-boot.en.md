@@ -305,8 +305,6 @@ spring.shardingsphere.sharding.tables.<logic-table-name>.key-generator.column= #
 spring.shardingsphere.sharding.tables.<logic-table-name>.key-generator.type= #Auto-increament key generator type; default means using default auto-increament key generator; user defined generator or internal generator (SNOWFLAKE, UUID, LEAF_SEGMENT) can both be selected
 spring.shardingsphere.sharding.tables.<logic-table-name>.key-generator.props.<property-name>= #Properties, Notice: when use SNOWFLAKE, `worker.id` and `max.tolerate.time.difference.milliseconds` for `SNOWFLAKE` need to be set
 
-spring.shardingsphere.sharding.tables.<logic-table-name>.logic-index= #Logic index name; for table-sharding DROP INDEX XXX in Oracle/PostgreSQL, logic index name needs to be configured to locate actual sharding tables of the executing SQL
-
 spring.shardingsphere.sharding.binding-tables[0]= #Binding table rule list
 spring.shardingsphere.sharding.binding-tables[1]= #Binding table rule list
 spring.shardingsphere.sharding.binding-tables[x]= #Binding table rule list

@@ -66,9 +66,7 @@ SQL rewrite only requires to revise its table name:
 SELECT t_order.order_id FROM t_order_1 AS t_order WHERE t_order.order_id=1 AND remarks=' t_order xxx';
 ```
 
-Index name is another identifier that can be rewritten. In some databases (such as MySQL), the index is created according to the table dimension, and its names in different tables can repeat. In some other databases (such as PostgreSQL), however, the index is created according to the database dimension, index names in different tables are required to be one and the only.
-
-In sharding table, the same logic table will be split into many physical tables in one database. Therefore, index names created for those physical tables cannot repeat. As a result, ShardingSphere will revise the index name as the logic index name + its physical table name. In ShardingSphere, schema management method is similar to that of the table. It uses logic schema to manage a set of data sources, so it requires to replace the logic schema written by users in SQL with physical database schema.
+In ShardingSphere, schema management method is similar to that of the table. It uses logic schema to manage a set of data sources, so it requires to replace the logic schema written by users in SQL with physical database schema.
 
 ShardingSphere only supports to use schema in database management statements but not in DQL and DML statements, for example:
 

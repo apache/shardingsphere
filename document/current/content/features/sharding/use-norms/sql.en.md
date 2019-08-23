@@ -94,7 +94,7 @@ Do not support SQL that contains schema, for the concept of ShardingSphere is to
 | TRUNCATE TABLE tbl_name                                                                     |                                         |
 | CREATE INDEX idx_name ON tbl_name                                                           |                                         |
 | DROP INDEX idx_name ON tbl_name                                                             |                                         |
-| DROP INDEX idx_name                                                                         |  Logic-index is configured in TableRule |
+| DROP INDEX idx_name                                                                         |                                         |
 | SELECT DISTINCT * FROM tbl_name WHERE col1 = ?                                              |                                         |
 | SELECT COUNT(DISTINCT col1) FROM tbl_name                                                   |                                         |
 
