@@ -24,11 +24,14 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.Assignmen
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.generic.TableSegmentAvailable;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Insert statement.
@@ -114,5 +117,30 @@ public final class InsertStatement extends DMLStatement implements TableSegmentA
             return setAssignment.getAssignments().size();
         }
         return 0;
+    }
+    
+    /**
+     * Get all value expressions.
+     * 
+     * @return all value expressions
+     */
+    public Collection<Collection<ExpressionSegment>> getAllValueExpressions() {
+        return null == setAssignment ? getAllValueExpressionsFromInsertValues() : Collections.singletonList(getAllValueExpressionsFromSetAssignments());
+    }
+    
+    private Collection<Collection<ExpressionSegment>> getAllValueExpressionsFromInsertValues() {
+        Collection<Collection<ExpressionSegment>> result = new LinkedList<>();
+        for (InsertValuesSegment each : values) {
+            result.add(each.getValues());
+        }
+        return result;
+    }
+    
+    private Collection<ExpressionSegment> getAllValueExpressionsFromSetAssignments() {
+        List<ExpressionSegment> result = new LinkedList<>();
+        for (AssignmentSegment each : setAssignment.getAssignments()) {
+            result.add(each.getValue());
+        }
+        return result;
     }
 }

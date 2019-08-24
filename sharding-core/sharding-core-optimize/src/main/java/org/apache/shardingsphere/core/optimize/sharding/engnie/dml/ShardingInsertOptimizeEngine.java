@@ -55,7 +55,7 @@ public final class ShardingInsertOptimizeEngine implements ShardingOptimizeEngin
         InsertClauseShardingConditionEngine shardingConditionEngine = new InsertClauseShardingConditionEngine(shardingRule);
         ShardingInsertColumns insertColumns = new ShardingInsertColumns(shardingRule, tableMetas, sqlStatement);
         Collection<InsertValue> insertValues = InsertValuesFactory.createInsertValues(sqlStatement);
-        Optional<GeneratedKey> generatedKey = GeneratedKey.getGenerateKey(shardingRule, parameters, sqlStatement, insertColumns, insertValues);
+        Optional<GeneratedKey> generatedKey = GeneratedKey.getGenerateKey(shardingRule, parameters, sqlStatement, insertColumns);
         boolean isGeneratedValue = generatedKey.isPresent() && generatedKey.get().isGenerated();
         Iterator<Comparable<?>> generatedValues = isGeneratedValue ? generatedKey.get().getGeneratedValues().iterator() : null;
         Collection<String> allColumnNames = new LinkedHashSet<>(insertColumns.getRegularColumnNames());
