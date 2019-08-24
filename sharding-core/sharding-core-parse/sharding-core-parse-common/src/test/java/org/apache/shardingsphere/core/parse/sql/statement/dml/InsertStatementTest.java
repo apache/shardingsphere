@@ -105,4 +105,24 @@ public final class InsertStatementTest {
     public void assertGetValueCountForPerGroupWithoutValuesAndSetAssignment() {
         assertThat(new InsertStatement().getValueCountForPerGroup(), is(0));
     }
+    
+    @Test
+    public void assertGetAllValueExpressionsWithValues() {
+        InsertStatement insertStatement = new InsertStatement();
+        ExpressionSegment valueSegment = new LiteralExpressionSegment(0, 0, 1);
+        insertStatement.getValues().add(new InsertValuesSegment(0, 0, Collections.singletonList(valueSegment)));
+        assertThat(insertStatement.getAllValueExpressions().size(), is(1));
+        assertThat(insertStatement.getAllValueExpressions().iterator().next().size(), is(1));
+        assertThat(insertStatement.getAllValueExpressions().iterator().next().iterator().next(), is(valueSegment));
+    }
+    
+    @Test
+    public void assertGetAllValueExpressionsWithSetAssignment() {
+        InsertStatement insertStatement = new InsertStatement();
+        ExpressionSegment valueSegment = new LiteralExpressionSegment(0, 0, 1);
+        insertStatement.setSetAssignment(new SetAssignmentsSegment(0, 0, Collections.singletonList(new AssignmentSegment(0, 0, new ColumnSegment(0, 0, "col"), valueSegment))));
+        assertThat(insertStatement.getAllValueExpressions().size(), is(1));
+        assertThat(insertStatement.getAllValueExpressions().iterator().next().size(), is(1));
+        assertThat(insertStatement.getAllValueExpressions().iterator().next().iterator().next(), is(valueSegment));
+    }
 }

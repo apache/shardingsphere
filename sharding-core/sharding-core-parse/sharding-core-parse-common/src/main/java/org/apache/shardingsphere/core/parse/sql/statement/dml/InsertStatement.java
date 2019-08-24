@@ -125,10 +125,10 @@ public final class InsertStatement extends DMLStatement implements TableSegmentA
      * @return all value expressions
      */
     public Collection<Collection<ExpressionSegment>> getAllValueExpressions() {
-        return null == setAssignment ? getAllValueExpressionsFromInsertValues() : Collections.singletonList(getAllValueExpressionsFromSetAssignments());
+        return null == setAssignment ? getAllValueExpressionsFromValues() : Collections.singletonList(getAllValueExpressionsFromSetAssignment());
     }
     
-    private Collection<Collection<ExpressionSegment>> getAllValueExpressionsFromInsertValues() {
+    private Collection<Collection<ExpressionSegment>> getAllValueExpressionsFromValues() {
         Collection<Collection<ExpressionSegment>> result = new LinkedList<>();
         for (InsertValuesSegment each : values) {
             result.add(each.getValues());
@@ -136,7 +136,7 @@ public final class InsertStatement extends DMLStatement implements TableSegmentA
         return result;
     }
     
-    private Collection<ExpressionSegment> getAllValueExpressionsFromSetAssignments() {
+    private Collection<ExpressionSegment> getAllValueExpressionsFromSetAssignment() {
         List<ExpressionSegment> result = new LinkedList<>();
         for (AssignmentSegment each : setAssignment.getAssignments()) {
             result.add(each.getValue());
