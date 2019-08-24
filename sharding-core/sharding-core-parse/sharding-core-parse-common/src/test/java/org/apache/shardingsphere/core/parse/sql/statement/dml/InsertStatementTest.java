@@ -71,22 +71,38 @@ public final class InsertStatementTest {
     }
     
     @Test
-    public void assertGetValueSizeWithValues() {
+    public void assertGetValueListCountWithValues() {
         InsertStatement insertStatement = new InsertStatement();
         insertStatement.getValues().add(new InsertValuesSegment(0, 0, Collections.<ExpressionSegment>singletonList(new LiteralExpressionSegment(0, 0, 1))));
-        assertThat(insertStatement.getValueSize(), is(1));
+        insertStatement.getValues().add(new InsertValuesSegment(0, 0, Collections.<ExpressionSegment>singletonList(new LiteralExpressionSegment(0, 0, 2))));
+        assertThat(insertStatement.getValueListCount(), is(2));
     }
     
     @Test
-    public void assertGetValueSizeWithSetAssignment() {
+    public void assertGetValueListCountWithSetAssignment() {
         InsertStatement insertStatement = new InsertStatement();
         insertStatement.setSetAssignment(
                 new SetAssignmentsSegment(0, 0, Collections.singletonList(new AssignmentSegment(0, 0, new ColumnSegment(0, 0, "col"), new LiteralExpressionSegment(0, 0, 1)))));
-        assertThat(insertStatement.getValueSize(), is(1));
+        assertThat(insertStatement.getValueListCount(), is(1));
     }
     
     @Test
-    public void assertGetValueSizeWithoutValuesAndSetAssignment() {
-        assertThat(new InsertStatement().getValueSize(), is(0));
+    public void assertGetValueCountForPerGroupWithValues() {
+        InsertStatement insertStatement = new InsertStatement();
+        insertStatement.getValues().add(new InsertValuesSegment(0, 0, Collections.<ExpressionSegment>singletonList(new LiteralExpressionSegment(0, 0, 1))));
+        assertThat(insertStatement.getValueCountForPerGroup(), is(1));
+    }
+    
+    @Test
+    public void assertGetValueCountForPerGroupWithSetAssignment() {
+        InsertStatement insertStatement = new InsertStatement();
+        insertStatement.setSetAssignment(
+                new SetAssignmentsSegment(0, 0, Collections.singletonList(new AssignmentSegment(0, 0, new ColumnSegment(0, 0, "col"), new LiteralExpressionSegment(0, 0, 1)))));
+        assertThat(insertStatement.getValueCountForPerGroup(), is(1));
+    }
+    
+    @Test
+    public void assertGetValueCountForPerGroupWithoutValuesAndSetAssignment() {
+        assertThat(new InsertStatement().getValueCountForPerGroup(), is(0));
     }
 }

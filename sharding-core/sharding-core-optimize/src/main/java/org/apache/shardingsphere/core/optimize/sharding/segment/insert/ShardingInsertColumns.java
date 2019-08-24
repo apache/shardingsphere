@@ -49,14 +49,14 @@ public final class ShardingInsertColumns implements InsertColumns {
         Collection<String> allColumnNames = tableMetas.getAllColumnNames(insertStatement.getTable().getTableName());
         Collection<String> result = new LinkedHashSet<>(allColumnNames);
         Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTable().getTableName());
-        if (generateKeyColumnName.isPresent() && isUseDefaultGenerateKeyFromMetaData(allColumnNames, insertStatement.getValueSize())) {
+        if (generateKeyColumnName.isPresent() && isUseDefaultGenerateKeyFromMetaData(allColumnNames, insertStatement.getValueCountForPerGroup())) {
             result.remove(generateKeyColumnName.get());
         }
         return result;
     }
     
-    private boolean isUseDefaultGenerateKeyFromMetaData(final Collection<String> allColumnNames, final int columnValueSize) {
-        return allColumnNames.size() > columnValueSize;
+    private boolean isUseDefaultGenerateKeyFromMetaData(final Collection<String> allColumnNames, final int valueCountForPerGroup) {
+        return allColumnNames.size() > valueCountForPerGroup;
     }
     
     private Collection<String> getRegularColumnNamesFromSQLStatement(final ShardingRule shardingRule, final InsertStatement insertStatement) {
@@ -69,6 +69,6 @@ public final class ShardingInsertColumns implements InsertColumns {
     }
     
     private boolean isUseDefaultGenerateKeyFromSQLStatement(final InsertStatement insertStatement) {
-        return !insertStatement.getColumns().isEmpty() && insertStatement.getColumns().size() > insertStatement.getValueSize();
+        return !insertStatement.getColumns().isEmpty() && insertStatement.getColumns().size() > insertStatement.getValueCountForPerGroup();
     }
 }

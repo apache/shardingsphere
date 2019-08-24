@@ -93,11 +93,20 @@ public final class InsertStatement extends DMLStatement implements TableSegmentA
     }
     
     /**
-     * Get value size.
-     * 
-     * @return value size
+     * Get value list count.
+     *
+     * @return value list count
      */
-    public int getValueSize() {
+    public int getValueListCount() {
+        return null == setAssignment ? values.size() : 1;
+    }
+    
+    /**
+     * Get value count for per value list.
+     * 
+     * @return value count
+     */
+    public int getValueCountForPerGroup() {
         if (!values.isEmpty()) {
             return values.iterator().next().getValues().size();
         }
