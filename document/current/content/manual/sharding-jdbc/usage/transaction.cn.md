@@ -64,7 +64,10 @@ ${shardingsphere-spi-impl.version}` 的jar暂未发布到maven中央仓，因此
 
 #### Saga相关配置
 
-可以通过在项目的classpath中添加`saga.properties`来定制化Saga事务的配置项。配置项的属性及说明如下：
+可以通过在项目的classpath中添加`saga.properties`来定制化Saga事务的配置项。当`saga.persistence.enabled=true`时，事务日志默认按JDBC的方式持久化到数据库中，也可以通过实现`io.shardingsphere.transaction.saga.persistence.SagaPersistence` 
+SPI，支持定制化存储，具体可参考项目`sharding-transaction-base-saga-persistence-jpa`。
+
+配置项的属性及说明如下：
 
 | *属性名称*                                          | *默认值*        | *说明*                                |
 | ---------------------------------------------------|-----------------|---------------------------------------|
@@ -73,8 +76,8 @@ ${shardingsphere-spi-impl.version}` 的jar暂未发布到maven中央仓，因此
 | saga.actuator.compensation.max.retries             |        5        | 失败SQL的最大尝试补偿次数              |
 | saga.actuator.transaction.retry.delay.milliseconds |       5000      | 失败SQL的重试间隔，单位毫秒            |
 | saga.actuator.compensation.retry.delay.milliseconds|       3000      | 失败SQL的补偿间隔，单位毫秒            |
-| saga.persistence.enabled                           |       false     | 是否对日志进行持久化                   |
 | saga.actuator.recovery.policy                      | ForwardRecovery | 补偿策略，ForwardRecovery为最大努力送达，BackwardRecovery为反向SQL补偿|
+| saga.persistence.enabled                           |       false     | 是否对日志进行持久化                   |
 | saga.persistence.ds.url                            |    无           | 事务日志数据库JDBC连接                 |
 | saga.persistence.ds.username                       |    无           | 事务日志数据库用户名                   |
 | saga.persistence.ds.password                       |    无           | 事务日志数据库密码                     |
@@ -100,7 +103,6 @@ CREATE TABLE IF NOT EXISTS saga_event(
 ```
 
 在classpath中添加`schema-init.sql`可以定日志表，Saga引擎会完成初始化建表操作。
-事务日志默认按JDBC的方式持久的数据库中，也可以通过实现`io.shardingsphere.transaction.saga.persistence.SagaPersistence` SPI，支持定制化存储，具体可参考项目`sharding-transaction-base-saga-persistence-jpa`。
 
 ### Seata相关配置
 
