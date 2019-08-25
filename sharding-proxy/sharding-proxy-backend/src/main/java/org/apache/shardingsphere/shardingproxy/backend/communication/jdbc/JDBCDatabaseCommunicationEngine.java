@@ -20,7 +20,6 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.merge.MergeEngineFactory;
 import org.apache.shardingsphere.core.merge.MergedResult;
-import org.apache.shardingsphere.core.merge.dal.show.ShowTablesMergedResult;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.DerivedColumn;
 import org.apache.shardingsphere.core.optimize.sharding.statement.ShardingOptimizedStatement;
@@ -111,7 +110,6 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
             return response;
         }
         setMergedResult(routeResult);
-        resetColumnLabelForShowTablesMergedResult();
         handleColumnsForQueryHeader(routeResult);
         return response;
     }
@@ -131,17 +129,11 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
                 logicSchema.getShardingRule(), routeResult, logicSchema.getMetaData().getTables(), ((QueryResponse) response).getQueryResults()).merge();
     }
     
-    private void resetColumnLabelForShowTablesMergedResult() {
-        if (mergedResult instanceof ShowTablesMergedResult) {
-            ((ShowTablesMergedResult) mergedResult).resetColumnLabel(logicSchema.getName());
-        }
-    }
-    
     private void handleColumnsForQueryHeader(final SQLRouteResult routeResult) {
         removeDerivedColumns();
         removeAssistedQueryColumns(routeResult);
         setLogicColumns();
-    } 
+    }
     
     private void removeDerivedColumns() {
         List<QueryHeader> toRemove = new LinkedList<>();

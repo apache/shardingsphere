@@ -15,25 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.segment.dal;
+package org.apache.shardingsphere.core.parse.core.filler.dal;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.generic.RemoveAvailable;
+import org.apache.shardingsphere.core.parse.core.filler.SQLSegmentFiller;
+import org.apache.shardingsphere.core.parse.sql.segment.dal.ShowFullSegment;
+import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.ShowTablesStatement;
 
 /**
- * From schema segment.
+ * Show full filler for MySQL.
  *
- * @author zhangliang
+ * @author sunbufu
  */
-@RequiredArgsConstructor
-@Getter
-public final class FromSchemaSegment implements SQLSegment, RemoveAvailable {
+public final class MySQLShowFullFiller implements SQLSegmentFiller<ShowFullSegment> {
     
-    private final int startIndex;
-    
-    private final int stopIndex;
-    
-    private final String schema;
+    @Override
+    public void fill(final ShowFullSegment sqlSegment, final SQLStatement sqlStatement) {
+        if (sqlStatement instanceof ShowTablesStatement) {
+            ((ShowTablesStatement) sqlStatement).setFull(sqlSegment.isFull());
+        }
+    }
 }

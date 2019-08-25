@@ -26,6 +26,7 @@ import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendH
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandlerFactory;
 import org.apache.shardingsphere.shardingproxy.backend.text.admin.BroadcastBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.admin.ShowDatabasesBackendHandler;
+import org.apache.shardingsphere.shardingproxy.backend.text.admin.ShowTablesBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.admin.UnicastBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.admin.UseDatabaseBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.query.QueryBackendHandler;
@@ -74,6 +75,20 @@ public final class TextProtocolBackendHandlerFactoryTest {
     @Test
     public void assertNewInstanceWithBegin() {
         String sql = "BEGIN";
+        TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
+        assertThat(actual, instanceOf(TransactionBackendHandler.class));
+    }
+    
+    @Test
+    public void assertNewInstanceWithCommit() {
+        String sql = "commit";
+        TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
+        assertThat(actual, instanceOf(TransactionBackendHandler.class));
+    }
+    
+    @Test
+    public void assertNewInstanceWithRollback() {
+        String sql = "rollback";
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
         assertThat(actual, instanceOf(TransactionBackendHandler.class));
     }
@@ -141,6 +156,13 @@ public final class TextProtocolBackendHandlerFactoryTest {
         String sql = "show databases";
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
         assertThat(actual, instanceOf(ShowDatabasesBackendHandler.class));
+    }
+    
+    @Test
+    public void assertNewInstanceWithShowTables() {
+        String sql = "show tables";
+        TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
+        assertThat(actual, instanceOf(ShowTablesBackendHandler.class));
     }
     
     @Test

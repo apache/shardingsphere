@@ -344,6 +344,22 @@ public final class ShardingRuleTest {
         new ShardingRule(shardingRuleConfiguration, null);
     }
     
+    @Test
+    public void assertGetLogicTableNames() {
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        shardingRuleConfig.getTableRuleConfigs().add(createTableRuleConfigWithAllStrategies());
+        ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, createDataSourceNames());
+        assertThat(shardingRule.getLogicTableNames().size(), is(1));
+    }
+    
+    @Test
+    public void assertGetLogicTableNamesWithActualTableName() {
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        shardingRuleConfig.getTableRuleConfigs().add(createTableRuleConfigWithAllStrategies());
+        ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, createDataSourceNames());
+        assertThat(shardingRule.getLogicTableNames("table_0").size(), is(1));
+    }
+    
     private ShardingRule createMaximumShardingRule() {
         ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
         shardingRuleConfiguration.setDefaultDataSourceName("ds_0");

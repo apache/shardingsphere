@@ -18,14 +18,17 @@
 package org.apache.shardingsphere.shardingproxy.backend;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 
 import java.lang.reflect.Field;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public final class MockLogicSchemasUtil {
     
@@ -47,5 +50,25 @@ public final class MockLogicSchemasUtil {
             result.put(prefix + "_" + i, mock(LogicSchema.class));
         }
         return result;
+    }
+    
+    /**
+     * Set logic tables on logic schemas for global registry.
+     * @param tables tables
+     * @param logicSchemaName logicSchemaName
+     */
+    public static void setLogicTablesOnLogicSchemas(final Collection<String> tables, final String logicSchemaName) {
+        LogicSchema logicSchema = LogicSchemas.getInstance().getLogicSchema(logicSchemaName);
+        if (null == logicSchema) {
+            return;
+        }
+        ShardingRule shardingRule = mockLogicTable(tables);
+        when(logicSchema.getShardingRule()).thenReturn(shardingRule);
+    }
+    
+    private static ShardingRule mockLogicTable(final Collection<String> tables) {
+        ShardingRule shardingRule = mock(ShardingRule.class);
+        when(shardingRule.getLogicTableNames()).thenReturn(tables);
+        return shardingRule;
     }
 }

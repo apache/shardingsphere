@@ -21,6 +21,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
+import com.google.common.collect.Sets;
 import lombok.Getter;
 import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
@@ -40,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.TreeSet;
 
 /**
@@ -374,6 +376,19 @@ public class ShardingRule implements BaseRule {
             if (each.isExisted(actualTableName)) {
                 result.add(each.getLogicTable());
             }
+        }
+        return result;
+    }
+    
+    /**
+     * Get all logic table names.
+     *
+     * @return all logic table name
+     */
+    public Collection<String> getLogicTableNames() {
+        Set<String> result = Sets.newHashSetWithExpectedSize(tableRules.size());
+        for (TableRule each : tableRules) {
+            result.add(each.getLogicTable());
         }
         return result;
     }

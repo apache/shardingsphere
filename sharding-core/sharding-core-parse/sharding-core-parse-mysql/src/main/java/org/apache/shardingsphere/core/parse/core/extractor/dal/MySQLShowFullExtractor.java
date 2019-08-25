@@ -22,22 +22,23 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.core.extractor.api.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.core.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.core.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.sql.segment.dal.FromSchemaSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dal.ShowFullSegment;
 
 import java.util.Map;
 
 /**
- * From schema extractor for MySQL.
+ * Show full extractor for MySQL.
  *
- * @author zhangliang
  * @author sunbufu
  */
-public final class MySQLFromSchemaExtractor implements OptionalSQLSegmentExtractor {
+public final class MySQLShowFullExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Optional<FromSchemaSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
-        Optional<ParserRuleContext> fromSchemaNode = ExtractorUtils.findFirstChildNodeNoneRecursive(ancestorNode, RuleName.FROM_SCHEMA);
-        return fromSchemaNode.isPresent() ? Optional.of(new FromSchemaSegment(fromSchemaNode.get().getStart().getStartIndex(), fromSchemaNode.get().getStop().getStopIndex(),
-            fromSchemaNode.get().children.get(1).getText())) : Optional.<FromSchemaSegment>absent();
+    public Optional<ShowFullSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
+        Optional<ParserRuleContext> showFullNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.SHOW_FULL);
+        if (!showFullNode.isPresent() || showFullNode.get().getChildCount() <= 0) {
+            return Optional.absent();
+        }
+        return Optional.of(new ShowFullSegment(showFullNode.get().getStart().getStartIndex(), showFullNode.get().getStop().getStopIndex(), true));
     }
 }

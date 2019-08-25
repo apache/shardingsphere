@@ -20,13 +20,17 @@ package org.apache.shardingsphere.core.merge.dal;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.dal.show.ShowCreateTableMergedResult;
 import org.apache.shardingsphere.core.merge.dal.show.ShowDatabasesMergedResult;
+import org.apache.shardingsphere.core.merge.dal.show.ShowIndexMergedResult;
 import org.apache.shardingsphere.core.merge.dal.show.ShowOtherMergedResult;
+import org.apache.shardingsphere.core.merge.dal.show.ShowTableStatusMergedResult;
 import org.apache.shardingsphere.core.merge.dal.show.ShowTablesMergedResult;
 import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.ShowCreateTableStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.ShowDatabasesStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.ShowIndexStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.ShowOtherStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.ShowTableStatusStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.ShowTablesStatement;
 import org.junit.Before;
 import org.junit.Test;
@@ -58,6 +62,13 @@ public final class DALMergeEngineTest {
     }
     
     @Test
+    public void assertMergeForShowShowTableStatusStatement() throws SQLException {
+        DALStatement dalStatement = new ShowTableStatusStatement();
+        DALMergeEngine dalMergeEngine = new DALMergeEngine(null, queryResults, dalStatement, null);
+        assertThat(dalMergeEngine.merge(), instanceOf(ShowTableStatusMergedResult.class));
+    }
+    
+    @Test
     public void assertMergeForShowShowTablesStatement() throws SQLException {
         DALStatement dalStatement = new ShowTablesStatement();
         DALMergeEngine dalMergeEngine = new DALMergeEngine(null, queryResults, dalStatement, null);
@@ -69,6 +80,13 @@ public final class DALMergeEngineTest {
         DALStatement dalStatement = new ShowCreateTableStatement();
         DALMergeEngine dalMergeEngine = new DALMergeEngine(null, queryResults, dalStatement, null);
         assertThat(dalMergeEngine.merge(), instanceOf(ShowCreateTableMergedResult.class));
+    }
+    
+    @Test
+    public void assertMergeForShowIndexStatement() throws SQLException {
+        DALStatement dalStatement = new ShowIndexStatement();
+        DALMergeEngine dalMergeEngine = new DALMergeEngine(null, queryResults, dalStatement, null);
+        assertThat(dalMergeEngine.merge(), instanceOf(ShowIndexMergedResult.class));
     }
     
     @Test

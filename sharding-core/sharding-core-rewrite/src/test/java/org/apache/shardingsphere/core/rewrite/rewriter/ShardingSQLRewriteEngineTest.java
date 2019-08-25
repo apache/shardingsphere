@@ -675,7 +675,7 @@ public final class ShardingSQLRewriteEngineTest {
     
     private SQLRouteResult createRouteResultForTableTokenWithoutBackQuoteFromSchemaForShow() {
         DALStatement showTablesStatement = new DALStatement();
-        showTablesStatement.getAllSQLSegments().add(new FromSchemaSegment(25, 43));
+        showTablesStatement.getAllSQLSegments().add(new FromSchemaSegment(25, 43, "sharding_db"));
         showTablesStatement.getAllSQLSegments().add(new TableSegment(18, 24, "table_x"));
         SQLRouteResult result = new SQLRouteResult(new ShardingTransparentOptimizedStatement(showTablesStatement), new EncryptTransparentOptimizedStatement(showTablesStatement));
         RoutingResult routingResult = new RoutingResult();

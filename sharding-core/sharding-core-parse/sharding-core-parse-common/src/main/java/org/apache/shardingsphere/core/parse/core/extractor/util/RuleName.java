@@ -155,6 +155,8 @@ public enum RuleName {
     
     SHOW_LIKE("ShowLike"),
     
+    SHOW_FULL("ShowFull"),
+    
     FROM_SCHEMA("FromSchema"),
     
     TOP("Top");

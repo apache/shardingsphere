@@ -15,25 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.segment.dal;
+package org.apache.shardingsphere.core.parse.core.filler.dal;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.generic.RemoveAvailable;
+import org.apache.shardingsphere.core.parse.core.filler.SQLSegmentFiller;
+import org.apache.shardingsphere.core.parse.sql.segment.dal.ShowLikeSegment;
+import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.ShowTablesStatement;
 
 /**
- * From schema segment.
+ * Show like filler for MySQL.
  *
- * @author zhangliang
+ * @author sunbufu
  */
-@RequiredArgsConstructor
-@Getter
-public final class FromSchemaSegment implements SQLSegment, RemoveAvailable {
+public final class MySQLShowLikeFiller implements SQLSegmentFiller<ShowLikeSegment> {
     
-    private final int startIndex;
-    
-    private final int stopIndex;
-    
-    private final String schema;
+    @Override
+    public void fill(final ShowLikeSegment sqlSegment, final SQLStatement sqlStatement) {
+        if (sqlStatement instanceof ShowTablesStatement) {
+            ((ShowTablesStatement) sqlStatement).setPattern(sqlSegment.getPattern());
+        }
+    }
 }

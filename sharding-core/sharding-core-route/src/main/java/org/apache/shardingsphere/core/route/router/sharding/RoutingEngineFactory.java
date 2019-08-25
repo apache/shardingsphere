@@ -26,6 +26,7 @@ import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingCo
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.ShowDatabasesStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.ShowTablesStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.UseStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.postgresql.ResetParameterStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.postgresql.SetStatement;
@@ -93,7 +94,7 @@ public final class RoutingEngineFactory {
     }
     
     private static RoutingEngine getDALRoutingEngine(final ShardingRule shardingRule, final SQLStatement sqlStatement, final Collection<String> tableNames) {
-        if (sqlStatement instanceof ShowDatabasesStatement || sqlStatement instanceof UseStatement) {
+        if (sqlStatement instanceof ShowDatabasesStatement || sqlStatement instanceof UseStatement || sqlStatement instanceof ShowTablesStatement) {
             return new IgnoreRoutingEngine();
         }
         if (sqlStatement instanceof SetStatement || sqlStatement instanceof ResetParameterStatement) {

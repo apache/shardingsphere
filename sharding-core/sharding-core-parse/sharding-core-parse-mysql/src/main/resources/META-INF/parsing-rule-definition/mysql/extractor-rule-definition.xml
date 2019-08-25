@@ -28,4 +28,5 @@
     <extractor-rule id="setAutoCommit" extractor-class="org.apache.shardingsphere.core.parse.core.extractor.tcl.MySQLSetAutoCommitExtractor" />
     <extractor-rule id="fromSchema" extractor-class="org.apache.shardingsphere.core.parse.core.extractor.dal.MySQLFromSchemaExtractor" />
     <extractor-rule id="showLike" extractor-class="org.apache.shardingsphere.core.parse.core.extractor.dal.MySQLShowLikeExtractor" />
+    <extractor-rule id="showFull" extractor-class="org.apache.shardingsphere.core.parse.core.extractor.dal.MySQLShowFullExtractor" />
 </extractor-rule-definition>

@@ -32,7 +32,7 @@ showDatabases
     ;
 
 showTables
-    : SHOW EXTENDED? FULL? TABLES fromSchema? (showLike | showWhereClause_)?
+    : SHOW EXTENDED? showFull TABLES fromSchema? (showLike | showWhereClause_)?
     ;
 
 showTableStatus
@@ -73,4 +73,8 @@ showWhereClause_
 
 setVariable
     : SET variable_?
+    ;
+
+showFull
+    : FULL?
     ;

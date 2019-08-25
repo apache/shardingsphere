@@ -17,42 +17,43 @@
 
 package org.apache.shardingsphere.core.merge.dal.show;
 
-import org.apache.shardingsphere.core.constant.ShardingConstant;
-import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
-import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.rule.ShardingRule;
+import lombok.RequiredArgsConstructor;
 
-import java.sql.SQLException;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 /**
- * Merged result for show tables.
+ * Merged result for show tableNames.
  *
  * @author zhangliang
  * @author panjuan
+ * @author sunbufu
  */
-public final class ShowTablesMergedResult extends LogicTablesMergedResult {
+@RequiredArgsConstructor
+public final class ShowTablesMergedResult extends LocalMergedResultAdapter {
     
-    private static final Map<String, Integer> LABEL_AND_INDEX_MAP = new HashMap<>(1, 1);
+    private final List<String> tableNames;
     
-    static {
-        LABEL_AND_INDEX_MAP.put("Tables_in_" + ShardingConstant.LOGIC_SCHEMA_NAME, 1);
+    private final List<String> tableTypes;
+    
+    private int currentIndex;
+    
+    public ShowTablesMergedResult() {
+        tableNames = Collections.emptyList();
+        tableTypes = Collections.emptyList();
     }
     
-    public ShowTablesMergedResult(final ShardingRule shardingRule, final List<QueryResult> queryResults, final TableMetas tableMetas) throws SQLException {
-        super(LABEL_AND_INDEX_MAP, shardingRule, queryResults, tableMetas);
+    @Override
+    public boolean next() {
+        return currentIndex++ < tableNames.size();
     }
     
-    /**
-     * Reset column label.
-     * 
-     * @param schema schema 
-     */
-    public void resetColumnLabel(final String schema) {
-        Map<String, Integer> labelAndIndexMap = new HashMap<>(1, 1);
-        labelAndIndexMap.put(schema, 1);
-        resetLabelAndIndexMap(labelAndIndexMap);
+    @Override
+    public Object getValue(final int columnIndex, final Class<?> type) {
+        if (1 == columnIndex) {
+            return tableNames.get(currentIndex > 0 ? currentIndex - 1 : 0);
+        } else {
+            return tableTypes.get(currentIndex > 0 ? currentIndex - 1 : 0);
+        }
     }
 }

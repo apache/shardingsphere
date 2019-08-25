@@ -25,6 +25,7 @@ import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.SetStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.ShowDatabasesStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.ShowTablesStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.UseStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.tcl.BeginTransactionStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.tcl.CommitStatement;
@@ -34,6 +35,7 @@ import org.apache.shardingsphere.core.parse.sql.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.text.admin.BroadcastBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.admin.ShowDatabasesBackendHandler;
+import org.apache.shardingsphere.shardingproxy.backend.text.admin.ShowTablesBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.admin.UnicastBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.admin.UseDatabaseBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.query.QueryBackendHandler;
@@ -98,6 +100,9 @@ public final class TextProtocolBackendHandlerFactory {
         }
         if (dalStatement instanceof ShowDatabasesStatement) {
             return new ShowDatabasesBackendHandler(backendConnection);
+        }
+        if (dalStatement instanceof ShowTablesStatement) {
+            return new ShowTablesBackendHandler((ShowTablesStatement) dalStatement, backendConnection);
         }
         if (dalStatement instanceof SetStatement) {
             return new BroadcastBackendHandler(sql, backendConnection);

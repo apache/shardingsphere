@@ -23,17 +23,17 @@ import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.generic.RemoveAvailable;
 
 /**
- * From schema segment.
- *
- * @author zhangliang
+ * Show full segment.
+ * 
+ * @author sunbufu
  */
 @RequiredArgsConstructor
 @Getter
-public final class FromSchemaSegment implements SQLSegment, RemoveAvailable {
+public final class ShowFullSegment implements SQLSegment, RemoveAvailable {
     
     private final int startIndex;
     
     private final int stopIndex;
     
-    private final String schema;
+    private final boolean full;
 }

@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
 
 /**
@@ -24,5 +26,14 @@ import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
  *
  * @author zhangliang
  */
+@Getter
+@Setter
 public final class ShowTablesStatement extends DALStatement {
+    
+    private boolean full;
+    
+    private String schema;
+    
+    private String pattern;
+    
 }
