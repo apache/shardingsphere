@@ -4,7 +4,7 @@ title = "分布式事务"
 weight = 5
 +++
 
-ShardingDataSource已经整合了分布式事务的功能，因此不需要用户进行额外的配置，每次获取ShardingConnection前，通过修改`TransactionTypeHolder`，可以对事务类型进行切换
+ShardingDataSource已经整合了分布式事务的功能，因此不需要用户进行额外的配置，每次获取ShardingConnection前，通过修改`TransactionTypeHolder`，可以对事务类型进行切换。
 
 ## XA事务
 
@@ -62,7 +62,7 @@ ${shardingsphere-spi-impl.version}` 的jar暂未发布到maven中央仓，因此
  TransactionTypeHolder.set(TransactionType.BASE);
  ```
 
-#### Saga相关配置
+#### Saga配置
 
 可以通过在项目的classpath中添加`saga.properties`来定制化Saga事务的配置项。当`saga.persistence.enabled=true`时，事务日志默认按JDBC的方式持久化到数据库中，也可以通过实现`io.shardingsphere.transaction.saga.persistence.SagaPersistence` 
 SPI，支持定制化存储，具体可参考项目`sharding-transaction-base-saga-persistence-jpa`。
@@ -104,7 +104,7 @@ CREATE TABLE IF NOT EXISTS saga_event(
 
 在classpath中添加`schema-init.sql`可以定日志表，Saga引擎会完成初始化建表操作。
 
-### Seata相关配置
+#### Seata配置
 
 1.按照[seata-work-shop](https://github.com/seata/seata-workshop)中的步骤，下载并启动seata server，参考 Step6 和 Step7即可。
 
