@@ -38,13 +38,14 @@ public final class InsertValue {
     
     private final Collection<ExpressionSegment> assignments;
     
+    private final int derivedColumnsCount;
+    
     /**
      * Get value expressions.
      * 
-     * @param derivedColumnsCount derived columns count
      * @return value expressions
      */
-    public ExpressionSegment[] getValueExpressions(final int derivedColumnsCount) {
+    public ExpressionSegment[] getValueExpressions() {
         ExpressionSegment[] result = new ExpressionSegment[assignments.size() + derivedColumnsCount];
         assignments.toArray(result);
         return result;
@@ -55,10 +56,9 @@ public final class InsertValue {
      * 
      * @param parameters SQL parameters
      * @param parametersBeginIndex begin index on this insert value segment of parameters
-     * @param derivedColumnsCount derived columns count
      * @return parameters of this insert value segment
      */
-    public Object[] getParameters(final List<Object> parameters, final int parametersBeginIndex, final int derivedColumnsCount) {
+    public Object[] getParameters(final List<Object> parameters, final int parametersBeginIndex) {
         int parametersCount = getParametersCount();
         if (0 == parametersCount) {
             return new Object[0];

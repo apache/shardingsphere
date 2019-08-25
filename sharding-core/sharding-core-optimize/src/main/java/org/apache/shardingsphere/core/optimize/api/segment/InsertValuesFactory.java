@@ -41,26 +41,28 @@ public final class InsertValuesFactory {
      * Create insert values.
      *
      * @param insertStatement insert statement
+     * @param derivedColumnsCount derived columns count
      * @return insert values
      */
-    public static Collection<InsertValue> createInsertValues(final InsertStatement insertStatement) {
-        return insertStatement.getSetAssignment().isPresent() ? getInsertValues(insertStatement.getSetAssignment().get()) : getInsertValues(insertStatement.getValues());
+    public static Collection<InsertValue> createInsertValues(final InsertStatement insertStatement, final int derivedColumnsCount) {
+        return insertStatement.getSetAssignment().isPresent()
+                ? getInsertValues(insertStatement.getSetAssignment().get(), derivedColumnsCount) : getInsertValues(insertStatement.getValues(), derivedColumnsCount);
     }
     
-    private static Collection<InsertValue> getInsertValues(final SetAssignmentsSegment setAssignmentsSegment) {
+    private static Collection<InsertValue> getInsertValues(final SetAssignmentsSegment setAssignmentsSegment, final int derivedColumnsCount) {
         Collection<InsertValue> result = new LinkedList<>();
         List<ExpressionSegment> columnValues = new LinkedList<>();
         for (AssignmentSegment each : setAssignmentsSegment.getAssignments()) {
             columnValues.add(each.getValue());
         }
-        result.add(new InsertValue(columnValues));
+        result.add(new InsertValue(columnValues, derivedColumnsCount));
         return result;
     }
     
-    private static Collection<InsertValue> getInsertValues(final Collection<InsertValuesSegment> insertValuesSegments) {
+    private static Collection<InsertValue> getInsertValues(final Collection<InsertValuesSegment> insertValuesSegments, final int derivedColumnsCount) {
         Collection<InsertValue> result = new LinkedList<>();
         for (InsertValuesSegment each : insertValuesSegments) {
-            result.add(new InsertValue(each.getValues()));
+            result.add(new InsertValue(each.getValues(), derivedColumnsCount));
         }
         return result;
     }

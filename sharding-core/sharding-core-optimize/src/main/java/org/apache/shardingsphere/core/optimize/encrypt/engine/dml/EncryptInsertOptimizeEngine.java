@@ -41,13 +41,12 @@ public final class EncryptInsertOptimizeEngine implements EncryptOptimizeEngine<
     @Override
     public EncryptInsertOptimizedStatement optimize(final EncryptRule encryptRule, final TableMetas tableMetas, final String sql, final List<Object> parameters, final InsertStatement sqlStatement) {
         EncryptInsertOptimizedStatement result = new EncryptInsertOptimizedStatement(sqlStatement, tableMetas);
-        int derivedColumnsCount = encryptRule.getAssistedQueryAndPlainColumnCount(sqlStatement.getTable().getTableName());
         int parametersCount = 0;
+        Collection<String> encryptDerivedColumnNames = encryptRule.getAssistedQueryAndPlainColumns(sqlStatement.getTable().getTableName());
         Collection<String> columnNames = sqlStatement.useDefaultColumns() ? tableMetas.getAllColumnNames(sqlStatement.getTable().getTableName()) : sqlStatement.getColumnNames();
-        for (InsertValue each : InsertValuesFactory.createInsertValues(sqlStatement)) {
-            Collection<String> encryptDerivedColumnNames = encryptRule.getAssistedQueryAndPlainColumns(sqlStatement.getTable().getTableName());
-            ExpressionSegment[] valueExpressions = each.getValueExpressions(derivedColumnsCount);
-            Object[] currentParameters = each.getParameters(parameters, parametersCount, derivedColumnsCount);
+        for (InsertValue each : InsertValuesFactory.createInsertValues(sqlStatement, encryptRule.getAssistedQueryAndPlainColumnCount(sqlStatement.getTable().getTableName()))) {
+            ExpressionSegment[] valueExpressions = each.getValueExpressions();
+            Object[] currentParameters = each.getParameters(parameters, parametersCount);
             OptimizedInsertValue optimizedInsertValue = result.addOptimizedInsertValue(encryptDerivedColumnNames, valueExpressions, currentParameters, each.getParametersCount());
             if (encryptRule.containsQueryAssistedColumn(sqlStatement.getTable().getTableName())) {
                 fillAssistedQueryOptimizedInsertValue(encryptRule, Arrays.asList(currentParameters), sqlStatement.getTable().getTableName(), columnNames, optimizedInsertValue);

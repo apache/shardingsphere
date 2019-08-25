@@ -31,7 +31,7 @@ public final class InsertValueTest {
     
     @Test
     public void assertGetParametersCount() {
-        InsertValue actual = new InsertValue(Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(0, 0, 1), new ParameterMarkerExpressionSegment(0, 0, 1)));
+        InsertValue actual = new InsertValue(Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(0, 0, 1), new ParameterMarkerExpressionSegment(0, 0, 1)), 1);
         assertThat(actual.getParametersCount(), is(1));
     }
 }
