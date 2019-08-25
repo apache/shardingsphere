@@ -131,7 +131,7 @@ public final class ShowTablesBackendHandler implements TextProtocolBackendHandle
         List<QueryHeader> result = Lists.newArrayListWithExpectedSize(showTablesStatement.isFull() ? 2 : 1);
         StringBuilder columnLabel = new StringBuilder().append("Tables_in_").append(schema);
         if (showTablesStatement.isFull()) {
-            columnLabel.append("(").append(showTablesStatement.getPattern()).append(")");
+            columnLabel.append(" (").append(showTablesStatement.getPattern()).append(")");
         }
         result.add(new QueryHeader("information_schema", "SCHEMATA", columnLabel.toString(), "TABLE_NAME", 100, Types.VARCHAR, 0));
         if (showTablesStatement.isFull()) {
