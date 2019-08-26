@@ -78,8 +78,8 @@ public class ShardingRule implements BaseRule {
         this.ruleConfiguration = shardingRuleConfig;
         shardingDataSourceNames = new ShardingDataSourceNames(shardingRuleConfig, dataSourceNames);
         tableRules = createTableRules(shardingRuleConfig);
-        bindingTableRules = createBindingTableRules(shardingRuleConfig.getBindingTableGroups());
         broadcastTables = shardingRuleConfig.getBroadcastTables();
+        bindingTableRules = createBindingTableRules(shardingRuleConfig.getBindingTableGroups());
         defaultDatabaseShardingStrategy = createDefaultShardingStrategy(shardingRuleConfig.getDefaultDatabaseShardingStrategyConfig());
         defaultTableShardingStrategy = createDefaultShardingStrategy(shardingRuleConfig.getDefaultTableShardingStrategyConfig());
         defaultShardingKeyGenerator = createDefaultKeyGenerator(shardingRuleConfig.getDefaultKeyGeneratorConfig());
