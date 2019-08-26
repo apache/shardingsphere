@@ -13,7 +13,7 @@ which has a corresponding compensation transaction. During the execution of saga
 corresponding compensation transaction will be invoked to complete the relevant recovery operation, so as to ensure that the local transactions related to saga are either successfully executed or 
 recovery to the state before the transaction is executed through compensation.
 
-### Revert Compensation Automatically
+### Compensation Automatically
 
 Saga defines that each sub-transaction in a transaction has a corresponding reverse compensation operation. Saga transaction manager generates a directed acyclic graph based on the results of program execution, and invokes reverse compensation operations in reverse order according to the graph when a rollback operation is needed. Saga transaction manager is only used to control when to retry and compensate properly. It is not responsible for the content of compensation. The specific operation of compensation needs to be provided by developers themselves.
 

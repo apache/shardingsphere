@@ -7,11 +7,13 @@ weight = 4
 
 ### Seata BASE transaction
 
-Seata是阿里集团和蚂蚁金服联合打造的分布式事务框架，截止到0.5.x版本包含了AT事务和TCC事务。其中AT事务的目标是在微服务架构下，提供增量的事务ACID语意，让用户像使用本地事务一样，使用分布式事务，核心理念同ShardingSphere一脉相承。
+Seata is a distributed transaction framework developed by Alibaba Group and Ant Finance. As of 0.5.x, it includes AT and TCC transactions. The goal of AT transaction is to provide incremental transaction ACID semantics under the micro-service architecture, so that users can use distributed transactions as they use local transactions. The core idea of AT transaction is the same as ShardingSphere.
 
 ### Seata AT transaction model
 
-Seata AT事务模型包含TM(事务管理器)，RM(资源管理器)，TC(事务协调器)。其中TC是一个独立的服务需要单独部署，TM和RM以jar包的方式同业务应用部署在一起，它们同TC建立长连接，在整个事务生命周期内，保持RPC通信。
-其中全局事务的发起方作为TM，全局事务的参与者作为RM ; TM负责全局事务的begin和commit/rollback，RM负责分支事务的执行结果上报，并且通过TC的协调进行commit/rollback。
+Seata AT transaction model includes TM (transaction manager), RM (resource manager), TC (transaction coordinator). TC is an independent service that needs to be deployed separately. TM and RM are 
+deployed together with business applications in the form of jar packages. They establish long connections with TC and keep RPC communication throughout the transaction life cycle.
+The initiator of global transaction is TM, and the participant of global transaction is RM; TM is in charge of begin and commit/rollback of global transaction, RM is in charge of reporting the 
+execution results of branch transaction, and commit/rollback is executed through TC coordination.
 
 ![Seata AT transaction model](https://shardingsphere.apache.org/document/current/img/transaction/seata-at-transaction.png)
