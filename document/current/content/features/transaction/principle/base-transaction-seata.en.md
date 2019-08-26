@@ -5,26 +5,29 @@ title = "Seata BASE transaction"
 weight = 4
 +++
 
-## 实现原理
+## Principle
 
-整合Seata AT事务时，需要把TM，RM，TC的模型融入到ShardingSphere 分布式事务的SPI的生态中。在数据库资源上，Seata通过对接DataSource接口，让JDBC操作可以同TC进行RPC通信。同样，ShardingSphere也是面向DataSource接口对用户配置的物理DataSource进行了聚合，因此把物理DataSource二次包装为Seata的DataSource后，就可以把Seata AT事务融入到ShardingSphere的分片中。
+When integrating Seata AT transactions, we need to integrate TM, RM and TC component into ShardingTransactionManager. Seata have proxied DataSource in order to communication with TC throng RPC 
+protocal.  Similarly, we can wrap user configured datasource into seata DataSource proxy to make sure distribute transaction after sharding.
 
-![柔性事务Seata](https://shardingsphere.apache.org/document/current/img/transaction/sharding-transaciton-base-seata-at-design.png)
+![Seata BASE transaction](https://shardingsphere.apache.org/document/current/img/transaction/sharding-transaciton-base-seata-at-design.png)
 
-**执行流程**
+**Execution Process**
 
-1.Init（Seata引擎初始化）
+1.Init（Init Seata component）
 
-包含Seata柔性事务的应用启动时，用户配置的数据源会按`seata.properties`的配置，适配为Seata事务所需的DataSourceProxy，并且注册到RM中。
+When an application containing `ShardingTransactionBaseSeataAT` startup, the user-configured DataSource will be wrapped into Seata DataSourceProxy through `seata.properties`, then registered into RM.
 
-2.Begin（开启Seata全局事务）
+2.Begin（begin global transaction）
 
-TM控制全局事务的边界，TM通过向TC发送Begin指令，获取全局事务ID，所有分支事务通过此全局事务ID，参与到全局事务中；全局事务ID的上下文存放在当前线程变量中。
+TM controls the boundaries of global transactions. TM obtains the global transaction ID by sending Begin instructions to TC. All branch transactions participate in the global transaction through 
+this global transaction ID. The context of the global transaction ID will be stored in the thread local variable.
 
-3.执行分片物理SQL
+3.Execute sharding physical SQLs
 
-处于Seata全局事务中的分片SQL通过RM生成undo快照，并且发送participate指令到TC，加入到全局事务中。ShardingSphere的分片物理SQL是按多线程方式执行，因此整合Seata AT事务时，需要在主线程和子线程间进行全局事务ID的上下文传递，这同服务间的上下文传递思路完全相同。
+Physical SQL in Seata global transaction will be intercepted to generate undo snapshots by RM and sends participate instructions to TC to join global transaction. 
+since sharding physical SQLs executed in multi-threads, global transaction context should transfer from main thread to child thread, which is exactly the same as context transfer between services.
 
-4.Commit/rollback(提交Seata事务）
+4.Commit/rollback(submit seata transaction）
 
-提交Seata事务时，TM会向TC发送全局事务的commit和rollback指令，TC根据全局事务ID协调所有分支事务进行commit和rollback。
+When submitting a seata transaction, TM sends TC the commit and rollback instructions of the global transaction. TC coordinates all branch transactions for commit and rollback according to the global transaction ID.
