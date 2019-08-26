@@ -76,7 +76,6 @@ SPI，支持定制化存储，具体可参考项目`sharding-transaction-base-sa
 | saga.actuator.compensation.max.retries             |        5        | 失败SQL的最大尝试补偿次数              |
 | saga.actuator.transaction.retry.delay.milliseconds |       5000      | 失败SQL的重试间隔，单位毫秒            |
 | saga.actuator.compensation.retry.delay.milliseconds|       3000      | 失败SQL的补偿间隔，单位毫秒            |
-| saga.actuator.recovery.policy                      | ForwardRecovery | 补偿策略，ForwardRecovery为最大努力送达，BackwardRecovery为反向SQL补偿|
 | saga.persistence.enabled                           |       false     | 是否对日志进行持久化                   |
 | saga.persistence.ds.url                            |    无           | 事务日志数据库JDBC连接                 |
 | saga.persistence.ds.username                       |    无           | 事务日志数据库用户名                   |

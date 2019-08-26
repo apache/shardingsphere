@@ -75,7 +75,6 @@ Configuration properties and explanations are as follow:
 | saga.actuator.compensation.max.retries              | 5               | Maximum compensation times                                   |
 | saga.actuator.transaction.retry.delay.milliseconds  | 5000            | Retry interval                                               |
 | saga.actuator.compensation.retry.delay.milliseconds | 3000            | Compensation interval                                        |
-| saga.actuator.recovery.policy                       | ForwardRecovery | Compensation strategy: ForwardRecovery is trying to deliver, BackwardRecovery is backward SQL compensation |
 | saga.persistence.enabled                            | false           | Persistence for event log                                    |
 | saga.persistence.ds.url                             | No               | JDBC url                         |
 | saga.persistence.ds.username                        | No               | User name                        |
