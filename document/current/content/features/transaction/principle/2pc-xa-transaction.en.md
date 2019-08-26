@@ -7,9 +7,9 @@ weight = 2
 
 ## Principle
 
-ShardingSphere has defined an SPI for distributed transactions, `ShardingTransactionManager`. `Sharding-JDBC` and `Sharding-Proxy` are two accesses for distributed transactions. `XAShardingTransactionManager` is its XA implementation, which can be added to ShardingSphere distributed ecology by introducing `sharding-transaction-xa-core` dependency. `XAShardingTransactionManager` manages and adapts to `actual datasource`; it delegates `begin/commit/rollback` in access transactions to XA managers.
+ShardingSphere has defined an SPI for distributed transactions, `ShardingTransactionManager`. Sharding-JDBC and Sharding-Proxy are two accesses for distributed transactions. `XAShardingTransactionManager` is its XA implementation, which can be added to ShardingSphere distributed ecology by introducing `sharding-transaction-xa-core` dependency. `XAShardingTransactionManager` manages and adapts to `actual datasource`; it delegates `begin/commit/rollback` in access transactions to XA managers.
 
-![XA事务实现原理](https://shardingsphere.apache.org/document/current/img/transaction/2pc-xa-transaction-design_cn.png)
+![Principle of sharding transaction XA](https://shardingsphere.apache.org/document/current/img/transaction/2pc-xa-transaction-design_cn.png)
 
 ### 1.Begin
 
@@ -22,10 +22,10 @@ After ShardingSphere parses, optimizes or routes, it will generate sharding SQLU
 For example:
 
 ```
-XAResource1.start             -- execute in the enlist phase
+XAResource1.start             ## execute in the enlist phase
 statement.execute("sql1");
 statement.execute("sql2");
-XAResource1.end               -- execute in the commit phase
+XAResource1.end               ## execute in the commit phase
 ```
 
 sql1 and sql2 in it will be marked as XA transactions.
@@ -37,13 +37,13 @@ After `XAShardingTransactionManager` receives the commit command in the access, 
 For example:
 
 ```
-XAResource1.prepare     -- ack: yes
-XAResource2.prepare     -- ack: yes
+XAResource1.prepare           ## ack: yes
+XAResource2.prepare           ## ack: yes
 XAResource1.commit
 XAResource2.commit
      
-XAResource1.prepare     -- ack: yes
-XAResource2.prepare     -- ack: no
+XAResource1.prepare           ## ack: yes
+XAResource2.prepare           ## ack: no
 XAResource1.rollback
 XAResource2.rollback
 ```

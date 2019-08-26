@@ -7,7 +7,7 @@ weight = 2
 
 ## 实现原理
 
-ShardingSphere里定义了分布式事务的SPI接口`ShardingTransactionManager`，`Sharding-JDBC`和`Sharding-Proxy`为分布式事务的两个接入端。`XAShardingTransactionManager`为分布式事务的XA实现类，通过引入`sharding-transaction-xa-core`依赖，即可加入ShardingSphere的分布式事务生态中。`XAShardingTransactionManager`主要负责对`actual datasource`进行管理和适配，并且将接入端事务的`begin/commit/rollback`操作委托给具体的XA事务管理器。
+ShardingSphere里定义了分布式事务的SPI接口`ShardingTransactionManager`，Sharding-JDBC和Sharding-Proxy为分布式事务的两个接入端。`XAShardingTransactionManager`为分布式事务的XA实现类，通过引入`sharding-transaction-xa-core`依赖，即可加入ShardingSphere的分布式事务生态中。XAShardingTransactionManager主要负责对`actual datasource`进行管理和适配，并且将接入端事务的`begin/commit/rollback`操作委托给具体的XA事务管理器。
 
 ![XA事务实现原理](https://shardingsphere.apache.org/document/current/img/transaction/2pc-xa-transaction-design_cn.png)
 
@@ -22,10 +22,10 @@ ShardingSphere进行解析/优化/路由后，会生成逻辑SQL的分片SQLUnit
 例如:
 
 ```
-XAResource1.start             -- enlist阶段执行
-statement.execute("sql1");
-statement.execute("sql2");
-XAResource1.end               -- 提交阶段执行
+XAResource1.start             ## Enlist阶段执行
+statement.execute("sql1");    ## 模拟执行一个分片SQL1
+statement.execute("sql2");    ## 模拟执行一个分片SQL2
+XAResource1.end               ## 提交阶段执行
 ```
 
 这里sql1和sql2将会被标记为XA事务。
@@ -39,13 +39,13 @@ XAResource1.end               -- 提交阶段执行
 例如:
 
 ```
-XAResource1.prepare     -- ack: yes
-XAResource2.prepare     -- ack: yes
+XAResource1.prepare           ## ack: yes
+XAResource2.prepare           ## ack: yes
 XAResource1.commit
 XAResource2.commit
      
-XAResource1.prepare     -- ack: yes
-XAResource2.prepare     -- ack: no
+XAResource1.prepare           ## ack: yes
+XAResource2.prepare           ## ack: no
 XAResource1.rollback
 XAResource2.rollback
 ```
