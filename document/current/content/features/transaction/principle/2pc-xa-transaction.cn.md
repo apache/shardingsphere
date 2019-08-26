@@ -10,7 +10,7 @@ weight = 2
 
 ShardingSphere里定义了分布式事务的SPI接口`ShardingTransactionManager`，`Sharding-JDBC`和`Sharding-Proxy`为分布式事务的两个接入端。`XAShardingTransactionManager`为分布式事务的XA实现类，通过引入`sharding-transaction-xa-core`依赖，即可加入ShardingSphere的分布式事务生态中。`XAShardingTransactionManager`主要负责对`actual datasource`进行管理和适配，并且将接入端事务的`begin/commit/rollback`操作委托给具体的XA事务管理器。
 
-### 处理流程
+### 执行流程
 
 #### 1. begin
 

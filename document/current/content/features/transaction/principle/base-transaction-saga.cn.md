@@ -9,9 +9,9 @@ weight = 3
 
 Saga柔性事务的实现类为`SagaShardingTransactionMananger`, ShardingSphere通过Hook的方式拦截逻辑SQL的解析和路由结果，这样，在分片物理SQL执行前，可以生成逆向SQL，在事务提交阶段再把SQL调用链交给Saga引擎处理。
 
-![柔性事务Saga](https://shardingsphere.apache.org/document/current/img/transaction/saga-transaction-design.png)
+![柔性事务Saga](https://shardingsphere.apache.org/document/current/img/transaction/sharding-transaction-base-saga-design.png)
 
-**处理流程**
+**执行流程**
 
 1.Init（Saga引擎初始化）
 
