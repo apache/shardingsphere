@@ -11,7 +11,7 @@ weight = 2
 
 ShardingSphere has defined an SPI for distributed transactions, `ShardingTransactionManager`. `Sharding-JDBC` and `Sharding-Proxy` are two accesses for distributed transactions. `XAShardingTransactionManager` is its XA implementation, which can be added to ShardingSphere distributed ecology by introducing `sharding-transaction-xa-core` dependency. `XAShardingTransactionManager` manages and adapts to `actual datasource`; it delegates `begin/commit/rollback` in access transactions to XA managers.
 
-### Process
+### Execution process
 
 #### 1. begin
 
