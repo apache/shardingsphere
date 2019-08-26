@@ -7,13 +7,14 @@ weight = 4
 
 ## 实现原理
 
-整合Seata AT事务时，需要把TM，RM，TC的模型融入到ShardingSphere 分布式事务的SPI的生态中。在数据库资源上，Seata通过对接DataSource接口，让JDBC操作可以同TC进行RPC通信。同样，ShardingSphere也是面向DataSource接口对用户配置的物理DataSource进行了聚合，因此把物理DataSource二次包装为Seata的DataSource后，就可以把Seata AT事务融入到ShardingSphere的分片中。
+整合`Seata AT`事务时，需要把TM，RM，TC的模型融入到ShardingSphere 分布式事务的SPI的生态中。在数据库资源上，Seata通过对接DataSource接口，让JDBC操作可以同TC进行RPC通信。同样，ShardingSphere也是面向DataSource接口对用户配置的物理DataSource进行了聚合，因此把物理DataSource二次包装为Seata
+的DataSource后，就可以把Seata AT事务融入到ShardingSphere的分片中。
 
 ![柔性事务Seata](https://shardingsphere.apache.org/document/current/img/transaction/sharding-transaciton-base-seata-at-design.png)
 
 ### 1.Init（Seata引擎初始化）
 
-包含Seata柔性事务的应用启动时，用户配置的数据源会按`seata.conf`的配置，适配为Seata事务所需的DataSourceProxy，并且注册到RM中。
+包含Seata柔性事务的应用启动时，用户配置的数据源会按`seata.conf`的配置，适配为Seata事务所需的`DataSourceProxy`，并且注册到RM中。
 
 ### 2.Begin（开启Seata全局事务）
 

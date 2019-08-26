@@ -68,14 +68,14 @@ Currently, we have integrated saga and seata into shardingsphere.
 You can add `saga.properties` in the project classpath to customize Saga configurations. When `saga.persistence.enabled=true`, Saga engine will persist event log through JDBC.  
 Configuration properties and explanations are as follow:
 
-| *Property*                                          | *Default Value* | *Explanation*                                                |
-| --------------------------------------------------- | --------------- | ------------------------------------------------------------ |
-| saga.actuator.executor.size                         | 5               | Saga actuator thread pool size                               |
-| saga.actuator.transaction.max.retries               | 5               | Maximum retry times                                          |
-| saga.actuator.compensation.max.retries              | 5               | Maximum compensation times                                   |
-| saga.actuator.transaction.retry.delay.milliseconds  | 5000            | Retry interval                                               |
-| saga.actuator.compensation.retry.delay.milliseconds | 3000            | Compensation interval                                        |
-| saga.persistence.enabled                            | false           | Persistence for event log                                    |
+| **Property**                                        | **Default Value**| **Explanation**                                              |
+| --------------------------------------------------- | ---------------- | ------------------------------------------------------------ |
+| saga.actuator.executor.size                         | 5                | Saga actuator thread pool size                               |
+| saga.actuator.transaction.max.retries               | 5                | Maximum retry times                                          |
+| saga.actuator.compensation.max.retries              | 5                | Maximum compensation times                                   |
+| saga.actuator.transaction.retry.delay.milliseconds  | 5000             | Retry interval                                               |
+| saga.actuator.compensation.retry.delay.milliseconds | 3000             | Compensation interval                                        |
+| saga.persistence.enabled                            | false            | Persistence for event log                                    |
 | saga.persistence.ds.url                             | No               | JDBC url                         |
 | saga.persistence.ds.username                        | No               | User name                        |
 | saga.persistence.ds.password                        | No               | Password                         |

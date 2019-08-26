@@ -64,12 +64,12 @@ ${shardingsphere-spi-impl.version}` 的jar暂未发布到maven中央仓，因此
 
 #### Saga配置
 
-可以通过在项目的classpath中添加`saga.properties`来定制化Saga事务的配置项。当`saga.persistence.enabled=true`时，事务日志默认按JDBC的方式持久化到数据库中，也可以通过实现`io.shardingsphere.transaction.saga.persistence.SagaPersistence` 
-SPI，支持定制化存储，具体可参考项目`sharding-transaction-base-saga-persistence-jpa`。
+可以通过在项目的classpath中添加`saga.properties`来定制化Saga事务的配置项。当saga.persistence.enabled=true时，事务日志默认按JDBC的方式持久化到数据库中，也可以通过实现`io.shardingsphere.transaction.saga.persistence.SagaPersistence` 
+SPI，支持定制化存储，具体可参考项目sharding-transaction-base-saga-persistence-jpa。
 
 配置项的属性及说明如下：
 
-| *属性名称*                                          | *默认值*        | *说明*                                |
+| **属性名称**                                       | **默认值**       | **说明**                              |
 | ---------------------------------------------------|-----------------|---------------------------------------|
 | saga.actuator.executor.size                        |        5        | 使用的线程池大小                       |
 | saga.actuator.transaction.max.retries              |        5        | 失败SQL的最大重试次数                  |

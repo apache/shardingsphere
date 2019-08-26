@@ -7,14 +7,14 @@ weight = 4
 
 ## Principle
 
-When integrating Seata AT transactions, we need to integrate TM, RM and TC component into ShardingTransactionManager. Seata have proxied DataSource in order to communication with TC throng RPC 
+When integrating `Seata AT` transaction, we need to integrate TM, RM and TC component into ShardingTransactionManager. Seata have proxied DataSource in order to communication with TC throng RPC 
 protocal.  Similarly, we can wrap user configured datasource into seata DataSource proxy to make sure distribute transaction after sharding.
 
 ![Seata BASE transaction](https://shardingsphere.apache.org/document/current/img/transaction/sharding-transaciton-base-seata-at-design.png)
 
 ### 1.Init(Init Seata component)
 
-When an application containing `ShardingTransactionBaseSeataAT` startup, the user-configured DataSource will be wrapped into Seata DataSourceProxy through `seata.conf`, then registered into RM.
+When an application containing `ShardingTransactionBaseSeataAT` startup, the user-configured DataSource will be wrapped into seata `DataSourceProxy` through `seata.conf`, then registered into RM.
 
 ### 2.Begin(begin global transaction)
 
