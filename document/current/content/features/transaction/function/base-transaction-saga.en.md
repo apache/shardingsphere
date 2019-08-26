@@ -25,4 +25,4 @@ Our BASE transaction has implemented [Saga](https://www.cs.cornell.edu/andru/cs7
 
 - Reverted SQL requires a **primary key**, please make sure it is defined in table structure.
 - For `INSERT` statements, **primary key value** needs to be shown in SQL, such as `INSERT INTO ${table_name} (id, value, ...) VALUES (11111, '', ....) (id means table primary key)`.
-- ShardingSphere distributed primary key can be used to automatically generate the primary key (it can not be a joint primary key).
+- ShardingSphere distributed primary key can be used to automatically generate the primary key.
