@@ -11,20 +11,18 @@ weight = 4
 
 ![柔性事务Seata](https://shardingsphere.apache.org/document/current/img/transaction/sharding-transaciton-base-seata-at-design.png)
 
-**执行流程**
-
-1.Init（Seata引擎初始化）
+### 1.Init（Seata引擎初始化）
 
 包含Seata柔性事务的应用启动时，用户配置的数据源会按`seata.properties`的配置，适配为Seata事务所需的DataSourceProxy，并且注册到RM中。
 
-2.Begin（开启Seata全局事务）
+### 2.Begin（开启Seata全局事务）
 
 TM控制全局事务的边界，TM通过向TC发送Begin指令，获取全局事务ID，所有分支事务通过此全局事务ID，参与到全局事务中；全局事务ID的上下文存放在当前线程变量中。
 
-3.执行分片物理SQL
+### 3.执行分片物理SQL
 
 处于Seata全局事务中的分片SQL通过RM生成undo快照，并且发送participate指令到TC，加入到全局事务中。ShardingSphere的分片物理SQL是按多线程方式执行，因此整合Seata AT事务时，需要在主线程和子线程间进行全局事务ID的上下文传递，这同服务间的上下文传递思路完全相同。
 
-4.Commit/rollback(提交Seata事务）
+### 4.Commit/rollback（提交Seata事务）
 
 提交Seata事务时，TM会向TC发送全局事务的commit和rollback指令，TC根据全局事务ID协调所有分支事务进行commit和rollback。
