@@ -1,14 +1,30 @@
 +++
 pre = "<b>3.4.3.2 </b>"
 toc = true
-title = "柔性事务"
+title = "Saga柔性事务"
 weight = 3
 +++
 
-## 设计
+## 实现原理
 
-![柔性事务设计](https://shardingsphere.apache.org/document/current/img/transaction/transaction-base-design_cn.png)
+Saga柔性事务的实现类为`SagaShardingTransactionMananger`, ShardingSphere通过Hook的方式拦截逻辑SQL的解析和路由结果，这样，在分片物理SQL执行前，可以生成逆向SQL，在事务提交阶段再把SQL调用链交给Saga引擎处理。
 
-ShardingSphere的柔性事务需要实现Sharding事务管理器的SPI接口，用于管理事务的生命周期。
-同时柔性事务还需要通过ShardingSphere的内部SQL Hook，获取与SQL相关的必要信息，帮助事务管理器控制分布式事务。
-事务隔离引擎还处于计划阶段，因此柔性事务暂不支持资源隔离功能。
+![柔性事务Saga](https://shardingsphere.apache.org/document/current/img/transaction/saga-transaction-design.png)
+
+*处理流程*
+
+1.Init（Saga引擎初始化）
+
+包含Saga柔性事务的应用启动时，saga-actuator引擎会根据`saga.properties`的配置进行初始化的流程。
+
+2.Begin（开启Saga全局事务）
+
+每次开启Saga全局事务时，将会生成本次全局事务的上下文（`SagaTransactionContext`），事务上下文记录了所有子事务的正向SQL和逆向SQL，作为生成事务调用链的元数据使用。
+
+3.执行物理SQL
+
+在物理SQL执行前，ShardingSphere根据SQL的类型生成逆向SQL，这里是通过Hook的方式拦截Parser的解析结果进行实现。
+
+4.Commit/rollback(提交Saga事务)
+
+提交阶段会生成Saga执行引擎所需的调用链路图，commit操作产生ForwardRecovery（正向SQL补偿）任务，rollback操作产生BackwardRecovery任务（逆向SQL补偿）。

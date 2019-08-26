@@ -7,17 +7,12 @@ weight = 3
 
 ### Saga事务
 
-为了更好地理解柔性事务的设计思路，需要先解释数个概念：
+Saga这个概念来源于三十多年前的一篇数据库论文[http://www.cs.cornell.edu/andru/cs711/2002fa/reading/sagas.pdf] ，一个Saga事务是一个有多个短时事务组成的长时的事务。
+在分布式事务场景下，我们把一个Saga分布式事务看做是一个由多个本地事务组成的事务，每个本地事务都有一个与之对应的补偿事务。在Saga事务的执行过程中，如果某一步执行出现异常，Saga事务会被终止，同时会调用对应的补偿事务完成相关的恢复操作，这样保证Saga相关的本地事务要么都是执行成功，要么通过补偿恢复成为事务执行之前的状态。
 
-* 分支事务(BranchTransaction)： 分布式事务中，被路由到不同节点的实际SQL。
-* 分支事务组(BranchTransactionGroup)： 分布式事务中，由同一个逻辑SQL生成的分支事务的组合。
+### 自动反向补偿
 
-![柔性事务Saga](https://shardingsphere.apache.org/document/current/img/transaction/saga-transaction-saga-design_cn.png)
+Saga定义了一个事务中的每个子事务都有一个与之对应的反向补偿操作。由Saga事务管理器根据程序执行结果生成一张有向无环图，并在需要执行回滚操作时，根据该图依次按照相反的顺序调用反向补偿操作。Saga事务管理器只用于控制何时重试，合适补偿，并不负责补偿的内容，补偿的具体操作需要由开发者自行提供。
 
-当ShardingSphere对SQL进行解析时，事务引擎会将当前事务切换到新的分支事务组。
-在开始并行执行路由后的实际SQL前，事务引擎会对这些SQL进行快照并注册对应分支事务到当前的分支事务组中。
-当事务中所有的SQL均被解析并执行后，事务中可能存在数个分支事务组，每个分支事务组中也可能存在数个分支事务，如下图：
+ShardingSphere采用反向SQL技术，将对数据库进行更新操作的SQL自动生成反向SQL，并交由[saga-actuator](https://github.com/apache/servicecomb-saga-actuator)执行，使用方则无需再关注如何实现补偿方法，将柔性事务管理器的应用范畴成功的定位回了事务的本源——数据库层面。
 
-![Saga事务内容](https://shardingsphere.apache.org/document/current/img/transaction/saga-transaction-context_cn.png)
-
-最后当用户提交事务时，Saga引擎按照分支事务组的顺序，使用其中分支事务的路由SQL进行重试或反向SQL进行回滚。
