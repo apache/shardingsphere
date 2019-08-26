@@ -13,7 +13,7 @@ weight = 4
 
 ### 1.Init（Seata引擎初始化）
 
-包含Seata柔性事务的应用启动时，用户配置的数据源会按`seata.properties`的配置，适配为Seata事务所需的DataSourceProxy，并且注册到RM中。
+包含Seata柔性事务的应用启动时，用户配置的数据源会按`seata.conf`的配置，适配为Seata事务所需的DataSourceProxy，并且注册到RM中。
 
 ### 2.Begin（开启Seata全局事务）
 

@@ -14,7 +14,7 @@ protocal.  Similarly, we can wrap user configured datasource into seata DataSour
 
 ### 1.Init(Init Seata component)
 
-When an application containing `ShardingTransactionBaseSeataAT` startup, the user-configured DataSource will be wrapped into Seata DataSourceProxy through `seata.properties`, then registered into RM.
+When an application containing `ShardingTransactionBaseSeataAT` startup, the user-configured DataSource will be wrapped into Seata DataSourceProxy through `seata.conf`, then registered into RM.
 
 ### 2.Begin(begin global transaction)
 
