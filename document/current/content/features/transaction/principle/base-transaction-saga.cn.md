@@ -11,7 +11,7 @@ Saga柔性事务的实现类为`SagaShardingTransactionMananger`, ShardingSphere
 
 ![柔性事务Saga](https://shardingsphere.apache.org/document/current/img/transaction/saga-transaction-design.png)
 
-*处理流程*
+**处理流程**
 
 1.Init（Saga引擎初始化）
 
