@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.core.optimize.sharding.segment.insert.keygen;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
 import org.apache.shardingsphere.core.optimize.sharding.segment.insert.GeneratedKey;
 import org.apache.shardingsphere.core.optimize.sharding.segment.insert.ShardingInsertColumns;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.complex.CommonExpressionSegment;
@@ -35,9 +35,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -66,32 +64,31 @@ public final class GeneratedKeyTest {
     @Test
     public void assertGetGenerateKeyWithoutGenerateKeyColumnConfiguration() {
         when(shardingRule.findGenerateKeyColumnName("tbl")).thenReturn(Optional.<String>absent());
-        assertFalse(GeneratedKey.getGenerateKey(shardingRule, Collections.<Object>singletonList(1), insertStatement, insertColumns, Collections.<InsertValue>emptyList()).isPresent());
+        assertFalse(GeneratedKey.getGenerateKey(shardingRule, Collections.<Object>singletonList(1), insertStatement, insertColumns).isPresent());
     }
     
     @Test
     public void assertGetGenerateKeyWhenCreateWithGenerateKeyColumnConfiguration() {
+        insertStatement.getValues().add(new InsertValuesSegment(0, 0, Collections.<ExpressionSegment>singletonList(new LiteralExpressionSegment(0, 0, 1))));
         when(shardingRule.findGenerateKeyColumnName("tbl")).thenReturn(Optional.of("id1"));
-        Optional<GeneratedKey> actual = GeneratedKey.getGenerateKey(shardingRule, Collections.<Object>singletonList(1), insertStatement, insertColumns, 
-                Collections.singleton(new InsertValue(Collections.<ExpressionSegment>emptyList())));
+        Optional<GeneratedKey> actual = GeneratedKey.getGenerateKey(shardingRule, Collections.<Object>singletonList(1), insertStatement, insertColumns);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getGeneratedValues().size(), is(1));
     }
     
     @Test
     public void assertGetGenerateKeyWhenFind() {
-        Collection<InsertValue> insertValues = new LinkedList<>();
-        insertValues.add(new InsertValue(Collections.<ExpressionSegment>singletonList(new ParameterMarkerExpressionSegment(1, 2, 0))));
-        insertValues.add(new InsertValue(Collections.<ExpressionSegment>singletonList(new LiteralExpressionSegment(1, 2, 100))));
-        insertValues.add(new InsertValue(Collections.<ExpressionSegment>singletonList(new LiteralExpressionSegment(1, 2, "value"))));
-        insertValues.add(new InsertValue(Collections.<ExpressionSegment>singletonList(new CommonExpressionSegment(1, 2, "ignored value"))));
+        insertStatement.getValues().add(new InsertValuesSegment(0, 0, Collections.<ExpressionSegment>singletonList(new ParameterMarkerExpressionSegment(1, 2, 0))));
+        insertStatement.getValues().add(new InsertValuesSegment(0, 0, Collections.<ExpressionSegment>singletonList(new LiteralExpressionSegment(1, 2, 100))));
+        insertStatement.getValues().add(new InsertValuesSegment(0, 0, Collections.<ExpressionSegment>singletonList(new LiteralExpressionSegment(1, 2, "value"))));
+        insertStatement.getValues().add(new InsertValuesSegment(0, 0, Collections.<ExpressionSegment>singletonList(new CommonExpressionSegment(1, 2, "ignored value"))));
         when(shardingRule.findGenerateKeyColumnName("tbl")).thenReturn(Optional.of("id"));
-        Optional<GeneratedKey> actual = GeneratedKey.getGenerateKey(shardingRule, Collections.<Object>singletonList(1), insertStatement, insertColumns, insertValues);
+        Optional<GeneratedKey> actual = GeneratedKey.getGenerateKey(shardingRule, Collections.<Object>singletonList(1), insertStatement, insertColumns);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getGeneratedValues().size(), is(3));
         assertThat(actual.get().getGeneratedValues().get(0), is((Comparable) 1));
         assertThat(actual.get().getGeneratedValues().get(1), is((Comparable) 100));
         assertThat(actual.get().getGeneratedValues().get(2), is((Comparable) "value"));
-        assertTrue(GeneratedKey.getGenerateKey(shardingRule, Collections.<Object>singletonList(1), insertStatement, insertColumns, insertValues).isPresent());
+        assertTrue(GeneratedKey.getGenerateKey(shardingRule, Collections.<Object>singletonList(1), insertStatement, insertColumns).isPresent());
     }
 }

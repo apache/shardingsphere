@@ -21,7 +21,6 @@ import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -58,24 +57,23 @@ public final class GeneratedKey {
      * @param parameters SQL parameters
      * @param insertStatement insert statement
      * @param insertColumns insert columns
-     * @param insertValues insert values
      * @return generate key
      */
-    public static Optional<GeneratedKey> getGenerateKey(final ShardingRule shardingRule, final List<Object> parameters, 
-                                                        final InsertStatement insertStatement, final ShardingInsertColumns insertColumns, final Collection<InsertValue> insertValues) {
+    public static Optional<GeneratedKey> getGenerateKey(final ShardingRule shardingRule, 
+                                                        final List<Object> parameters, final InsertStatement insertStatement, final ShardingInsertColumns insertColumns) {
         Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTable().getTableName());
         if (!generateKeyColumnName.isPresent()) {
             return Optional.absent();
         }
         return insertColumns.getRegularColumnNames().contains(generateKeyColumnName.get()) 
-                ? findGeneratedKey(parameters, insertColumns, insertValues, generateKeyColumnName.get())
-                : Optional.of(createGeneratedKey(shardingRule, insertStatement, insertValues, generateKeyColumnName.get()));
+                ? findGeneratedKey(parameters, insertStatement, insertColumns, generateKeyColumnName.get())
+                : Optional.of(createGeneratedKey(shardingRule, insertStatement, generateKeyColumnName.get()));
     }
     
     private static Optional<GeneratedKey> findGeneratedKey(
-            final List<Object> parameters, final ShardingInsertColumns insertColumns, final Collection<InsertValue> insertValues, final String generateKeyColumnName) {
+            final List<Object> parameters, final InsertStatement insertStatement, final ShardingInsertColumns insertColumns, final String generateKeyColumnName) {
         GeneratedKey result = null;
-        for (ExpressionSegment each : findGenerateKeyExpressionSegments(insertColumns, insertValues, generateKeyColumnName)) {
+        for (ExpressionSegment each : findGenerateKeyExpressionSegments(insertStatement, insertColumns, generateKeyColumnName)) {
             if (null == result) {
                 result = new GeneratedKey(generateKeyColumnName, false);
             }
@@ -89,10 +87,10 @@ public final class GeneratedKey {
     }
     
     private static Collection<ExpressionSegment> findGenerateKeyExpressionSegments(
-            final ShardingInsertColumns insertColumns, final Collection<InsertValue> insertValues, final String generateKeyColumnName) {
+            final InsertStatement insertStatement, final ShardingInsertColumns insertColumns, final String generateKeyColumnName) {
         Collection<ExpressionSegment> result = new LinkedList<>();
         Collection<String> columnNames = insertColumns.getRegularColumnNames();
-        for (InsertValue each : insertValues) {
+        for (Collection<ExpressionSegment> each : insertStatement.getAllValueExpressions()) {
             Optional<ExpressionSegment> generateKeyExpression = findGenerateKeyExpressionSegment(generateKeyColumnName, columnNames.iterator(), each);
             if (generateKeyExpression.isPresent()) {
                 result.add(generateKeyExpression.get());
@@ -101,8 +99,9 @@ public final class GeneratedKey {
         return result;
     }
     
-    private static Optional<ExpressionSegment> findGenerateKeyExpressionSegment(final String generateKeyColumnName, final Iterator<String> columnNames, final InsertValue insertValue) {
-        for (ExpressionSegment each : insertValue.getAssignments()) {
+    private static Optional<ExpressionSegment> findGenerateKeyExpressionSegment(final String generateKeyColumnName, 
+                                                                                final Iterator<String> columnNames, final Collection<ExpressionSegment> expressionSegments) {
+        for (ExpressionSegment each : expressionSegments) {
             if (generateKeyColumnName.equalsIgnoreCase(columnNames.next())) {
                 return Optional.of(each);
             }
@@ -110,10 +109,9 @@ public final class GeneratedKey {
         return Optional.absent();
     }
     
-    private static GeneratedKey createGeneratedKey(
-            final ShardingRule shardingRule, final InsertStatement insertStatement, final Collection<InsertValue> insertValues, final String generateKeyColumnName) {
+    private static GeneratedKey createGeneratedKey(final ShardingRule shardingRule, final InsertStatement insertStatement, final String generateKeyColumnName) {
         GeneratedKey result = new GeneratedKey(generateKeyColumnName, true);
-        for (int i = 0; i < insertValues.size(); i++) {
+        for (int i = 0; i < insertStatement.getValueListCount(); i++) {
             result.getGeneratedValues().add(shardingRule.generateKey(insertStatement.getTable().getTableName()));
         }
         return result;
