@@ -23,7 +23,7 @@
     <parent>
         <groupId>io.shardingsphere</groupId>
         <artifactId>sharding-orchestration-reg-spi-impl</artifactId>
-        <version>4.0.0-RC2-SNAPSHOT</version>
+        <version>4.0.0-RC2</version>
     </parent>
     <artifactId>sharding-orchestration-reg-etcd</artifactId>
     <name>${project.artifactId}</name>
