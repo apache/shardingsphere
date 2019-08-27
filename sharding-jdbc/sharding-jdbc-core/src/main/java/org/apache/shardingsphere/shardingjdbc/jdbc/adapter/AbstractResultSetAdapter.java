@@ -63,7 +63,6 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     private final Map<String, String> logicAndActualColumns; 
     
     public AbstractResultSetAdapter(final List<ResultSet> resultSets, final Statement statement, final SQLRouteResult sqlRouteResult) {
-        Preconditions.checkArgument(!resultSets.isEmpty());
         this.resultSets = resultSets;
         this.statement = statement;
         this.sqlRouteResult = sqlRouteResult;
