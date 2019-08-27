@@ -39,11 +39,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-/**
- * Class desc.
- *
- * @author liya
- */
 public class DescribeTableMergedResultTest {
 
     private List<QueryResult> queryResults;
