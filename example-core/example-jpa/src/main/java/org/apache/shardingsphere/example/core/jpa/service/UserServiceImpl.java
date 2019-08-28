@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.example.core.jpa.service;
 
 import org.apache.shardingsphere.example.core.api.repository.UserRepository;
+import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.apache.shardingsphere.example.core.jpa.entity.UserEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,8 +28,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service
-public class JPAUserCommonServiceImplJPA implements JPAUserService {
+@Service("user")
+public class UserServiceImpl implements ExampleService {
     
     @Resource
     private UserRepository userRepository;

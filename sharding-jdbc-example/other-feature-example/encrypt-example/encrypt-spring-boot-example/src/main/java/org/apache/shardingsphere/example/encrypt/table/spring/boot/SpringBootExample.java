@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.example.encrypt.table.spring.boot;
 
-import org.apache.shardingsphere.example.core.jpa.service.JPAUserService;
+import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -40,8 +40,8 @@ public class SpringBootExample {
     public static void main(final String[] args) throws SQLException {
         // TODO: Because of assistedQueryColumns, we need to consider the DDL of encrypt module. Now JPA examples can not run well.
         try (ConfigurableApplicationContext applicationContext = SpringApplication.run(SpringBootExample.class, args)) {
-            JPAUserService userService = applicationContext.getBean(JPAUserService.class);
-            userService.processSuccess();
+            ExampleService exampleService = applicationContext.getBean("user", ExampleService.class);
+            exampleService.processSuccess();
         }
     }
 }
