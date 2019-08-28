@@ -49,7 +49,7 @@ mvn clean install
 
 ```
 shardingsphere-example
-  ├── example-common
+  ├── example-core
   │   ├── config-utility
   │   ├── repository-api
   │   ├── example-raw-jdbc
@@ -71,7 +71,6 @@ shardingsphere-example
   │   │   └──transaction-base-seata-example
   │   ├── other-feature-example
   │   │   ├── hint-example
-  │   │   ├── broadcast-example
   │   │   └── encrypt-example
   ├── sharding-proxy-example
   │   └── sharding-proxy-boot-mybatis-example
@@ -106,10 +105,6 @@ You can get more detail from **[transaction-example](./sharding-jdbc-example/tra
 ### Best Practice for hint routing
 
 You can get more detail from **[hint-example](./sharding-jdbc-example/other-feature-example/hint-example)**
-
-### Best Practice for broadcast table
-
-You can get more detail from **[broadcast-table-example](./sharding-jdbc-example/other-feature-example/broadcast-table-example)**
 
 ### Best Practice for data encrypt
 
