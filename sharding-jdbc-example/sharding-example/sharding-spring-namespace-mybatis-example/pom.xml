@@ -13,7 +13,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere.example</groupId>
-            <artifactId>example-mybatis</artifactId>
+            <artifactId>example-spring-mybatis</artifactId>
             <version>${project.version}</version>
         </dependency>
 

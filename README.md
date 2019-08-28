@@ -54,7 +54,7 @@ shardingsphere-example
   │   ├── repository-api
   │   ├── example-raw-jdbc
   │   ├── example-jpa
-  │   └── example-mybatis
+  │   └── example-spring-mybatis
   ├── sharding-jdbc-example
   │   ├── sharding-example
   │   │   ├── sharding-raw-jdbc-example

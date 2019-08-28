@@ -8,7 +8,7 @@
         <artifactId>example-core</artifactId>
         <version>4.0.0-RC2</version>
     </parent>
-    <artifactId>example-mybatis</artifactId>
+    <artifactId>example-spring-mybatis</artifactId>
     
     <dependencies>
         <dependency>
