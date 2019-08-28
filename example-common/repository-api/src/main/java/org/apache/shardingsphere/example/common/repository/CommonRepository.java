@@ -47,7 +47,7 @@ public interface CommonRepository<T, P> {
      * insert data.
      * 
      * @param entity entity
-     * @return count or primary key
+     * @return generated primary key
      * @throws SQLException SQL exception
      */
     Long insert(T entity) throws SQLException;
