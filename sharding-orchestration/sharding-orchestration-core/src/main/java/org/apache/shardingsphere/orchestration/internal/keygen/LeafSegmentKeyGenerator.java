@@ -47,8 +47,6 @@ public final class LeafSegmentKeyGenerator implements ShardingKeyGenerator {
     
     private static final String DEFAULT_REGISTRY_CENTER = "zookeeper";
     
-    private static final float DEFAULT_THRESHOLD = 0.5F;
-    
     private static final String SLANTING_BAR = "/";
     
     private static final String REGULAR_PATTERN = "^((?!/).)*$";
@@ -82,33 +80,64 @@ public final class LeafSegmentKeyGenerator implements ShardingKeyGenerator {
         String leafKey = getLeafKey();
         if (null == leafRegistryCenter) {
             initLeafSegmentKeyGenerator(leafKey);
-            return id;
+        }else{
+            increaseIdWhenLeafKeyStoredInCenter(leafKey);       
         }
-        increaseIdWhenLeafKeyStoredInCenter(leafKey);
         return id;
     }
     
     private void initLeafSegmentKeyGenerator(final String leafKey) {
         RegistryCenterConfiguration leafConfiguration = getRegistryCenterConfiguration();
         leafRegistryCenter = new RegistryCenterServiceLoader().load(leafConfiguration);
-        if (leafRegistryCenter.isExisted(leafKey)) {
-            id = incrementCacheId(leafKey, getStep());
-        } else {
-            id = getInitialValue();
-            leafRegistryCenter.persist(leafKey, String.valueOf(id));
-            leafRegistryCenter.initLock(leafKey);
-        }
         step = getStep();
+        id = initializeId(leafKey);
+        initializeLeafKeyInCenter(leafKey, id, step);
+        initializeCacheIdAsynchronous(id, step);    
     }
     
     private void increaseIdWhenLeafKeyStoredInCenter(final String leafKey) {
-        ++id;
-        if (((id % step) >= (step * DEFAULT_THRESHOLD - 1)) && cacheIdQueue.isEmpty()) {
-            incrementCacheIdAsynchronous(leafKey, step);
-        }
-        if ((id % step) == (step - 1)) {
+        if ((id % step) == 0) {
             id = tryTakeCacheId();
+            incrementCacheIdAsynchronous(leafKey, step - (id % step));
         }
+        ++id;
+    }
+    
+    private long initializeId(final String leafKey){
+        if (leafRegistryCenter.isExisted(leafKey)) {
+            return Long.parseLong(leafRegistryCenter.getDirectly(leafKey))+1;
+        } else {
+            return getInitialValue();
+        }
+    }
+    
+    private void initializeLeafKeyInCenter(final String leafKey, final long id, final long step){
+        leafRegistryCenter.initLock(leafKey);
+        while(!leafRegistryCenter.tryLock()){
+        }
+        leafRegistryCenter.persist(leafKey, String.valueOf(id + step - id % step));
+        leafRegistryCenter.tryRelease();
+    }
+
+    private void initializeCacheIdAsynchronous(final long id, final long step){
+        incrementCacheIdExecutor.execute(new Runnable() {
+
+            @Override
+            public void run() {
+                tryPutCacheId(id + step - id % step);
+            }
+        });
+    }
+    
+    private void incrementCacheIdAsynchronous(final String leafKey, final long step) {
+        incrementCacheIdExecutor.execute(new Runnable() {
+
+            @Override
+            public void run() {
+                long newId = incrementCacheId(leafKey, step);
+                tryPutCacheId(newId);
+            }
+        });
     }
     
     private RegistryCenterConfiguration getRegistryCenterConfiguration() {
@@ -119,36 +148,13 @@ public final class LeafSegmentKeyGenerator implements ShardingKeyGenerator {
         return result;
     }
     
-    private void incrementCacheIdAsynchronous(final String leafKey, final long step) {
-        incrementCacheIdExecutor.execute(new Runnable() {
-
-            @Override
-            public void run() {
-                long id = incrementCacheId(leafKey, step);
-                tryPutCacheId(id);
-            }
-        });
-    }
-    
     @SneakyThrows
     private long incrementCacheId(final String leafKey, final long step) {
-        long result = Long.MIN_VALUE;
-        boolean lockIsAcquired = leafRegistryCenter.tryLock();
-        if (lockIsAcquired) {
-            result = updateCacheIdInCenter(leafKey, step);
-            leafRegistryCenter.tryRelease();
+        while(!leafRegistryCenter.tryLock()){
         }
+        long result = updateCacheIdInCenter(leafKey, step);
+        leafRegistryCenter.tryRelease();
         return result;
-    }
-    
-    @SneakyThrows
-    private void tryPutCacheId(final long id) {
-        cacheIdQueue.put(id);
-    }
-    
-    @SneakyThrows
-    private long tryTakeCacheId() {
-        return cacheIdQueue.take();
     }
     
     private long updateCacheIdInCenter(final String leafKey, final long step) {
@@ -160,6 +166,16 @@ public final class LeafSegmentKeyGenerator implements ShardingKeyGenerator {
         long result = cacheId + step;
         leafRegistryCenter.update(leafKey, String.valueOf(result));
         return result;
+    }
+    
+    @SneakyThrows
+    private void tryPutCacheId(final long id) {
+        cacheIdQueue.put(id);
+    }
+    
+    @SneakyThrows
+    private long tryTakeCacheId() {
+        return cacheIdQueue.take();
     }
     
     private long getStep() {
