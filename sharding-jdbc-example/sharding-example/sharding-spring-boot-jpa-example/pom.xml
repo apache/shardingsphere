@@ -13,7 +13,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere.example</groupId>
-            <artifactId>repository-jpa</artifactId>
+            <artifactId>example-jpa</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

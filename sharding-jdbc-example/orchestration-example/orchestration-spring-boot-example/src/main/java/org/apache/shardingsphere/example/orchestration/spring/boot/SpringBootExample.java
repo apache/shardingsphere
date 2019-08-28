@@ -27,8 +27,8 @@ import org.springframework.context.annotation.ComponentScan;
 
 import java.sql.SQLException;
 
-@ComponentScan("org.apache.shardingsphere.example.common.jpa")
-@EntityScan(basePackages = "org.apache.shardingsphere.example.common.jpa.entity")
+@ComponentScan("org.apache.shardingsphere.example.core.jpa")
+@EntityScan(basePackages = "org.apache.shardingsphere.example.core.jpa.entity")
 @SpringBootApplication(exclude = JtaAutoConfiguration.class)
 public class SpringBootExample {
     
