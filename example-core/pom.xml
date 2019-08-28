@@ -12,10 +12,10 @@
     <packaging>pom</packaging>
     
     <modules>
-        <module>example-api</module>
-        <module>example-jpa</module>
-        <module>example-spring-mybatis</module>
         <module>config-utility</module>
+        <module>example-api</module>
         <module>example-raw-jdbc</module>
+        <module>example-spring-mybatis</module>
+        <module>example-spring-jpa</module>
     </modules>
 </project>

@@ -30,7 +30,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere.example</groupId>
-            <artifactId>example-jpa</artifactId>
+            <artifactId>example-spring-jpa</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
