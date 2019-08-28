@@ -17,11 +17,9 @@
 
 package org.apache.shardingsphere.example.orchestration.raw.jdbc;
 
-import org.apache.shardingsphere.example.core.jdbc.repository.OrderItemRepositoryImpl;
-import org.apache.shardingsphere.example.core.jdbc.repository.OrderRepositoryImpl;
-import org.apache.shardingsphere.example.core.jdbc.service.OrderServiceImpl;
-import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
+import org.apache.shardingsphere.example.core.api.service.ExampleService;
+import org.apache.shardingsphere.example.core.jdbc.service.OrderServiceImpl;
 import org.apache.shardingsphere.example.orchestration.raw.jdbc.config.RegistryCenterConfigurationUtil;
 import org.apache.shardingsphere.example.orchestration.raw.jdbc.config.cloud.CloudEncryptConfiguration;
 import org.apache.shardingsphere.example.orchestration.raw.jdbc.config.cloud.CloudMasterSlaveConfiguration;
@@ -88,7 +86,7 @@ public class JavaConfigurationExample {
     }
     
     private static ExampleService getExampleService(final DataSource dataSource) {
-        return new OrderServiceImpl(new OrderRepositoryImpl(dataSource), new OrderItemRepositoryImpl(dataSource));
+        return new OrderServiceImpl(dataSource);
     }
     
     private static void closeDataSource(final DataSource dataSource) throws Exception {

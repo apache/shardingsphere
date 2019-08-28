@@ -17,12 +17,17 @@
 
 package org.apache.shardingsphere.example.core.jdbc.service;
 
-import org.apache.shardingsphere.example.core.api.repository.OrderItemRepository;
 import org.apache.shardingsphere.example.core.api.entity.Order;
 import org.apache.shardingsphere.example.core.api.entity.OrderItem;
+import org.apache.shardingsphere.example.core.api.repository.AddressRepository;
+import org.apache.shardingsphere.example.core.api.repository.OrderItemRepository;
 import org.apache.shardingsphere.example.core.api.repository.OrderRepository;
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
+import org.apache.shardingsphere.example.core.jdbc.repository.AddressRepositoryImpl;
+import org.apache.shardingsphere.example.core.jdbc.repository.OrderItemRepositoryImpl;
+import org.apache.shardingsphere.example.core.jdbc.repository.OrderRepositoryImpl;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,9 +38,18 @@ public final class OrderServiceImpl implements ExampleService {
     
     private OrderItemRepository orderItemRepository;
     
-    public OrderServiceImpl(final OrderRepository orderRepository, final OrderItemRepository orderItemRepository) {
+    private AddressRepository addressRepository;
+    
+    public OrderServiceImpl(final DataSource dataSource) {
+        this.orderRepository = new OrderRepositoryImpl(dataSource);
+        this.orderItemRepository = new OrderItemRepositoryImpl(dataSource);
+        this.addressRepository = new AddressRepositoryImpl(dataSource);
+    }
+    
+    public OrderServiceImpl(final OrderRepository orderRepository, final OrderItemRepository orderItemRepository, final AddressRepository addressRepository) {
         this.orderRepository = orderRepository;
         this.orderItemRepository = orderItemRepository;
+        this.addressRepository = addressRepository;
     }
     
     @Override

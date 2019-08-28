@@ -19,10 +19,10 @@ package org.apache.shardingsphere.example.transaction.base.seata.raw.jdbc;
 
 import org.apache.shardingsphere.example.core.api.entity.Order;
 import org.apache.shardingsphere.example.core.api.entity.OrderItem;
+import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.apache.shardingsphere.example.core.jdbc.repository.OrderItemRepositoryImpl;
 import org.apache.shardingsphere.example.core.jdbc.repository.OrderRepositoryImpl;
 import org.apache.shardingsphere.example.core.jdbc.service.OrderServiceImpl;
-import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingDataSourceFactory;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
@@ -59,7 +59,7 @@ public class YamlConfigurationTransactionExample {
     }
     
     private static ExampleService getExampleService(final DataSource dataSource) {
-        return new OrderServiceImpl(new OrderRepositoryImpl(dataSource), new OrderItemRepositoryImpl(dataSource));
+        return new OrderServiceImpl(dataSource);
     }
     
     private static void processSeataTransaction(final DataSource dataSource, final ExampleService exampleService) throws SQLException {

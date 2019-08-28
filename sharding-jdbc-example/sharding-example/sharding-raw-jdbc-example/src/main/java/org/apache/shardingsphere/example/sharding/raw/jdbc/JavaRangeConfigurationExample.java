@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.example.sharding.raw.jdbc;
 
+import org.apache.shardingsphere.example.core.api.service.ExampleService;
+import org.apache.shardingsphere.example.core.jdbc.repository.AddressRepositoryImpl;
 import org.apache.shardingsphere.example.core.jdbc.repository.OrderItemRepositoryImpl;
 import org.apache.shardingsphere.example.core.jdbc.repository.RangeOrderRepositoryImpl;
 import org.apache.shardingsphere.example.core.jdbc.service.OrderServiceImpl;
-import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.apache.shardingsphere.example.sharding.raw.jdbc.factory.RangeDataSourceFactory;
 import org.apache.shardingsphere.example.type.ShardingType;
 
@@ -47,6 +48,6 @@ public class JavaRangeConfigurationExample {
     }
     
     private static ExampleService getExampleService(final DataSource dataSource) {
-        return new OrderServiceImpl(new RangeOrderRepositoryImpl(dataSource), new OrderItemRepositoryImpl(dataSource));
+        return new OrderServiceImpl(new RangeOrderRepositoryImpl(dataSource), new OrderItemRepositoryImpl(dataSource), new AddressRepositoryImpl(dataSource));
     }
 }

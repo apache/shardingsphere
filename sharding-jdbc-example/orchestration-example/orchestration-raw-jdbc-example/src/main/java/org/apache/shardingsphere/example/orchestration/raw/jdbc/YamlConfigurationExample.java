@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.example.orchestration.raw.jdbc;
 
-import org.apache.shardingsphere.example.core.jdbc.repository.OrderItemRepositoryImpl;
-import org.apache.shardingsphere.example.core.jdbc.repository.OrderRepositoryImpl;
-import org.apache.shardingsphere.example.core.jdbc.service.OrderServiceImpl;
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
+import org.apache.shardingsphere.example.core.jdbc.service.OrderServiceImpl;
 import org.apache.shardingsphere.example.type.RegistryCenterType;
 import org.apache.shardingsphere.example.type.ShardingType;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
@@ -81,7 +79,7 @@ public class YamlConfigurationExample {
     }
     
     private static ExampleService getExampleService(final DataSource dataSource) {
-        return new OrderServiceImpl(new OrderRepositoryImpl(dataSource), new OrderItemRepositoryImpl(dataSource));
+        return new OrderServiceImpl(dataSource);
     }
     
     private static void closeDataSource(final DataSource dataSource) throws Exception {

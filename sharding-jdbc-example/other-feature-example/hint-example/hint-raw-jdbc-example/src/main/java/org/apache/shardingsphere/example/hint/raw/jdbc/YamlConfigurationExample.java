@@ -17,11 +17,9 @@
 
 package org.apache.shardingsphere.example.hint.raw.jdbc;
 
-import org.apache.shardingsphere.example.core.jdbc.repository.OrderItemRepositoryImpl;
-import org.apache.shardingsphere.example.core.jdbc.repository.OrderRepositoryImpl;
-import org.apache.shardingsphere.example.core.jdbc.service.OrderServiceImpl;
-import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.apache.shardingsphere.api.hint.HintManager;
+import org.apache.shardingsphere.example.core.api.service.ExampleService;
+import org.apache.shardingsphere.example.core.jdbc.service.OrderServiceImpl;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlMasterSlaveDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingDataSourceFactory;
 
@@ -64,7 +62,7 @@ public class YamlConfigurationExample {
     }
     
     private static ExampleService getExampleService(final DataSource dataSource) {
-        return new OrderServiceImpl(new OrderRepositoryImpl(dataSource), new OrderItemRepositoryImpl(dataSource));
+        return new OrderServiceImpl(dataSource);
     }
     
     private static void processWithHintValue(final DataSource dataSource) throws SQLException {

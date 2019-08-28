@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.example.sharding.raw.jdbc;
 
-import org.apache.shardingsphere.example.core.jdbc.repository.OrderItemRepositoryImpl;
-import org.apache.shardingsphere.example.core.jdbc.repository.OrderRepositoryImpl;
-import org.apache.shardingsphere.example.core.jdbc.service.OrderServiceImpl;
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
+import org.apache.shardingsphere.example.core.jdbc.service.OrderServiceImpl;
 import org.apache.shardingsphere.example.sharding.raw.jdbc.factory.DataSourceFactory;
 import org.apache.shardingsphere.example.type.ShardingType;
 
@@ -47,6 +45,6 @@ public class JavaConfigurationExample {
     }
     
     private static ExampleService getExampleService(final DataSource dataSource) {
-        return new OrderServiceImpl(new OrderRepositoryImpl(dataSource), new OrderItemRepositoryImpl(dataSource));
+        return new OrderServiceImpl(dataSource);
     }
 }
