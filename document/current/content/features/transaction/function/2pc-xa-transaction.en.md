@@ -16,4 +16,4 @@ weight = 2
 
 ## Not Support
 
-* Recover commit and rollback in other machines after it is down.
+* Recover committing and rolling back in other machines after the service is down.
