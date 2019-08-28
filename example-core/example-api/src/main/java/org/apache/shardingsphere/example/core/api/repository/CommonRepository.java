@@ -50,7 +50,7 @@ public interface CommonRepository<T, P> {
      * @return generated primary key
      * @throws SQLException SQL exception
      */
-    Long insert(T entity) throws SQLException;
+    P insert(T entity) throws SQLException;
     
     /**
      * Delete data.
