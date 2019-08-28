@@ -51,7 +51,7 @@ mvn clean install
 shardingsphere-example
   ├── example-core
   │   ├── config-utility
-  │   ├── repository-api
+  │   ├── example-api
   │   ├── example-raw-jdbc
   │   ├── example-spring-jpa
   │   └── example-spring-mybatis
