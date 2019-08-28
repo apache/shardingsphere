@@ -22,7 +22,7 @@ import org.apache.shardingsphere.example.core.api.entity.OrderItem;
 import org.apache.shardingsphere.example.core.jdbc.repository.OrderItemRepositoryImpl;
 import org.apache.shardingsphere.example.core.jdbc.repository.OrderRepositoryImpl;
 import org.apache.shardingsphere.example.core.jdbc.service.CommonServiceImpl;
-import org.apache.shardingsphere.example.core.api.service.CommonService;
+import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingDataSourceFactory;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
@@ -48,7 +48,7 @@ public class YamlConfigurationTransactionExample {
     
     public static void main(final String[] args) throws SQLException, IOException {
         DataSource dataSource = YamlShardingDataSourceFactory.createDataSource(getFile(configFile));
-        CommonService commonService = getCommonService(dataSource);
+        ExampleService commonService = getCommonService(dataSource);
         commonService.initEnvironment();
         processSeataTransaction(dataSource, commonService);
         commonService.cleanEnvironment();
@@ -58,11 +58,11 @@ public class YamlConfigurationTransactionExample {
         return new File(Thread.currentThread().getClass().getResource(fileName).getFile());
     }
     
-    private static CommonService getCommonService(final DataSource dataSource) {
+    private static ExampleService getCommonService(final DataSource dataSource) {
         return new CommonServiceImpl(new OrderRepositoryImpl(dataSource), new OrderItemRepositoryImpl(dataSource));
     }
     
-    private static void processSeataTransaction(final DataSource dataSource, final CommonService commonService) throws SQLException {
+    private static void processSeataTransaction(final DataSource dataSource, final ExampleService commonService) throws SQLException {
         TransactionTypeHolder.set(TransactionType.BASE);
         System.out.println("------############## Start seata succeed transaction ##################------");
         try (Connection connection = dataSource.getConnection()) {
@@ -88,7 +88,7 @@ public class YamlConfigurationTransactionExample {
         truncateTable(dataSource);
     }
     
-    private static void insertSuccess(final Connection connection, final CommonService commonService) throws SQLException {
+    private static void insertSuccess(final Connection connection, final ExampleService commonService) throws SQLException {
         for (int i = 0; i < 10; i++) {
             Order order = new Order();
             order.setUserId(i);

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.example.core.jdbc.service;
 
-import org.apache.shardingsphere.example.core.api.service.CommonService;
+import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.apache.shardingsphere.example.core.api.entity.User;
 import org.apache.shardingsphere.example.core.api.repository.UserRepository;
 
@@ -25,7 +25,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class UserServiceImpl implements CommonService {
+public final class UserServiceImpl implements ExampleService {
     
     private final UserRepository userRepository;
     

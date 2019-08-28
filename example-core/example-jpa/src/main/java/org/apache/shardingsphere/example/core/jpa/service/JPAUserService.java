@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.example.core.jpa.service;
 
-import org.apache.shardingsphere.example.core.api.service.CommonService;
+import org.apache.shardingsphere.example.core.api.service.ExampleService;
 
-public interface JPAUserService extends CommonService {
+public interface JPAUserService extends ExampleService {
 }

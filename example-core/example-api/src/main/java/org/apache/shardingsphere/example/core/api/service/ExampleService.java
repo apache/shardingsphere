@@ -19,7 +19,7 @@ package org.apache.shardingsphere.example.core.api.service;
 
 import java.sql.SQLException;
 
-public interface CommonService {
+public interface ExampleService {
     
     /**
      * Initialize environment.

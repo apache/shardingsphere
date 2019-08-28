@@ -20,7 +20,7 @@ package org.apache.shardingsphere.example.orchestration.raw.jdbc;
 import org.apache.shardingsphere.example.core.jdbc.repository.OrderItemRepositoryImpl;
 import org.apache.shardingsphere.example.core.jdbc.repository.OrderRepositoryImpl;
 import org.apache.shardingsphere.example.core.jdbc.service.CommonServiceImpl;
-import org.apache.shardingsphere.example.core.api.service.CommonService;
+import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.orchestration.raw.jdbc.config.RegistryCenterConfigurationUtil;
 import org.apache.shardingsphere.example.orchestration.raw.jdbc.config.cloud.CloudEncryptConfiguration;
@@ -56,7 +56,7 @@ public class JavaConfigurationExample {
     
     public static void main(final String[] args) throws Exception {
         DataSource dataSource = getDataSource(shardingType, loadConfigFromRegCenter);
-        CommonService commonService = getCommonService(dataSource);
+        ExampleService commonService = getCommonService(dataSource);
         commonService.initEnvironment();
         commonService.processSuccess();
         commonService.cleanEnvironment();
@@ -87,7 +87,7 @@ public class JavaConfigurationExample {
         return RegistryCenterType.ZOOKEEPER == registryCenterType ? RegistryCenterConfigurationUtil.getZooKeeperConfiguration() : RegistryCenterConfigurationUtil.getEtcdConfiguration();
     }
     
-    private static CommonService getCommonService(final DataSource dataSource) {
+    private static ExampleService getCommonService(final DataSource dataSource) {
         return new CommonServiceImpl(new OrderRepositoryImpl(dataSource), new OrderItemRepositoryImpl(dataSource));
     }
     

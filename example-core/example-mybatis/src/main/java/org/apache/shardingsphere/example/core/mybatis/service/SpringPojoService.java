@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.example.core.mybatis.service;
 
-import org.apache.shardingsphere.example.core.api.service.CommonService;
+import org.apache.shardingsphere.example.core.api.service.ExampleService;
 
-public interface SpringPojoService extends CommonService {
+public interface SpringPojoService extends ExampleService {
 }

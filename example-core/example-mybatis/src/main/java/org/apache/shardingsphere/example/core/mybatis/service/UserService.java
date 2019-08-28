@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.example.core.mybatis.service;
 
-import org.apache.shardingsphere.example.core.api.service.CommonService;
+import org.apache.shardingsphere.example.core.api.service.ExampleService;
 
-public interface UserService extends CommonService {
+public interface UserService extends ExampleService {
 }

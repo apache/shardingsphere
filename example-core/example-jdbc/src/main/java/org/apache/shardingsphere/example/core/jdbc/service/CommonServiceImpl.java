@@ -21,13 +21,13 @@ import org.apache.shardingsphere.example.core.api.repository.OrderItemRepository
 import org.apache.shardingsphere.example.core.api.entity.Order;
 import org.apache.shardingsphere.example.core.api.entity.OrderItem;
 import org.apache.shardingsphere.example.core.api.repository.OrderRepository;
-import org.apache.shardingsphere.example.core.api.service.CommonService;
+import org.apache.shardingsphere.example.core.api.service.ExampleService;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class CommonServiceImpl implements CommonService {
+public final class CommonServiceImpl implements ExampleService {
     
     private OrderRepository orderRepository;
     

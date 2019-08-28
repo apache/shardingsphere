@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.example.sharding.spring.boot.mybatis;
 
 import org.apache.shardingsphere.example.core.mybatis.service.SpringPojoService;
-import org.apache.shardingsphere.example.core.api.service.CommonService;
+import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -35,7 +35,7 @@ public class SpringBootMybatisMain {
     
     public static void main(final String[] args) throws SQLException {
         try (ConfigurableApplicationContext applicationContext = SpringApplication.run(SpringBootMybatisMain.class, args)) {
-            CommonService commonService = applicationContext.getBean(SpringPojoService.class);
+            ExampleService commonService = applicationContext.getBean(SpringPojoService.class);
             commonService.initEnvironment();
             commonService.processSuccess();
             commonService.cleanEnvironment();

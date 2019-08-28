@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.example.proxy.spring.boot.mybatis;
 
 import org.apache.shardingsphere.example.core.mybatis.service.SpringPojoService;
-import org.apache.shardingsphere.example.core.api.service.CommonService;
+import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -45,7 +45,7 @@ public class SpringBootStarterExample {
     }
     
     private static void process(final ConfigurableApplicationContext applicationContext) throws SQLException {
-        CommonService commonService = getCommonService(applicationContext);
+        ExampleService commonService = getCommonService(applicationContext);
         commonService.initEnvironment();
         commonService.processSuccess();
         try {
@@ -58,7 +58,7 @@ public class SpringBootStarterExample {
         }
     }
     
-    private static CommonService getCommonService(final ConfigurableApplicationContext applicationContext) {
+    private static ExampleService getCommonService(final ConfigurableApplicationContext applicationContext) {
         return applicationContext.getBean(SpringPojoService.class);
     }
 }

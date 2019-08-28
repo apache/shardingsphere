@@ -20,7 +20,7 @@ package org.apache.shardingsphere.example.orchestration.raw.jdbc;
 import org.apache.shardingsphere.example.core.jdbc.repository.OrderItemRepositoryImpl;
 import org.apache.shardingsphere.example.core.jdbc.repository.OrderRepositoryImpl;
 import org.apache.shardingsphere.example.core.jdbc.service.CommonServiceImpl;
-import org.apache.shardingsphere.example.core.api.service.CommonService;
+import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.apache.shardingsphere.example.type.RegistryCenterType;
 import org.apache.shardingsphere.example.type.ShardingType;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
@@ -52,7 +52,7 @@ public class YamlConfigurationExample {
     
     public static void main(final String[] args) throws Exception {
         DataSource dataSource = getDataSource(registryCenterType, loadConfigFromRegCenter, shardingType);
-        CommonService commonService = getCommonService(dataSource);
+        ExampleService commonService = getCommonService(dataSource);
         commonService.initEnvironment();
         commonService.processSuccess();
         commonService.cleanEnvironment();
@@ -80,7 +80,7 @@ public class YamlConfigurationExample {
         return new File(Thread.currentThread().getClass().getResource(fileName).getFile());
     }
     
-    private static CommonService getCommonService(final DataSource dataSource) {
+    private static ExampleService getCommonService(final DataSource dataSource) {
         return new CommonServiceImpl(new OrderRepositoryImpl(dataSource), new OrderItemRepositoryImpl(dataSource));
     }
     

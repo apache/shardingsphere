@@ -20,7 +20,7 @@ package org.apache.shardingsphere.example.hint.raw.jdbc;
 import org.apache.shardingsphere.example.core.jdbc.repository.OrderItemRepositoryImpl;
 import org.apache.shardingsphere.example.core.jdbc.repository.OrderRepositoryImpl;
 import org.apache.shardingsphere.example.core.jdbc.service.CommonServiceImpl;
-import org.apache.shardingsphere.example.core.api.service.CommonService;
+import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlMasterSlaveDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingDataSourceFactory;
@@ -40,7 +40,7 @@ public class YamlConfigurationExample {
     
     public static void main(final String[] args) throws SQLException, IOException {
         DataSource dataSource = getDataSource();
-        CommonService commonService = getCommonService(dataSource);
+        ExampleService commonService = getCommonService(dataSource);
         commonService.initEnvironment();
         processWithHintValue(dataSource);
         commonService.cleanEnvironment();
@@ -63,7 +63,7 @@ public class YamlConfigurationExample {
         return new File(Thread.currentThread().getClass().getResource(configFile).getFile());
     }
     
-    private static CommonService getCommonService(final DataSource dataSource) {
+    private static ExampleService getCommonService(final DataSource dataSource) {
         return new CommonServiceImpl(new OrderRepositoryImpl(dataSource), new OrderItemRepositoryImpl(dataSource));
     }
     
