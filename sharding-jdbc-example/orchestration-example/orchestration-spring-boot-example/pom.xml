@@ -6,14 +6,15 @@
     <parent>
         <groupId>org.apache.shardingsphere.example</groupId>
         <artifactId>orchestration-example</artifactId>
-        <version>4.0.0-RC2-SNAPSHOT</version>
+        <version>4.0.0-RC2</version>
     </parent>
     <artifactId>orchestration-spring-boot-example</artifactId>
+    <name>Example::orchestration::spring-boot</name>
     
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere.example</groupId>
-            <artifactId>repository-jpa</artifactId>
+            <artifactId>example-spring-jpa</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

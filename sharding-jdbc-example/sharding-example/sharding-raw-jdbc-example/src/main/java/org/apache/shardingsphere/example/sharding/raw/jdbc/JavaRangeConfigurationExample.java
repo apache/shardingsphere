@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.example.sharding.raw.jdbc;
 
-import org.apache.shardingsphere.example.common.jdbc.repository.OrderItemRepositoryImpl;
-import org.apache.shardingsphere.example.common.jdbc.repository.RangeOrderRepositoryImpl;
-import org.apache.shardingsphere.example.common.jdbc.service.CommonServiceImpl;
-import org.apache.shardingsphere.example.common.service.CommonService;
+import org.apache.shardingsphere.example.core.jdbc.repository.OrderItemRepositoryImpl;
+import org.apache.shardingsphere.example.core.jdbc.repository.RangeOrderRepositoryImpl;
+import org.apache.shardingsphere.example.core.jdbc.service.OrderServiceImpl;
+import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.apache.shardingsphere.example.sharding.raw.jdbc.factory.RangeDataSourceFactory;
 import org.apache.shardingsphere.example.type.ShardingType;
 
@@ -40,13 +40,13 @@ public class JavaRangeConfigurationExample {
     
     public static void main(final String[] args) throws SQLException {
         DataSource dataSource = RangeDataSourceFactory.newInstance(shardingType);
-        CommonService commonService = getCommonService(dataSource);
-        commonService.initEnvironment();
-        commonService.processSuccess();
-        commonService.cleanEnvironment();
+        ExampleService exampleService = getExampleService(dataSource);
+        exampleService.initEnvironment();
+        exampleService.processSuccess();
+        exampleService.cleanEnvironment();
     }
     
-    private static CommonService getCommonService(final DataSource dataSource) {
-        return new CommonServiceImpl(new RangeOrderRepositoryImpl(dataSource), new OrderItemRepositoryImpl(dataSource));
+    private static ExampleService getExampleService(final DataSource dataSource) {
+        return new OrderServiceImpl(new RangeOrderRepositoryImpl(dataSource), new OrderItemRepositoryImpl(dataSource));
     }
 }

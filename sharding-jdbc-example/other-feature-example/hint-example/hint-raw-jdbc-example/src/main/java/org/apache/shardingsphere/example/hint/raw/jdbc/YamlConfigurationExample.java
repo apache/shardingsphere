@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.example.hint.raw.jdbc;
 
-import org.apache.shardingsphere.example.common.jdbc.repository.OrderItemRepositoryImpl;
-import org.apache.shardingsphere.example.common.jdbc.repository.OrderRepositoryImpl;
-import org.apache.shardingsphere.example.common.jdbc.service.CommonServiceImpl;
-import org.apache.shardingsphere.example.common.service.CommonService;
+import org.apache.shardingsphere.example.core.jdbc.repository.OrderItemRepositoryImpl;
+import org.apache.shardingsphere.example.core.jdbc.repository.OrderRepositoryImpl;
+import org.apache.shardingsphere.example.core.jdbc.service.OrderServiceImpl;
+import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlMasterSlaveDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingDataSourceFactory;
@@ -40,10 +40,10 @@ public class YamlConfigurationExample {
     
     public static void main(final String[] args) throws SQLException, IOException {
         DataSource dataSource = getDataSource();
-        CommonService commonService = getCommonService(dataSource);
-        commonService.initEnvironment();
+        ExampleService exampleService = getExampleService(dataSource);
+        exampleService.initEnvironment();
         processWithHintValue(dataSource);
-        commonService.cleanEnvironment();
+        exampleService.cleanEnvironment();
     }
     
     private static DataSource getDataSource() throws IOException, SQLException {
@@ -63,8 +63,8 @@ public class YamlConfigurationExample {
         return new File(Thread.currentThread().getClass().getResource(configFile).getFile());
     }
     
-    private static CommonService getCommonService(final DataSource dataSource) {
-        return new CommonServiceImpl(new OrderRepositoryImpl(dataSource), new OrderItemRepositoryImpl(dataSource));
+    private static ExampleService getExampleService(final DataSource dataSource) {
+        return new OrderServiceImpl(new OrderRepositoryImpl(dataSource), new OrderItemRepositoryImpl(dataSource));
     }
     
     private static void processWithHintValue(final DataSource dataSource) throws SQLException {

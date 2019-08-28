@@ -23,13 +23,13 @@
     <parent>
         <groupId>org.apache.shardingsphere.example</groupId>
         <artifactId>sharding-jdbc-example</artifactId>
-        <version>4.0.0-RC2-SNAPSHOT</version>
+        <version>4.0.0-RC2</version>
     </parent>
     <artifactId>other-feature-example</artifactId>
+    <name>Example::other-feature::root</name>
     <packaging>pom</packaging>
     
     <modules>
-        <module>broadcast-table-example</module>
         <module>encrypt-example</module>
         <module>hint-example</module>
     </modules>

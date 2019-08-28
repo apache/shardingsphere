@@ -6,14 +6,15 @@
     <parent>
         <groupId>org.apache.shardingsphere.example</groupId>
         <artifactId>transaction-example</artifactId>
-        <version>4.0.0-RC2-SNAPSHOT</version>
+        <version>4.0.0-RC2</version>
     </parent>
     <artifactId>transaction-2pc-xa-raw-jdbc-example</artifactId>
+    <name>Example::transaction::2pc-xa-raw-jdbc</name>
     
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere.example</groupId>
-            <artifactId>repository-jdbc</artifactId>
+            <artifactId>example-raw-jdbc</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

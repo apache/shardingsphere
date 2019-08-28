@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.example.sharding.spring.boot.mybatis;
 
-import org.apache.shardingsphere.example.common.mybatis.service.SpringPojoService;
-import org.apache.shardingsphere.example.common.service.CommonService;
+import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -28,17 +27,17 @@ import org.springframework.context.annotation.ComponentScan;
 
 import java.sql.SQLException;
 
-@ComponentScan("org.apache.shardingsphere.example.common.mybatis")
-@MapperScan(basePackages = "org.apache.shardingsphere.example.common.mybatis.repository")
+@ComponentScan("org.apache.shardingsphere.example.core.mybatis")
+@MapperScan(basePackages = "org.apache.shardingsphere.example.core.mybatis.repository")
 @SpringBootApplication(exclude = JtaAutoConfiguration.class)
 public class SpringBootMybatisMain {
     
     public static void main(final String[] args) throws SQLException {
         try (ConfigurableApplicationContext applicationContext = SpringApplication.run(SpringBootMybatisMain.class, args)) {
-            CommonService commonService = applicationContext.getBean(SpringPojoService.class);
-            commonService.initEnvironment();
-            commonService.processSuccess();
-            commonService.cleanEnvironment();
+            ExampleService exampleService = applicationContext.getBean("order", ExampleService.class);
+            exampleService.initEnvironment();
+            exampleService.processSuccess();
+            exampleService.cleanEnvironment();
         }
     }
 }

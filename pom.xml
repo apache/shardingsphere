@@ -5,13 +5,16 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.shardingsphere.example</groupId>
     <artifactId>shardingsphere-example</artifactId>
-    <version>4.0.0-RC2-SNAPSHOT</version>
+    <version>4.0.0-RC2</version>
     
     <modules>
-        <module>example-common</module>
+        <module>example-core</module>
         <module>sharding-jdbc-example</module>
         <module>sharding-proxy-example</module>
     </modules>
+    
+    <name>Example::root</name>
+    
     <packaging>pom</packaging>
     
     <properties>
@@ -20,8 +23,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.locale>zh_CN</project.build.locale>
         
-        <shardingsphere.version>4.0.0-RC2-SNAPSHOT</shardingsphere.version>
-        <shardingsphere.spi.impl.version>4.0.0-RC2-SNAPSHOT</shardingsphere.spi.impl.version>
+        <shardingsphere.version>4.0.0-RC2</shardingsphere.version>
+        <shardingsphere.spi.impl.version>4.0.0-RC2</shardingsphere.spi.impl.version>
         
         <aspectjweaver.version>1.8.9</aspectjweaver.version>
         <spring-framework.version>4.3.20.RELEASE</spring-framework.version>

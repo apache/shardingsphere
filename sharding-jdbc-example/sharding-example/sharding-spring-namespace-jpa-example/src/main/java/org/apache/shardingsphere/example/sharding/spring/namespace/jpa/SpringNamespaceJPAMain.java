@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.example.sharding.spring.namespace.jpa;
 
-import org.apache.shardingsphere.example.common.jpa.service.JPACommonService;
+import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -33,8 +33,8 @@ public class SpringNamespaceJPAMain {
     
     public static void main(final String[] args) throws SQLException {
         try (ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext(CONFIG_FILE)) {
-            JPACommonService commonService = applicationContext.getBean(JPACommonService.class);
-            commonService.processSuccess();
+            ExampleService exampleService = applicationContext.getBean("order", ExampleService.class);
+            exampleService.processSuccess();
         }
     }
 }

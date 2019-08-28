@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.example.encrypt.table.spring.namespace;
 
-import org.apache.shardingsphere.example.common.mybatis.service.SpringUserServiceImpl;
+import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -29,10 +29,10 @@ public class SpringNamespaceExample {
     
     public static void main(final String[] args) throws SQLException {
         try (ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext(CONFIG_FILE)) {
-            SpringUserServiceImpl userService = applicationContext.getBean(SpringUserServiceImpl.class);
-            userService.initEnvironment();
-            userService.processSuccess();
-            userService.cleanEnvironment();
+            ExampleService exampleService = applicationContext.getBean("user", ExampleService.class);
+            exampleService.initEnvironment();
+            exampleService.processSuccess();
+            exampleService.cleanEnvironment();
         }
     }
 }

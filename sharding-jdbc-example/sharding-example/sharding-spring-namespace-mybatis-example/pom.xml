@@ -6,14 +6,15 @@
     <parent>
         <groupId>org.apache.shardingsphere.example</groupId>
         <artifactId>sharding-example</artifactId>
-        <version>4.0.0-RC2-SNAPSHOT</version>
+        <version>4.0.0-RC2</version>
     </parent>
     <artifactId>sharding-spring-namespace-mybatis-example</artifactId>
+    <name>Example::sharding::spring-namespace-mybatis</name>
 
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere.example</groupId>
-            <artifactId>repository-mybatis</artifactId>
+            <artifactId>example-spring-mybatis</artifactId>
             <version>${project.version}</version>
         </dependency>
 

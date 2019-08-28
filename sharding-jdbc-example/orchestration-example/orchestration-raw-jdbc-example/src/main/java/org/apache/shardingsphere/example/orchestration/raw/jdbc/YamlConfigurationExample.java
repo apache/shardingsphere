@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.example.orchestration.raw.jdbc;
 
-import org.apache.shardingsphere.example.common.jdbc.repository.OrderItemRepositoryImpl;
-import org.apache.shardingsphere.example.common.jdbc.repository.OrderRepositoryImpl;
-import org.apache.shardingsphere.example.common.jdbc.service.CommonServiceImpl;
-import org.apache.shardingsphere.example.common.service.CommonService;
+import org.apache.shardingsphere.example.core.jdbc.repository.OrderItemRepositoryImpl;
+import org.apache.shardingsphere.example.core.jdbc.repository.OrderRepositoryImpl;
+import org.apache.shardingsphere.example.core.jdbc.service.OrderServiceImpl;
+import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.apache.shardingsphere.example.type.RegistryCenterType;
 import org.apache.shardingsphere.example.type.ShardingType;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
@@ -52,10 +52,10 @@ public class YamlConfigurationExample {
     
     public static void main(final String[] args) throws Exception {
         DataSource dataSource = getDataSource(registryCenterType, loadConfigFromRegCenter, shardingType);
-        CommonService commonService = getCommonService(dataSource);
-        commonService.initEnvironment();
-        commonService.processSuccess();
-        commonService.cleanEnvironment();
+        ExampleService exampleService = getExampleService(dataSource);
+        exampleService.initEnvironment();
+        exampleService.processSuccess();
+        exampleService.cleanEnvironment();
         closeDataSource(dataSource);
     }
     
@@ -80,8 +80,8 @@ public class YamlConfigurationExample {
         return new File(Thread.currentThread().getClass().getResource(fileName).getFile());
     }
     
-    private static CommonService getCommonService(final DataSource dataSource) {
-        return new CommonServiceImpl(new OrderRepositoryImpl(dataSource), new OrderItemRepositoryImpl(dataSource));
+    private static ExampleService getExampleService(final DataSource dataSource) {
+        return new OrderServiceImpl(new OrderRepositoryImpl(dataSource), new OrderItemRepositoryImpl(dataSource));
     }
     
     private static void closeDataSource(final DataSource dataSource) throws Exception {

@@ -17,7 +17,7 @@
                         http://shardingsphere.apache.org/schema/shardingsphere/orchestration
                         http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
     <import resource="classpath*:META-INF/zookeeper/registry-center.xml" />
-    <context:component-scan base-package="org.apache.shardingsphere.example.common.mybatis" />
+    <context:component-scan base-package="org.apache.shardingsphere.example.core.mybatis" />
     <bean id="demo_ds_0" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
         <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds_0"/>
@@ -64,7 +64,7 @@
     </bean>
 
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-        <property name="basePackage" value="org.apache.shardingsphere.example.common.mybatis.repository"/>
+        <property name="basePackage" value="org.apache.shardingsphere.example.core.mybatis.repository"/>
         <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
     </bean>
 </beans>

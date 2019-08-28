@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.example.orchestration.spring.boot;
 
-import org.apache.shardingsphere.example.common.jpa.service.JPACommonService;
+import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -27,15 +27,15 @@ import org.springframework.context.annotation.ComponentScan;
 
 import java.sql.SQLException;
 
-@ComponentScan("org.apache.shardingsphere.example.common.jpa")
-@EntityScan(basePackages = "org.apache.shardingsphere.example.common.jpa.entity")
+@ComponentScan("org.apache.shardingsphere.example.core.jpa")
+@EntityScan(basePackages = "org.apache.shardingsphere.example.core.jpa.entity")
 @SpringBootApplication(exclude = JtaAutoConfiguration.class)
 public class SpringBootExample {
     
     public static void main(final String[] args) throws SQLException {
         try (ConfigurableApplicationContext applicationContext = SpringApplication.run(SpringBootExample.class, args)) {
-            JPACommonService commonService = applicationContext.getBean(JPACommonService.class);
-            commonService.processSuccess();
+            ExampleService exampleService = applicationContext.getBean("order", ExampleService.class);
+            exampleService.processSuccess();
         }
     }
 }
