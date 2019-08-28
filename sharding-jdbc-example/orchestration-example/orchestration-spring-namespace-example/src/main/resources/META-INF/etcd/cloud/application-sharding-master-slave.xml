@@ -30,7 +30,7 @@
                         http://shardingsphere.apache.org/schema/shardingsphere/orchestration
                         http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd">
     <import resource="classpath*:META-INF/etcd/registry-center.xml" />
-    <context:component-scan base-package="org.apache.shardingsphere.example.common.mybatis" />
+    <context:component-scan base-package="org.apache.shardingsphere.example.core.mybatis" />
     
     <orchestration:sharding-data-source id="shardingMasterSlaveDataSource" registry-center-ref="regCenter"/>
     
@@ -45,7 +45,7 @@
     </bean>
     
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-        <property name="basePackage" value="org.apache.shardingsphere.example.common.mybatis.repository"/>
+        <property name="basePackage" value="org.apache.shardingsphere.example.core.mybatis.repository"/>
         <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
     </bean>
 </beans>

@@ -14,7 +14,7 @@
     <modules>
         <module>example-api</module>
         <module>example-jpa</module>
-        <module>repository-mybatis</module>
+        <module>example-mybatis</module>
         <module>config-utility</module>
         <module>example-jdbc</module>
     </modules>

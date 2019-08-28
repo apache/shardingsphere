@@ -28,8 +28,8 @@ import org.springframework.context.annotation.ComponentScan;
 
 import java.sql.SQLException;
 
-@ComponentScan("org.apache.shardingsphere.example.common.mybatis")
-@MapperScan(basePackages = "org.apache.shardingsphere.example.common.mybatis.repository")
+@ComponentScan("org.apache.shardingsphere.example.core.mybatis")
+@MapperScan(basePackages = "org.apache.shardingsphere.example.core.mybatis.repository")
 @SpringBootApplication(exclude = JtaAutoConfiguration.class)
 public class SpringBootMybatisMain {
     

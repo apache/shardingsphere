@@ -34,7 +34,7 @@ import java.sql.SQLException;
  * 2. Please make sure sharding-proxy is running before you run this example.
  */
 @ComponentScan("org.apache.shardingsphere.example")
-@MapperScan(basePackages = "org.apache.shardingsphere.example.common.mybatis.repository")
+@MapperScan(basePackages = "org.apache.shardingsphere.example.core.mybatis.repository")
 @SpringBootApplication
 public class SpringBootStarterExample {
     
