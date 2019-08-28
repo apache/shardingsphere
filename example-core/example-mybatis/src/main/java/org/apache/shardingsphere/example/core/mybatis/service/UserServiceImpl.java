@@ -19,6 +19,7 @@ package org.apache.shardingsphere.example.core.mybatis.service;
 
 import org.apache.shardingsphere.example.core.api.repository.UserRepository;
 import org.apache.shardingsphere.example.core.api.entity.User;
+import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -26,8 +27,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service
-public class SpringUserServiceImpl implements UserService {
+@Service("user")
+public class UserServiceImpl implements ExampleService {
     
     @Resource
     private UserRepository userRepository;
