@@ -19,7 +19,7 @@ package org.apache.shardingsphere.example.sharding.raw.jdbc;
 
 import org.apache.shardingsphere.example.core.jdbc.repository.OrderItemRepositoryImpl;
 import org.apache.shardingsphere.example.core.jdbc.repository.OrderRepositoryImpl;
-import org.apache.shardingsphere.example.core.jdbc.service.CommonServiceImpl;
+import org.apache.shardingsphere.example.core.jdbc.service.OrderServiceImpl;
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.apache.shardingsphere.example.sharding.raw.jdbc.factory.YamlDataSourceFactory;
 import org.apache.shardingsphere.example.type.ShardingType;
@@ -41,13 +41,13 @@ public class YamlConfigurationExample {
     
     public static void main(final String[] args) throws SQLException, IOException {
         DataSource dataSource = YamlDataSourceFactory.newInstance(shardingType);
-        ExampleService commonService = getCommonService(dataSource);
-        commonService.initEnvironment();
-        commonService.processSuccess();
-        commonService.cleanEnvironment();
+        ExampleService exampleService = getExampleService(dataSource);
+        exampleService.initEnvironment();
+        exampleService.processSuccess();
+        exampleService.cleanEnvironment();
     }
     
-    private static ExampleService getCommonService(final DataSource dataSource) {
-        return new CommonServiceImpl(new OrderRepositoryImpl(dataSource), new OrderItemRepositoryImpl(dataSource));
+    private static ExampleService getExampleService(final DataSource dataSource) {
+        return new OrderServiceImpl(new OrderRepositoryImpl(dataSource), new OrderItemRepositoryImpl(dataSource));
     }
 }

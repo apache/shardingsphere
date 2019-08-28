@@ -34,8 +34,8 @@ public class SpringBootExample {
     
     public static void main(final String[] args) throws SQLException {
         try (ConfigurableApplicationContext applicationContext = SpringApplication.run(SpringBootExample.class, args)) {
-            JPACommonService commonService = applicationContext.getBean(JPACommonService.class);
-            commonService.processSuccess();
+            JPACommonService exampleService = applicationContext.getBean(JPACommonService.class);
+            exampleService.processSuccess();
         }
     }
 }

@@ -39,10 +39,10 @@ public class SpringNamespaceExample {
     
     public static void main(final String[] args) throws SQLException {
         try (ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext(getApplicationFile())) {
-            SpringPojoService commonService = applicationContext.getBean(SpringPojoService.class);
-            commonService.initEnvironment();
-            commonService.processSuccess();
-            commonService.cleanEnvironment();
+            SpringPojoService exampleService = applicationContext.getBean(SpringPojoService.class);
+            exampleService.initEnvironment();
+            exampleService.processSuccess();
+            exampleService.cleanEnvironment();
         }
     }
     

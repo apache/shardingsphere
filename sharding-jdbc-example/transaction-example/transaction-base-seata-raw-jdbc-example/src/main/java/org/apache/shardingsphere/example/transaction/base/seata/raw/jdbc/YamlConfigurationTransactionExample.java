@@ -21,7 +21,7 @@ import org.apache.shardingsphere.example.core.api.entity.Order;
 import org.apache.shardingsphere.example.core.api.entity.OrderItem;
 import org.apache.shardingsphere.example.core.jdbc.repository.OrderItemRepositoryImpl;
 import org.apache.shardingsphere.example.core.jdbc.repository.OrderRepositoryImpl;
-import org.apache.shardingsphere.example.core.jdbc.service.CommonServiceImpl;
+import org.apache.shardingsphere.example.core.jdbc.service.OrderServiceImpl;
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingDataSourceFactory;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -48,26 +48,26 @@ public class YamlConfigurationTransactionExample {
     
     public static void main(final String[] args) throws SQLException, IOException {
         DataSource dataSource = YamlShardingDataSourceFactory.createDataSource(getFile(configFile));
-        ExampleService commonService = getCommonService(dataSource);
-        commonService.initEnvironment();
-        processSeataTransaction(dataSource, commonService);
-        commonService.cleanEnvironment();
+        ExampleService exampleService = getExampleService(dataSource);
+        exampleService.initEnvironment();
+        processSeataTransaction(dataSource, exampleService);
+        exampleService.cleanEnvironment();
     }
     
     private static File getFile(final String fileName) {
         return new File(Thread.currentThread().getClass().getResource(fileName).getFile());
     }
     
-    private static ExampleService getCommonService(final DataSource dataSource) {
-        return new CommonServiceImpl(new OrderRepositoryImpl(dataSource), new OrderItemRepositoryImpl(dataSource));
+    private static ExampleService getExampleService(final DataSource dataSource) {
+        return new OrderServiceImpl(new OrderRepositoryImpl(dataSource), new OrderItemRepositoryImpl(dataSource));
     }
     
-    private static void processSeataTransaction(final DataSource dataSource, final ExampleService commonService) throws SQLException {
+    private static void processSeataTransaction(final DataSource dataSource, final ExampleService exampleService) throws SQLException {
         TransactionTypeHolder.set(TransactionType.BASE);
         System.out.println("------############## Start seata succeed transaction ##################------");
         try (Connection connection = dataSource.getConnection()) {
             connection.setAutoCommit(false);
-            insertSuccess(connection, commonService);
+            insertSuccess(connection, exampleService);
             connection.commit();
         }
         LockSupport.parkUntil(System.currentTimeMillis() + 1000);
@@ -78,17 +78,17 @@ public class YamlConfigurationTransactionExample {
         Connection connection = dataSource.getConnection();
         try {
             connection.setAutoCommit(false);
-            insertSuccess(connection, commonService);
+            insertSuccess(connection, exampleService);
             throw new SQLException("exception occur!");
         } catch (final SQLException ex) {
             connection.rollback();
         }
-        commonService.printData();
+        exampleService.printData();
         System.out.println("------############# End seata failure transaction #############------");
         truncateTable(dataSource);
     }
     
-    private static void insertSuccess(final Connection connection, final ExampleService commonService) throws SQLException {
+    private static void insertSuccess(final Connection connection, final ExampleService exampleService) throws SQLException {
         for (int i = 0; i < 10; i++) {
             Order order = new Order();
             order.setUserId(i);
@@ -100,7 +100,7 @@ public class YamlConfigurationTransactionExample {
             item.setStatus("SEATA-INIT");
             insertOrderItem(connection, item);
         }
-        commonService.printData();
+        exampleService.printData();
     }
     
     private static Long insertOrder(final Connection connection, final Order order) {

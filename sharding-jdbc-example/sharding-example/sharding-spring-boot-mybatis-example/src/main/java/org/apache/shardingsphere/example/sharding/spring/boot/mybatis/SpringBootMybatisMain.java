@@ -35,10 +35,10 @@ public class SpringBootMybatisMain {
     
     public static void main(final String[] args) throws SQLException {
         try (ConfigurableApplicationContext applicationContext = SpringApplication.run(SpringBootMybatisMain.class, args)) {
-            ExampleService commonService = applicationContext.getBean(SpringPojoService.class);
-            commonService.initEnvironment();
-            commonService.processSuccess();
-            commonService.cleanEnvironment();
+            ExampleService exampleService = applicationContext.getBean(SpringPojoService.class);
+            exampleService.initEnvironment();
+            exampleService.processSuccess();
+            exampleService.cleanEnvironment();
         }
     }
 }

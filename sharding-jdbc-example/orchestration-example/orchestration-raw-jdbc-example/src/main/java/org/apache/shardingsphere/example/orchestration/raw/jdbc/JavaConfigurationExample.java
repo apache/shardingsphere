@@ -19,7 +19,7 @@ package org.apache.shardingsphere.example.orchestration.raw.jdbc;
 
 import org.apache.shardingsphere.example.core.jdbc.repository.OrderItemRepositoryImpl;
 import org.apache.shardingsphere.example.core.jdbc.repository.OrderRepositoryImpl;
-import org.apache.shardingsphere.example.core.jdbc.service.CommonServiceImpl;
+import org.apache.shardingsphere.example.core.jdbc.service.OrderServiceImpl;
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.orchestration.raw.jdbc.config.RegistryCenterConfigurationUtil;
@@ -56,10 +56,10 @@ public class JavaConfigurationExample {
     
     public static void main(final String[] args) throws Exception {
         DataSource dataSource = getDataSource(shardingType, loadConfigFromRegCenter);
-        ExampleService commonService = getCommonService(dataSource);
-        commonService.initEnvironment();
-        commonService.processSuccess();
-        commonService.cleanEnvironment();
+        ExampleService exampleService = getExampleService(dataSource);
+        exampleService.initEnvironment();
+        exampleService.processSuccess();
+        exampleService.cleanEnvironment();
         closeDataSource(dataSource);
     }
     
@@ -87,8 +87,8 @@ public class JavaConfigurationExample {
         return RegistryCenterType.ZOOKEEPER == registryCenterType ? RegistryCenterConfigurationUtil.getZooKeeperConfiguration() : RegistryCenterConfigurationUtil.getEtcdConfiguration();
     }
     
-    private static ExampleService getCommonService(final DataSource dataSource) {
-        return new CommonServiceImpl(new OrderRepositoryImpl(dataSource), new OrderItemRepositoryImpl(dataSource));
+    private static ExampleService getExampleService(final DataSource dataSource) {
+        return new OrderServiceImpl(new OrderRepositoryImpl(dataSource), new OrderItemRepositoryImpl(dataSource));
     }
     
     private static void closeDataSource(final DataSource dataSource) throws Exception {

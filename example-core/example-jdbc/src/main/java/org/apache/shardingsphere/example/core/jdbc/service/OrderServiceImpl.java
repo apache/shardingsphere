@@ -27,13 +27,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class CommonServiceImpl implements ExampleService {
+public final class OrderServiceImpl implements ExampleService {
     
     private OrderRepository orderRepository;
     
     private OrderItemRepository orderItemRepository;
     
-    public CommonServiceImpl(final OrderRepository orderRepository, final OrderItemRepository orderItemRepository) {
+    public OrderServiceImpl(final OrderRepository orderRepository, final OrderItemRepository orderItemRepository) {
         this.orderRepository = orderRepository;
         this.orderItemRepository = orderItemRepository;
     }

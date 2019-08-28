@@ -45,20 +45,20 @@ public class SpringBootStarterExample {
     }
     
     private static void process(final ConfigurableApplicationContext applicationContext) throws SQLException {
-        ExampleService commonService = getCommonService(applicationContext);
-        commonService.initEnvironment();
-        commonService.processSuccess();
+        ExampleService exampleService = getExampleService(applicationContext);
+        exampleService.initEnvironment();
+        exampleService.processSuccess();
         try {
-            commonService.processFailure();
+            exampleService.processFailure();
         } catch (final Exception ex) {
             System.out.println(ex.getMessage());
-            commonService.printData();
+            exampleService.printData();
         } finally {
-            commonService.cleanEnvironment();
+            exampleService.cleanEnvironment();
         }
     }
     
-    private static ExampleService getCommonService(final ConfigurableApplicationContext applicationContext) {
+    private static ExampleService getExampleService(final ConfigurableApplicationContext applicationContext) {
         return applicationContext.getBean(SpringPojoService.class);
     }
 }

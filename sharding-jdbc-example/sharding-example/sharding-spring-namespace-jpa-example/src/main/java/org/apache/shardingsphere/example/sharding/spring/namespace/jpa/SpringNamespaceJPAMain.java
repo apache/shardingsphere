@@ -33,8 +33,8 @@ public class SpringNamespaceJPAMain {
     
     public static void main(final String[] args) throws SQLException {
         try (ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext(CONFIG_FILE)) {
-            JPACommonService commonService = applicationContext.getBean(JPACommonService.class);
-            commonService.processSuccess();
+            JPACommonService exampleService = applicationContext.getBean(JPACommonService.class);
+            exampleService.processSuccess();
         }
     }
 }
