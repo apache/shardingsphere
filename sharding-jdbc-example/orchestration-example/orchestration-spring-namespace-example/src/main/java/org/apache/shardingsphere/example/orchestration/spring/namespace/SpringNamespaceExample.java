@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.example.orchestration.spring.namespace;
 
-import org.apache.shardingsphere.example.core.mybatis.service.SpringPojoService;
+import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.apache.shardingsphere.example.type.RegistryCenterType;
 import org.apache.shardingsphere.example.type.ShardingType;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -39,7 +39,7 @@ public class SpringNamespaceExample {
     
     public static void main(final String[] args) throws SQLException {
         try (ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext(getApplicationFile())) {
-            SpringPojoService exampleService = applicationContext.getBean(SpringPojoService.class);
+            ExampleService exampleService = applicationContext.getBean("order", ExampleService.class);
             exampleService.initEnvironment();
             exampleService.processSuccess();
             exampleService.cleanEnvironment();

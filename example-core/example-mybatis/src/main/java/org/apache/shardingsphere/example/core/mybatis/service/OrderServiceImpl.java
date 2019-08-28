@@ -21,6 +21,7 @@ import org.apache.shardingsphere.example.core.api.repository.OrderItemRepository
 import org.apache.shardingsphere.example.core.api.repository.OrderRepository;
 import org.apache.shardingsphere.example.core.api.entity.Order;
 import org.apache.shardingsphere.example.core.api.entity.OrderItem;
+import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,8 +30,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service
-public class SpringPojoServiceImpl implements SpringPojoService {
+@Service("order")
+public class OrderServiceImpl implements ExampleService {
     
     @Resource
     private OrderRepository orderRepository;
