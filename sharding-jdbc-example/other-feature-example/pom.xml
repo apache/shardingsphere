@@ -29,7 +29,6 @@
     <packaging>pom</packaging>
     
     <modules>
-        <module>broadcast-table-example</module>
         <module>encrypt-example</module>
         <module>hint-example</module>
     </modules>
