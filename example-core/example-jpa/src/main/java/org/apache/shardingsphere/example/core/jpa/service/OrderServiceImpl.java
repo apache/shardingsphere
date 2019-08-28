@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.example.core.jpa.service;
 
+import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.apache.shardingsphere.example.core.jpa.entity.OrderEntity;
 import org.apache.shardingsphere.example.core.jpa.entity.OrderItemEntity;
 import org.apache.shardingsphere.example.core.api.repository.OrderItemRepository;
@@ -29,8 +30,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service
-public class JPACommonServiceImpl implements JPACommonService {
+@Service("order")
+public class OrderServiceImpl implements ExampleService {
     
     @Resource
     private OrderRepository orderRepository;

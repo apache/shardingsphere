@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.example.orchestration.spring.boot;
 
-import org.apache.shardingsphere.example.core.jpa.service.JPACommonService;
+import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -34,7 +34,7 @@ public class SpringBootExample {
     
     public static void main(final String[] args) throws SQLException {
         try (ConfigurableApplicationContext applicationContext = SpringApplication.run(SpringBootExample.class, args)) {
-            JPACommonService exampleService = applicationContext.getBean(JPACommonService.class);
+            ExampleService exampleService = applicationContext.getBean("order", ExampleService.class);
             exampleService.processSuccess();
         }
     }
