@@ -9,6 +9,7 @@
         <version>4.0.0-RC2</version>
     </parent>
     <artifactId>orchestration-spring-namespace-example</artifactId>
+    <name>Example::orchestration::spring-namespace</name>
     
     <dependencies>
         <dependency>

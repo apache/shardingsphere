@@ -9,6 +9,8 @@
         <version>4.0.0-RC2</version>
     </parent>
     <artifactId>transaction-example</artifactId>
+    <name>Example::transaction::root</name>
+    
     <packaging>pom</packaging>
     
     <modules>

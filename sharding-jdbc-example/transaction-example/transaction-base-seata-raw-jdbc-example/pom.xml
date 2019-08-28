@@ -27,6 +27,7 @@
     <modelVersion>4.0.0</modelVersion>
     
     <artifactId>transaction-base-seata-raw-jdbc-example</artifactId>
+    <name>Example::transaction::base-seata-raw-jdbc</name>
     
     <dependencies>
         <dependency>

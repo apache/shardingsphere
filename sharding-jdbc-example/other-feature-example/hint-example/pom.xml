@@ -26,6 +26,8 @@
         <version>4.0.0-RC2</version>
     </parent>
     <artifactId>hint-example</artifactId>
+    <name>Example::hint::root</name>
+    
     <packaging>pom</packaging>
     
     <modules>

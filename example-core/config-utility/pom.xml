@@ -10,6 +10,7 @@
     </parent>
     
     <artifactId>config-utility</artifactId>
+    <name>common::config-utility</name>
     
     <dependencies>
         <dependency>

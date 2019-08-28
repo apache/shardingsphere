@@ -9,4 +9,5 @@
         <version>4.0.0-RC2</version>
     </parent>
     <artifactId>example-api</artifactId>
+    <name>common::example-core::example-api</name>
 </project>

@@ -26,6 +26,7 @@
         <version>4.0.0-RC2</version>
     </parent>
     <artifactId>encrypt-spring-namespace-example</artifactId>
+    <name>Example::encrypt::spring-namespace</name>
     
     <dependencies>
         <dependency>

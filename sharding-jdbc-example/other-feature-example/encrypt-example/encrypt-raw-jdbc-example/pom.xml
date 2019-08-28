@@ -26,6 +26,7 @@
         <version>4.0.0-RC2</version>
     </parent>
     <artifactId>encrypt-raw-jdbc-example</artifactId>
+    <name>Example::encrypt::raw-jdbc</name>
     
     <dependencies>
         <dependency>

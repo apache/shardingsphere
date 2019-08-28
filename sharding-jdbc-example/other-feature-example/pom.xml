@@ -26,6 +26,7 @@
         <version>4.0.0-RC2</version>
     </parent>
     <artifactId>other-feature-example</artifactId>
+    <name>Example::other-feature::root</name>
     <packaging>pom</packaging>
     
     <modules>

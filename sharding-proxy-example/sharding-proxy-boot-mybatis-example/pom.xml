@@ -9,6 +9,7 @@
         <version>4.0.0-RC2</version>
     </parent>
     <artifactId>sharding-proxy-boot-mybatis-example</artifactId>
+    <name>Example::proxy::spring-boot-mybatis</name>
     
     <dependencies>
         <dependency>

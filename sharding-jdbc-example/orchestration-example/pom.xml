@@ -9,6 +9,7 @@
         <version>4.0.0-RC2</version>
     </parent>
     <artifactId>orchestration-example</artifactId>
+    <name>Example::orchestration</name>
     <packaging>pom</packaging>
     
     <modules>

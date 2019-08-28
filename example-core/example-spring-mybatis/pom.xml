@@ -9,6 +9,7 @@
         <version>4.0.0-RC2</version>
     </parent>
     <artifactId>example-spring-mybatis</artifactId>
+    <name>common::example-spring-mybatis</name>
     
     <dependencies>
         <dependency>

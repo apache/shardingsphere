@@ -9,6 +9,7 @@
         <version>4.0.0-RC2</version>
     </parent>
     <artifactId>example-raw-jdbc</artifactId>
+    <name>common::example-raw-jdbc</name>
     
     <dependencies>
         <dependency>

@@ -9,6 +9,7 @@
         <version>4.0.0-RC2</version>
     </parent>
     <artifactId>orchestration-spring-boot-example</artifactId>
+    <name>Example::orchestration::spring-boot</name>
     
     <dependencies>
         <dependency>
