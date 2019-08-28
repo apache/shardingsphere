@@ -30,6 +30,8 @@ import javax.persistence.Table;
 @Table(name = "t_order")
 public final class OrderEntity extends Order {
     
+    private static final long serialVersionUID = 4743102234543827854L;
+    
     @Id
     @Column(name = "order_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)

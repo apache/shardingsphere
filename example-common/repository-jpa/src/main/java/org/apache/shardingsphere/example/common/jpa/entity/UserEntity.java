@@ -28,6 +28,8 @@ import javax.persistence.Table;
 @Table(name = "t_user")
 public final class UserEntity extends User {
     
+    private static final long serialVersionUID = -3708998745561667721L;
+    
     @Id
     @Column(name = "user_id")
     @Override
