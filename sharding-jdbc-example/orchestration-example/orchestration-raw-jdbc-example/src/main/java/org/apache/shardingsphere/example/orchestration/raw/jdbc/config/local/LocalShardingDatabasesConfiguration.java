@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.example.orchestration.raw.jdbc.config.local;
 
-import org.apache.shardingsphere.example.api.DataSourceUtil;
+import org.apache.shardingsphere.example.core.api.DataSourceUtil;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;

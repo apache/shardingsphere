@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.example.encrypt.table.spring.boot;
 
-import org.apache.shardingsphere.example.jpa.service.JPAUserService;
+import org.apache.shardingsphere.example.core.jpa.service.JPAUserService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;

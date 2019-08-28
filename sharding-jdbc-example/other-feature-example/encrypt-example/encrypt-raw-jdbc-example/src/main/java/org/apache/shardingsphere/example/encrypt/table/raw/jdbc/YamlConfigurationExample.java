@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.example.encrypt.table.raw.jdbc;
 
-import org.apache.shardingsphere.example.jdbc.repository.UserRepositoryImpl;
-import org.apache.shardingsphere.example.jdbc.service.UserServiceImpl;
-import org.apache.shardingsphere.example.api.service.CommonService;
+import org.apache.shardingsphere.example.core.jdbc.repository.UserRepositoryImpl;
+import org.apache.shardingsphere.example.core.jdbc.service.UserServiceImpl;
+import org.apache.shardingsphere.example.core.api.service.CommonService;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlEncryptDataSourceFactory;
 
 import javax.sql.DataSource;

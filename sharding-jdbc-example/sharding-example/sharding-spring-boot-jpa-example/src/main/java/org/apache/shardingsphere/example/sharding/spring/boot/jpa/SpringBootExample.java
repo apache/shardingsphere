@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.example.sharding.spring.boot.jpa;
 
-import org.apache.shardingsphere.example.jpa.service.JPACommonService;
+import org.apache.shardingsphere.example.core.jpa.service.JPACommonService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;

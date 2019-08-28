@@ -22,7 +22,7 @@ import org.apache.shardingsphere.example.algorithm.PreciseModuloShardingDatabase
 import org.apache.shardingsphere.example.algorithm.PreciseModuloShardingTableAlgorithm;
 import org.apache.shardingsphere.example.algorithm.RangeModuloShardingDatabaseAlgorithm;
 import org.apache.shardingsphere.example.algorithm.RangeModuloShardingTableAlgorithm;
-import org.apache.shardingsphere.example.api.DataSourceUtil;
+import org.apache.shardingsphere.example.core.api.DataSourceUtil;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;

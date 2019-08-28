@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.example.orchestration.spring.namespace;
 
-import org.apache.shardingsphere.example.mybatis.service.SpringPojoService;
+import org.apache.shardingsphere.example.core.mybatis.service.SpringPojoService;
 import org.apache.shardingsphere.example.type.RegistryCenterType;
 import org.apache.shardingsphere.example.type.ShardingType;
 import org.springframework.context.ConfigurableApplicationContext;

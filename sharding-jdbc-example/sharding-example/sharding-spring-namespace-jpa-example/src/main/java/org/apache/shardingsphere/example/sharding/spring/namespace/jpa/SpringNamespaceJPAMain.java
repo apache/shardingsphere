@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.example.sharding.spring.namespace.jpa;
 
-import org.apache.shardingsphere.example.jpa.service.JPACommonService;
+import org.apache.shardingsphere.example.core.jpa.service.JPACommonService;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
