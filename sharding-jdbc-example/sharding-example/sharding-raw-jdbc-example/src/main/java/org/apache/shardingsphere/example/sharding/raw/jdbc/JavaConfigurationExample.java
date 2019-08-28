@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.example.sharding.raw.jdbc;
 
-import org.apache.shardingsphere.example.common.jdbc.repository.OrderItemRepositoryImpl;
-import org.apache.shardingsphere.example.common.jdbc.repository.OrderRepositoryImpl;
-import org.apache.shardingsphere.example.common.jdbc.service.CommonServiceImpl;
-import org.apache.shardingsphere.example.common.service.CommonService;
+import org.apache.shardingsphere.example.jdbc.repository.OrderItemRepositoryImpl;
+import org.apache.shardingsphere.example.jdbc.repository.OrderRepositoryImpl;
+import org.apache.shardingsphere.example.jdbc.service.CommonServiceImpl;
+import org.apache.shardingsphere.example.api.service.CommonService;
 import org.apache.shardingsphere.example.sharding.raw.jdbc.factory.DataSourceFactory;
 import org.apache.shardingsphere.example.type.ShardingType;
 

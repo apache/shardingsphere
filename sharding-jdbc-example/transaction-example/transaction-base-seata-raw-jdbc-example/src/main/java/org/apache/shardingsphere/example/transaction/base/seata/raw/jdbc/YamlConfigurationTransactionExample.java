@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.example.transaction.base.seata.raw.jdbc;
 
-import org.apache.shardingsphere.example.common.entity.Order;
-import org.apache.shardingsphere.example.common.entity.OrderItem;
-import org.apache.shardingsphere.example.common.jdbc.repository.OrderItemRepositoryImpl;
-import org.apache.shardingsphere.example.common.jdbc.repository.OrderRepositoryImpl;
-import org.apache.shardingsphere.example.common.jdbc.service.CommonServiceImpl;
-import org.apache.shardingsphere.example.common.service.CommonService;
+import org.apache.shardingsphere.example.api.entity.Order;
+import org.apache.shardingsphere.example.api.entity.OrderItem;
+import org.apache.shardingsphere.example.jdbc.repository.OrderItemRepositoryImpl;
+import org.apache.shardingsphere.example.jdbc.repository.OrderRepositoryImpl;
+import org.apache.shardingsphere.example.jdbc.service.CommonServiceImpl;
+import org.apache.shardingsphere.example.api.service.CommonService;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingDataSourceFactory;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.example.sharding.spring.namespace.mybatis;
 
-import org.apache.shardingsphere.example.common.mybatis.service.SpringPojoService;
+import org.apache.shardingsphere.example.mybatis.service.SpringPojoService;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 

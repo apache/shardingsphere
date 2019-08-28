@@ -18,7 +18,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere.example</groupId>
-            <artifactId>repository-api</artifactId>
+            <artifactId>example-api</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

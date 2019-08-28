@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.example.orchestration.raw.jdbc;
 
-import org.apache.shardingsphere.example.common.jdbc.repository.OrderItemRepositoryImpl;
-import org.apache.shardingsphere.example.common.jdbc.repository.OrderRepositoryImpl;
-import org.apache.shardingsphere.example.common.jdbc.service.CommonServiceImpl;
-import org.apache.shardingsphere.example.common.service.CommonService;
+import org.apache.shardingsphere.example.jdbc.repository.OrderItemRepositoryImpl;
+import org.apache.shardingsphere.example.jdbc.repository.OrderRepositoryImpl;
+import org.apache.shardingsphere.example.jdbc.service.CommonServiceImpl;
+import org.apache.shardingsphere.example.api.service.CommonService;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.orchestration.raw.jdbc.config.RegistryCenterConfigurationUtil;
 import org.apache.shardingsphere.example.orchestration.raw.jdbc.config.cloud.CloudEncryptConfiguration;

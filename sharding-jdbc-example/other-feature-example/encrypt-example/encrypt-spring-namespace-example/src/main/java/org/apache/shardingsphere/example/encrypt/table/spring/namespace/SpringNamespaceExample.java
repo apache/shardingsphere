@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.example.encrypt.table.spring.namespace;
 
-import org.apache.shardingsphere.example.common.mybatis.service.SpringUserServiceImpl;
+import org.apache.shardingsphere.example.mybatis.service.SpringUserServiceImpl;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
