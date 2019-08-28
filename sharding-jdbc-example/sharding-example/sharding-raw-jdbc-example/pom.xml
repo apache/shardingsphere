@@ -13,7 +13,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere.example</groupId>
-            <artifactId>repository-jdbc</artifactId>
+            <artifactId>example-jdbc</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
