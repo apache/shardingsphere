@@ -52,7 +52,7 @@ shardingsphere-example
   ├── example-common
   │   ├── config-utility
   │   ├── repository-api
-  │   ├── example-jdbc
+  │   ├── example-raw-jdbc
   │   ├── example-jpa
   │   └── example-mybatis
   ├── sharding-jdbc-example

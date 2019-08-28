@@ -16,6 +16,6 @@
         <module>example-jpa</module>
         <module>example-mybatis</module>
         <module>config-utility</module>
-        <module>example-jdbc</module>
+        <module>example-raw-jdbc</module>
     </modules>
 </project>
