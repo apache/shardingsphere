@@ -40,7 +40,7 @@ public class SpringBootExample {
     public static void main(final String[] args) throws SQLException {
         // TODO: Because of assistedQueryColumns, we need to consider the DDL of encrypt module. Now JPA examples can not run well.
         try (ConfigurableApplicationContext applicationContext = SpringApplication.run(SpringBootExample.class, args)) {
-            ExampleService exampleService = applicationContext.getBean("user", ExampleService.class);
+            ExampleService exampleService = applicationContext.getBean("encrypt", ExampleService.class);
             exampleService.processSuccess();
         }
     }

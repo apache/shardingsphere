@@ -29,7 +29,7 @@ public class SpringNamespaceExample {
     
     public static void main(final String[] args) throws SQLException {
         try (ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext(CONFIG_FILE)) {
-            ExampleService exampleService = applicationContext.getBean("user", ExampleService.class);
+            ExampleService exampleService = applicationContext.getBean("encrypt", ExampleService.class);
             exampleService.initEnvironment();
             exampleService.processSuccess();
             exampleService.cleanEnvironment();
