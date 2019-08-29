@@ -113,7 +113,7 @@ Architects can adjust the system architecture to the most applicable one to curr
 * Orchestration & Governance
 * Data Encryption
 * Tracing & Observability
-* Elastic scaling out (Planing)
+* Elastic scaling out (Planning)
 
 ## Project Status
 
