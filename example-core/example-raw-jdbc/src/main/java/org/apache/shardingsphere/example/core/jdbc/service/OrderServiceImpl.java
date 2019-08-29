@@ -120,6 +120,7 @@ public final class OrderServiceImpl implements ExampleService {
     private Order insertOrder(final int i) throws SQLException {
         Order order = new Order();
         order.setUserId(i);
+        order.setAddressId(i);
         order.setStatus("INSERT_TEST");
         orderRepository.insert(order);
         return order;

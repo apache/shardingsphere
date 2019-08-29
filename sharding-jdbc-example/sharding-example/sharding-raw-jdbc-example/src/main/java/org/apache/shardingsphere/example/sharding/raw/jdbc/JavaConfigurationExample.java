@@ -39,9 +39,12 @@ public class JavaConfigurationExample {
     public static void main(final String[] args) throws SQLException {
         DataSource dataSource = DataSourceFactory.newInstance(shardingType);
         ExampleService exampleService = getExampleService(dataSource);
-        exampleService.initEnvironment();
-        exampleService.processSuccess();
-        exampleService.cleanEnvironment();
+        try {
+            exampleService.initEnvironment();
+            exampleService.processSuccess();
+        } finally {
+            exampleService.cleanEnvironment();
+        }
     }
     
     private static ExampleService getExampleService(final DataSource dataSource) {

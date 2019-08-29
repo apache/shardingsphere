@@ -39,7 +39,7 @@ public class OrderRepositoryImpl implements OrderRepository {
     
     @Override
     public void createTableIfNotExists() throws SQLException {
-        String sql = "CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT NOT NULL AUTO_INCREMENT, user_id INT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id))";
+        String sql = "CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT NOT NULL AUTO_INCREMENT, user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id))";
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.executeUpdate(sql);
@@ -66,11 +66,12 @@ public class OrderRepositoryImpl implements OrderRepository {
     
     @Override
     public Long insert(final Order order) throws SQLException {
-        String sql = "INSERT INTO t_order (user_id, status) VALUES (?, ?)";
+        String sql = "INSERT INTO t_order (user_id, address_id, status) VALUES (?, ?, ?)";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setInt(1, order.getUserId());
-            preparedStatement.setString(2, order.getStatus());
+            preparedStatement.setLong(2, order.getAddressId());
+            preparedStatement.setString(3, order.getStatus());
             preparedStatement.executeUpdate();
             try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
                 if (resultSet.next()) {
@@ -106,7 +107,8 @@ public class OrderRepositoryImpl implements OrderRepository {
                 Order order = new Order();
                 order.setOrderId(resultSet.getLong(1));
                 order.setUserId(resultSet.getInt(2));
-                order.setStatus(resultSet.getString(3));
+                order.setAddressId(resultSet.getLong(3));
+                order.setStatus(resultSet.getString(4));
                 result.add(order);
             }
         }

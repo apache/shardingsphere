@@ -27,6 +27,8 @@ public class Order implements Serializable {
     
     private int userId;
     
+    private long addressId;
+    
     private String status;
     
     public long getOrderId() {
@@ -53,8 +55,16 @@ public class Order implements Serializable {
         this.status = status;
     }
     
+    public long getAddressId() {
+        return addressId;
+    }
+    
+    public void setAddressId(final long addressId) {
+        this.addressId = addressId;
+    }
+    
     @Override
     public String toString() {
-        return String.format("order_id: %s, user_id: %s, status: %s", orderId, userId, status);
+        return String.format("order_id: %s, user_id: %s, address_id: %s, status: %s", orderId, userId, addressId, status);
     }
 }
