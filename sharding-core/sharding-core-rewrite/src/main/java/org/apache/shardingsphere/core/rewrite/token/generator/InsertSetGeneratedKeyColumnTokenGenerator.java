@@ -59,7 +59,7 @@ public final class InsertSetGeneratedKeyColumnTokenGenerator implements Optional
     private InsertSetGeneratedKeyColumnToken createInsertSetAddGeneratedKeyToken(
             final InsertOptimizedStatement optimizedStatement, final String generatedKeyColumn, final List<AssignmentSegment> assignments) {
         return new InsertSetGeneratedKeyColumnToken(
-                assignments.get(assignments.size() - 1).getStopIndex() + 1, generatedKeyColumn, optimizedStatement.getOptimizedInsertValues().get(0).getValueExpression(generatedKeyColumn));
+                assignments.get(assignments.size() - 1).getStopIndex() + 1, generatedKeyColumn, optimizedStatement.getInsertValues().get(0).getValueExpression(generatedKeyColumn));
     }
     
     private Optional<String> getGeneratedKeyColumn(final ShardingInsertOptimizedStatement optimizedStatement, final ShardingRule shardingRule) {

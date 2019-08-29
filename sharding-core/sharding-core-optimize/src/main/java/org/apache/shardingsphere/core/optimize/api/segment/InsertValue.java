@@ -31,7 +31,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Optimized insert value.
+ * Insert value.
  *
  * @author panjuan
  * @author zhangliang
@@ -39,7 +39,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Getter
 @ToString(exclude = "dataNodes")
-public final class OptimizedInsertValue {
+public final class InsertValue {
     
     private final List<String> columnNames;
     
@@ -53,8 +53,8 @@ public final class OptimizedInsertValue {
     
     private final List<DataNode> dataNodes = new LinkedList<>();
     
-    public OptimizedInsertValue(final List<String> columnNames, 
-                                final Collection<ExpressionSegment> assignments, final int derivedColumnsCount, final List<Object> parameters, final int parametersBeginIndex) {
+    public InsertValue(final List<String> columnNames,
+                       final Collection<ExpressionSegment> assignments, final int derivedColumnsCount, final List<Object> parameters, final int parametersBeginIndex) {
         this.columnNames = columnNames;
         this.assignments = assignments;
         valueExpressions = createValueExpressions(derivedColumnsCount);

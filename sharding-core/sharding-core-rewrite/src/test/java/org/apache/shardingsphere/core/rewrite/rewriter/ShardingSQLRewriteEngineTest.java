@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.rewrite.rewriter;
 
 import com.google.common.base.Preconditions;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.core.optimize.api.segment.OptimizedInsertValue;
+import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
 import org.apache.shardingsphere.core.optimize.encrypt.condition.EncryptCondition;
 import org.apache.shardingsphere.core.optimize.encrypt.condition.EncryptConditions;
 import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptTransparentOptimizedStatement;
@@ -226,9 +226,9 @@ public final class ShardingSQLRewriteEngineTest {
         Collection<ExpressionSegment> assignments = Arrays.<ExpressionSegment>asList(
                 new ParameterMarkerExpressionSegment(0, 0, 0), new ParameterMarkerExpressionSegment(0, 0, 1), new ParameterMarkerExpressionSegment(0, 0, 2));
         List<Object> parameters = Arrays.<Object>asList("x", 1, 1);
-        OptimizedInsertValue optimizedInsertValue = shardingStatement.createOptimizedInsertValue("id", Collections.<String>emptyList(), assignments, 0, parameters, 0);
-        shardingStatement.addOptimizedInsertValue(optimizedInsertValue);
-        shardingStatement.getOptimizedInsertValues().get(0).getDataNodes().add(new DataNode("db0.table_1"));
+        InsertValue insertValue = shardingStatement.createInsertValue("id", Collections.<String>emptyList(), assignments, 0, parameters, 0);
+        shardingStatement.addInsertValue(insertValue);
+        shardingStatement.getInsertValues().get(0).getDataNodes().add(new DataNode("db0.table_1"));
         SQLRouteResult result = new SQLRouteResult(shardingStatement, new EncryptTransparentOptimizedStatement(insertStatement));
         result.setRoutingResult(new RoutingResult());
         return result;
@@ -253,9 +253,9 @@ public final class ShardingSQLRewriteEngineTest {
         ShardingInsertOptimizedStatement shardingStatement = new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), insertColumns, null);
         Collection<ExpressionSegment> assignments = Arrays.<ExpressionSegment>asList(new ParameterMarkerExpressionSegment(0, 0, 0), new ParameterMarkerExpressionSegment(0, 0, 1));
         List<Object> parameters = Arrays.<Object>asList("Bill", 1);
-        OptimizedInsertValue optimizedInsertValue = shardingStatement.createOptimizedInsertValue("id", Collections.<String>emptyList(), assignments, 0, parameters, 0);
-        shardingStatement.addOptimizedInsertValue(optimizedInsertValue);
-        shardingStatement.getOptimizedInsertValues().get(0).getDataNodes().add(new DataNode("db0.table_1"));
+        InsertValue insertValue = shardingStatement.createInsertValue("id", Collections.<String>emptyList(), assignments, 0, parameters, 0);
+        shardingStatement.addInsertValue(insertValue);
+        shardingStatement.getInsertValues().get(0).getDataNodes().add(new DataNode("db0.table_1"));
         SQLRouteResult result = new SQLRouteResult(shardingStatement, new EncryptTransparentOptimizedStatement(insertStatement));
         result.setRoutingResult(new RoutingResult());
         return result;
@@ -280,9 +280,9 @@ public final class ShardingSQLRewriteEngineTest {
         ShardingInsertOptimizedStatement shardingStatement = new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), insertColumns, null);
         Collection<ExpressionSegment> assignments = Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(0, 0, 10), new LiteralExpressionSegment(0, 0, 1));
         List<Object> parameters = Collections.emptyList();
-        OptimizedInsertValue optimizedInsertValue = shardingStatement.createOptimizedInsertValue("id", Collections.<String>emptyList(), assignments, 0, parameters, 0);
-        shardingStatement.addOptimizedInsertValue(optimizedInsertValue);
-        shardingStatement.getOptimizedInsertValues().get(0).getDataNodes().add(new DataNode("db0.table_1"));
+        InsertValue insertValue = shardingStatement.createInsertValue("id", Collections.<String>emptyList(), assignments, 0, parameters, 0);
+        shardingStatement.addInsertValue(insertValue);
+        shardingStatement.getInsertValues().get(0).getDataNodes().add(new DataNode("db0.table_1"));
         SQLRouteResult result = new SQLRouteResult(shardingStatement, new EncryptTransparentOptimizedStatement(insertStatement));
         result.setRoutingResult(new RoutingResult());
         return result;
@@ -307,9 +307,9 @@ public final class ShardingSQLRewriteEngineTest {
         ShardingInsertOptimizedStatement shardingStatement = new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), insertColumns, null);
         Collection<ExpressionSegment> assignments = Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(0, 0, 10), new LiteralExpressionSegment(0, 0, 1));
         List<Object> parameters = Collections.emptyList();
-        OptimizedInsertValue optimizedInsertValue = shardingStatement.createOptimizedInsertValue("id", Collections.<String>emptyList(), assignments, 0, parameters, 0);
-        shardingStatement.addOptimizedInsertValue(optimizedInsertValue);
-        shardingStatement.getOptimizedInsertValues().get(0).getDataNodes().add(new DataNode("db0.table_1"));
+        InsertValue insertValue = shardingStatement.createInsertValue("id", Collections.<String>emptyList(), assignments, 0, parameters, 0);
+        shardingStatement.addInsertValue(insertValue);
+        shardingStatement.getInsertValues().get(0).getDataNodes().add(new DataNode("db0.table_1"));
         SQLRouteResult result = new SQLRouteResult(shardingStatement, new EncryptTransparentOptimizedStatement(insertStatement));
         result.setRoutingResult(new RoutingResult());
         return result;
@@ -333,9 +333,9 @@ public final class ShardingSQLRewriteEngineTest {
         ShardingInsertOptimizedStatement shardingStatement = new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), insertColumns, null);
         Collection<ExpressionSegment> assignments = Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(0, 0, 10), new LiteralExpressionSegment(0, 0, 1));
         List<Object> parameters = Collections.emptyList();
-        OptimizedInsertValue optimizedInsertValue = shardingStatement.createOptimizedInsertValue("id", Collections.<String>emptyList(), assignments, 1, parameters, 0);
-        shardingStatement.addOptimizedInsertValue(optimizedInsertValue);
-        shardingStatement.getOptimizedInsertValues().get(0).getDataNodes().add(new DataNode("db0.table_1"));
+        InsertValue insertValue = shardingStatement.createInsertValue("id", Collections.<String>emptyList(), assignments, 1, parameters, 0);
+        shardingStatement.addInsertValue(insertValue);
+        shardingStatement.getInsertValues().get(0).getDataNodes().add(new DataNode("db0.table_1"));
         SQLRouteResult result = new SQLRouteResult(shardingStatement, new EncryptTransparentOptimizedStatement(insertStatement));
         result.setRoutingResult(new RoutingResult());
         return result;
@@ -360,9 +360,9 @@ public final class ShardingSQLRewriteEngineTest {
         ShardingInsertOptimizedStatement shardingStatement = new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), insertColumns, null);
         Collection<ExpressionSegment> assignments = Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(0, 0, 10), new LiteralExpressionSegment(0, 0, 1));
         List<Object> parameters = Collections.emptyList();
-        OptimizedInsertValue optimizedInsertValue = shardingStatement.createOptimizedInsertValue("id", Collections.<String>emptyList(), assignments, 0, parameters, 0);
-        shardingStatement.addOptimizedInsertValue(optimizedInsertValue);
-        shardingStatement.getOptimizedInsertValues().get(0).getDataNodes().add(new DataNode("db0.table_1"));
+        InsertValue insertValue = shardingStatement.createInsertValue("id", Collections.<String>emptyList(), assignments, 0, parameters, 0);
+        shardingStatement.addInsertValue(insertValue);
+        shardingStatement.getInsertValues().get(0).getDataNodes().add(new DataNode("db0.table_1"));
         SQLRouteResult result = new SQLRouteResult(shardingStatement, new EncryptTransparentOptimizedStatement(insertStatement));
         result.setRoutingResult(new RoutingResult());
         return result;
@@ -386,9 +386,9 @@ public final class ShardingSQLRewriteEngineTest {
         ShardingInsertOptimizedStatement shardingStatement = new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), insertColumns, null);
         Collection<ExpressionSegment> assignments = Arrays.<ExpressionSegment>asList(new ParameterMarkerExpressionSegment(0, 0, 0), new ParameterMarkerExpressionSegment(0, 0, 1));
         List<Object> parameters = Arrays.<Object>asList("x", 1);
-        OptimizedInsertValue optimizedInsertValue = shardingStatement.createOptimizedInsertValue("id", Collections.<String>emptyList(), assignments, 0, parameters, 0);
-        shardingStatement.addOptimizedInsertValue(optimizedInsertValue);
-        shardingStatement.getOptimizedInsertValues().get(0).getDataNodes().add(new DataNode("db0.table_1"));
+        InsertValue insertValue = shardingStatement.createInsertValue("id", Collections.<String>emptyList(), assignments, 0, parameters, 0);
+        shardingStatement.addInsertValue(insertValue);
+        shardingStatement.getInsertValues().get(0).getDataNodes().add(new DataNode("db0.table_1"));
         SQLRouteResult result = new SQLRouteResult(shardingStatement, new EncryptTransparentOptimizedStatement(insertStatement));
         result.setRoutingResult(new RoutingResult());
         return result;
@@ -995,9 +995,9 @@ public final class ShardingSQLRewriteEngineTest {
         Collection<ExpressionSegment> assignments = Arrays.<ExpressionSegment>asList(
             new LiteralExpressionSegment(0, 0, 10), new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 10));
         List<Object> parameters = Collections.emptyList();
-        OptimizedInsertValue optimizedInsertValue = shardingStatement.createOptimizedInsertValue("id", Arrays.asList("plain", "query"), assignments, 3, parameters, 0);
-        shardingStatement.addOptimizedInsertValue(optimizedInsertValue);
-        shardingStatement.getOptimizedInsertValues().get(0).getDataNodes().add(new DataNode("db0.table_1"));
+        InsertValue insertValue = shardingStatement.createInsertValue("id", Arrays.asList("plain", "query"), assignments, 3, parameters, 0);
+        shardingStatement.addInsertValue(insertValue);
+        shardingStatement.getInsertValues().get(0).getDataNodes().add(new DataNode("db0.table_1"));
         SQLRouteResult result = new SQLRouteResult(shardingStatement, new EncryptTransparentOptimizedStatement(insertStatement));
         result.setRoutingResult(new RoutingResult());
         return result;

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.optimize.sharding.statement.dml;
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.shardingsphere.core.optimize.api.segment.OptimizedInsertValue;
+import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
 import org.apache.shardingsphere.core.optimize.api.segment.Tables;
 import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.encrypt.condition.EncryptCondition;
@@ -52,7 +52,7 @@ public final class ShardingInsertOptimizedStatement extends ShardingConditionOpt
     
     private final GeneratedKey generatedKey;
     
-    private final List<OptimizedInsertValue> optimizedInsertValues = new LinkedList<>();
+    private final List<InsertValue> insertValues = new LinkedList<>();
     
     public ShardingInsertOptimizedStatement(final SQLStatement sqlStatement, 
                                             final List<ShardingCondition> shardingConditions, final ShardingInsertColumns insertColumns, final GeneratedKey generatedKey) {
@@ -63,7 +63,7 @@ public final class ShardingInsertOptimizedStatement extends ShardingConditionOpt
     }
     
     /**
-     * Create optimized insert value.
+     * Create insert value.
      *
      * @param generateKeyColumnName generate key column name
      * @param derivedColumnNames derived column names
@@ -71,23 +71,23 @@ public final class ShardingInsertOptimizedStatement extends ShardingConditionOpt
      * @param derivedColumnsCount derived columns count
      * @param parameters SQL parameters
      * @param startIndexOfAppendedParameters start index of appended parameters
-     * @return optimized insert value
+     * @return insert value
      */
-    public OptimizedInsertValue createOptimizedInsertValue(final String generateKeyColumnName, final Collection<String> derivedColumnNames, final Collection<ExpressionSegment> assignments, 
-                                                           final int derivedColumnsCount, final List<Object> parameters, final int startIndexOfAppendedParameters) {
+    public InsertValue createInsertValue(final String generateKeyColumnName, final Collection<String> derivedColumnNames, final Collection<ExpressionSegment> assignments,
+                                         final int derivedColumnsCount, final List<Object> parameters, final int startIndexOfAppendedParameters) {
         List<String> allColumnNames = new LinkedList<>(insertColumns.getRegularColumnNames());
         allColumnNames.add(generateKeyColumnName);
         allColumnNames.addAll(derivedColumnNames);
-        return new OptimizedInsertValue(allColumnNames, assignments, derivedColumnsCount, parameters, startIndexOfAppendedParameters);
+        return new InsertValue(allColumnNames, assignments, derivedColumnsCount, parameters, startIndexOfAppendedParameters);
     }
     
     /**
-     * Add optimized insert value.
+     * Add insert value.
      *
-     * @param  optimizedInsertValue optimized insert value
+     * @param  insertValue insert value
      */
-    public void addOptimizedInsertValue(final OptimizedInsertValue optimizedInsertValue) {
-        optimizedInsertValues.add(optimizedInsertValue);
+    public void addInsertValue(final InsertValue insertValue) {
+        insertValues.add(insertValue);
     }
     
     /**

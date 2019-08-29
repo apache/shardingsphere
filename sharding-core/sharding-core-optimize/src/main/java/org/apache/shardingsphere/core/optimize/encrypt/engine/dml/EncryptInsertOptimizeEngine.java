@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.optimize.encrypt.engine.dml;
 
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.optimize.api.segment.OptimizedInsertValue;
+import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
 import org.apache.shardingsphere.core.optimize.encrypt.engine.EncryptOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptInsertOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
@@ -44,38 +44,37 @@ public final class EncryptInsertOptimizeEngine implements EncryptOptimizeEngine<
         Collection<String> columnNames = sqlStatement.useDefaultColumns() ? tableMetas.getAllColumnNames(sqlStatement.getTable().getTableName()) : sqlStatement.getColumnNames();
         int derivedColumnCount = encryptRule.getAssistedQueryAndPlainColumnCount(sqlStatement.getTable().getTableName());
         for (Collection<ExpressionSegment> each : sqlStatement.getAllValueExpressions()) {
-            OptimizedInsertValue optimizedInsertValue = result.addOptimizedInsertValue(encryptDerivedColumnNames, each, derivedColumnCount, parameters, parametersCount);
-            Object[] currentParameters = optimizedInsertValue.getParameters();
+            InsertValue insertValue = result.addInsertValue(encryptDerivedColumnNames, each, derivedColumnCount, parameters, parametersCount);
+            Object[] currentParameters = insertValue.getParameters();
             if (encryptRule.containsQueryAssistedColumn(sqlStatement.getTable().getTableName())) {
-                fillAssistedQueryOptimizedInsertValue(encryptRule, Arrays.asList(currentParameters), sqlStatement.getTable().getTableName(), columnNames, optimizedInsertValue);
+                fillAssistedQueryInsertValue(encryptRule, Arrays.asList(currentParameters), sqlStatement.getTable().getTableName(), columnNames, insertValue);
             }
             if (encryptRule.containsPlainColumn(sqlStatement.getTable().getTableName())) {
-                fillPlainOptimizedInsertValue(encryptRule, Arrays.asList(currentParameters), sqlStatement.getTable().getTableName(), columnNames, optimizedInsertValue);
+                fillPlainInsertValue(encryptRule, Arrays.asList(currentParameters), sqlStatement.getTable().getTableName(), columnNames, insertValue);
             }
-            parametersCount += optimizedInsertValue.getParametersCount();
+            parametersCount += insertValue.getParametersCount();
         }
         return result;
     }
     
-    private void fillAssistedQueryOptimizedInsertValue(final EncryptRule encryptRule, final List<Object> parameters,
-                                                       final String tableName, final Collection<String> columnNames, final OptimizedInsertValue optimizedInsertValue) {
+    private void fillAssistedQueryInsertValue(final EncryptRule encryptRule, 
+                                              final List<Object> parameters, final String tableName, final Collection<String> columnNames, final InsertValue insertValue) {
         for (String each : columnNames) {
             if (encryptRule.isLogicColumn(tableName, each) || encryptRule.isCipherColumn(tableName, each)) {
                 String logicColumn = encryptRule.isLogicColumn(tableName, each) ? each : encryptRule.getLogicColumn(tableName, each);
                 if (encryptRule.getAssistedQueryColumn(tableName, logicColumn).isPresent()) {
-                    optimizedInsertValue.appendValue((Comparable<?>) optimizedInsertValue.getValue(logicColumn), parameters);
+                    insertValue.appendValue((Comparable<?>) insertValue.getValue(logicColumn), parameters);
                 }
             }
         }
     }
     
-    private void fillPlainOptimizedInsertValue(final EncryptRule encryptRule, final List<Object> parameters, 
-                                               final String tableName, final Collection<String> columnNames, final OptimizedInsertValue optimizedInsertValue) {
+    private void fillPlainInsertValue(final EncryptRule encryptRule, final List<Object> parameters, final String tableName, final Collection<String> columnNames, final InsertValue insertValue) {
         for (String each : columnNames) {
             if (encryptRule.isLogicColumn(tableName, each) || encryptRule.isCipherColumn(tableName, each)) {
                 String logicColumn = encryptRule.isLogicColumn(tableName, each) ? each : encryptRule.getLogicColumn(tableName, each);
                 if (encryptRule.getPlainColumn(tableName, logicColumn).isPresent()) {
-                    optimizedInsertValue.appendValue((Comparable<?>) optimizedInsertValue.getValue(logicColumn), parameters);
+                    insertValue.appendValue((Comparable<?>) insertValue.getValue(logicColumn), parameters);
                 }
             }
         }

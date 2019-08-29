@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.rewrite.builder;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.optimize.api.segment.OptimizedInsertValue;
+import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
 import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.rule.DataNode;
@@ -46,7 +46,7 @@ public final class InsertParameterBuilder implements ParameterBuilder {
     
     private List<InsertParameterUnit> createInsertParameterUnits(final InsertOptimizedStatement optimizedStatement) {
         List<InsertParameterUnit> result = new LinkedList<>();
-        for (OptimizedInsertValue each : optimizedStatement.getOptimizedInsertValues()) {
+        for (InsertValue each : optimizedStatement.getInsertValues()) {
             result.add(new InsertParameterUnit(Arrays.asList(each.getParameters()), each.getDataNodes()));
         }
         return result;

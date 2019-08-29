@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.optimize.sharding.engnie.dml;
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.optimize.api.segment.OptimizedInsertValue;
+import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
 import org.apache.shardingsphere.core.optimize.sharding.engnie.ShardingOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.sharding.segment.condition.engine.InsertClauseShardingConditionEngine;
@@ -70,20 +70,20 @@ public final class ShardingInsertOptimizeEngine implements ShardingOptimizeEngin
         for (Collection<ExpressionSegment> each : sqlStatement.getAllValueExpressions()) {
             String generateKeyColumnName = shardingRule.findGenerateKeyColumnName(sqlStatement.getTable().getTableName()).orNull();
             Collection<String> encryptDerivedColumnNames = shardingRule.getEncryptRule().getAssistedQueryAndPlainColumns(sqlStatement.getTable().getTableName());
-            OptimizedInsertValue optimizedInsertValue = result.createOptimizedInsertValue(
+            InsertValue insertValue = result.createInsertValue(
                     generateKeyColumnName, encryptDerivedColumnNames, each, derivedColumnsCount, parameters, parametersCount);
-            result.addOptimizedInsertValue(optimizedInsertValue);
-            Object[] currentParameters = optimizedInsertValue.getParameters();
+            result.addInsertValue(insertValue);
+            Object[] currentParameters = insertValue.getParameters();
             if (isGeneratedValue) {
-                optimizedInsertValue.appendValue(generatedValues.next(), Arrays.asList(currentParameters));
+                insertValue.appendValue(generatedValues.next(), Arrays.asList(currentParameters));
             }
             if (shardingRule.getEncryptRule().containsQueryAssistedColumn(tableName)) {
-                fillAssistedQueryOptimizedInsertValue(shardingRule, tableName, insertColumns.getRegularColumnNames(), optimizedInsertValue, Arrays.asList(currentParameters));
+                fillAssistedQueryInsertValue(shardingRule, tableName, insertColumns.getRegularColumnNames(), insertValue, Arrays.asList(currentParameters));
             }
             if (shardingRule.getEncryptRule().containsPlainColumn(tableName)) {
-                fillPlainOptimizedInsertValue(shardingRule, tableName, insertColumns.getRegularColumnNames(), optimizedInsertValue, Arrays.asList(currentParameters));
+                fillPlainInsertValue(shardingRule, tableName, insertColumns.getRegularColumnNames(), insertValue, Arrays.asList(currentParameters));
             }
-            parametersCount += optimizedInsertValue.getParametersCount();
+            parametersCount += insertValue.getParametersCount();
         }
         return result;
     }
@@ -109,20 +109,20 @@ public final class ShardingInsertOptimizeEngine implements ShardingOptimizeEngin
         return isGeneratedValue ? assistedQueryAndPlainColumnsCount + 1 : assistedQueryAndPlainColumnsCount;
     }
     
-    private void fillAssistedQueryOptimizedInsertValue(final ShardingRule shardingRule,
-                                                       final String tableName, final Collection<String> columnNames, final OptimizedInsertValue optimizedInsertValue, final List<Object> parameters) {
+    private void fillAssistedQueryInsertValue(final ShardingRule shardingRule,
+                                              final String tableName, final Collection<String> columnNames, final InsertValue insertValue, final List<Object> parameters) {
         for (String each : columnNames) {
             if (shardingRule.getEncryptRule().getAssistedQueryColumn(tableName, each).isPresent()) {
-                optimizedInsertValue.appendValue((Comparable<?>) optimizedInsertValue.getValue(each), parameters);
+                insertValue.appendValue((Comparable<?>) insertValue.getValue(each), parameters);
             }
         }
     }
     
-    private void fillPlainOptimizedInsertValue(final ShardingRule shardingRule,
-                                               final String tableName, final Collection<String> columnNames, final OptimizedInsertValue optimizedInsertValue, final List<Object> parameters) {
+    private void fillPlainInsertValue(final ShardingRule shardingRule,
+                                      final String tableName, final Collection<String> columnNames, final InsertValue insertValue, final List<Object> parameters) {
         for (String each : columnNames) {
             if (shardingRule.getEncryptRule().getPlainColumn(tableName, each).isPresent()) {
-                optimizedInsertValue.appendValue((Comparable<?>) optimizedInsertValue.getValue(each), parameters);
+                insertValue.appendValue((Comparable<?>) insertValue.getValue(each), parameters);
             }
         }
     }

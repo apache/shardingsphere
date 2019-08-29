@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.rewrite.builder;
 
-import org.apache.shardingsphere.core.optimize.api.segment.OptimizedInsertValue;
+import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
 import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.route.type.TableUnit;
@@ -43,14 +43,14 @@ public final class InsertParameterBuilderTest {
     }
     
     private InsertOptimizedStatement createInsertOptimizedStatement() {
-        OptimizedInsertValue optimizedInsertValue1 = mock(OptimizedInsertValue.class);
-        when(optimizedInsertValue1.getParameters()).thenReturn(new Object[] {3, 4});
-        when(optimizedInsertValue1.getDataNodes()).thenReturn(Collections.singletonList(new DataNode("db1.tb1")));
-        OptimizedInsertValue optimizedInsertValue2 = mock(OptimizedInsertValue.class);
-        when(optimizedInsertValue2.getParameters()).thenReturn(new Object[] {5, 6});
-        when(optimizedInsertValue2.getDataNodes()).thenReturn(Collections.singletonList(new DataNode("db2.tb2")));
+        InsertValue insertValue1 = mock(InsertValue.class);
+        when(insertValue1.getParameters()).thenReturn(new Object[] {3, 4});
+        when(insertValue1.getDataNodes()).thenReturn(Collections.singletonList(new DataNode("db1.tb1")));
+        InsertValue insertValue2 = mock(InsertValue.class);
+        when(insertValue2.getParameters()).thenReturn(new Object[] {5, 6});
+        when(insertValue2.getDataNodes()).thenReturn(Collections.singletonList(new DataNode("db2.tb2")));
         InsertOptimizedStatement result = mock(InsertOptimizedStatement.class);
-        when(result.getOptimizedInsertValues()).thenReturn(Arrays.asList(optimizedInsertValue1, optimizedInsertValue2));
+        when(result.getInsertValues()).thenReturn(Arrays.asList(insertValue1, insertValue2));
         return result;
     }
     
