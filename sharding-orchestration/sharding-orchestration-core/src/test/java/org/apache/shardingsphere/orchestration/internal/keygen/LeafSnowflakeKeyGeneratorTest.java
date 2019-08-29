@@ -86,7 +86,7 @@ public final class LeafSnowflakeKeyGeneratorTest {
             actual.add(leafSnowflakeKeyGenerator.generateKey());
         }
         assertThat(actual, is(expected));
-    }    
+    }
     
     @Test
     public void assertGenerateKeyWithFixedWorkId() {
