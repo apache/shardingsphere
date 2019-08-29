@@ -31,6 +31,8 @@ shardingRule:
           algorithmExpression: t_order_item_${order_id % 2}  
   bindingTables:
     - t_order,t_order_item
+  broadcastTables:
+    - t_address
   
   defaultDatabaseStrategy:
     inline:

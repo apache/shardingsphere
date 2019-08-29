@@ -39,8 +39,11 @@
                 <sharding:table-rule logic-table="t_order_item" actual-data-nodes="demo_ds.t_order_item_${0..1}" table-strategy-ref="orderItemTableStrategy" key-generator-ref="itemKeyGenerator" />
             </sharding:table-rules>
             <sharding:binding-table-rules>
-                <sharding:binding-table-rule logic-tables="t_order, t_order_item"/>
+                <sharding:binding-table-rule logic-tables="t_order,t_order_item"/>
             </sharding:binding-table-rules>
+            <sharding:broadcast-table-rules>
+                <sharding:broadcast-table-rule table="t_address"/>
+            </sharding:broadcast-table-rules>
         </sharding:sharding-rule>
         <sharding:props>
             <prop key="sql.show">false</prop>

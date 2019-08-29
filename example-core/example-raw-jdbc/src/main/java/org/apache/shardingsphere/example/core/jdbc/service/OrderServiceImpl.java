@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.example.core.jdbc.service;
 
+import org.apache.shardingsphere.example.core.api.entity.Address;
 import org.apache.shardingsphere.example.core.api.entity.Order;
 import org.apache.shardingsphere.example.core.api.entity.OrderItem;
 import org.apache.shardingsphere.example.core.api.repository.AddressRepository;
@@ -58,12 +59,33 @@ public final class OrderServiceImpl implements ExampleService {
         orderItemRepository.createTableIfNotExists();
         orderRepository.truncateTable();
         orderItemRepository.truncateTable();
+        initAddressTable();
+    }
+    
+    private void initAddressTable() throws SQLException {
+        addressRepository.createTableIfNotExists();
+        addressRepository.truncateTable();
+        initAddressData();
+    }
+    
+    private void initAddressData() throws SQLException {
+        for (int i = 0; i < 10; i++) {
+            insertAddress(i);
+        }
+    }
+    
+    private void insertAddress(final int i) throws SQLException {
+        Address address = new Address();
+        address.setAddressCode(String.valueOf(i));
+        address.setAddressName("address_" + i);
+        addressRepository.insert(address);
     }
     
     @Override
     public void cleanEnvironment() throws SQLException {
         orderRepository.dropTable();
         orderItemRepository.dropTable();
+        addressRepository.dropTable();
     }
     
     @Override
@@ -88,18 +110,27 @@ public final class OrderServiceImpl implements ExampleService {
         System.out.println("---------------------------- Insert Data ----------------------------");
         List<Long> result = new ArrayList<>(10);
         for (int i = 1; i <= 10; i++) {
-            Order order = new Order();
-            order.setUserId(i);
-            order.setStatus("INSERT_TEST");
-            orderRepository.insert(order);
-            OrderItem item = new OrderItem();
-            item.setOrderId(order.getOrderId());
-            item.setUserId(i);
-            item.setStatus("INSERT_TEST");
-            orderItemRepository.insert(item);
+            Order order = insertOrder(i);
+            insertOrderItem(i, order);
             result.add(order.getOrderId());
         }
         return result;
+    }
+    
+    private Order insertOrder(final int i) throws SQLException {
+        Order order = new Order();
+        order.setUserId(i);
+        order.setStatus("INSERT_TEST");
+        orderRepository.insert(order);
+        return order;
+    }
+    
+    private void insertOrderItem(final int i, final Order order) throws SQLException {
+        OrderItem item = new OrderItem();
+        item.setOrderId(order.getOrderId());
+        item.setUserId(i);
+        item.setStatus("INSERT_TEST");
+        orderItemRepository.insert(item);
     }
     
     private void deleteData(final List<Long> orderIds) throws SQLException {

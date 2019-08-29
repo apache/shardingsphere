@@ -33,6 +33,8 @@ shardingRule:
           worker.id: 123        
   bindingTables:
     - t_order,t_order_item
+  broadcastTables:
+    - t_address
 
 props:
   sql.show: false
