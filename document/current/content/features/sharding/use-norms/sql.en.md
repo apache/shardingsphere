@@ -16,41 +16,41 @@ It is inevitably to have some unlisted SQLs, welcome to supplement for that. We 
 
 - 100% compatible（MySQL only, we are completing other databases).
 
-### Route to multiple data nodes or non-MySQL database
+### Route to multiple data nodes
 
-Fully support DQL, DML, DDL, DCL, TCL and some DAL for MySQL. Support pagination, DISTINCT, ORDER BY, GROUP BY, aggregation and JOIN (does not support cross-database relevance). Here is an example of a most complex kind of DQL:
+Fully support DML, DDL, DCL, TCL and some DAL. Support pagination, DISTINCT, ORDER BY, GROUP BY, aggregation and JOIN (does not support cross-database relevance). Here is an example of a most complex kind of DML:
 
 - Main SELECT
 
 ```sql
 SELECT select_expr [, select_expr ...] FROM table_reference [, table_reference ...]
-[WHERE where_condition] 
-[GROUP BY {col_name | position} [ASC | DESC]] 
-[ORDER BY {col_name | position} [ASC | DESC], ...] 
+[WHERE predicates]
+[GROUP BY {col_name | position} [ASC | DESC], ...]
+[ORDER BY {col_name | position} [ASC | DESC], ...]
 [LIMIT {[offset,] row_count | row_count OFFSET offset}]
 ```
 
 - select_expr
 
 ```sql
-* | 
-[DISTINCT] COLUMN_NAME [AS] [alias] | 
-(MAX | MIN | SUM | AVG)(COLUMN_NAME | alias) [AS] [alias] | 
-COUNT(* | COLUMN_NAME | alias) [AS] [alias]
+*
+| [DISTINCT] COLUMN_NAME [AS] [alias]
+| (MAX | MIN | SUM | AVG)(COLUMN_NAME | alias) [AS] [alias]
+| COUNT(* | COLUMN_NAME | alias) [AS] [alias]
 ```
 
 - table_reference
 
 ```sql
-tbl_name [AS] alias] [index_hint_list] | 
-table_reference ([INNER] | {LEFT|RIGHT} [OUTER]) JOIN table_factor [JOIN ON conditional_expr | USING (column_list)] | 
+tbl_name [AS] alias] [index_hint_list]
+| table_reference ([INNER] | {LEFT|RIGHT} [OUTER]) JOIN table_factor [JOIN ON conditional_expr | USING (column_list)]
 ```
 
 ## Unsupported SQL
 
-### Route to multiple data nodes or non-MySQL database
+### Route to multiple data nodes
 
-Do not support redundant parentheses, CASE WHEN, HAVING and UNION (ALL) and partly available sub-query.
+Do not support CASE WHEN, HAVING and UNION (ALL) and partly available sub-query.
 
 Support not only pagination sub-query (see [pagination](https://shardingsphere.apache.org/document/current/cn/features/sharding/usage-standard/pagination) for more details), but also sub-query with the same mode. No matter how many layers are nested, ShardingSphere can parse to the first sub-query that contains data table. Once it finds another sub-query of this kind in the sub-level nested, it will directly throw a parsing exception.
 
@@ -94,47 +94,45 @@ Do not support SQL that contains schema, for the concept of ShardingSphere is to
 | TRUNCATE TABLE tbl_name                                                                     |                                         |
 | CREATE INDEX idx_name ON tbl_name                                                           |                                         |
 | DROP INDEX idx_name ON tbl_name                                                             |                                         |
-| DROP INDEX idx_name                                                                         |  Logic-index is configured in TableRule |
+| DROP INDEX idx_name                                                                         |                                         |
 | SELECT DISTINCT * FROM tbl_name WHERE col1 = ?                                              |                                         |
 | SELECT COUNT(DISTINCT col1) FROM tbl_name                                                   |                                         |
 
 ### Unsupported SQL
 
-| SQL                                                          | Reason                                              |
-| ------------------------------------------------------------ | --------------------------------------------------- |
-| INSERT INTO tbl_name (col1, col2, ...) VALUES(1+2, ?, ...)   | VALUES clause does not support operation expression |
+| SQL                                                                                        | Reason                                              |
+| ------------------------------------------------------------------------------------------ | --------------------------------------------------- |
+| INSERT INTO tbl_name (col1, col2, ...) VALUES(1+2, ?, ...)                                 | VALUES clause does not support operation expression |
 | INSERT INTO tbl_name (col1, col2, ...) SELECT col1, col2, ... FROM tbl_name WHERE col3 = ? | INSERT .. SELECT                                    |
-| INSERT INTO tbl_name SET col1 = ?                            | INSERT .. SET                                       |
-| SELECT COUNT(col1) as count_alias FROM tbl_name GROUP BY col1 HAVING count_alias > ? | HAVING                                              |
-| SELECT * FROM tbl_name1 UNION SELECT * FROM tbl_name2        | UNION                                               |
-| SELECT * FROM tbl_name1 UNION ALL SELECT * FROM tbl_name2    | UNION ALL                                           |
-| SELECT * FROM tbl_name1 WHERE (val1=?) AND (val1=?)          | Redundant parentheses (MySQL is already available)  |
-| SELECT * FROM ds.tbl_name1                                   | Contain schema                                      |
-| SELECT SUM(DISTINCT col1), SUM(col1) FROM tbl_name           | See `DISTINCT` availability detail                  |
+| SELECT COUNT(col1) as count_alias FROM tbl_name GROUP BY col1 HAVING count_alias > ?       | HAVING                                              |
+| SELECT * FROM tbl_name1 UNION SELECT * FROM tbl_name2                                      | UNION                                               |
+| SELECT * FROM tbl_name1 UNION ALL SELECT * FROM tbl_name2                                  | UNION ALL                                           |
+| SELECT * FROM ds.tbl_name1                                                                 | Contain schema                                      |
+| SELECT SUM(DISTINCT col1), SUM(col1) FROM tbl_name                                         | See DISTINCT availability detail                    |
 
 ## DISTINCT Availability Explanation
 
 ### Supported SQL
 
-| SQL                                                                                         | Conditions                    |
-| ------------------------------------------------------------------------------------------- | ----------------------------------- |
-| SELECT DISTINCT * FROM tbl_name WHERE col1 = ?                                              |                                     |
-| SELECT DISTINCT col1 FROM tbl_name                                                          |                                     |
-| SELECT DISTINCT col1, col2, col3 FROM tbl_name                                              |                                     |
-| SELECT DISTINCT col1 FROM tbl_name ORDER BY col1                                            |                                     |
-| SELECT DISTINCT col1 FROM tbl_name ORDER BY col2                                            |                                     |
-| SELECT DISTINCT(col1) FROM tbl_name                                                         | MySQL                               |
-| SELECT AVG(DISTINCT col1) FROM tbl_name                                                     | MySQL                               |
-| SELECT SUM(DISTINCT col1) FROM tbl_name                                                     | MySQL                               |
-| SELECT COUNT(DISTINCT col1) FROM tbl_name                                                   | MySQL                               |
-| SELECT COUNT(DISTINCT col1) FROM tbl_name GROUP BY col1                                     | MySQL                               |
-| SELECT COUNT(DISTINCT col1 + col2) FROM tbl_name                                            | MySQL                               |
-| SELECT COUNT(DISTINCT col1), SUM(DISTINCT col1) FROM tbl_name                               | MySQL                               |
-| SELECT COUNT(DISTINCT col1), col1 FROM tbl_name GROUP BY col1                               | MySQL                               |
-| SELECT col1, COUNT(DISTINCT col1) FROM tbl_name GROUP BY col1                               | MySQL                               |
+| SQL                                                           |
+| ------------------------------------------------------------- |
+| SELECT DISTINCT * FROM tbl_name WHERE col1 = ?                |
+| SELECT DISTINCT col1 FROM tbl_name                            |
+| SELECT DISTINCT col1, col2, col3 FROM tbl_name                |
+| SELECT DISTINCT col1 FROM tbl_name ORDER BY col1              |
+| SELECT DISTINCT col1 FROM tbl_name ORDER BY col2              |
+| SELECT DISTINCT(col1) FROM tbl_name                           |
+| SELECT AVG(DISTINCT col1) FROM tbl_name                       |
+| SELECT SUM(DISTINCT col1) FROM tbl_name                       |
+| SELECT COUNT(DISTINCT col1) FROM tbl_name                     |
+| SELECT COUNT(DISTINCT col1) FROM tbl_name GROUP BY col1       |
+| SELECT COUNT(DISTINCT col1 + col2) FROM tbl_name              |
+| SELECT COUNT(DISTINCT col1), SUM(DISTINCT col1) FROM tbl_name |
+| SELECT COUNT(DISTINCT col1), col1 FROM tbl_name GROUP BY col1 |
+| SELECT col1, COUNT(DISTINCT col1) FROM tbl_name GROUP BY col1 |
 
 ### Unsupported SQL
 
-| SQL                                                | Reason                                                       |
-| -------------------------------------------------- | ------------------------------------------------------------ |
+| SQL                                                | Reason                                                                             |
+| -------------------------------------------------- | ---------------------------------------------------------------------------------- |
 | SELECT SUM(DISTINCT col1), SUM(col1) FROM tbl_name | Use normal aggregation function and DISTINCT aggregation function in the same time |

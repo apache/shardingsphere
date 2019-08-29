@@ -94,20 +94,34 @@ props:
 ```
 
 ### Data Masking
+
 ```yaml
 dataSource:  !!org.apache.commons.dbcp2.BasicDataSource
   driverClassName: com.mysql.jdbc.Driver
   jdbcUrl: jdbc:mysql://127.0.0.1:3306/encrypt?serverTimezone=UTC&useSSL=false
   username: root
   password:
-  
+
 encryptRule:
   encryptors:
-    order_encryptor:
+    encryptor_aes:
       type: aes
-      qualifiedColumns: t_order.user_id
       props:
-        aes.key.value: 123456
+        aes.key.value: 123456abc
+    encryptor_md5:
+      type: md5
+  tables:
+    t_encrypt:
+      columns:
+        user_id:
+          plainColumn: user_plain
+          cipherColumn: user_cipher
+          encryptor: encryptor_aes
+        order_id:
+          cipherColumn: order_cipher
+          encryptor: encryptor_md5
+  props:
+    query.with.cipher.column: true
 ```
 
 ### Data Sharding + Read-Write Split
@@ -244,13 +258,20 @@ shardingRule:
   
   defaultTableStrategy:
     none:
+
   encryptRule:
     encryptors:
-      order_encryptor:
-        type: AES
-        qualifiedColumns: t_order.order_id
+      encryptor_aes:
+        type: aes
         props:
-          aes.key.value: 123456 
+          aes.key.value: 123456abc
+    tables:
+      t_order:
+        columns:
+          order_id:
+            plainColumn: order_plain
+            cipherColumn: order_cipher
+            encryptor: encryptor_aes
 
 props:
   sql.show: true
@@ -304,10 +325,9 @@ shardingRule:
       tableStrategy: #Tables sharding strategy, Same as databases sharding strategy
       keyGenerator:   
         column: #Column name of key generator
-        type: #Type of key generator, use default key generator if absent
+        type: #Type of key generator, use default key generator if absent, and there are three types to choose, that is, SNOWFLAKE/UUID/LEAF_SEGMENT
         props: #Properties, Notice: when use SNOWFLAKE, `worker.id` and `max.tolerate.time.difference.milliseconds` for `SNOWFLAKE` need to be set         
-        
-      logicIndex: #Name if logic index. If use `DROP INDEX XXX` SQL in Oracle/PostgreSQL, This property needs to be set for finding the actual tables
+
   bindingTables: #Binding table rule configurations
   - <logic_table_name1, logic_table_name2, ...> 
   - <logic_table_name3, logic_table_name4, ...>
@@ -330,12 +350,14 @@ shardingRule:
       masterDataSourceName: #more details can reference Read-write splitting part
       slaveDataSourceNames: #more details can reference Read-write splitting part
       loadBalanceAlgorithmType: #more details can reference Read-write splitting part
-      loadBalanceAlgorithmClassName: #more details can reference Read-write splitting part
+      props: #Properties configuration of load balance algorithm
+            <property-name>: #property key value pair
 
 props: #Properties
   sql.show: #To show SQLS or not, default value: false
   executor.size: #The number of working threads, default value: CPU count
   check.table.metadata.enabled: #To check the metadata consistency of all the tables or not, default value : false
+  max.connections.size.per.query: #The maximum connection number allocated by each query of each physical database. default value: 1
 ```
 
 ### Read-Write Split
@@ -350,13 +372,15 @@ masterSlaveRule:
     - <data_source_name1>
     - <data_source_name2>
     - <data_source_name_x>
-  loadBalanceAlgorithmClassName: #Slave database load balance algorithm class name; the class should implement MasterSlaveLoadBalanceAlgorithm interface and provide parameter-free constructor
   loadBalanceAlgorithmType: #Slave database load balance algorithm type; optional value, ROUND_ROBIN and RANDOM, can be omitted if `loadBalanceAlgorithmClassName` exists
+  props: #Properties configuration of load balance algorithm
+      <property-name>: #property key value pair
   
 props: #Property configuration
   sql.show: #Show SQL or not; default value: false
   executor.size: #Executing thread number; default value: CPU core number
   check.table.metadata.enabled: # Whether to check table metadata consistency when it initializes; default value: false
+  max.connections.size.per.query: #The maximum connection number allocated by each query of each physical database. default value: 1
 ```
 
 ### Data Masking
@@ -365,12 +389,18 @@ dataSource: #Ignore data sources configuration
 
 encryptRule:
   encryptors:
-    encryptor_name: #Encryptor name
-      type: #Type of encryptor，use user-defined ones or built-in ones, e.g. MD5/AES
-      qualifiedColumns: #Column names to be encrypted, the format is `tableName`.`columnName`, e.g. tb.col1. When configuring multiple column names, separate them with commas
-      assistedQueryColumns: #AssistedColumns for query，when use ShardingQueryAssistedEncryptor, it can help query encrypted data
-      props: #Properties, Notice: when use AES encryptor, `aes.key.value` for AES encryptor need to be set
-        aes.key.value:
+    <encryptor-name>:
+      type: #encryptor type
+      props: #Properties, e.g. `aes.key.value` for AES encryptor
+        aes.key.value: 
+  tables:
+    <table-name>:
+      columns:
+        <logic-column-name>:
+          plainColumn: #plaintext column name
+          cipherColumn: #ciphertext column name
+          assistedQueryColumn: #AssistedColumns for query，when use ShardingQueryAssistedEncryptor, it can help query encrypted data
+          encryptor: #encrypt name
 ```
 
 ### Orchestration
@@ -385,6 +415,7 @@ orchestration:
   name: #Orchestration instance name
   overwrite: #Whether to overwrite local configurations with registry center configurations; if it can, each initialization should refer to local configurations
   registry: #Registry center configuration
+    type: #Registry center type. Example:zookeeper
     serverLists: #The list of servers that connect to registry center, including IP and port number; use commas to seperate addresses, such as: host1:2181,host2:2181
     namespace: #Registry center namespace
     digest: #The token that connects to the registry center; default means there is no need for authentication

@@ -22,8 +22,8 @@ As the first product and the predecessor of ShardingSphere, Sharding-JDBC define
 |                        | *Sharding-JDBC* | *Sharding-Proxy*     | *Sharding-Sidecar* |
 | ---------------------- | --------------- | -------------------- | ------------------ |
 | Database               | `Any`           | MySQL/PostgreSQL     | MySQL/PostgreSQL   |
-| Connections Cost       | `More`          | Less                 | More               |
-| Heterogeneous Language | `Java Only`     | Any                  | Any                |
+| Connections Count Cost | `More`          | Less                 | More               |
+| Supported Languages    | `Java Only`     | Any                  | Any                |
 | Performance            | `Low loss`      | Relatively High loss | Low loss           |
 | Decentralization       | `Yes`           | No                   | No                 |
 | Static Entry           | `No`            | Yes                  | No                 |

@@ -58,4 +58,4 @@ Please refer to the following picture for the detailed structure of snowflake al
 
 ### LEAF
 
-We have referred [Leaf](https://tech.meituan.com/2017/04/21/mt-leaf.html), Meituan's distributed ID generation system, to generate a distributed auto-increment key through the registry center. Its algorithms are being developed.
+We have referred [Leaf](https://tech.meituan.com/2017/04/21/mt-leaf.html), Meituan's distributed ID generation system, including Leaf-segment and Leaf-snowflake. Currently, Leaf-segment can be used in ShardingSphere.

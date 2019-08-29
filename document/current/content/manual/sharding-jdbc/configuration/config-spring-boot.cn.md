@@ -31,10 +31,12 @@ spring.shardingsphere.sharding.tables.t_order.actual-data-nodes=ds$->{0..1}.t_or
 spring.shardingsphere.sharding.tables.t_order.table-strategy.inline.sharding-column=order_id
 spring.shardingsphere.sharding.tables.t_order.table-strategy.inline.algorithm-expression=t_order$->{order_id % 2}
 spring.shardingsphere.sharding.tables.t_order.key-generator.column=order_id
+spring.shardingsphere.sharding.tables.t_order.key-generator.type=SNOWFLAKE
 spring.shardingsphere.sharding.tables.t_order_item.actual-data-nodes=ds$->{0..1}.t_order_item$->{0..1}
 spring.shardingsphere.sharding.tables.t_order_item.table-strategy.inline.sharding-column=order_id
 spring.shardingsphere.sharding.tables.t_order_item.table-strategy.inline.algorithm-expression=t_order_item$->{order_id % 2}
 spring.shardingsphere.sharding.tables.t_order_item.key-generator.column=order_item_id
+spring.shardingsphere.sharding.tables.t_order_item.key-generator.type=SNOWFLAKE
 spring.shardingsphere.sharding.binding-tables=t_order,t_order_item
 spring.shardingsphere.sharding.broadcast-tables=t_config
 
@@ -85,9 +87,15 @@ spring.shardingsphere.datasource.ds.username=root
 spring.shardingsphere.datasource.ds.password=
 spring.shardingsphere.datasource.ds.max-total=100
 
-spring.shardingsphere.encrypt.encryptors.order_encrypt.type=aes
-spring.shardingsphere.encrypt.encryptors.order_encrypt.qualifiedColumns=t_order.user_id
-spring.shardingsphere.encrypt.encryptors.order_encrypt.props.aes.key.value=123456
+spring.shardingsphere.encrypt.encryptors.encryptor_aes.type=aes
+spring.shardingsphere.encrypt.encryptors.encryptor_aes.props.aes.key.value=123456
+spring.shardingsphere.encrypt.tables.t_order.columns.user_id.plainColumn=user_decrypt
+spring.shardingsphere.encrypt.tables.t_order.columns.user_id.cipherColumn=user_encrypt
+spring.shardingsphere.encrypt.tables.t_order.columns.user_id.assistedQueryColumn=user_assisted
+spring.shardingsphere.encrypt.tables.t_order.columns.user_id.encryptor=encryptor_aes
+
+spring.shardingsphere.props.sql.show=true
+spring.shardingsphere.props.query.with.cipher.comlum=true
 ```
 
 ### 数据分片 + 读写分离
@@ -133,10 +141,12 @@ spring.shardingsphere.sharding.tables.t_order.actual-data-nodes=ds$->{0..1}.t_or
 spring.shardingsphere.sharding.tables.t_order.table-strategy.inline.sharding-column=order_id
 spring.shardingsphere.sharding.tables.t_order.table-strategy.inline.algorithm-expression=t_order$->{order_id % 2}
 spring.shardingsphere.sharding.tables.t_order.key-generator.column=order_id
+spring.shardingsphere.sharding.tables.t_order.key-generator.type=SNOWFLAKE
 spring.shardingsphere.sharding.tables.t_order_item.actual-data-nodes=ds$->{0..1}.t_order_item$->{0..1}
 spring.shardingsphere.sharding.tables.t_order_item.table-strategy.inline.sharding-column=order_id
 spring.shardingsphere.sharding.tables.t_order_item.table-strategy.inline.algorithm-expression=t_order_item$->{order_id % 2}
 spring.shardingsphere.sharding.tables.t_order_item.key-generator.column=order_item_id
+spring.shardingsphere.sharding.tables.t_order_item.key-generator.type=SNOWFLAKE
 spring.shardingsphere.sharding.binding-tables=t_order,t_order_item
 spring.shardingsphere.sharding.broadcast-tables=t_config
 
@@ -179,9 +189,12 @@ spring.shardingsphere.sharding.tables.t_order_item.table-strategy.inline.shardin
 spring.shardingsphere.sharding.tables.t_order_item.table-strategy.inline.algorithm-expression=t_order_item_$->{order_id % 2}
 spring.shardingsphere.sharding.tables.t_order_item.key-generator.column=order_item_id
 spring.shardingsphere.sharding.tables.t_order_item.key-generator.type=SNOWFLAKE
-spring.shardingsphere.sharding.encryptRule.encryptors.order_encryptor.qualifiedColumns=t_order.order_id
-spring.shardingsphere.sharding.encryptRule.encryptors.order_encryptor.type=AES
-spring.shardingsphere.sharding.encryptRule.encryptors.order_encryptor.props.aes.key.value=123456
+spring.shardingsphere.encrypt.encryptors.encryptor_aes.type=aes
+spring.shardingsphere.encrypt.encryptors.encryptor_aes.props.aes.key.value=123456
+spring.shardingsphere.encrypt.tables.t_order.columns.user_id.plainColumn=user_decrypt
+spring.shardingsphere.encrypt.tables.t_order.columns.user_id.cipherColumn=user_encrypt
+spring.shardingsphere.encrypt.tables.t_order.columns.user_id.assistedQueryColumn=user_assisted
+spring.shardingsphere.encrypt.tables.t_order.columns.user_id.encryptor=encryptor_aes
 ```
 
 ### 治理
@@ -220,11 +233,9 @@ spring.shardingsphere.sharding.tables.t_order_item.key-generator.column=order_it
 spring.shardingsphere.sharding.binding-tables=t_order,t_order_item
 spring.shardingsphere.sharding.broadcast-tables=t_config
 
-spring.shardingsphere.sharding.default-database-strategy.inline.sharding-column=user_id
-spring.shardingsphere.sharding.default-database-strategy.inline.algorithm-expression=master$->{user_id % 2}
-
 spring.shardingsphere.orchestration.name=spring_boot_ds_sharding
 spring.shardingsphere.orchestration.overwrite=true
+spring.shardingsphere.orchestration.registry.type=zookeeper
 spring.shardingsphere.orchestration.registry.namespace=orchestration-spring-boot-sharding-test
 spring.shardingsphere.orchestration.registry.server-lists=localhost:2181
 ```
@@ -242,10 +253,12 @@ spring.shardingsphere.sharding.tables.t_order.actual-data-nodes=ds$->{0..1}.t_or
 spring.shardingsphere.sharding.tables.t_order.table-strategy.inline.sharding-column=order_id
 spring.shardingsphere.sharding.tables.t_order.table-strategy.inline.algorithm-expression=t_order$->{order_id % 2}
 spring.shardingsphere.sharding.tables.t_order.key-generator.column=order_id
+spring.shardingsphere.sharding.tables.t_order.key-generator.type=SNOWFLAKE
 spring.shardingsphere.sharding.tables.t_order_item.actual-data-nodes=ds$->{0..1}.t_order_item$->{0..1}
 spring.shardingsphere.sharding.tables.t_order_item.table-strategy.inline.sharding-column=order_id
 spring.shardingsphere.sharding.tables.t_order_item.table-strategy.inline.algorithm-expression=t_order_item$->{order_id % 2}
 spring.shardingsphere.sharding.tables.t_order_item.key-generator.column=order_item_id
+spring.shardingsphere.sharding.tables.t_order_item.key-generator.type=SNOWFLAKE
 spring.shardingsphere.sharding.binding-tables=t_order,t_order_item
 spring.shardingsphere.sharding.broadcast-tables=t_config
 
@@ -291,10 +304,8 @@ spring.shardingsphere.sharding.tables.<logic-table-name>.database-strategy.hint.
 spring.shardingsphere.sharding.tables.<logic-table-name>.table-strategy.xxx= #省略
 
 spring.shardingsphere.sharding.tables.<logic-table-name>.key-generator.column= #自增列名称，缺省表示不使用自增主键生成器
-spring.shardingsphere.sharding.tables.<logic-table-name>.key-generator.type= #自增列值生成器类型，缺省表示使用默认自增列值生成器。可使用用户自定义的列值生成器或选择内置类型：SNOWFLAKE/UUID
+spring.shardingsphere.sharding.tables.<logic-table-name>.key-generator.type= #自增列值生成器类型，缺省表示使用默认自增列值生成器。可使用用户自定义的列值生成器或选择内置类型：SNOWFLAKE/UUID/LEAF_SEGMENT
 spring.shardingsphere.sharding.tables.<logic-table-name>.key-generator.props.<property-name>= #属性配置, 注意：使用SNOWFLAKE算法，需要配置worker.id与max.tolerate.time.difference.milliseconds属性
-
-spring.shardingsphere.sharding.tables.<logic-table-name>.logic-index= #逻辑索引名称，对于分表的Oracle/PostgreSQL数据库中DROP INDEX XXX语句，需要通过配置逻辑索引名称定位所执行SQL的真实分表
 
 spring.shardingsphere.sharding.binding-tables[0]= #绑定表规则列表
 spring.shardingsphere.sharding.binding-tables[1]= #绑定表规则列表
@@ -307,7 +318,7 @@ spring.shardingsphere.sharding.broadcast-tables[x]= #广播表规则列表
 spring.shardingsphere.sharding.default-data-source-name= #未配置分片规则的表将通过默认数据源定位
 spring.shardingsphere.sharding.default-database-strategy.xxx= #默认数据库分片策略，同分库策略
 spring.shardingsphere.sharding.default-table-strategy.xxx= #默认表分片策略，同分表策略
-spring.shardingsphere.sharding.default-key-generator.type= #默认自增列值生成器类型，缺省将使用org.apache.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator。可使用用户自定义的列值生成器或选择内置类型：SNOWFLAKE/UUID
+spring.shardingsphere.sharding.default-key-generator.type= #默认自增列值生成器类型，缺省将使用org.apache.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator。可使用用户自定义的列值生成器或选择内置类型：SNOWFLAKE/UUID/LEAF_SEGMENT
 spring.shardingsphere.sharding.default-key-generator.props.<property-name>= #自增列值生成器属性配置, 比如SNOWFLAKE算法的worker.id与max.tolerate.time.difference.milliseconds
 
 spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.master-data-source-name= #详见读写分离部分
@@ -340,10 +351,14 @@ spring.shardingsphere.props.check.table.metadata.enabled= #是否在启动时检
 
 ### 数据脱敏
 ```properties
-spring.shardingsphere.sharding.encryptRule.encryptors.<encryptor-name>.type= #加解密器类型，可自定义或选择内置类型：MD5/AES 
-spring.shardingsphere.sharding.encryptRule.encryptors.<encryptor-name>.qualifiedColumns= #加解密字段，格式为：表名.列名，例如：tb.col1。多个列，请用逗号分隔
-spring.shardingsphere.sharding.encryptRule.encryptors.<encryptor-name>.assistedQueryColumns= #辅助查询字段，针对ShardingQueryAssistedEncryptor类型的加解密器进行辅助查询
-spring.shardingsphere.sharding.encryptRule.encryptors.<encryptor-name>.props.<property-name>= #属性配置, 注意：使用AES加密器，需要配置AES加密器的KEY属性：aes.key.value
+#省略数据源配置，与数据分片一致
+
+spring.shardingsphere.encrypt.encryptors.<encryptor-name>.type= #加解密器类型，可自定义或选择内置类型：MD5/AES 
+spring.shardingsphere.encrypt.encryptors.<encryptor-name>.props.<property-name>= #属性配置, 注意：使用AES加密器，需要配置AES加密器的KEY属性：aes.key.value
+spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.plainColumn= #存储明文的字段
+spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.cipherColumn= #存储密文的字段
+spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.assistedQueryColumn= #辅助查询字段，针对ShardingQueryAssistedEncryptor类型的加解密器进行辅助查询
+spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.encryptor= #加密器名字
 ```
 ### 治理
 

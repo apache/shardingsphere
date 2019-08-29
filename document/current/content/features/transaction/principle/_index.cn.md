@@ -11,3 +11,4 @@ chapter = true
 
 * 两阶段XA事务
 * Saga柔性事务
+* Seata柔性事务

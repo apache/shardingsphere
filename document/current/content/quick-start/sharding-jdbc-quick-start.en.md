@@ -26,5 +26,5 @@ Sharding-JDBC can be configured by four methods, `Java`, `YAML`, `Spring namespa
 Use ShardingDataSourceFactory and rule configuration objects to create ShardingDataSource, which is realized from DataSource,  a standard JDBC interface. Then, users can use native JDBC or JPA, MyBatis and other ORM frameworks to develop.
 
 ```java
-DataSource dataSource = ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig);
+DataSource dataSource = ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig, props);
 ```

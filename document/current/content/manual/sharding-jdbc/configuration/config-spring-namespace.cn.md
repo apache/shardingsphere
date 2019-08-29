@@ -146,7 +146,12 @@ weight = 4
         <property name="password" value="" />
     </bean>
     
-    <bean id="randomStrategy" class="org.apache.shardingsphere.example.spring.namespace.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm" />
+    <!-- 4.0.0-RC1 版本 负载均衡策略配置方式 -->
+    <!-- <bean id="randomStrategy" class="org.apache.shardingsphere.example.spring.namespace.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm" /> -->
+    
+    <!-- 4.0.0-RC2 之后版本 负载均衡策略配置方式 -->
+    <master-slave:load-balance-algorithm id="randomStrategy" type="RANDOM" />
+    
     <master-slave:data-source id="masterSlaveDataSource" master-data-source-name="ds_master" slave-data-source-names="ds_slave0, ds_slave1" strategy-ref="randomStrategy">
             <master-slave:props>
                 <prop key="sql.show">${sql_show}</prop>
@@ -183,9 +188,23 @@ weight = 4
         <prop key="aes.key.value">123456</prop>
     </bean:properties>
     
-    <encrypt:data-source id="encryptDataSource" data-source-name="ds" >
-        <encrypt:encryptor-rule id="pwd_encryptor" type="assistedTest" qualified-columns="t_user.pwd" assisted-query-columns="t_user.assisted_query_pwd" />
-        <encrypt:encryptor-rule id="name_encryptor" type="AES" qualified-columns="t_user.user_name" props-ref="props" />
+    <encrypt:data-source id="encryptDataSource" data-source-name="db" >
+        <encrypt:encrypt-rule>
+            <encrypt:tables>
+                <encrypt:table name="t_order">
+                    <encrypt:column logic-column="user_id" plain-column="user_decrypt" cipher-column="user_encrypt" assisted-query-column="user_assisted" encryptor-ref="encryptor_aes" />
+                    <encrypt:column logic-column="order_id" plain-column="order_decrypt" cipher-column="order_encrypt" assisted-query-column="order_assisted" encryptor-ref="encryptor_md5"/>
+                </encrypt:table>
+            </encrypt:tables>
+            <encrypt:encryptors>
+                <encrypt:encryptor id="encryptor_aes" type="AES" props-ref="props"/>
+                <encrypt:encryptor id="encryptor_md5" type="MD5" />
+            </encrypt:encryptors>
+        </encrypt:encrypt-rule>
+        <encrypt:props>
+            <prop key="sql.show">${sql_show}</prop>
+            <prop key="query.with.cipher.column">true</prop>
+        </encrypt:props>
     </encrypt:data-source>
 </beans>
 ```
@@ -200,6 +219,7 @@ weight = 4
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
+       xmlns:master-slave="http://shardingsphere.apache.org/schema/shardingsphere/masterslave"
        xsi:schemaLocation="http://www.springframework.org/schema/beans 
                         http://www.springframework.org/schema/beans/spring-beans.xsd
                         http://www.springframework.org/schema/context
@@ -207,7 +227,9 @@ weight = 4
                         http://www.springframework.org/schema/tx
                         http://www.springframework.org/schema/tx/spring-tx.xsd
                         http://shardingsphere.apache.org/schema/shardingsphere/sharding 
-                        http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd">
+                        http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
+                        http://shardingsphere.apache.org/schema/shardingsphere/masterslave  
+                        http://shardingsphere.apache.org/schema/shardingsphere/masterslave/master-slave.xsd">
     <context:annotation-config />
     <context:component-scan base-package="org.apache.shardingsphere.example.spring.namespace.jpa" />
     
@@ -270,7 +292,11 @@ weight = 4
         <property name="password" value="" />
     </bean>
     
-    <bean id="randomStrategy" class="org.apache.shardingsphere.example.spring.namespace.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm" />
+    <!-- 4.0.0-RC1 版本 负载均衡策略配置方式 -->
+    <!-- <bean id="randomStrategy" class="org.apache.shardingsphere.example.spring.namespace.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm" /> -->
+    
+    <!-- 4.0.0-RC2 之后版本 负载均衡策略配置方式 -->
+    <master-slave:load-balance-algorithm id="randomStrategy" type="RANDOM" />
     
     <sharding:inline-strategy id="databaseStrategy" sharding-column="user_id" algorithm-expression="ds_ms$->{user_id % 2}" />
     <sharding:inline-strategy id="orderTableStrategy" sharding-column="order_id" algorithm-expression="t_order$->{order_id % 2}" />
@@ -374,8 +400,17 @@ weight = 4
                 <sharding:table-rule logic-table="t_order_item" actual-data-nodes="demo_ds_${0..1}.t_order_item_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderItemTableStrategy" key-generator-ref="itemKeyGenerator" />
             </sharding:table-rules>
             <sharding:encrypt-rule>
-                <sharding:encryptor-rule id="order_encryptor" type="AES" qualified-columns="t_order.order_id" props-ref="dataProtectorProps" />
-            </sharding:encrypt-rule>
+                <encrypt:tables>
+                    <encrypt:table name="t_order">
+                        <encrypt:column logic-column="user_id" plain-column="user_decrypt" cipher-column="user_encrypt" assisted-query-column="user_assisted" encryptor-ref="encryptor_aes" />
+                        <encrypt:column logic-column="order_id" plain-column="order_decrypt" cipher-column="order_encrypt" assisted-query-column="order_assisted" encryptor-ref="encryptor_md5"/>
+                    </encrypt:table>
+                </encrypt:tables>
+                <encrypt:encryptors>
+                    <encrypt:encryptor id="encryptor_aes" type="AES" props-ref="props"/>
+                    <encrypt:encryptor id="encryptor_md5" type="MD5" />
+                </encrypt:encryptors>
+            </sharding:encrypt-rule>           
         </sharding:sharding-rule>
         <sharding:props>
             <prop key="sql.show">true</prop>
@@ -443,7 +478,6 @@ weight = 4
 | database-strategy-ref (?)    | 属性  | 数据库分片策略，对应\<sharding:xxx-strategy>中的策略Id，缺省表示使用\<sharding:sharding-rule />配置的默认数据库分片策略                                                                                              |
 | table-strategy-ref (?)       | 属性  | 表分片策略，对应\<sharding:xxx-strategy>中的策略Id，缺省表示使用\<sharding:sharding-rule />配置的默认表分片策略                                                                                                     |
 | key-generator-ref (?)        | 属性  | 自增列值生成器引用，缺省表示使用默认自增列值生成器                                                                                                                                                                 |
-| logic-index (?)              | 属性  | 逻辑索引名称，对于分表的Oracle/PostgreSQL数据库中DROP INDEX XXX语句，需要通过配置逻辑索引名称定位所执行SQL的真实分表                                                                                                    |
 
 #### \<sharding:binding-table-rules />
 
@@ -511,32 +545,23 @@ weight = 4
 | *名称*             | *类型*                       | *说明*                                                                           |
 | ----------------- | ---------------------------- | ------------------------------------------------------------------------------- |
 | column            | 属性                          | 自增列名称                                                                       |
-| type              | 属性                          | 自增列值生成器类型，可自定义或选择内置类型：SNOWFLAKE/UUID                            |
+| type              | 属性                          | 自增列值生成器类型，可自定义或选择内置类型：SNOWFLAKE/UUID/LEAF_SEGMENT                            |
 | props-ref         | 属性                          | 属性配置, 注意：使用SNOWFLAKE算法，需要配置worker.id与max.tolerate.time.difference.milliseconds属性 | 
 
-#### \<sharding:encrypt-rules />
-
-| *名称*              | *类型* | *说明*          |
-| -------------------| ----- | --------------- |
-| encryptor-rule (+) | 标签  | 加解密器配置对象   |
-
-#### \<sharding:encryptor-rule />
-| *名称*                 | *类型*                   | *说明*                                                                |
-| --------------------- | ---------------------- | ---------------------------------------------------------------------- |
-| type                  | 属性                    | 加解密器类型，可自定义或选择内置类型：MD5/AES                               |
-| qualified-columns     | 属性                    | 加解密字段，格式为：表名.列名，例如：tb.col1。多个列，请用逗号分隔             |
-| assisted-query-columns| 属性                    | 辅助查询字段，针对ShardingQueryAssistedEncryptor类型的加解密器进行辅助查询   |
-| props-ref             | 属性                    | 属性配置, 注意：使用AES加密器，需要配置AES加密器的KEY属性：aes.key.value       | 
- 
+#### \<sharding:encrypt-rule />
+| *名称*                     | *类型*                 | *说明*                                  |
+| ------------------------- | ---------------------- | -------------------------------------- |
+| encrypt:encrypt-rule(?)    | 标签                   | 加解密规则                              |
 
 #### \<sharding:props />
 
-| *名称*                             |  *类型* | *说明*                                        |
+| *名称*                             |  *类型* | *说明*                                         |
 | -----------------------------------| ----- | ---------------------------------------------- |
-| sql.show (?)                       | 属性  | 是否开启SQL显示，默认值: false                    |
+| sql.show (?)                       | 属性  | 是否开启SQL显示，默认值: false                     |
 | executor.size (?)                  | 属性  | 工作线程数量，默认值: CPU核数                      |
-| max.connections.size.per.query (?) | 属性  | 每个物理数据库为每次查询分配的最大连接数量。默认值: 1 |
+| max.connections.size.per.query (?) | 属性  | 每个物理数据库为每次查询分配的最大连接数量。默认值: 1  |
 | check.table.metadata.enabled (?)   | 属性  | 是否在启动时检查分表元数据一致性，默认值: false       |
+| query.with.cipher.column (?)       | 属性  | 当存在明文列时，是否使用密文列查询，默认值: true      |
 
 ### 读写分离
 
@@ -562,6 +587,15 @@ weight = 4
 | max.connections.size.per.query (?) | 属性   | 每个物理数据库为每次查询分配的最大连接数量。默认值: 1 |
 | check.table.metadata.enabled (?)   | 属性   | 是否在启动时检查分表元数据一致性，默认值: false       |
 
+#### \<master-slave:load-balance-algorithm />
+4.0.0-RC2 版本 添加
+
+| *名称*                             |  *类型* | *说明*                                         |
+| -----------------------------------| ------ | ---------------------------------------------- |
+| id                                 |  属性  | Spring Bean Id                                  |
+| type                               |  属性  | 负载均衡算法类型，'RANDOM'或'ROUND_ROBIN' ，支持自定义拓展|
+| props-ref (?)                      |  属性  | 负载均衡算法配置参数                               |
+
 ### 数据脱敏
 
 命名空间：http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd
@@ -574,15 +608,47 @@ weight = 4
 | data-source-name        | 属性  | 加密数据源Bean Id                              |
 | props (?)               | 标签  | 属性配置                                       |
 
-#### \<encrypt:encryptor-rule />
+#### \<encrypt:encryptors />
+
+| *名称*                   | *类型* | *说明*                                                    |
+| ----------------------- | ----- | --------------------------------------------------------- |
+| encryptor(+)            | 标签  | 加密器配置                                                |
+
+#### \<encrypt:encryptor />
+
+| *名称*                    | *类型* | *说明*                                                             |
+| ------------------------ | ----- | ------------------------------------------------------------------ |
+| id                       | 属性  | 加密器的名称                                                         |
+| type                     | 属性  | 加解密器类型，可自定义或选择内置类型：MD5/AES                            |
+| props-ref                | 属性  | 属性配置, 注意：使用AES加密器，需要配置AES加密器的KEY属性：aes.key.value   |
+
+#### \<encrypt:tables />
 
 | *名称*                  | *类型* | *说明*                                                    |
 | ----------------------- | ----- | --------------------------------------------------------- |
-| id                      | 属性  | 加密器的名称                                                |
-| type                    | 属性  | 加解密器类型，可自定义或选择内置类型：MD5/AES                   |
-| qualified-columns       | 属性  | 加解密字段，格式为：表名.列名，例如：tb.col1。多个列，请用逗号分隔 |
+| table(+)                | 标签  | 加密表配置                                                  |
+
+#### \<encrypt:table />
+
+| *名称*                  | *类型* | *说明*                                                     |
+| ----------------------- | ----- | --------------------------------------------------------- |
+| column(+)               | 标签  | 加密列配置                                                  |
+
+#### \<encrypt:column />
+
+| *名称*                  | *类型* | *说明*                                                              |
+| ----------------------- | ----- | ------------------------------------------------------------------ |
+| logic-column            | 属性  | 逻辑列名                                                             |
+| plain-column            | 属性  | 存储明文的字段                                                        |
+| cipher-column           | 属性  | 存储密文的字段                                                        |
 | assisted-query-columns  | 属性  | 辅助查询字段，针对ShardingQueryAssistedEncryptor类型的加解密器进行辅助查询|
-| props-re                | 属性  | 属性配置                                                    |
+
+#### \<encrypt:props />
+
+| *名称*                             |  *类型* | *说明*                                         |
+| -----------------------------------| ----- | ---------------------------------------------- |
+| sql.show (?)                       | 属性  | 是否开启SQL显示，默认值: false                     |
+| query.with.cipher.column (?)       | 属性  | 当存在明文列时，是否使用密文列查询，默认值: true      |
 
 ### 数据分片 + 治理
 

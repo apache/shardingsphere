@@ -172,7 +172,7 @@ ShardingSphere采用snowflake算法作为默认的分布式分布式自增主键
 
 回答：
 
-为保证源码的可读性，ShardingSphere编码规范要求类、方法和变量的命名要做到望文生义，避免使用缩写，因此可能导致部分源码文件命名较长。由于Windows版本的Git是使用msys编译的，它使用了旧版本的Windows Api，限制文件名不能超过260个字符。
+为保证源码的可读性，ShardingSphere编码规范要求类、方法和变量的命名要做到顾名思义，避免使用缩写，因此可能导致部分源码文件命名较长。由于Windows版本的Git是使用msys编译的，它使用了旧版本的Windows Api，限制文件名不能超过260个字符。
 
 解决方案如下：
 
@@ -183,3 +183,32 @@ git config --global core.longpaths true
 参考资料：
 https://docs.microsoft.com/zh-cn/windows/desktop/FileIO/naming-a-file
 https://ourcodeworld.com/articles/read/109/how-to-solve-filename-too-long-error-in-git-powershell-and-github-application-for-windows
+
+#### 14. Windows环境下，运行Sharding-Proxy，找不到或无法加载主类 org.apache.shardingshpere.shardingproxy.Bootstrap，如何解决？
+
+回答：
+
+某些解压缩工具在解压Sharding-Proxy二进制包时可能将文件名截断，导致找不到某些类。
+
+解决方案：
+
+打开cmd.exe并执行下面的命令：
+```
+tar zxvf apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz
+```
+
+#### 15. Type is required 异常的解决方法?
+
+回答：
+
+ShardingSphere中很多功能实现类的加载方式是通过[SPI](https://shardingsphere.apache.org/document/current/cn/features/spi/)注入的方式完成的，如分布式主键，注册中心等；这些功能通过配置中type类型来寻找对应的SPI实现，因此必须在配置文件中指定类型。
+
+#### 16. 为什么我实现了`ShardingKeyGenerator`接口，也配置了Type，但是自定义的分布式主键依然不生效？
+
+回答：
+
+[Service Provider Interface (SPI)](https://docs.oracle.com/javase/tutorial/sound/SPI-intro.html)是一种为了被第三方实现或扩展的API，除了实现接口外，还需要在META-INF/services中创建对应文件来指定SPI的实现类，JVM才会加载这些服务。
+
+具体的SPI使用方式，请大家自行搜索。
+
+与分布式主键`ShardingKeyGenerator`接口相同，其他ShardingSphere的[扩展功能](https://shardingsphere.apache.org/document/current/cn/features/spi/)也需要用相同的方式注入才能生效。

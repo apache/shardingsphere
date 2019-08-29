@@ -1,4 +1,4 @@
-﻿+++
++++
 toc = true
 title = "Java Configuration"
 weight = 1
@@ -17,27 +17,22 @@ weight = 1
          shardingRuleConfig.getBroadcastTables().add("t_config");
          shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "ds${user_id % 2}"));
          shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new ModuloShardingTableAlgorithm()));
-         return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig);
+         return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new Properties());
      }
      
      private static KeyGeneratorConfiguration getKeyGeneratorConfiguration() {
-                  KeyGeneratorConfiguration result = new KeyGeneratorConfiguration();
-                  result.setColumn("order_id");
-                  return result;
+         KeyGeneratorConfiguration result = new KeyGeneratorConfiguration("SNOWFLAKE", "order_id");
+         return result;
      }
      
      TableRuleConfiguration getOrderTableRuleConfiguration() {
-         TableRuleConfiguration result = new TableRuleConfiguration();
-         result.setLogicTable("t_order");
-         result.setActualDataNodes("ds${0..1}.t_order${0..1}");
+         TableRuleConfiguration result = new TableRuleConfiguration("t_order", "ds${0..1}.t_order${0..1}");
          result.setKeyGeneratorConfig(getKeyGeneratorConfiguration());
          return result;
      }
      
      TableRuleConfiguration getOrderItemTableRuleConfiguration() {
-         TableRuleConfiguration result = new TableRuleConfiguration();
-         result.setLogicTable("t_order_item");
-         result.setActualDataNodes("ds${0..1}.t_order_item${0..1}");
+         TableRuleConfiguration result = new TableRuleConfiguration("t_order_item", "ds${0..1}.t_order_item${0..1}");
          return result;
      }
      
@@ -53,11 +48,8 @@ weight = 1
 
 ```java
      DataSource getMasterSlaveDataSource() throws SQLException {
-         MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration();
-         masterSlaveRuleConfig.setName("ds_master_slave");
-         masterSlaveRuleConfig.setMasterDataSourceName("ds_master");
-         masterSlaveRuleConfig.setSlaveDataSourceNames(Arrays.asList("ds_slave0", "ds_slave1"));
-         return MasterSlaveDataSourceFactory.createDataSource(createDataSourceMap(), masterSlaveRuleConfig, new LinkedHashMap<String, Object>(), new Properties());
+         MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration("ds_master_slave", "ds_master", Arrays.asList("ds_slave0", "ds_slave1"));
+         return MasterSlaveDataSourceFactory.createDataSource(createDataSourceMap(), masterSlaveRuleConfig, new Properties());
      }
      
      Map<String, DataSource> createDataSourceMap() {
@@ -73,15 +65,19 @@ weight = 1
 
 ```java
     DataSource getEncryptDataSource() throws SQLException {
-        return EncryptDataSourceFactory.createDataSource(DataSourceUtil.createDataSource("demo_ds"), getOrderEncryptRuleConfiguration());
+        return EncryptDataSourceFactory.createDataSource(DataSourceUtil.createDataSource("demo_ds"), getEncryptRuleConfiguration(), new Properties());
     }
 
-    private static EncryptRuleConfiguration getOrderEncryptRuleConfiguration() {
-        EncryptRuleConfiguration encryptRuleConfiguration = new EncryptRuleConfiguration();
-        Properties properties = new Properties();
-        properties.setProperty("aes.key.value", "123456");
-        EncryptorRuleConfiguration encryptorRuleConfiguration = new EncryptorRuleConfiguration("AES", "t_order.order_id", properties);
-        encryptRuleConfiguration.getEncryptorRuleConfigs().put("user_encryptor", encryptorRuleConfiguration);
+    private static EncryptRuleConfiguration getEncryptRuleConfiguration() {
+        Properties props = new Properties();
+        props.setProperty("aes.key.value", "123456");
+        EncryptorRuleConfiguration encryptorConfig = new EncryptorRuleConfiguration("AES", props);
+        EncryptColumnRuleConfiguration columnConfig = new EncryptColumnRuleConfiguration("plain_pwd", "cipher_pwd", "", "aes");
+        EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration(Collections.singletonMap("pwd", columnConfig));
+        EncryptRuleConfiguration encryptRuleConfig = new EncryptRuleConfiguration();
+        encryptRuleConfig.getEncryptors().put("aes", encryptorConfig);
+        encryptRuleConfig.getTables().put("t_encrypt", tableConfig);
+		return encryptRuleConfig;
     }
 ```
 
@@ -94,30 +90,25 @@ weight = 1
         shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
         shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
         shardingRuleConfig.getBroadcastTables().add("t_config");
-        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new StandardShardingStrategyConfiguration("user_id", new ModuloShardingDatabaseAlgorithm()));
-        shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new ModuloShardingTableAlgorithm()));
+        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new StandardShardingStrategyConfiguration("user_id", new PreciseModuloShardingDatabaseAlgorithm()));
+        shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new PreciseModuloShardingTableAlgorithm()));
         shardingRuleConfig.setMasterSlaveRuleConfigs(getMasterSlaveRuleConfigurations());
-        return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new HashMap<String, Object>(), new Properties());
+        return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new Properties());
     }
     
     private static KeyGeneratorConfiguration getKeyGeneratorConfiguration() {
-                 KeyGeneratorConfiguration result = new KeyGeneratorConfiguration();
-                 result.setColumn("order_id");
-                 return result;
+        KeyGeneratorConfiguration result = new KeyGeneratorConfiguration("SNOWFLAKE", "order_id");
+        return result;
     }
     
     TableRuleConfiguration getOrderTableRuleConfiguration() {
-        TableRuleConfiguration result = new TableRuleConfiguration();
-        result.setLogicTable("t_order");
-        result.setActualDataNodes("ds_${0..1}.t_order_${[0, 1]}");
+        TableRuleConfiguration result = new TableRuleConfiguration("t_order", "ds_${0..1}.t_order_${[0, 1]}");
         result.setKeyGeneratorConfig(getKeyGeneratorConfiguration());
         return result;
     }
     
     TableRuleConfiguration getOrderItemTableRuleConfiguration() {
-        TableRuleConfiguration result = new TableRuleConfiguration();
-        result.setLogicTable("t_order_item");
-        result.setActualDataNodes("ds_${0..1}.t_order_item_${[0, 1]}");
+        TableRuleConfiguration result = new TableRuleConfiguration("t_order_item", "ds_${0..1}.t_order_item_${[0, 1]}");
         return result;
     }
     
@@ -149,7 +140,7 @@ weight = 1
             shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
             shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "demo_ds_${user_id % 2}"));
             shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new PreciseModuloShardingTableAlgorithm()));
-            shardingRuleConfig.setEncryptRuleConfig(getOrderEncryptRuleConfiguration());
+            shardingRuleConfig.setEncryptRuleConfig(getEncryptRuleConfiguration());
             return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new Properties());
         }
         
@@ -165,12 +156,16 @@ weight = 1
             return result;
         }
         
-        private static EncryptRuleConfiguration getOrderEncryptRuleConfiguration() {
-            EncryptRuleConfiguration encryptRuleConfiguration = new EncryptRuleConfiguration();
-            Properties properties = new Properties();
-            properties.setProperty("aes.key.value", "123456");
-            EncryptorRuleConfiguration encryptorRuleConfiguration = new EncryptorRuleConfiguration("AES", "t_order.order_id", properties);
-            encryptRuleConfiguration.getEncryptorRuleConfigs().put("user_encryptor", encryptorRuleConfiguration);
+        private static EncryptRuleConfiguration getEncryptRuleConfiguration() {
+            Properties props = new Properties();
+            props.setProperty("aes.key.value", "123456");
+            EncryptorRuleConfiguration encryptorConfig = new EncryptorRuleConfiguration("AES", props);
+            EncryptColumnRuleConfiguration columnConfig = new EncryptColumnRuleConfiguration("plain_order", "cipher_order", "", "aes");
+            EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration(Collections.singletonMap("order_id", columnConfig));
+            EncryptRuleConfiguration encryptRuleConfig = new EncryptRuleConfiguration();
+            encryptRuleConfig.getEncryptors().put("aes", encryptorConfig);
+            encryptRuleConfig.getTables().put("t_order", tableConfig);
+			return encryptRuleConfig;
         }
         
         private static Map<String, DataSource> createDataSourceMap() {
@@ -225,7 +220,7 @@ weight = 1
 | defaultDataSourceName (?)                 | String                                     | Tables not configured with sharding rules will locate according to default data sources |
 | defaultDatabaseShardingStrategyConfig (?) | ShardingStrategyConfiguration              | Default database sharding strategy                           |
 | defaultTableShardingStrategyConfig (?)    | ShardingStrategyConfiguration              | Default table sharding strategy                              |
-| defaultKeyGeneratorConfig (?)             | KeyGeneratorConfiguration                  | Default key generator configuration, use user-defined ones or built-in ones, e.g. SNOWFLAKE, UUID. Default key generator is `org.apache.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator` |
+| defaultKeyGeneratorConfig (?)             | KeyGeneratorConfiguration                  | Default key generator configuration, use user-defined ones or built-in ones, e.g. SNOWFLAKE/UUID/LEAF_SEGMENT. Default key generator is `org.apache.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator` |
 | masterSlaveRuleConfigs (?)                | Collection\<MasterSlaveRuleConfiguration\> | Read-write split rules, default indicates not using read-write split |
 
 #### TableRuleConfiguration
@@ -236,7 +231,6 @@ weight = 1
 | actualDataNodes (?)                | String                        | Describe data source names and actual tables, delimiter as point, multiple data nodes split by comma, support inline expression. Absent means sharding databases only. Example: ds${0..7}.tbl${0..7} |
 | databaseShardingStrategyConfig (?) | ShardingStrategyConfiguration | Databases sharding strategy, use default databases sharding strategy if absent |
 | tableShardingStrategyConfig (?)    | ShardingStrategyConfiguration | Tables sharding strategy, use default databases sharding strategy if absent |
-| logicIndex (?)                     | String                        | Name if logic index. If use *DROP INDEX XXX* SQL in Oracle/PostgreSQL, This property needs to be set for finding the actual tables |
 | keyGeneratorConfig (?)             | KeyGeneratorConfiguration     | Key generator configuration, use default key generator if absent |
 | encryptorConfiguration (?)         | EncryptorConfiguration        | Encrypt generator configuration                              |
 
@@ -289,15 +283,34 @@ The implementation class of `ShardingStrategyConfiguration`, used to configure n
 | type              | String                       | Type of key generator，use user-defined ones or built-in ones, e.g. SNOWFLAKE, UUID         |
 | props             | Properties                   | Properties, Notice: when use SNOWFLAKE, `worker.id` and `max.tolerate.time.difference.milliseconds` for `SNOWFLAKE` need to be set|
 
+#### EncryptRuleConfiguration
+
+| *Name*              | *DataType*                                  | *Explanation*                                                                  |
+| ------------------- | ------------------------------------------- | ------------------------------------------------------------------------------ |
+| encryptors          | Map<String, EncryptorRuleConfiguration>     | Encryptor names and encryptors                                                 |
+| tables              | Map<String, EncryptTableRuleConfiguration>  | Encrypt table names and encrypt tables                                         |
+
 #### EncryptorRuleConfiguration
 
-| *Name*              | *DataType*                   | *Description*                                                                                        |
-| -----------------   | ---------------------------- | ---------------------------------------------------------------------------------------------------- |
-| type                | String                       | Type of encryptor，use user-defined ones or built-in ones, e.g. MD5/AES                               |
-| qualifiedColumns    | String                       | Column names to be encrypted, the format is `tableName`.`columnName`, e.g. tb.col1. When configuring multiple column names, separate them with commas|
-| assistedQueryColumns| String                       | AssistedColumns for query，when use ShardingQueryAssistedEncryptor, it can help query encrypted data  |
-| props               | Properties                   | Properties, Notice: when use AES encryptor, `aes.key.value` for AES encryptor need to be set          |
+| *Name*              | *DataType*                   | *Explanation*                                                                               |
+| ------------------- | ---------------------------- | ------------------------------------------------------------------------------------------- |
+| type                | String                       | Type of encryptor，use user-defined ones or built-in ones, e.g. MD5/AES                      |
+| properties          | Properties                   | Properties, Notice: when use AES encryptor, `aes.key.value` for AES encryptor need to be set | 
 
+#### EncryptTableRuleConfiguration
+
+| *Name*              | *DataType*                                   | *Explanation*                              |
+| ------------------- | -------------------------------------------- | ------------------------------------------ |
+| tables              | Map<String, EncryptColumnRuleConfiguration>  | Encrypt column names and encrypt column    |
+
+#### EncryptColumnRuleConfiguration
+
+| *Name*              | *DataType*                   | *Explanation*                                                                                         |
+| ------------------- | ---------------------------- |  ---------------------------------------------------------------------------------------------------- |
+| plainColumn         | String                       | Plain column name                                                                                     |
+| cipherColumn        | String                       | Cipher column name                                                                                    |
+| assistedQueryColumn | String                       | AssistedColumns for query，when use ShardingQueryAssistedEncryptor, it can help query encrypted data  |
+| encryptor           | String                       | Encryptor name                                                                                        | 
 
 #### ShardingPropertiesConstant
 
@@ -308,7 +321,8 @@ Property configuration items, can be of the following properties.
 | sql.show (?)                       | boolean    | Show SQL or not, default value: false                        |
 | executor.size (?)                  | int        | Work thread number, default value: CPU core number           |
 | max.connections.size.per.query (?) | int        | The maximum connection number allocated by each query of each physical database. default value: 1 |
-| check.table.metadata.enabled (?)   | boolean    | Check meta-data consistency or not in initialization, default value: false |
+| check.table.metadata.enabled (?)   | boolean    | Check meta-data consistency or not in initialization, default value: false                        |
+| query.with.cipher.column (?)       | boolean    | When there is a plainColumn, use cipherColumn or not to query, default value: true                |
 
 ### Read-Write Split
 
@@ -352,9 +366,19 @@ Property configuration items, can be of the following properties.
 
 #### EncryptRuleConfiguration
 
-| *Name*                   | *DataType*                      | *Explanation*    |
-| ------------------------ | ------------------------------- | ---------------- |
-| encryptorRuleConfigs     | Map\<String, EncryptorRuleConfiguration\> | Map of encryptor names and configurations，encryptor Same as `EncryptorRuleConfiguration` |
+| *Name*              | *DataType*                                  | *Explanation*                                               |
+| ------------------- | ------------------------------------------- | ----------------------------------------------------------- |
+| encryptors          | Map<String, EncryptorRuleConfiguration>     | Encryptor names and encryptors                              |
+| tables              | Map<String, EncryptTableRuleConfiguration>  | Encrypt table names and encrypt tables                      |
+
+#### PropertiesConstant
+
+Property configuration items, can be of the following properties.
+
+| *Name*                            | *DataType*| *Explanation*                                                                        |
+| ----------------------------------| --------- | ------------------------------------------------------------------------------------ |
+| sql.show (?)                      | boolean   | Print SQL parse and rewrite log or not, default value: false                         |
+| query.with.cipher.column (?)      | boolean   | When there is a plainColumn, use cipherColumn or not to query, default value: true   |
 
 ### Orchestration
 

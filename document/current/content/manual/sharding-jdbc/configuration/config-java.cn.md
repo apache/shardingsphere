@@ -17,27 +17,22 @@ weight = 1
          shardingRuleConfig.getBroadcastTables().add("t_config");
          shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "ds${user_id % 2}"));
          shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new ModuloShardingTableAlgorithm()));
-         return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig);
+         return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new Properties());
      }
      
      private static KeyGeneratorConfiguration getKeyGeneratorConfiguration() {
-             KeyGeneratorConfiguration result = new KeyGeneratorConfiguration();
-             result.setColumn("order_id");
-             return result;
+         KeyGeneratorConfiguration result = new KeyGeneratorConfiguration("SNOWFLAKE", "order_id");
+         return result;
      }
      
      TableRuleConfiguration getOrderTableRuleConfiguration() {
-         TableRuleConfiguration result = new TableRuleConfiguration();
-         result.setLogicTable("t_order");
-         result.setActualDataNodes("ds${0..1}.t_order${0..1}");
+         TableRuleConfiguration result = new TableRuleConfiguration("t_order", "ds${0..1}.t_order${0..1}");
          result.setKeyGeneratorConfig(getKeyGeneratorConfiguration());
          return result;
      }
      
      TableRuleConfiguration getOrderItemTableRuleConfiguration() {
-         TableRuleConfiguration result = new TableRuleConfiguration();
-         result.setLogicTable("t_order_item");
-         result.setActualDataNodes("ds${0..1}.t_order_item${0..1}");
+         TableRuleConfiguration result = new TableRuleConfiguration("t_order_item", "ds${0..1}.t_order_item${0..1}");
          return result;
      }
      
@@ -53,11 +48,8 @@ weight = 1
 
 ```java
      DataSource getMasterSlaveDataSource() throws SQLException {
-         MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration();
-         masterSlaveRuleConfig.setName("ds_master_slave");
-         masterSlaveRuleConfig.setMasterDataSourceName("ds_master");
-         masterSlaveRuleConfig.setSlaveDataSourceNames(Arrays.asList("ds_slave0", "ds_slave1"));
-         return MasterSlaveDataSourceFactory.createDataSource(createDataSourceMap(), masterSlaveRuleConfig, new LinkedHashMap<String, Object>(), new Properties());
+         MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration("ds_master_slave", "ds_master", Arrays.asList("ds_slave0", "ds_slave1"));
+         return MasterSlaveDataSourceFactory.createDataSource(createDataSourceMap(), masterSlaveRuleConfig, new Properties());
      }
      
      Map<String, DataSource> createDataSourceMap() {
@@ -73,15 +65,19 @@ weight = 1
 
 ```java
     DataSource getEncryptDataSource() throws SQLException {
-        return EncryptDataSourceFactory.createDataSource(DataSourceUtil.createDataSource("demo_ds"), getOrderEncryptRuleConfiguration());
+        return EncryptDataSourceFactory.createDataSource(DataSourceUtil.createDataSource("demo_ds"), getEncryptRuleConfiguration(), new Properties());
     }
 
-    private static EncryptRuleConfiguration getOrderEncryptRuleConfiguration() {
-        EncryptRuleConfiguration encryptRuleConfiguration = new EncryptRuleConfiguration();
-        Properties properties = new Properties();
-        properties.setProperty("aes.key.value", "123456");
-        EncryptorRuleConfiguration encryptorRuleConfiguration = new EncryptorRuleConfiguration("AES", "t_order.order_id", properties);
-        encryptRuleConfiguration.getEncryptorRuleConfigs().put("user_encryptor", encryptorRuleConfiguration);
+    private static EncryptRuleConfiguration getEncryptRuleConfiguration() {
+        Properties props = new Properties();
+        props.setProperty("aes.key.value", "123456");
+        EncryptorRuleConfiguration encryptorConfig = new EncryptorRuleConfiguration("AES", props);
+        EncryptColumnRuleConfiguration columnConfig = new EncryptColumnRuleConfiguration("plain_pwd", "cipher_pwd", "", "aes");
+        EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration(Collections.singletonMap("pwd", columnConfig));
+        EncryptRuleConfiguration encryptRuleConfig = new EncryptRuleConfiguration();
+        encryptRuleConfig.getEncryptors().put("aes", encryptorConfig);
+        encryptRuleConfig.getTables().put("t_encrypt", tableConfig);
+        return encryptRuleConfig;
     }
 ```
 
@@ -94,30 +90,25 @@ weight = 1
         shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
         shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
         shardingRuleConfig.getBroadcastTables().add("t_config");
-        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new StandardShardingStrategyConfiguration("user_id", new ModuloShardingDatabaseAlgorithm()));
-        shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new ModuloShardingTableAlgorithm()));
+        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new StandardShardingStrategyConfiguration("user_id", new PreciseModuloShardingDatabaseAlgorithm()));
+        shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new PreciseModuloShardingTableAlgorithm()));
         shardingRuleConfig.setMasterSlaveRuleConfigs(getMasterSlaveRuleConfigurations());
-        return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new HashMap<String, Object>(), new Properties());
+        return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new Properties());
     }
     
     private static KeyGeneratorConfiguration getKeyGeneratorConfiguration() {
-                 KeyGeneratorConfiguration result = new KeyGeneratorConfiguration();
-                 result.setColumn("order_id");
-                 return result;
+        KeyGeneratorConfiguration result = new KeyGeneratorConfiguration("SNOWFLAKE", "order_id");
+        return result;
     }
     
     TableRuleConfiguration getOrderTableRuleConfiguration() {
-        TableRuleConfiguration result = new TableRuleConfiguration();
-        result.setLogicTable("t_order");
-        result.setActualDataNodes("ds_${0..1}.t_order_${[0, 1]}");
+        TableRuleConfiguration result = new TableRuleConfiguration("t_order", "ds_${0..1}.t_order_${[0, 1]}");
         result.setKeyGeneratorConfig(getKeyGeneratorConfiguration());
         return result;
     }
     
     TableRuleConfiguration getOrderItemTableRuleConfiguration() {
-        TableRuleConfiguration result = new TableRuleConfiguration();
-        result.setLogicTable("t_order_item");
-        result.setActualDataNodes("ds_${0..1}.t_order_item_${[0, 1]}");
+        TableRuleConfiguration result = new TableRuleConfiguration("t_order_item", "ds_${0..1}.t_order_item_${[0, 1]}");
         return result;
     }
     
@@ -150,7 +141,7 @@ weight = 1
         shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "demo_ds_${user_id % 2}"));
         shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new PreciseModuloShardingTableAlgorithm()));
-        shardingRuleConfig.setEncryptRuleConfig(getOrderEncryptRuleConfiguration());
+        shardingRuleConfig.setEncryptRuleConfig(getEncryptRuleConfiguration());
         return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new Properties());
     }
     
@@ -166,12 +157,16 @@ weight = 1
         return result;
     }
     
-    private static EncryptRuleConfiguration getOrderEncryptRuleConfiguration() {
-        EncryptRuleConfiguration encryptRuleConfiguration = new EncryptRuleConfiguration();
-        Properties properties = new Properties();
-        properties.setProperty("aes.key.value", "123456");
-        EncryptorRuleConfiguration encryptorRuleConfiguration = new EncryptorRuleConfiguration("AES", "t_order.order_id", properties);
-        encryptRuleConfiguration.getEncryptorRuleConfigs().put("user_encryptor", encryptorRuleConfiguration);
+    private static EncryptRuleConfiguration getEncryptRuleConfiguration() {
+        Properties props = new Properties();
+        props.setProperty("aes.key.value", "123456");
+        EncryptorRuleConfiguration encryptorConfig = new EncryptorRuleConfiguration("AES", props);
+        EncryptColumnRuleConfiguration columnConfig = new EncryptColumnRuleConfiguration("plain_order", "cipher_order", "", "aes");
+        EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration(Collections.singletonMap("order_id", columnConfig));
+        EncryptRuleConfiguration encryptRuleConfig = new EncryptRuleConfiguration();
+        encryptRuleConfig.getEncryptors().put("aes", encryptorConfig);
+        encryptRuleConfig.getTables().put("t_order", tableConfig);
+		return encryptRuleConfig;
     }
     
     private static Map<String, DataSource> createDataSourceMap() {
@@ -243,7 +238,6 @@ weight = 1
 | actualDataNodes (?)                | String                        | 由数据源名 + 表名组成，以小数点分隔。多个表以逗号分隔，支持inline表达式。缺省表示使用已知数据源与逻辑表名称生成数据节点。用于广播表（即每个库中都需要一个同样的表用于关联查询，多为字典表）或只分库不分表且所有库的表结构完全一致的情况    |
 | databaseShardingStrategyConfig (?) | ShardingStrategyConfiguration | 分库策略，缺省表示使用默认分库策略                                                                                                                                                                              |
 | tableShardingStrategyConfig (?)    | ShardingStrategyConfiguration | 分表策略，缺省表示使用默认分表策略                                                                                                                                                                              |
-| logicIndex (?)                     | String                        | 逻辑索引名称，对于分表的Oracle/PostgreSQL数据库中DROP INDEX XXX语句，需要通过配置逻辑索引名称定位所执行SQL的真实分表                                                                                                   |
 | keyGeneratorConfig (?)             | KeyGeneratorConfiguration     | 自增列值生成器配置，缺省表示使用默认自增主键生成器                                                                                                                                                                |
 | encryptorConfiguration (?)         | EncryptorConfiguration        | 加解密生成器配置                                                                                                                                                                                              |
 
@@ -292,17 +286,37 @@ ShardingStrategyConfiguration的实现类，用于配置不分片的策略。
 | *名称*             | *数据类型*                    | *说明*                                                                         |
 | ----------------- | ---------------------------- | ------------------------------------------------------------------------------ |
 | column            | String                       | 自增列名称                                                                      |
-| type              | String                       | 自增列值生成器类型，可自定义或选择内置类型：SNOWFLAKE/UUID                           |
+| type              | String                       | 自增列值生成器类型，可自定义或选择内置类型：SNOWFLAKE/UUID/LEAF_SEGMENT                          |
 | props             | Properties                   | 属性配置, 注意：使用SNOWFLAKE算法，需要配置worker.id与max.tolerate.time.difference.milliseconds属性 |  
+
+#### EncryptRuleConfiguration
+
+| *名称*               |*数据类型*                                    | *说明*                                                                          |
+| ------------------- | ------------------------------------------- | ------------------------------------------------------------------------------ |
+| encryptors          | Map<String, EncryptorRuleConfiguration>     | 加解密器配置列表，可自定义或选择内置类型：MD5/AES                                    |
+| tables              | Map<String, EncryptTableRuleConfiguration>  | 加密表配置列表                      |
 
 #### EncryptorRuleConfiguration
 
 | *名称*               |*数据类型*                    | *说明*                                                                          |
 | ------------------- | ---------------------------- | ------------------------------------------------------------------------------ |
-| type                | String                       | 加解密器类型，可自定义或选择内置类型：MD5/AES                                        |
-| qualifiedColumns    | String                       | 加解密字段，格式为：表名.列名，例如：tb.col1。多个列，请用逗号分隔                      |
-| assistedQueryColumns| String                       | 辅助查询字段，针对ShardingQueryAssistedEncryptor类型的加解密器进行辅助查询            |
-| props               | Properties                   | 属性配置, 注意：使用AES加密器，需要配置AES加密器的KEY属性：aes.key.value                                      |  
+| type                | String                       | 加解密器类型，可自定义或选择内置类型：MD5/AES                                       |
+| properties          | Properties                   | 属性配置, 注意：使用AES加密器，需要配置AES加密器的KEY属性：aes.key.value              | 
+
+#### EncryptTableRuleConfiguration
+
+| *名称*               |*数据类型*                                     | *说明*                            |
+| ------------------- | -------------------------------------------- | --------------------------------- |
+| tables              | Map<String, EncryptColumnRuleConfiguration>  | 加密列配置列表                      |
+
+#### EncryptColumnRuleConfiguration
+
+| *名称*               |*数据类型*                    | *说明*                                                                          |
+| ------------------- | ----------------------------  ------------------------------------------------------------------------------ |
+| plainColumn        | String                       | 存储明文的字段                                                                   |
+| cipherColumn       | String                       | 存储密文的字段                                                                   |
+| assistedQueryColumn| String                       | 辅助查询字段，针对ShardingQueryAssistedEncryptor类型的加解密器进行辅助查询            |
+| encryptor          | String                       | 加解密器名字                                                                      | 
 
 #### PropertiesConstant
 
@@ -314,6 +328,7 @@ ShardingStrategyConfiguration的实现类，用于配置不分片的策略。
 | executor.size (?)                 | int       | 工作线程数量，默认值: CPU核数                       |
 | max.connections.size.per.query (?)| int       | 每个物理数据库为每次查询分配的最大连接数量。默认值: 1   |
 | check.table.metadata.enabled (?)  | boolean   | 是否在启动时检查分表元数据一致性，默认值: false        |
+| query.with.cipher.column (?)      | boolean   | 当存在明文列时，是否使用密文列查询，默认值: true        |
 
 ### 读写分离
 
@@ -361,9 +376,19 @@ ShardingStrategyConfiguration的实现类，用于配置不分片的策略。
 
 #### EncryptRuleConfiguration
 
-| *名称*                    | *数据类型*                       | *说明*           |
-| ------------------------ | ------------------------------- | ---------------- |
-| encryptorRuleConfigs     | Map\<String, EncryptorRuleConfiguration\> | 加解密器名称与配置，加解密器配置内容同上 |
+| *名称*               |*数据类型*                                    | *说明*                                                                          |
+| ------------------- | ------------------------------------------- | ------------------------------------------------------------------------------ |
+| encryptors          | Map<String, EncryptorRuleConfiguration>     | 加解密器配置列表，可自定义或选择内置类型：MD5/AES                                    |
+| tables              | Map<String, EncryptTableRuleConfiguration>  | 加密表配置列表                      |
+
+#### PropertiesConstant
+
+属性配置项，可以为以下属性。
+
+| *名称*                             | *数据类型*  | *说明*                                          |
+| ----------------------------------| --------- | -------------------------------------------------|
+| sql.show (?)                      | boolean   | 是否开启SQL显示，默认值: false                      |
+| query.with.cipher.column (?)      | boolean   | 当存在明文列时，是否使用密文列查询，默认值: true       |
 
 ### 治理
 

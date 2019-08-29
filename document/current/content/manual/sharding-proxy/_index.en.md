@@ -19,8 +19,8 @@ Sharding-Proxy is the second product of ShardingSphere. It defines itself as a t
 |                          | *Sharding-JDBC* | *Sharding-Proxy*       | *Sharding-Sidecar* |
 | ------------------------ | --------------- | ---------------------- | ------------------ |
 | Database                 | Any             | `MySQL`                | MySQL              |
-| The number of Connection | High            | `Low`                  | High               |
-| Heterogeneous Language   | Java Only       | `Any`                  | Any                |
+| Connections Count Cost   | High            | `Low`                  | High               |
+| Supported Languages      | Java Only       | `Any`                  | Any                |
 | Performance              | Low loss        | `Relatively high loss` | Low loss           |
 | Decentralization         | Yes             | `No`                   | Yes                |
 | Static Entry             | No              | `Yes`                  | No                 |

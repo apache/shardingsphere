@@ -107,6 +107,40 @@ masterSlaveRule:
     - ds_slave1
 ```
 
+### Data Masking
+
+```yaml
+schemaName: encrypt_db
+
+dataSource:
+  url: jdbc:mysql://127.0.0.1:3306/demo_ds?serverTimezone=UTC&useSSL=false
+  username: root
+  password:
+  connectionTimeoutMilliseconds: 30000
+  idleTimeoutMilliseconds: 60000
+  maxLifetimeMilliseconds: 1800000
+  maxPoolSize: 50
+
+encryptRule:
+  encryptors:
+    encryptor_aes:
+      type: aes
+      props:
+        aes.key.value: 123456abc
+    encryptor_md5:
+      type: md5
+  tables:
+    t_encrypt:
+      columns:
+        user_id:
+          plainColumn: user_plain
+          cipherColumn: user_cipher
+          encryptor: encryptor_aes
+        order_id:
+          cipherColumn: order_cipher
+          encryptor: encryptor_md5
+```
+
 ### Data Sharding + Read-Write Split
 
 ```yaml
@@ -238,7 +272,7 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 65
 
-shardingRule:  
+shardingRule:
   tables:
     t_order: 
       actualDataNodes: ds${0..1}.t_order${0..1}
@@ -273,11 +307,17 @@ shardingRule:
     
   encryptRule:
     encryptors:
-      order_encryptor:
-        type: AES
-        qualifiedColumns: t_order.order_id
+      encryptor_aes:
+        type: aes
         props:
-          aes.key.value: 123456  
+          aes.key.value: 123456abc
+    tables:
+      t_order:
+        columns:
+          order_id:
+            plainColumn: order_plain
+            cipherColumn: order_cipher
+            encryptor: encryptor_aes 
 ```
 
 ## Overall Configuration Instance
@@ -293,6 +333,7 @@ orchestration:
   name: orchestration_ds
   overwrite: true
   registry:
+    type: zookeeper
     namespace: orchestration
     serverLists: localhost:2181
 ```
@@ -301,8 +342,12 @@ orchestration:
 
 ```yaml
 authentication:
-  username: root
-  password:
+  users:
+    root:
+      password: root
+    sharding:
+      password: sharding 
+      authorizedSchemas: sharding_db
 ```
 
 ### Common property
@@ -349,12 +394,20 @@ dataSource: #Ignore data sources configuration
 
 encryptRule:
   encryptors:
-    encryptor_name: #Encryptor name
-      type: #Type of encryptor，use user-defined ones or built-in ones, e.g. MD5/AES
-      qualifiedColumns: #Column names to be encrypted, the format is `tableName`.`columnName`, e.g. tb.col1. When configuring multiple column names, separate them with commas
-      assistedQueryColumns: #AssistedColumns for query，when use ShardingQueryAssistedEncryptor, it can help query encrypted data
+    <encryptor-name>:
+      type: #encryptor type
       props: #Properties, e.g. `aes.key.value` for AES encryptor
-        aes.key.value:
+        aes.key.value: 
+  tables:
+    <table-name>:
+      columns:
+        <logic-column-name>:
+          plainColumn: #plaintext column name
+          cipherColumn: #ciphertext column name
+          assistedQueryColumn: #AssistedColumns for query，when use ShardingQueryAssistedEncryptor, it can help query encrypted data
+          encryptor: #encrypt name
+  props:
+    query.with.cipher.column: true #Whether use cipherColumn to query or not
 ```
 
 ## Overall Configuration Explanation
@@ -369,7 +422,7 @@ It is the same with Sharding-JDBC configuration.
 #Omit configurations that are the same with Sharding-JDBC
 props:
   acceptor.size: #The thread number of accept connection; default to be 2 times of cpu core
-  proxy.transaction.enabled: #Whether to enable transaction; it only supports XA transactions, default not to enable
+  proxy.transaction.type: #Support LOCAL, XA, BASE; Default is LOCAL transaction, for BASE type you should copy ShardingTransactionManager associated jar to lib directory
   proxy.opentracing.enabled: #Whether to enable opentracing, default not to enable; refer to [APM](/en/features/orchestration/apm/) for more details
   check.table.metadata.enabled: #Whether to check metadata consistency of sharding table when it initializes; default value: false
 ```
@@ -380,8 +433,12 @@ It is used to verify the authentication to log in Sharding-Proxy, which must use
 
 ```yaml
 authentication:
-   username: root
-   password:
+  users:
+    root: # self-defined username
+      password: root # self-defined password
+    sharding: # self-defined username
+      password: sharding # self-defined password
+      authorizedSchemas: sharding_db, masterslave_db # schemas authorized to this user, please use commas to connect multiple schemas. Default authorizedSchemas is all of the schemas.
 ```
 
 ## Yaml Syntax Explanation

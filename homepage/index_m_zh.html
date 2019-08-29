@@ -123,13 +123,13 @@
             <div class="sub-content">
               <p class="sub-text">
                 Apache ShardingSphere(Incubator)
-                是一套开源的分布式数据库中间件解决方案组成的生态圈，它由Sharding-JDBC、Sharding-Proxy和Sharding-Sidecar（规划中）这3款相互独立，却又能够混合部署配合使用的产品组成。它们均提供标准化的数据分片、分布式事务和数据库治理功能，可适用于如Java同构、异构语言、容器、云原生等各种多样化的应用场景。
+                是一套开源的分布式数据库中间件解决方案组成的生态圈，它由Sharding-JDBC、Sharding-Proxy和Sharding-Sidecar（规划中）这3款相互独立，却又能够混合部署配合使用的产品组成。它们均提供标准化的数据分片、分布式事务和数据库治理功能，可适用于如Java同构、异构语言、云原生等各种多样化的应用场景。
               </p>
               <p class="sub-text">
                 ShardingSphere定位为关系型数据库中间件，旨在充分合理地在分布式的场景下利用关系型数据库的计算和存储能力，而并非实现一个全新的关系型数据库。它通过关注不变，进而抓住事物本质。关系型数据库当今依然占有巨大市场，是各个公司核心业务的基石，未来也难于撼动，我们目前阶段更加关注在原有基础上的增量，而非颠覆。
               </p>
               <p class="sub-text">
-                目前所有的可用发布都是进入Apache孵化器之前的发布版本，Apache官方发布将从4.0.0版本开始。
+                Apache官方发布从4.0.0版本开始。
               </p>
             </div>
             <a
@@ -195,10 +195,9 @@
             <div class="l-m-tit">分布式事务</div>
             <hr class="l-m-tit-hr" />
             <div class="l-m-info">
-              <p>从本地事务接口自动对接分布式事务</p>
-              <p>XA事务和柔性事务自由切换</p>
-              <p>原生数据源接口自动转换XA接口</p>
-              <p>柔性事务自动补偿，无需用户实现补偿接口</p>
+              <p>标准化事务接口</p>
+              <p>XA强一致事务</p>
+              <p>柔性事务</p>
             </div>
             <img
               src="https://shardingsphere.apache.org/images/db_transaction@2.png"
@@ -214,24 +213,11 @@
             <div class="l-m-tit">数据库治理</div>
             <hr class="l-m-tit-hr" />
             <div class="l-m-info">
-              <p>
-                服务治理
-              <li>配置动态化</li>
-              <li>高可用</li>
-              <li>熔断 & 禁用</li>
-              </p>
-              <p>
-                数据治理
-              <li>数据脱敏</li>
-              <li>权限</li>
-              </p>
-              <p>可观察性
-              <li>APM</li>
-              <li>链路追踪</li>
-              <li>调用拓扑</li>
-              <li>OpenTracing对接</li>
-              </p>
-              <p>弹性伸缩 (规划中)</p>
+              <p>配置动态化</p>
+              <p>编排 & 治理</p>
+              <p>数据脱敏</p>
+              <p>可视化链路追踪</p>
+              <p>弹性伸缩(规划中)</p>
             </div>
             <img
               src="https://shardingsphere.apache.org/images/db_orchestration@2.png"
