@@ -80,7 +80,7 @@ public final class LeafSegmentKeyGenerator implements ShardingKeyGenerator {
         String leafKey = getLeafKey();
         if (null == leafRegistryCenter) {
             initLeafSegmentKeyGenerator(leafKey);
-        }else{
+        } else {
             increaseIdWhenLeafKeyStoredInCenter(leafKey);       
         }
         return id;
@@ -103,23 +103,24 @@ public final class LeafSegmentKeyGenerator implements ShardingKeyGenerator {
         ++id;
     }
     
-    private long initializeId(final String leafKey){
+    private long initializeId(final String leafKey) {
         if (leafRegistryCenter.isExisted(leafKey)) {
-            return Long.parseLong(leafRegistryCenter.getDirectly(leafKey))+1;
+            return Long.parseLong(leafRegistryCenter.getDirectly(leafKey)) + 1;
         } else {
             return getInitialValue();
         }
     }
     
-    private void initializeLeafKeyInCenter(final String leafKey, final long id, final long step){
+    private void initializeLeafKeyInCenter(final String leafKey, final long id, final long step) {
         leafRegistryCenter.initLock(leafKey);
-        while(!leafRegistryCenter.tryLock()){
+        while (!leafRegistryCenter.tryLock()) {
+            continue;
         }
         leafRegistryCenter.persist(leafKey, String.valueOf(id + step - id % step));
         leafRegistryCenter.tryRelease();
     }
 
-    private void initializeCacheIdAsynchronous(final long id, final long step){
+    private void initializeCacheIdAsynchronous(final long id, final long step) {
         incrementCacheIdExecutor.execute(new Runnable() {
 
             @Override
@@ -150,7 +151,8 @@ public final class LeafSegmentKeyGenerator implements ShardingKeyGenerator {
     
     @SneakyThrows
     private long incrementCacheId(final String leafKey, final long step) {
-        while(!leafRegistryCenter.tryLock()){
+        while (!leafRegistryCenter.tryLock()) {
+            continue;
         }
         long result = updateCacheIdInCenter(leafKey, step);
         leafRegistryCenter.tryRelease();
