@@ -17,19 +17,20 @@
 
 package org.apache.shardingsphere.example.core.jpa.repository;
 
-import org.apache.shardingsphere.example.core.api.repository.OrderItemRepository;
-import org.apache.shardingsphere.example.core.api.entity.OrderItem;
+import org.apache.shardingsphere.example.core.api.entity.Address;
+import org.apache.shardingsphere.example.core.api.repository.AddressRepository;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
+import java.sql.SQLException;
 import java.util.List;
 
 @Repository
 @Transactional
-public class OrderItemRepositoryImpl implements OrderItemRepository {
+public class AddressRepositoryImpl implements AddressRepository {
     
     @PersistenceContext
     private EntityManager entityManager;
@@ -40,31 +41,31 @@ public class OrderItemRepositoryImpl implements OrderItemRepository {
     }
     
     @Override
-    public void truncateTable() {
-        throw new UnsupportedOperationException("truncateTable for JPA");
-    }
-    
-    @Override
     public void dropTable() {
         throw new UnsupportedOperationException("dropTable for JPA");
     }
     
     @Override
-    public Long insert(final OrderItem orderItem) {
-        entityManager.persist(orderItem);
-        return orderItem.getOrderItemId();
+    public void truncateTable() {
+        throw new UnsupportedOperationException("truncateTable for JPA");
     }
     
     @Override
-    public void delete(final Long orderItemId) {
-        Query query = entityManager.createQuery("DELETE FROM OrderItemEntity i WHERE i.orderItemId = ?1 AND i.userId = 51");
-        query.setParameter(1, orderItemId);
+    public String insert(final Address entity) {
+        entityManager.persist(entity);
+        return entity.getAddressCode();
+    }
+    
+    @Override
+    public void delete(final String addressCode) {
+        Query query = entityManager.createQuery("DELETE FROM AddressEntity i WHERE i.addressCode = ?1");
+        query.setParameter(1, addressCode);
         query.executeUpdate();
     }
     
     @Override
     @SuppressWarnings("unchecked")
-    public List<OrderItem> selectAll() {
-        return (List<OrderItem>) entityManager.createQuery("SELECT i FROM OrderEntity o, OrderItemEntity i WHERE o.orderId = i.orderId").getResultList();
+    public List<Address> selectAll() {
+        return (List<Address>) entityManager.createQuery("SELECT i FROM AddressEntity i").getResultList();
     }
 }

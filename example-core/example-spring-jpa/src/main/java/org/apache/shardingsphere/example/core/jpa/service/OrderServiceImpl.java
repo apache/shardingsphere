@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.example.core.jpa.service;
 
+import org.apache.shardingsphere.example.core.api.repository.AddressRepository;
 import org.apache.shardingsphere.example.core.api.repository.OrderItemRepository;
 import org.apache.shardingsphere.example.core.api.repository.OrderRepository;
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
+import org.apache.shardingsphere.example.core.jpa.entity.AddressEntity;
 import org.apache.shardingsphere.example.core.jpa.entity.OrderEntity;
 import org.apache.shardingsphere.example.core.jpa.entity.OrderItemEntity;
 import org.springframework.context.annotation.Primary;
@@ -40,9 +42,18 @@ public class OrderServiceImpl implements ExampleService {
     
     @Resource
     private OrderItemRepository orderItemRepository;
+    
+    @Resource
+    private AddressRepository addressRepository;
 
     @Override
-    public void initEnvironment() {
+    public void initEnvironment() throws SQLException {
+        for (int i = 1; i <= 10; i++) {
+            AddressEntity entity = new AddressEntity();
+            entity.setAddressCode(String.valueOf(i));
+            entity.setAddressName("address_" + String.valueOf(i));
+            addressRepository.insert(entity);
+        }
     }
     
     @Override
