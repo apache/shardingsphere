@@ -52,7 +52,7 @@ public final class EncryptInsertOptimizeEngineTest {
     
     private EncryptRule encryptRule;
     
-    private final List<Object> parametersWithValues = Arrays.asList((Object) 1, (Object) 2);
+    private final List<Object> parametersWithValues = Arrays.<Object>asList(1, 2);
     
     private final List<Object> parametersWithoutValues = Collections.emptyList();
     

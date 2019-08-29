@@ -26,6 +26,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralE
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.core.rule.DataNode;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -42,13 +43,55 @@ public final class OptimizedInsertValue {
     
     private final List<String> columnNames;
     
+    private final Collection<ExpressionSegment> assignments;
+    
     private final ExpressionSegment[] valueExpressions;
     
     private final Object[] parameters;
     
-    private final int startIndexOfAppendedParameters;
+    private final int parametersCount;
     
     private final List<DataNode> dataNodes = new LinkedList<>();
+    
+    public OptimizedInsertValue(final List<String> columnNames, 
+                                final Collection<ExpressionSegment> assignments, final int derivedColumnsCount, final List<Object> parameters, final int parametersBeginIndex) {
+        this.columnNames = columnNames;
+        this.assignments = assignments;
+        valueExpressions = createValueExpressions(derivedColumnsCount);
+        this.parameters = createParameters(parameters, derivedColumnsCount, parametersBeginIndex);
+        this.parametersCount = getParametersCount();
+    }
+    
+    private ExpressionSegment[] createValueExpressions(final int derivedColumnsCount) {
+        ExpressionSegment[] result = new ExpressionSegment[assignments.size() + derivedColumnsCount];
+        assignments.toArray(result);
+        return result;
+    }
+    
+    private Object[] createParameters(final List<Object> parameters, final int derivedColumnsCount, final int parametersBeginIndex) {
+        int parametersCount = getParametersCount();
+        if (0 == parametersCount) {
+            return new Object[0];
+        }
+        Object[] result = new Object[parametersCount + derivedColumnsCount];
+        parameters.subList(parametersBeginIndex, parametersBeginIndex + parametersCount).toArray(result);
+        return result;
+    }
+    
+    /**
+     * Get parameters count.
+     *
+     * @return parameters count
+     */
+    public int getParametersCount() {
+        int result = 0;
+        for (ExpressionSegment each : assignments) {
+            if (each instanceof ParameterMarkerExpressionSegment) {
+                result++;
+            }
+        }
+        return result;
+    }
     
     /**
      * Get value.
@@ -93,7 +136,7 @@ public final class OptimizedInsertValue {
     }
     
     private void appendParameter(final Object parameter) {
-        parameters[getNullIndex(parameters, startIndexOfAppendedParameters)] = parameter;
+        parameters[getNullIndex(parameters, parametersCount)] = parameter;
     }
     
     private int getNullIndex(final Object[] array, final int startIndex) {

@@ -67,17 +67,18 @@ public final class ShardingInsertOptimizedStatement extends ShardingConditionOpt
      *
      * @param generateKeyColumnName generate key column name
      * @param derivedColumnNames derived column names
-     * @param valueExpressions value expressions
+     * @param assignments assignments
+     * @param derivedColumnsCount derived columns count
      * @param parameters SQL parameters
      * @param startIndexOfAppendedParameters start index of appended parameters
      * @return optimized insert value
      */
-    public OptimizedInsertValue createOptimizedInsertValue(final String generateKeyColumnName, final Collection<String> derivedColumnNames,
-                                                           final ExpressionSegment[] valueExpressions, final Object[] parameters, final int startIndexOfAppendedParameters) {
+    public OptimizedInsertValue createOptimizedInsertValue(final String generateKeyColumnName, final Collection<String> derivedColumnNames, final Collection<ExpressionSegment> assignments, 
+                                                           final int derivedColumnsCount, final List<Object> parameters, final int startIndexOfAppendedParameters) {
         List<String> allColumnNames = new LinkedList<>(insertColumns.getRegularColumnNames());
         allColumnNames.add(generateKeyColumnName);
         allColumnNames.addAll(derivedColumnNames);
-        return new OptimizedInsertValue(allColumnNames, valueExpressions, parameters, startIndexOfAppendedParameters);
+        return new OptimizedInsertValue(allColumnNames, assignments, derivedColumnsCount, parameters, startIndexOfAppendedParameters);
     }
     
     /**

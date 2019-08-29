@@ -20,8 +20,6 @@ package org.apache.shardingsphere.core.optimize.sharding.engnie.dml;
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
-import org.apache.shardingsphere.core.optimize.api.segment.InsertValuesFactory;
 import org.apache.shardingsphere.core.optimize.api.segment.OptimizedInsertValue;
 import org.apache.shardingsphere.core.optimize.sharding.engnie.ShardingOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingCondition;
@@ -31,6 +29,7 @@ import org.apache.shardingsphere.core.optimize.sharding.segment.insert.ShardingI
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingInsertOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.OnDuplicateKeyColumnsSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
@@ -63,18 +62,18 @@ public final class ShardingInsertOptimizeEngine implements ShardingOptimizeEngin
             allColumnNames.add(generatedKey.get().getColumnName());
         }
         allColumnNames.addAll(shardingRule.getEncryptRule().getAssistedQueryAndPlainColumns(sqlStatement.getTable().getTableName()));
-        Collection<InsertValue> insertValues = InsertValuesFactory.createInsertValues(sqlStatement, getDerivedColumnsCount(shardingRule, tableName, isGeneratedValue));
-        List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(sqlStatement, parameters, allColumnNames, insertValues, generatedKey.orNull());
+        int derivedColumnsCount = getDerivedColumnsCount(shardingRule, tableName, isGeneratedValue);
+        List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(sqlStatement, parameters, allColumnNames, generatedKey.orNull());
         ShardingInsertOptimizedStatement result = new ShardingInsertOptimizedStatement(sqlStatement, shardingConditions, insertColumns, generatedKey.orNull());
         checkDuplicateKeyForShardingKey(shardingRule, sqlStatement, tableName);
         int parametersCount = 0;
-        for (InsertValue each : insertValues) {
-            Object[] currentParameters = each.getParameters(parameters, parametersCount);
+        for (Collection<ExpressionSegment> each : sqlStatement.getAllValueExpressions()) {
             String generateKeyColumnName = shardingRule.findGenerateKeyColumnName(sqlStatement.getTable().getTableName()).orNull();
             Collection<String> encryptDerivedColumnNames = shardingRule.getEncryptRule().getAssistedQueryAndPlainColumns(sqlStatement.getTable().getTableName());
             OptimizedInsertValue optimizedInsertValue = result.createOptimizedInsertValue(
-                    generateKeyColumnName, encryptDerivedColumnNames, each.getValueExpressions(), currentParameters, each.getParametersCount());
+                    generateKeyColumnName, encryptDerivedColumnNames, each, derivedColumnsCount, parameters, parametersCount);
             result.addOptimizedInsertValue(optimizedInsertValue);
+            Object[] currentParameters = optimizedInsertValue.getParameters();
             if (isGeneratedValue) {
                 optimizedInsertValue.appendValue(generatedValues.next(), Arrays.asList(currentParameters));
             }
@@ -84,7 +83,7 @@ public final class ShardingInsertOptimizeEngine implements ShardingOptimizeEngin
             if (shardingRule.getEncryptRule().containsPlainColumn(tableName)) {
                 fillPlainOptimizedInsertValue(shardingRule, tableName, insertColumns.getRegularColumnNames(), optimizedInsertValue, Arrays.asList(currentParameters));
             }
-            parametersCount += each.getParametersCount();
+            parametersCount += optimizedInsertValue.getParametersCount();
         }
         return result;
     }

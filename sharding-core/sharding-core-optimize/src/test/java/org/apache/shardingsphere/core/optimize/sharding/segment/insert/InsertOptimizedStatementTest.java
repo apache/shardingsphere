@@ -27,9 +27,12 @@ import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -41,11 +44,18 @@ public final class InsertOptimizedStatementTest {
         ShardingInsertColumns insertColumns = mock(ShardingInsertColumns.class);
         when(insertColumns.getRegularColumnNames()).thenReturn(Arrays.asList("id", "value", "status"));
         ShardingInsertOptimizedStatement insertClauseOptimizedStatement = new ShardingInsertOptimizedStatement(new InsertStatement(), Collections.<ShardingCondition>emptyList(), insertColumns, null);
-        ExpressionSegment[] expressions = {new LiteralExpressionSegment(0, 0, 1), new ParameterMarkerExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, "test")};
-        Object[] parameters = {"parameter"};
-        OptimizedInsertValue optimizedInsertValue = insertClauseOptimizedStatement.createOptimizedInsertValue("id", Collections.<String>emptyList(), expressions, parameters, 1);
+        ExpressionSegment assignment1 = new LiteralExpressionSegment(0, 0, 1);
+        ExpressionSegment assignment2 = new ParameterMarkerExpressionSegment(0, 0, 1);
+        ExpressionSegment assignment3 = new LiteralExpressionSegment(0, 0, "test");
+        Collection<ExpressionSegment> assignments = Arrays.asList(assignment1, assignment2, assignment3);
+        List<Object> parameters = Collections.<Object>singletonList("parameter");
+        OptimizedInsertValue optimizedInsertValue = insertClauseOptimizedStatement.createOptimizedInsertValue("id", Collections.<String>emptyList(), assignments, 1, parameters, 0);
         insertClauseOptimizedStatement.addOptimizedInsertValue(optimizedInsertValue);
-        assertThat(insertClauseOptimizedStatement.getOptimizedInsertValues().get(0).getValueExpressions(), is(expressions));
+        assertThat(insertClauseOptimizedStatement.getOptimizedInsertValues().get(0).getValueExpressions().length, is(4));
+        assertThat(insertClauseOptimizedStatement.getOptimizedInsertValues().get(0).getValueExpressions()[0], is(assignment1));
+        assertThat(insertClauseOptimizedStatement.getOptimizedInsertValues().get(0).getValueExpressions()[1], is(assignment2));
+        assertThat(insertClauseOptimizedStatement.getOptimizedInsertValues().get(0).getValueExpressions()[2], is(assignment3));
+        assertNull(insertClauseOptimizedStatement.getOptimizedInsertValues().get(0).getValueExpressions()[3]);
         assertThat(insertClauseOptimizedStatement.getOptimizedInsertValues().get(0).getParameters()[0], is((Object) "parameter"));
         assertThat(insertClauseOptimizedStatement.getOptimizedInsertValues().get(0).getDataNodes().size(), is(0));
         assertThat(insertClauseOptimizedStatement.getOptimizedInsertValues().get(0).getValue("value"), is((Object) "parameter"));
