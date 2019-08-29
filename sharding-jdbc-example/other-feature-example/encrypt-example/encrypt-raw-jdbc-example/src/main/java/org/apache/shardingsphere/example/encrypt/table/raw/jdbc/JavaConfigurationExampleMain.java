@@ -21,25 +21,23 @@
 
 package org.apache.shardingsphere.example.encrypt.table.raw.jdbc;
 
+import org.apache.shardingsphere.example.core.api.ExampleExecuteTemplate;
+import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.apache.shardingsphere.example.core.jdbc.repository.UserRepositoryImpl;
 import org.apache.shardingsphere.example.core.jdbc.service.UserServiceImpl;
-import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.apache.shardingsphere.example.encrypt.table.raw.jdbc.config.EncryptDatabasesConfiguration;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 
-public class JavaConfigurationExample {
+public class JavaConfigurationExampleMain {
     
     public static void main(final String[] args) throws SQLException {
         DataSource dataSource = new EncryptDatabasesConfiguration().getDataSource();
-        ExampleService userService = getUserService(dataSource);
-        userService.initEnvironment();
-        userService.processSuccess();
-        userService.cleanEnvironment();
+        ExampleExecuteTemplate.run(getExampleService(dataSource));
     }
     
-    private static ExampleService getUserService(final DataSource dataSource) {
+    private static ExampleService getExampleService(final DataSource dataSource) {
         return new UserServiceImpl(new UserRepositoryImpl(dataSource));
     }
 }

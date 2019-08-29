@@ -15,32 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.sharding.spring.boot.mybatis;
+package org.apache.shardingsphere.example.encrypt.table.spring.boot;
 
+import org.apache.shardingsphere.example.core.api.ExampleExecuteTemplate;
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
-import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 
 import java.sql.SQLException;
 
-@ComponentScan("org.apache.shardingsphere.example.core.mybatis")
-@MapperScan(basePackages = "org.apache.shardingsphere.example.core.mybatis.repository")
+@ComponentScan("org.apache.shardingsphere.example.core.jpa")
+@EntityScan(basePackages = "org.apache.shardingsphere.example.core.jpa.entity")
 @SpringBootApplication(exclude = JtaAutoConfiguration.class)
-public class SpringBootMybatisMain {
+public class ExampleMain {
     
+    /**
+     * The example can't work well.
+     * Related issue #2884: https://github.com/apache/incubator-shardingsphere/issues/2884
+     *
+     * @throws SQLException SQL exception
+     */
+    @Deprecated
     public static void main(final String[] args) throws SQLException {
-        try (ConfigurableApplicationContext applicationContext = SpringApplication.run(SpringBootMybatisMain.class, args)) {
-            ExampleService exampleService = applicationContext.getBean(ExampleService.class);
-            try {
-                exampleService.initEnvironment();
-                exampleService.processSuccess();
-            } finally {
-                exampleService.cleanEnvironment();
-            }
+        // TODO: Because of assistedQueryColumns, we need to consider the DDL of encrypt module. Now JPA examples can not run well.
+        try (ConfigurableApplicationContext applicationContext = SpringApplication.run(ExampleMain.class, args)) {
+            ExampleExecuteTemplate.run(applicationContext.getBean("encrypt", ExampleService.class));
         }
     }
 }

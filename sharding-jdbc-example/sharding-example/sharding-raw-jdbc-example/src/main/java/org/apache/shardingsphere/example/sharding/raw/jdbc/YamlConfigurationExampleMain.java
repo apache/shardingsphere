@@ -17,34 +17,30 @@
 
 package org.apache.shardingsphere.example.sharding.raw.jdbc;
 
+import org.apache.shardingsphere.example.core.api.ExampleExecuteTemplate;
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.apache.shardingsphere.example.core.jdbc.service.OrderServiceImpl;
-import org.apache.shardingsphere.example.sharding.raw.jdbc.factory.DataSourceFactory;
+import org.apache.shardingsphere.example.sharding.raw.jdbc.factory.YamlDataSourceFactory;
 import org.apache.shardingsphere.example.type.ShardingType;
 
 import javax.sql.DataSource;
+import java.io.IOException;
 import java.sql.SQLException;
 
 /*
  * Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
  */
-public class JavaConfigurationExample {
+public class YamlConfigurationExampleMain {
     
-//    private static ShardingType shardingType = ShardingType.SHARDING_DATABASES;
-    private static ShardingType shardingType = ShardingType.SHARDING_TABLES;
+    private static ShardingType shardingType = ShardingType.SHARDING_DATABASES;
+//    private static ShardingType shardingType = ShardingType.SHARDING_TABLES;
 //    private static ShardingType shardingType = ShardingType.SHARDING_DATABASES_AND_TABLES;
 //    private static ShardingType shardingType = ShardingType.MASTER_SLAVE;
 //    private static ShardingType shardingType = ShardingType.SHARDING_MASTER_SLAVE;
     
-    public static void main(final String[] args) throws SQLException {
-        DataSource dataSource = DataSourceFactory.newInstance(shardingType);
-        ExampleService exampleService = getExampleService(dataSource);
-        try {
-            exampleService.initEnvironment();
-            exampleService.processSuccess();
-        } finally {
-            exampleService.cleanEnvironment();
-        }
+    public static void main(final String[] args) throws SQLException, IOException {
+        DataSource dataSource = YamlDataSourceFactory.newInstance(shardingType);
+        ExampleExecuteTemplate.run(getExampleService(dataSource));
     }
     
     private static ExampleService getExampleService(final DataSource dataSource) {

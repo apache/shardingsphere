@@ -15,28 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.sharding.spring.boot.jpa;
+package org.apache.shardingsphere.example.core.api;
 
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfiguration;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.ComponentScan;
 
 import java.sql.SQLException;
 
-@ComponentScan("org.apache.shardingsphere.example.core.jpa")
-@EntityScan(basePackages = "org.apache.shardingsphere.example.core.jpa.entity")
-@SpringBootApplication(exclude = JtaAutoConfiguration.class)
-public class SpringBootExample {
+public final class ExampleExecuteTemplate {
     
-    public static void main(final String[] args) throws SQLException {
-        try (ConfigurableApplicationContext applicationContext = SpringApplication.run(SpringBootExample.class, args)) {
-            ExampleService exampleService = applicationContext.getBean(ExampleService.class);
+    public static void run(final ExampleService exampleService) throws SQLException {
+        try {
             exampleService.initEnvironment();
             exampleService.processSuccess();
+        } finally {
             exampleService.cleanEnvironment();
         }
     }

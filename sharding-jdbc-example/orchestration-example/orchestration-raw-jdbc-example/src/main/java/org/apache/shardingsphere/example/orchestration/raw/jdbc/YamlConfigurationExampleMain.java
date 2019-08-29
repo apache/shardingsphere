@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.example.orchestration.raw.jdbc;
 
+import org.apache.shardingsphere.example.core.api.ExampleExecuteTemplate;
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.apache.shardingsphere.example.core.jdbc.service.OrderServiceImpl;
 import org.apache.shardingsphere.example.type.RegistryCenterType;
@@ -36,7 +37,7 @@ import java.sql.SQLException;
  * 2. Please make sure sharding-orchestration-reg-zookeeper-curator in your pom if registryCenterType = RegistryCenterType.ZOOKEEPER.
  * 3. Please make sure sharding-orchestration-reg-etcd in your pom if registryCenterType = RegistryCenterType.ETCD.
  */
-public class YamlConfigurationExample {
+public class YamlConfigurationExampleMain {
     
     private static ShardingType shardingType = ShardingType.SHARDING_DATABASES_AND_TABLES;
 //    private static ShardingType shardingType = ShardingType.MASTER_SLAVE;
@@ -50,11 +51,11 @@ public class YamlConfigurationExample {
     
     public static void main(final String[] args) throws Exception {
         DataSource dataSource = getDataSource(registryCenterType, loadConfigFromRegCenter, shardingType);
-        ExampleService exampleService = getExampleService(dataSource);
-        exampleService.initEnvironment();
-        exampleService.processSuccess();
-        exampleService.cleanEnvironment();
-        closeDataSource(dataSource);
+        try {
+            ExampleExecuteTemplate.run(getExampleService(dataSource));
+        } finally {
+            closeDataSource(dataSource);
+        }
     }
     
     private static DataSource getDataSource(final RegistryCenterType registryCenterType, final boolean loadConfigFromRegCenter, final ShardingType shardingType) throws SQLException, IOException {

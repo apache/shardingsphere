@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.orchestration.spring.boot;
+package org.apache.shardingsphere.example.sharding.spring.boot.jpa;
 
+import org.apache.shardingsphere.example.core.api.ExampleExecuteTemplate;
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -30,14 +31,11 @@ import java.sql.SQLException;
 @ComponentScan("org.apache.shardingsphere.example.core.jpa")
 @EntityScan(basePackages = "org.apache.shardingsphere.example.core.jpa.entity")
 @SpringBootApplication(exclude = JtaAutoConfiguration.class)
-public class SpringBootExample {
+public class ExampleMain {
     
     public static void main(final String[] args) throws SQLException {
-        try (ConfigurableApplicationContext applicationContext = SpringApplication.run(SpringBootExample.class, args)) {
-            ExampleService exampleService = applicationContext.getBean(ExampleService.class);
-            exampleService.initEnvironment();
-            exampleService.processSuccess();
-            exampleService.cleanEnvironment();
+        try (ConfigurableApplicationContext applicationContext = SpringApplication.run(ExampleMain.class, args)) {
+            ExampleExecuteTemplate.run(applicationContext.getBean(ExampleService.class));
         }
     }
 }

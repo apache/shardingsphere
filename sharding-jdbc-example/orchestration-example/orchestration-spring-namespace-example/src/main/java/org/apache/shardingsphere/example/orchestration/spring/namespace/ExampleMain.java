@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.example.orchestration.spring.namespace;
 
+import org.apache.shardingsphere.example.core.api.ExampleExecuteTemplate;
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.apache.shardingsphere.example.type.RegistryCenterType;
 import org.apache.shardingsphere.example.type.ShardingType;
@@ -25,7 +26,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.sql.SQLException;
 
-public class SpringNamespaceExample {
+public class ExampleMain {
     
     private static ShardingType shardingType = ShardingType.SHARDING_DATABASES_AND_TABLES;
 //    private static ShardingType shardingType = ShardingType.MASTER_SLAVE;
@@ -39,10 +40,7 @@ public class SpringNamespaceExample {
     
     public static void main(final String[] args) throws SQLException {
         try (ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext(getApplicationFile())) {
-            ExampleService exampleService = applicationContext.getBean(ExampleService.class);
-            exampleService.initEnvironment();
-            exampleService.processSuccess();
-            exampleService.cleanEnvironment();
+            ExampleExecuteTemplate.run(applicationContext.getBean(ExampleService.class));
         }
     }
     

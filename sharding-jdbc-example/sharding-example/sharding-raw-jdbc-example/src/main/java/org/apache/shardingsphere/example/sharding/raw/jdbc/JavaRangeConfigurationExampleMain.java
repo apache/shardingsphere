@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.example.sharding.raw.jdbc;
 
+import org.apache.shardingsphere.example.core.api.ExampleExecuteTemplate;
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.apache.shardingsphere.example.core.jdbc.repository.AddressRepositoryImpl;
 import org.apache.shardingsphere.example.core.jdbc.repository.OrderItemRepositoryImpl;
@@ -31,7 +32,7 @@ import java.sql.SQLException;
 /*
  * Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
  */
-public class JavaRangeConfigurationExample {
+public class JavaRangeConfigurationExampleMain {
     
     private static ShardingType shardingType = ShardingType.SHARDING_DATABASES;
 //    private static ShardingType shardingType = ShardingType.SHARDING_TABLES;
@@ -41,10 +42,7 @@ public class JavaRangeConfigurationExample {
     
     public static void main(final String[] args) throws SQLException {
         DataSource dataSource = RangeDataSourceFactory.newInstance(shardingType);
-        ExampleService exampleService = getExampleService(dataSource);
-        exampleService.initEnvironment();
-        exampleService.processSuccess();
-        exampleService.cleanEnvironment();
+        ExampleExecuteTemplate.run(getExampleService(dataSource));
     }
     
     private static ExampleService getExampleService(final DataSource dataSource) {

@@ -17,30 +17,28 @@
 
 package org.apache.shardingsphere.example.encrypt.table.raw.jdbc;
 
+import org.apache.shardingsphere.example.core.api.ExampleExecuteTemplate;
+import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.apache.shardingsphere.example.core.jdbc.repository.UserRepositoryImpl;
 import org.apache.shardingsphere.example.core.jdbc.service.UserServiceImpl;
-import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlEncryptDataSourceFactory;
 
 import javax.sql.DataSource;
 import java.io.File;
 import java.sql.SQLException;
 
-public class YamlConfigurationExample {
+public class YamlConfigurationExampleMain {
     
     public static void main(final String[] args) throws SQLException {
         DataSource dataSource = YamlEncryptDataSourceFactory.createDataSource(getFile());
-        ExampleService userService = getUserService(dataSource);
-        userService.initEnvironment();
-        userService.processSuccess();
-        userService.cleanEnvironment();
+        ExampleExecuteTemplate.run(getExampleService(dataSource));
     }
     
     private static File getFile() {
         return new File(Thread.currentThread().getClass().getResource("/META-INF/encrypt-databases.yaml").getFile());
     }
     
-    private static ExampleService getUserService(final DataSource dataSource) {
+    private static ExampleService getExampleService(final DataSource dataSource) {
         return new UserServiceImpl(new UserRepositoryImpl(dataSource));
     }
 }

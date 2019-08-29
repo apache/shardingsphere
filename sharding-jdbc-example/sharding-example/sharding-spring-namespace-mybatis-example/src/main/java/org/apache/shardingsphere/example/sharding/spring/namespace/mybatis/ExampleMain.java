@@ -15,15 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.sharding.spring.namespace.jpa;
+package org.apache.shardingsphere.example.sharding.spring.namespace.mybatis;
 
+import org.apache.shardingsphere.example.core.api.ExampleExecuteTemplate;
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.sql.SQLException;
 
-public class SpringNamespaceJPAMain {
+public class ExampleMain {
     
     private static final String CONFIG_FILE = "META-INF/application-sharding-databases.xml";
 //    private static final String CONFIG_FILE = "META-INF/application-sharding-tables.xml";
@@ -33,9 +34,7 @@ public class SpringNamespaceJPAMain {
     
     public static void main(final String[] args) throws SQLException {
         try (ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext(CONFIG_FILE)) {
-            ExampleService exampleService = applicationContext.getBean(ExampleService.class);
-            exampleService.initEnvironment();
-            exampleService.processSuccess();
+            ExampleExecuteTemplate.run(applicationContext.getBean(ExampleService.class));
         }
     }
 }

@@ -41,7 +41,7 @@ import java.util.concurrent.locks.LockSupport;
     Please startup seata-server( before running this example.
     Download seata-server from here https://github.com/seata/seata/releases
  */
-public class YamlConfigurationTransactionExample {
+public class ExampleMain {
     
     private static String configFile = "/META-INF/sharding-databases-tables.yaml";
 //    private static String configFile = "/META-INF/master-slave.yaml";

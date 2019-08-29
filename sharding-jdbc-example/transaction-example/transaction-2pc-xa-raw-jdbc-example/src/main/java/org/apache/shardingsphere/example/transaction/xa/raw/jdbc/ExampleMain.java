@@ -34,7 +34,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class YamlConfigurationTransactionExample {
+public class ExampleMain {
     
     private static String configFile = "/META-INF/sharding-databases-tables.yaml";
     //    private static String configFile = "/META-INF/master-slave.yaml";
