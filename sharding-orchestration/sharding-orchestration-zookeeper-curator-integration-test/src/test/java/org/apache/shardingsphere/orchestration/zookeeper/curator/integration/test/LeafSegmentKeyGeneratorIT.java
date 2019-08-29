@@ -58,7 +58,6 @@ public final class LeafSegmentKeyGeneratorIT {
         properties.setProperty("serverList", "127.0.0.1:3181");
         properties.setProperty("initialValue", "100001");
         properties.setProperty("step", "3");
-        properties.setProperty("digest", "");
         properties.setProperty("leafKey", "test_table_1");
         properties.setProperty("registryCenterType", "zookeeper");
         leafSegmentKeyGenerator.setProperties(properties);
@@ -76,7 +75,6 @@ public final class LeafSegmentKeyGeneratorIT {
         properties.setProperty("serverList", "127.0.0.1:3181");
         properties.setProperty("initialValue", "100001");
         properties.setProperty("step", "5");
-        properties.setProperty("digest", "");
         properties.setProperty("leafKey", "test_table_6");
         properties.setProperty("registryCenterType", "zookeeper");
         leafSegmentKeyGenerator.setProperties(properties);
@@ -94,7 +92,6 @@ public final class LeafSegmentKeyGeneratorIT {
         properties.setProperty("serverList", "127.0.0.1:3181");
         properties.setProperty("initialValue", "100001");
         properties.setProperty("step", "5");
-        properties.setProperty("digest", "");
         properties.setProperty("leafKey", "test_table_6");
         properties.setProperty("registryCenterType", "zookeeper");
         leafSegmentKeyGenerator.setProperties(properties);
@@ -112,7 +109,6 @@ public final class LeafSegmentKeyGeneratorIT {
         properties.setProperty("serverList", "127.0.0.1:3181");
         properties.setProperty("initialValue", "100001");
         properties.setProperty("step", "7");
-        properties.setProperty("digest", "");
         properties.setProperty("leafKey", "test_table_7");
         properties.setProperty("registryCenterType", "zookeeper");
         leafSegmentKeyGenerator.setProperties(properties);
@@ -130,7 +126,6 @@ public final class LeafSegmentKeyGeneratorIT {
         properties.setProperty("serverList", "127.0.0.1:3181");
         properties.setProperty("initialValue", "100001");
         properties.setProperty("step", "7");
-        properties.setProperty("digest", "");
         properties.setProperty("leafKey", "test_table_7");
         properties.setProperty("registryCenterType", "zookeeper");
         leafSegmentKeyGenerator.setProperties(properties);
@@ -150,7 +145,6 @@ public final class LeafSegmentKeyGeneratorIT {
         properties.setProperty("serverList", "127.0.0.1:3181");
         properties.setProperty("initialValue", "100001");
         properties.setProperty("step", "3");
-        properties.setProperty("digest", "");
         properties.setProperty("leafKey", "test_table_2");
         properties.setProperty("registryCenterType", "zookeeper");
         leafSegmentKeyGenerator.setProperties(properties);
@@ -176,7 +170,7 @@ public final class LeafSegmentKeyGeneratorIT {
         properties.setProperty("serverList", "127.0.0.1:3181");
         properties.setProperty("initialValue", "100001");
         properties.setProperty("step", "3");
-        properties.setProperty("digest", "");
+        properties.setProperty("digest", "name:123456");
         properties.setProperty("leafKey", "test_table_3");
         properties.setProperty("registryCenterType", "zookeeper");
         leafSegmentKeyGenerator.setProperties(properties);
@@ -201,7 +195,6 @@ public final class LeafSegmentKeyGeneratorIT {
         Properties properties = new Properties();
         properties.setProperty("serverList", "127.0.0.1:3181");
         properties.setProperty("initialValue", "100001");
-        properties.setProperty("digest", "");
         properties.setProperty("leafKey", "test_table_4");
         properties.setProperty("registryCenterType", "zookeeper");
         leafSegmentKeyGenerator.setProperties(properties);
@@ -226,7 +219,6 @@ public final class LeafSegmentKeyGeneratorIT {
         Properties properties = new Properties();
         properties.setProperty("serverList", "127.0.0.1:3181");
         properties.setProperty("step", "3");
-        properties.setProperty("digest", "");
         properties.setProperty("leafKey", "test_table_5");
         properties.setProperty("registryCenterType", "zookeeper");
         leafSegmentKeyGenerator.setProperties(properties);
