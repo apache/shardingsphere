@@ -25,5 +25,5 @@ package org.apache.shardingsphere.transaction.core;
  */
 public enum TransactionOperationType {
     
-    BEGIN, COMMIT, ROLLBACK
+    BEGIN, SUSPEND, RESUME, COMMIT, ROLLBACK
 }

@@ -29,7 +29,6 @@ import org.apache.shardingsphere.transaction.xa.fixture.DataSourceUtils;
 import org.apache.shardingsphere.transaction.xa.fixture.ReflectiveUtil;
 import org.apache.shardingsphere.transaction.xa.jta.connection.SingleXAConnection;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.SingleXADataSource;
-import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
 import org.apache.shardingsphere.transaction.xa.spi.XATransactionManager;
 import org.junit.Before;
 import org.junit.Test;
@@ -125,7 +124,8 @@ public final class XAShardingTransactionManagerTest {
         setCachedSingleXADataSourceMap("ds1");
         Connection actual = xaShardingTransactionManager.getConnection("ds1");
         assertThat(actual, instanceOf(Connection.class));
-        verify(xaTransactionManager).enlistResource(any(SingleXAResource.class));
+		// xa resource is enlisted by the underling transaction manager
+		// verify(xaTransactionManager).enlistResource(any(SingleXAResource.class));
     }
     
     @Test
@@ -135,7 +135,8 @@ public final class XAShardingTransactionManagerTest {
         assertThat(actual, instanceOf(Connection.class));
         xaShardingTransactionManager.getConnection("ds1");
         assertThat(actual, instanceOf(Connection.class));
-        verify(xaTransactionManager).enlistResource(any(SingleXAResource.class));
+        // xa resource is enlisted by the underling transaction manager
+        // verify(xaTransactionManager).enlistResource(any(SingleXAResource.class));
     }
     
     @Test
@@ -166,10 +167,10 @@ public final class XAShardingTransactionManagerTest {
         SingleXADataSource singleXADataSource = mock(SingleXADataSource.class);
         SingleXAConnection singleXAConnection = mock(SingleXAConnection.class);
         XADataSource xaDataSource = mock(XADataSource.class);
-        SingleXAResource singleXAResource = mock(SingleXAResource.class);
+        // SingleXAResource singleXAResource = mock(SingleXAResource.class);
         Connection connection = mock(Connection.class);
         when(singleXAConnection.getConnection()).thenReturn(connection);
-        when(singleXAConnection.getXAResource()).thenReturn(singleXAResource);
+        // when(singleXAConnection.getXAResource()).thenReturn(singleXAResource);
         when(singleXADataSource.getXAConnection()).thenReturn(singleXAConnection);
         when(singleXADataSource.getResourceName()).thenReturn(datasourceName);
         when(singleXADataSource.getXaDataSource()).thenReturn(xaDataSource);

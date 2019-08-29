@@ -54,6 +54,27 @@ public final class YamlShardingDataSourceFactory {
     /**
      * Create sharding data source.
      *
+     * @param yamlFile YAML file for rule configuration of databases and tables sharding with data sources
+     * @param configClass target class that the YAML configuration needs to be converted
+     * @return sharding data source
+     * @throws SQLException SQL exception
+     * @throws IOException IO exception
+     */
+    public static DataSource createDataSource(final File yamlFile, Class<? extends YamlRootShardingConfiguration> configClass) throws SQLException, IOException {
+		YamlRootShardingConfiguration config = YamlEngine.unmarshal(yamlFile, configClass);
+		try {
+			config.afterPropertiesSet();
+		} catch (RuntimeException error) {
+			throw error;
+		} catch (Exception error) {
+			throw new RuntimeException(error);
+		}
+        return ShardingDataSourceFactory.createDataSource(config.getDataSources(), new ShardingRuleConfigurationYamlSwapper().swap(config.getShardingRule()), config.getProps());
+    }
+    
+    /**
+     * Create sharding data source.
+     *
      * @param yamlBytes YAML bytes for rule configuration of databases and tables sharding with data sources
      * @return sharding data source
      * @throws SQLException SQL exception
@@ -61,6 +82,27 @@ public final class YamlShardingDataSourceFactory {
      */
     public static DataSource createDataSource(final byte[] yamlBytes) throws SQLException, IOException {
         YamlRootShardingConfiguration config = YamlEngine.unmarshal(yamlBytes, YamlRootShardingConfiguration.class);
+        return ShardingDataSourceFactory.createDataSource(config.getDataSources(), new ShardingRuleConfigurationYamlSwapper().swap(config.getShardingRule()), config.getProps());
+    }
+    
+    /**
+     * Create sharding data source.
+     *
+     * @param yamlBytes YAML bytes for rule configuration of databases and tables sharding with data sources
+     * @param configClass target class that the YAML configuration needs to be converted
+     * @return sharding data source
+     * @throws SQLException SQL exception
+     * @throws IOException IO exception
+     */
+    public static DataSource createDataSource(final byte[] yamlBytes, Class<? extends YamlRootShardingConfiguration> configClass) throws SQLException, IOException {
+        YamlRootShardingConfiguration config = YamlEngine.unmarshal(yamlBytes, configClass);
+		try {
+			config.afterPropertiesSet();
+		} catch (RuntimeException error) {
+			throw error;
+		} catch (Exception error) {
+			throw new RuntimeException(error);
+		}
         return ShardingDataSourceFactory.createDataSource(config.getDataSources(), new ShardingRuleConfigurationYamlSwapper().swap(config.getShardingRule()), config.getProps());
     }
     

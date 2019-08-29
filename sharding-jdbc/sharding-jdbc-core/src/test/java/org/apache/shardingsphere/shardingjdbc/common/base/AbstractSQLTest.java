@@ -17,17 +17,6 @@
 
 package org.apache.shardingsphere.shardingjdbc.common.base;
 
-import com.google.common.collect.Sets;
-import lombok.AccessLevel;
-import lombok.Getter;
-import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.core.database.DatabaseTypes;
-import org.apache.shardingsphere.shardingjdbc.common.env.DatabaseEnvironment;
-import org.apache.shardingsphere.spi.database.DatabaseType;
-import org.h2.tools.RunScript;
-import org.junit.BeforeClass;
-
-import javax.sql.DataSource;
 import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -36,6 +25,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.sql.DataSource;
+
+import org.apache.commons.dbcp2.BasicDataSource;
+import org.apache.shardingsphere.core.database.DatabaseTypes;
+import org.apache.shardingsphere.shardingjdbc.common.env.DatabaseEnvironment;
+import org.apache.shardingsphere.spi.database.DatabaseType;
+import org.h2.tools.RunScript;
+import org.junit.BeforeClass;
+
+import com.google.common.collect.Sets;
+
+import lombok.AccessLevel;
+import lombok.Getter;
 
 public abstract class AbstractSQLTest {
     

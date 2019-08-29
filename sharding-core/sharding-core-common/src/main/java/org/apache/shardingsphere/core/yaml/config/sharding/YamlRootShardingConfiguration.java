@@ -31,4 +31,7 @@ import org.apache.shardingsphere.core.yaml.config.common.YamlRootRuleConfigurati
 public class YamlRootShardingConfiguration extends YamlRootRuleConfiguration {
     
     private YamlShardingRuleConfiguration shardingRule;
+    
+    public void afterPropertiesSet() throws Exception {}
+    
 }

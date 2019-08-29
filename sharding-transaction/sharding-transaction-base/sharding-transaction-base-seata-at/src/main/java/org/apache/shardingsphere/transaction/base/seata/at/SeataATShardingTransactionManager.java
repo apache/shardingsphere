@@ -82,6 +82,21 @@ public final class SeataATShardingTransactionManager implements ShardingTransact
     }
     
     @Override
+	public Object getTransaction() {
+		return null; // not supported yet
+	}
+
+	@Override
+	public Object suspend() {
+		return null; // not supported yet
+	}
+
+	@Override
+	public void resume(Object transaction) {
+		// not supported yet
+	}
+	
+    @Override
     @SneakyThrows
     public void commit() {
         try {

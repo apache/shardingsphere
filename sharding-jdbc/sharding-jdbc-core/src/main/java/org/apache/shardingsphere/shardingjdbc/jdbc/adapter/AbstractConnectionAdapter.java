@@ -28,7 +28,6 @@ import org.apache.shardingsphere.core.route.router.masterslave.MasterVisitedMana
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteCallback;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteTemplate;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationConnection;
-import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -204,7 +203,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     public final void close() throws SQLException {
         closed = true;
         MasterVisitedManager.clear();
-        TransactionTypeHolder.clear();
+        // TransactionTypeHolder.clear();
         int connectionSize = cachedConnections.size();
         try {
             forceExecuteTemplateForClose.execute(cachedConnections.entries(), new ForceExecuteCallback<Entry<String, Connection>>() {

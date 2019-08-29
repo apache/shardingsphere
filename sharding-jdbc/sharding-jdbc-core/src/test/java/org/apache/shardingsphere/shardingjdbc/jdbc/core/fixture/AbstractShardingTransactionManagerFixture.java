@@ -38,6 +38,8 @@ public abstract class AbstractShardingTransactionManagerFixture implements Shard
     
     private final Map<String, DataSource> dataSourceMap = new HashMap<>();
     
+    private transient Object transaction = null;
+    
     @Override
     public final void init(final DatabaseType databaseType, final Collection<ResourceDataSource> resourceDataSources) {
         for (ResourceDataSource each : resourceDataSources) {
@@ -57,17 +59,38 @@ public abstract class AbstractShardingTransactionManagerFixture implements Shard
     
     @Override
     public final void begin() {
+    	this.transaction = new Object();
         invocations.add(TransactionOperationType.BEGIN);
     }
     
     @Override
+	public Object getTransaction() {
+		return this.transaction;
+	}
+
+	@Override
+	public Object suspend() {
+		Object transaction = this.getTransaction();
+		this.transaction = null;
+		return transaction;
+	}
+
+	@Override
+	public void resume(Object transaction) {
+        // invocations.add(TransactionOperationType.RESUME);
+		this.transaction = transaction;
+	}
+	
+    @Override
     public final void commit() {
         invocations.add(TransactionOperationType.COMMIT);
+    	this.transaction = null;
     }
     
     @Override
     public final void rollback() {
         invocations.add(TransactionOperationType.ROLLBACK);
+    	this.transaction = null;
     }
     
     @Override

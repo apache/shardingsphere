@@ -68,7 +68,20 @@ public interface ShardingTransactionManager extends AutoCloseable {
      * Begin transaction.
      */
     void begin();
-    
+    /**
+     * Get current transaction.
+     * @return
+     */
+    Object getTransaction();
+    /**
+     * Suspend current transaction.
+     */
+    Object suspend();
+    /**
+     * Resume target transaction
+     * @param transaction suspended transaction
+     */
+    void resume(Object transaction);
     /**
      * Commit transaction.
      */

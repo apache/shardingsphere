@@ -51,6 +51,20 @@ public final class OtherShardingTransactionManagerFixture implements ShardingTra
     }
     
     @Override
+	public Object getTransaction() {
+		return null;
+	}
+
+	@Override
+	public Object suspend() {
+		return null;
+	}
+
+	@Override
+	public void resume(Object transaction) {
+	}
+	
+    @Override
     public void commit() {
     }
     
