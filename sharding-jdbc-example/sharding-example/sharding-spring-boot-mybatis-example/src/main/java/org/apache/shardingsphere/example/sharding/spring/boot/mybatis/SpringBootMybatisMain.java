@@ -34,7 +34,7 @@ public class SpringBootMybatisMain {
     
     public static void main(final String[] args) throws SQLException {
         try (ConfigurableApplicationContext applicationContext = SpringApplication.run(SpringBootMybatisMain.class, args)) {
-            ExampleService exampleService = applicationContext.getBean("order", ExampleService.class);
+            ExampleService exampleService = applicationContext.getBean(ExampleService.class);
             exampleService.initEnvironment();
             exampleService.processSuccess();
             exampleService.cleanEnvironment();

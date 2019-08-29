@@ -34,7 +34,7 @@ public class SpringBootExample {
     
     public static void main(final String[] args) throws SQLException {
         try (ConfigurableApplicationContext applicationContext = SpringApplication.run(SpringBootExample.class, args)) {
-            ExampleService exampleService = applicationContext.getBean("order", ExampleService.class);
+            ExampleService exampleService = applicationContext.getBean(ExampleService.class);
             exampleService.processSuccess();
         }
     }

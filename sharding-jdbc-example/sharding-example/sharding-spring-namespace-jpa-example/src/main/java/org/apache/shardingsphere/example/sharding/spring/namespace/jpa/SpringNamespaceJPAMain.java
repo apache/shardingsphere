@@ -33,7 +33,7 @@ public class SpringNamespaceJPAMain {
     
     public static void main(final String[] args) throws SQLException {
         try (ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext(CONFIG_FILE)) {
-            ExampleService exampleService = applicationContext.getBean("order", ExampleService.class);
+            ExampleService exampleService = applicationContext.getBean(ExampleService.class);
             exampleService.processSuccess();
         }
     }

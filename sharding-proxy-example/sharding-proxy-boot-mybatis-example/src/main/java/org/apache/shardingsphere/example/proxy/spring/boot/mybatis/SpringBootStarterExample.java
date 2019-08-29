@@ -58,6 +58,6 @@ public class SpringBootStarterExample {
     }
     
     private static ExampleService getExampleService(final ConfigurableApplicationContext applicationContext) {
-        return applicationContext.getBean("order", ExampleService.class);
+        return applicationContext.getBean(ExampleService.class);
     }
 }

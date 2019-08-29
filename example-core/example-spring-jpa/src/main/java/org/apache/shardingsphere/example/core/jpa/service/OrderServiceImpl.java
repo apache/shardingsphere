@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.example.core.jpa.service;
 
+import org.apache.shardingsphere.example.core.api.repository.OrderItemRepository;
+import org.apache.shardingsphere.example.core.api.repository.OrderRepository;
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.apache.shardingsphere.example.core.jpa.entity.OrderEntity;
 import org.apache.shardingsphere.example.core.jpa.entity.OrderItemEntity;
-import org.apache.shardingsphere.example.core.api.repository.OrderItemRepository;
-import org.apache.shardingsphere.example.core.api.repository.OrderRepository;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,7 +31,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service("order")
+@Service
+@Primary
 public class OrderServiceImpl implements ExampleService {
     
     @Resource
