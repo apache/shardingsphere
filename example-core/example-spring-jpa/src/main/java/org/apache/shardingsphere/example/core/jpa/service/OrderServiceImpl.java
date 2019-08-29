@@ -86,6 +86,7 @@ public class OrderServiceImpl implements ExampleService {
         for (int i = 1; i <= 10; i++) {
             OrderEntity order = new OrderEntity();
             order.setUserId(i);
+            order.setAddressId(i);
             order.setStatus("INSERT_TEST_JPA");
             orderRepository.insert(order);
             OrderItemEntity item = new OrderItemEntity();

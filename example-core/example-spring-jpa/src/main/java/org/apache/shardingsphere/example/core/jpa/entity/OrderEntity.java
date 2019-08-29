@@ -46,6 +46,12 @@ public final class OrderEntity extends Order {
         return super.getUserId();
     }
     
+    @Column(name = "address_id")
+    @Override
+    public long getAddressId() {
+        return super.getAddressId();
+    }
+    
     @Column(name = "status")
     @Override
     public String getStatus() {

@@ -98,6 +98,7 @@ public class OrderServiceImpl implements ExampleService {
         for (int i = 1; i <= 10; i++) {
             Order order = new Order();
             order.setUserId(i);
+            order.setAddressId(i);
             order.setStatus("INSERT_TEST");
             orderRepository.insert(order);
             OrderItem item = new OrderItem();

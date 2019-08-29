@@ -28,7 +28,7 @@ import javax.persistence.Table;
 @Table(name = "t_address")
 public final class AddressEntity extends Address {
     
-    private static final long serialVersionUID = 4743102234543827854L;
+    private static final long serialVersionUID = 4743102234543827855L;
     
     @Id
     @Column(name = "address_id")
