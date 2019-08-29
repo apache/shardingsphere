@@ -19,12 +19,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.apache.shardingsphere.example.core.mybatis.repository.MybatisAddressRepository">
     <resultMap id="baseResultMap" type="org.apache.shardingsphere.example.core.api.entity.Address">
-        <result column="address_code" property="addressCode" jdbcType="VARCHAR"/>
+        <result column="address_id" property="addressId" jdbcType="BIGINT"/>
         <result column="address_name" property="addressName" jdbcType="VARCHAR"/>
     </resultMap>
 
     <update id="createTableIfNotExists">
-        CREATE TABLE IF NOT EXISTS t_address (address_code VARCHAR(20) NOT NULL, address_name VARCHAR(100) NOT NULL, PRIMARY KEY (address_code));
+        CREATE TABLE IF NOT EXISTS t_address (address_id BIGINT NOT NULL, address_name VARCHAR(100) NOT NULL, PRIMARY KEY (address_id));
     </update>
     
     <update id="truncateTable">
@@ -36,11 +36,11 @@
     </update>
     
     <insert id="insert">
-        INSERT INTO t_address (address_code, address_name) VALUES (#{addressCode,jdbcType=VARCHAR}, #{addressName,jdbcType=VARCHAR});
+        INSERT INTO t_address (address_id, address_name) VALUES (#{addressId,jdbcType=BIGINT}, #{addressName,jdbcType=VARCHAR});
     </insert>
     
     <delete id="delete">
-        DELETE FROM t_address WHERE address_code = #{addressCode,jdbcType=VARCHAR};
+        DELETE FROM t_address WHERE address_id = #{addressId,jdbcType=BIGINT};
     </delete>
     
     <select id="selectAll" resultMap="baseResultMap">

@@ -50,7 +50,7 @@ public class OrderServiceImpl implements ExampleService {
     public void initEnvironment() throws SQLException {
         for (int i = 1; i <= 10; i++) {
             AddressEntity entity = new AddressEntity();
-            entity.setAddressCode((long) i);
+            entity.setAddressId((long) i);
             entity.setAddressName("address_" + String.valueOf(i));
             addressRepository.insert(entity);
         }

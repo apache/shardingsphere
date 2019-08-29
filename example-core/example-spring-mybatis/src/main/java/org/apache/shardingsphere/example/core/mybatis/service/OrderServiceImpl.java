@@ -60,7 +60,7 @@ public class OrderServiceImpl implements ExampleService {
         addressRepository.truncateTable();
         for (int i = 1; i <= 10; i++) {
             Address entity = new Address();
-            entity.setAddressCode((long) i);
+            entity.setAddressId((long) i);
             entity.setAddressName("address_" + String.valueOf(i));
             addressRepository.insert(entity);
         }

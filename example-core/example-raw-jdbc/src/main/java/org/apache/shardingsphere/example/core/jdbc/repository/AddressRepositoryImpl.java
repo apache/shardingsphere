@@ -40,7 +40,7 @@ public final class AddressRepositoryImpl implements AddressRepository {
     @Override
     public void createTableIfNotExists() throws SQLException {
         String sql = "CREATE TABLE IF NOT EXISTS t_address "
-            + "(address_code VARCHAR(20) NOT NULL, address_name VARCHAR(100) NOT NULL, PRIMARY KEY (address_code))";
+            + "(address_id BIGINT NOT NULL, address_name VARCHAR(100) NOT NULL, PRIMARY KEY (address_id))";
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.executeUpdate(sql);
@@ -67,19 +67,19 @@ public final class AddressRepositoryImpl implements AddressRepository {
     
     @Override
     public Long insert(final Address entity) throws SQLException {
-        String sql = "INSERT INTO t_address (address_code, address_name) VALUES (?, ?)";
+        String sql = "INSERT INTO t_address (address_id, address_name) VALUES (?, ?)";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setLong(1, entity.getAddressCode());
+            preparedStatement.setLong(1, entity.getAddressId());
             preparedStatement.setString(2, entity.getAddressName());
             preparedStatement.executeUpdate();
         }
-        return entity.getAddressCode();
+        return entity.getAddressId();
     }
     
     @Override
     public void delete(final Long primaryKey) throws SQLException {
-        String sql = "DELETE FROM t_address WHERE address_code=?";
+        String sql = "DELETE FROM t_address WHERE address_id=?";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setLong(1, primaryKey);
@@ -100,7 +100,7 @@ public final class AddressRepositoryImpl implements AddressRepository {
              ResultSet resultSet = preparedStatement.executeQuery()) {
             while (resultSet.next()) {
                 Address address = new Address();
-                address.setAddressCode(resultSet.getLong(1));
+                address.setAddressId(resultSet.getLong(1));
                 address.setAddressName(resultSet.getString(2));
                 result.add(address);
             }

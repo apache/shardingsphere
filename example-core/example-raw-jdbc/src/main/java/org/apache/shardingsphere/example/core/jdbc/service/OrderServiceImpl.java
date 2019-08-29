@@ -76,7 +76,7 @@ public final class OrderServiceImpl implements ExampleService {
     
     private void insertAddress(final int i) throws SQLException {
         Address address = new Address();
-        address.setAddressCode((long) i);
+        address.setAddressId((long) i);
         address.setAddressName("address_" + i);
         addressRepository.insert(address);
     }

@@ -52,7 +52,7 @@ public class AddressRepositoryImpl implements AddressRepository {
     @Override
     public Long insert(final Address entity) {
         entityManager.persist(entity);
-        return entity.getAddressCode();
+        return entity.getAddressId();
     }
     
     @Override

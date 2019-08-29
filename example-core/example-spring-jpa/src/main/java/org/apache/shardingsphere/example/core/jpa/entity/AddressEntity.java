@@ -31,10 +31,10 @@ public final class AddressEntity extends Address {
     private static final long serialVersionUID = 4743102234543827854L;
     
     @Id
-    @Column(name = "address_code")
+    @Column(name = "address_id")
     @Override
-    public Long getAddressCode() {
-        return super.getAddressCode();
+    public Long getAddressId() {
+        return super.getAddressId();
     }
     
     @Column(name = "address_name")

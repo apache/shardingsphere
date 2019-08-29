@@ -21,16 +21,16 @@ public class Address {
     
     private static final long serialVersionUID = 661434701950670670L;
     
-    private Long addressCode;
+    private Long addressId;
     
     private String addressName;
     
-    public Long getAddressCode() {
-        return addressCode;
+    public Long getAddressId() {
+        return addressId;
     }
     
-    public void setAddressCode(final Long addressCode) {
-        this.addressCode = addressCode;
+    public void setAddressId(final Long addressId) {
+        this.addressId = addressId;
     }
     
     public String getAddressName() {
