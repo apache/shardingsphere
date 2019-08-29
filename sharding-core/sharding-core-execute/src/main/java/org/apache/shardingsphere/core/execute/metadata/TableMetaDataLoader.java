@@ -199,7 +199,9 @@ public final class TableMetaDataLoader {
     
     private Collection<String> getLogicIndexes(final Connection connection, final String catalog, final String actualTableName) throws SQLException {
         Collection<String> result = new HashSet<>();
-        try (ResultSet resultSet = connection.getMetaData().getIndexInfo(catalog, catalog, actualTableName, false, false)) {
+        //modify by chenty 20190823  throw exception : java.sql.SQLException: 调用中的无效参数
+        String username = connection.getMetaData().getUserName();
+        try (ResultSet resultSet = connection.getMetaData().getIndexInfo(catalog, username, actualTableName, false, false)) {
             while (resultSet.next()) {
                 Optional<String> logicIndex = getLogicIndex(resultSet.getString(INDEX_NAME), actualTableName);
                 if (logicIndex.isPresent()) {

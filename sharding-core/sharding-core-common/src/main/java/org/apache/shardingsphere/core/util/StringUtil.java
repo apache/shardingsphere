@@ -67,4 +67,10 @@ public final class StringUtil {
             return false;
         }
     }
+
+    //modify by chenty 20190823
+    public static boolean isEmpty(String str) {
+        return null == str || str.length() == 0;
+    }
+
 }

@@ -23,6 +23,7 @@ import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
+import org.apache.shardingsphere.core.util.StringUtil;
 import org.apache.shardingsphere.spi.database.DataSourceMetaData;
 
 import java.sql.Connection;
@@ -116,7 +117,12 @@ public final class TableMetaDataInitializer {
     }
     
     private String getCurrentSchemaName(final Connection connection) throws SQLException {
+        String databaseTypeNm = this.dataSourceMetas.getDatabaseTypeInfo().getName();
         try {
+            //modify by chenty 20190823 oracle must return user name
+            if(!StringUtil.isEmpty(databaseTypeNm) && databaseTypeNm.equals("Oracle")){
+                return  connection.getMetaData().getUserName().toUpperCase();
+            }
             return connection.getSchema();
         } catch (final AbstractMethodError | SQLFeatureNotSupportedException ignore) {
             return null;
