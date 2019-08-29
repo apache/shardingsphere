@@ -117,9 +117,7 @@ public final class LeafSnowflakeKeyGeneratorIT {
     }
     
     @Test
-    public void assertGenerateKeyWithDigest() throws Exception {
-        int threadNumber = Runtime.getRuntime().availableProcessors() << 1;
-        ExecutorService executor = Executors.newFixedThreadPool(threadNumber);
+    public void assertGenerateKeyWithDigest() {
         Properties properties = new Properties();
         properties.setProperty("serverList", "127.0.0.1:3181");
         properties.setProperty("serviceId", "testService1");
