@@ -30,7 +30,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class YamlConfigurationExample {
+public class ExampleMain {
     
     private static final HintType TYPE = HintType.DATABASE_TABLES;
 //    private static final HintType TYPE = HintType.DATABASE_ONLY;
