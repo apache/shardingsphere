@@ -25,7 +25,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
-import java.sql.SQLException;
 import java.util.List;
 
 @Repository
@@ -51,13 +50,13 @@ public class AddressRepositoryImpl implements AddressRepository {
     }
     
     @Override
-    public String insert(final Address entity) {
+    public Long insert(final Address entity) {
         entityManager.persist(entity);
         return entity.getAddressCode();
     }
     
     @Override
-    public void delete(final String addressCode) {
+    public void delete(final Long addressCode) {
         Query query = entityManager.createQuery("DELETE FROM AddressEntity i WHERE i.addressCode = ?1");
         query.setParameter(1, addressCode);
         query.executeUpdate();

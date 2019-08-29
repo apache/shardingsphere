@@ -19,5 +19,5 @@ package org.apache.shardingsphere.example.core.api.repository;
 
 import org.apache.shardingsphere.example.core.api.entity.Address;
 
-public interface AddressRepository extends CommonRepository<Address, String> {
+public interface AddressRepository extends CommonRepository<Address, Long> {
 }

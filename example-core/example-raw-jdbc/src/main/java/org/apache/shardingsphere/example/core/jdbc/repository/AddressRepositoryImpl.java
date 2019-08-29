@@ -66,11 +66,11 @@ public final class AddressRepositoryImpl implements AddressRepository {
     }
     
     @Override
-    public String insert(final Address entity) throws SQLException {
+    public Long insert(final Address entity) throws SQLException {
         String sql = "INSERT INTO t_address (address_code, address_name) VALUES (?, ?)";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setString(1, entity.getAddressCode());
+            preparedStatement.setLong(1, entity.getAddressCode());
             preparedStatement.setString(2, entity.getAddressName());
             preparedStatement.executeUpdate();
         }
@@ -78,11 +78,11 @@ public final class AddressRepositoryImpl implements AddressRepository {
     }
     
     @Override
-    public void delete(final String primaryKey) throws SQLException {
+    public void delete(final Long primaryKey) throws SQLException {
         String sql = "DELETE FROM t_address WHERE address_code=?";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setString(1, primaryKey);
+            preparedStatement.setLong(1, primaryKey);
             preparedStatement.executeUpdate();
         }
     }
@@ -100,7 +100,7 @@ public final class AddressRepositoryImpl implements AddressRepository {
              ResultSet resultSet = preparedStatement.executeQuery()) {
             while (resultSet.next()) {
                 Address address = new Address();
-                address.setAddressCode(resultSet.getString(1));
+                address.setAddressCode(resultSet.getLong(1));
                 address.setAddressName(resultSet.getString(2));
                 result.add(address);
             }

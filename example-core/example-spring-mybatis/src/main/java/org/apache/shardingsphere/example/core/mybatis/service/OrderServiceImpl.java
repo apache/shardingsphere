@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.example.core.mybatis.service;
 
+import org.apache.shardingsphere.example.core.api.entity.Address;
 import org.apache.shardingsphere.example.core.api.entity.Order;
 import org.apache.shardingsphere.example.core.api.entity.OrderItem;
+import org.apache.shardingsphere.example.core.api.repository.AddressRepository;
 import org.apache.shardingsphere.example.core.api.repository.OrderItemRepository;
 import org.apache.shardingsphere.example.core.api.repository.OrderRepository;
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
@@ -40,6 +42,9 @@ public class OrderServiceImpl implements ExampleService {
     
     @Resource
     private OrderItemRepository orderItemRepository;
+    
+    @Resource
+    private AddressRepository addressRepository;
 
     @Override
     public void initEnvironment() throws SQLException {
@@ -47,6 +52,18 @@ public class OrderServiceImpl implements ExampleService {
         orderItemRepository.createTableIfNotExists();
         orderRepository.truncateTable();
         orderItemRepository.truncateTable();
+        initAddressTable();
+    }
+    
+    private void initAddressTable() throws SQLException {
+        addressRepository.createTableIfNotExists();
+        addressRepository.truncateTable();
+        for (int i = 1; i <= 10; i++) {
+            Address entity = new Address();
+            entity.setAddressCode((long) i);
+            entity.setAddressName("address_" + String.valueOf(i));
+            addressRepository.insert(entity);
+        }
     }
 
     @Override

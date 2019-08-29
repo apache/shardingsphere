@@ -15,31 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.core.jpa.entity;
+package org.apache.shardingsphere.example.core.mybatis.repository;
 
-import org.apache.shardingsphere.example.core.api.entity.Address;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.shardingsphere.example.core.api.repository.AddressRepository;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
-@Entity
-@Table(name = "t_address")
-public final class AddressEntity extends Address {
-    
-    private static final long serialVersionUID = 4743102234543827854L;
-    
-    @Id
-    @Column(name = "address_code")
-    @Override
-    public Long getAddressCode() {
-        return super.getAddressCode();
-    }
-    
-    @Column(name = "address_name")
-    @Override
-    public String getAddressName() {
-        return super.getAddressName();
-    }
+@Mapper
+public interface MybatisAddressRepository extends AddressRepository {
 }
