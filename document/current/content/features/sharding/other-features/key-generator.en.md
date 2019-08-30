@@ -58,4 +58,5 @@ Please refer to the following picture for the detailed structure of snowflake al
 
 ### LEAF
 
-We have referred [Leaf](https://tech.meituan.com/2017/04/21/mt-leaf.html), Meituan's distributed ID generation system, including Leaf-segment and Leaf-snowflake. Currently, Leaf-segment can be used in ShardingSphere.
+We have referred [Leaf](https://tech.meituan.com/2017/04/21/mt-leaf.html), Meituan's distributed ID generation system, including Leaf-segment and Leaf-snowflake. 
+Leaf-segment is implemented in the 4.0.0-RC2-release version and Leaf-snowflake is implemented in the 4.0.0-RC3-release version.

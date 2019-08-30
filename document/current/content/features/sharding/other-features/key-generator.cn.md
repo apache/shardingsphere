@@ -65,4 +65,5 @@ Math.pow(2, 41) / (365 * 24 * 60 * 60 * 1000L);
 
 ### LEAF
 
-借鉴美团点评分布式ID生成系统[Leaf](https://tech.meituan.com/2017/04/21/mt-leaf.html), 主要分为Leaf-segment和Leaf-snowflake两种方案。目前ShardingSphere已实现Leaf-segment。
+鉴美团点评分布式ID生成系统[Leaf](https://tech.meituan.com/2017/04/21/mt-leaf.html), 主要分为Leaf-segment和Leaf-snowflake两种方案。
+ShardingSphere在4.0.0-RC2-release版本中实现了Leaf-segment,在4.0.0-RC3-release版本中实现了Leaf-snowflake。
