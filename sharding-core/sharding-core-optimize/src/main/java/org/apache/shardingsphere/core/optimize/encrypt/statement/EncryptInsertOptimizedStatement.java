@@ -24,7 +24,6 @@ import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
 import org.apache.shardingsphere.core.optimize.api.segment.Tables;
 import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 
@@ -54,25 +53,6 @@ public final class EncryptInsertOptimizedStatement implements InsertOptimizedSta
         this.sqlStatement = sqlStatement;
         tables = new Tables(sqlStatement);
         columnNames = sqlStatement.useDefaultColumns() ? tableMetas.getAllColumnNames(sqlStatement.getTable().getTableName()) : sqlStatement.getColumnNames();
-    }
-    
-    /**
-     * Add insert value.
-     *
-     * @param derivedColumnNames derived column names
-     * @param assignments assignments
-     * @param derivedColumnsCount derived columns count
-     * @param parameters SQL parameters
-     * @param parametersOffset offset of SQL parameters
-     * @return insert value
-     */
-    public InsertValue addInsertValue(final Collection<String> derivedColumnNames, final Collection<ExpressionSegment> assignments,
-                                      final int derivedColumnsCount, final List<Object> parameters, final int parametersOffset) {
-        List<String> allColumnNames = new LinkedList<>(columnNames);
-        allColumnNames.addAll(derivedColumnNames);
-        InsertValue result = new InsertValue(allColumnNames, assignments, derivedColumnsCount, parameters, parametersOffset);
-        insertValues.add(result);
-        return result;
     }
     
     @Override

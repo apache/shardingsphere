@@ -27,6 +27,7 @@ import org.apache.shardingsphere.core.rule.EncryptRule;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -44,7 +45,8 @@ public final class EncryptInsertOptimizeEngine implements EncryptOptimizeEngine<
         Collection<String> columnNames = sqlStatement.useDefaultColumns() ? tableMetas.getAllColumnNames(sqlStatement.getTable().getTableName()) : sqlStatement.getColumnNames();
         int derivedColumnCount = encryptRule.getAssistedQueryAndPlainColumnCount(sqlStatement.getTable().getTableName());
         for (Collection<ExpressionSegment> each : sqlStatement.getAllValueExpressions()) {
-            InsertValue insertValue = result.addInsertValue(encryptDerivedColumnNames, each, derivedColumnCount, parameters, parametersOffset);
+            InsertValue insertValue = createInsertValue(columnNames, encryptDerivedColumnNames, each, derivedColumnCount, parameters, parametersOffset);
+            result.getInsertValues().add(insertValue);
             Object[] currentParameters = insertValue.getParameters();
             if (encryptRule.containsQueryAssistedColumn(sqlStatement.getTable().getTableName())) {
                 fillAssistedQueryInsertValue(encryptRule, Arrays.asList(currentParameters), sqlStatement.getTable().getTableName(), columnNames, insertValue);
@@ -55,6 +57,13 @@ public final class EncryptInsertOptimizeEngine implements EncryptOptimizeEngine<
             parametersOffset += insertValue.getParametersCount();
         }
         return result;
+    }
+    
+    private InsertValue createInsertValue(final Collection<String> columnNames, final Collection<String> derivedColumnNames, final Collection<ExpressionSegment> assignments,
+                                          final int derivedColumnsCount, final List<Object> parameters, final int parametersOffset) {
+        List<String> allColumnNames = new LinkedList<>(columnNames);
+        allColumnNames.addAll(derivedColumnNames);
+        return new InsertValue(allColumnNames, assignments, derivedColumnsCount, parameters, parametersOffset);
     }
     
     private void fillAssistedQueryInsertValue(final EncryptRule encryptRule, 
