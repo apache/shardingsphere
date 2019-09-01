@@ -68,10 +68,10 @@ public final class ShardingInsertOptimizeEngine implements ShardingOptimizeEngin
         List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(sqlStatement, parameters, allColumnNames, generatedKey.orNull());
         ShardingInsertOptimizedStatement result = new ShardingInsertOptimizedStatement(sqlStatement, shardingConditions, columnNames, generatedKey.orNull());
         checkDuplicateKeyForShardingKey(shardingRule, sqlStatement, tableName);
-        int parametersCount = 0;
+        int parametersOffset = 0;
         for (Collection<ExpressionSegment> each : sqlStatement.getAllValueExpressions()) {
             Collection<String> encryptDerivedColumnNames = shardingRule.getEncryptRule().getAssistedQueryAndPlainColumns(tableName);
-            InsertValue insertValue = result.createInsertValue(generateKeyColumnName.orNull(), encryptDerivedColumnNames, each, derivedColumnsCount, parameters, parametersCount);
+            InsertValue insertValue = result.createInsertValue(generateKeyColumnName.orNull(), encryptDerivedColumnNames, each, derivedColumnsCount, parameters, parametersOffset);
             result.addInsertValue(insertValue);
             Object[] currentParameters = insertValue.getParameters();
             if (isGeneratedValue) {
@@ -83,7 +83,7 @@ public final class ShardingInsertOptimizeEngine implements ShardingOptimizeEngin
             if (shardingRule.getEncryptRule().containsPlainColumn(tableName)) {
                 fillPlainInsertValue(shardingRule, tableName, columnNames, insertValue, Arrays.asList(currentParameters));
             }
-            parametersCount += insertValue.getParametersCount();
+            parametersOffset += insertValue.getParametersCount();
         }
         return result;
     }

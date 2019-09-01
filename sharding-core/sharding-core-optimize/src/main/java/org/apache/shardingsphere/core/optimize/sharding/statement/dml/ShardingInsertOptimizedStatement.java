@@ -69,15 +69,15 @@ public final class ShardingInsertOptimizedStatement extends ShardingConditionOpt
      * @param assignments assignments
      * @param derivedColumnsCount derived columns count
      * @param parameters SQL parameters
-     * @param startIndexOfAppendedParameters start index of appended parameters
+     * @param parametersOffset offset of SQL parameters
      * @return insert value
      */
     public InsertValue createInsertValue(final String generateKeyColumnName, final Collection<String> derivedColumnNames, final Collection<ExpressionSegment> assignments,
-                                         final int derivedColumnsCount, final List<Object> parameters, final int startIndexOfAppendedParameters) {
+                                         final int derivedColumnsCount, final List<Object> parameters, final int parametersOffset) {
         List<String> allColumnNames = new LinkedList<>(columnNames);
         allColumnNames.add(generateKeyColumnName);
         allColumnNames.addAll(derivedColumnNames);
-        return new InsertValue(allColumnNames, assignments, derivedColumnsCount, parameters, startIndexOfAppendedParameters);
+        return new InsertValue(allColumnNames, assignments, derivedColumnsCount, parameters, parametersOffset);
     }
     
     /**

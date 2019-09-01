@@ -45,21 +45,21 @@ public final class InsertValue {
     
     private final Collection<ExpressionSegment> assignments;
     
+    private final int parametersCount;
+    
     private final ExpressionSegment[] valueExpressions;
     
     private final Object[] parameters;
     
-    private final int parametersCount;
-    
     private final List<DataNode> dataNodes = new LinkedList<>();
     
     public InsertValue(final List<String> columnNames,
-                       final Collection<ExpressionSegment> assignments, final int derivedColumnsCount, final List<Object> parameters, final int parametersBeginIndex) {
+                       final Collection<ExpressionSegment> assignments, final int derivedColumnsCount, final List<Object> parameters, final int parametersOffset) {
         this.columnNames = columnNames;
         this.assignments = assignments;
+        parametersCount = calculateParametersCount();
         valueExpressions = createValueExpressions(derivedColumnsCount);
-        this.parameters = createParameters(parameters, derivedColumnsCount, parametersBeginIndex);
-        this.parametersCount = getParametersCount();
+        this.parameters = createParameters(parameters, derivedColumnsCount, parametersOffset);
     }
     
     private ExpressionSegment[] createValueExpressions(final int derivedColumnsCount) {
@@ -68,22 +68,16 @@ public final class InsertValue {
         return result;
     }
     
-    private Object[] createParameters(final List<Object> parameters, final int derivedColumnsCount, final int parametersBeginIndex) {
-        int parametersCount = getParametersCount();
+    private Object[] createParameters(final List<Object> parameters, final int derivedColumnsCount, final int parametersOffset) {
         if (0 == parametersCount) {
             return new Object[0];
         }
         Object[] result = new Object[parametersCount + derivedColumnsCount];
-        parameters.subList(parametersBeginIndex, parametersBeginIndex + parametersCount).toArray(result);
+        parameters.subList(parametersOffset, parametersOffset + parametersCount).toArray(result);
         return result;
     }
     
-    /**
-     * Get parameters count.
-     *
-     * @return parameters count
-     */
-    public int getParametersCount() {
+    private int calculateParametersCount() {
         int result = 0;
         for (ExpressionSegment each : assignments) {
             if (each instanceof ParameterMarkerExpressionSegment) {

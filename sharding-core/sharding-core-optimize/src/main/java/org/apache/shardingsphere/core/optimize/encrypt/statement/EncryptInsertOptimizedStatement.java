@@ -63,14 +63,14 @@ public final class EncryptInsertOptimizedStatement implements InsertOptimizedSta
      * @param assignments assignments
      * @param derivedColumnsCount derived columns count
      * @param parameters SQL parameters
-     * @param startIndexOfAppendedParameters start index of appended parameters
+     * @param parametersOffset offset of SQL parameters
      * @return insert value
      */
     public InsertValue addInsertValue(final Collection<String> derivedColumnNames, final Collection<ExpressionSegment> assignments,
-                                      final int derivedColumnsCount, final List<Object> parameters, final int startIndexOfAppendedParameters) {
+                                      final int derivedColumnsCount, final List<Object> parameters, final int parametersOffset) {
         List<String> allColumnNames = new LinkedList<>(columnNames);
         allColumnNames.addAll(derivedColumnNames);
-        InsertValue result = new InsertValue(allColumnNames, assignments, derivedColumnsCount, parameters, startIndexOfAppendedParameters);
+        InsertValue result = new InsertValue(allColumnNames, assignments, derivedColumnsCount, parameters, parametersOffset);
         insertValues.add(result);
         return result;
     }

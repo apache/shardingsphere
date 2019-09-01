@@ -39,12 +39,12 @@ public final class EncryptInsertOptimizeEngine implements EncryptOptimizeEngine<
     @Override
     public EncryptInsertOptimizedStatement optimize(final EncryptRule encryptRule, final TableMetas tableMetas, final String sql, final List<Object> parameters, final InsertStatement sqlStatement) {
         EncryptInsertOptimizedStatement result = new EncryptInsertOptimizedStatement(sqlStatement, tableMetas);
-        int parametersCount = 0;
+        int parametersOffset = 0;
         Collection<String> encryptDerivedColumnNames = encryptRule.getAssistedQueryAndPlainColumns(sqlStatement.getTable().getTableName());
         Collection<String> columnNames = sqlStatement.useDefaultColumns() ? tableMetas.getAllColumnNames(sqlStatement.getTable().getTableName()) : sqlStatement.getColumnNames();
         int derivedColumnCount = encryptRule.getAssistedQueryAndPlainColumnCount(sqlStatement.getTable().getTableName());
         for (Collection<ExpressionSegment> each : sqlStatement.getAllValueExpressions()) {
-            InsertValue insertValue = result.addInsertValue(encryptDerivedColumnNames, each, derivedColumnCount, parameters, parametersCount);
+            InsertValue insertValue = result.addInsertValue(encryptDerivedColumnNames, each, derivedColumnCount, parameters, parametersOffset);
             Object[] currentParameters = insertValue.getParameters();
             if (encryptRule.containsQueryAssistedColumn(sqlStatement.getTable().getTableName())) {
                 fillAssistedQueryInsertValue(encryptRule, Arrays.asList(currentParameters), sqlStatement.getTable().getTableName(), columnNames, insertValue);
@@ -52,7 +52,7 @@ public final class EncryptInsertOptimizeEngine implements EncryptOptimizeEngine<
             if (encryptRule.containsPlainColumn(sqlStatement.getTable().getTableName())) {
                 fillPlainInsertValue(encryptRule, Arrays.asList(currentParameters), sqlStatement.getTable().getTableName(), columnNames, insertValue);
             }
-            parametersCount += insertValue.getParametersCount();
+            parametersOffset += insertValue.getParametersCount();
         }
         return result;
     }
