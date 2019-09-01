@@ -21,7 +21,6 @@ import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.optimize.api.segment.InsertColumns;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
@@ -35,7 +34,7 @@ import java.util.LinkedHashSet;
  * @author panjuan
  */
 @ToString
-public final class ShardingInsertColumns implements InsertColumns {
+public final class ShardingInsertColumns {
     
     @Getter
     private final Collection<String> regularColumnNames;
