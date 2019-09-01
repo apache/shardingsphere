@@ -42,7 +42,7 @@ public final class InsertOptimizedStatementTest {
         ExpressionSegment assignment1 = new LiteralExpressionSegment(0, 0, 1);
         ExpressionSegment assignment2 = new ParameterMarkerExpressionSegment(0, 0, 1);
         ExpressionSegment assignment3 = new LiteralExpressionSegment(0, 0, "test");
-        insertClauseOptimizedStatement.addInsertValue(
+        insertClauseOptimizedStatement.getInsertValues().add(
                 new InsertValue(Arrays.asList("id", "value", "status", "id"), Arrays.asList(assignment1, assignment2, assignment3), 1, Collections.<Object>singletonList("parameter"), 0));
         assertThat(insertClauseOptimizedStatement.getInsertValues().get(0).getValueExpressions().length, is(4));
         assertThat(insertClauseOptimizedStatement.getInsertValues().get(0).getValueExpressions()[0], is(assignment1));

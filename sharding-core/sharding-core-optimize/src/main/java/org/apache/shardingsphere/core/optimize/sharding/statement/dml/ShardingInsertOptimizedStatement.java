@@ -52,21 +52,11 @@ public final class ShardingInsertOptimizedStatement extends ShardingConditionOpt
     
     private final List<InsertValue> insertValues = new LinkedList<>();
     
-    public ShardingInsertOptimizedStatement(final SQLStatement sqlStatement, 
-                                            final List<ShardingCondition> shardingConditions, final Collection<String> columnNames, final GeneratedKey generatedKey) {
+    public ShardingInsertOptimizedStatement(final SQLStatement sqlStatement, final List<ShardingCondition> shardingConditions, final Collection<String> columnNames, final GeneratedKey generatedKey) {
         super(sqlStatement, new ShardingConditions(shardingConditions), new EncryptConditions(Collections.<EncryptCondition>emptyList()));
         tables = new Tables(sqlStatement);
         this.columnNames = columnNames;
         this.generatedKey = generatedKey;
-    }
-    
-    /**
-     * Add insert value.
-     *
-     * @param  insertValue insert value
-     */
-    public void addInsertValue(final InsertValue insertValue) {
-        insertValues.add(insertValue);
     }
     
     /**

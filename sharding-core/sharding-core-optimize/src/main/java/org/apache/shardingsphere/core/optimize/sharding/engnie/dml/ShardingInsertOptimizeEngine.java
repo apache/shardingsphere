@@ -74,7 +74,7 @@ public final class ShardingInsertOptimizeEngine implements ShardingOptimizeEngin
         Collection<String> encryptDerivedColumnNames = shardingRule.getEncryptRule().getAssistedQueryAndPlainColumns(tableName);
         for (Collection<ExpressionSegment> each : sqlStatement.getAllValueExpressions()) {
             InsertValue insertValue = createInsertValue(columnNames, generateKeyColumnName.orNull(), encryptDerivedColumnNames, each, derivedColumnsCount, parameters, parametersOffset);
-            result.addInsertValue(insertValue);
+            result.getInsertValues().add(insertValue);
             Object[] currentParameters = insertValue.getParameters();
             if (isGeneratedValue) {
                 insertValue.appendValue(generatedValues.next(), Arrays.asList(currentParameters));
