@@ -26,31 +26,31 @@ import static org.junit.Assert.assertNotNull;
 
 /**
  * Environment path.
- *
+ * 
  * @author zhangliang
  * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class EnvironmentPath {
-
+    
     private static final String DATABASE_ENVIRONMENT_RESOURCES_PATH = "integrate/env/%s/schema.xml";
-
+    
     private static final String DATA_INITIALIZE_RESOURCES_PATH = "integrate/env/%s/dataset.xml";
-
-    private static final String SHARDING_RULE_RESOURCES_PATH = "integrate/env/%s/sharding-rule-test.yaml";
-
+    
+    private static final String SHARDING_RULE_RESOURCES_PATH = "integrate/env/%s/sharding-rule.yaml";
+    
     private static final String AUTHORITY_RESOURCES_PATH = "integrate/env/%s/authority.xml";
-
+    
     /**
      * Get database environment resource File.
-     *
+     * 
      * @param shardingRuleType Sharding rule type
      * @return database environment resource file
      */
     public static String getDatabaseEnvironmentResourceFile(final String shardingRuleType) {
         return getResourceFile(DATABASE_ENVIRONMENT_RESOURCES_PATH, shardingRuleType);
     }
-
+    
     /**
      * Get data initialize resource File.
      *
@@ -60,7 +60,7 @@ public final class EnvironmentPath {
     public static String getDataInitializeResourceFile(final String shardingRuleType) {
         return getResourceFile(DATA_INITIALIZE_RESOURCES_PATH, shardingRuleType);
     }
-
+    
     /**
      * Get sharding rule resource File.
      *
@@ -70,13 +70,13 @@ public final class EnvironmentPath {
     public static String getShardingRuleResourceFile(final String shardingRuleType) {
         return getResourceFile(SHARDING_RULE_RESOURCES_PATH, shardingRuleType);
     }
-
+    
     private static String getResourceFile(final String resourcePath, final String shardingRuleType) {
         URL resourceURL = EnvironmentPath.class.getClassLoader().getResource(String.format(resourcePath, shardingRuleType));
         assertNotNull(resourceURL);
         return resourceURL.getFile();
     }
-
+    
     /**
      * Get authority resource File.
      *
