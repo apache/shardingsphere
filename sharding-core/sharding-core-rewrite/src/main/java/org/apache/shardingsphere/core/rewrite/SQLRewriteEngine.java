@@ -108,7 +108,7 @@ public final class SQLRewriteEngine {
     
     private void encryptInsertOptimizedStatement(final EncryptRule encryptRule, final ShardingInsertOptimizedStatement insertOptimizedStatement) {
         for (InsertValue insertValue : insertOptimizedStatement.getInsertValues()) {
-            for (String each : insertOptimizedStatement.getInsertColumns().getRegularColumnNames()) {
+            for (String each : insertOptimizedStatement.getColumnNames()) {
                 encryptInsertValue(encryptRule, insertValue, insertOptimizedStatement.getTables().getSingleTableName(), each);
             }
         }

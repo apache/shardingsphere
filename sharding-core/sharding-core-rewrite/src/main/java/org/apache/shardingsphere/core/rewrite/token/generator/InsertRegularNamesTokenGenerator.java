@@ -68,8 +68,7 @@ public final class InsertRegularNamesTokenGenerator implements OptionalSQLTokenG
         Collection<String> result = new LinkedList<>();
         Map<String, String> logicAndCipherColumns = getEncryptRule(baseRule).getLogicAndCipherColumns(optimizedStatement.getTables().getSingleTableName());
         Collection<String> columnNames = optimizedStatement instanceof ShardingInsertOptimizedStatement
-                ? ((ShardingInsertOptimizedStatement) optimizedStatement).getInsertColumns().getRegularColumnNames()
-                : ((EncryptInsertOptimizedStatement) optimizedStatement).getColumnNames();
+                ? ((ShardingInsertOptimizedStatement) optimizedStatement).getColumnNames() : ((EncryptInsertOptimizedStatement) optimizedStatement).getColumnNames();
         for (String each : columnNames) {
             result.add(getCipherColumn(each, logicAndCipherColumns));
         }
@@ -96,8 +95,7 @@ public final class InsertRegularNamesTokenGenerator implements OptionalSQLTokenG
     private boolean isNeedToAppendGeneratedKey(final InsertOptimizedStatement optimizedStatement, final ShardingRule shardingRule) {
         Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(optimizedStatement.getTables().getSingleTableName());
         Collection<String> columnNames = optimizedStatement instanceof ShardingInsertOptimizedStatement
-                ? ((ShardingInsertOptimizedStatement) optimizedStatement).getInsertColumns().getRegularColumnNames()
-                : ((EncryptInsertOptimizedStatement) optimizedStatement).getColumnNames();
+                ? ((ShardingInsertOptimizedStatement) optimizedStatement).getColumnNames() : ((EncryptInsertOptimizedStatement) optimizedStatement).getColumnNames();
         return generateKeyColumnName.isPresent() && !columnNames.contains(generateKeyColumnName.get());
     }
     

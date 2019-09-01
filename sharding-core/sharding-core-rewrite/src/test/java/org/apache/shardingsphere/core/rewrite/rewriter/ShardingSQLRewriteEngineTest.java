@@ -25,7 +25,6 @@ import org.apache.shardingsphere.core.optimize.encrypt.condition.EncryptConditio
 import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptTransparentOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingConditions;
-import org.apache.shardingsphere.core.optimize.sharding.segment.insert.ShardingInsertColumns;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.groupby.GroupBy;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.AggregationSelectItem;
@@ -93,7 +92,6 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public final class ShardingSQLRewriteEngineTest {
     
@@ -220,9 +218,7 @@ public final class ShardingSQLRewriteEngineTest {
         insertStatement.getAllSQLSegments().add(new InsertColumnsSegment(30, 30, Collections.singleton(mock(ColumnSegment.class))));
         insertStatement.getAllSQLSegments().add(new InsertValuesSegment(39, 44, Collections.<ExpressionSegment>emptyList()));
         insertStatement.getAllSQLSegments().add(new TableSegment(12, 18, "table_x"));
-        ShardingInsertColumns insertColumns = mock(ShardingInsertColumns.class);
-        when(insertColumns.getRegularColumnNames()).thenReturn(Arrays.asList("name", "age"));
-        ShardingInsertOptimizedStatement shardingStatement = new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), insertColumns, null);
+        ShardingInsertOptimizedStatement shardingStatement = new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), Arrays.asList("name", "age"), null);
         Collection<ExpressionSegment> assignments = Arrays.<ExpressionSegment>asList(
                 new ParameterMarkerExpressionSegment(0, 0, 0), new ParameterMarkerExpressionSegment(0, 0, 1), new ParameterMarkerExpressionSegment(0, 0, 2));
         List<Object> parameters = Arrays.<Object>asList("x", 1, 1);
@@ -248,9 +244,7 @@ public final class ShardingSQLRewriteEngineTest {
         insertStatement.getAllSQLSegments().add(new InsertValuesSegment(29, 31, Collections.<ExpressionSegment>emptyList()));
         insertStatement.setTable(new TableSegment(0, 0, "table_x"));
         insertStatement.getAllSQLSegments().add(new TableSegment(12, 20, "`table_x`"));
-        ShardingInsertColumns insertColumns = mock(ShardingInsertColumns.class);
-        when(insertColumns.getRegularColumnNames()).thenReturn(Collections.singletonList("name"));
-        ShardingInsertOptimizedStatement shardingStatement = new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), insertColumns, null);
+        ShardingInsertOptimizedStatement shardingStatement = new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), Collections.singletonList("name"), null);
         Collection<ExpressionSegment> assignments = Arrays.<ExpressionSegment>asList(new ParameterMarkerExpressionSegment(0, 0, 0), new ParameterMarkerExpressionSegment(0, 0, 1));
         List<Object> parameters = Arrays.<Object>asList("Bill", 1);
         InsertValue insertValue = shardingStatement.createInsertValue("id", Collections.<String>emptyList(), assignments, 0, parameters, 0);
@@ -275,9 +269,7 @@ public final class ShardingSQLRewriteEngineTest {
         insertStatement.getAllSQLSegments().add(new InsertValuesSegment(29, 32, Collections.<ExpressionSegment>emptyList()));
         insertStatement.setTable(new TableSegment(0, 0, "table_x"));
         insertStatement.getAllSQLSegments().add(new TableSegment(12, 20, "`table_x`"));
-        ShardingInsertColumns insertColumns = mock(ShardingInsertColumns.class);
-        when(insertColumns.getRegularColumnNames()).thenReturn(Collections.singletonList("name"));
-        ShardingInsertOptimizedStatement shardingStatement = new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), insertColumns, null);
+        ShardingInsertOptimizedStatement shardingStatement = new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), Collections.singletonList("name"), null);
         Collection<ExpressionSegment> assignments = Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(0, 0, 10), new LiteralExpressionSegment(0, 0, 1));
         List<Object> parameters = Collections.emptyList();
         InsertValue insertValue = shardingStatement.createInsertValue("id", Collections.<String>emptyList(), assignments, 0, parameters, 0);
@@ -302,9 +294,7 @@ public final class ShardingSQLRewriteEngineTest {
         insertStatement.getAllSQLSegments().add(new InsertValuesSegment(29, 32, Collections.<ExpressionSegment>emptyList()));
         insertStatement.setTable(new TableSegment(0, 0, "table_x"));
         insertStatement.getAllSQLSegments().add(new TableSegment(12, 20, "`table_x`"));
-        ShardingInsertColumns insertColumns = mock(ShardingInsertColumns.class);
-        when(insertColumns.getRegularColumnNames()).thenReturn(Collections.singletonList("name"));
-        ShardingInsertOptimizedStatement shardingStatement = new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), insertColumns, null);
+        ShardingInsertOptimizedStatement shardingStatement = new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), Collections.singletonList("name"), null);
         Collection<ExpressionSegment> assignments = Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(0, 0, 10), new LiteralExpressionSegment(0, 0, 1));
         List<Object> parameters = Collections.emptyList();
         InsertValue insertValue = shardingStatement.createInsertValue("id", Collections.<String>emptyList(), assignments, 0, parameters, 0);
@@ -328,9 +318,7 @@ public final class ShardingSQLRewriteEngineTest {
         insertStatement.getColumns().add(new ColumnSegment(0, 0, "id"));
         insertStatement.setTable(new TableSegment(0, 0, "table_x"));
         insertStatement.getAllSQLSegments().add(new TableSegment(12, 20, "`table_x`"));
-        ShardingInsertColumns insertColumns = mock(ShardingInsertColumns.class);
-        when(insertColumns.getRegularColumnNames()).thenReturn(Arrays.asList("name", "id"));
-        ShardingInsertOptimizedStatement shardingStatement = new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), insertColumns, null);
+        ShardingInsertOptimizedStatement shardingStatement = new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), Arrays.asList("name", "id"), null);
         Collection<ExpressionSegment> assignments = Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(0, 0, 10), new LiteralExpressionSegment(0, 0, 1));
         List<Object> parameters = Collections.emptyList();
         InsertValue insertValue = shardingStatement.createInsertValue("id", Collections.<String>emptyList(), assignments, 1, parameters, 0);
@@ -355,9 +343,7 @@ public final class ShardingSQLRewriteEngineTest {
         insertStatement.getAllSQLSegments().add(new TableSegment(12, 20, "`table_x`"));
         insertStatement.getAllSQLSegments().add(new InsertColumnsSegment(21, 21, Collections.<ColumnSegment>emptyList()));
         insertStatement.getAllSQLSegments().add(new InsertValuesSegment(29, 35, Collections.<ExpressionSegment>emptyList()));
-        ShardingInsertColumns insertColumns = mock(ShardingInsertColumns.class);
-        when(insertColumns.getRegularColumnNames()).thenReturn(Arrays.asList("name", "id"));
-        ShardingInsertOptimizedStatement shardingStatement = new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), insertColumns, null);
+        ShardingInsertOptimizedStatement shardingStatement = new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), Arrays.asList("name", "id"), null);
         Collection<ExpressionSegment> assignments = Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(0, 0, 10), new LiteralExpressionSegment(0, 0, 1));
         List<Object> parameters = Collections.emptyList();
         InsertValue insertValue = shardingStatement.createInsertValue("id", Collections.<String>emptyList(), assignments, 0, parameters, 0);
@@ -381,9 +367,7 @@ public final class ShardingSQLRewriteEngineTest {
         insertStatement.getAllSQLSegments().add(new InsertValuesSegment(29, 34, Collections.<ExpressionSegment>emptyList()));
         insertStatement.setTable(new TableSegment(0, 0, "table_x"));
         insertStatement.getAllSQLSegments().add(new TableSegment(12, 20, "`table_x`"));
-        ShardingInsertColumns insertColumns = mock(ShardingInsertColumns.class);
-        when(insertColumns.getRegularColumnNames()).thenReturn(Collections.singletonList("name"));
-        ShardingInsertOptimizedStatement shardingStatement = new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), insertColumns, null);
+        ShardingInsertOptimizedStatement shardingStatement = new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), Collections.singletonList("name"), null);
         Collection<ExpressionSegment> assignments = Arrays.<ExpressionSegment>asList(new ParameterMarkerExpressionSegment(0, 0, 0), new ParameterMarkerExpressionSegment(0, 0, 1));
         List<Object> parameters = Arrays.<Object>asList("x", 1);
         InsertValue insertValue = shardingStatement.createInsertValue("id", Collections.<String>emptyList(), assignments, 0, parameters, 0);
@@ -850,10 +834,8 @@ public final class ShardingSQLRewriteEngineTest {
     private SQLRouteResult createSQLRouteResultForTableTokenWithSchemaForInsert() {
         InsertStatement insertStatement = new InsertStatement();
         insertStatement.getAllSQLSegments().add(new TableSegment(12, 30, "table_x"));
-        ShardingInsertColumns insertColumns = mock(ShardingInsertColumns.class);
-        when(insertColumns.getRegularColumnNames()).thenReturn(Arrays.asList("order_id", "user_id", "status", "id"));
-        SQLRouteResult result = new SQLRouteResult(
-                new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), insertColumns, null), new EncryptTransparentOptimizedStatement(insertStatement));
+        SQLRouteResult result = new SQLRouteResult(new ShardingInsertOptimizedStatement(
+                insertStatement, Collections.<ShardingCondition>emptyList(), Arrays.asList("order_id", "user_id", "status", "id"), null), new EncryptTransparentOptimizedStatement(insertStatement));
         result.setRoutingResult(new RoutingResult());
         return result;
     }
@@ -989,9 +971,7 @@ public final class ShardingSQLRewriteEngineTest {
         insertStatement.getAllSQLSegments().add(new SetAssignmentsSegment(26, 34, Collections.singleton(new AssignmentSegment(26, 34, columnSegment, expressionSegment))));
         insertStatement.getAllSQLSegments().add(new TableSegment(12, 20, "`table_w`"));
         insertStatement.setTable(new TableSegment(0, 0, "table_w"));
-        ShardingInsertColumns insertColumns = mock(ShardingInsertColumns.class);
-        when(insertColumns.getRegularColumnNames()).thenReturn(Collections.singletonList("name"));
-        ShardingInsertOptimizedStatement shardingStatement = new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), insertColumns, null);
+        ShardingInsertOptimizedStatement shardingStatement = new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), Collections.singletonList("name"), null);
         Collection<ExpressionSegment> assignments = Arrays.<ExpressionSegment>asList(
             new LiteralExpressionSegment(0, 0, 10), new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 10));
         List<Object> parameters = Collections.emptyList();

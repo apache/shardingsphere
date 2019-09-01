@@ -28,7 +28,6 @@ import org.apache.shardingsphere.core.optimize.encrypt.condition.EncryptConditio
 import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingConditions;
 import org.apache.shardingsphere.core.optimize.sharding.segment.insert.GeneratedKey;
-import org.apache.shardingsphere.core.optimize.sharding.segment.insert.ShardingInsertColumns;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
@@ -48,17 +47,17 @@ public final class ShardingInsertOptimizedStatement extends ShardingConditionOpt
     
     private final Tables tables;
     
-    private final ShardingInsertColumns insertColumns;
+    private final Collection<String> columnNames;
     
     private final GeneratedKey generatedKey;
     
     private final List<InsertValue> insertValues = new LinkedList<>();
     
     public ShardingInsertOptimizedStatement(final SQLStatement sqlStatement, 
-                                            final List<ShardingCondition> shardingConditions, final ShardingInsertColumns insertColumns, final GeneratedKey generatedKey) {
+                                            final List<ShardingCondition> shardingConditions, final Collection<String> columnNames, final GeneratedKey generatedKey) {
         super(sqlStatement, new ShardingConditions(shardingConditions), new EncryptConditions(Collections.<EncryptCondition>emptyList()));
         tables = new Tables(sqlStatement);
-        this.insertColumns = insertColumns;
+        this.columnNames = columnNames;
         this.generatedKey = generatedKey;
     }
     
@@ -75,7 +74,7 @@ public final class ShardingInsertOptimizedStatement extends ShardingConditionOpt
      */
     public InsertValue createInsertValue(final String generateKeyColumnName, final Collection<String> derivedColumnNames, final Collection<ExpressionSegment> assignments,
                                          final int derivedColumnsCount, final List<Object> parameters, final int startIndexOfAppendedParameters) {
-        List<String> allColumnNames = new LinkedList<>(insertColumns.getRegularColumnNames());
+        List<String> allColumnNames = new LinkedList<>(columnNames);
         allColumnNames.add(generateKeyColumnName);
         allColumnNames.addAll(derivedColumnNames);
         return new InsertValue(allColumnNames, assignments, derivedColumnsCount, parameters, startIndexOfAppendedParameters);

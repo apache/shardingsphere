@@ -64,6 +64,6 @@ public final class InsertSetGeneratedKeyColumnTokenGenerator implements Optional
     
     private Optional<String> getGeneratedKeyColumn(final ShardingInsertOptimizedStatement optimizedStatement, final ShardingRule shardingRule) {
         Optional<String> generateKeyColumn = shardingRule.findGenerateKeyColumnName(optimizedStatement.getTables().getSingleTableName());
-        return generateKeyColumn.isPresent() && !optimizedStatement.getInsertColumns().getRegularColumnNames().contains(generateKeyColumn.get()) ? generateKeyColumn : Optional.<String>absent();
+        return generateKeyColumn.isPresent() && !optimizedStatement.getColumnNames().contains(generateKeyColumn.get()) ? generateKeyColumn : Optional.<String>absent();
     }
 }

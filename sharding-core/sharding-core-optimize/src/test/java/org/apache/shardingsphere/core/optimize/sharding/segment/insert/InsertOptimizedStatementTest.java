@@ -34,16 +34,13 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public final class InsertOptimizedStatementTest {
     
     @Test
     public void assertAddInsertValueWithSet() {
-        ShardingInsertColumns insertColumns = mock(ShardingInsertColumns.class);
-        when(insertColumns.getRegularColumnNames()).thenReturn(Arrays.asList("id", "value", "status"));
-        ShardingInsertOptimizedStatement insertClauseOptimizedStatement = new ShardingInsertOptimizedStatement(new InsertStatement(), Collections.<ShardingCondition>emptyList(), insertColumns, null);
+        ShardingInsertOptimizedStatement insertClauseOptimizedStatement = new ShardingInsertOptimizedStatement(
+                new InsertStatement(), Collections.<ShardingCondition>emptyList(), Arrays.asList("id", "value", "status"), null);
         ExpressionSegment assignment1 = new LiteralExpressionSegment(0, 0, 1);
         ExpressionSegment assignment2 = new ParameterMarkerExpressionSegment(0, 0, 1);
         ExpressionSegment assignment3 = new LiteralExpressionSegment(0, 0, "test");

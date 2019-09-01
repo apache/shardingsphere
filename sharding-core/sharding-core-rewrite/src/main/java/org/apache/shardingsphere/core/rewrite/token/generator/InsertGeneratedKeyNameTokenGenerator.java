@@ -46,7 +46,7 @@ public final class InsertGeneratedKeyNameTokenGenerator implements OptionalSQLTo
             final ShardingInsertOptimizedStatement optimizedStatement, final InsertColumnsSegment segment, final ShardingRule shardingRule) {
         String tableName = optimizedStatement.getTables().getSingleTableName();
         Optional<String> generatedKeyColumnName = shardingRule.findGenerateKeyColumnName(tableName);
-        return generatedKeyColumnName.isPresent() && !optimizedStatement.getInsertColumns().getRegularColumnNames().contains(generatedKeyColumnName.get())
+        return generatedKeyColumnName.isPresent() && !optimizedStatement.getColumnNames().contains(generatedKeyColumnName.get())
                 ? Optional.of(new InsertGeneratedKeyNameToken(segment.getStopIndex(), generatedKeyColumnName.get(), isToAddCloseParenthesis(tableName, segment, shardingRule)))
                 : Optional.<InsertGeneratedKeyNameToken>absent();
     }
@@ -54,5 +54,4 @@ public final class InsertGeneratedKeyNameTokenGenerator implements OptionalSQLTo
     private boolean isToAddCloseParenthesis(final String tableName, final InsertColumnsSegment segment, final ShardingRule shardingRule) {
         return segment.getColumns().isEmpty() && 0 == shardingRule.getEncryptRule().getAssistedQueryAndPlainColumnCount(tableName);
     }
-    
 }
