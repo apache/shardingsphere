@@ -24,7 +24,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class OracleDataSourceMetaDataTest {
-    
+
     @Test
     public void assertGetPropertiesWithPort() {
         OracleDataSourceMetaData actual = new OracleDataSourceMetaData("jdbc:oracle:thin:@//127.0.0.1:9999/ds_0");
@@ -32,7 +32,7 @@ public final class OracleDataSourceMetaDataTest {
         assertThat(actual.getPort(), is(9999));
         assertThat(actual.getSchemaName(), is("ds_0"));
     }
-    
+
     @Test
     public void assertGetPropertiesWithDefaultPort() {
         OracleDataSourceMetaData actual = new OracleDataSourceMetaData("jdbc:oracle:oci:@127.0.0.1/ds_0");
@@ -40,7 +40,16 @@ public final class OracleDataSourceMetaDataTest {
         assertThat(actual.getPort(), is(1521));
         assertThat(actual.getSchemaName(), is("ds_0"));
     }
-    
+
+    @Test
+    public void assertGetPropertiesWithOracleRacCfg() {
+        String url="jdbc:oracle:thin:@(DESCRIPTION =(ADDRESS=(PROTOCOL=TCP)(HOST=127.0.0.2)(PORT=1521))(ADDRESS=(PROTOCOL=TCP)(HOST=127.0.0.3)(PORT=1521))(LOAD_BALANCE=yes)(FAILOVER=ON)(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=ds_0)(FAILOVER_MODE=(TYPE=SELECT)(METHOD=BASIC)(RETIRES=20)(DELAY=15))))";
+        OracleDataSourceMetaData actual = new OracleDataSourceMetaData(url);
+        assertThat(actual.getHostName(), is("127.0.0.2"));
+        assertThat(actual.getPort(), is(1521));
+        assertThat(actual.getSchemaName(), is("ds_0"));
+    }
+
     @Test(expected = UnrecognizedDatabaseURLException.class)
     public void assertGetPropertiesFailure() {
         new OracleDataSourceMetaData("jdbc:oracle:xxxxxxxx");

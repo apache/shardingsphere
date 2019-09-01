@@ -33,6 +33,7 @@ import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
+import org.apache.shardingsphere.core.util.StringUtil;
 import org.apache.shardingsphere.spi.database.DataSourceMetaData;
 
 import java.sql.Connection;
@@ -199,9 +200,15 @@ public final class TableMetaDataLoader {
 
     private Collection<String> getLogicIndexes(final Connection connection, final String catalog, final String actualTableName) throws SQLException {
         Collection<String> result = new HashSet<>();
-        //modify by chenty 20190823  throw exception : java.sql.SQLException:
-        String username = connection.getMetaData().getUserName();
-        try (ResultSet resultSet = connection.getMetaData().getIndexInfo(catalog, username, actualTableName, false, false)) {
+        String databaseTypeNm = this.dataSourceMetas.getDatabaseTypeInfo().getName();
+        ResultSet resultSet = null;
+        if(!StringUtil.isEmpty(databaseTypeNm) && databaseTypeNm.equals("Oracle")){
+            String userName = connection.getMetaData().getUserName().toUpperCase();
+            resultSet = connection.getMetaData().getIndexInfo(catalog, userName, actualTableName, false, false);
+        } else {
+            resultSet = connection.getMetaData().getIndexInfo(catalog, catalog, actualTableName, false, false);
+        }
+        if (null != resultSet) {
             while (resultSet.next()) {
                 Optional<String> logicIndex = getLogicIndex(resultSet.getString(INDEX_NAME), actualTableName);
                 if (logicIndex.isPresent()) {

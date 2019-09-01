@@ -33,15 +33,14 @@ import java.util.Map.Entry;
  * @author panjuan
  */
 public final class DataSourceMetas {
-    
+
     private final Map<String, DataSourceMetaData> dataSourceMetaDataMap;
-    //modify by chenty 20190823
     private final DatabaseType databaseTypeInfo;
     public DataSourceMetas(final Map<String, String> dataSourceURLs, final DatabaseType databaseType) {
         dataSourceMetaDataMap = getDataSourceMetaDataMap(dataSourceURLs, databaseType);
         databaseTypeInfo = databaseType;
     }
-    
+
     private Map<String, DataSourceMetaData> getDataSourceMetaDataMap(final Map<String, String> dataSourceURLs, final DatabaseType databaseType) {
         Map<String, DataSourceMetaData> result = new HashMap<>(dataSourceURLs.size(), 1);
         for (Entry<String, String> entry : dataSourceURLs.entrySet()) {
@@ -49,7 +48,7 @@ public final class DataSourceMetas {
         }
         return result;
     }
-    
+
     /**
      * Get all instance data source names.
      *
@@ -64,7 +63,7 @@ public final class DataSourceMetas {
         }
         return result;
     }
-    
+
     private boolean isExisted(final String dataSourceName, final Collection<String> existedDataSourceNames) {
         DataSourceMetaData sample = dataSourceMetaDataMap.get(dataSourceName);
         for (String each : existedDataSourceNames) {
@@ -74,15 +73,15 @@ public final class DataSourceMetas {
         }
         return false;
     }
-    
+
     private boolean isInSameDatabaseInstance(final DataSourceMetaData sample, final DataSourceMetaData target) {
         return sample instanceof MemorizedDataSourceMetaData
                 ? target.getSchemaName().equals(sample.getSchemaName()) : target.getHostName().equals(sample.getHostName()) && target.getPort() == sample.getPort();
     }
-    
+
     /**
      * Get data source meta data.
-     * 
+     *
      * @param dataSourceName data source name
      * @return data source meta data
      */

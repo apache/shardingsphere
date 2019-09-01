@@ -32,17 +32,15 @@ import java.util.regex.Pattern;
  */
 @Getter
 public final class OracleDataSourceMetaData implements DataSourceMetaData {
-    
+
     private static final int DEFAULT_PORT = 1521;
-    
+
     private final String hostName;
-    
+
     private final int port;
-    
+
     private final String schemaName;
-    //modify by chenty 20190823  to support oracle 12c config like jdbc:oracle:thin:@127.0.0.1:11521/camp2.xxx.com
     private final Pattern pattern = Pattern.compile("jdbc:oracle:(thin|oci|kprb):@(//)?([\\w\\-\\.]+):?([0-9]*)[:/]([\\w\\-\\.]+)", Pattern.CASE_INSENSITIVE);
-    //modify by chenty 20190822 to support oracle rac config
     public OracleDataSourceMetaData(final String url) {
         Matcher matcher = pattern.matcher(url);
         if(matcher.find()){

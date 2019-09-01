@@ -41,20 +41,20 @@ import java.util.Map;
  * @author zhangliang
  */
 public final class TableMetaDataInitializer {
-    
+
     private final DataSourceMetas dataSourceMetas;
-    
+
     private final TableMetaDataConnectionManager connectionManager;
-    
+
     private final TableMetaDataLoader tableMetaDataLoader;
-    
+
     public TableMetaDataInitializer(final DataSourceMetas dataSourceMetas, final ShardingExecuteEngine executeEngine,
                                     final TableMetaDataConnectionManager connectionManager, final int maxConnectionsSizePerQuery, final boolean isCheckingMetaData) {
         this.dataSourceMetas = dataSourceMetas;
         this.connectionManager = connectionManager;
         tableMetaDataLoader = new TableMetaDataLoader(dataSourceMetas, executeEngine, connectionManager, maxConnectionsSizePerQuery, isCheckingMetaData);
     }
-    
+
     /**
      * Load table meta data.
      *
@@ -66,10 +66,10 @@ public final class TableMetaDataInitializer {
     public TableMetaData load(final String logicTableName, final ShardingRule shardingRule) throws SQLException {
         return tableMetaDataLoader.load(logicTableName, shardingRule);
     }
-    
+
     /**
      * Load all table meta data.
-     * 
+     *
      * @param shardingRule sharding rule
      * @return all table meta data
      * @throws SQLException SQL exception
@@ -80,7 +80,7 @@ public final class TableMetaDataInitializer {
         result.putAll(loadDefaultTables(shardingRule));
         return result;
     }
-    
+
     private Map<String, TableMetaData> loadShardingTables(final ShardingRule shardingRule) throws SQLException {
         Map<String, TableMetaData> result = new HashMap<>(shardingRule.getTableRules().size(), 1);
         for (TableRule each : shardingRule.getTableRules()) {
@@ -88,7 +88,7 @@ public final class TableMetaDataInitializer {
         }
         return result;
     }
-    
+
     private Map<String, TableMetaData> loadDefaultTables(final ShardingRule shardingRule) throws SQLException {
         Map<String, TableMetaData> result = new HashMap<>(shardingRule.getTableRules().size(), 1);
         Optional<String> actualDefaultDataSourceName = shardingRule.findActualDefaultDataSourceName();
@@ -99,7 +99,7 @@ public final class TableMetaDataInitializer {
         }
         return result;
     }
-    
+
     private Collection<String> getAllTableNames(final String dataSourceName) throws SQLException {
         Collection<String> result = new LinkedHashSet<>();
         DataSourceMetaData dataSourceMetaData = this.dataSourceMetas.getDataSourceMetaData(dataSourceName);
@@ -115,11 +115,10 @@ public final class TableMetaDataInitializer {
         }
         return result;
     }
-    
+
     private String getCurrentSchemaName(final Connection connection) throws SQLException {
         String databaseTypeNm = this.dataSourceMetas.getDatabaseTypeInfo().getName();
         try {
-            //modify by chenty 20190823 oracle must return user name
             if(!StringUtil.isEmpty(databaseTypeNm) && databaseTypeNm.equals("Oracle")){
                 return  connection.getMetaData().getUserName().toUpperCase();
             }
