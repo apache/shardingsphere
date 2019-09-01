@@ -25,7 +25,6 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegme
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -48,12 +47,11 @@ public final class EncryptInsertOptimizeEngine implements EncryptOptimizeEngine<
         for (Collection<ExpressionSegment> each : sqlStatement.getAllValueExpressions()) {
             InsertValue insertValue = createInsertValue(columnNames, encryptDerivedColumnNames, each, derivedColumnCount, parameters, parametersOffset);
             result.getInsertValues().add(insertValue);
-            Object[] currentParameters = insertValue.getParameters();
             if (encryptRule.containsQueryAssistedColumn(tableName)) {
-                fillAssistedQueryInsertValue(encryptRule, Arrays.asList(currentParameters), tableName, columnNames, insertValue);
+                fillAssistedQueryInsertValue(encryptRule, insertValue.getParameters(), tableName, columnNames, insertValue);
             }
             if (encryptRule.containsPlainColumn(tableName)) {
-                fillPlainInsertValue(encryptRule, Arrays.asList(currentParameters), tableName, columnNames, insertValue);
+                fillPlainInsertValue(encryptRule, insertValue.getParameters(), tableName, columnNames, insertValue);
             }
             parametersOffset += insertValue.getParametersCount();
         }

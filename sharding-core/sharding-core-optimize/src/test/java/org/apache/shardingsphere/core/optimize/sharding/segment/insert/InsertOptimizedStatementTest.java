@@ -30,7 +30,6 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 public final class InsertOptimizedStatementTest {
@@ -44,12 +43,11 @@ public final class InsertOptimizedStatementTest {
         ExpressionSegment assignment3 = new LiteralExpressionSegment(0, 0, "test");
         insertClauseOptimizedStatement.getInsertValues().add(
                 new InsertValue(Arrays.asList("id", "value", "status", "id"), Arrays.asList(assignment1, assignment2, assignment3), 1, Collections.<Object>singletonList("parameter"), 0));
-        assertThat(insertClauseOptimizedStatement.getInsertValues().get(0).getValueExpressions().length, is(4));
-        assertThat(insertClauseOptimizedStatement.getInsertValues().get(0).getValueExpressions()[0], is(assignment1));
-        assertThat(insertClauseOptimizedStatement.getInsertValues().get(0).getValueExpressions()[1], is(assignment2));
-        assertThat(insertClauseOptimizedStatement.getInsertValues().get(0).getValueExpressions()[2], is(assignment3));
-        assertNull(insertClauseOptimizedStatement.getInsertValues().get(0).getValueExpressions()[3]);
-        assertThat(insertClauseOptimizedStatement.getInsertValues().get(0).getParameters()[0], is((Object) "parameter"));
+        assertThat(insertClauseOptimizedStatement.getInsertValues().get(0).getValueExpressions().size(), is(3));
+        assertThat(insertClauseOptimizedStatement.getInsertValues().get(0).getValueExpressions().get(0), is(assignment1));
+        assertThat(insertClauseOptimizedStatement.getInsertValues().get(0).getValueExpressions().get(1), is(assignment2));
+        assertThat(insertClauseOptimizedStatement.getInsertValues().get(0).getValueExpressions().get(2), is(assignment3));
+        assertThat(insertClauseOptimizedStatement.getInsertValues().get(0).getParameters().get(0), is((Object) "parameter"));
         assertThat(insertClauseOptimizedStatement.getInsertValues().get(0).getDataNodes().size(), is(0));
         assertThat(insertClauseOptimizedStatement.getInsertValues().get(0).getValue("value"), is((Object) "parameter"));
         assertThat(insertClauseOptimizedStatement.getInsertValues().get(0).getValue("status"), is((Object) "test"));

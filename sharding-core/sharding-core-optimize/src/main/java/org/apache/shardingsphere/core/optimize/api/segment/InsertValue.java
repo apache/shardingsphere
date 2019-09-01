@@ -26,7 +26,9 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralE
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.core.rule.DataNode;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -43,47 +45,43 @@ public final class InsertValue {
     
     private final List<String> columnNames;
     
-    private final Collection<ExpressionSegment> assignments;
-    
     private final int parametersCount;
     
-    private final ExpressionSegment[] valueExpressions;
+    private final List<ExpressionSegment> valueExpressions;
     
-    private final Object[] parameters;
+    private final List<Object> parameters;
     
     private final List<DataNode> dataNodes = new LinkedList<>();
     
-    public InsertValue(final List<String> columnNames,
-                       final Collection<ExpressionSegment> assignments, final int derivedColumnsCount, final List<Object> parameters, final int parametersOffset) {
+    public InsertValue(final List<String> columnNames, final Collection<ExpressionSegment> assignments, final int derivedColumnsCount, final List<Object> parameters, final int parametersOffset) {
         this.columnNames = columnNames;
-        this.assignments = assignments;
-        parametersCount = calculateParametersCount();
-        valueExpressions = createValueExpressions(derivedColumnsCount);
-        this.parameters = createParameters(parameters, derivedColumnsCount, parametersOffset);
+        parametersCount = calculateParametersCount(assignments);
+        valueExpressions = getValueExpressions(assignments, derivedColumnsCount);
+        this.parameters = getParameters(parameters, derivedColumnsCount, parametersOffset);
     }
     
-    private ExpressionSegment[] createValueExpressions(final int derivedColumnsCount) {
-        ExpressionSegment[] result = new ExpressionSegment[assignments.size() + derivedColumnsCount];
-        assignments.toArray(result);
-        return result;
-    }
-    
-    private Object[] createParameters(final List<Object> parameters, final int derivedColumnsCount, final int parametersOffset) {
-        if (0 == parametersCount) {
-            return new Object[0];
-        }
-        Object[] result = new Object[parametersCount + derivedColumnsCount];
-        parameters.subList(parametersOffset, parametersOffset + parametersCount).toArray(result);
-        return result;
-    }
-    
-    private int calculateParametersCount() {
+    private int calculateParametersCount(final Collection<ExpressionSegment> assignments) {
         int result = 0;
         for (ExpressionSegment each : assignments) {
             if (each instanceof ParameterMarkerExpressionSegment) {
                 result++;
             }
         }
+        return result;
+    }
+    
+    private List<ExpressionSegment> getValueExpressions(final Collection<ExpressionSegment> assignments, final int derivedColumnsCount) {
+        List<ExpressionSegment> result = new ArrayList<>(assignments.size() + derivedColumnsCount);
+        result.addAll(assignments);
+        return result;
+    }
+    
+    private List<Object> getParameters(final List<Object> parameters, final int derivedColumnsCount, final int parametersOffset) {
+        if (0 == parametersCount) {
+            return Collections.emptyList();
+        }
+        List<Object> result = new ArrayList<>(parametersCount + derivedColumnsCount);
+        result.addAll(parameters.subList(parametersOffset, parametersOffset + parametersCount));
         return result;
     }
     
@@ -94,8 +92,8 @@ public final class InsertValue {
      * @return value
      */
     public Object getValue(final String columnName) {
-        ExpressionSegment valueExpression = valueExpressions[columnNames.indexOf(columnName)];
-        return valueExpression instanceof ParameterMarkerExpressionSegment ? parameters[getParameterIndex(valueExpression)] : ((LiteralExpressionSegment) valueExpression).getLiterals();
+        ExpressionSegment valueExpression = valueExpressions.get(columnNames.indexOf(columnName));
+        return valueExpression instanceof ParameterMarkerExpressionSegment ? parameters.get(getParameterIndex(valueExpression)) : ((LiteralExpressionSegment) valueExpression).getLiterals();
     }
     
     /**
@@ -105,7 +103,7 @@ public final class InsertValue {
      * @return column sql expression
      */
     public ExpressionSegment getValueExpression(final String columnName) {
-        return valueExpressions[columnNames.indexOf(columnName)];
+        return valueExpressions.get(columnNames.indexOf(columnName));
     }
     
     /**
@@ -117,29 +115,12 @@ public final class InsertValue {
     public void appendValue(final Comparable<?> value, final List<Object> parameters) {
         if (parameters.isEmpty()) {
             // TODO fix start index and stop index
-            appendValueExpression(new LiteralExpressionSegment(0, 0, value));
+            valueExpressions.add(new LiteralExpressionSegment(0, 0, value));
         } else {
             // TODO fix start index and stop index
-            appendValueExpression(new ParameterMarkerExpressionSegment(0, 0, parameters.size() - 1));
-            appendParameter(value);
+            valueExpressions.add(new ParameterMarkerExpressionSegment(0, 0, parameters.size() - 1));
+            this.parameters.add(value);
         }
-    }
-    
-    private void appendValueExpression(final ExpressionSegment expressionSegment) {
-        valueExpressions[getNullIndex(valueExpressions, 0)] = expressionSegment;
-    }
-    
-    private void appendParameter(final Object parameter) {
-        parameters[getNullIndex(parameters, parametersCount)] = parameter;
-    }
-    
-    private int getNullIndex(final Object[] array, final int startIndex) {
-        for (int i = startIndex; i < array.length; i++) {
-            if (null == array[i]) {
-                return i;
-            }
-        }
-        throw new ShardingException("Index Out Of Bounds For InsertOptimizeResultUnit.");
     }
     
     /**
@@ -149,11 +130,11 @@ public final class InsertValue {
      * @param value value
      */
     public void setValue(final String columnName, final Object value) {
-        ExpressionSegment expressionSegment = valueExpressions[columnNames.indexOf(columnName)];
+        ExpressionSegment expressionSegment = valueExpressions.get(columnNames.indexOf(columnName));
         if (expressionSegment instanceof ParameterMarkerExpressionSegment) {
-            parameters[getParameterIndex(expressionSegment)] = value;
+            parameters.set(getParameterIndex(expressionSegment), value);
         } else {
-            valueExpressions[columnNames.indexOf(columnName)] = new LiteralExpressionSegment(expressionSegment.getStartIndex(), expressionSegment.getStopIndex(), value);
+            valueExpressions.set(columnNames.indexOf(columnName), new LiteralExpressionSegment(expressionSegment.getStartIndex(), expressionSegment.getStopIndex(), value));
         }
     }
     

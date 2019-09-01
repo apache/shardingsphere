@@ -33,7 +33,6 @@ import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -75,16 +74,15 @@ public final class ShardingInsertOptimizeEngine implements ShardingOptimizeEngin
         for (Collection<ExpressionSegment> each : sqlStatement.getAllValueExpressions()) {
             InsertValue insertValue = createInsertValue(columnNames, generateKeyColumnName.orNull(), encryptDerivedColumnNames, each, derivedColumnsCount, parameters, parametersOffset);
             result.getInsertValues().add(insertValue);
-            Object[] currentParameters = insertValue.getParameters();
             if (isGeneratedValue) {
-                insertValue.appendValue(generatedValues.next(), Arrays.asList(currentParameters));
+                insertValue.appendValue(generatedValues.next(), insertValue.getParameters());
             }
             EncryptRule encryptRule = shardingRule.getEncryptRule();
             if (encryptRule.containsQueryAssistedColumn(tableName)) {
-                fillAssistedQueryInsertValue(encryptRule, Arrays.asList(currentParameters), tableName, columnNames, insertValue);
+                fillAssistedQueryInsertValue(encryptRule, insertValue.getParameters(), tableName, columnNames, insertValue);
             }
             if (encryptRule.containsPlainColumn(tableName)) {
-                fillPlainInsertValue(encryptRule, Arrays.asList(currentParameters), tableName, columnNames, insertValue);
+                fillPlainInsertValue(encryptRule, insertValue.getParameters(), tableName, columnNames, insertValue);
             }
             parametersOffset += insertValue.getParametersCount();
         }

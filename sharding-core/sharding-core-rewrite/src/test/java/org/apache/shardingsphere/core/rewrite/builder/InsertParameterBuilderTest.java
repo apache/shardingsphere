@@ -44,10 +44,10 @@ public final class InsertParameterBuilderTest {
     
     private InsertOptimizedStatement createInsertOptimizedStatement() {
         InsertValue insertValue1 = mock(InsertValue.class);
-        when(insertValue1.getParameters()).thenReturn(new Object[] {3, 4});
+        when(insertValue1.getParameters()).thenReturn(Arrays.<Object>asList(3, 4));
         when(insertValue1.getDataNodes()).thenReturn(Collections.singletonList(new DataNode("db1.tb1")));
         InsertValue insertValue2 = mock(InsertValue.class);
-        when(insertValue2.getParameters()).thenReturn(new Object[] {5, 6});
+        when(insertValue2.getParameters()).thenReturn(Arrays.<Object>asList(5, 6));
         when(insertValue2.getDataNodes()).thenReturn(Collections.singletonList(new DataNode("db2.tb2")));
         InsertOptimizedStatement result = mock(InsertOptimizedStatement.class);
         when(result.getInsertValues()).thenReturn(Arrays.asList(insertValue1, insertValue2));

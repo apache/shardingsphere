@@ -23,7 +23,6 @@ import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStat
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.rule.DataNode;
 
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -47,7 +46,7 @@ public final class InsertParameterBuilder implements ParameterBuilder {
     private List<InsertParameterUnit> createInsertParameterUnits(final InsertOptimizedStatement optimizedStatement) {
         List<InsertParameterUnit> result = new LinkedList<>();
         for (InsertValue each : optimizedStatement.getInsertValues()) {
-            result.add(new InsertParameterUnit(Arrays.asList(each.getParameters()), each.getDataNodes()));
+            result.add(new InsertParameterUnit(each.getParameters(), each.getDataNodes()));
         }
         return result;
     }

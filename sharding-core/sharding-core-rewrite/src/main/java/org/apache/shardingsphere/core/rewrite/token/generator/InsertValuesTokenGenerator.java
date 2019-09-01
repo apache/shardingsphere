@@ -27,7 +27,6 @@ import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertValuesToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
-import java.util.Arrays;
 import java.util.Collection;
 
 /**
@@ -52,7 +51,7 @@ public final class InsertValuesTokenGenerator implements OptionalSQLTokenGenerat
     private InsertValuesToken createInsertValuesToken(final InsertOptimizedStatement optimizedStatement, final Collection<InsertValuesSegment> insertValuesSegments) {
         InsertValuesToken result = new InsertValuesToken(getStartIndex(insertValuesSegments), getStopIndex(insertValuesSegments));
         for (InsertValue each : optimizedStatement.getInsertValues()) {
-            result.addInsertValueToken(Arrays.asList(each.getValueExpressions()), each.getDataNodes());
+            result.addInsertValueToken(each.getValueExpressions(), each.getDataNodes());
         }
         return result;
     }
