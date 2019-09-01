@@ -36,6 +36,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -69,9 +70,9 @@ public final class ShardingInsertOptimizeEngine implements ShardingOptimizeEngin
         ShardingInsertOptimizedStatement result = new ShardingInsertOptimizedStatement(sqlStatement, shardingConditions, columnNames, generatedKey.orNull());
         checkDuplicateKeyForShardingKey(shardingRule, sqlStatement, tableName);
         int parametersOffset = 0;
+        Collection<String> encryptDerivedColumnNames = shardingRule.getEncryptRule().getAssistedQueryAndPlainColumns(tableName);
         for (Collection<ExpressionSegment> each : sqlStatement.getAllValueExpressions()) {
-            Collection<String> encryptDerivedColumnNames = shardingRule.getEncryptRule().getAssistedQueryAndPlainColumns(tableName);
-            InsertValue insertValue = result.createInsertValue(generateKeyColumnName.orNull(), encryptDerivedColumnNames, each, derivedColumnsCount, parameters, parametersOffset);
+            InsertValue insertValue = createInsertValue(columnNames, generateKeyColumnName.orNull(), encryptDerivedColumnNames, each, derivedColumnsCount, parameters, parametersOffset);
             result.addInsertValue(insertValue);
             Object[] currentParameters = insertValue.getParameters();
             if (isGeneratedValue) {
@@ -116,6 +117,14 @@ public final class ShardingInsertOptimizeEngine implements ShardingOptimizeEngin
             }
         }
         return false;
+    }
+    
+    private InsertValue createInsertValue(final Collection<String> columnNames, final String generateKeyColumnName, final Collection<String> derivedColumnNames, 
+                                          final Collection<ExpressionSegment> assignments, final int derivedColumnsCount, final List<Object> parameters, final int parametersOffset) {
+        List<String> allColumnNames = new LinkedList<>(columnNames);
+        allColumnNames.add(generateKeyColumnName);
+        allColumnNames.addAll(derivedColumnNames);
+        return new InsertValue(allColumnNames, assignments, derivedColumnsCount, parameters, parametersOffset);
     }
     
     private void fillAssistedQueryInsertValue(final ShardingRule shardingRule,

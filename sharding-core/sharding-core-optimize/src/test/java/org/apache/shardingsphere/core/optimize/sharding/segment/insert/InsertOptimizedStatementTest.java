@@ -27,9 +27,7 @@ import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
@@ -44,10 +42,8 @@ public final class InsertOptimizedStatementTest {
         ExpressionSegment assignment1 = new LiteralExpressionSegment(0, 0, 1);
         ExpressionSegment assignment2 = new ParameterMarkerExpressionSegment(0, 0, 1);
         ExpressionSegment assignment3 = new LiteralExpressionSegment(0, 0, "test");
-        Collection<ExpressionSegment> assignments = Arrays.asList(assignment1, assignment2, assignment3);
-        List<Object> parameters = Collections.<Object>singletonList("parameter");
-        InsertValue insertValue = insertClauseOptimizedStatement.createInsertValue("id", Collections.<String>emptyList(), assignments, 1, parameters, 0);
-        insertClauseOptimizedStatement.addInsertValue(insertValue);
+        insertClauseOptimizedStatement.addInsertValue(
+                new InsertValue(Arrays.asList("id", "value", "status", "id"), Arrays.asList(assignment1, assignment2, assignment3), 1, Collections.<Object>singletonList("parameter"), 0));
         assertThat(insertClauseOptimizedStatement.getInsertValues().get(0).getValueExpressions().length, is(4));
         assertThat(insertClauseOptimizedStatement.getInsertValues().get(0).getValueExpressions()[0], is(assignment1));
         assertThat(insertClauseOptimizedStatement.getInsertValues().get(0).getValueExpressions()[1], is(assignment2));

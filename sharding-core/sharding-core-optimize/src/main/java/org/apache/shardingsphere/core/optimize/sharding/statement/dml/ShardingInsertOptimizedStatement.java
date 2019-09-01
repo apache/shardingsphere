@@ -28,7 +28,6 @@ import org.apache.shardingsphere.core.optimize.encrypt.condition.EncryptConditio
 import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingConditions;
 import org.apache.shardingsphere.core.optimize.sharding.segment.insert.GeneratedKey;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
 import java.util.Collection;
@@ -59,25 +58,6 @@ public final class ShardingInsertOptimizedStatement extends ShardingConditionOpt
         tables = new Tables(sqlStatement);
         this.columnNames = columnNames;
         this.generatedKey = generatedKey;
-    }
-    
-    /**
-     * Create insert value.
-     *
-     * @param generateKeyColumnName generate key column name
-     * @param derivedColumnNames derived column names
-     * @param assignments assignments
-     * @param derivedColumnsCount derived columns count
-     * @param parameters SQL parameters
-     * @param parametersOffset offset of SQL parameters
-     * @return insert value
-     */
-    public InsertValue createInsertValue(final String generateKeyColumnName, final Collection<String> derivedColumnNames, final Collection<ExpressionSegment> assignments,
-                                         final int derivedColumnsCount, final List<Object> parameters, final int parametersOffset) {
-        List<String> allColumnNames = new LinkedList<>(columnNames);
-        allColumnNames.add(generateKeyColumnName);
-        allColumnNames.addAll(derivedColumnNames);
-        return new InsertValue(allColumnNames, assignments, derivedColumnsCount, parameters, parametersOffset);
     }
     
     /**
