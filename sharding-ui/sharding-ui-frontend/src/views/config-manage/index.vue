@@ -20,7 +20,6 @@
     <el-radio-group v-model="radioValue" @change="onChange">
       <el-radio-button label="schema"/>
       <el-radio-button label="authentication"/>
-      <el-radio-button label="configMap"/>
       <el-radio-button label="props"/>
     </el-radio-group>
     <component :is="currentView"/>
@@ -30,15 +29,13 @@
 import MSchema from './module/schema'
 import MAuthentication from './module/authentication'
 import MProps from './module/props'
-import MConfigMap from './module/configMap'
 
 export default {
   name: 'ConfigManage',
   components: {
     MSchema,
     MAuthentication,
-    MProps,
-    MConfigMap
+    MProps
   },
   data() {
     return {
@@ -54,8 +51,6 @@ export default {
         this.currentView = MAuthentication
       } else if (val === 'props') {
         this.currentView = MProps
-      } else {
-        this.currentView = MConfigMap
       }
     }
   }

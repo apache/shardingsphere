@@ -28,9 +28,6 @@ export default {
   // Authentication
   getAuth: () => API.get(`/api/authentication`),
   putAuth: (params = {}) => API.put(`/api/authentication`, params),
-  // configMap
-  getConfigMap: () => API.get(`/api/config-map`),
-  putConfigMap: (params = {}) => API.put(`/api/config-map`, params),
   // props
   getProps: () => API.get(`/api/props`),
   putProps: (params = {}) => API.put(`/api/props`, params)
