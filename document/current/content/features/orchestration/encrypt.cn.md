@@ -205,7 +205,31 @@ encryptRule:
 3. 脱敏字段无法支持比较操作，如：大于小于、ORDER BY、BETWEEN、LIKE等
 4. 脱敏字段无法支持计算操作，如：AVG、SUM以及计算表达式
 
-九、后续
+九、加密策略解析
+
+ShardingSphere提供了两种加密策略用于数据脱敏，该两种策略分别对应ShardingSphere的两种加解密的接口，即ShardingEncryptor和ShardingQueryAssistedEncryptor。
+
+一方面，ShardingSphere为用户提供了内置的加解密实现类，用户只需进行配置即可使用；另一方面，为了满足用户不同场景的需求，我们还开放了相关加解密接口，用户可依据该两种类型的接口提供具体实现类。再进行简单配置，即可让ShardingSphere调用用户自定义的加解密方案进行数据脱敏。
+
+###### ShardingEncryptor
+该解决方案通过提供`encrypt()`, `decrypt()`两种方法对需要脱敏的数据进行加解密。在用户进行`INSERT`, `DELETE`, `UPDATE`时，ShardingSphere会按照用户配置，对SQL进行解析、改写、路由，并会调用`encrypt()`将数据加密后存储到数据库, 而在`SELECT`时，则调用`decrypt()`方法将从数据库中取出的脱敏数据进行逆向解密，最终将原始数据返回给用户。
+
+当前，ShardingSphere针对这种类型的脱敏解决方案提供了两种具体实现类，分别是MD5(不可逆)，AES(可逆)，用户只需配置即可使用这两种内置的方案。
+
+###### ShardingQueryAssistedEncryptor
+相比较于第一种脱敏方案，该方案更为安全和复杂。它的理念是：即使是相同的数据，如两个用户的密码相同，它们在数据库里存储的脱敏数据也应当是不一样的。这种理念更有利于保护用户信息，防止撞库成功。
+
+它提供三种函数进行实现，分别是`encrypt()`, `decrypt()`, `queryAssistedEncrypt()`。在`encrypt()`阶段，用户通过设置某个变动种子，例如时间戳。针对原始数据+变动种子组合的内容进行加密，就能保证即使原始数据相同，也因为有变动种子的存在，致使加密后的脱敏数据是不一样的。在`decrypt()`可依据之前规定的加密算法，利用种子数据进行解密。
+
+虽然这种方式确实可以增加数据的保密性，但是另一个问题却随之出现：相同的数据在数据库里存储的内容是不一样的，那么当用户按照这个加密列进行等值查询(`SELECT FROM table WHERE encryptedColumnn = ?`)时会发现无法将所有相同的原始数据查询出来。为此，我们提出了辅助查询列的概念。该辅助查询列通过`queryAssistedEncrypt()`生成，与`decrypt()`不同的是，该方法通过对原始数据进行另一种方式的加密，但是针对原始数据相同的数据，这种加密方式产生的加密数据是一致的。将`queryAssistedEncrypt()`后的数据存储到数据中用于辅助查询真实数据。因此，数据库表中多出这一个辅助查询列。
+
+由于`queryAssistedEncrypt()`和`encrypt()`产生不同加密数据进行存储，而`decrypt()`可逆，`queryAssistedEncrypt()`不可逆。 在查询原始数据的时候，我们会自动对SQL进行解析、改写、路由，利用辅助查询列进行
+`WHERE`条件的查询，却利用 `decrypt()`对`encrypt()`加密后的数据进行解密，并将原始数据返回给用户。这一切都是对用户透明化的。
+
+当前，ShardingSphere针对这种类型的脱敏解决方案并没有提供具体实现类，却将该理念抽象成接口，提供给用户自行实现。ShardingSphere将调用用户提供的该方案的具体实现类进行数据脱敏。
+
+
+十、后续
 
 本篇文章介绍了如何使用ShardingSphere产品之一的Encrypt-JDBC进行接入，接入形式还可以选择使用SpringBoot、SpringNameSpace等，这种形态的接入端主要面向JAVA同构，并与业务代码共同部署在生产环境中。面向异构语言，ShardingSphere还提供Encrypt-Proxy客户端。Encrypt-Proxy是一款实现MySQL、PostgreSQL的二进制协议的服务器端产品，用户可独立部署Encrypt-Proxy服务，并且像使用普通MySQL、PostgreSQL数据库一样，使用例如Navicat第三方数据库管理工具、JAVA连接池、命令行的方式访问这台具有脱敏功能的`虚拟数据库服务器`。
 
