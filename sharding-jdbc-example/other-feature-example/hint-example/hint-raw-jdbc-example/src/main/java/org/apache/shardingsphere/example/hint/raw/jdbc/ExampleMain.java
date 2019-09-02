@@ -73,7 +73,7 @@ public class ExampleMain {
             statement.execute("select * from t_order");
             statement.execute("SELECT i.* FROM t_order o, t_order_item i WHERE o.order_id = i.order_id");
             statement.execute("select * from t_order_item");
-            statement.execute("INSERT INTO t_order (user_id, status) VALUES (1, 'init')");
+            statement.execute("INSERT INTO t_order (user_id, address_id, status) VALUES (1, 1, 'init')");
         }
     }
     

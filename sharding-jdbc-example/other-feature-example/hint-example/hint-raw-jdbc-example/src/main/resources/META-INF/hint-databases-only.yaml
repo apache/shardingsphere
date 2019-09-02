@@ -18,12 +18,15 @@ shardingRule:
       actualDataNodes: ds_${0..1}.t_order_item
   bindingTables:
     - t_order,t_order_item
+  broadcastTables:
+    - t_address
   
   defaultDatabaseStrategy:
     hint:
       algorithmClassName: org.apache.shardingsphere.example.hint.raw.jdbc.ModuloHintShardingAlgorithm
   defaultTableStrategy:
     none:
+
 
 props:
   sql.show: true
