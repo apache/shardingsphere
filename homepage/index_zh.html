@@ -23,7 +23,11 @@
       href="https://shardingsphere.apache.org/images/favicon.png"
       type="image/x-icon"
     />
-    <link rel="stylesheet" type="text/css" href="https://shardingsphere.apache.org/css/index.css" />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://shardingsphere.apache.org/css/index.css"
+    />
     <!--[if IE 8]>
       <style>
         .sub-tile-ie {
@@ -48,9 +52,9 @@
           <div class="float-right">
             <div class="nav-item">
               <a
-                      href="https://shardingsphere.apache.org/document/current/cn/downloads/"
-                      target="_blank"
-              >下载</a
+                href="https://shardingsphere.apache.org/document/current/cn/downloads/"
+                target="_blank"
+                >下载</a
               >
             </div>
             <div class="nav-item">
@@ -63,7 +67,7 @@
                     target="_blank"
                     >4.x(当前)</a
                   >
-                  <a 
+                  <a
                     class="i-drop-list"
                     href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/overview"
                     target="_blank"
@@ -108,9 +112,9 @@
             </div>
             <div class="nav-item">
               <a
-                      href="https://shardingsphere.apache.org/community/cn/contribute/"
-                      target="_blank"
-              >社区</a
+                href="https://shardingsphere.apache.org/community/cn/contribute/"
+                target="_blank"
+                >社区</a
               >
             </div>
             <div class="nav-item space">
@@ -122,40 +126,18 @@
           </div>
         </div>
         <div id="content" class="content">
-          <!-- 此处style用来调节标题羽毛的位置，防止改变标题长度引起错位 -->
-          <div class="sub-title" style="background-position: 250px 120px">
-            <div class="sub-tile-ie">HTAP & 云原生 & 零侵入</div>
-            <svg width="500" height="50" viewBoxs="0 0 700 50">
-              <defs>
-                <linearGradient
-                  id="SVGID_1_"
-                  gradientUnits="userSpaceOnUse"
-                  x1="0"
-                  y1="10"
-                  x2="500"
-                  y2="10"
-                >
-                  <stop offset="0" style="stop-color:#7e297c" />
-                  <stop offset="0.5" style="stop-color:#f79a22" />
-                  <stop offset="1" style="stop-color:#d03135" />
-                </linearGradient>
-              </defs>
-              <text
-                font-family="'PingFang SC','Microsoft Yahei'"
-                text-anchor="middle"
-                class="sub-title-svg"
-                x="250"
-                y="40"
-              >
+          <div class="sub-title">
+            <div class="sub-title-box">
+              <div class="sub-title-ie">
                 微内核 & 云原生 & 零侵入
-              </text>
-            </svg>
-            <!-- 此处style用来调节Incubating的位置，防止改变标题长度引起错位 -->
-            <div class="sub-corner" style="right:256px;">Incubating</div>
+              </div>
+              <div class="sub-corner">Incubating</div>
+            </div>
           </div>
           <hr class="sub-hr" />
           <p class="sub-text">
-            Apache ShardingSphere(Incubator) 是一套开源的分布式数据库中间件解决方案组成的生态圈，它由Sharding-JDBC、Sharding-Proxy和Sharding-Sidecar（规划中）这3款相互独立，却又能够混合部署配合使用的产品组成。它们均提供标准化的数据分片、分布式事务和数据库治理功能，可适用于如Java同构、异构语言、云原生等各种多样化的应用场景。
+            Apache ShardingSphere(Incubator)
+            是一套开源的分布式数据库中间件解决方案组成的生态圈，它由Sharding-JDBC、Sharding-Proxy和Sharding-Sidecar（规划中）这3款相互独立，却又能够混合部署配合使用的产品组成。它们均提供标准化的数据分片、分布式事务和数据库治理功能，可适用于如Java同构、异构语言、云原生等各种多样化的应用场景。
           </p>
           <p class="sub-text">
             ShardingSphere定位为关系型数据库中间件，旨在充分合理地在分布式的场景下利用关系型数据库的计算和存储能力，而并非实现一个全新的关系型数据库。它通过关注不变，进而抓住事物本质。关系型数据库当今依然占有巨大市场，是各个公司核心业务的基石，未来也难于撼动，我们目前阶段更加关注在原有基础上的增量，而非颠覆。
@@ -304,7 +286,7 @@
         </div>
       </div>
     </div>
-    <footer>@Apache ShardingSphere</footer>
+    <div class="footer">@Apache ShardingSphere</div>
     <script>
       !(function() {
         var $btnDoc = document.getElementById('btn-document')
