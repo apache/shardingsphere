@@ -43,7 +43,8 @@ a {
 .sub-header {
   width: 1200px;
   margin: 0 auto;
-  background: url(https://shardingsphere.apache.org/images/background_center.png) 480px 480px no-repeat;
+  background: url(https://shardingsphere.apache.org/images/background_center.png)
+    480px 480px no-repeat;
 }
 .nav {
   margin: 0 auto;
@@ -109,27 +110,47 @@ a {
 }
 .content {
   margin: 0 auto;
-  background: url(https://shardingsphere.apache.org/images/background_corner.png) 990px 580px no-repeat;
+  background: url(https://shardingsphere.apache.org/images/background_corner.png)
+    990px 580px no-repeat;
 }
 .sub-title {
   position: relative;
-  padding-top: 140px;
-  padding-bottom: 40px;
+  padding-top: 120px;
+  padding-bottom: 20px;
   text-align: center;
   font-size: 0;
   color: #ee9a32;
   font-weight: bold;
+}
+.sub-title-box {
+  display: inline-block;
   background-image: url(https://shardingsphere.apache.org/images/background_title.png);
   background-repeat: no-repeat;
+  padding: 20px 70px;
+  position: relative;
 }
-.sub-title-svg {
+.sub-title-ie {
+  display: inline-block;
+  background-image: -webkit-linear-gradient(left, #7e297c, #f79a22, #d03135);
+  background-image: -o-linear-gradient(right, #7e297c, #f79a22, #d03135);
+  background-image: -moz-linear-gradient(right, #7e297c, #f79a22, #d03135);
+  background-image: linear-gradient(to right, #7e297c, #f79a22, #d03135);
+  background-image: none\0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-family: 'PingFang SC', 'Microsoft Yahei';
+  font-size: 42px;
+}
+/* .sub-title-svg {
   fill: url(#SVGID_1_);
   font-size: 42px;
   font-weight: bolder;
-}
+} */
 .sub-corner {
   position: absolute;
-  top: 100px;
+  top: -20px;
+  right: -10px;
   width: 114px;
   height: 35px;
   font-size: 18px;
@@ -261,7 +282,8 @@ a {
 }
 .footer-logo {
   padding: 56px 100px 50px 15px;
-  background: url(https://shardingsphere.apache.org/images/background_bottom.png) right center no-repeat;
+  background: url(https://shardingsphere.apache.org/images/background_bottom.png)
+    right center no-repeat;
 }
 .footer-icon {
   margin: 68px 20px 60px 0;
@@ -274,6 +296,7 @@ a {
 }
 .footer-icon > a > img {
   width: 100%;
+  border: 0;
 }
 .footer {
   height: 126px;
