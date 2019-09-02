@@ -56,24 +56,28 @@ public final class GeneratedKey {
      * @param shardingRule sharding rule
      * @param parameters SQL parameters
      * @param insertStatement insert statement
-     * @param insertColumns insert columns
+     * @param columnNames column names
      * @return generate key
      */
     public static Optional<GeneratedKey> getGenerateKey(final ShardingRule shardingRule, 
-                                                        final List<Object> parameters, final InsertStatement insertStatement, final ShardingInsertColumns insertColumns) {
+                                                        final List<Object> parameters, final InsertStatement insertStatement, final Collection<String> columnNames) {
         Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTable().getTableName());
         if (!generateKeyColumnName.isPresent()) {
             return Optional.absent();
         }
-        return insertColumns.getRegularColumnNames().contains(generateKeyColumnName.get()) 
-                ? findGeneratedKey(parameters, insertStatement, insertColumns, generateKeyColumnName.get())
+        return containsGenerateKey(columnNames, insertStatement.getValueCountForPerGroup(), generateKeyColumnName.get())
+                ? findGeneratedKey(parameters, insertStatement, columnNames, generateKeyColumnName.get())
                 : Optional.of(createGeneratedKey(shardingRule, insertStatement, generateKeyColumnName.get()));
     }
     
+    private static boolean containsGenerateKey(final Collection<String> columnNames, final int valueCountForPerGroup, final String generateKeyColumnName) {
+        return columnNames.contains(generateKeyColumnName) && columnNames.size() == valueCountForPerGroup;
+    }
+    
     private static Optional<GeneratedKey> findGeneratedKey(
-            final List<Object> parameters, final InsertStatement insertStatement, final ShardingInsertColumns insertColumns, final String generateKeyColumnName) {
+            final List<Object> parameters, final InsertStatement insertStatement, final Collection<String> columnNames, final String generateKeyColumnName) {
         GeneratedKey result = null;
-        for (ExpressionSegment each : findGenerateKeyExpressionSegments(insertStatement, insertColumns, generateKeyColumnName)) {
+        for (ExpressionSegment each : findGenerateKeyExpressions(insertStatement, columnNames, generateKeyColumnName)) {
             if (null == result) {
                 result = new GeneratedKey(generateKeyColumnName, false);
             }
@@ -86,12 +90,10 @@ public final class GeneratedKey {
         return Optional.fromNullable(result);
     }
     
-    private static Collection<ExpressionSegment> findGenerateKeyExpressionSegments(
-            final InsertStatement insertStatement, final ShardingInsertColumns insertColumns, final String generateKeyColumnName) {
+    private static Collection<ExpressionSegment> findGenerateKeyExpressions(final InsertStatement insertStatement, final Collection<String> columnNames, final String generateKeyColumnName) {
         Collection<ExpressionSegment> result = new LinkedList<>();
-        Collection<String> columnNames = insertColumns.getRegularColumnNames();
         for (Collection<ExpressionSegment> each : insertStatement.getAllValueExpressions()) {
-            Optional<ExpressionSegment> generateKeyExpression = findGenerateKeyExpressionSegment(generateKeyColumnName, columnNames.iterator(), each);
+            Optional<ExpressionSegment> generateKeyExpression = findGenerateKeyExpression(columnNames.iterator(), generateKeyColumnName, each);
             if (generateKeyExpression.isPresent()) {
                 result.add(generateKeyExpression.get());
             }
@@ -99,9 +101,8 @@ public final class GeneratedKey {
         return result;
     }
     
-    private static Optional<ExpressionSegment> findGenerateKeyExpressionSegment(final String generateKeyColumnName, 
-                                                                                final Iterator<String> columnNames, final Collection<ExpressionSegment> expressionSegments) {
-        for (ExpressionSegment each : expressionSegments) {
+    private static Optional<ExpressionSegment> findGenerateKeyExpression(final Iterator<String> columnNames, final String generateKeyColumnName, final Collection<ExpressionSegment> expressions) {
+        for (ExpressionSegment each : expressions) {
             if (generateKeyColumnName.equalsIgnoreCase(columnNames.next())) {
                 return Optional.of(each);
             }

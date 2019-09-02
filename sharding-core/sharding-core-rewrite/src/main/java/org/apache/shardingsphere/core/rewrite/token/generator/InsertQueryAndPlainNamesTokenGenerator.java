@@ -72,8 +72,7 @@ public final class InsertQueryAndPlainNamesTokenGenerator implements OptionalSQL
     private Collection<String> getAssistedQueryColumns(final InsertOptimizedStatement optimizedStatement, final EncryptRule encryptRule) {
         Collection<String> result = new LinkedList<>();
         Collection<String> columnNames = optimizedStatement instanceof ShardingInsertOptimizedStatement
-                ? ((ShardingInsertOptimizedStatement) optimizedStatement).getInsertColumns().getRegularColumnNames()
-                : ((EncryptInsertOptimizedStatement) optimizedStatement).getColumnNames();
+                ? ((ShardingInsertOptimizedStatement) optimizedStatement).getColumnNames() : ((EncryptInsertOptimizedStatement) optimizedStatement).getColumnNames();
         for (String each : columnNames) {
             Optional<String> assistedQueryColumn = encryptRule.getAssistedQueryColumn(optimizedStatement.getTables().getSingleTableName(), each);
             if (assistedQueryColumn.isPresent()) {
@@ -86,8 +85,7 @@ public final class InsertQueryAndPlainNamesTokenGenerator implements OptionalSQL
     private Collection<String> getPlainColumns(final InsertOptimizedStatement optimizedStatement, final EncryptRule encryptRule) {
         Collection<String> result = new LinkedList<>();
         Collection<String> columnNames = optimizedStatement instanceof ShardingInsertOptimizedStatement
-                ? ((ShardingInsertOptimizedStatement) optimizedStatement).getInsertColumns().getRegularColumnNames()
-                : ((EncryptInsertOptimizedStatement) optimizedStatement).getColumnNames();
+                ? ((ShardingInsertOptimizedStatement) optimizedStatement).getColumnNames() : ((EncryptInsertOptimizedStatement) optimizedStatement).getColumnNames();
         for (String each : columnNames) {
             Optional<String> plainColumn = encryptRule.getPlainColumn(optimizedStatement.getTables().getSingleTableName(), each);
             if (plainColumn.isPresent()) {
