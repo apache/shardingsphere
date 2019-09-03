@@ -58,7 +58,7 @@ public final class MergeEngineFactory {
             return new DQLMergeEngine(databaseType, routeResult, queryResults);
         } 
         if (routeResult.getShardingStatement().getSQLStatement() instanceof DALStatement) {
-            return new DALMergeEngine(shardingRule, queryResults, (DALStatement) routeResult.getShardingStatement().getSQLStatement(), tableMetas);
+            return new DALMergeEngine(shardingRule, queryResults, routeResult.getShardingStatement(), tableMetas);
         }
         return new TransparentMergeEngine(queryResults);
     }
