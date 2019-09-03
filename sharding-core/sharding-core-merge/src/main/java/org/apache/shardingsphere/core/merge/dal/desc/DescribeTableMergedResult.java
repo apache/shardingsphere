@@ -38,9 +38,9 @@ import java.util.Map;
  * @author liya
  */
 public final class DescribeTableMergedResult extends MemoryMergedResult {
-
+    
     private static final Map<String, Integer> LABEL_AND_INDEX_MAP = new HashMap<>(6, 1);
-
+    
     static {
         LABEL_AND_INDEX_MAP.put("Field", 1);
         LABEL_AND_INDEX_MAP.put("Type", 2);
@@ -49,20 +49,20 @@ public final class DescribeTableMergedResult extends MemoryMergedResult {
         LABEL_AND_INDEX_MAP.put("Default", 5);
         LABEL_AND_INDEX_MAP.put("Extra", 6);
     }
-
+    
     private final ShardingRule shardingRule;
-
+    
     private final OptimizedStatement optimizedStatement;
-
+    
     private final Iterator<MemoryQueryResultRow> memoryResultSetRows;
-
+    
     public DescribeTableMergedResult(final ShardingRule shardingRule, final List<QueryResult> queryResults, final OptimizedStatement optimizedStatement) throws SQLException {
         super(LABEL_AND_INDEX_MAP);
         this.shardingRule = shardingRule;
         this.optimizedStatement = optimizedStatement;
         this.memoryResultSetRows = init(queryResults);
     }
-
+    
     private Iterator<MemoryQueryResultRow> init(final List<QueryResult> queryResults) throws SQLException {
         List<MemoryQueryResultRow> result = new LinkedList<>();
         for (QueryResult each : queryResults) {
@@ -78,7 +78,7 @@ public final class DescribeTableMergedResult extends MemoryMergedResult {
         }
         return result.iterator();
     }
-
+    
     private Optional<MemoryQueryResultRow> optimize(final QueryResult queryResult) throws SQLException {
         MemoryQueryResultRow memoryQueryResultRow = new MemoryQueryResultRow(queryResult);
         String logicTableName = optimizedStatement.getTables().getSingleTableName();
@@ -96,9 +96,9 @@ public final class DescribeTableMergedResult extends MemoryMergedResult {
         }
         return Optional.of(memoryQueryResultRow);
     }
-
+    
     @Override
-    public boolean next() throws SQLException {
+    public boolean next() {
         if (memoryResultSetRows.hasNext()) {
             setCurrentResultSetRow(memoryResultSetRows.next());
             return true;
