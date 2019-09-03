@@ -20,16 +20,17 @@ package org.apache.shardingsphere.ui.web.controller;
 import org.apache.shardingsphere.ui.servcie.ProxyAuthenticationService;
 import org.apache.shardingsphere.ui.web.response.ResponseResult;
 import org.apache.shardingsphere.ui.web.response.ResponseResultUtil;
-import org.apache.shardingsphere.core.rule.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
+
 /**
  * RESTful API of sharding proxy authentication.
- * 
+ *
  * @author chenqingyang
  */
 @RestController
@@ -41,23 +42,23 @@ public final class ProxyAuthenticationController {
     
     /**
      * Load authentication.
-     * 
+     *
      * @return response result
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public ResponseResult<Authentication> loadAuthentication() {
+    public ResponseResult<String> loadAuthentication() {
         return ResponseResultUtil.build(proxyAuthenticationService.getAuthentication());
     }
     
     /**
      * Update authentication.
-     * 
-     * @param authentication authentication
+     *
+     * @param configMap config map
      * @return response result
      */
     @RequestMapping(value = "", method = RequestMethod.PUT)
-    public ResponseResult updateAuthentication(@RequestBody final Authentication authentication) {
-        proxyAuthenticationService.updateAuthentication(authentication);
+    public ResponseResult updateAuthentication(@RequestBody final Map<String, String> configMap) {
+        proxyAuthenticationService.updateAuthentication(configMap.get("authentication"));
         return ResponseResultUtil.success();
     }
 }

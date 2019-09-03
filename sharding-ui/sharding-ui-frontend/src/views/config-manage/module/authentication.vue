@@ -16,87 +16,95 @@
   -->
 
 <template>
-  <div class="auth">
-    <el-form ref="ruleForm" :model="form" :rules="rules" label-width="80px">
-      <el-form-item :label="$t('login.labelUserName')" prop="username">
-        <el-input v-model="form.username" :placeholder="$t('input.pUserName')"/>
-      </el-form-item>
-      <el-form-item :label="$t('login.labelPassword')" prop="password">
-        <el-input v-model="form.password" :placeholder="$t('input.pPaasword')"/>
-      </el-form-item>
-      <el-form-item>
-        <el-button @click="resetForm('ruleForm')">{{ $t('btn.reset') }}</el-button>
-        <el-button type="primary" @click="submitForm('ruleForm')">{{ $t('btn.submit') }}</el-button>
-      </el-form-item>
-    </el-form>
-  </div>
+  <el-card class="box-card authentication">
+    <el-row :gutter="20">
+      <el-col :span="12">
+        <span
+          style="font-size: 14px; color: #4a4a4a; margin-bottom: 10px;display: inline-block;"
+        >Edit source here:</span>
+        <el-input :rows="20" v-model="textarea" type="textarea" class="edit-text"/>
+      </el-col>
+      <el-col :span="12">
+        <span
+          style="font-size: 14px; color: #4a4a4a; margin-bottom: 10px;display: inline-block;"
+        >Result (JS object dump):</span>
+        <el-input :rows="20" v-model="textarea2" type="textarea" readonly class="show-text"/>
+      </el-col>
+    </el-row>
+    <el-row>
+      <el-button class="auth-btn" type="primary" @click="onConfirm">{{ $t('btn.submit') }}</el-button>
+    </el-row>
+  </el-card>
 </template>
 <script>
+import yaml from 'js-yaml'
 import API from '../api'
 export default {
   name: 'Authentication',
   data() {
     return {
-      form: {
-        username: '',
-        password: ''
-      },
-      rules: {
-        username: [
-          { required: true, message: this.$t('input').pUserName, trigger: 'blur' }
-        ],
-        password: [
-          { required: true, message: this.$t('input').pPaasword, trigger: 'blur' }
-        ]
-      }
+      textarea: ``
+    }
+  },
+  computed: {
+    textarea2() {
+      return JSON.stringify(yaml.safeLoad(this.textarea), null, '\t')
     }
   },
   created() {
-    this.getAuth()
+    this.getAuthentication()
   },
   methods: {
-    getAuth() {
-      API.getAuth().then((res) => {
-        const data = res.model
-        this.form.username = data.username
-        this.form.password = data.password
-      })
-    },
-    submitForm(formName) {
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-          const params = {
-            password: this.form.password,
-            username: this.form.username
-          }
-          API.putAuth(params).then((res) => {
-            if (res.success) {
-              this.$notify({
-                title: this.$t('common').notify.title,
-                message: this.$t('common').notify.updateCompletedMessage,
-                type: 'success'
-              })
-            } else {
-              this.$notify({
-                title: this.$t('common').notify.title,
-                message: this.$t('common').notify.updateFaildMessage,
-                type: 'error'
-              })
-            }
-          })
+    getAuthentication() {
+      API.getAuth().then(res => {
+        if (!res.success) return
+        const model = res.model
+        if (Object.prototype.toString.call(model) === '[object String]') {
+          this.textarea = model
         } else {
-          return false
+          this.textarea = JSON.stringify(model, null, '\t')
         }
       })
     },
-    resetForm(formName) {
-      this.$refs[formName].resetFields()
+    onConfirm() {
+      API.putAuth({ authentication: this.textarea }).then(res => {
+        if (res.success) {
+          this.$notify({
+            title: this.$t('common').notify.title,
+            message: this.$t('common').notify.updateCompletedMessage,
+            type: 'success'
+          })
+          this.centerDialogVisible = false
+        } else {
+          this.$notify({
+            title: this.$t('common').notify.title,
+            message: this.$t('common').notify.updateFaildMessage,
+            type: 'error'
+          })
+        }
+      })
     }
   }
 }
 </script>
 <style lang="scss" scoped>
-  .auth {
-    margin-top: 20px;
+.authentication {
+  margin-top: 20px;
+  .edit-text {
+    margin-top: 5px;
+    textarea {
+      background: #fffffb;
+    }
   }
+  .show-text {
+    margin-top: 5px;
+    textarea {
+      background: rgb(246, 246, 246);
+    }
+  }
+  .auth-btn {
+    margin-top: 10px;
+    float: right;
+  }
+}
 </style>

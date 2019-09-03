@@ -17,11 +17,9 @@
 
 package org.apache.shardingsphere.ui.servcie.impl;
 
-import com.google.common.base.Strings;
 import org.apache.shardingsphere.ui.servcie.ProxyAuthenticationService;
 import org.apache.shardingsphere.ui.servcie.RegistryCenterService;
 import org.apache.shardingsphere.ui.util.ConfigurationYamlConverter;
-import org.apache.shardingsphere.core.rule.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,14 +35,24 @@ public final class ProxyAuthenticationServiceImpl implements ProxyAuthentication
     private RegistryCenterService registryCenterService;
     
     @Override
-    public Authentication getAuthentication() {
-        String data = registryCenterService.getActivatedRegistryCenter().get(registryCenterService.getActivateConfigurationNode().getAuthenticationPath());
-        return Strings.isNullOrEmpty(data) ? null : ConfigurationYamlConverter.loadAuthentication(data);
+    public String getAuthentication() {
+        return registryCenterService.getActivatedRegistryCenter().get(registryCenterService.getActivateConfigurationNode().getAuthenticationPath());
     }
     
     @Override
-    public void updateAuthentication(final Authentication authentication) {
+    public void updateAuthentication(final String authentication) {
+        checkAuthenticationConfiguration(authentication);
         registryCenterService.getActivatedRegistryCenter()
-                .persist(registryCenterService.getActivateConfigurationNode().getAuthenticationPath(), ConfigurationYamlConverter.dumpAuthentication(authentication));
+                .persist(registryCenterService.getActivateConfigurationNode().getAuthenticationPath(), authentication);
+    }
+    
+    private void checkAuthenticationConfiguration(final String data) {
+        try {
+            ConfigurationYamlConverter.loadAuthentication(data);
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            throw new IllegalArgumentException("authentication configuration is invalid.");
+        }
     }
 }

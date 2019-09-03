@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.ui.servcie;
 
-import org.apache.shardingsphere.core.rule.Authentication;
-
 /**
  * Sharding proxy Authentication service.
  * 
@@ -31,12 +29,12 @@ public interface ProxyAuthenticationService {
      * 
      * @return authentication
      */
-    Authentication getAuthentication();
+    String getAuthentication();
     
     /**
      * Update authentication.
-     * 
+     *
      * @param authentication authentication
      */
-    void updateAuthentication(Authentication authentication);
+    void updateAuthentication(String authentication);
 }
