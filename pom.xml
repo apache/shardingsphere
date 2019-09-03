@@ -738,6 +738,7 @@
                         <exclude>**/.gitignore</exclude>
                         <exclude>**/.gitmodules</exclude>
                         <exclude>**/.git/**</exclude>
+                        <exclude>**/.gitkeep</exclude>
                         <!-- CI files -->
                         <exclude>**/.travis.yml</exclude>
                         <!-- GitHub files -->
