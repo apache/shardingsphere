@@ -37,7 +37,7 @@ import java.util.Map;
  *
  * @author liya
  */
-public class DescribeTableMergedResult extends MemoryMergedResult {
+public final class DescribeTableMergedResult extends MemoryMergedResult {
 
     private static final Map<String, Integer> LABEL_AND_INDEX_MAP = new HashMap<>(6, 1);
 

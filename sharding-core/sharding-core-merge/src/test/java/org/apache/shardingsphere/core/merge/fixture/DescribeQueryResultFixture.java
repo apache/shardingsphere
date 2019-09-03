@@ -33,7 +33,7 @@ import java.util.Iterator;
  * @author liya
  */
 @RequiredArgsConstructor
-public class DescribeQueryResultFixture implements QueryResult {
+public final class DescribeQueryResultFixture implements QueryResult {
 
     private final Iterator<QueryResult> queryResults;
 

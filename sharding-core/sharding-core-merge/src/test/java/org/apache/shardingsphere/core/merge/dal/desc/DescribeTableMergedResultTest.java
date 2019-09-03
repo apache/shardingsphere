@@ -42,7 +42,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class DescribeTableMergedResultTest {
+public final class DescribeTableMergedResultTest {
 
     private List<QueryResult> queryResults;
 
