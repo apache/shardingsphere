@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.integrate.jaxb.expr;
+package org.apache.shardingsphere.core.parse.integrate.jaxb.predicate.value;
 
-public interface ExpectedExpressionSegment {
+public interface ExpectedPredicateRightValue {
 }

@@ -15,7 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.integrate.jaxb.expr;
+package org.apache.shardingsphere.core.parse.integrate.jaxb.expr.complex;
 
-public interface ExpectedExpressionSegment {
+import org.apache.shardingsphere.core.parse.integrate.jaxb.expr.ExpectedExpressionSegment;
+
+public interface ExpectedComplexExpressionSegment extends ExpectedExpressionSegment {
 }

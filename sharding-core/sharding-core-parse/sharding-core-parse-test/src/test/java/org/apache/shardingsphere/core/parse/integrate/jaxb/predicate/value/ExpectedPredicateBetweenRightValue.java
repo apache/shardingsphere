@@ -15,7 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.integrate.jaxb.expr;
+package org.apache.shardingsphere.core.parse.integrate.jaxb.predicate.value;
 
-public interface ExpectedExpressionSegment {
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+
+@Getter
+@Setter
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class ExpectedPredicateBetweenRightValue implements ExpectedPredicateRightValue {
 }
