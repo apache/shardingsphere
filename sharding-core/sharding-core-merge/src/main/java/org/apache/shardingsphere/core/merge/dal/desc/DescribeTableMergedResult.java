@@ -22,6 +22,7 @@ import org.apache.shardingsphere.core.merge.dql.common.MemoryMergedResult;
 import org.apache.shardingsphere.core.merge.dql.common.MemoryQueryResultRow;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
 
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -63,13 +64,21 @@ public class DescribeTableMergedResult extends MemoryMergedResult {
 
     private Iterator<MemoryQueryResultRow> init(final List<QueryResult> queryResults) throws SQLException {
         String logicTableName = optimizedStatement.getTables().getSingleTableName();
+        Map<String, EncryptTable> tables = shardingRule.getEncryptRule().getTables();
+        boolean encrypted = tables.containsKey(logicTableName);
         List<MemoryQueryResultRow> result = new LinkedList<>();
         for (QueryResult each : queryResults) {
             while (each.next()) {
                 MemoryQueryResultRow memoryResultSetRow = new MemoryQueryResultRow(each);
-                String actualColumn = memoryResultSetRow.getCell(1).toString();
-                if (hide(logicTableName, actualColumn)) {
-                    continue;
+                if (encrypted) {
+                    EncryptTable encryptTable = tables.get(logicTableName);
+                    String columnName = memoryResultSetRow.getCell(1).toString();
+                    if (encryptTable.getAssistedQueryColumns().contains(columnName)) {
+                        continue;
+                    }
+                    if (encryptTable.getCipherColumns().contains(columnName)) {
+                        memoryResultSetRow.setCell(1, encryptTable.getLogicColumn(columnName));
+                    }
                 }
                 result.add(memoryResultSetRow);
             }
@@ -78,10 +87,6 @@ public class DescribeTableMergedResult extends MemoryMergedResult {
             setCurrentResultSetRow(result.get(0));
         }
         return result.iterator();
-    }
-
-    private boolean hide(final String logicTable, final String actualColumn) {
-        return shardingRule.getEncryptRule().getAssistedQueryColumns(logicTable).contains(actualColumn);
     }
 
     @Override

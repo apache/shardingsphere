@@ -24,14 +24,17 @@ import org.apache.shardingsphere.core.optimize.api.segment.Tables;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -97,8 +100,16 @@ public class DescribeTableMergedResultTest {
     }
 
     @Test
-    public void assertNextForEmptyQueryResult() throws SQLException {
-        ShardingRule shardingRule = mock(ShardingRule.class);
+    public void assertNextForEmptyQueryResultWithoutEncryptRule() throws SQLException {
+        ShardingRule shardingRule = mockShardingRuleWithoutEncryptRule();
+        List<QueryResult> queryResults = Collections.emptyList();
+        DescribeTableMergedResult describeTableMergedResult = new DescribeTableMergedResult(shardingRule, queryResults, optimizedStatement);
+        assertFalse(describeTableMergedResult.next());
+    }
+
+    @Test
+    public void assertNextForEmptyQueryResultWithEncryptRule() throws SQLException {
+        ShardingRule shardingRule = mockShardingRuleWithEncryptRule();
         List<QueryResult> queryResults = Collections.emptyList();
         DescribeTableMergedResult describeTableMergedResult = new DescribeTableMergedResult(shardingRule, queryResults, optimizedStatement);
         assertFalse(describeTableMergedResult.next());
@@ -112,8 +123,8 @@ public class DescribeTableMergedResultTest {
         assertEquals(describeTableMergedResult.getValue(1, String.class), "id");
         assertEquals(describeTableMergedResult.getValue("Field", String.class), "id");
         assertTrue(describeTableMergedResult.next());
-        assertEquals(describeTableMergedResult.getValue(1, String.class), "name");
-        assertEquals(describeTableMergedResult.getValue("Field", String.class), "name");
+        assertEquals(describeTableMergedResult.getValue(1, String.class), "logic_name");
+        assertEquals(describeTableMergedResult.getValue("Field", String.class), "logic_name");
         assertTrue(describeTableMergedResult.next());
         assertEquals(describeTableMergedResult.getValue(1, String.class), "pre_name");
         assertEquals(describeTableMergedResult.getValue("Field", String.class), "pre_name");
@@ -179,6 +190,7 @@ public class DescribeTableMergedResultTest {
     private ShardingRule mockShardingRuleWithoutEncryptRule() {
         ShardingRule shardingRule = mock(ShardingRule.class);
         EncryptRule encryptRule = mock(EncryptRule.class);
+        when(encryptRule.getTables()).thenReturn(Collections.<String, EncryptTable>emptyMap());
         when(shardingRule.getEncryptRule()).thenReturn(encryptRule);
         return shardingRule;
     }
@@ -186,8 +198,14 @@ public class DescribeTableMergedResultTest {
     private ShardingRule mockShardingRuleWithEncryptRule() {
         ShardingRule shardingRule = mock(ShardingRule.class);
         EncryptRule encryptRule = mock(EncryptRule.class);
-        when(encryptRule.getAssistedQueryColumns("user")).thenReturn(Arrays.asList("name_assisted"));
+        EncryptTable encryptTable = mock(EncryptTable.class);
+        Map<String, EncryptTable> tables = new HashMap<>();
+        tables.put("user", encryptTable);
         when(shardingRule.getEncryptRule()).thenReturn(encryptRule);
+        when(encryptRule.getTables()).thenReturn(tables);
+        when(encryptTable.getAssistedQueryColumns()).thenReturn(Arrays.asList("name_assisted"));
+        when(encryptTable.getCipherColumns()).thenReturn(Arrays.asList("name"));
+        when(encryptTable.getLogicColumn("name")).thenReturn("logic_name");
         return shardingRule;
     }
 
