@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.merge.dal.desc;
 
+import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.dql.common.MemoryMergedResult;
 import org.apache.shardingsphere.core.merge.dql.common.MemoryQueryResultRow;
@@ -66,9 +67,9 @@ public class DescribeTableMergedResult extends MemoryMergedResult {
         List<MemoryQueryResultRow> result = new LinkedList<>();
         for (QueryResult each : queryResults) {
             while (each.next()) {
-                MemoryQueryResultRow memoryQueryResultRow = optimize(each);
-                if (memoryQueryResultRow != null) {
-                    result.add(memoryQueryResultRow);
+                Optional<MemoryQueryResultRow> memoryQueryResultRow = optimize(each);
+                if (memoryQueryResultRow.isPresent()) {
+                    result.add(memoryQueryResultRow.get());
                 }
             }
         }
@@ -78,7 +79,7 @@ public class DescribeTableMergedResult extends MemoryMergedResult {
         return result.iterator();
     }
 
-    private MemoryQueryResultRow optimize(final QueryResult queryResult) throws SQLException {
+    private Optional<MemoryQueryResultRow> optimize(final QueryResult queryResult) throws SQLException {
         MemoryQueryResultRow memoryQueryResultRow = new MemoryQueryResultRow(queryResult);
         String logicTableName = optimizedStatement.getTables().getSingleTableName();
         Map<String, EncryptTable> tables = shardingRule.getEncryptRule().getTables();
@@ -87,13 +88,13 @@ public class DescribeTableMergedResult extends MemoryMergedResult {
             EncryptTable encryptTable = tables.get(logicTableName);
             String columnName = memoryQueryResultRow.getCell(1).toString();
             if (encryptTable.getAssistedQueryColumns().contains(columnName)) {
-                return null;
+                return Optional.absent();
             }
             if (encryptTable.getCipherColumns().contains(columnName)) {
                 memoryQueryResultRow.setCell(1, encryptTable.getLogicColumn(columnName));
             }
         }
-        return memoryQueryResultRow;
+        return Optional.of(memoryQueryResultRow);
     }
 
     @Override
