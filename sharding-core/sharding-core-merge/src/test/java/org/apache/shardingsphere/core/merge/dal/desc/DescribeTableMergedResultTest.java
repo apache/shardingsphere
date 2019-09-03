@@ -100,16 +100,8 @@ public class DescribeTableMergedResultTest {
     }
 
     @Test
-    public void assertNextForEmptyQueryResultWithoutEncryptRule() throws SQLException {
-        ShardingRule shardingRule = mockShardingRuleWithoutEncryptRule();
-        List<QueryResult> queryResults = Collections.emptyList();
-        DescribeTableMergedResult describeTableMergedResult = new DescribeTableMergedResult(shardingRule, queryResults, optimizedStatement);
-        assertFalse(describeTableMergedResult.next());
-    }
-
-    @Test
-    public void assertNextForEmptyQueryResultWithEncryptRule() throws SQLException {
-        ShardingRule shardingRule = mockShardingRuleWithEncryptRule();
+    public void assertNextForEmptyQueryResult() throws SQLException {
+        ShardingRule shardingRule = mock(ShardingRule.class);
         List<QueryResult> queryResults = Collections.emptyList();
         DescribeTableMergedResult describeTableMergedResult = new DescribeTableMergedResult(shardingRule, queryResults, optimizedStatement);
         assertFalse(describeTableMergedResult.next());

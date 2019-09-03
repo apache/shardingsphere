@@ -24,7 +24,6 @@ import org.apache.shardingsphere.core.merge.dal.show.ShowDatabasesMergedResult;
 import org.apache.shardingsphere.core.merge.dal.show.ShowOtherMergedResult;
 import org.apache.shardingsphere.core.merge.dal.show.ShowTablesMergedResult;
 import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
-import org.apache.shardingsphere.core.optimize.api.segment.Tables;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.DescribeStatement;
@@ -32,9 +31,6 @@ import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.Show
 import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.ShowDatabasesStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.ShowOtherStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.ShowTablesStatement;
-import org.apache.shardingsphere.core.rule.EncryptRule;
-import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -94,14 +90,7 @@ public final class DALMergeEngineTest {
     public void assertMergeForDescribeStatement() throws SQLException {
         DALStatement dalStatement = new DescribeStatement();
         OptimizedStatement optimizedStatement = mockOptimizedStatement(dalStatement);
-        Tables tables = mock(Tables.class);
-        ShardingRule shardingRule = mock(ShardingRule.class);
-        EncryptRule encryptRule = mock(EncryptRule.class);
-        when(tables.getSingleTableName()).thenReturn("user");
-        when(optimizedStatement.getTables()).thenReturn(tables);
-        when(encryptRule.getTables()).thenReturn(Collections.<String, EncryptTable>emptyMap());
-        when(shardingRule.getEncryptRule()).thenReturn(encryptRule);
-        DALMergeEngine dalMergeEngine = new DALMergeEngine(shardingRule, queryResults, optimizedStatement, null);
+        DALMergeEngine dalMergeEngine = new DALMergeEngine(null, queryResults, optimizedStatement, null);
         assertThat(dalMergeEngine.merge(), instanceOf(DescribeTableMergedResult.class));
     }
 

@@ -63,30 +63,37 @@ public class DescribeTableMergedResult extends MemoryMergedResult {
     }
 
     private Iterator<MemoryQueryResultRow> init(final List<QueryResult> queryResults) throws SQLException {
-        String logicTableName = optimizedStatement.getTables().getSingleTableName();
-        Map<String, EncryptTable> tables = shardingRule.getEncryptRule().getTables();
-        boolean encrypted = tables.containsKey(logicTableName);
         List<MemoryQueryResultRow> result = new LinkedList<>();
         for (QueryResult each : queryResults) {
             while (each.next()) {
-                MemoryQueryResultRow memoryResultSetRow = new MemoryQueryResultRow(each);
-                if (encrypted) {
-                    EncryptTable encryptTable = tables.get(logicTableName);
-                    String columnName = memoryResultSetRow.getCell(1).toString();
-                    if (encryptTable.getAssistedQueryColumns().contains(columnName)) {
-                        continue;
-                    }
-                    if (encryptTable.getCipherColumns().contains(columnName)) {
-                        memoryResultSetRow.setCell(1, encryptTable.getLogicColumn(columnName));
-                    }
+                MemoryQueryResultRow memoryQueryResultRow = optimize(each);
+                if (memoryQueryResultRow != null) {
+                    result.add(memoryQueryResultRow);
                 }
-                result.add(memoryResultSetRow);
             }
         }
         if (!result.isEmpty()) {
             setCurrentResultSetRow(result.get(0));
         }
         return result.iterator();
+    }
+
+    private MemoryQueryResultRow optimize(final QueryResult queryResult) throws SQLException {
+        MemoryQueryResultRow memoryQueryResultRow = new MemoryQueryResultRow(queryResult);
+        String logicTableName = optimizedStatement.getTables().getSingleTableName();
+        Map<String, EncryptTable> tables = shardingRule.getEncryptRule().getTables();
+        boolean encrypted = tables.containsKey(logicTableName);
+        if (encrypted) {
+            EncryptTable encryptTable = tables.get(logicTableName);
+            String columnName = memoryQueryResultRow.getCell(1).toString();
+            if (encryptTable.getAssistedQueryColumns().contains(columnName)) {
+                return null;
+            }
+            if (encryptTable.getCipherColumns().contains(columnName)) {
+                memoryQueryResultRow.setCell(1, encryptTable.getLogicColumn(columnName));
+            }
+        }
+        return memoryQueryResultRow;
     }
 
     @Override
