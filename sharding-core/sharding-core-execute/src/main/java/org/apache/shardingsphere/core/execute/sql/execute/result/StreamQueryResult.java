@@ -48,12 +48,12 @@ public final class StreamQueryResult implements QueryResult {
     
     public StreamQueryResult(final ResultSet resultSet, final ShardingRule shardingRule, final ShardingProperties properties) throws SQLException {
         this.resultSet = resultSet;
-        queryResultMetaData = new QueryResultMetaData(resultSet.getMetaData(), shardingRule);
+        queryResultMetaData = new QueryResultMetaData(resultSet.getMetaData(), shardingRule, properties);
     }
     
     public StreamQueryResult(final ResultSet resultSet, final EncryptRule encryptRule, final ShardingProperties properties) throws SQLException {
         this.resultSet = resultSet;
-        queryResultMetaData = new QueryResultMetaData(resultSet.getMetaData(), encryptRule);
+        queryResultMetaData = new QueryResultMetaData(resultSet.getMetaData(), encryptRule, properties);
     }
     
     public StreamQueryResult(final ResultSet resultSet) throws SQLException {

@@ -57,12 +57,12 @@ public final class MemoryQueryResult implements QueryResult {
     
     public MemoryQueryResult(final ResultSet resultSet, final ShardingRule shardingRule, final ShardingProperties properties) throws SQLException {
         resultData = getResultData(resultSet);
-        queryResultMetaData = new QueryResultMetaData(resultSet.getMetaData(), shardingRule);
+        queryResultMetaData = new QueryResultMetaData(resultSet.getMetaData(), shardingRule, properties);
     }
     
     public MemoryQueryResult(final ResultSet resultSet, final EncryptRule encryptRule, final ShardingProperties properties) throws SQLException {
         resultData = getResultData(resultSet);
-        queryResultMetaData = new QueryResultMetaData(resultSet.getMetaData(), encryptRule);
+        queryResultMetaData = new QueryResultMetaData(resultSet.getMetaData(), encryptRule, properties);
     }
     
     public MemoryQueryResult(final ResultSet resultSet) throws SQLException {
