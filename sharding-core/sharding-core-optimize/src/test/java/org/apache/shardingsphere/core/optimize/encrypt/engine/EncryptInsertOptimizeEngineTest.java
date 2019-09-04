@@ -120,9 +120,6 @@ public final class EncryptInsertOptimizeEngineTest {
         assertTrue(actual.getInsertValues().get(0).getParameters().isEmpty());
         assertThat(actual.getInsertValues().get(0).getValue("col1"), is((Object) 1));
         assertThat(actual.getInsertValues().get(0).getValue("col2"), is((Object) 2));
-        assertThat(actual.getInsertValues().get(0).getValue("query1"), is((Object) 1));
-        assertThat(actual.getInsertValues().get(0).getValue("query2"), is((Object) 2));
-        
     }
     
     private InsertStatement createInsertStatementWithValuesWithoutPlaceHolderWithQueryEncrypt() {
@@ -143,7 +140,6 @@ public final class EncryptInsertOptimizeEngineTest {
         assertTrue(actual.getInsertValues().get(0).getParameters().isEmpty());
         assertThat(actual.getInsertValues().get(0).getValue("col1"), is((Object) 1));
         assertThat(actual.getInsertValues().get(0).getValue("col2"), is((Object) 2));
-        
     }
     
     private InsertStatement createInsertStatementWithSetWithoutPlaceHolderWithEncrypt() {
@@ -162,12 +158,9 @@ public final class EncryptInsertOptimizeEngineTest {
         EncryptInsertOptimizeEngine optimizeEngine = new EncryptInsertOptimizeEngine();
         EncryptInsertOptimizedStatement actual = optimizeEngine.optimize(encryptRule, mock(TableMetas.class), "", parametersWithValues, insertStatement);
         assertThat(actual.getInsertValues().size(), is(1));
-        assertThat(actual.getInsertValues().get(0).getParameters().size(), is(4));
+        assertThat(actual.getInsertValues().get(0).getParameters().size(), is(2));
         assertThat(actual.getInsertValues().get(0).getParameters().get(0), is((Object) 1));
         assertThat(actual.getInsertValues().get(0).getParameters().get(1), is((Object) 2));
-        assertThat(actual.getInsertValues().get(0).getParameters().get(2), is((Object) 1));
-        assertThat(actual.getInsertValues().get(0).getParameters().get(3), is((Object) 2));
-        
     }
     
     private InsertStatement createInsertStatementWithSetWithPlaceHolderWithQueryEncrypt() {

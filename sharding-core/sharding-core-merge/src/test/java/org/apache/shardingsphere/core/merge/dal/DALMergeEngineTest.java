@@ -77,7 +77,7 @@ public final class DALMergeEngineTest {
         DALMergeEngine dalMergeEngine = new DALMergeEngine(null, queryResults, optimizedStatement, null);
         assertThat(dalMergeEngine.merge(), instanceOf(ShowCreateTableMergedResult.class));
     }
-
+    
     @Test
     public void assertMergeForShowOtherStatement() throws SQLException {
         DALStatement dalStatement = new ShowOtherStatement();
@@ -85,7 +85,7 @@ public final class DALMergeEngineTest {
         DALMergeEngine dalMergeEngine = new DALMergeEngine(null, queryResults, optimizedStatement, null);
         assertThat(dalMergeEngine.merge(), instanceOf(ShowOtherMergedResult.class));
     }
-
+    
     @Test
     public void assertMergeForDescribeStatement() throws SQLException {
         DALStatement dalStatement = new DescribeStatement();
@@ -93,7 +93,7 @@ public final class DALMergeEngineTest {
         DALMergeEngine dalMergeEngine = new DALMergeEngine(null, queryResults, optimizedStatement, null);
         assertThat(dalMergeEngine.merge(), instanceOf(DescribeTableMergedResult.class));
     }
-
+    
     private OptimizedStatement mockOptimizedStatement(final DALStatement dalStatement) {
         OptimizedStatement optimizedStatement = mock(OptimizedStatement.class);
         when(optimizedStatement.getSQLStatement()).thenReturn(dalStatement);
