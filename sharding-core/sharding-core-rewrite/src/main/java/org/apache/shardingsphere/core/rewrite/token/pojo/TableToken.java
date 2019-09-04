@@ -17,10 +17,13 @@
 
 package org.apache.shardingsphere.core.rewrite.token.pojo;
 
+import com.google.common.base.Joiner;
 import lombok.Getter;
-import lombok.ToString;
-import org.apache.shardingsphere.core.parse.constant.QuoteCharacter;
+import org.apache.shardingsphere.core.parse.core.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
+import org.apache.shardingsphere.core.route.type.RoutingUnit;
+
+import java.util.Map;
 
 /**
  * Table token.
@@ -29,8 +32,7 @@ import org.apache.shardingsphere.core.parse.util.SQLUtil;
  * @author panjuan
  */
 @Getter
-@ToString
-public final class TableToken extends SQLToken implements Substitutable {
+public final class TableToken extends SQLToken implements Substitutable, Alterable {
     
     private final String tableName;
     
@@ -43,5 +45,12 @@ public final class TableToken extends SQLToken implements Substitutable {
         this.tableName = SQLUtil.getExactlyValue(tableName);
         this.quoteCharacter = quoteCharacter;
         this.stopIndex = stopIndex;
+    }
+    
+    @Override
+    public String toString(final RoutingUnit routingUnit, final Map<String, String> logicAndActualTables) {
+        String actualTableName = logicAndActualTables.get(tableName.toLowerCase());
+        actualTableName = null == actualTableName ? tableName.toLowerCase() : actualTableName;
+        return Joiner.on("").join(quoteCharacter.getStartDelimiter(), actualTableName, quoteCharacter.getEndDelimiter());
     }
 }

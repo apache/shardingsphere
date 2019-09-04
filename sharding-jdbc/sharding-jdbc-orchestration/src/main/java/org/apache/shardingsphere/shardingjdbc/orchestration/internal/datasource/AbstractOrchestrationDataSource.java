@@ -23,7 +23,6 @@ import com.google.common.eventbus.Subscribe;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.api.config.RuleConfiguration;
 import org.apache.shardingsphere.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.core.constant.ShardingConstant;
@@ -79,8 +78,7 @@ public abstract class AbstractOrchestrationDataSource extends AbstractUnsupporte
     }
     
     @Override
-    @SneakyThrows
-    public final Connection getConnection(final String username, final String password) {
+    public final Connection getConnection(final String username, final String password) throws SQLException {
         return getConnection();
     }
     

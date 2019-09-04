@@ -25,6 +25,7 @@ import java.util.Calendar;
  * Query result form database.
  *
  * @author zhangliang
+ * @author yangyi
  */
 public interface QueryResult {
     
@@ -122,4 +123,20 @@ public interface QueryResult {
      * @throws SQLException SQL Exception
      */
     boolean wasNull() throws SQLException;
+    
+    /**
+     * Whether the column value is case sensitive.
+     *
+     * @param columnIndex column index
+     * @return true if column is case sensitive, otherwise false
+     * @throws SQLException SQL Exception
+     */
+    boolean isCaseSensitive(int columnIndex) throws SQLException;
+
+    /**
+     * Get QueryResultMetaData.
+     *
+     * @return QueryResultMetaData
+     */
+    QueryResultMetaData getQueryResultMetaData();
 }

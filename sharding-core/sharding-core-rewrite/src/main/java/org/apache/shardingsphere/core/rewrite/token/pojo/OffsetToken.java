@@ -37,4 +37,9 @@ public final class OffsetToken extends SQLToken implements Substitutable {
         this.stopIndex = stopIndex;
         this.revisedOffset = revisedOffset;
     }
+    
+    @Override
+    public String toString() {
+        return String.valueOf(revisedOffset);
+    }
 }

@@ -20,11 +20,7 @@ package org.apache.shardingsphere.shardingproxy.backend.schema;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.api.config.RuleConfiguration;
-import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
-import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.orchestration.internal.eventbus.ShardingOrchestrationEventBus;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.SchemaAddedEvent;
@@ -34,6 +30,7 @@ import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParamet
 import org.apache.shardingsphere.shardingproxy.util.DataSourceConverter;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -49,7 +46,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author panjuan
  */
 @Getter
-@Slf4j
 public final class LogicSchemas {
     
     private static final LogicSchemas INSTANCE = new LogicSchemas();
@@ -76,8 +72,9 @@ public final class LogicSchemas {
      *
      * @param schemaDataSources data source map
      * @param schemaRules schema rule map
+     * @throws SQLException SQL exception
      */
-    public void init(final Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources, final Map<String, RuleConfiguration> schemaRules) {
+    public void init(final Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources, final Map<String, RuleConfiguration> schemaRules) throws SQLException {
         init(schemaRules.keySet(), schemaDataSources, schemaRules, false);
     }
     
@@ -88,44 +85,25 @@ public final class LogicSchemas {
      * @param schemaDataSources data source map
      * @param schemaRules schema rule map
      * @param isUsingRegistry is using registry or not
+     * @throws SQLException SQL exception
      */
     public void init(final Collection<String> localSchemaNames, final Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources,
-                     final Map<String, RuleConfiguration> schemaRules, final boolean isUsingRegistry) {
+                     final Map<String, RuleConfiguration> schemaRules, final boolean isUsingRegistry) throws SQLException {
         databaseType = DatabaseTypes.getActualDatabaseType(
                 JDBCDriverURLRecognizerEngine.getJDBCDriverURLRecognizer(schemaDataSources.values().iterator().next().values().iterator().next().getUrl()).getDatabaseType());
         initSchemas(localSchemaNames, schemaDataSources, schemaRules, isUsingRegistry);
     }
     
-    private void initSchemas(final Collection<String> localSchemaNames, 
-                             final Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources, final Map<String, RuleConfiguration> schemaRules, final boolean isUsingRegistry) {
+    private void initSchemas(final Collection<String> localSchemaNames, final Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources, 
+                             final Map<String, RuleConfiguration> schemaRules, final boolean isUsingRegistry) throws SQLException {
         if (schemaRules.isEmpty()) {
-            logicSchemas.put(schemaDataSources.keySet().iterator().next(), createLogicSchema(schemaDataSources.keySet().iterator().next(), schemaDataSources, null, isUsingRegistry));
+            logicSchemas.put(schemaDataSources.keySet().iterator().next(), LogicSchemaFactory.newInstance(schemaDataSources.keySet().iterator().next(), schemaDataSources, null, isUsingRegistry));
         }
         for (Entry<String, RuleConfiguration> entry : schemaRules.entrySet()) {
             if (localSchemaNames.isEmpty() || localSchemaNames.contains(entry.getKey())) {
-                logicSchemas.put(entry.getKey(), createLogicSchema(entry.getKey(), schemaDataSources, entry.getValue(), isUsingRegistry));
+                logicSchemas.put(entry.getKey(), LogicSchemaFactory.newInstance(entry.getKey(), schemaDataSources, entry.getValue(), isUsingRegistry));
             }
         }
-    }
-    
-    private LogicSchema createLogicSchema(
-            final String schemaName, final Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources, final RuleConfiguration ruleConfiguration, final boolean isUsingRegistry) {
-        LogicSchema result;
-        try {
-            if (ruleConfiguration instanceof ShardingRuleConfiguration) {
-                result = new ShardingSchema(schemaName, schemaDataSources.get(schemaName), (ShardingRuleConfiguration) ruleConfiguration, isUsingRegistry);
-            } else if (ruleConfiguration instanceof MasterSlaveRuleConfiguration) {
-                result = new MasterSlaveSchema(schemaName, schemaDataSources.get(schemaName), (MasterSlaveRuleConfiguration) ruleConfiguration, isUsingRegistry);
-            } else if (ruleConfiguration instanceof EncryptRuleConfiguration) {
-                result = new EncryptSchema(schemaName, schemaDataSources.get(schemaName), (EncryptRuleConfiguration) ruleConfiguration);
-            } else {
-                result = new TransparentSchema(schemaName, schemaDataSources.get(schemaName));
-            }
-        } catch (final Exception ex) {
-            log.error("Exception occur when create schema {}.\nThe exception detail is {}.", schemaName, ex.getMessage());
-            throw ex;
-        }
-        return result;
     }
     
     /**
@@ -161,10 +139,11 @@ public final class LogicSchemas {
      * Renew to add new schema.
      *
      * @param schemaAddedEvent schema add changed event
+     * @throws SQLException SQL exception
      */
     @Subscribe
-    public synchronized void renew(final SchemaAddedEvent schemaAddedEvent) {
-        logicSchemas.put(schemaAddedEvent.getShardingSchemaName(), createLogicSchema(schemaAddedEvent.getShardingSchemaName(), 
+    public synchronized void renew(final SchemaAddedEvent schemaAddedEvent) throws SQLException {
+        logicSchemas.put(schemaAddedEvent.getShardingSchemaName(), LogicSchemaFactory.newInstance(schemaAddedEvent.getShardingSchemaName(), 
                 Collections.singletonMap(schemaAddedEvent.getShardingSchemaName(), DataSourceConverter.getDataSourceParameterMap(schemaAddedEvent.getDataSourceConfigurations())), 
                 schemaAddedEvent.getRuleConfiguration(), true));
     }

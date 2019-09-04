@@ -21,6 +21,7 @@ import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.rule.Authentication;
+import org.apache.shardingsphere.core.util.ConfigurationLogger;
 import org.apache.shardingsphere.orchestration.internal.eventbus.ShardingOrchestrationEventBus;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.AuthenticationChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.PropertiesChangedEvent;
@@ -34,6 +35,7 @@ import java.util.Properties;
  * @author chenqingyang
  * @author panjuan
  * @author zhangliang
+ * @author sunbufu
  */
 @Getter
 public final class ShardingProxyContext {
@@ -77,6 +79,7 @@ public final class ShardingProxyContext {
      */
     @Subscribe
     public synchronized void renew(final PropertiesChangedEvent event) {
+        ConfigurationLogger.log(event.getProps());
         shardingProperties = new ShardingProperties(event.getProps());
     }
     
@@ -87,6 +90,7 @@ public final class ShardingProxyContext {
      */
     @Subscribe
     public synchronized void renew(final AuthenticationChangedEvent event) {
+        ConfigurationLogger.log(event.getAuthentication());
         authentication = event.getAuthentication();
     }
     

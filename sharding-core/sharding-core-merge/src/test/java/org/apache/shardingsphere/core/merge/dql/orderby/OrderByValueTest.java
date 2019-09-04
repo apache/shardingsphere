@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.core.merge.dql.orderby;
 
-import org.apache.shardingsphere.core.constant.OrderDirection;
 import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
+import org.apache.shardingsphere.core.optimize.sharding.segment.select.orderby.OrderByItem;
+import org.apache.shardingsphere.core.parse.core.constant.OrderDirection;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.IndexOrderByItemSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.OrderByItemSegment;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,6 +28,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Arrays;
 
@@ -46,25 +47,34 @@ public final class OrderByValueTest {
     @Mock
     private ResultSet resultSet2;
     
+    @Mock
+    private ResultSetMetaData resultSetMetaData;
+    
     @Before
     public void setUp() throws SQLException {
         when(resultSet1.next()).thenReturn(true, false);
         when(resultSet2.next()).thenReturn(true, false);
         when(resultSet1.getObject(1)).thenReturn("1");
         when(resultSet1.getObject(2)).thenReturn("2");
+        when(resultSet1.getMetaData()).thenReturn(resultSetMetaData);
+        when(resultSet2.getMetaData()).thenReturn(resultSetMetaData);
+        when(resultSetMetaData.isCaseSensitive(1)).thenReturn(false);
+        when(resultSetMetaData.isCaseSensitive(1)).thenReturn(true);
     }
     
     @Test
     public void assertCompareToForAsc() throws SQLException {
-        OrderByValue orderByValue1 = new OrderByValue(
-                new TestQueryResult(resultSet1), Arrays.<OrderByItemSegment>asList(
-                        new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC), new IndexOrderByItemSegment(0, 0, 2, OrderDirection.ASC, OrderDirection.ASC)));
+        OrderByValue orderByValue1 = new OrderByValue(new TestQueryResult(resultSet1), 
+                Arrays.asList(
+                        createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC)), 
+                        createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.ASC, OrderDirection.ASC))));
         assertTrue(orderByValue1.next());
         when(resultSet2.getObject(1)).thenReturn("3");
         when(resultSet2.getObject(2)).thenReturn("4");
-        OrderByValue orderByValue2 = new OrderByValue(
-                new TestQueryResult(resultSet2), Arrays.<OrderByItemSegment>asList(
-                        new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC), new IndexOrderByItemSegment(0, 0, 2, OrderDirection.ASC, OrderDirection.ASC)));
+        OrderByValue orderByValue2 = new OrderByValue(new TestQueryResult(resultSet2), 
+                Arrays.asList(
+                        createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC)),
+                        createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.ASC, OrderDirection.ASC))));
         assertTrue(orderByValue2.next());
         assertTrue(orderByValue1.compareTo(orderByValue2) < 0);
         assertFalse(orderByValue1.getQueryResult().next());
@@ -73,15 +83,17 @@ public final class OrderByValueTest {
     
     @Test
     public void assertCompareToForDesc() throws SQLException {
-        OrderByValue orderByValue1 = new OrderByValue(
-                new TestQueryResult(resultSet1), Arrays.<OrderByItemSegment>asList(
-                        new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC), new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC)));
+        OrderByValue orderByValue1 = new OrderByValue(new TestQueryResult(resultSet1), 
+                Arrays.asList(
+                        createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC)), 
+                        createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC))));
         assertTrue(orderByValue1.next());
         when(resultSet2.getObject(1)).thenReturn("3");
         when(resultSet2.getObject(2)).thenReturn("4");
-        OrderByValue orderByValue2 = new OrderByValue(
-                new TestQueryResult(resultSet2), Arrays.<OrderByItemSegment>asList(
-                        new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC), new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC)));
+        OrderByValue orderByValue2 = new OrderByValue(new TestQueryResult(resultSet2), 
+                Arrays.asList(
+                        createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC)), 
+                        createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC))));
         assertTrue(orderByValue2.next());
         assertTrue(orderByValue1.compareTo(orderByValue2) > 0);
         assertFalse(orderByValue1.getQueryResult().next());
@@ -90,18 +102,24 @@ public final class OrderByValueTest {
     
     @Test
     public void assertCompareToWhenEqual() throws SQLException {
-        OrderByValue orderByValue1 = new OrderByValue(
-                new TestQueryResult(resultSet1), Arrays.<OrderByItemSegment>asList(
-                        new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC), new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC)));
+        OrderByValue orderByValue1 = new OrderByValue(new TestQueryResult(resultSet1), 
+                Arrays.asList(
+                        createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC)), 
+                        createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC))));
         assertTrue(orderByValue1.next());
         when(resultSet2.getObject(1)).thenReturn("1");
         when(resultSet2.getObject(2)).thenReturn("2");
-        OrderByValue orderByValue2 = new OrderByValue(
-                new TestQueryResult(resultSet2), Arrays.<OrderByItemSegment>asList(
-                        new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC), new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC)));
+        OrderByValue orderByValue2 = new OrderByValue(new TestQueryResult(resultSet2), Arrays.asList(createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC)), 
+                createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC))));
         assertTrue(orderByValue2.next());
         assertThat(orderByValue1.compareTo(orderByValue2), is(0));
         assertFalse(orderByValue1.getQueryResult().next());
         assertFalse(orderByValue2.getQueryResult().next());
+    }
+    
+    private OrderByItem createOrderByItem(final IndexOrderByItemSegment indexOrderByItemSegment) {
+        OrderByItem result = new OrderByItem(indexOrderByItemSegment);
+        result.setIndex(indexOrderByItemSegment.getColumnIndex());
+        return result;
     }
 }

@@ -22,10 +22,11 @@ import lombok.Getter;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.execute.metadata.TableMetaDataInitializer;
-import org.apache.shardingsphere.core.metadata.ShardingMetaData;
-import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
-import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetas;
+import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.parse.SQLParseEngine;
+import org.apache.shardingsphere.core.parse.SQLParseEngineFactory;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.orchestration.internal.eventbus.ShardingOrchestrationEventBus;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
@@ -35,6 +36,7 @@ import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParamet
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 import org.apache.shardingsphere.shardingproxy.util.DataSourceConverter;
 
+import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -49,13 +51,13 @@ public abstract class LogicSchema {
     
     private final String name;
     
-    private final ParsingResultCache parsingResultCache;
+    private final SQLParseEngine parseEngine;
     
     private JDBCBackendDataSource backendDataSource;
     
     public LogicSchema(final String name, final Map<String, YamlDataSourceParameter> dataSources) {
         this.name = name;
-        parsingResultCache = new ParsingResultCache();
+        parseEngine = SQLParseEngineFactory.getSQLParseEngine(LogicSchemas.getInstance().getDatabaseType());
         backendDataSource = new JDBCBackendDataSource(dataSources);
         ShardingOrchestrationEventBus.getInstance().register(this);
     }
@@ -65,7 +67,7 @@ public abstract class LogicSchema {
      * 
      * @return sharding meta data.
      */
-    public abstract ShardingMetaData getMetaData();
+    public abstract ShardingSphereMetaData getMetaData();
     
     /**
      * Get Sharding rule.
@@ -92,10 +94,10 @@ public abstract class LogicSchema {
         return result;
     }
     
-    protected final TableMetaDataInitializer getTableMetaDataInitializer(final ShardingDataSourceMetaData shardingDataSourceMetaData) {
+    protected final TableMetaDataInitializer getTableMetaDataInitializer(final DataSourceMetas dataSourceMetas) {
         ShardingProperties shardingProperties = ShardingProxyContext.getInstance().getShardingProperties();
         return new TableMetaDataInitializer(
-                shardingDataSourceMetaData, BackendExecutorContext.getInstance().getExecuteEngine(), new ProxyTableMetaDataConnectionManager(getBackendDataSource()),
+                dataSourceMetas, BackendExecutorContext.getInstance().getExecuteEngine(), new ProxyTableMetaDataConnectionManager(getBackendDataSource()),
                 shardingProperties.<Integer>getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY),
                 shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.CHECK_TABLE_METADATA_ENABLED));
     }
@@ -117,8 +119,9 @@ public abstract class LogicSchema {
     /**
      * Refresh table meta data.
      * 
-     * @param sqlStatement SQL statement
+     * @param optimizedStatement optimized statement
+     * @throws SQLException SQL exception
      */
-    public void refreshTableMetaData(final SQLStatement sqlStatement) {
+    public void refreshTableMetaData(final OptimizedStatement optimizedStatement) throws SQLException {
     }
 }

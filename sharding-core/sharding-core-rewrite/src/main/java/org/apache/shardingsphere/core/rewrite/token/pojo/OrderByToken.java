@@ -17,15 +17,41 @@
 
 package org.apache.shardingsphere.core.rewrite.token.pojo;
 
+import lombok.Getter;
+import org.apache.shardingsphere.core.parse.core.constant.OrderDirection;
+
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * Order by token.
  *
  * @author zhangliang
  * @author panjuan
  */
+@Getter
 public final class OrderByToken extends SQLToken implements Attachable {
+    
+    private final List<String> columnLabels = new LinkedList<>();
+    
+    private final List<OrderDirection> orderDirections = new LinkedList<>();
     
     public OrderByToken(final int startIndex) {
         super(startIndex);
+    }
+    
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+        result.append(" ORDER BY ");
+        for (int i = 0; i < columnLabels.size(); i++) {
+            if (0 == i) {
+                result.append(columnLabels.get(i)).append(" ").append(orderDirections.get(i).name());
+            } else {
+                result.append(",").append(columnLabels.get(i)).append(" ").append(orderDirections.get(i).name());
+            }
+        }
+        result.append(" ");
+        return result.toString();
     }
 }

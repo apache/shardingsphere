@@ -31,10 +31,9 @@ import org.apache.shardingsphere.core.parse.util.SQLUtil;
 @Setter
 public final class ColumnDefinitionSegment implements SQLSegment {
     
-    // TODO fix startIndex & stopIndex
-    private final int startIndex = 0;
+    private final int startIndex;
     
-    private final int stopIndex = 0;
+    private final int stopIndex;
     
     private String columnName;
     
@@ -42,7 +41,9 @@ public final class ColumnDefinitionSegment implements SQLSegment {
     
     private boolean primaryKey;
     
-    public ColumnDefinitionSegment(final String columnName, final String dataType, final boolean primaryKey) {
+    public ColumnDefinitionSegment(final int startIndex, final int stopIndex, final String columnName, final String dataType, final boolean primaryKey) {
+        this.startIndex = startIndex;
+        this.stopIndex = stopIndex;
         this.columnName = SQLUtil.getExactlyValue(columnName);
         this.dataType = dataType;
         this.primaryKey = primaryKey;

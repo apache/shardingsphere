@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.route.hook;
 
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
 
@@ -44,9 +44,9 @@ public final class SPIRoutingHook implements RoutingHook {
     }
     
     @Override
-    public void finishSuccess(final SQLRouteResult sqlRouteResult, final ShardingTableMetaData shardingTableMetaData) {
+    public void finishSuccess(final SQLRouteResult sqlRouteResult, final TableMetas tableMetas) {
         for (RoutingHook each : routingHooks) {
-            each.finishSuccess(sqlRouteResult, shardingTableMetaData);
+            each.finishSuccess(sqlRouteResult, tableMetas);
         }
     }
     

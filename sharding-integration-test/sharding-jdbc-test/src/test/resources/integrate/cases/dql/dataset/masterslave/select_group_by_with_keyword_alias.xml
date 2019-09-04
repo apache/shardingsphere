@@ -1,0 +1,43 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<dataset>
+    <metadata>
+        <column name="orders_sum" />
+        <column name="key" />
+    </metadata>
+    <row values="2001, 10" />
+    <row values="2201, 11" />
+    <row values="2401, 12" />
+    <row values="2601, 13" />
+    <row values="2801, 14" />
+    <row values="3001, 15" />
+    <row values="3201, 16" />
+    <row values="3401, 17" />
+    <row values="3601, 18" />
+    <row values="3801, 19" />
+    <row values="4001, 20" />
+    <row values="4201, 21" />
+    <row values="4401, 22" />
+    <row values="4601, 23" />
+    <row values="4801, 24" />
+    <row values="5001, 25" />
+    <row values="5201, 26" />
+    <row values="5401, 27" />
+    <row values="5601, 28" />
+    <row values="5801, 29" />
+</dataset>

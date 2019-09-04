@@ -17,14 +17,12 @@
 
 package org.apache.shardingsphere.core.parse.sql.statement.dcl;
 
-import lombok.ToString;
-import org.apache.shardingsphere.core.parse.sql.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.generic.AbstractSQLStatement;
 
 /**
  * DCL statement.
  *
  * @author panjuan
  */
-@ToString(callSuper = true)
 public final class DCLStatement extends AbstractSQLStatement {
 }

@@ -18,6 +18,17 @@
 package org.apache.shardingsphere.core.rewrite.token.pojo;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.complex.ComplexExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.core.route.type.RoutingUnit;
+import org.apache.shardingsphere.core.rule.DataNode;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Insert values token.
@@ -26,12 +37,84 @@ import lombok.Getter;
  * @author panjuan
  */
 @Getter
-public final class InsertValuesToken extends SQLToken implements Substitutable {
+public final class InsertValuesToken extends SQLToken implements Substitutable, Alterable {
     
     private final int stopIndex;
+    
+    private final List<InsertValueToken> insertValueTokens;
     
     public InsertValuesToken(final int startIndex, final int stopIndex) {
         super(startIndex);
         this.stopIndex = stopIndex;
+        this.insertValueTokens = new LinkedList<>();
+    }
+    
+    /**
+     * Add insert value token.
+     * 
+     * @param values values
+     * @param dataNodes data nodes
+     */
+    public void addInsertValueToken(final List<ExpressionSegment> values, final List<DataNode> dataNodes) {
+        insertValueTokens.add(new InsertValueToken(values, dataNodes));
+    }
+    
+    @Override
+    public String toString(final RoutingUnit routingUnit, final Map<String, String> logicAndActualTables) {
+        StringBuilder result = new StringBuilder();
+        appendUnits(routingUnit, result);
+        result.delete(result.length() - 2, result.length());
+        return result.toString();
+    }
+    
+    private void appendUnits(final RoutingUnit routingUnit, final StringBuilder result) {
+        for (InsertValueToken each : insertValueTokens) {
+            if (isToAppendInsertOptimizeResult(routingUnit, each)) {
+                result.append(each).append(", ");
+            }
+        }
+    }
+    
+    private boolean isToAppendInsertOptimizeResult(final RoutingUnit routingUnit, final InsertValueToken unit) {
+        if (unit.getDataNodes().isEmpty() || null == routingUnit) {
+            return true;
+        }
+        for (DataNode each : unit.getDataNodes()) {
+            if (routingUnit.getTableUnit(each.getDataSourceName(), each.getTableName()).isPresent()) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    @RequiredArgsConstructor
+    private final class InsertValueToken {
+    
+        private final List<ExpressionSegment> values;
+    
+        @Getter
+        private final List<DataNode> dataNodes;
+    
+        @Override
+        public String toString() {
+            StringBuilder result = new StringBuilder();
+            result.append("(");
+            for (int i = 0; i < values.size(); i++) {
+                result.append(getColumnValue(i)).append(", ");
+            }
+            result.delete(result.length() - 2, result.length()).append(")");
+            return result.toString();
+        }
+        
+        private String getColumnValue(final int index) {
+            ExpressionSegment columnValue = values.get(index);
+            if (columnValue instanceof ParameterMarkerExpressionSegment) {
+                return "?";
+            } else if (columnValue instanceof LiteralExpressionSegment) {
+                Object literals = ((LiteralExpressionSegment) columnValue).getLiterals();
+                return literals instanceof String ? String.format("'%s'", ((LiteralExpressionSegment) columnValue).getLiterals()) : literals.toString();
+            }
+            return ((ComplexExpressionSegment) columnValue).getText();
+        }
     }
 }

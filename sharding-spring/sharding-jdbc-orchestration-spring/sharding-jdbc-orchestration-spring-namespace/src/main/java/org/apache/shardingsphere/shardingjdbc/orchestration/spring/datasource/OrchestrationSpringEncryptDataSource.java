@@ -21,6 +21,8 @@ import org.apache.shardingsphere.orchestration.config.OrchestrationConfiguration
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationEncryptDataSource;
 
+import java.sql.SQLException;
+
 /**
  * Orchestration encrypt datasource for spring namespace.
  *
@@ -28,11 +30,11 @@ import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.
  */
 public final class OrchestrationSpringEncryptDataSource extends OrchestrationEncryptDataSource {
     
-    public OrchestrationSpringEncryptDataSource(final EncryptDataSource dataSource, final OrchestrationConfiguration orchestrationConfig) {
+    public OrchestrationSpringEncryptDataSource(final EncryptDataSource dataSource, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
         super(dataSource, orchestrationConfig);
     }
     
-    public OrchestrationSpringEncryptDataSource(final OrchestrationConfiguration orchestrationConfig) {
+    public OrchestrationSpringEncryptDataSource(final OrchestrationConfiguration orchestrationConfig) throws SQLException {
         super(orchestrationConfig);
     }
 }

@@ -18,38 +18,57 @@
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.InsertValuesSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
+import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
+import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertValuesToken;
-import org.apache.shardingsphere.core.rule.BaseRule;
+import org.apache.shardingsphere.core.rule.EncryptRule;
 
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Insert values token generator.
  *
  * @author panjuan
  */
-public final class InsertValuesTokenGenerator implements OptionalSQLTokenGenerator<BaseRule> {
+public final class InsertValuesTokenGenerator implements OptionalSQLTokenGenerator<EncryptRule> {
     
     @Override
-    public Optional<InsertValuesToken> generateSQLToken(final SQLStatement sqlStatement, final List<Object> parameters, final BaseRule baseRule) {
-        Collection<InsertValuesSegment> insertValuesSegments = sqlStatement.findSQLSegments(InsertValuesSegment.class);
-        if (!(sqlStatement instanceof InsertStatement) || insertValuesSegments.isEmpty()) {
-            return Optional.absent();
-        }
-        return createInsertValuesToken(insertValuesSegments);
+    public Optional<InsertValuesToken> generateSQLToken(final OptimizedStatement optimizedStatement, 
+                                                        final ParameterBuilder parameterBuilder, final EncryptRule encryptRule, final boolean isQueryWithCipherColumn) {
+        Collection<InsertValuesSegment> insertValuesSegments = optimizedStatement.getSQLStatement().findSQLSegments(InsertValuesSegment.class);
+        return isNeedToGenerateSQLToken(optimizedStatement, insertValuesSegments)
+                ? Optional.of(createInsertValuesToken((InsertOptimizedStatement) optimizedStatement, insertValuesSegments)) : Optional.<InsertValuesToken>absent();
     }
     
-    private Optional<InsertValuesToken> createInsertValuesToken(final Collection<InsertValuesSegment> insertValuesSegments) {
-        int startIndex = insertValuesSegments.iterator().next().getStartIndex();
-        int stopIndex = insertValuesSegments.iterator().next().getStopIndex();
-        for (InsertValuesSegment each : insertValuesSegments) {
-            startIndex = startIndex > each.getStartIndex() ? each.getStartIndex() : startIndex;
-            stopIndex = stopIndex < each.getStopIndex() ? each.getStopIndex() : stopIndex;
+    private boolean isNeedToGenerateSQLToken(final OptimizedStatement optimizedStatement, final Collection<InsertValuesSegment> insertValuesSegments) {
+        return optimizedStatement.getSQLStatement() instanceof InsertStatement && !insertValuesSegments.isEmpty();
+    }
+    
+    private InsertValuesToken createInsertValuesToken(final InsertOptimizedStatement optimizedStatement, final Collection<InsertValuesSegment> insertValuesSegments) {
+        InsertValuesToken result = new InsertValuesToken(getStartIndex(insertValuesSegments), getStopIndex(insertValuesSegments));
+        for (InsertValue each : optimizedStatement.getInsertValues()) {
+            result.addInsertValueToken(each.getValueExpressions(), each.getDataNodes());
         }
-        return Optional.of(new InsertValuesToken(startIndex, stopIndex));
+        return result;
+    }
+    
+    private int getStartIndex(final Collection<InsertValuesSegment> insertValuesSegments) {
+        int result = insertValuesSegments.iterator().next().getStartIndex();
+        for (InsertValuesSegment each : insertValuesSegments) {
+            result = result > each.getStartIndex() ? each.getStartIndex() : result;
+        }
+        return result;
+    }
+    
+    private int getStopIndex(final Collection<InsertValuesSegment> insertValuesSegments) {
+        int result = insertValuesSegments.iterator().next().getStopIndex();
+        for (InsertValuesSegment each : insertValuesSegments) {
+            result = result < each.getStopIndex() ? each.getStopIndex() : result;
+        }
+        return result;
     }
 }

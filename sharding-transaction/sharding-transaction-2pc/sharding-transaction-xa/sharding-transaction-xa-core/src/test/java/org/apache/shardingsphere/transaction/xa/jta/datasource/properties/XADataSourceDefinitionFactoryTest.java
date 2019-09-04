@@ -19,6 +19,7 @@ package org.apache.shardingsphere.transaction.xa.jta.datasource.properties;
 
 import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.H2XADataSourceDefinition;
+import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.MariaDBXADataSourceDefinition;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.MySQLXADataSourceDefinition;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.OracleXADataSourceDefinition;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.PostgreSQLXADataSourceDefinition;
@@ -38,6 +39,11 @@ public final class XADataSourceDefinitionFactoryTest {
     @Test
     public void assertCreateXAPropertiesForMySQL() {
         assertThat(XADataSourceDefinitionFactory.getXADataSourceDefinition(DatabaseTypes.getActualDatabaseType("MySQL")), instanceOf(MySQLXADataSourceDefinition.class));
+    }
+
+    @Test
+    public void assertCreateXAPropertiesForMariaDB() {
+        assertThat(XADataSourceDefinitionFactory.getXADataSourceDefinition(DatabaseTypes.getActualDatabaseType("MariaDB")), instanceOf(MariaDBXADataSourceDefinition.class));
     }
     
     @Test

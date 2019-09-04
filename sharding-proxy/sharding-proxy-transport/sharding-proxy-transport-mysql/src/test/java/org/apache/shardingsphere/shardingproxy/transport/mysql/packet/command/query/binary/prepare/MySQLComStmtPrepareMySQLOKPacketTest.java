@@ -36,7 +36,7 @@ public final class MySQLComStmtPrepareMySQLOKPacketTest {
     
     @Test
     public void assertWrite() {
-        MySQLComStmtPrepareOKPacket actual = new MySQLComStmtPrepareOKPacket(1, 1, 1, 1, 0);
+        MySQLComStmtPrepareOKPacket actual = new MySQLComStmtPrepareOKPacket(1, 1, 0, 1, 0);
         assertThat(actual.getSequenceId(), is(1));
         actual.write(payload);
         verify(payload).writeInt1(0x00);

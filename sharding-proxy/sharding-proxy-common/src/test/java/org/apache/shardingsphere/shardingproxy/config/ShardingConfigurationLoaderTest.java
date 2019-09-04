@@ -111,11 +111,9 @@ public final class ShardingConfigurationLoaderTest {
         assertTrue(actual.getEncryptors().containsKey("encryptor_md5"));
         YamlEncryptorRuleConfiguration aesEncryptorRule = actual.getEncryptors().get("encryptor_aes");
         assertThat(aesEncryptorRule.getType(), is("aes"));
-        assertThat(aesEncryptorRule.getQualifiedColumns(), is("t_encrypt.pwd"));
         assertThat(aesEncryptorRule.getProps().getProperty("aes.key.value"), is("123456abc"));
         YamlEncryptorRuleConfiguration md5EncryptorRule = actual.getEncryptors().get("encryptor_md5");
         assertThat(md5EncryptorRule.getType(), is("md5"));
-        assertThat(md5EncryptorRule.getQualifiedColumns(), is("t_encrypt.name"));
     }
     
     private void assertDataSourceParameter(final YamlDataSourceParameter actual, final String expectedURL) {

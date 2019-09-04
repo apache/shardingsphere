@@ -17,11 +17,9 @@
 
 package org.apache.shardingsphere.core.parse.sql.segment.dml.order.item;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.core.constant.OrderDirection;
+import org.apache.shardingsphere.core.parse.core.constant.OrderDirection;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 
 /**
@@ -31,8 +29,6 @@ import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
  */
 @RequiredArgsConstructor
 @Getter
-@Setter
-@EqualsAndHashCode
 public abstract class OrderByItemSegment implements SQLSegment {
     
     private final int startIndex;
@@ -42,15 +38,4 @@ public abstract class OrderByItemSegment implements SQLSegment {
     private final OrderDirection orderDirection;
     
     private final OrderDirection nullOrderDirection;
-    
-    private int index = -1;
-    
-    @Override
-    public final boolean equals(final Object obj) {
-        if (null == obj || !(obj instanceof OrderByItemSegment)) {
-            return false;
-        }
-        OrderByItemSegment orderByItemSegment = (OrderByItemSegment) obj;
-        return orderDirection == orderByItemSegment.getOrderDirection() && index == orderByItemSegment.getIndex();
-    }
 }

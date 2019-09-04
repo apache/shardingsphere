@@ -28,7 +28,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public class QueryRowTest {
+public final class QueryRowTest {
     
     private QueryRow queryRow;
     

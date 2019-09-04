@@ -18,16 +18,16 @@
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SQLToken;
 import org.apache.shardingsphere.core.rule.BaseRule;
-
-import java.util.List;
 
 /**
  * SQL token generator for optional.
  *
  * @author zhangliang
+ * @author panjuan
  * 
  * @param <T> type of rule 
  */
@@ -36,10 +36,11 @@ public interface OptionalSQLTokenGenerator<T extends BaseRule> extends SQLTokenG
     /**
      * Generate SQL token.
      * 
-     * @param sqlStatement SQL statement
-     * @param parameters SQL parameters
+     * @param optimizedStatement optimized statement
+     * @param parameterBuilder SQL parameter builder
      * @param rule rule
+     * @param isQueryWithCipherColumn is query with cipher column
      * @return SQL token
      */
-    Optional<? extends SQLToken> generateSQLToken(SQLStatement sqlStatement, List<Object> parameters, T rule);
+    Optional<? extends SQLToken> generateSQLToken(OptimizedStatement optimizedStatement, ParameterBuilder parameterBuilder, T rule, boolean isQueryWithCipherColumn);
 }

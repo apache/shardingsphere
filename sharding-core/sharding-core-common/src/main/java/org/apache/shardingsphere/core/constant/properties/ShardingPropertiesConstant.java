@@ -81,6 +81,12 @@ public enum ShardingPropertiesConstant {
     MAX_CONNECTIONS_SIZE_PER_QUERY("max.connections.size.per.query", String.valueOf(1), int.class),
     
     /**
+     * When encrypt data, query with cipher column or not.
+     * 
+     */
+    QUERY_WITH_CIPHER_COLUMN("query.with.cipher.column", String.valueOf(Boolean.TRUE), boolean.class),
+    
+    /**
      * Sharding-Proxy's flush threshold for every records from databases.
      */
     PROXY_FRONTEND_FLUSH_THRESHOLD("proxy.frontend.flush.threshold", String.valueOf(128), int.class),

@@ -20,11 +20,9 @@ package org.apache.shardingsphere.core.execute.sql.execute.result;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
-import lombok.SneakyThrows;
-import org.apache.shardingsphere.core.constant.AggregationType;
 import org.apache.shardingsphere.core.execute.sql.execute.row.QueryRow;
-import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationDistinctSelectItem;
+import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.AggregationDistinctSelectItem;
+import org.apache.shardingsphere.core.parse.core.constant.AggregationType;
 
 import java.io.InputStream;
 import java.sql.SQLException;
@@ -33,7 +31,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Set;
 
 /**
@@ -45,13 +42,12 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     
     private final AggregationDistinctQueryMetaData metaData;
         
-    private AggregationDistinctQueryResult(final Multimap<String, Integer> columnLabelAndIndexMap, final Iterator<QueryRow> resultData, final AggregationDistinctQueryMetaData distinctQueryMetaData) {
-        super(columnLabelAndIndexMap, resultData);
+    private AggregationDistinctQueryResult(final QueryResultMetaData queryResultMetaData, final Iterator<QueryRow> resultData, final AggregationDistinctQueryMetaData distinctQueryMetaData) {
+        super(queryResultMetaData, resultData);
         metaData = distinctQueryMetaData;
     }
     
-    @SneakyThrows
-    public AggregationDistinctQueryResult(final Collection<QueryResult> queryResults, final List<AggregationDistinctSelectItem> aggregationDistinctSelectItems) {
+    public AggregationDistinctQueryResult(final Collection<QueryResult> queryResults, final List<AggregationDistinctSelectItem> aggregationDistinctSelectItems) throws SQLException {
         super(queryResults, Lists.transform(aggregationDistinctSelectItems, new Function<AggregationDistinctSelectItem, String>() {
     
             @Override
@@ -59,7 +55,7 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
                 return input.getDistinctColumnLabel();
             }
         }));
-        metaData = new AggregationDistinctQueryMetaData(aggregationDistinctSelectItems, getColumnLabelAndIndexMap());
+        metaData = new AggregationDistinctQueryMetaData(aggregationDistinctSelectItems, getQueryResultMetaData());
     }
     
     /**
@@ -75,7 +71,7 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
             public DistinctQueryResult apply(final QueryRow input) {
                 Set<QueryRow> resultData = new LinkedHashSet<>();
                 resultData.add(input);
-                return new AggregationDistinctQueryResult(getColumnLabelAndIndexMap(), resultData.iterator(), metaData);
+                return new AggregationDistinctQueryResult(getQueryResultMetaData(), resultData.iterator(), metaData);
             }
         }));
     }
@@ -133,19 +129,13 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     }
     
     @Override
-    public int getColumnCount() {
-        return getColumnLabelAndIndexMap().size();
-    }
-    
-    @Override
     public String getColumnLabel(final int columnIndex) throws SQLException {
         if (metaData.isAggregationDistinctColumnIndex(columnIndex)) {
             return metaData.getAggregationDistinctColumnLabel(columnIndex);
         }
-        for (Entry<String, Integer> entry : getColumnLabelAndIndexMap().entries()) {
-            if (columnIndex == entry.getValue()) {
-                return entry.getKey();
-            }
+        String columnLabel = getQueryResultMetaData().getColumnLabel(columnIndex);
+        if (null != columnLabel) {
+            return columnLabel;
         }
         throw new SQLException("Column index out of range", "9999");
     }

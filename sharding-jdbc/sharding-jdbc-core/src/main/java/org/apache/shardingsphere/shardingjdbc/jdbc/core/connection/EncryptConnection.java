@@ -19,13 +19,10 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.connection;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
-import org.apache.shardingsphere.core.parse.entry.EncryptSQLParseEntry;
-import org.apache.shardingsphere.core.rule.EncryptRule;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.EncryptRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.EncryptPreparedStatement;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.EncryptStatement;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationConnection;
-import org.apache.shardingsphere.spi.database.DatabaseType;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -44,15 +41,9 @@ import java.sql.Statement;
 @Getter
 public final class EncryptConnection extends AbstractUnsupportedOperationConnection {
     
-    private final DatabaseType databaseType;
-    
     private final Connection connection;
     
-    private final EncryptRule encryptRule;
-    
-    private final EncryptSQLParseEntry parseEngine;
-    
-    private final ShardingProperties shardingProperties;
+    private final EncryptRuntimeContext runtimeContext;
     
     @Override
     public DatabaseMetaData getMetaData() throws SQLException {
@@ -60,17 +51,17 @@ public final class EncryptConnection extends AbstractUnsupportedOperationConnect
     }
     
     @Override
-    public Statement createStatement() {
+    public Statement createStatement() throws SQLException {
         return new EncryptStatement(this);
     }
     
     @Override
-    public Statement createStatement(final int resultSetType, final int resultSetConcurrency) {
+    public Statement createStatement(final int resultSetType, final int resultSetConcurrency) throws SQLException {
         return new EncryptStatement(this, resultSetType, resultSetConcurrency);
     }
     
     @Override
-    public Statement createStatement(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) {
+    public Statement createStatement(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) throws SQLException {
         return new EncryptStatement(this, resultSetType, resultSetConcurrency, resultSetHoldability);
     }
     

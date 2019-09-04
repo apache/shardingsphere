@@ -81,17 +81,17 @@ public final class SecondTestRegistryCenter implements RegistryCenter {
     public String getType() {
         return "SecondTestRegistryCenter";
     }
-
+    
     @Override
-    public void initLock(final String key){
+    public void initLock(final String key) {
     }
-
+    
     @Override
-    public boolean tryLock(){
+    public boolean tryLock() {
         return true;
     }
-
+    
     @Override
-    public void tryRelease(){
+    public void tryRelease() {
     }
 }

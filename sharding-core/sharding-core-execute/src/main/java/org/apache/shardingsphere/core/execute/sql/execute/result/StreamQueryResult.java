@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.execute.sql.execute.result;
 
 import com.google.common.base.Optional;
-import lombok.SneakyThrows;
+import lombok.Getter;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
@@ -36,29 +36,28 @@ import java.util.Calendar;
  *
  * @author zhangliang
  * @author panjuan
+ * @author yangyi
  */
 public final class StreamQueryResult implements QueryResult {
-    
-    private final QueryResultMetaData metaData;
+
+    @Getter
+    private final QueryResultMetaData queryResultMetaData;
     
     private final ResultSet resultSet;
     
-    @SneakyThrows
-    public StreamQueryResult(final ResultSet resultSet, final ShardingRule shardingRule) {
+    public StreamQueryResult(final ResultSet resultSet, final ShardingRule shardingRule) throws SQLException {
         this.resultSet = resultSet;
-        metaData = new QueryResultMetaData(resultSet.getMetaData(), shardingRule);
+        queryResultMetaData = new QueryResultMetaData(resultSet.getMetaData(), shardingRule);
     }
     
-    @SneakyThrows
-    public StreamQueryResult(final ResultSet resultSet, final EncryptRule encryptRule) {
+    public StreamQueryResult(final ResultSet resultSet, final EncryptRule encryptRule) throws SQLException {
         this.resultSet = resultSet;
-        metaData = new QueryResultMetaData(resultSet.getMetaData(), encryptRule);
+        queryResultMetaData = new QueryResultMetaData(resultSet.getMetaData(), encryptRule);
     }
     
-    @SneakyThrows
-    public StreamQueryResult(final ResultSet resultSet) {
+    public StreamQueryResult(final ResultSet resultSet) throws SQLException {
         this.resultSet = resultSet;
-        metaData = new QueryResultMetaData(resultSet.getMetaData());
+        queryResultMetaData = new QueryResultMetaData(resultSet.getMetaData());
     }
     
     @Override
@@ -73,7 +72,7 @@ public final class StreamQueryResult implements QueryResult {
     
     @Override
     public Object getValue(final String columnLabel, final Class<?> type) throws SQLException {
-        return decrypt(columnLabel, QueryResultUtil.getValue(resultSet, metaData.getColumnIndex(columnLabel)));
+        return decrypt(columnLabel, QueryResultUtil.getValue(resultSet, queryResultMetaData.getColumnIndex(columnLabel)));
     }
     
     @Override
@@ -140,23 +139,26 @@ public final class StreamQueryResult implements QueryResult {
     }
     
     @Override
-    public int getColumnCount() {
-        return metaData.getColumnCount();
+    public boolean isCaseSensitive(final int columnIndex) throws SQLException {
+        return queryResultMetaData.isCaseSensitive(columnIndex);
     }
     
     @Override
-    public String getColumnLabel(final int columnIndex) {
-        return metaData.getColumnLabel(columnIndex);
+    public int getColumnCount() throws SQLException {
+        return queryResultMetaData.getColumnCount();
     }
     
-    @SneakyThrows
-    private Object decrypt(final String columnLabel, final Object value) {
-        return decrypt(metaData.getColumnIndex(columnLabel), value);
+    @Override
+    public String getColumnLabel(final int columnIndex) throws SQLException {
+        return queryResultMetaData.getColumnLabel(columnIndex);
     }
     
-    @SneakyThrows
-    private Object decrypt(final int columnIndex, final Object value) {
-        Optional<ShardingEncryptor> shardingEncryptor = metaData.getShardingEncryptor(columnIndex);
+    private Object decrypt(final String columnLabel, final Object value) throws SQLException {
+        return decrypt(queryResultMetaData.getColumnIndex(columnLabel), value);
+    }
+    
+    private Object decrypt(final int columnIndex, final Object value) throws SQLException {
+        Optional<ShardingEncryptor> shardingEncryptor = queryResultMetaData.getShardingEncryptor(columnIndex);
         return shardingEncryptor.isPresent() ? shardingEncryptor.get().decrypt(getCiphertext(value)) : value;
     }
     

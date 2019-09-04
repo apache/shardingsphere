@@ -21,14 +21,17 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.MergeEngine;
 import org.apache.shardingsphere.core.merge.MergedResult;
+import org.apache.shardingsphere.core.merge.dal.desc.DescribeTableMergedResult;
 import org.apache.shardingsphere.core.merge.dal.show.ShowCreateTableMergedResult;
 import org.apache.shardingsphere.core.merge.dal.show.ShowDatabasesMergedResult;
 import org.apache.shardingsphere.core.merge.dal.show.ShowIndexMergedResult;
 import org.apache.shardingsphere.core.merge.dal.show.ShowOtherMergedResult;
 import org.apache.shardingsphere.core.merge.dal.show.ShowTableStatusMergedResult;
 import org.apache.shardingsphere.core.merge.dal.show.ShowTablesMergedResult;
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.metadata.table.TableMetas;
+import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.DescribeStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.ShowCreateTableStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.ShowDatabasesStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.ShowIndexStatement;
@@ -52,26 +55,30 @@ public final class DALMergeEngine implements MergeEngine {
     
     private final List<QueryResult> queryResults;
     
-    private final DALStatement dalStatement;
+    private final OptimizedStatement optimizedStatement;
     
-    private final ShardingTableMetaData shardingTableMetaData;
+    private final TableMetas tableMetas;
     
     @Override
     public MergedResult merge() throws SQLException {
+        final DALStatement dalStatement = (DALStatement) optimizedStatement.getSQLStatement();
         if (dalStatement instanceof ShowDatabasesStatement) {
             return new ShowDatabasesMergedResult();
         }
         if (dalStatement instanceof ShowTableStatusStatement) {
-            return new ShowTableStatusMergedResult(shardingRule, queryResults, shardingTableMetaData);
+            return new ShowTableStatusMergedResult(shardingRule, queryResults, tableMetas);
         }
         if (dalStatement instanceof ShowTablesStatement) {
-            return new ShowTablesMergedResult(shardingRule, queryResults, shardingTableMetaData);
+            return new ShowTablesMergedResult(shardingRule, queryResults, tableMetas);
         }
         if (dalStatement instanceof ShowCreateTableStatement) {
-            return new ShowCreateTableMergedResult(shardingRule, queryResults, shardingTableMetaData);
+            return new ShowCreateTableMergedResult(shardingRule, queryResults, tableMetas);
         }
         if (dalStatement instanceof ShowIndexStatement) {
-            return new ShowIndexMergedResult(shardingRule, queryResults, shardingTableMetaData);
+            return new ShowIndexMergedResult(shardingRule, queryResults, tableMetas);
+        }
+        if (dalStatement instanceof DescribeStatement) {
+            return new DescribeTableMergedResult(shardingRule, queryResults, optimizedStatement);
         }
         return new ShowOtherMergedResult(queryResults.get(0));
     }

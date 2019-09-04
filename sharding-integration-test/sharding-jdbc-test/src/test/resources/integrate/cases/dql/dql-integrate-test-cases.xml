@@ -81,10 +81,6 @@
         <assertion expected-data-file="select_full_route_with_binding_tables.xml" />
     </dql-test-case>
     
-    <dql-test-case sql-case-id="select_full_route_for_upper_case_with_binding_tables">
-        <assertion parameters="10:int, 11:int, 1000:int, 1909:int" expected-data-file="select_sharding_route_with_binding_tables.xml" />
-    </dql-test-case>
-    
     <dql-test-case sql-case-id="select_sharding_route_with_broadcast_table">
         <assertion parameters="10:int, 11:int, 1001:int, 1100:int, init:String" expected-data-file="select_sharding_route_with_broadcast_table.xml" />
         <assertion parameters="10:int, 11:int, 1009:int, 1108:int, none:String" expected-data-file="empty_order_item.xml" />
@@ -122,7 +118,7 @@
         <assertion parameters="'{&quot;rule2&quot;:&quot;null&quot;}', '{&quot;rule2&quot;:&quot;null&quot;}', 100:int, 200:int, 10:int, 1000:int" expected-data-file="select_equal_with_single_table.xml" />
         <assertion parameters="'{&quot;rule2&quot;:&quot;null&quot;}', '{&quot;rule2&quot;:&quot;null&quot;}', 100:int, 200:int, 12:int, 1000:int" expected-data-file="empty_order.xml" />
     </dql-test-case>
-
+    
     <dql-test-case sql-case-id="select_sum">
         <assertion expected-data-file="select_sum.xml" />
     </dql-test-case>
@@ -130,11 +126,11 @@
     <dql-test-case sql-case-id="select_count">
         <assertion expected-data-file="select_count.xml" />
     </dql-test-case>
-
+    
     <dql-test-case sql-case-id="select_count_with_sub">
         <assertion expected-data-file="select_count_with_sub.xml" />
     </dql-test-case>
-
+    
     <dql-test-case sql-case-id="select_count_with_sub_with_whitespace">
         <assertion expected-data-file="select_count_with_sub_with_whitespace.xml" />
     </dql-test-case>
@@ -361,15 +357,15 @@
     <dql-test-case sql-case-id="select_pagination_with_row_number_not_at_end">
         <assertion parameters="20:int" expected-data-file="select_pagination_with_row_number_not_at_end.xml" />
     </dql-test-case>
-
+    
     <dql-test-case sql-case-id="select_pagination_with_group_by_and_order_by">
         <assertion parameters="10:int, 19:int, 1000:int, 1909:int, 1:int, 10:int" expected-data-file="select_pagination_with_group_by_and_order_by.xml" />
     </dql-test-case>
-
+    
     <dql-test-case sql-case-id="select_pagination_with_diff_group_by_and_order_by">
         <assertion parameters="10:int, 19:int, 1000:int, 1909:int, 1:int, 10:int" expected-data-file="select_pagination_with_diff_group_by_and_order_by.xml" />
     </dql-test-case>
-
+    
     <dql-test-case sql-case-id="select_inner_join_related_with_alias">
         <assertion parameters="1000:int" expected-data-file="select_inner_join.xml" />
     </dql-test-case>
@@ -382,14 +378,11 @@
         <assertion parameters="1000:int" expected-data-file="select_inner_join.xml" />
     </dql-test-case>
     
-    <dql-test-case sql-case-id="select_sub_query_with_single_table">
-        <assertion parameters="1000:int, 1001:int" expected-data-file="select_sub_query_with_single_table.xml" />
-    </dql-test-case>
-    
     <!--<dql-test-case sql-case-id="select_sub_query_with_multiple_tables">-->
     <!--<assertion parameters="1000:int, 1001:int" expected-data-file="select_sub_query_with_multiple_tables.xml" />-->
     <!--</dql-test-case>-->
-
+    
+    <!-- TODO do not support ORDER BY or ORDER BY in subquery for now, add later
     <dql-test-case sql-case-id="select_sub_query_with_order_by">
         <assertion expected-data-file="select_sub_query_with_order_by.xml" />
     </dql-test-case>
@@ -397,13 +390,18 @@
     <dql-test-case sql-case-id="select_sub_query_with_group_by">
         <assertion expected-data-file="select_sub_query_with_group_by.xml" />
     </dql-test-case>
+    -->
     
     <dql-test-case sql-case-id="select_with_double_quotes">
         <assertion parameters="100001:int" expected-data-file="select_not_equal_with_single_table.xml" />
     </dql-test-case>
-
-     <dql-test-case sql-case-id="select_distinct_with_single_column">
+    
+    <dql-test-case sql-case-id="select_distinct_with_single_column">
         <assertion expected-data-file="select_distinct_with_single_column.xml" />
+    </dql-test-case>
+
+    <dql-test-case sql-case-id="select_distinct_with_owner_column">
+        <assertion expected-data-file="select_distinct_with_owner_column.xml" />
     </dql-test-case>
 
     <dql-test-case sql-case-id="select_distinct_with_multi_column">
@@ -413,16 +411,20 @@
     <dql-test-case sql-case-id="select_distinct_with_star">
         <assertion expected-data-file="select_distinct_with_star.xml" />
     </dql-test-case>
-
+    
+    <dql-test-case sql-case-id="select_distinct_with_owner_star">
+        <assertion expected-data-file="select_distinct_with_owner_star.xml" />
+    </dql-test-case>
+    
     <dql-test-case sql-case-id="select_distinct_with_sum">
         <assertion expected-data-file="select_distinct_with_sum.xml" />
     </dql-test-case>
-
+    
     <dql-test-case sql-case-id="select_distinct_with_count">
         <assertion expected-data-file="select_distinct_with_count.xml" />
     </dql-test-case>
     
-     <dql-test-case sql-case-id="select_distinct_with_avg">
+    <dql-test-case sql-case-id="select_distinct_with_avg">
         <assertion expected-data-file="select_distinct_with_avg.xml" />
     </dql-test-case>
     
@@ -441,7 +443,7 @@
     <dql-test-case sql-case-id="select_distinct_with_single_count_group_by">
         <assertion expected-data-file="select_distinct_with_single_count_group_by.xml" />
     </dql-test-case>
-
+    
     <dql-test-case sql-case-id="select_distinct_with_count_group_by">
         <assertion expected-data-file="select_distinct_with_count_group_by.xml" />
     </dql-test-case>

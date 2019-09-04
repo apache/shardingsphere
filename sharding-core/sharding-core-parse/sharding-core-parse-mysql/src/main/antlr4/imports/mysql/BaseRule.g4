@@ -98,7 +98,13 @@ unreservedWord_
     | BOOLEAN | MAX | MIN | SUM | COUNT | AVG | BIT_AND
     | BIT_OR | BIT_XOR | GROUP_CONCAT | JSON_ARRAYAGG | JSON_OBJECTAGG | STD | STDDEV
     | STDDEV_POP | STDDEV_SAMP | VAR_POP | VAR_SAMP | VARIANCE | EXTENDED | STATUS
-    | FIELDS | INDEXES | USER | ROLE | OJ | AUTOCOMMIT | OFF
+    | FIELDS | INDEXES | USER | ROLE | OJ | AUTOCOMMIT | OFF | ROTATE | INSTANCE | MASTER | BINLOG |ERROR
+    | SCHEDULE | COMPLETION | DO | DEFINER | START | EVERY | HOST | SOCKET | OWNER | PORT | RETURNS | CONTAINS
+    | SECURITY | INVOKER | UNDEFINED | MERGE | TEMPTABLE | CASCADED | LOCAL | SERVER | WRAPPER | OPTIONS | DATAFILE
+    | FILE_BLOCK_SIZE | EXTENT_SIZE | INITIAL_SIZE | AUTOEXTEND_SIZE | MAX_SIZE | NODEGROUP
+    | WAIT | LOGFILE | UNDOFILE | UNDO_BUFFER_SIZE | REDO_BUFFER_SIZE | DEFINITION | ORGANIZATION
+    | DESCRIPTION | REFERENCE | FOLLOWS | PRECEDES | NAME |CLOSE | OPEN | NEXT | HANDLER | PREV
+    | IMPORT | CONCURRENT | XML | POSITION | SHARE | DUMPFILE
     ;
 
 schemaName
@@ -111,6 +117,38 @@ tableName
 
 columnName
     : (owner DOT_)? name
+    ;
+
+userName
+    : (STRING_ | IDENTIFIER_) AT_ (STRING_ IDENTIFIER_)
+    | identifier_
+    | STRING_
+    ;
+
+eventName
+    : (STRING_ | IDENTIFIER_) AT_ (STRING_ IDENTIFIER_)
+    | identifier_
+    | STRING_ 
+    ;
+
+serverName
+    : identifier_
+    | STRING_
+    ; 
+
+wrapperName
+    : identifier_
+    | STRING_
+    ;
+
+functionName
+    : identifier_
+    | (owner DOT_)? identifier_
+    ;
+
+viewName
+    : identifier_
+    | (owner DOT_)? identifier_
     ;
 
 owner
@@ -136,6 +174,10 @@ indexName
 characterSetName_
     : IDENTIFIER_
     ;
+
+collationName_
+   : IDENTIFIER_
+   ;
 
 expr
     : expr logicalOperator expr
@@ -262,7 +304,7 @@ specialFunction_
     ;
 
 groupConcatFunction_
-    : GROUP_CONCAT LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? (orderByClause (SEPARATOR expr)?)? RP_
+    : GROUP_CONCAT LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? (orderByClause)? (SEPARATOR expr)? RP_
     ;
 
 windowFunction_

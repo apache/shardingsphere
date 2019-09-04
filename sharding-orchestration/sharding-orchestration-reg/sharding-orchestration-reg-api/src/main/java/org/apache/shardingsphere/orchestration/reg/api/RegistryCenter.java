@@ -115,7 +115,7 @@ public interface RegistryCenter extends TypeBasedSPI {
      *
      * @param key key of data
      */
-    void initLock(final String key);
+    void initLock(String key);
 
     /**
      * Try to get the lock of the key.

@@ -9,7 +9,7 @@ about: Something isn't working as expected
 
 Before report a bug, make sure you have:
 
-- Searched open and closed [GitHub issues](https://github.com/apache/incubator-shardingsphere-example/issues).
+- Searched open and closed [GitHub issues](https://github.com/apache/incubator-shardingsphere/issues).
 - Read documentation: [ShardingSphere Doc](https://shardingsphere.apache.org/document/current/en/overview).
 
 Please pay attention on issues you submitted, because we maybe need more details. 

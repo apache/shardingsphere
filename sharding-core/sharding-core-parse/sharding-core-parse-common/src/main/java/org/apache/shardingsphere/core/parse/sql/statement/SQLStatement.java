@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.parse.sql.statement;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.parse.sql.context.table.Tables;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 
 import java.util.Collection;
@@ -31,20 +30,6 @@ import java.util.Collection;
 public interface SQLStatement {
     
     /**
-     * Get logic SQL.
-     *
-     * @return logic SQL
-     */
-    String getLogicSQL();
-    
-    /**
-     * Set logic SQL.
-     *
-     * @param logicSQL logic SQL
-     */
-    void setLogicSQL(String logicSQL);
-    
-    /**
      * Get count of parameters.
      *
      * @return count of parameters
@@ -52,18 +37,11 @@ public interface SQLStatement {
     int getParametersCount();
     
     /**
-     * Set count of parameters.
-     *
-     * @param parametersCount count of parameters
-     */
-    void setParametersCount(int parametersCount);
-    
-    /**
-     * Get SQL segments.
+     * Get all SQL segments.
      * 
-     * @return SQL segments
+     * @return all SQL segments
      */
-    Collection<SQLSegment> getSQLSegments();
+    Collection<SQLSegment> getAllSQLSegments();
     
     /**
      * Find SQL segment.
@@ -82,11 +60,4 @@ public interface SQLStatement {
      * @return SQL segments
      */
     <T extends SQLSegment> Collection<T> findSQLSegments(Class<T> sqlSegmentType);
-    
-    /**
-     * Get tables.
-     * 
-     * @return tables
-     */
-    Tables getTables();
 }

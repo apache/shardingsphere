@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.core.parse.rule.fixture.TestParserEntry
+org.apache.shardingsphere.core.parse.core.rule.fixture.TestParserEntry

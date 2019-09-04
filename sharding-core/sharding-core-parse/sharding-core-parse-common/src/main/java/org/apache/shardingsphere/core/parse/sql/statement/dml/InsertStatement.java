@@ -17,13 +17,19 @@
 
 package org.apache.shardingsphere.core.parse.sql.statement.dml;
 
-import com.google.common.base.Preconditions;
+import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
-import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.InsertValuesSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.core.parse.sql.statement.generic.TableSegmentAvailable;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -36,20 +42,105 @@ import java.util.List;
  */
 @Getter
 @Setter
-@ToString(callSuper = true)
-public final class InsertStatement extends DMLStatement {
+public final class InsertStatement extends DMLStatement implements TableSegmentAvailable {
     
-    private final Collection<String> columnNames = new LinkedList<>();
+    private TableSegment table;
     
-    private final List<InsertValue> values = new LinkedList<>();
+    private SetAssignmentsSegment setAssignment;
+    
+    private final Collection<ColumnSegment> columns = new LinkedList<>();
+    
+    private final Collection<InsertValuesSegment> values = new LinkedList<>();
     
     /**
-     * Judge contains default values or not.
+     * Get set assignment segment.
      * 
-     * @return contains default values or not
+     * @return set assignment segment
      */
-    public boolean containsDefaultValues() {
-        Preconditions.checkState(!values.isEmpty());
-        return columnNames.size() != values.get(0).getAssignments().size();
+    public Optional<SetAssignmentsSegment> getSetAssignment() {
+        return Optional.fromNullable(setAssignment);
+    }
+    
+    /**
+     * Judge is use default columns or not.
+     * 
+     * @return is use default columns or not
+     */
+    public boolean useDefaultColumns() {
+        return columns.isEmpty() && null == setAssignment;
+    }
+    
+    /**
+     * Get column names.
+     *
+     * @return column names
+     */
+    public Collection<String> getColumnNames() {
+        return null == setAssignment ? getColumnNamesForInsertColumns() : getColumnNamesForSetAssignment();
+    }
+    
+    private Collection<String> getColumnNamesForInsertColumns() {
+        Collection<String> result = new LinkedList<>();
+        for (ColumnSegment each : columns) {
+            result.add(each.getName());
+        }
+        return result;
+    }
+    
+    private Collection<String> getColumnNamesForSetAssignment() {
+        Collection<String> result = new LinkedList<>();
+        for (AssignmentSegment each : setAssignment.getAssignments()) {
+            result.add(each.getColumn().getName());
+        }
+        return result;
+    }
+    
+    /**
+     * Get value list count.
+     *
+     * @return value list count
+     */
+    public int getValueListCount() {
+        return null == setAssignment ? values.size() : 1;
+    }
+    
+    /**
+     * Get value count for per value list.
+     * 
+     * @return value count
+     */
+    public int getValueCountForPerGroup() {
+        if (!values.isEmpty()) {
+            return values.iterator().next().getValues().size();
+        }
+        if (null != setAssignment) {
+            return setAssignment.getAssignments().size();
+        }
+        return 0;
+    }
+    
+    /**
+     * Get all value expressions.
+     * 
+     * @return all value expressions
+     */
+    public Collection<Collection<ExpressionSegment>> getAllValueExpressions() {
+        return null == setAssignment ? getAllValueExpressionsFromValues() : Collections.singletonList(getAllValueExpressionsFromSetAssignment());
+    }
+    
+    private Collection<Collection<ExpressionSegment>> getAllValueExpressionsFromValues() {
+        Collection<Collection<ExpressionSegment>> result = new LinkedList<>();
+        for (InsertValuesSegment each : values) {
+            result.add(each.getValues());
+        }
+        return result;
+    }
+    
+    private Collection<ExpressionSegment> getAllValueExpressionsFromSetAssignment() {
+        List<ExpressionSegment> result = new LinkedList<>();
+        for (AssignmentSegment each : setAssignment.getAssignments()) {
+            result.add(each.getValue());
+        }
+        return result;
     }
 }

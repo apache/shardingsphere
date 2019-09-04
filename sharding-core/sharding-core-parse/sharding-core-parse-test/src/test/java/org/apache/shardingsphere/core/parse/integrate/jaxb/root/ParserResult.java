@@ -20,13 +20,12 @@ package org.apache.shardingsphere.core.parse.integrate.jaxb.root;
 import com.google.common.base.Splitter;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.core.parse.integrate.jaxb.condition.ExpectedConditions;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.groupby.ExpectedGroupByColumn;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.insert.ExpectedInsertColumnsAndValues;
-import org.apache.shardingsphere.core.parse.integrate.jaxb.item.ExpectedSelectItems;
-import org.apache.shardingsphere.core.parse.integrate.jaxb.meta.ExpectedTableMetaData;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.orderby.ExpectedOrderByColumn;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.pagination.ExpectedPaginationValue;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.predicate.ExpectedWhereSegment;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.selectitem.ExpectedSelectItems;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.table.ExpectedAlterTable;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.table.ExpectedTable;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.token.ExpectedTokens;
@@ -59,12 +58,6 @@ public final class ParserResult {
     @XmlElement(name = "schema")
     private List<ExpectedTable> schemas = new LinkedList<>();
     
-    @XmlElement(name = "sharding-conditions")
-    private ExpectedConditions shardingConditions = new ExpectedConditions();
-    
-    @XmlElement(name = "select-items")
-    private ExpectedSelectItems selectItems = new ExpectedSelectItems();
-    
     @XmlElement
     private ExpectedTokens tokens = new ExpectedTokens();
     
@@ -82,14 +75,8 @@ public final class ParserResult {
     @XmlElement(name = "row-count")
     private ExpectedPaginationValue rowCount;
     
-    @XmlElement
-    private ExpectedTableMetaData meta;
-    
     @XmlElement(name = "alter-table")
     private ExpectedAlterTable alterTable;
-    
-    @XmlElement(name = "encrypt-conditions")
-    private ExpectedConditions encryptConditions = new ExpectedConditions();
     
     @XmlElement(name = "insert-columns-and-values")
     private ExpectedInsertColumnsAndValues insertColumnsAndValues = new ExpectedInsertColumnsAndValues();
@@ -99,6 +86,12 @@ public final class ParserResult {
     
     @XmlAttribute(name = "auto-commit")
     private boolean autoCommit;
+
+    @XmlElement(name = "select-items")
+    private ExpectedSelectItems selectItems = new ExpectedSelectItems();
+
+    @XmlElement(name = "where-segment")
+    private ExpectedWhereSegment whereSegment;
     
     /**
      * Get parameters.

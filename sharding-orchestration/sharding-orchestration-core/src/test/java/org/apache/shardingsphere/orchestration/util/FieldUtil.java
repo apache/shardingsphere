@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 
 /**
  * Field Utility.
@@ -32,7 +33,7 @@ public final class FieldUtil {
     
     /**
      * Set field.
-     * 
+     *
      * @param target target to be settled
      * @param fieldName field name to be settled
      * @param fieldValue field value to be settled
@@ -46,7 +47,7 @@ public final class FieldUtil {
     
     /**
      * Get field value.
-     * 
+     *
      * @param target target to be getter
      * @param fieldName field name to be getter
      * @return field value
@@ -56,5 +57,23 @@ public final class FieldUtil {
         Field field = target.getClass().getDeclaredField(fieldName);
         field.setAccessible(true);
         return field.get(target);
+    }
+    
+    /**
+     * Set static final field.
+     *
+     * @param target target to be settled
+     * @param fieldName field name to be settled
+     * @param fieldValue field value to be settled
+     */
+    @SneakyThrows
+    public static void setStaticFinalField(final Object target, final String fieldName, final Object fieldValue) {
+        Field timeServiceField = target.getClass().getDeclaredField(fieldName);
+        timeServiceField.setAccessible(true);
+        Field modifiers = timeServiceField.getClass().getDeclaredField("modifiers");
+        modifiers.setAccessible(true);
+        modifiers.setInt(timeServiceField, timeServiceField.getModifiers() & ~Modifier.FINAL);
+        timeServiceField.set(target, fieldValue);
+        modifiers.setInt(timeServiceField, timeServiceField.getModifiers() & ~Modifier.FINAL);
     }
 }

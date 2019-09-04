@@ -24,9 +24,9 @@ import org.apache.shardingsphere.api.config.sharding.strategy.ComplexShardingStr
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.fixture.ComplexKeysShardingAlgorithmFixture;
 import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
-import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
+import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.junit.Before;
 import org.junit.Test;
@@ -53,7 +53,7 @@ public final class ShowCreateTableMergedResultTest {
     
     private ResultSet resultSet;
     
-    private ShardingTableMetaData shardingTableMetaData;
+    private TableMetas tableMetas;
     
     @Before
     public void setUp() throws SQLException {
@@ -64,7 +64,7 @@ public final class ShowCreateTableMergedResultTest {
         shardingRule = new ShardingRule(shardingRuleConfig, Lists.newArrayList("ds"));
         Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(1, 1);
         tableMetaDataMap.put("table", new TableMetaData(Collections.<ColumnMetaData>emptyList(), Collections.<String>emptySet()));
-        shardingTableMetaData = new ShardingTableMetaData(tableMetaDataMap);
+        tableMetas = new TableMetas(tableMetaDataMap);
         resultSet = mock(ResultSet.class);
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
         when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
@@ -81,7 +81,7 @@ public final class ShowCreateTableMergedResultTest {
     
     @Test
     public void assertNextForEmptyQueryResult() throws SQLException {
-        ShowCreateTableMergedResult showCreateTableMergedResult = new ShowCreateTableMergedResult(shardingRule, new ArrayList<QueryResult>(), shardingTableMetaData);
+        ShowCreateTableMergedResult showCreateTableMergedResult = new ShowCreateTableMergedResult(shardingRule, new ArrayList<QueryResult>(), tableMetas);
         assertFalse(showCreateTableMergedResult.next());
     }
     
@@ -96,7 +96,7 @@ public final class ShowCreateTableMergedResultTest {
             + "  `created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n"
             + "  PRIMARY KEY (`id`)\n"
             + ") ENGINE=InnoDB AUTO_INCREMENT=121 DEFAULT CHARSET=utf8 COLLATE=utf8_bin");
-        ShowCreateTableMergedResult showCreateTableMergedResult = new ShowCreateTableMergedResult(shardingRule, queryResults, shardingTableMetaData);
+        ShowCreateTableMergedResult showCreateTableMergedResult = new ShowCreateTableMergedResult(shardingRule, queryResults, tableMetas);
         assertTrue(showCreateTableMergedResult.next());
     }
     
@@ -111,7 +111,7 @@ public final class ShowCreateTableMergedResultTest {
             + "  `created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n"
             + "  PRIMARY KEY (`id`)\n"
             + ") ENGINE=InnoDB AUTO_INCREMENT=121 DEFAULT CHARSET=utf8 COLLATE=utf8_bin");
-        ShowCreateTableMergedResult showCreateTableMergedResult = new ShowCreateTableMergedResult(shardingRule, queryResults, shardingTableMetaData);
+        ShowCreateTableMergedResult showCreateTableMergedResult = new ShowCreateTableMergedResult(shardingRule, queryResults, tableMetas);
         assertTrue(showCreateTableMergedResult.next());
     }
 }

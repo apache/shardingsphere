@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.orchestration.internal.registry.config.listener;
 
-import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
-import org.apache.shardingsphere.api.config.encryptor.EncryptorRuleConfiguration;
+import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
+import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
@@ -58,7 +58,9 @@ public class SchemaChangedListenerTest {
     
     private static final String MASTER_SLAVE_RULE_YAML = "masterDataSourceName: master_ds\n" + "name: ms_ds\n" + "slaveDataSourceNames:\n" + "- slave_ds_0\n" + "- slave_ds_1\n";
     
-    private static final String ENCRYPT_RULE_YAML = "encryptors:\n  order_encryptor:\n    type: AES\n    qualifiedColumns: t_order.order_id\n    props:\n      aes.key.value: 123456";
+    private static final String ENCRYPT_RULE_YAML = "tables:\n" + "  t_order:\n" + "    columns:\n" + "      order_id:\n" 
+            + "        cipherColumn: order_id\n" + "        encryptor: order_encryptor\n" + "encryptors:\n" + "  order_encryptor:\n" 
+            + "    type: aes\n" + "    props:\n" + "      aes.key.value: 123456";
     
     private SchemaChangedListener schemaChangedListener;
     
@@ -110,11 +112,10 @@ public class SchemaChangedListenerTest {
         ShardingOrchestrationEvent actual = schemaChangedListener.createShardingOrchestrationEvent(dataChangedEvent);
         assertThat(actual, instanceOf(EncryptRuleChangedEvent.class));
         assertThat(((EncryptRuleChangedEvent) actual).getShardingSchemaName(), is("encrypt_db"));
-        assertThat(((EncryptRuleChangedEvent) actual).getEncryptRuleConfiguration().getEncryptorRuleConfigs().size(), is(1));
-        Entry<String, EncryptorRuleConfiguration> entry = ((EncryptRuleChangedEvent) actual).getEncryptRuleConfiguration().getEncryptorRuleConfigs().entrySet().iterator().next();
+        assertThat(((EncryptRuleChangedEvent) actual).getEncryptRuleConfiguration().getEncryptors().size(), is(1));
+        Entry<String, EncryptorRuleConfiguration> entry = ((EncryptRuleChangedEvent) actual).getEncryptRuleConfiguration().getEncryptors().entrySet().iterator().next();
         assertThat(entry.getKey(), is("order_encryptor"));
-        assertThat(entry.getValue().getType(), is("AES"));
-        assertThat(entry.getValue().getQualifiedColumns(), is("t_order.order_id"));
+        assertThat(entry.getValue().getType(), is("aes"));
         assertThat(entry.getValue().getProperties().get("aes.key.value").toString(), is("123456"));
     }
     

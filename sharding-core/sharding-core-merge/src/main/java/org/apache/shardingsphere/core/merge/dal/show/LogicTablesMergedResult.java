@@ -21,7 +21,7 @@ import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.dql.common.MemoryMergedResult;
 import org.apache.shardingsphere.core.merge.dql.common.MemoryQueryResultRow;
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
 
@@ -46,13 +46,13 @@ public abstract class LogicTablesMergedResult extends MemoryMergedResult {
     
     private final Set<String> tableNames = new HashSet<>();
     
-    private final ShardingTableMetaData shardingTableMetaData;
+    private final TableMetas tableMetas;
     
     public LogicTablesMergedResult(final Map<String, Integer> labelAndIndexMap, 
-                                   final ShardingRule shardingRule, final List<QueryResult> queryResults, final ShardingTableMetaData shardingTableMetaData) throws SQLException {
+                                   final ShardingRule shardingRule, final List<QueryResult> queryResults, final TableMetas tableMetas) throws SQLException {
         super(labelAndIndexMap);
         this.shardingRule = shardingRule;
-        this.shardingTableMetaData = shardingTableMetaData;
+        this.tableMetas = tableMetas;
         memoryResultSetRows = init(queryResults);
     }
     
@@ -64,7 +64,7 @@ public abstract class LogicTablesMergedResult extends MemoryMergedResult {
                 String actualTableName = memoryResultSetRow.getCell(1).toString();
                 Optional<TableRule> tableRule = shardingRule.findTableRuleByActualTable(actualTableName);
                 if (!tableRule.isPresent()) {
-                    if (shardingRule.getTableRules().isEmpty() || shardingTableMetaData.containsTable(actualTableName) && tableNames.add(actualTableName)) {
+                    if (shardingRule.getTableRules().isEmpty() || tableMetas.containsTable(actualTableName) && tableNames.add(actualTableName)) {
                         result.add(memoryResultSetRow);
                     }
                 } else if (tableNames.add(tableRule.get().getLogicTable())) {

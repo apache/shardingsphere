@@ -35,6 +35,10 @@ DATABASES
     : D A T A B A S E S
     ;
 
+DATABASE
+    : D A T A B A S E
+    ;
+
 SCHEMAS
     : S C H E M A S
     ;
@@ -954,4 +958,256 @@ SECOND_MICROSECOND
 
 UL_BINARY
     : UL_ B I N A R Y
+    ;
+
+ROTATE
+    : R O T A T E
+    ;
+
+MASTER
+    : M A S T E R 
+    ;
+
+BINLOG
+    : B I N L O G
+    ;
+
+ERROR
+    : E R R O R
+    ;
+
+SCHEDULE
+    : S C H E D U L E
+    ;
+
+COMPLETION
+    : C O M P L E T I O N
+    ;
+
+EVERY
+    : E V E R Y
+    ;
+
+STARTS
+    : S T A R T S
+    ;
+
+ENDS
+    : E N D S
+    ;
+
+HOST
+    : H O S T
+    ;
+
+SOCKET
+    : S O C K E T
+    ;
+
+PORT
+    : P O R T
+    ;
+
+SERVER
+    : S E R V E R
+    ;
+
+WRAPPER
+    : W R A P P E R
+    ;
+
+OPTIONS
+    : O P T I O N S
+    ;
+
+OWNER
+    : O W N E R
+    ;
+
+DETERMINISTIC
+    : D E T E R M I N I S T I C
+    ;
+
+RETURNS
+    : R E T U R N S
+    ;
+
+CONTAINS
+    : C O N T A I N S
+    ;
+
+READS
+    : R E A D S
+    ;
+
+MODIFIES
+    : M O D I F I E S
+    ;
+
+SECURITY
+    : S E C U R I T Y
+    ;
+
+INVOKER
+    : I N V O K E R
+    ;
+
+OUT
+    : O U T
+    ;
+
+INOUT
+    : I N O U T
+    ;
+
+TEMPTABLE
+    : T E M P T A B L E
+    ;
+
+MERGE
+    : M E R G E
+    ;
+
+UNDEFINED
+    : U N D E F I N E D
+    ;
+
+DATAFILE
+    : D A T A F I L E
+    ;
+
+FILE_BLOCK_SIZE
+    : F I L E UL_ B L O C K UL_ S I Z E
+    ; 
+
+EXTENT_SIZE
+    : E X T E N T UL_ S I Z E
+    ;
+
+INITIAL_SIZE
+    : I N I T I A L UL_ S I Z E
+    ;
+
+AUTOEXTEND_SIZE
+    : A U T O E X T E N D UL_ S I Z E
+    ;
+
+MAX_SIZE
+    : M A X UL_ S I Z E
+    ;
+
+NODEGROUP
+    : N O D E G R O U P
+    ;
+
+WAIT
+    : W A I T
+    ;
+
+LOGFILE
+    : L O G F I L E
+    ;
+
+UNDOFILE
+    : U N D O F I L E
+    ;
+
+UNDO_BUFFER_SIZE
+    : U N D O UL_ B U F F E R UL_ S I Z E
+    ;
+
+REDO_BUFFER_SIZE
+    : R E D O UL_ B U F F E R UL_ S I Z E
+    ;
+
+HANDLER
+    : H A N D L E R
+    ;
+
+PREV
+    : P R E V
+    ;
+
+ORGANIZATION
+    : O R G A N I Z A T I O N
+    ;
+
+DEFINITION
+    : D E F I N I T I O N
+    ;
+
+DESCRIPTION
+    : D E S C R I P T I O N
+    ;
+
+REFERENCE
+    : R E F E R E N C E
+    ;
+
+FOLLOWS
+    : F O L L O W S
+    ;
+
+PRECEDES
+    : P R E C E D E S
+    ;
+
+IMPORT
+    : I M P O R T
+    ;
+
+LOAD
+    : L O A D
+    ;
+
+CONCURRENT
+    : C O N C U R R E N T
+    ;
+
+INFILE
+    : I N F I L E
+    ;
+
+LINES
+    : L I N E S
+    ;
+
+STARTING
+    : S T A R T I N G
+    ;
+
+TERMINATED
+    : T E R M I N A T E D
+    ;    
+
+OPTIONALLY
+    : O P T I O N A L L Y
+    ;
+
+ENCLOSED
+    : E N C L O S E D
+    ;
+
+ESCAPED
+    : E S C A P E D
+    ;
+
+XML
+    : X M L
+    ;
+
+UNDO
+    : U N D O
+    ;
+
+DUMPFILE
+    : D U M P F I L E
+    ;
+
+OUTFILE
+    : O U T F I L E
+    ;
+
+SHARE
+    : S H A R E
     ;

@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 import org.apache.shardingsphere.transaction.xa.jta.connection.dialect.H2XAConnectionWrapper;
+import org.apache.shardingsphere.transaction.xa.jta.connection.dialect.MariaDBXAConnectionWrapper;
 import org.apache.shardingsphere.transaction.xa.jta.connection.dialect.MySQLXAConnectionWrapper;
 import org.apache.shardingsphere.transaction.xa.jta.connection.dialect.PostgreSQLXAConnectionWrapper;
 
@@ -48,6 +49,8 @@ public final class XAConnectionFactory {
         switch (databaseType.getName()) {
             case "MySQL":
                 return new MySQLXAConnectionWrapper().wrap(xaDataSource, connection);
+            case "MariaDB":
+                return new MariaDBXAConnectionWrapper().wrap(xaDataSource, connection);
             case "PostgreSQL":
                 return new PostgreSQLXAConnectionWrapper().wrap(xaDataSource, connection);
             case "H2":

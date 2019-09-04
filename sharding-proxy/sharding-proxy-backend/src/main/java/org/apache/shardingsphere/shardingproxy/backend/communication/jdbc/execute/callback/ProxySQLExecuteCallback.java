@@ -31,10 +31,10 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execut
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.ExecuteUpdateResponse;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapper.JDBCExecutorWrapper;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
-import org.apache.shardingsphere.shardingproxy.backend.schema.EncryptSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
-import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSchema;
+import org.apache.shardingsphere.shardingproxy.backend.schema.impl.EncryptSchema;
+import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShardingSchema;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -97,7 +97,7 @@ public final class ProxySQLExecuteCallback extends SQLExecuteCallback<ExecuteRes
         return result;
     }
     
-    private QueryResult createQueryResult(final ResultSet resultSet, final ConnectionMode connectionMode) {
+    private QueryResult createQueryResult(final ResultSet resultSet, final ConnectionMode connectionMode) throws SQLException {
         LogicSchema logicSchema = backendConnection.getLogicSchema();
         if (logicSchema instanceof ShardingSchema) {
             ShardingRule shardingRule = logicSchema.getShardingRule();

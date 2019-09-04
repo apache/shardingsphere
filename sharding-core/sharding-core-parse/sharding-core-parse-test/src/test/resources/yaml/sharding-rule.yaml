@@ -49,9 +49,14 @@ shardingRule:
   bindingTables:
     - t_order, t_order_item
   encryptRule:
+    tables:
+      t_order:
+        columns:
+          status:
+            cipherColumn: status
+            encryptor: order_encryptor
     encryptors:
       order_encryptor:
         type: aes
-        qualifiedColumns: t_order.status
         props:
           aes.key.value: abc12345

@@ -20,13 +20,18 @@ package org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
+import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.constant.ShardingConstant;
 import org.apache.shardingsphere.core.exception.ShardingException;
+import org.apache.shardingsphere.core.rule.EncryptRule;
+import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.util.InlineExpressionParser;
 import org.apache.shardingsphere.core.yaml.swapper.impl.EncryptRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.impl.MasterSlaveRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.impl.ShardingRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.internal.registry.ShardingOrchestrationFacade;
 import org.apache.shardingsphere.orchestration.yaml.swapper.OrchestrationConfigurationYamlSwapper;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
@@ -36,16 +41,21 @@ import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.common.SpringBootPropertiesConfigurationProperties;
+import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.encrypt.LocalEncryptRuleCondition;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.encrypt.SpringBootEncryptRuleConfigurationProperties;
+import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.masterslave.LocalMasterSlaveRuleCondition;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.masterslave.SpringBootMasterSlaveRuleConfigurationProperties;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.orchestration.SpringBootOrchestrationConfigurationProperties;
+import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.sharding.LocalShardingRuleCondition;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.sharding.SpringBootShardingRuleConfigurationProperties;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.util.DataSourceUtil;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.util.PropertyUtil;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.StandardEnvironment;
@@ -59,10 +69,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Orchestration spring boot sharding and master-slave configuration.
+ * Orchestration spring boot configuration.
  *
  * @author caohao
  * @author panjuan
+ * @author yangyi
  */
 @Configuration
 @EnableConfigurationProperties({
@@ -75,106 +86,95 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     
     private final Map<String, DataSource> dataSourceMap = new LinkedHashMap<>();
     
-    private final SpringBootShardingRuleConfigurationProperties shardingProperties;
+    private final SpringBootShardingRuleConfigurationProperties shardingRule;
     
-    private final SpringBootMasterSlaveRuleConfigurationProperties masterSlaveProperties;
+    private final SpringBootMasterSlaveRuleConfigurationProperties masterSlaveRule;
     
-    private final SpringBootEncryptRuleConfigurationProperties encryptProperties;
+    private final SpringBootEncryptRuleConfigurationProperties encryptRule;
     
-    private final SpringBootPropertiesConfigurationProperties propProperties;
+    private final SpringBootPropertiesConfigurationProperties props;
     
-    private final SpringBootOrchestrationConfigurationProperties orchestrationProperties;
-    
-    private final ShardingRuleConfigurationYamlSwapper shardingSwapper = new ShardingRuleConfigurationYamlSwapper();
-    
-    private final MasterSlaveRuleConfigurationYamlSwapper masterSlaveSwapper = new MasterSlaveRuleConfigurationYamlSwapper();
-    
-    private final EncryptRuleConfigurationYamlSwapper encryptSwapper = new EncryptRuleConfigurationYamlSwapper();
+    private final SpringBootOrchestrationConfigurationProperties orchestrationRule;
     
     private final OrchestrationConfigurationYamlSwapper orchestrationSwapper = new OrchestrationConfigurationYamlSwapper();
     
     /**
-     * Get data source bean.
-     * 
+     * Get orchestration configuration.
+     *
+     * @return orchestration configuration
+     */
+    @Bean
+    public OrchestrationConfiguration orchestrationConfiguration() {
+        Preconditions.checkState(isValidOrchestrationConfiguration(), "The orchestration configuration is invalid, please configure orchestration name");
+        return orchestrationSwapper.swap(orchestrationRule);
+    }
+    
+    private boolean isValidOrchestrationConfiguration() {
+        return !Strings.isNullOrEmpty(orchestrationRule.getName());
+    }
+    
+    /**
+     * Get orchestration sharding data source bean by local configuration.
+     *
+     * @param orchestrationConfiguration orchestration configuration
+     * @return orchestration sharding data source bean
+     * @throws SQLException SQL exception
+     */
+    @Bean
+    @Conditional(LocalShardingRuleCondition.class)
+    public DataSource shardingDataSourceByLocal(final OrchestrationConfiguration orchestrationConfiguration) throws SQLException {
+        ShardingRule shardingRule = new ShardingRule(new ShardingRuleConfigurationYamlSwapper().swap(this.shardingRule), dataSourceMap.keySet());
+        return new OrchestrationShardingDataSource(new ShardingDataSource(dataSourceMap, shardingRule, props.getProps()), orchestrationConfiguration);
+    }
+    
+    /**
+     * Get orchestration master-slave data source bean by local configuration.
+     *
+     * @param orchestrationConfiguration orchestration configuration
+     * @return orchestration master-slave data source bean
+     * @throws SQLException SQL exception
+     */
+    @Bean
+    @Conditional(LocalMasterSlaveRuleCondition.class)
+    public DataSource masterSlaveDataSourceByLocal(final OrchestrationConfiguration orchestrationConfiguration) throws SQLException {
+        MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfigurationYamlSwapper().swap(masterSlaveRule);
+        return new OrchestrationMasterSlaveDataSource(new MasterSlaveDataSource(dataSourceMap, new MasterSlaveRule(masterSlaveRuleConfig), props.getProps()), orchestrationConfiguration);
+    }
+    
+    /**
+     * Get orchestration encrypt data source bean by local configuration.
+     *
+     * @param orchestrationConfiguration orchestration configuration
+     * @return orchestration encrypt data source bean
+     * @throws SQLException SQL exception
+     */
+    @Bean
+    @Conditional(LocalEncryptRuleCondition.class)
+    public DataSource encryptDataSourceByLocal(final OrchestrationConfiguration orchestrationConfiguration) throws SQLException {
+        EncryptRuleConfiguration encryptRuleConfig = new EncryptRuleConfigurationYamlSwapper().swap(encryptRule);
+        return new OrchestrationEncryptDataSource(
+                new EncryptDataSource(dataSourceMap.values().iterator().next(), new EncryptRule(encryptRuleConfig), props.getProps()), orchestrationConfiguration);
+    }
+    
+    /**
+     * Get data source bean from registry center.
+     *
+     * @param orchestrationConfiguration orchestration configuration
      * @return data source bean
      * @throws SQLException SQL Exception
      */
     @Bean
-    public DataSource dataSource() throws SQLException {
-        Preconditions.checkState(isValidConfiguration(), "The orchestration configuration is invalid, please choose one from Sharding rule and Master-slave rule.");
-        return isShardingRule() ? createShardingDataSource() : isEncryptRule() ? createEncryptDataSource() : createMasterSlaveDataSource();
-    }
-    
-    private boolean isValidConfiguration() {
-        return isValidRuleConfiguration() || isValidOrchestrationConfiguration();
-    }
-    
-    private boolean isValidRuleConfiguration() {
-        int validConfigCount = 0;
-        validConfigCount += shardingProperties.getTables().isEmpty() ? 0 : 1;
-        validConfigCount += Strings.isNullOrEmpty(masterSlaveProperties.getMasterDataSourceName()) ? 0 : 1;
-        validConfigCount += encryptProperties.getEncryptors().isEmpty() ? 0 : 1;
-        return 1 == validConfigCount;
-    }
-    
-    private boolean isValidOrchestrationConfiguration() {
-        return !Strings.isNullOrEmpty(orchestrationProperties.getName());
-    }
-    
-    private boolean isShardingRule() {
-        return isValidRuleConfiguration() ? isShardingRuleByLocal() : isShardingRuleByRegistry();
-    }
-    
-    private boolean isShardingRuleByLocal() {
-        return !shardingProperties.getTables().isEmpty();
-    }
-    
-    private boolean isShardingRuleByRegistry() {
-        try (ShardingOrchestrationFacade shardingOrchestrationFacade = new ShardingOrchestrationFacade(
-                orchestrationSwapper.swap(orchestrationProperties), Collections.singletonList(ShardingConstant.LOGIC_SCHEMA_NAME))) {
-            return shardingOrchestrationFacade.getConfigService().isShardingRule(ShardingConstant.LOGIC_SCHEMA_NAME);
+    @ConditionalOnMissingBean(DataSource.class)
+    public DataSource dataSource(final OrchestrationConfiguration orchestrationConfiguration) throws SQLException {
+        try (ShardingOrchestrationFacade shardingOrchestrationFacade = new ShardingOrchestrationFacade(orchestrationConfiguration, Collections.singletonList(ShardingConstant.LOGIC_SCHEMA_NAME))) {
+            if (shardingOrchestrationFacade.getConfigService().isEncryptRule(ShardingConstant.LOGIC_SCHEMA_NAME)) {
+                return new OrchestrationEncryptDataSource(orchestrationConfiguration);
+            } else if (shardingOrchestrationFacade.getConfigService().isShardingRule(ShardingConstant.LOGIC_SCHEMA_NAME)) {
+                return new OrchestrationShardingDataSource(orchestrationConfiguration);
+            } else {
+                return new OrchestrationMasterSlaveDataSource(orchestrationConfiguration);
+            }
         }
-    }
-    
-    private boolean isEncryptRule() {
-        return isValidRuleConfiguration() ? isEncryptRuleByLocal() : isEncryptRuleByRegistry();
-    }
-    
-    private boolean isEncryptRuleByLocal() {
-        return !encryptProperties.getEncryptors().isEmpty();
-    }
-    
-    private boolean isEncryptRuleByRegistry() {
-        try (ShardingOrchestrationFacade shardingOrchestrationFacade = new ShardingOrchestrationFacade(
-            orchestrationSwapper.swap(orchestrationProperties), Collections.singletonList(ShardingConstant.LOGIC_SCHEMA_NAME))) {
-            return shardingOrchestrationFacade.getConfigService().isEncryptRule(ShardingConstant.LOGIC_SCHEMA_NAME);
-        }
-    }
-    
-    private DataSource createShardingDataSource() throws SQLException {
-        if (shardingProperties.getTables().isEmpty()) {
-            return new OrchestrationShardingDataSource(orchestrationSwapper.swap(orchestrationProperties));
-        }
-        ShardingDataSource shardingDataSource = new ShardingDataSource(
-                dataSourceMap, new ShardingRule(shardingSwapper.swap(shardingProperties), dataSourceMap.keySet()), propProperties.getProps());
-        return new OrchestrationShardingDataSource(shardingDataSource, orchestrationSwapper.swap(orchestrationProperties));
-    }
-    
-    private DataSource createMasterSlaveDataSource() throws SQLException {
-        if (Strings.isNullOrEmpty(masterSlaveProperties.getMasterDataSourceName())) {
-            return new OrchestrationMasterSlaveDataSource(orchestrationSwapper.swap(orchestrationProperties));
-        }
-        MasterSlaveDataSource masterSlaveDataSource = new MasterSlaveDataSource(
-                dataSourceMap, masterSlaveSwapper.swap(masterSlaveProperties), propProperties.getProps());
-        return new OrchestrationMasterSlaveDataSource(masterSlaveDataSource, orchestrationSwapper.swap(orchestrationProperties));
-    }
-    
-    private DataSource createEncryptDataSource() {
-        if (encryptProperties.getEncryptors().isEmpty()) {
-            return new OrchestrationEncryptDataSource(orchestrationSwapper.swap(orchestrationProperties));
-        }
-        EncryptDataSource encryptDataSource = new EncryptDataSource(dataSourceMap.values().iterator().next(), encryptSwapper.swap(encryptProperties), propProperties.getProps());
-        return new OrchestrationEncryptDataSource(encryptDataSource, orchestrationSwapper.swap(orchestrationProperties));
     }
     
     @Override

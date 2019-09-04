@@ -18,13 +18,15 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
 import com.google.common.base.Optional;
-import lombok.SneakyThrows;
+import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.merge.MergedResult;
+import org.apache.shardingsphere.core.optimize.api.segment.Tables;
+import org.apache.shardingsphere.core.optimize.sharding.statement.ShardingOptimizedStatement;
+import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.core.strategy.encrypt.ShardingEncryptorEngine;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingStatement;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 import org.junit.Before;
@@ -47,6 +49,7 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -65,13 +68,22 @@ public final class ShardingResultSetTest {
     private ShardingResultSet shardingResultSet;
     
     @Before
-    public void setUp() {
+    public void setUp() throws SQLException {
         mergeResultSet = mock(MergedResult.class);
-        shardingResultSet = new ShardingResultSet(getResultSets(), mergeResultSet, getShardingStatement());
+        shardingResultSet = new ShardingResultSet(getResultSets(), mergeResultSet, getShardingStatement(), createSQLRouteResult());
     }
     
-    @SneakyThrows
-    private List<ResultSet> getResultSets() {
+    private SQLRouteResult createSQLRouteResult() {
+        SQLRouteResult result = mock(SQLRouteResult.class);
+        ShardingOptimizedStatement shardingStatement = mock(ShardingOptimizedStatement.class);
+        Tables tables = mock(Tables.class);
+        when(tables.getTableNames()).thenReturn(Collections.<String>emptyList());
+        when(shardingStatement.getTables()).thenReturn(tables);
+        when(result.getShardingStatement()).thenReturn(shardingStatement);
+        return result;
+    }
+    
+    private List<ResultSet> getResultSets() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
         when(resultSetMetaData.getTableName(anyInt())).thenReturn("test");
@@ -82,16 +94,15 @@ public final class ShardingResultSetTest {
     
     private ShardingStatement getShardingStatement() {
         ShardingConnection shardingConnection = mock(ShardingConnection.class);
-        ShardingContext shardingContext = mock(ShardingContext.class);
+        ShardingRuntimeContext runtimeContext = mock(ShardingRuntimeContext.class);
         ShardingRule shardingRule = mock(ShardingRule.class);
         when(shardingRule.getLogicTableNames(anyString())).thenReturn(Collections.singletonList("test"));
-        ShardingEncryptorEngine shardingEncryptorEngine = mock(ShardingEncryptorEngine.class);
         EncryptRule encryptRule = mock(EncryptRule.class);
-        when(encryptRule.getEncryptorEngine()).thenReturn(shardingEncryptorEngine);
-        when(shardingEncryptorEngine.getShardingEncryptor(anyString(), anyString())).thenReturn(Optional.<ShardingEncryptor>absent());
+        when(encryptRule.getShardingEncryptor(anyString(), anyString())).thenReturn(Optional.<ShardingEncryptor>absent());
         when(shardingRule.getEncryptRule()).thenReturn(encryptRule);
-        when(shardingContext.getShardingRule()).thenReturn(shardingRule);
-        when(shardingConnection.getShardingContext()).thenReturn(shardingContext);
+        when(runtimeContext.getRule()).thenReturn(shardingRule);
+        when(runtimeContext.getProps()).thenReturn(new ShardingProperties(new Properties()));
+        when(shardingConnection.getRuntimeContext()).thenReturn(runtimeContext);
         ShardingStatement statement = mock(ShardingStatement.class);
         when(statement.getConnection()).thenReturn(shardingConnection);
         return statement;

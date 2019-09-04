@@ -19,13 +19,11 @@ package org.apache.shardingsphere.core;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
-import org.apache.shardingsphere.core.metadata.ShardingMetaData;
-import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
+import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.route.PreparedStatementRoutingEngine;
-import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.core.strategy.encrypt.ShardingEncryptorEngine;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -55,10 +53,9 @@ public final class PreparedQueryShardingEngineTest extends BaseShardingEngineTes
     public void setUp() {
         ShardingRule shardingRule = mock(ShardingRule.class);
         EncryptRule encryptRule = mock(EncryptRule.class);
-        when(encryptRule.getEncryptorEngine()).thenReturn(new ShardingEncryptorEngine());
         when(shardingRule.getEncryptRule()).thenReturn(encryptRule);
         shardingEngine = new PreparedQueryShardingEngine(
-                getSql(), shardingRule, getShardingProperties(), mock(ShardingMetaData.class), DatabaseTypes.getActualDatabaseType("MySQL"), new ParsingResultCache());
+                getSql(), shardingRule, getShardingProperties(), mock(ShardingSphereMetaData.class), DatabaseTypes.getActualDatabaseType("MySQL"), mock(SQLParseEngine.class));
         setRoutingEngine();
     }
     
@@ -70,9 +67,7 @@ public final class PreparedQueryShardingEngineTest extends BaseShardingEngineTes
     }
     
     protected void assertShard() {
-        SQLRouteResult sqlRouteResult = createSQLRouteResult();
-        sqlRouteResult.getSqlStatement().setLogicSQL("SELECT ?");
-        when(routingEngine.route(getParameters())).thenReturn(sqlRouteResult);
+        when(routingEngine.route(getParameters())).thenReturn(createSQLRouteResult());
         assertSQLRouteResult(shardingEngine.shard(getSql(), getParameters()));
     }
     

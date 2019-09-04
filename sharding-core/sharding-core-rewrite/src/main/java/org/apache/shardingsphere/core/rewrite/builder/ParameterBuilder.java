@@ -17,120 +17,36 @@
 
 package org.apache.shardingsphere.core.rewrite.builder;
 
-import lombok.Getter;
-import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResult;
-import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResultUnit;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
-import org.apache.shardingsphere.core.rule.DataNode;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * Parameter builder.
  *
  * @author panjuan
  */
-@Getter
-public final class ParameterBuilder {
-    
-    private final List<Object> originalParameters;
-    
-    private final Map<Integer, Object> addedIndexAndParameters;
-    
-    private final Map<Integer, Object> replacedIndexAndParameters;
-    
-    private final List<InsertParameterUnit> insertParameterUnits;
-    
-    public ParameterBuilder(final List<Object> parameters) {
-        originalParameters = new LinkedList<>(parameters);
-        addedIndexAndParameters = new HashMap<>();
-        replacedIndexAndParameters = new HashMap<>();
-        insertParameterUnits = new LinkedList<>();
-    }
+public interface ParameterBuilder {
     
     /**
-     * Set insert parameter units.
+     * Get original parameters.
      * 
-     * @param insertOptimizeResult insert optimize result
+     * @return original parameters
      */
-    public void setInsertParameterUnits(final InsertOptimizeResult insertOptimizeResult) {
-        if (insertParameterUnits.isEmpty() && null != insertOptimizeResult) {
-            insertParameterUnits.addAll(createInsertParameterUnits(insertOptimizeResult));
-        }
-    }
-    
-    private List<InsertParameterUnit> createInsertParameterUnits(final InsertOptimizeResult insertOptimizeResult) {
-        List<InsertParameterUnit> result = new LinkedList<>();
-        if (null == insertOptimizeResult) {
-            return result;
-        }
-        for (InsertOptimizeResultUnit each : insertOptimizeResult.getUnits()) {
-            result.add(new InsertParameterUnit(Arrays.asList(each.getParameters()), each.getDataNodes()));
-        }
-        return result;
-    }
+    List<Object> getOriginalParameters();
     
     /**
      * Get parameters.
      *
      * @return parameters
      */
-    public List<Object> getParameters() {
-        List<Object> result = getInsertParameters();
-        return result.isEmpty() ? getRevisedParameters() : result;
-    }
+    List<Object> getParameters();
     
     /**
      * Get parameters.
-     * 
+     *
      * @param routingUnit routing unit
      * @return parameters
      */
-    public List<Object> getParameters(final RoutingUnit routingUnit) {
-        List<Object> result = getInsertParameters(routingUnit);
-        return result.isEmpty() ? getRevisedParameters() : result;
-    }
-    
-    private List<Object> getInsertParameters() {
-        List<Object> result = new LinkedList<>();
-        for (InsertParameterUnit each : insertParameterUnits) {
-            result.addAll(each.getParameters());
-        }
-        return result;
-    }
-    
-    private List<Object> getInsertParameters(final RoutingUnit routingUnit) {
-        List<Object> result = new LinkedList<>();
-        for (InsertParameterUnit each : insertParameterUnits) {
-            if (isAppendInsertParameter(each, routingUnit)) {
-                result.addAll(each.getParameters());
-            }
-        }
-        return result;
-    }
-    
-    private boolean isAppendInsertParameter(final InsertParameterUnit unit, final RoutingUnit routingUnit) {
-        for (DataNode each : unit.getDataNodes()) {
-            if (routingUnit.getTableUnit(each.getDataSourceName(), each.getTableName()).isPresent()) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    private List<Object> getRevisedParameters() {
-        List<Object> result = new LinkedList<>(originalParameters);
-        for (Entry<Integer, Object> entry : addedIndexAndParameters.entrySet()) {
-            result.add(entry.getKey(), entry.getValue());
-        }
-        for (Entry<Integer, Object> entry : replacedIndexAndParameters.entrySet()) {
-            result.set(entry.getKey(), entry.getValue());
-        }
-        return result;
-    }
+    List<Object> getParameters(RoutingUnit routingUnit);
 }

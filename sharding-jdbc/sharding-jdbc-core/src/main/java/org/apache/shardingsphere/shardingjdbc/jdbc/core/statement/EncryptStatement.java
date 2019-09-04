@@ -17,16 +17,11 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
-import org.apache.shardingsphere.core.optimize.OptimizeEngineFactory;
-import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
+import org.apache.shardingsphere.core.optimize.encrypt.EncryptOptimizeEngineFactory;
+import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
-import org.apache.shardingsphere.core.rewrite.rewriter.parameter.ParameterRewriter;
-import org.apache.shardingsphere.core.rewrite.rewriter.sql.EncryptSQLRewriter;
-import org.apache.shardingsphere.core.rewrite.rewriter.sql.SQLRewriter;
 import org.apache.shardingsphere.core.route.SQLLogger;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.EncryptResultSet;
@@ -37,9 +32,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 
 /**
  * Encrypt statement.
@@ -48,26 +41,25 @@ import java.util.LinkedList;
  */
 public final class EncryptStatement extends AbstractUnsupportedOperationStatement {
     
+    private final EncryptConnection connection;
+    
     private final Statement statement;
     
-    private final EncryptConnection connection;
+    private EncryptOptimizedStatement encryptStatement;
     
     private EncryptResultSet resultSet;
     
-    @SneakyThrows
-    public EncryptStatement(final EncryptConnection connection) {
+    public EncryptStatement(final EncryptConnection connection) throws SQLException {
         statement = connection.getConnection().createStatement();
         this.connection = connection;
     }
     
-    @SneakyThrows
-    public EncryptStatement(final EncryptConnection connection, final int resultSetType, final int resultSetConcurrency) {
+    public EncryptStatement(final EncryptConnection connection, final int resultSetType, final int resultSetConcurrency) throws SQLException {
         statement = connection.getConnection().createStatement(resultSetType, resultSetConcurrency);
         this.connection = connection;
     }
     
-    @SneakyThrows
-    public EncryptStatement(final EncryptConnection connection, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) {
+    public EncryptStatement(final EncryptConnection connection, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) throws SQLException {
         statement = connection.getConnection().createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);
         this.connection = connection;
     }
@@ -75,7 +67,7 @@ public final class EncryptStatement extends AbstractUnsupportedOperationStatemen
     @Override
     public ResultSet executeQuery(final String sql) throws SQLException {
         ResultSet resultSet = statement.executeQuery(getRewriteSQL(sql));
-        this.resultSet = new EncryptResultSet(this, resultSet, connection.getEncryptRule());
+        this.resultSet = new EncryptResultSet(connection.getRuntimeContext(), encryptStatement, this, resultSet);
         return this.resultSet;
     }
     
@@ -84,21 +76,23 @@ public final class EncryptStatement extends AbstractUnsupportedOperationStatemen
         return resultSet;
     }
     
+    @SuppressWarnings("unchecked")
     private String getRewriteSQL(final String sql) {
-        SQLStatement sqlStatement = connection.getParseEngine().parse(sql, false);
-        SQLRewriteEngine encryptSQLRewriteEngine = new SQLRewriteEngine(connection.getEncryptRule(), sqlStatement, Collections.emptyList());
-        OptimizeResult optimizeResult = OptimizeEngineFactory.newInstance(connection.getEncryptRule(), sqlStatement, Collections.emptyList()).optimize();
-        Collection<SQLRewriter> sqlRewriters = new LinkedList<>();
-        if (sqlStatement instanceof DMLStatement) {
-            sqlRewriters.add(new EncryptSQLRewriter(connection.getEncryptRule().getEncryptorEngine(), (DMLStatement) sqlStatement, optimizeResult));
-        }
-        encryptSQLRewriteEngine.init(Collections.<ParameterRewriter>emptyList(), sqlRewriters);
+        SQLStatement sqlStatement = connection.getRuntimeContext().getParseEngine().parse(sql, false);
+        encryptStatement = EncryptOptimizeEngineFactory.newInstance(
+                sqlStatement).optimize(connection.getRuntimeContext().getRule(), connection.getRuntimeContext().getTableMetas(), sql, Collections.emptyList(), sqlStatement);
+        SQLRewriteEngine encryptSQLRewriteEngine = new SQLRewriteEngine(connection.getRuntimeContext().getRule(), 
+                encryptStatement, sql, Collections.emptyList(), connection.getRuntimeContext().getProps().<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN));
         String result = encryptSQLRewriteEngine.generateSQL().getSql();
-        boolean showSQL = connection.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW);
-        if (showSQL) {
-            SQLLogger.logSQL(result);
-        }
+        showSQL(result);
         return result;
+    }
+    
+    private void showSQL(final String sql) {
+        boolean showSQL = connection.getRuntimeContext().getProps().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW);
+        if (showSQL) {
+            SQLLogger.logSQL(sql);
+        }
     }
     
     @Override
@@ -150,7 +144,7 @@ public final class EncryptStatement extends AbstractUnsupportedOperationStatemen
     }
     
     private EncryptResultSet createEncryptResultSet(final Statement statement) throws SQLException {
-        return null == statement.getResultSet() ? null : new EncryptResultSet(this, statement.getResultSet(), connection.getEncryptRule());
+        return null == statement.getResultSet() ? null : new EncryptResultSet(connection.getRuntimeContext(), encryptStatement, this, statement.getResultSet());
     }
     
     @Override

@@ -17,18 +17,21 @@
 
 package org.apache.shardingsphere.core.parse.integrate.asserts.table;
 
-import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.integrate.asserts.SQLStatementAssertMessage;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.table.ExpectedTable;
-import org.apache.shardingsphere.core.parse.sql.context.table.Table;
-import org.apache.shardingsphere.core.parse.sql.context.table.Tables;
+import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Table assert.
@@ -46,22 +49,34 @@ public final class TableAssert {
      * @param actual actual tables
      * @param expected expected tables
      */
-    public void assertTables(final Tables actual, final List<ExpectedTable> expected) {
-        assertThat(assertMessage.getFullAssertMessage("Tables size assertion error: "), actual.getTableNames().size(), is(expected.size()));
-        for (ExpectedTable each : expected) {
-            Optional<Table> table;
-            if (null != each.getAlias()) {
-                table = actual.find(each.getAlias());
-            } else {
-                table = actual.find(each.getName());
-            }
-            assertTrue(assertMessage.getFullAssertMessage("Table should exist: "), table.isPresent());
-            assertTable(table.get(), each);
+    public void assertTables(final Collection<TableSegment> actual, final List<ExpectedTable> expected) {
+        Collection<TableSegment> mergedActual = mergeTableSegments(actual);
+        Map<String, ExpectedTable> expectedMap = getExpectedMap(expected);
+        assertThat(assertMessage.getFullAssertMessage("Tables size assertion error: "), mergedActual.size(), is(expectedMap.size()));
+        for (TableSegment each : mergedActual) {
+            assertThat(assertMessage.getFullAssertMessage("Table name assertion error: "), each.getTableName(), is(expectedMap.get(each.getTableName()).getName()));
+            assertThat(assertMessage.getFullAssertMessage("Table alias assertion error: "), each.getAlias().orNull(), is(expectedMap.get(each.getTableName()).getAlias()));
         }
     }
     
-    private void assertTable(final Table actual, final ExpectedTable expected) {
-        assertThat(assertMessage.getFullAssertMessage("Table name assertion error: "), actual.getName(), is(expected.getName()));
-        assertThat(assertMessage.getFullAssertMessage("Table alias assertion error: "), actual.getAlias().orNull(), is(expected.getAlias()));
+    // TODO:yanan remove this method and make sure the table number of xml is correct
+    private Collection<TableSegment> mergeTableSegments(final Collection<TableSegment> actual) {
+        Collection<TableSegment> result = new LinkedList<>();
+        Set<String> tableNames = new HashSet<>(actual.size(), 1);
+        for (TableSegment each : actual) {
+            if (tableNames.add(each.getTableName())) {
+                result.add(each);
+            }
+        }
+        return result;
+    }
+
+    // TODO:yanan remove this method and make sure the seq of xml is correct
+    private Map<String, ExpectedTable> getExpectedMap(final List<ExpectedTable> expected) {
+        Map<String, ExpectedTable> result = new HashMap<>(expected.size(), 1);
+        for (ExpectedTable each : expected) {
+            result.put(each.getName(), each);
+        }
+        return result;
     }
 }

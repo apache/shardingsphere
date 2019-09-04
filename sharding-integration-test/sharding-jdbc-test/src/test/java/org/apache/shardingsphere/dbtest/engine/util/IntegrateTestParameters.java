@@ -20,8 +20,8 @@ package org.apache.shardingsphere.dbtest.engine.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
-import org.apache.shardingsphere.core.parse.SQLParseEngine;
-import org.apache.shardingsphere.core.parse.rule.registry.MasterSlaveParseRuleRegistry;
+import org.apache.shardingsphere.core.parse.core.SQLParseKernel;
+import org.apache.shardingsphere.core.parse.core.rule.registry.ParseRuleRegistry;
 import org.apache.shardingsphere.dbtest.cases.assertion.IntegrateTestCasesLoader;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCase;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCaseAssertion;
@@ -66,8 +66,8 @@ public final class IntegrateTestParameters {
             String sqlCaseId = each[0].toString();
             String databaseType = each[1].toString();
             SQLCaseType caseType = (SQLCaseType) each[2];
-            Class<?> sqlStatementClass = new SQLParseEngine(MasterSlaveParseRuleRegistry.getInstance(), 
-                    DatabaseTypes.getTrunkDatabaseType(databaseType), sqlCasesLoader.getSQL(sqlCaseId, SQLCaseType.Placeholder, Collections.emptyList()), null, null).parse().getClass();
+            Class<?> sqlStatementClass = new SQLParseKernel(ParseRuleRegistry.getInstance(), 
+                    DatabaseTypes.getTrunkDatabaseType(databaseType), sqlCasesLoader.getSQL(sqlCaseId, SQLCaseType.Placeholder, Collections.emptyList())).parse().getClass();
             if (!sqlType.getSqlStatementClass().isAssignableFrom(sqlStatementClass)) {
                 continue;
             }
@@ -119,8 +119,8 @@ public final class IntegrateTestParameters {
             String sqlCaseId = each[0].toString();
             String databaseType = each[1].toString();
             SQLCaseType caseType = (SQLCaseType) each[2];
-            Class<?> sqlStatementClass = new SQLParseEngine(MasterSlaveParseRuleRegistry.getInstance(), 
-                    DatabaseTypes.getTrunkDatabaseType(databaseType), sqlCasesLoader.getSQL(sqlCaseId, SQLCaseType.Placeholder, Collections.emptyList()), null, null).parse().getClass();
+            Class<?> sqlStatementClass = new SQLParseKernel(ParseRuleRegistry.getInstance(), 
+                    DatabaseTypes.getTrunkDatabaseType(databaseType), sqlCasesLoader.getSQL(sqlCaseId, SQLCaseType.Placeholder, Collections.emptyList())).parse().getClass();
             if (!sqlType.getSqlStatementClass().isAssignableFrom(sqlStatementClass)) {
                 continue;
             }

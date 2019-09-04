@@ -23,4 +23,6 @@ package org.apache.shardingsphere.shardingproxy.backend.exception;
  * @author zhangliang
  */
 public final class NoDatabaseSelectedException extends BackendException {
+    
+    private static final long serialVersionUID = -372108713585501394L;
 }

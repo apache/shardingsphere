@@ -21,10 +21,13 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.merge.MergeEngineFactory;
 import org.apache.shardingsphere.core.merge.MergedResult;
 import org.apache.shardingsphere.core.merge.dal.show.ShowTablesMergedResult;
-import org.apache.shardingsphere.core.parse.constant.DerivedColumn;
+import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.DerivedColumn;
+import org.apache.shardingsphere.core.optimize.sharding.statement.ShardingOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
+import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.ConnectionStatus;
@@ -38,12 +41,14 @@ import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryRespo
 import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
-import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSchema;
+import org.apache.shardingsphere.shardingproxy.backend.schema.impl.EncryptSchema;
+import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShardingSchema;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -84,13 +89,13 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         if (routeResult.getRouteUnits().isEmpty()) {
             return new UpdateResponse();
         }
-        SQLStatement sqlStatement = routeResult.getSqlStatement();
-        if (isExecuteDDLInXATransaction(sqlStatement)) {
-            return new ErrorResponse(new TableModifyInTransactionException(sqlStatement.getTables().isSingleTable() ? sqlStatement.getTables().getSingleTableName() : "unknown_table"));
+        ShardingOptimizedStatement shardingStatement = routeResult.getShardingStatement();
+        if (isExecuteDDLInXATransaction(shardingStatement.getSQLStatement())) {
+            return new ErrorResponse(new TableModifyInTransactionException(shardingStatement.getTables().isSingleTable() ? shardingStatement.getTables().getSingleTableName() : "unknown_table"));
         }
         response = executeEngine.execute(routeResult);
         if (logicSchema instanceof ShardingSchema) {
-            logicSchema.refreshTableMetaData(routeResult.getSqlStatement());
+            logicSchema.refreshTableMetaData(routeResult.getShardingStatement());
         }
         return merge(routeResult);
     }
@@ -102,32 +107,86 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     
     private BackendResponse merge(final SQLRouteResult routeResult) throws SQLException {
         if (response instanceof UpdateResponse) {
-            if (!isAllBroadcastTables(routeResult.getSqlStatement())) {
-                ((UpdateResponse) response).mergeUpdateCount();
-            }
+            mergeUpdateCount(routeResult);
             return response;
         }
-        mergedResult = MergeEngineFactory.newInstance(databaseType, 
-                logicSchema.getShardingRule(), routeResult, logicSchema.getMetaData().getTable(), ((QueryResponse) response).getQueryResults()).merge();
+        setMergedResult(routeResult);
+        resetColumnLabelForShowTablesMergedResult();
+        handleColumnsForQueryHeader(routeResult);
+        return response;
+    }
+    
+    private void mergeUpdateCount(final SQLRouteResult routeResult) {
+        if (!isAllBroadcastTables(routeResult.getShardingStatement())) {
+            ((UpdateResponse) response).mergeUpdateCount();
+        }
+    }
+    
+    private boolean isAllBroadcastTables(final OptimizedStatement optimizedStatement) {
+        return logicSchema instanceof ShardingSchema && logicSchema.getShardingRule().isAllBroadcastTables(optimizedStatement.getTables().getTableNames());
+    }
+    
+    private void setMergedResult(final SQLRouteResult routeResult) throws SQLException {
+        mergedResult = MergeEngineFactory.newInstance(databaseType,
+                logicSchema.getShardingRule(), routeResult, logicSchema.getMetaData().getTables(), ((QueryResponse) response).getQueryResults()).merge();
+    }
+    
+    private void resetColumnLabelForShowTablesMergedResult() {
         if (mergedResult instanceof ShowTablesMergedResult) {
             ((ShowTablesMergedResult) mergedResult).resetColumnLabel(logicSchema.getName());
         }
-        return getQueryHeaderResponseWithoutDerivedColumns(((QueryResponse) response).getQueryHeaders());
     }
     
-    private boolean isAllBroadcastTables(final SQLStatement sqlStatement) {
-        return logicSchema instanceof ShardingSchema && logicSchema.getShardingRule().isAllBroadcastTables(sqlStatement.getTables().getTableNames());
-    }
+    private void handleColumnsForQueryHeader(final SQLRouteResult routeResult) {
+        removeDerivedColumns();
+        removeAssistedQueryColumns(routeResult);
+        setLogicColumns();
+    } 
     
-    private QueryResponse getQueryHeaderResponseWithoutDerivedColumns(final List<QueryHeader> queryHeaders) {
-        List<QueryHeader> derivedColumnQueryHeaders = new LinkedList<>();
+    private void removeDerivedColumns() {
+        List<QueryHeader> toRemove = new LinkedList<>();
+        List<QueryHeader> queryHeaders = ((QueryResponse) response).getQueryHeaders();
         for (QueryHeader each : queryHeaders) {
             if (DerivedColumn.isDerivedColumn(each.getColumnLabel())) {
-                derivedColumnQueryHeaders.add(each);
+                toRemove.add(each);
             }
         }
-        queryHeaders.removeAll(derivedColumnQueryHeaders);
-        return new QueryResponse(queryHeaders);
+        queryHeaders.removeAll(toRemove);
+    }
+    
+    private void removeAssistedQueryColumns(final SQLRouteResult routeResult) {
+        List<QueryHeader> toRemove = new LinkedList<>();
+        List<QueryHeader> queryHeaders = ((QueryResponse) response).getQueryHeaders();
+        Collection<String> assistedQueryColumns = getAssistedQueryColumns(routeResult);
+        for (QueryHeader each : queryHeaders) {
+            if (assistedQueryColumns.contains(each.getColumnName())) {
+                toRemove.add(each);
+            }
+        }
+        queryHeaders.removeAll(toRemove);
+    }
+    
+    private Collection<String> getAssistedQueryColumns(final SQLRouteResult routeResult) {
+        Collection<String> result = new LinkedList<>();
+        EncryptRule encryptRule = getEncryptRule();
+        for (String each : routeResult.getShardingStatement().getTables().getTableNames()) {
+            result.addAll(encryptRule.getAssistedQueryColumns(each));
+        }
+        return result;
+    }
+    
+    private EncryptRule getEncryptRule() {
+        return logicSchema instanceof EncryptSchema ? ((EncryptSchema) logicSchema).getEncryptRule() : logicSchema.getShardingRule().getEncryptRule();
+    }
+    
+    private void setLogicColumns() {
+        List<QueryHeader> queryHeaders = ((QueryResponse) response).getQueryHeaders();
+        EncryptRule encryptRule = getEncryptRule();
+        for (QueryHeader each : queryHeaders) {
+            if (encryptRule.isCipherColumn(each.getTable(), each.getColumnName())) {
+                each.setColumnLabelAndName(encryptRule.getLogicColumn(each.getTable(), each.getColumnName()));
+            }
+        }
     }
     
     @Override

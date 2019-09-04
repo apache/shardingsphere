@@ -80,7 +80,7 @@ public final class OrchestrationMasterSlaveDataSourceTest {
     @Test
     public void assertRenewRule() {
         masterSlaveDataSource.renew(getMasterSlaveRuleChangedEvent());
-        assertThat(masterSlaveDataSource.getDataSource().getMasterSlaveRule().getName(), is("new_ms"));
+        assertThat(masterSlaveDataSource.getDataSource().getRuntimeContext().getRule().getName(), is("new_ms"));
     }
     
     private MasterSlaveRuleChangedEvent getMasterSlaveRuleChangedEvent() {
@@ -108,7 +108,7 @@ public final class OrchestrationMasterSlaveDataSourceTest {
     @Test
     public void assertRenewProperties() {
         masterSlaveDataSource.renew(getPropertiesChangedEvent());
-        assertThat(masterSlaveDataSource.getDataSource().getShardingProperties().getProps().getProperty("sql.show"), is("true"));
+        assertThat(masterSlaveDataSource.getDataSource().getRuntimeContext().getProps().getProps().getProperty("sql.show"), is("true"));
     }
     
     private PropertiesChangedEvent getPropertiesChangedEvent() {
@@ -120,7 +120,7 @@ public final class OrchestrationMasterSlaveDataSourceTest {
     @Test
     public void assertRenewDisabledState() {
         masterSlaveDataSource.renew(getDisabledStateChangedEvent());
-        assertThat(masterSlaveDataSource.getDataSource().getMasterSlaveRule().getSlaveDataSourceNames().size(), is(0));
+        assertThat(masterSlaveDataSource.getDataSource().getRuntimeContext().getRule().getSlaveDataSourceNames().size(), is(0));
     }
     
     private DisabledStateChangedEvent getDisabledStateChangedEvent() {
@@ -140,7 +140,7 @@ public final class OrchestrationMasterSlaveDataSourceTest {
     }
     
     @Test
-    public void assertGetConnection() {
+    public void assertGetConnection() throws SQLException {
         assertThat(masterSlaveDataSource.getConnection("root", "root"), instanceOf(Connection.class));
     }
     

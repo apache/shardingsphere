@@ -18,28 +18,51 @@
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.optimize.sharding.segment.select.orderby.OrderByItem;
+import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
+import org.apache.shardingsphere.core.parse.core.constant.QuoteCharacter;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrderByItemSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ExpressionOrderByItemSegment;
+import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.pojo.OrderByToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-
-import java.util.List;
 
 /**
  * Order by token generator.
  *
  * @author zhangliang
  */
-public final class OrderByTokenGenerator implements OptionalSQLTokenGenerator<ShardingRule> {
+public final class OrderByTokenGenerator implements OptionalSQLTokenGenerator<ShardingRule>, IgnoreForSingleRoute {
     
     @Override
-    public Optional<OrderByToken> generateSQLToken(final SQLStatement sqlStatement, final List<Object> parameters, final ShardingRule shardingRule) {
-        if (!(sqlStatement instanceof SelectStatement)) {
+    public Optional<OrderByToken> generateSQLToken(
+            final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final ShardingRule shardingRule, final boolean isQueryWithCipherColumn) {
+        if (!(optimizedStatement instanceof ShardingSelectOptimizedStatement)) {
             return Optional.absent();
         }
-        if (((SelectStatement) sqlStatement).isToAppendOrderByItems()) {
-            return Optional.of(new OrderByToken(((SelectStatement) sqlStatement).getGroupByLastIndex() + 1));
+        if (((ShardingSelectOptimizedStatement) optimizedStatement).getOrderBy().isGenerated()) {
+            return Optional.of(createOrderByToken((ShardingSelectOptimizedStatement) optimizedStatement));
         }
         return Optional.absent();
+    }
+    
+    private OrderByToken createOrderByToken(final ShardingSelectOptimizedStatement optimizedStatement) {
+        OrderByToken result = new OrderByToken(optimizedStatement.getGroupBy().getLastIndex() + 1);
+        String columnLabel;
+        for (OrderByItem each : optimizedStatement.getOrderBy().getItems()) {
+            if (each.getSegment() instanceof ColumnOrderByItemSegment) {
+                ColumnOrderByItemSegment columnOrderByItemSegment = (ColumnOrderByItemSegment) each.getSegment();
+                QuoteCharacter quoteCharacter = columnOrderByItemSegment.getColumn().getQuoteCharacter();
+                columnLabel = quoteCharacter.getStartDelimiter() + columnOrderByItemSegment.getText() + quoteCharacter.getEndDelimiter();
+            } else if (each.getSegment() instanceof ExpressionOrderByItemSegment) {
+                columnLabel = ((ExpressionOrderByItemSegment) each.getSegment()).getText();
+            } else {
+                columnLabel = String.valueOf(each.getIndex());
+            }
+            result.getColumnLabels().add(columnLabel);
+            result.getOrderDirections().add(each.getSegment().getOrderDirection());
+        }
+        return result;
     }
 }

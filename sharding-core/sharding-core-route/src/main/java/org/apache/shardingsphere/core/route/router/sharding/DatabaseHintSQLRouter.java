@@ -18,8 +18,10 @@
 package org.apache.shardingsphere.core.route.router.sharding;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.SQLParseEngine;
-import org.apache.shardingsphere.core.parse.rule.registry.MasterSlaveParseRuleRegistry;
+import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptTransparentOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.sharding.statement.ShardingTransparentOptimizedStatement;
+import org.apache.shardingsphere.core.parse.core.SQLParseKernel;
+import org.apache.shardingsphere.core.parse.core.rule.registry.ParseRuleRegistry;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
@@ -46,13 +48,13 @@ public final class DatabaseHintSQLRouter implements ShardingRouter {
     
     @Override
     public SQLStatement parse(final String logicSQL, final boolean useCache) {
-        return new SQLParseEngine(MasterSlaveParseRuleRegistry.getInstance(), databaseType, logicSQL, null, null).parse();
+        return new SQLParseKernel(ParseRuleRegistry.getInstance(), databaseType, logicSQL).parse();
     }
     
     @Override
     // TODO insert SQL need parse gen key
-    public SQLRouteResult route(final SQLStatement sqlStatement, final List<Object> parameters) {
-        SQLRouteResult result = new SQLRouteResult(sqlStatement);
+    public SQLRouteResult route(final String logicSQL, final List<Object> parameters, final SQLStatement sqlStatement) {
+        SQLRouteResult result = new SQLRouteResult(new ShardingTransparentOptimizedStatement(sqlStatement), new EncryptTransparentOptimizedStatement(sqlStatement));
         RoutingResult routingResult = new DatabaseHintRoutingEngine(
                 shardingRule.getShardingDataSourceNames().getDataSourceNames(), (HintShardingStrategy) shardingRule.getDefaultDatabaseShardingStrategy()).route();
         result.setRoutingResult(routingResult);

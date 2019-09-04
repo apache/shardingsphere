@@ -19,8 +19,8 @@ package org.apache.shardingsphere.shardingproxy.backend.text;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.core.parse.SQLParseEngine;
-import org.apache.shardingsphere.core.parse.rule.registry.MasterSlaveParseRuleRegistry;
+import org.apache.shardingsphere.core.parse.core.SQLParseKernel;
+import org.apache.shardingsphere.core.parse.core.rule.registry.ParseRuleRegistry;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.SetStatement;
@@ -63,9 +63,9 @@ public final class TextProtocolBackendHandlerFactory {
         if (sql.toUpperCase().startsWith(ShardingCTLBackendHandlerFactory.SCTL)) {
             return ShardingCTLBackendHandlerFactory.newInstance(sql, backendConnection);
         }
-        SQLStatement sqlStatement = new SQLParseEngine(MasterSlaveParseRuleRegistry.getInstance(), databaseType, sql, null, null).parse();
+        SQLStatement sqlStatement = new SQLParseKernel(ParseRuleRegistry.getInstance(), databaseType, sql).parse();
         if (sqlStatement instanceof TCLStatement) {
-            return createTCLBackendHandler((TCLStatement) sqlStatement, backendConnection);
+            return createTCLBackendHandler(sql, (TCLStatement) sqlStatement, backendConnection);
         }
         if (sqlStatement instanceof DALStatement) {
             return createDALBackendHandler((DALStatement) sqlStatement, sql, backendConnection);
@@ -73,7 +73,7 @@ public final class TextProtocolBackendHandlerFactory {
         return new QueryBackendHandler(sql, backendConnection);
     }
     
-    private static TextProtocolBackendHandler createTCLBackendHandler(final TCLStatement tclStatement, final BackendConnection backendConnection) {
+    private static TextProtocolBackendHandler createTCLBackendHandler(final String sql, final TCLStatement tclStatement, final BackendConnection backendConnection) {
         if (tclStatement instanceof BeginTransactionStatement) {
             return new TransactionBackendHandler(TransactionOperationType.BEGIN, backendConnection);
         }
@@ -89,7 +89,7 @@ public final class TextProtocolBackendHandlerFactory {
         if (tclStatement instanceof RollbackStatement) {
             return new TransactionBackendHandler(TransactionOperationType.ROLLBACK, backendConnection);
         }
-        return new BroadcastBackendHandler(tclStatement.getLogicSQL(), backendConnection);
+        return new BroadcastBackendHandler(sql, backendConnection);
     }
     
     private static TextProtocolBackendHandler createDALBackendHandler(final DALStatement dalStatement, final String sql, final BackendConnection backendConnection) {

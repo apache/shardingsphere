@@ -21,6 +21,7 @@ import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.h2.jdbcx.JdbcXAConnection;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mariadb.jdbc.MariaXaConnection;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.postgresql.xa.PGXAConnection;
@@ -45,7 +46,12 @@ public final class XAConnectionFactoryTest {
     public void assertCreateMySQLXAConnection() {
         XAConnectionFactory.createXAConnection(DatabaseTypes.getActualDatabaseType("MySQL"), xaDataSource, connection);
     }
-    
+
+    @Test(expected = Exception.class)
+    public void assertCreateMariaDBXAConnection() {
+        assertThat(XAConnectionFactory.createXAConnection(DatabaseTypes.getActualDatabaseType("MariaDB"), xaDataSource, connection), instanceOf(MariaXaConnection.class));
+    }
+
     @Test
     public void assertCreatePostgreSQLXAConnection() {
         assertThat(XAConnectionFactory.createXAConnection(DatabaseTypes.getActualDatabaseType("PostgreSQL"), xaDataSource, connection), instanceOf(PGXAConnection.class));

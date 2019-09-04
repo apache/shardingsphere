@@ -17,13 +17,12 @@
 
 package org.apache.shardingsphere.core.parse.integrate.asserts;
 
-import org.apache.shardingsphere.core.parse.integrate.asserts.condition.ConditionAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.insert.InsertNamesAndValuesAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.table.TableAssert;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.EncryptParserResultSetRegistry;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.root.ParserResult;
+import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.loader.encrypt.EncryptSQLCasesRegistry;
@@ -41,8 +40,6 @@ public final class EncryptSQLStatementAssert {
     
     private final TableAssert tableAssert;
     
-    private final ConditionAssert conditionAssert;
-    
     private final InsertNamesAndValuesAssert insertNamesAndValuesAssert;
     
     public EncryptSQLStatementAssert(final SQLStatement actual, final String sqlCaseId, final SQLCaseType sqlCaseType) {
@@ -51,7 +48,6 @@ public final class EncryptSQLStatementAssert {
         this.actual = actual;
         expected = EncryptParserResultSetRegistry.getInstance().getRegistry().get(sqlCaseId);
         tableAssert = new TableAssert(assertMessage);
-        conditionAssert = new ConditionAssert(assertMessage);
         insertNamesAndValuesAssert = new InsertNamesAndValuesAssert(assertMessage, sqlCaseType);
     }
     
@@ -59,10 +55,7 @@ public final class EncryptSQLStatementAssert {
      * Assert SQL statement.
      */
     public void assertSQLStatement() {
-        tableAssert.assertTables(actual.getTables(), expected.getTables());
-        if (actual instanceof DMLStatement) {
-            conditionAssert.assertConditions(((DMLStatement) actual).getEncryptConditions(), expected.getEncryptConditions());
-        }
+        tableAssert.assertTables(actual.findSQLSegments(TableSegment.class), expected.getTables());
         if (actual instanceof InsertStatement) {
             insertNamesAndValuesAssert.assertInsertNamesAndValues((InsertStatement) actual, expected.getInsertColumnsAndValues());
         }

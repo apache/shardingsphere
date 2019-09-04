@@ -24,9 +24,9 @@ import org.apache.shardingsphere.api.config.sharding.strategy.ComplexShardingStr
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.fixture.ComplexKeysShardingAlgorithmFixture;
 import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
-import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
+import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.junit.Before;
 import org.junit.Test;
@@ -53,7 +53,7 @@ public final class ShowTablesMergedResultTest {
     
     private ResultSet resultSet;
     
-    private ShardingTableMetaData shardingTableMetaData;
+    private TableMetas tableMetas;
     
     @Before
     public void setUp() throws SQLException {
@@ -64,7 +64,7 @@ public final class ShowTablesMergedResultTest {
         shardingRule = new ShardingRule(shardingRuleConfig, Lists.newArrayList("ds"));
         Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(1, 1);
         tableMetaDataMap.put("table", new TableMetaData(Collections.<ColumnMetaData>emptyList(), Collections.<String>emptySet()));
-        shardingTableMetaData = new ShardingTableMetaData(tableMetaDataMap);
+        tableMetas = new TableMetas(tableMetaDataMap);
         resultSet = mock(ResultSet.class);
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
         when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
@@ -81,28 +81,28 @@ public final class ShowTablesMergedResultTest {
     
     @Test
     public void assertNextForEmptyQueryResult() throws SQLException {
-        ShowTablesMergedResult showTablesMergedResult = new ShowTablesMergedResult(shardingRule, new ArrayList<QueryResult>(), shardingTableMetaData);
+        ShowTablesMergedResult showTablesMergedResult = new ShowTablesMergedResult(shardingRule, new ArrayList<QueryResult>(), tableMetas);
         assertFalse(showTablesMergedResult.next());
     }
     
     @Test
     public void assertNextForActualTableNameInTableRule() throws SQLException {
         when(resultSet.getObject(1)).thenReturn("table_0");
-        ShowTablesMergedResult showTablesMergedResult = new ShowTablesMergedResult(shardingRule, queryResults, shardingTableMetaData);
+        ShowTablesMergedResult showTablesMergedResult = new ShowTablesMergedResult(shardingRule, queryResults, tableMetas);
         assertTrue(showTablesMergedResult.next());
     }
     
     @Test
     public void assertNextForActualTableNameNotInTableRuleWithDefaultDataSource() throws SQLException {
         when(resultSet.getObject(1)).thenReturn("table");
-        ShowTablesMergedResult showTablesMergedResult = new ShowTablesMergedResult(shardingRule, queryResults, shardingTableMetaData);
+        ShowTablesMergedResult showTablesMergedResult = new ShowTablesMergedResult(shardingRule, queryResults, tableMetas);
         assertTrue(showTablesMergedResult.next());
     }
     
     @Test
     public void assertNextForActualTableNameNotInTableRuleWithoutDefaultDataSource() throws SQLException {
         when(resultSet.getObject(1)).thenReturn("table_3");
-        ShowTablesMergedResult showTablesMergedResult = new ShowTablesMergedResult(shardingRule, queryResults, shardingTableMetaData);
+        ShowTablesMergedResult showTablesMergedResult = new ShowTablesMergedResult(shardingRule, queryResults, tableMetas);
         assertFalse(showTablesMergedResult.next());
     }
 }

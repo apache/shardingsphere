@@ -18,15 +18,13 @@
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.optimize.pagination.Pagination;
+import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.optimize.sharding.segment.select.pagination.Pagination;
+import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.NumberLiteralPaginationValueSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationValueSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.pojo.OffsetToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-
-import java.util.List;
 
 /**
  * Offset token generator.
@@ -36,21 +34,14 @@ import java.util.List;
 public final class OffsetTokenGenerator implements OptionalSQLTokenGenerator<ShardingRule>, IgnoreForSingleRoute {
     
     @Override
-    public Optional<OffsetToken> generateSQLToken(final SQLStatement sqlStatement, final List<Object> parameters, final ShardingRule shardingRule) {
-        if (!(sqlStatement instanceof SelectStatement)) {
+    public Optional<OffsetToken> generateSQLToken(
+            final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final ShardingRule shardingRule, final boolean isQueryWithCipherColumn) {
+        if (!(optimizedStatement instanceof ShardingSelectOptimizedStatement)) {
             return Optional.absent();
         }
-        Optional<PaginationValueSegment> offset = getLiteralOffsetSegment((SelectStatement) sqlStatement);
-        return offset.isPresent()
-                ? Optional.of(new OffsetToken(offset.get().getStartIndex(), offset.get().getStopIndex(), getRevisedOffset((SelectStatement) sqlStatement, parameters, offset.get())))
+        Pagination pagination = ((ShardingSelectOptimizedStatement) optimizedStatement).getPagination();
+        return pagination.getOffsetSegment().isPresent() && pagination.getOffsetSegment().get() instanceof NumberLiteralPaginationValueSegment
+                ? Optional.of(new OffsetToken(pagination.getOffsetSegment().get().getStartIndex(), pagination.getOffsetSegment().get().getStopIndex(), pagination.getRevisedOffset()))
                 : Optional.<OffsetToken>absent();
-    }
-    
-    private Optional<PaginationValueSegment> getLiteralOffsetSegment(final SelectStatement selectStatement) {
-        return selectStatement.getOffset() instanceof NumberLiteralPaginationValueSegment ? Optional.of(selectStatement.getOffset()) : Optional.<PaginationValueSegment>absent();
-    }
-    
-    private int getRevisedOffset(final SelectStatement selectStatement, final List<Object> parameters, final PaginationValueSegment offsetSegment) {
-        return new Pagination(offsetSegment, selectStatement.getRowCount(), parameters).getRevisedOffset();
     }
 }

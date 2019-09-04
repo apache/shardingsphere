@@ -23,6 +23,7 @@ import org.apache.shardingsphere.core.parse.integrate.jaxb.orderby.ExpectedOrder
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.OrderByItemSegment;
 
+import java.util.Collection;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -44,7 +45,7 @@ public final class OrderByAssert {
      * @param actual actual order by items
      * @param expected expected order by items
      */
-    public void assertOrderByItems(final List<OrderByItemSegment> actual, final List<ExpectedOrderByColumn> expected) {
+    public void assertOrderByItems(final Collection<OrderByItemSegment> actual, final List<ExpectedOrderByColumn> expected) {
         assertThat(assertMessage.getFullAssertMessage("Order by items size error: "), actual.size(), is(expected.size()));
         int count = 0;
         for (OrderByItemSegment each : actual) {
@@ -57,10 +58,9 @@ public final class OrderByAssert {
     
     private void assertOrderByItem(final ColumnOrderByItemSegment actual, final ExpectedOrderByColumn expected) {
         assertThat(assertMessage.getFullAssertMessage("Order by item owner assertion error: "),
-                actual.getColumn().getOwner().isPresent() ? actual.getColumn().getOwner().get().getName() : null, is(expected.getOwner()));
+                actual.getColumn().getOwner().isPresent() ? actual.getColumn().getOwner().get().getTableName() : null, is(expected.getOwner()));
         assertThat(assertMessage.getFullAssertMessage("Order by item name assertion error: "), actual.getColumn().getName(), is(expected.getName()));
         assertThat(assertMessage.getFullAssertMessage("Order by item order direction assertion error: "), actual.getOrderDirection().name(), is(expected.getOrderDirection()));
         // TODO assert nullOrderDirection
-        assertThat(assertMessage.getFullAssertMessage("Order by item index assertion error: "), actual.getIndex(), is(expected.getIndex()));
     }
 }

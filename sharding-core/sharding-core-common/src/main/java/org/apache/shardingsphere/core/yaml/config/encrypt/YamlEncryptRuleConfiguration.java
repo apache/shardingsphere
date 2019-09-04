@@ -25,7 +25,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Encrypt rule configuration for YAML.
+ * Encrypt rule configuration.
  *
  * @author panjuan
  */
@@ -34,4 +34,6 @@ import java.util.Map;
 public class YamlEncryptRuleConfiguration implements YamlConfiguration {
     
     private Map<String, YamlEncryptorRuleConfiguration> encryptors = new LinkedHashMap<>();
+    
+    private Map<String, YamlEncryptTableRuleConfiguration> tables = new LinkedHashMap<>();
 }

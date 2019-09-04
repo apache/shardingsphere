@@ -19,12 +19,13 @@ package org.apache.shardingsphere.core.merge.dql.orderby;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.OrderByItemSegment;
+import org.apache.shardingsphere.core.optimize.sharding.segment.select.orderby.OrderByItem;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -32,16 +33,33 @@ import java.util.List;
  * Order by value.
  * 
  * @author zhangliang
+ * @author yangyi
  */
-@RequiredArgsConstructor
 public final class OrderByValue implements Comparable<OrderByValue> {
     
     @Getter
     private final QueryResult queryResult;
     
-    private final List<OrderByItemSegment> orderByItems;
+    private final Collection<OrderByItem> orderByItems;
+    
+    private final List<Boolean> orderValuesCaseSensitive;
     
     private List<Comparable<?>> orderValues;
+    
+    public OrderByValue(final QueryResult queryResult, final Collection<OrderByItem> orderByItems) {
+        this.queryResult = queryResult;
+        this.orderByItems = orderByItems;
+        this.orderValuesCaseSensitive = getOrderValuesCaseSensitive();
+    }
+    
+    @SneakyThrows
+    private List<Boolean> getOrderValuesCaseSensitive() {
+        List<Boolean> result = new ArrayList<>(orderByItems.size());
+        for (OrderByItem each : orderByItems) {
+            result.add(queryResult.isCaseSensitive(each.getIndex()));
+        }
+        return result;
+    }
     
     /**
      * iterate next data.
@@ -57,7 +75,7 @@ public final class OrderByValue implements Comparable<OrderByValue> {
     
     private List<Comparable<?>> getOrderValues() throws SQLException {
         List<Comparable<?>> result = new ArrayList<>(orderByItems.size());
-        for (OrderByItemSegment each : orderByItems) {
+        for (OrderByItem each : orderByItems) {
             Object value = queryResult.getValue(each.getIndex(), Object.class);
             Preconditions.checkState(null == value || value instanceof Comparable, "Order by value must implements Comparable");
             result.add((Comparable<?>) value);
@@ -67,12 +85,14 @@ public final class OrderByValue implements Comparable<OrderByValue> {
     
     @Override
     public int compareTo(final OrderByValue o) {
-        for (int i = 0; i < orderByItems.size(); i++) {
-            OrderByItemSegment thisOrderBy = orderByItems.get(i);
-            int result = CompareUtil.compareTo(orderValues.get(i), o.orderValues.get(i), thisOrderBy.getOrderDirection(), thisOrderBy.getNullOrderDirection());
+        int i = 0;
+        for (OrderByItem each : orderByItems) {
+            int result = CompareUtil.compareTo(orderValues.get(i), o.orderValues.get(i), each.getSegment().getOrderDirection(),
+                each.getSegment().getNullOrderDirection(), orderValuesCaseSensitive.get(i));
             if (0 != result) {
                 return result;
             }
+            i++;
         }
         return 0;
     }

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.transaction.xa.jta.connection;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,8 +28,8 @@ import javax.sql.ConnectionEventListener;
 import javax.sql.StatementEventListener;
 import javax.sql.XAConnection;
 import javax.transaction.xa.XAResource;
-
 import java.sql.Connection;
+import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -56,22 +55,19 @@ public final class SingleXAConnectionTest {
     }
     
     @Test
-    @SneakyThrows
     public void assertGetConnection() {
         Connection actual = singleXAConnection.getConnection();
         assertThat(actual, is(connection));
     }
     
     @Test
-    @SneakyThrows
-    public void assertGetXAResource() {
+    public void assertGetXAResource() throws SQLException {
         XAResource actual = singleXAConnection.getXAResource();
         assertThat(actual, instanceOf(SingleXAResource.class));
     }
     
     @Test
-    @SneakyThrows
-    public void close() {
+    public void close() throws SQLException {
         singleXAConnection.close();
         verify(xaConnection).close();
     }

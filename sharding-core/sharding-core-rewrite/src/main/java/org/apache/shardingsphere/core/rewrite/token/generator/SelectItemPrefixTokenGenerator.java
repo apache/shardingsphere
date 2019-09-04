@@ -18,35 +18,27 @@
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.SelectItemsSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.item.AggregationDistinctSelectItemSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.SelectItems;
+import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
+import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SelectItemPrefixToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-
-import java.util.List;
 
 /**
  * Select item prefix token generator.
  *
  * @author panjuan
  */
-public final class SelectItemPrefixTokenGenerator implements OptionalSQLTokenGenerator<ShardingRule> {
+public final class SelectItemPrefixTokenGenerator implements OptionalSQLTokenGenerator<ShardingRule>, IgnoreForSingleRoute {
     
     @Override
-    public Optional<SelectItemPrefixToken> generateSQLToken(final SQLStatement sqlStatement, final List<Object> parameters, final ShardingRule shardingRule) {
-        if (!(sqlStatement instanceof SelectStatement)) {
+    public Optional<SelectItemPrefixToken> generateSQLToken(
+            final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final ShardingRule shardingRule, final boolean isQueryWithCipherColumn) {
+        if (!(optimizedStatement instanceof ShardingSelectOptimizedStatement)) {
             return Optional.absent();
         }
-        Optional<SelectItemsSegment> selectItemsSegment = sqlStatement.findSQLSegment(SelectItemsSegment.class);
-        if (selectItemsSegment.isPresent() && isContainAggregationDistinctSelectItemSegment(selectItemsSegment.get())) {
-            return Optional.of(new SelectItemPrefixToken(selectItemsSegment.get().getStartIndex()));
-        }
-        return Optional.absent();
-    }
-    
-    private boolean isContainAggregationDistinctSelectItemSegment(final SelectItemsSegment selectItemsSegment) {
-        return !selectItemsSegment.findSelectItemSegments(AggregationDistinctSelectItemSegment.class).isEmpty();
+        SelectItems selectItems = ((ShardingSelectOptimizedStatement) optimizedStatement).getSelectItems();
+        return selectItems.getAggregationDistinctSelectItems().isEmpty() ? Optional.<SelectItemPrefixToken>absent() : Optional.of(new SelectItemPrefixToken(selectItems.getStartIndex()));
     }
 }

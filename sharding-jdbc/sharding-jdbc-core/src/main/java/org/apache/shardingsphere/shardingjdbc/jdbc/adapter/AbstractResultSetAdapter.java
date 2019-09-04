@@ -18,7 +18,10 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.adapter;
 
 import com.google.common.base.Preconditions;
+import lombok.AccessLevel;
 import lombok.Getter;
+import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteCallback;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteTemplate;
@@ -32,12 +35,15 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Adapter for {@code ResultSet}.
  * 
  * @author zhangliang
+ * @author panjuan
  */
 public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperationResultSet {
     
@@ -51,26 +57,59 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     
     private final ForceExecuteTemplate<ResultSet> forceExecuteTemplate = new ForceExecuteTemplate<>();
     
-    public AbstractResultSetAdapter(final List<ResultSet> resultSets, final Statement statement) {
+    private final SQLRouteResult sqlRouteResult;
+    
+    @Getter(AccessLevel.PROTECTED)
+    private final Map<String, String> logicAndActualColumns; 
+    
+    public AbstractResultSetAdapter(final List<ResultSet> resultSets, final Statement statement, final SQLRouteResult sqlRouteResult) {
         Preconditions.checkArgument(!resultSets.isEmpty());
         this.resultSets = resultSets;
         this.statement = statement;
+        this.sqlRouteResult = sqlRouteResult;
+        logicAndActualColumns = createLogicAndActualColumns();
     }
     
     @Override
     public final ResultSetMetaData getMetaData() throws SQLException {
-        return new ShardingResultSetMetaData(resultSets.get(0).getMetaData(), getShardingRule());
+        return new ShardingResultSetMetaData(resultSets.get(0).getMetaData(), getShardingRule(), sqlRouteResult.getShardingStatement(), logicAndActualColumns);
+    }
+    
+    private Map<String, String> createLogicAndActualColumns() {
+        return isQueryWithCipherColumn() ? createLogicAndCipherColumns() : createLogicAndPlainColumns();
+    }
+    
+    private Map<String, String> createLogicAndCipherColumns() {
+        Map<String, String> result = new LinkedHashMap<>();
+        for (String each : sqlRouteResult.getShardingStatement().getTables().getTableNames()) {
+            result.putAll(getShardingRule().getEncryptRule().getLogicAndCipherColumns(each));
+        }
+        return result;
+    }
+    
+    private Map<String, String> createLogicAndPlainColumns() {
+        Map<String, String> result = new LinkedHashMap<>();
+        for (String each : sqlRouteResult.getShardingStatement().getTables().getTableNames()) {
+            result.putAll(getShardingRule().getEncryptRule().getLogicAndPlainColumns(each));
+        }
+        return result;
     }
     
     private ShardingRule getShardingRule() {
         return statement instanceof ShardingPreparedStatement 
-                ? ((ShardingPreparedStatement) statement).getConnection().getShardingContext().getShardingRule() 
-                : ((ShardingStatement) statement).getConnection().getShardingContext().getShardingRule();
+                ? ((ShardingPreparedStatement) statement).getConnection().getRuntimeContext().getRule() 
+                : ((ShardingStatement) statement).getConnection().getRuntimeContext().getRule();
+    }
+    
+    private boolean isQueryWithCipherColumn() {
+        return statement instanceof ShardingPreparedStatement
+                ? ((ShardingPreparedStatement) statement).getConnection().getRuntimeContext().getProps().<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN)
+                : ((ShardingStatement) statement).getConnection().getRuntimeContext().getProps().<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
     }
     
     @Override
     public final int findColumn(final String columnLabel) throws SQLException {
-        return resultSets.get(0).findColumn(columnLabel);
+        return resultSets.get(0).findColumn(getActualColumnLabel(columnLabel));
     }
     
     @Override
@@ -146,5 +185,9 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
                 resultSet.clearWarnings();
             }
         });
+    }
+    
+    protected final String getActualColumnLabel(final String columnLabel) {
+        return getLogicAndActualColumns().keySet().contains(columnLabel) ? getLogicAndActualColumns().get(columnLabel) : columnLabel;
     }
 }

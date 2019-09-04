@@ -18,9 +18,8 @@
 package org.apache.shardingsphere.shardingjdbc.orchestration.spring;
 
 import lombok.SneakyThrows;
-
-import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
-import org.apache.shardingsphere.api.config.encryptor.EncryptorRuleConfiguration;
+import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
+import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.rule.EncryptRule;
@@ -34,6 +33,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -56,32 +56,35 @@ public class OrchestrationEncryptNamespaceTest extends AbstractJUnit4SpringConte
     private EncryptRule getEncryptRule() {
         OrchestrationSpringEncryptDataSource encryptDataSource = (OrchestrationSpringEncryptDataSource) applicationContext.getBean("encryptDataSourceOrchestration");
         EncryptDataSource dataSource = (EncryptDataSource) FieldValueUtil.getFieldValue(encryptDataSource, "dataSource", true);
-        return dataSource.getEncryptRule();
+        return dataSource.getRuntimeContext().getRule();
     }
     
     private void assertEncryptRule(final EncryptRule encryptRule) {
-        assertNotNull(encryptRule.getEncryptRuleConfig());
-        EncryptRuleConfiguration ruleConfiguration = encryptRule.getEncryptRuleConfig();
-        assertThat(ruleConfiguration.getEncryptorRuleConfigs().size(), is(2));
-        EncryptorRuleConfiguration encryptorRule = ruleConfiguration.getEncryptorRuleConfigs().get("order_encryptor");
+        assertNotNull(encryptRule.getRuleConfiguration());
+        EncryptRuleConfiguration ruleConfiguration = encryptRule.getRuleConfiguration();
+        assertThat(ruleConfiguration.getEncryptors().size(), is(2));
+        assertThat(ruleConfiguration.getTables().size(), is(1));
+        assertThat(ruleConfiguration.getTables().get("t_order").getColumns().get("user_id").getCipherColumn(), is("user_encrypt"));
+        assertThat(ruleConfiguration.getTables().get("t_order").getColumns().get("order_id").getPlainColumn(), is("order_decrypt"));
+        EncryptorRuleConfiguration encryptorRule = ruleConfiguration.getEncryptors().get("encryptor_md5");
         assertNotNull(encryptorRule);
         assertThat(encryptorRule.getType(), is("MD5"));
-        assertThat(encryptorRule.getQualifiedColumns(), is("t_order.order_id"));
-        encryptorRule = ruleConfiguration.getEncryptorRuleConfigs().get("user_encryptor");
+        encryptorRule = ruleConfiguration.getEncryptors().get("encryptor_aes");
         assertThat(encryptorRule.getType(), is("AES"));
-        assertThat(encryptorRule.getQualifiedColumns(), is("t_order.user_id"));
         assertThat(encryptorRule.getProperties().getProperty("aes.key.value"), is("123456"));
     }
     
     @Test
     public void assertProperties() {
         boolean showSQL = getShardingProperties("encryptDataSourceOrchestration").getValue(ShardingPropertiesConstant.SQL_SHOW);
+        boolean queryWithCipherColumn = getShardingProperties("encryptDataSourceOrchestration").getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
         assertTrue(showSQL);
+        assertFalse(queryWithCipherColumn);
     }
     
     private ShardingProperties getShardingProperties(final String encryptDatasourceName) {
         OrchestrationSpringEncryptDataSource encryptDataSource = applicationContext.getBean(encryptDatasourceName, OrchestrationSpringEncryptDataSource.class);
         EncryptDataSource dataSource = (EncryptDataSource) FieldValueUtil.getFieldValue(encryptDataSource, "dataSource", true);
-        return dataSource.getShardingProperties();
+        return dataSource.getRuntimeContext().getProps();
     }
 }
