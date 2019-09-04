@@ -22,6 +22,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.predicate.value.ExpectedPredicateBetweenRightValue;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.predicate.value.ExpectedPredicateCompareRightValue;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.predicate.value.ExpectedPredicateInRightValue;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.predicate.value.ExpectedPredicateRightValue;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -43,4 +44,22 @@ public final class ExpectedPredicateSegment extends ExpectedBaseSegment {
 
     @XmlElement(name = "predicate-compare-right-value")
     private ExpectedPredicateCompareRightValue compareRightValue = new ExpectedPredicateCompareRightValue();
+
+    /**
+     * find expected right value type
+     * @param expectedPredicateRightValue
+     * @return right value
+     */
+    public <T extends ExpectedPredicateRightValue> T findExpectedRightValue(final Class<T> expectedPredicateRightValue) {
+        if (expectedPredicateRightValue.isAssignableFrom(ExpectedPredicateCompareRightValue.class)) {
+            return (T) compareRightValue;
+        }
+        if (expectedPredicateRightValue.isAssignableFrom(ExpectedPredicateInRightValue.class)) {
+            return (T) inRightValue;
+        }
+        if (expectedPredicateRightValue.isAssignableFrom(ExpectedPredicateBetweenRightValue.class)) {
+            return (T) betweenRightValue;
+        }
+        return null;
+    }
 }
