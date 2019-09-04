@@ -160,7 +160,7 @@ public final class StreamQueryResult implements QueryResult {
     
     private Object decrypt(final int columnIndex, final Object value) throws SQLException {
         Optional<ShardingEncryptor> shardingEncryptor = queryResultMetaData.getShardingEncryptor(columnIndex);
-        return shardingEncryptor.isPresent() ? shardingEncryptor.get().decrypt(getCiphertext(value)) : value;
+        return queryResultMetaData.isQueryWithCipherColumn() && shardingEncryptor.isPresent() ? shardingEncryptor.get().decrypt(getCiphertext(value)) : value;
     }
     
     private String getCiphertext(final Object value) {
