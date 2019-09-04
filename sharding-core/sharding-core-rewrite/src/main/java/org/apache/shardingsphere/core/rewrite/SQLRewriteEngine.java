@@ -43,6 +43,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 import org.apache.shardingsphere.spi.encrypt.ShardingQueryAssistedEncryptor;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -115,9 +116,33 @@ public final class SQLRewriteEngine {
     }
     
     private void encryptInsertOptimizedStatement(final EncryptRule encryptRule, final EncryptInsertOptimizedStatement insertOptimizedStatement) {
+        String tableName = insertOptimizedStatement.getTables().getSingleTableName();
         for (InsertValue insertValue : insertOptimizedStatement.getInsertValues()) {
+            if (encryptRule.containsQueryAssistedColumn(tableName)) {
+                fillAssistedQueryInsertValue(encryptRule, insertValue.getParameters(), tableName, insertOptimizedStatement.getColumnNames(), insertValue);
+            }
+            if (encryptRule.containsPlainColumn(tableName)) {
+                fillPlainInsertValue(encryptRule, insertValue.getParameters(), tableName, insertOptimizedStatement.getColumnNames(), insertValue);
+            }
             for (String each : insertOptimizedStatement.getColumnNames()) {
                 encryptInsertValue(encryptRule, insertValue, insertOptimizedStatement.getTables().getSingleTableName(), each);
+            }
+        }
+    }
+    
+    private void fillAssistedQueryInsertValue(final EncryptRule encryptRule,
+                                              final List<Object> parameters, final String tableName, final Collection<String> columnNames, final InsertValue insertValue) {
+        for (String each : columnNames) {
+            if (encryptRule.getAssistedQueryColumn(tableName, each).isPresent()) {
+                insertValue.appendValue((Comparable<?>) insertValue.getValue(each), parameters);
+            }
+        }
+    }
+    
+    private void fillPlainInsertValue(final EncryptRule encryptRule, final List<Object> parameters, final String tableName, final Collection<String> columnNames, final InsertValue insertValue) {
+        for (String each : columnNames) {
+            if (encryptRule.getPlainColumn(tableName, each).isPresent()) {
+                insertValue.appendValue((Comparable<?>) insertValue.getValue(each), parameters);
             }
         }
     }
