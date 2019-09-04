@@ -24,8 +24,7 @@ import lombok.NoArgsConstructor;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
 /**
@@ -41,7 +40,7 @@ public final class DataSourceUtil {
     private static Collection<Class<?>> generalClassType;
     
     static {
-        generalClassType = Sets.<Class<?>>newHashSet(boolean.class, Boolean.class, int.class, Integer.class, long.class, Long.class, String.class);
+        generalClassType = Sets.<Class<?>>newHashSet(boolean.class, Boolean.class, int.class, Integer.class, long.class, Long.class, String.class, Collection.class, List.class);
     }
     
     /**
@@ -77,6 +76,8 @@ public final class DataSourceUtil {
                     method.invoke(dataSource, Integer.parseInt(setterValue));
                 } else if (long.class == each || Long.class == each) {
                     method.invoke(dataSource, Long.parseLong(setterValue));
+                }else if (Collection.class == each || List.class == each) {
+                    method.invoke(dataSource, strToList(setterValue));
                 } else {
                     method.invoke(dataSource, setterValue);
                 }
@@ -84,5 +85,16 @@ public final class DataSourceUtil {
             } catch (final ReflectiveOperationException ignored) {
             }
         }
+    }
+    private static List<String> strToList(String param) {
+        List<String> result;
+        if(param.startsWith("[") && param.endsWith("]")) {
+            String tempStr = param.substring(1, param.length() -1);
+            result = Arrays.asList(tempStr.split(","));
+        } else {
+            result = new ArrayList<>();
+            result.add(param);
+        }
+        return result;
     }
 }
