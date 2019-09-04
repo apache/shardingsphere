@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.execute.sql.execute.result;
 
 import com.google.common.base.Optional;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
@@ -37,6 +38,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Calendar;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -53,13 +55,13 @@ public final class MemoryQueryResultTest {
     
     @Test
     public void assertConstructorWithShardingRule() throws SQLException {
-        MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet(), getShardingRule());
+        MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet(), getShardingRule(), new ShardingProperties(new Properties()));
         assertThat(queryResult.getQueryResultMetaData().getShardingEncryptor(1), is(Optional.fromNullable(shardingEncryptor)));
     }
     
     @Test
     public void assertConstructorWithEncryptRule() throws SQLException {
-        MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet(), getEncryptRule());
+        MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet(), getEncryptRule(), new ShardingProperties(new Properties()));
         assertThat(queryResult.getQueryResultMetaData().getShardingEncryptor(1), is(Optional.fromNullable(shardingEncryptor)));
     }
     
@@ -115,7 +117,7 @@ public final class MemoryQueryResultTest {
     @Test
     public void assertGetValueWithShardingRule() throws SQLException {
         when(shardingEncryptor.decrypt("1")).thenReturn("1");
-        MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet(), getShardingRule());
+        MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet(), getShardingRule(), new ShardingProperties(new Properties()));
         queryResult.next();
         assertThat(queryResult.getValue("order_id", Integer.class), Is.<Object>is("1"));
     }
