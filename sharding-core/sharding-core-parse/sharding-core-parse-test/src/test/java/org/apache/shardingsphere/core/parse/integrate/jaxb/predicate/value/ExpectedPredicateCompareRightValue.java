@@ -19,7 +19,9 @@ package org.apache.shardingsphere.core.parse.integrate.jaxb.predicate.value;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.expr.ExpectedExpressionSegment;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.expr.complex.ExpectedCommonExpressionSegment;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.expr.complex.ExpectedComplexExpressionSegment;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.expr.complex.ExpectedSubquerySegment;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.expr.simple.ExpectedLiteralExpressionSegment;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.expr.simple.ExpectedParamMarkerExpressionSegment;
@@ -48,4 +50,25 @@ public final class ExpectedPredicateCompareRightValue implements ExpectedPredica
 
     @XmlElement(name = "param-marker-expression")
     private ExpectedParamMarkerExpressionSegment paramMarkerExpression;
+
+    /**
+     * find expected expression
+     * @param expectedExpressionSegment
+     * @return  expression segment
+     */
+    public <T extends ExpectedExpressionSegment> T findExpectedExpression(final Class<T> expectedExpressionSegment) {
+        if (expectedExpressionSegment.isAssignableFrom(ExpectedParamMarkerExpressionSegment.class)) {
+            return (T) paramMarkerExpression;
+        }
+        if (expectedExpressionSegment.isAssignableFrom(ExpectedLiteralExpressionSegment.class)) {
+            return (T) literalExpression;
+        }
+        if (expectedExpressionSegment.isAssignableFrom(ExpectedCommonExpressionSegment.class)) {
+            return (T) commonExpressionSegment;
+        }
+        if (expectedExpressionSegment.isAssignableFrom(ExpectedComplexExpressionSegment.class)) {
+            return (T) subquerySegment;
+        }
+        return null;
+    }
 }

@@ -19,12 +19,23 @@ package org.apache.shardingsphere.core.parse.integrate.asserts.predicate;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.integrate.asserts.SQLStatementAssertMessage;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.expr.ExpectedExpressionSegment;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.expr.complex.ExpectedCommonExpressionSegment;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.expr.complex.ExpectedSubquerySegment;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.expr.simple.ExpectedLiteralExpressionSegment;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.expr.simple.ExpectedParamMarkerExpressionSegment;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.predicate.ExpectedAndPredicate;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.predicate.ExpectedColumnSegment;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.predicate.ExpectedPredicateSegment;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.predicate.ExpectedWhereSegment;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.predicate.value.ExpectedPredicateCompareRightValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.complex.CommonExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.complex.ComplexExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.complex.SubquerySegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.WhereSegment;
@@ -103,7 +114,25 @@ public final class PredicateAssert {
         assertThat(assertMessage.getFullAssertMessage("column segment table name assertion error: "), actual.getOwner().isPresent() ? actual.getOwner().get().getTableName() : null, is(expected.getOwner().getName()));
     }
 
+    /**
+     * assert expr and operation
+     * @param actual
+     * @param expected
+     */
     private void assertCompareRightValue(final PredicateCompareRightValue actual, final ExpectedPredicateCompareRightValue expected) {
         assertThat(assertMessage.getFullAssertMessage("right value operator assertion error: "),actual.getOperator(),is(expected.getOperator()));
+        if (actual.getExpression() instanceof ParameterMarkerExpressionSegment) {
+            assertThat(assertMessage.getFullAssertMessage("parameter marker expression parameterMarkerindex assertion error"),((ParameterMarkerExpressionSegment) actual.getExpression()).getParameterMarkerIndex(),is(expected.findExpectedExpression(ExpectedParamMarkerExpressionSegment.class).getParameterMarkerIndex()));
+        }
+        if (actual.getExpression() instanceof CommonExpressionSegment) {
+            assertThat(assertMessage.getFullAssertMessage("common expression text assertion error: "),((ComplexExpressionSegment) actual.getExpression()).getText(),is(expected.findExpectedExpression(ExpectedCommonExpressionSegment.class).getText()));
+        }
+        if (actual.getExpression() instanceof SubquerySegment) {
+            assertThat(assertMessage.getFullAssertMessage("subquery segment text assertion error: "),((ComplexExpressionSegment) actual.getExpression()).getText(),is(expected.findExpectedExpression(ExpectedSubquerySegment.class).getText()));
+        }
+        if (actual.getExpression() instanceof LiteralExpressionSegment) {
+            assertThat(assertMessage.getFullAssertMessage("literal assertion error:"),((LiteralExpressionSegment) actual.getExpression()).getLiterals().toString(),is(expected.findExpectedExpression(ExpectedLiteralExpressionSegment.class).getLiterals().toString()));
+        }
     }
+
 }
