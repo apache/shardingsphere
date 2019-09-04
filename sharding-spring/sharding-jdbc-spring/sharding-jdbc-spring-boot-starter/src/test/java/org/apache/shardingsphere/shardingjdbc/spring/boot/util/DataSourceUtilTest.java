@@ -24,6 +24,7 @@ import org.junit.Test;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -118,5 +119,12 @@ public final class DataSourceUtilTest {
         BasicDataSource actual = (BasicDataSource) DataSourceUtil.getDataSource(BasicDataSource.class.getName(), dataSourceProperties);
         assertThat(actual.getTimeBetweenEvictionRunsMillis(), is(16L));
         assertThat(actual.getMinEvictableIdleTimeMillis(), is(4000L));
+    }
+    @Test
+    public void assertDataSourceForCollectionValue() throws ReflectiveOperationException {
+        Map<String, Object> dataSourceProperties = new HashMap<>(2, 1);
+        dataSourceProperties.put("connectionInitSqls", "[set names utf8mb4]");
+        BasicDataSource actual = (BasicDataSource) DataSourceUtil.getDataSource(BasicDataSource.class.getName(), dataSourceProperties);
+        assertThat(actual.getConnectionInitSqls(), hasItem("set names utf8mb4"));
     }
 }
