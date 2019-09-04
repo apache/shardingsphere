@@ -19,12 +19,41 @@ package org.apache.shardingsphere.core.parse.integrate.jaxb.predicate.value;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.expr.complex.ExpectedCommonExpressionSegment;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.expr.complex.ExpectedSubquerySegment;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.expr.simple.ExpectedLiteralExpressionSegment;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.expr.simple.ExpectedParamMarkerExpressionSegment;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class ExpectedPredicateBetweenRightValue implements ExpectedPredicateRightValue {
+
+    @XmlElement(name = "between-common-expression")
+    private ExpectedCommonExpressionSegment betweenCommonExpressionSegment;
+
+    @XmlElement(name = "between-subquery-segment")
+    private ExpectedSubquerySegment betweenSubquerySegment;
+
+    @XmlElement(name = "between-literal-expression")
+    private ExpectedLiteralExpressionSegment betweenLiteralExpression;
+
+    @XmlElement(name = "between-param-marker-expression")
+    private ExpectedParamMarkerExpressionSegment betweenParamMarkerExpression;
+
+    @XmlElement(name = "and-subquery-segment")
+    private ExpectedSubquerySegment andSubquerySegment;
+
+    @XmlElement(name = "and-common-expression")
+    private ExpectedCommonExpressionSegment andCommonExpressionSegment;
+
+    @XmlElement(name = "and-literal-expression")
+    private ExpectedLiteralExpressionSegment andLiteralExpression;
+
+    @XmlElement(name = "and-param-marker-expression")
+    private ExpectedParamMarkerExpressionSegment andParamMarkerExpression;
 }

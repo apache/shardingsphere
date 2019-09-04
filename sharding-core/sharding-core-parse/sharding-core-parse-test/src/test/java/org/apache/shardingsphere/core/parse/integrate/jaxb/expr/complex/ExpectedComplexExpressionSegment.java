@@ -20,4 +20,11 @@ package org.apache.shardingsphere.core.parse.integrate.jaxb.expr.complex;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.expr.ExpectedExpressionSegment;
 
 public interface ExpectedComplexExpressionSegment extends ExpectedExpressionSegment {
+
+    /**
+     * Get text.
+     *
+     * @return text
+     */
+    String getText();
 }

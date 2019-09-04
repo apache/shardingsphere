@@ -19,12 +19,28 @@ package org.apache.shardingsphere.core.parse.integrate.jaxb.predicate;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.predicate.value.ExpectedPredicateBetweenRightValue;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.predicate.value.ExpectedPredicateCompareRightValue;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.predicate.value.ExpectedPredicateInRightValue;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class ExpectedPredicateSegment extends ExpectedBaseSegment {
+
+    @XmlElement(name = "column-segment")
+    private ExpectedColumnSegment column = new ExpectedColumnSegment();
+
+    @XmlElement(name = "predicate-between-right-value")
+    private ExpectedPredicateBetweenRightValue betweenRightValue = new ExpectedPredicateBetweenRightValue();
+
+    @XmlElement(name = "predicate-in-right-value")
+    private ExpectedPredicateInRightValue inRightValue = new ExpectedPredicateInRightValue();
+
+    @XmlElement(name = "predicate-compare-right-value")
+    private ExpectedPredicateCompareRightValue compareRightValue = new ExpectedPredicateCompareRightValue();
 }

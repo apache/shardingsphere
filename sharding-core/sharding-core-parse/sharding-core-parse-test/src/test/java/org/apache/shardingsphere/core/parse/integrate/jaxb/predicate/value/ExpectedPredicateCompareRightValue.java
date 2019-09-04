@@ -19,12 +19,33 @@ package org.apache.shardingsphere.core.parse.integrate.jaxb.predicate.value;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.expr.complex.ExpectedCommonExpressionSegment;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.expr.complex.ExpectedSubquerySegment;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.expr.simple.ExpectedLiteralExpressionSegment;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.expr.simple.ExpectedParamMarkerExpressionSegment;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class ExpectedPredicateCompareRightValue implements ExpectedPredicateRightValue {
+
+    @XmlAttribute
+    private String operator;
+
+    @XmlElement(name = "common-expression")
+    private ExpectedCommonExpressionSegment commonExpressionSegment;
+
+    @XmlElement(name = "subquery-segment")
+    private ExpectedSubquerySegment subquerySegment;
+
+    @XmlElement(name = "literal-expression")
+    private ExpectedLiteralExpressionSegment literalExpression;
+
+    @XmlElement(name = "param-marker-expression")
+    private ExpectedParamMarkerExpressionSegment paramMarkerExpression;
 }

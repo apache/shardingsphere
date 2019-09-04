@@ -20,11 +20,22 @@ package org.apache.shardingsphere.core.parse.integrate.jaxb.predicate;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.*;
+import java.util.LinkedList;
+import java.util.List;
 
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class ExpectedWhereSegment extends ExpectedBaseSegment {
+
+    @XmlAttribute
+    private Integer parametersCount;
+
+    @XmlElementWrapper(name = "and-predicates")
+    @XmlElement(name = "and-predicate")
+    private List<ExpectedAndPredicate> andPredicates = new LinkedList<>();
+
+    @XmlAttribute
+    private Integer parameterStartIndex;
 }

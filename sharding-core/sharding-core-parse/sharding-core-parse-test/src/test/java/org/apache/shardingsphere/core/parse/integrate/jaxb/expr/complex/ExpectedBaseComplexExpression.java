@@ -22,9 +22,19 @@ import lombok.Setter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ExpectedBaseComplexExpression implements ExpectedComplexExpressionSegment {
+
+    @XmlAttribute(name = "start-index")
+    private Integer startIndex;
+
+    @XmlAttribute(name = "stop-index")
+    private Integer stopIndex;
+
+    @XmlAttribute
+    private String text;
 }

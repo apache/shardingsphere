@@ -19,12 +19,25 @@ package org.apache.shardingsphere.core.parse.integrate.jaxb.predicate;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.core.parse.core.constant.QuoteCharacter;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.selectitem.ExpectedTableSegment;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class ExpectedColumnSegment extends ExpectedBaseSegment {
+
+    @XmlAttribute
+    private String name;
+
+    @XmlAttribute
+    private QuoteCharacter quoteCharacter = QuoteCharacter.NONE;
+
+    @XmlElement(name = "table-segment")
+    private ExpectedTableSegment owner = new ExpectedTableSegment();
 }
