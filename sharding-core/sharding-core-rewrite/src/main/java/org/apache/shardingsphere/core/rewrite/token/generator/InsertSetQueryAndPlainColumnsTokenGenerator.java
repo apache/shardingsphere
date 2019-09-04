@@ -21,8 +21,6 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
-import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptInsertOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingInsertOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
@@ -57,40 +55,23 @@ public final class InsertSetQueryAndPlainColumnsTokenGenerator implements Option
     }
     
     private Optional<InsertSetQueryAndPlainColumnsToken> createInsertSetAddItemsToken(final InsertOptimizedStatement optimizedStatement, final EncryptRule encryptRule) {
-        if (0 == encryptRule.getAssistedQueryAndPlainColumnCount(optimizedStatement.getTables().getSingleTableName())) {
+        String tableName = optimizedStatement.getTables().getSingleTableName();
+        if (0 == encryptRule.getAssistedQueryAndPlainColumnCount(tableName)) {
             return Optional.absent();
         }
-        List<String> assistedQueryAndPlainColumnNames = getAssistedQueryAndPlainColumnNames(optimizedStatement, encryptRule);
+        List<String> encryptDerivedColumnNames = getEncryptDerivedColumnNames(tableName, encryptRule);
         return Optional.of(new InsertSetQueryAndPlainColumnsToken(
-                getStartIndex(optimizedStatement), assistedQueryAndPlainColumnNames, getAssistedQueryAndPlainColumnValues(optimizedStatement, assistedQueryAndPlainColumnNames)));
+                getStartIndex(optimizedStatement), encryptDerivedColumnNames, getEncryptDerivedValues(optimizedStatement, encryptDerivedColumnNames)));
     }
     
-    private List<String> getAssistedQueryAndPlainColumnNames(final InsertOptimizedStatement optimizedStatement, final EncryptRule encryptRule) {
+    private List<String> getEncryptDerivedColumnNames(final String tableName, final EncryptRule encryptRule) {
         List<String> result = new LinkedList<>();
-        result.addAll(getAssistedQueryColumnNames(optimizedStatement, encryptRule));
-        result.addAll(getPlainColumnNames(optimizedStatement, encryptRule));
-        return result;
-    }
-    
-    private List<String> getAssistedQueryColumnNames(final InsertOptimizedStatement optimizedStatement, final EncryptRule encryptRule) {
-        List<String> result = new LinkedList<>();
-        Collection<String> columnNames = optimizedStatement instanceof ShardingInsertOptimizedStatement
-                ? ((ShardingInsertOptimizedStatement) optimizedStatement).getColumnNames() : ((EncryptInsertOptimizedStatement) optimizedStatement).getColumnNames();
-        for (String each : columnNames) {
-            Optional<String> assistedQueryColumn = encryptRule.getAssistedQueryColumn(optimizedStatement.getTables().getSingleTableName(), each);
+        for (String each : encryptRule.getLogicColumns(tableName)) {
+            Optional<String> assistedQueryColumn = encryptRule.getAssistedQueryColumn(tableName, each);
             if (assistedQueryColumn.isPresent()) {
                 result.add(assistedQueryColumn.get());
             }
-        }
-        return result;
-    }
-    
-    private List<String> getPlainColumnNames(final InsertOptimizedStatement optimizedStatement, final EncryptRule encryptRule) {
-        List<String> result = new LinkedList<>();
-        Collection<String> columnNames = optimizedStatement instanceof ShardingInsertOptimizedStatement
-                ? ((ShardingInsertOptimizedStatement) optimizedStatement).getColumnNames() : ((EncryptInsertOptimizedStatement) optimizedStatement).getColumnNames();
-        for (String each : columnNames) {
-            Optional<String> plainColumn = encryptRule.getPlainColumn(optimizedStatement.getTables().getSingleTableName(), each);
+            Optional<String> plainColumn = encryptRule.getPlainColumn(tableName, each);
             if (plainColumn.isPresent()) {
                 result.add(plainColumn.get());
             }
@@ -105,9 +86,9 @@ public final class InsertSetQueryAndPlainColumnsTokenGenerator implements Option
         return assignments.get(assignments.size() - 1).getStopIndex() + 1;
     }
     
-    private List<ExpressionSegment> getAssistedQueryAndPlainColumnValues(final InsertOptimizedStatement optimizedStatement, final Collection<String> assistedQueryAndPlainColumnNames) {
+    private List<ExpressionSegment> getEncryptDerivedValues(final InsertOptimizedStatement optimizedStatement, final Collection<String> encryptDerivedColumnNames) {
         List<ExpressionSegment> result = new LinkedList<>();
-        for (String each : assistedQueryAndPlainColumnNames) {
+        for (String each : encryptDerivedColumnNames) {
             result.add(optimizedStatement.getInsertValues().get(0).getValueExpression(each));
         }
         return result;

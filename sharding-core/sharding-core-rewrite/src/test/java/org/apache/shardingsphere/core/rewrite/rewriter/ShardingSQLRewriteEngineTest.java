@@ -946,7 +946,7 @@ public final class ShardingSQLRewriteEngineTest {
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(
                 createSQLRouteResultForInsertWithQueryAssistedShardingEncryptor(), "INSERT INTO `table_w` set name = 10 ON DUPLICATE KEY UPDATE name = VALUES(name)", Collections.emptyList());
         assertThat(rewriteEngine.generateSQL(routingUnit, logicTableAndActualTables).getSql(),
-                is("INSERT INTO `table_w` set cipher = 'encryptValue', id = 1, query = 'assistedEncryptValue', plain = 1 ON DUPLICATE KEY UPDATE name = VALUES(name)"));
+                is("INSERT INTO `table_w` set cipher = 'encryptValue', id = 1, query = 'assistedEncryptValue', plain = 10 ON DUPLICATE KEY UPDATE name = VALUES(name)"));
     }
     
     private SQLRouteResult createSQLRouteResultForInsertWithQueryAssistedShardingEncryptor() {
@@ -958,9 +958,8 @@ public final class ShardingSQLRewriteEngineTest {
         insertStatement.getAllSQLSegments().add(new TableSegment(12, 20, "`table_w`"));
         insertStatement.setTable(new TableSegment(0, 0, "table_w"));
         ShardingInsertOptimizedStatement shardingStatement = new ShardingInsertOptimizedStatement(insertStatement, Collections.<ShardingCondition>emptyList(), Collections.singletonList("name"), null);
-        Collection<ExpressionSegment> assignments = Arrays.<ExpressionSegment>asList(
-            new LiteralExpressionSegment(0, 0, 10), new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 10));
-        shardingStatement.getInsertValues().add(new InsertValue(Arrays.asList("name", "id", "plain", "query"), assignments, 3, Collections.emptyList(), 0));
+        Collection<ExpressionSegment> assignments = Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(0, 0, 10), new LiteralExpressionSegment(0, 0, 1));
+        shardingStatement.getInsertValues().add(new InsertValue(Arrays.asList("name", "id", "query", "plain"), assignments, 3, Collections.emptyList(), 0));
         shardingStatement.getInsertValues().get(0).getDataNodes().add(new DataNode("db0.table_1"));
         SQLRouteResult result = new SQLRouteResult(shardingStatement, new EncryptTransparentOptimizedStatement(insertStatement));
         result.setRoutingResult(new RoutingResult());
