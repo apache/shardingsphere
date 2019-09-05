@@ -79,13 +79,13 @@ public final class WhereEncryptColumnTokenGenerator implements CollectionSQLToke
     }
     
     private String getEncryptedColumnName(final EncryptRule encryptRule, final EncryptCondition encryptCondition) {
-        Optional<String> assistedQueryColumn = encryptRule.getAssistedQueryColumn(encryptCondition.getTableName(), encryptCondition.getColumnName());
+        Optional<String> assistedQueryColumn = encryptRule.findAssistedQueryColumn(encryptCondition.getTableName(), encryptCondition.getColumnName());
         return assistedQueryColumn.isPresent() 
                 ? assistedQueryColumn.get() : encryptRule.getCipherColumn(encryptCondition.getTableName(), encryptCondition.getColumnName());
     }
     
     private List<Object> getEncryptedColumnValues(final EncryptRule encryptRule, final EncryptCondition encryptCondition, final List<Object> originalValues) {
-        Optional<String> assistedQueryColumn = encryptRule.getAssistedQueryColumn(encryptCondition.getTableName(), encryptCondition.getColumnName());
+        Optional<String> assistedQueryColumn = encryptRule.findAssistedQueryColumn(encryptCondition.getTableName(), encryptCondition.getColumnName());
         return assistedQueryColumn.isPresent() 
                 ? encryptRule.getEncryptAssistedColumnValues(encryptCondition.getTableName(), encryptCondition.getColumnName(), originalValues) 
                 : encryptRule.getEncryptColumnValues(encryptCondition.getTableName(), encryptCondition.getColumnName(), originalValues);
@@ -108,7 +108,7 @@ public final class WhereEncryptColumnTokenGenerator implements CollectionSQLToke
     }
     
     private String getPlainColumn(final EncryptRule encryptRule, final EncryptCondition encryptCondition) {
-        Optional<String> result = encryptRule.getPlainColumn(encryptCondition.getTableName(), encryptCondition.getColumnName());
+        Optional<String> result = encryptRule.findPlainColumn(encryptCondition.getTableName(), encryptCondition.getColumnName());
         if (result.isPresent()) {
             return result.get();
         }

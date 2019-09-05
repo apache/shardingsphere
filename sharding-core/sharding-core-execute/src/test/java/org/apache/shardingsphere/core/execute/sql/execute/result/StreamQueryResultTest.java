@@ -79,7 +79,7 @@ public final class StreamQueryResultTest {
     
     private EncryptRule getEncryptRule() {
         EncryptRule result = mock(EncryptRule.class);
-        when(result.getShardingEncryptor("order", "order_id")).thenReturn(Optional.fromNullable(shardingEncryptor));
+        when(result.findShardingEncryptor("order", "order_id")).thenReturn(Optional.fromNullable(shardingEncryptor));
         when(result.isCipherColumn("order", "order_id")).thenReturn(false);
         return result;
     }

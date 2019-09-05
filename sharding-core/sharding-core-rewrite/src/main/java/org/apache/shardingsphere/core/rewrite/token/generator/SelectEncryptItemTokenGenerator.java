@@ -83,7 +83,7 @@ public final class SelectEncryptItemTokenGenerator implements CollectionSQLToken
     private SelectEncryptItemToken createSelectCipherItemToken(final SelectItemSegment selectItemSegment, 
                                                                final String tableName, final EncryptRule encryptRule, final boolean isQueryWithCipherColumn) {
         String columnName = ((ColumnSelectItemSegment) selectItemSegment).getName();
-        Optional<String> plainColumn = encryptRule.getPlainColumn(tableName, columnName);
+        Optional<String> plainColumn = encryptRule.findPlainColumn(tableName, columnName);
         if (!isQueryWithCipherColumn && plainColumn.isPresent()) {
             return createSelectEncryptItemToken(selectItemSegment, plainColumn.get());
         }

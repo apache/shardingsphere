@@ -58,7 +58,7 @@ public final class QueryResultMetaDataTest {
         shardingEncryptor = mock(ShardingEncryptor.class);
         ShardingRule result = mock(ShardingRule.class);
         EncryptRule encryptRule = mock(EncryptRule.class);
-        when(encryptRule.getShardingEncryptor(anyString(), anyString())).thenReturn(Optional.of(shardingEncryptor));
+        when(encryptRule.findShardingEncryptor(anyString(), anyString())).thenReturn(Optional.of(shardingEncryptor));
         when(result.getEncryptRule()).thenReturn(encryptRule);
         when(result.getLogicTableNames(anyString())).thenReturn(Collections.<String>emptyList());
         when(result.findTableRuleByActualTable("table")).thenReturn(Optional.<TableRule>absent());

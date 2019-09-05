@@ -78,7 +78,7 @@ public final class ShardingSelectOptimizeEngineTest {
     public void setUp() {
         when(shardingRule.isShardingColumn("column", "tbl")).thenReturn(true);
         EncryptRule encryptRule = mock(EncryptRule.class);
-        when(encryptRule.getShardingEncryptor("tbl", "column")).thenReturn(Optional.<ShardingEncryptor>absent());
+        when(encryptRule.findShardingEncryptor("tbl", "column")).thenReturn(Optional.<ShardingEncryptor>absent());
         when(shardingRule.getEncryptRule()).thenReturn(encryptRule);
         selectStatement = new SelectStatement();
         selectStatement.getAllSQLSegments().add(new TableSegment(0, 0, "tbl"));

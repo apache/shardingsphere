@@ -86,7 +86,7 @@ public abstract class AbstractBaseExecutorTest {
         ShardingEncryptor shardingEncryptor = mock(ShardingEncryptor.class);
         when(shardingEncryptor.decrypt(anyString())).thenReturn("decryptValue");
         EncryptRule encryptRule = mock(EncryptRule.class);
-        when(encryptRule.getShardingEncryptor(anyString(), anyString())).thenReturn(Optional.of(shardingEncryptor));
+        when(encryptRule.findShardingEncryptor(anyString(), anyString())).thenReturn(Optional.of(shardingEncryptor));
         when(shardingRule.getEncryptRule()).thenReturn(encryptRule);
         when(shardingRule.findTableRuleByActualTable("table_x")).thenReturn(Optional.<TableRule>absent());
         return shardingRule;

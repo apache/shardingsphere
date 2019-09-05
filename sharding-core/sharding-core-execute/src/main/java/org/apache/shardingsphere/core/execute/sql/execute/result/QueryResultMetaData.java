@@ -144,7 +144,7 @@ public final class QueryResultMetaData {
      */
     public Optional<ShardingEncryptor> getShardingEncryptor(final int columnIndex) throws SQLException {
         String logicTable = getTableName(columnIndex);
-        return encryptRule.getShardingEncryptor(logicTable, getLogicColumn(logicTable, columnIndex));
+        return encryptRule.findShardingEncryptor(logicTable, getLogicColumn(logicTable, columnIndex));
     }
     
     private String getTableName(final int columnIndex) throws SQLException {

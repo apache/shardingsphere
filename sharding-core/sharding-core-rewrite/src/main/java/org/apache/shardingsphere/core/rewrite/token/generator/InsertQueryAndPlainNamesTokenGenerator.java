@@ -63,11 +63,11 @@ public final class InsertQueryAndPlainNamesTokenGenerator implements OptionalSQL
     private List<String> getEncryptDerivedColumnNames(final String tableName, final EncryptRule encryptRule) {
         List<String> result = new LinkedList<>();
         for (String each : encryptRule.getLogicColumns(tableName)) {
-            Optional<String> assistedQueryColumn = encryptRule.getAssistedQueryColumn(tableName, each);
+            Optional<String> assistedQueryColumn = encryptRule.findAssistedQueryColumn(tableName, each);
             if (assistedQueryColumn.isPresent()) {
                 result.add(assistedQueryColumn.get());
             }
-            Optional<String> plainColumn = encryptRule.getPlainColumn(tableName, each);
+            Optional<String> plainColumn = encryptRule.findPlainColumn(tableName, each);
             if (plainColumn.isPresent()) {
                 result.add(plainColumn.get());
             }
