@@ -125,16 +125,6 @@ public final class EncryptRule implements BaseRule {
     }
     
     /**
-     * Get logic columns.
-     *
-     * @param logicTable logic table
-     * @return logic columns
-     */
-    public Collection<String> getLogicColumns(final String logicTable) {
-        return tables.containsKey(logicTable) ? tables.get(logicTable).getLogicColumns() : Collections.<String>emptyList();
-    }
-    
-    /**
      * Find plain column.
      *
      * @param logicTable logic table name
@@ -143,10 +133,6 @@ public final class EncryptRule implements BaseRule {
      */
     public Optional<String> findPlainColumn(final String logicTable, final String logicColumn) {
         return tables.containsKey(logicTable) ? tables.get(logicTable).getPlainColumn(logicColumn) : Optional.<String>absent();
-    }
-    
-    private Collection<String> getPlainColumns(final String logicTable) {
-        return tables.containsKey(logicTable) ? tables.get(logicTable).getPlainColumns() : Collections.<String>emptyList();
     }
     
     /**
@@ -213,6 +199,10 @@ public final class EncryptRule implements BaseRule {
      */
     public Integer getAssistedQueryAndPlainColumnCount(final String logicTable) {
         return getAssistedQueryColumns(logicTable).size() + getPlainColumns(logicTable).size();
+    }
+    
+    private Collection<String> getPlainColumns(final String logicTable) {
+        return tables.containsKey(logicTable) ? tables.get(logicTable).getPlainColumns() : Collections.<String>emptyList();
     }
     
     /**

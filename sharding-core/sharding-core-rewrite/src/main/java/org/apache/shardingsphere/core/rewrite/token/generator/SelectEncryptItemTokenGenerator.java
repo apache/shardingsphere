@@ -27,6 +27,7 @@ import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SelectEncryptItemToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
+import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -67,17 +68,20 @@ public final class SelectEncryptItemTokenGenerator implements CollectionSQLToken
             return Collections.emptyList();
         }
         String tableName = optimizedStatement.getTables().getSingleTableName();
-        Collection<String> logicColumns = encryptRule.getLogicColumns(tableName);
+        Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
+        if (!encryptTable.isPresent()) {
+            return Collections.emptyList();
+        }
         for (SelectItemSegment each : selectItemsSegment.get().getSelectItems()) {
-            if (isLogicColumn(each, logicColumns)) {
+            if (isLogicColumn(each, encryptTable.get())) {
                 result.add(createSelectCipherItemToken(each, tableName, encryptRule, isQueryWithCipherColumn));
             }
         }
         return result;
     }
     
-    private boolean isLogicColumn(final SelectItemSegment each, final Collection<String> logicColumns) {
-        return each instanceof ColumnSelectItemSegment && logicColumns.contains(((ColumnSelectItemSegment) each).getName());
+    private boolean isLogicColumn(final SelectItemSegment selectItemSegment, final EncryptTable encryptTable) {
+        return selectItemSegment instanceof ColumnSelectItemSegment && encryptTable.getLogicColumns().contains(((ColumnSelectItemSegment) selectItemSegment).getName());
     }
     
     private SelectEncryptItemToken createSelectCipherItemToken(final SelectItemSegment selectItemSegment, 

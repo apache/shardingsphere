@@ -70,7 +70,7 @@ public final class EncryptTable {
      * @return logic column
      */
     public Collection<String> getLogicColumns() {
-        return columns.keySet();        
+        return columns.keySet();
     }
     
     /**

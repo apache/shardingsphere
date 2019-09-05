@@ -27,9 +27,11 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegme
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertSetQueryAndPlainColumnsToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
+import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -65,8 +67,12 @@ public final class InsertSetQueryAndPlainColumnsTokenGenerator implements Option
     }
     
     private List<String> getEncryptDerivedColumnNames(final String tableName, final EncryptRule encryptRule) {
+        Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
+        if (!encryptTable.isPresent()) {
+            return Collections.emptyList();
+        }
         List<String> result = new LinkedList<>();
-        for (String each : encryptRule.getLogicColumns(tableName)) {
+        for (String each : encryptTable.get().getLogicColumns()) {
             Optional<String> assistedQueryColumn = encryptRule.findAssistedQueryColumn(tableName, each);
             if (assistedQueryColumn.isPresent()) {
                 result.add(assistedQueryColumn.get());
