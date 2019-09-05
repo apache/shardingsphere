@@ -15,21 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.api.segment;
+package org.apache.shardingsphere.core.parse.integrate.jaxb.expr.complex;
 
-import java.util.Collection;
+import lombok.Getter;
+import lombok.Setter;
 
-/**
- * Insert columns.
- *
- * @author zhangliang
- */
-public interface InsertColumns {
-    
-    /**
-     * Get regular column names.
-     * 
-     * @return regular column names
-     */
-    Collection<String> getRegularColumnNames();
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+
+@Getter
+@Setter
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class ExpectedSubquerySegment extends ExpectedBaseComplexExpression {
 }

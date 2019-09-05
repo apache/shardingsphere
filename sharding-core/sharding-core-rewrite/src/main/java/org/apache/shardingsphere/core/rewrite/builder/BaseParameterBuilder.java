@@ -29,6 +29,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 /**
  * Base parameter builder.
@@ -40,7 +41,7 @@ public final class BaseParameterBuilder implements ParameterBuilder {
     
     private final List<Object> originalParameters = new LinkedList<>();
     
-    private final Map<Integer, Object> addedIndexAndParameters = new HashMap<>();
+    private final Map<Integer, Object> addedIndexAndParameters = new TreeMap<>();
     
     private final Map<Integer, Object> replacedIndexAndParameters = new HashMap<>();
     
@@ -83,11 +84,11 @@ public final class BaseParameterBuilder implements ParameterBuilder {
     @Override
     public List<Object> getParameters() {
         List<Object> result = new LinkedList<>(originalParameters);
-        for (Entry<Integer, Object> entry : addedIndexAndParameters.entrySet()) {
-            result.add(entry.getKey(), entry.getValue());
-        }
         for (Entry<Integer, Object> entry : replacedIndexAndParameters.entrySet()) {
             result.set(entry.getKey(), entry.getValue());
+        }
+        for (Entry<Integer, Object> entry : ((TreeMap<Integer, Object>) addedIndexAndParameters).descendingMap().entrySet()) {
+            result.add(entry.getKey(), entry.getValue());
         }
         return result;
     }

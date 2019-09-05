@@ -98,7 +98,7 @@ public final class ShardingResultSetTest {
         ShardingRule shardingRule = mock(ShardingRule.class);
         when(shardingRule.getLogicTableNames(anyString())).thenReturn(Collections.singletonList("test"));
         EncryptRule encryptRule = mock(EncryptRule.class);
-        when(encryptRule.getShardingEncryptor(anyString(), anyString())).thenReturn(Optional.<ShardingEncryptor>absent());
+        when(encryptRule.findShardingEncryptor(anyString(), anyString())).thenReturn(Optional.<ShardingEncryptor>absent());
         when(shardingRule.getEncryptRule()).thenReturn(encryptRule);
         when(runtimeContext.getRule()).thenReturn(shardingRule);
         when(runtimeContext.getProps()).thenReturn(new ShardingProperties(new Properties()));

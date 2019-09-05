@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.rewrite.token.pojo;
 
-import lombok.Getter;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.complex.ComplexExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
@@ -30,7 +29,6 @@ import java.util.List;
  *
  * @author panjuan
  */
-@Getter
 public final class InsertSetQueryAndPlainColumnsToken extends SQLToken implements Attachable {
     
     private final List<String> columnNames;

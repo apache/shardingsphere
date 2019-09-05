@@ -52,7 +52,7 @@ public final class UpdateEncryptColumnTokenGenerator implements CollectionSQLTok
         Collection<EncryptColumnToken> result = new LinkedList<>();
         String tableName = optimizedStatement.getTables().getSingleTableName();
         for (AssignmentSegment each : ((UpdateStatement) optimizedStatement.getSQLStatement()).getSetAssignment().getAssignments()) {
-            if (encryptRule.getShardingEncryptor(tableName, each.getColumn().getName()).isPresent()) {
+            if (encryptRule.findShardingEncryptor(tableName, each.getColumn().getName()).isPresent()) {
                 result.add(createUpdateEncryptColumnToken(parameterBuilder, encryptRule, tableName, each));
             }
         }
@@ -69,7 +69,7 @@ public final class UpdateEncryptColumnTokenGenerator implements CollectionSQLTok
     private EncryptColumnToken createUpdateEncryptParameterColumnToken(final ParameterBuilder parameterBuilder, 
                                                                        final EncryptRule encryptRule, final String tableName, final AssignmentSegment assignmentSegment) {
         UpdateEncryptParameterColumnToken result = new UpdateEncryptParameterColumnToken(assignmentSegment.getColumn().getStartIndex(), assignmentSegment.getStopIndex());
-        Optional<String> plainColumn = encryptRule.getPlainColumn(tableName, assignmentSegment.getColumn().getName());
+        Optional<String> plainColumn = encryptRule.findPlainColumn(tableName, assignmentSegment.getColumn().getName());
         if (plainColumn.isPresent()) {
             result.addUpdateColumn(plainColumn.get());
             result.addUpdateColumn(encryptRule.getCipherColumn(tableName, assignmentSegment.getColumn().getName()));
@@ -100,7 +100,7 @@ public final class UpdateEncryptColumnTokenGenerator implements CollectionSQLTok
     
     private void addAssistedQueryUpdateColumn(final ParameterBuilder parameterBuilder, final EncryptRule encryptRule,
                                               final String tableName, final AssignmentSegment assignmentSegment, final UpdateEncryptParameterColumnToken result) {
-        Optional<String> assistedQueryColumn = encryptRule.getAssistedQueryColumn(tableName, assignmentSegment.getColumn().getName());
+        Optional<String> assistedQueryColumn = encryptRule.findAssistedQueryColumn(tableName, assignmentSegment.getColumn().getName());
         if (assistedQueryColumn.isPresent()) {
             result.addUpdateColumn(assistedQueryColumn.get());
             addAssistedQueryColumnValueToParameterBuilder(parameterBuilder, encryptRule, tableName, assignmentSegment);
@@ -126,7 +126,7 @@ public final class UpdateEncryptColumnTokenGenerator implements CollectionSQLTok
     
     private void addPlainUpdateColumn(final EncryptRule encryptRule, final String tableName, final AssignmentSegment assignmentSegment, final UpdateEncryptLiteralColumnToken result) {
         Object originalColumnValue = ((LiteralExpressionSegment) assignmentSegment.getValue()).getLiterals();
-        Optional<String> plainColumn = encryptRule.getPlainColumn(tableName, assignmentSegment.getColumn().getName());
+        Optional<String> plainColumn = encryptRule.findPlainColumn(tableName, assignmentSegment.getColumn().getName());
         if (plainColumn.isPresent()) {
             result.addUpdateColumn(plainColumn.get(), originalColumnValue);
         }
@@ -141,7 +141,7 @@ public final class UpdateEncryptColumnTokenGenerator implements CollectionSQLTok
     
     private void addAssistedQueryUpdateColumn(final EncryptRule encryptRule, final String tableName, final AssignmentSegment assignmentSegment, final UpdateEncryptLiteralColumnToken result) {
         Object originalColumnValue = ((LiteralExpressionSegment) assignmentSegment.getValue()).getLiterals();
-        Optional<String> assistedQueryColumn = encryptRule.getAssistedQueryColumn(tableName, assignmentSegment.getColumn().getName());
+        Optional<String> assistedQueryColumn = encryptRule.findAssistedQueryColumn(tableName, assignmentSegment.getColumn().getName());
         if (assistedQueryColumn.isPresent()) {
             Object assistedQueryColumnValue = encryptRule.getEncryptAssistedColumnValues(
                     tableName, assignmentSegment.getColumn().getName(), Collections.singletonList(originalColumnValue)).iterator().next();

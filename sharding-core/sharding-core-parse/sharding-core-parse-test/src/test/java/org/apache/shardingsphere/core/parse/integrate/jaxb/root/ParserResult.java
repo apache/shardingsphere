@@ -24,6 +24,7 @@ import org.apache.shardingsphere.core.parse.integrate.jaxb.groupby.ExpectedGroup
 import org.apache.shardingsphere.core.parse.integrate.jaxb.insert.ExpectedInsertColumnsAndValues;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.orderby.ExpectedOrderByColumn;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.pagination.ExpectedPaginationValue;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.predicate.ExpectedWhereSegment;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.selectitem.ExpectedSelectItems;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.table.ExpectedAlterTable;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.table.ExpectedTable;
@@ -88,6 +89,9 @@ public final class ParserResult {
 
     @XmlElement(name = "select-items")
     private ExpectedSelectItems selectItems = new ExpectedSelectItems();
+
+    @XmlElement(name = "where-segment")
+    private ExpectedWhereSegment whereSegment;
     
     /**
      * Get parameters.

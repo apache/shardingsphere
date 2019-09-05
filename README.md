@@ -8,7 +8,7 @@
 [![Stargazers over time](https://starchart.cc/apache/incubator-shardingsphere.svg)](https://starchart.cc/apache/incubator-shardingsphere)
 
 [![Total Lines](https://tokei.rs/b1/github/apache/incubator-shardingsphere?category=lines)](https://github.com/apache/incubator-shardingsphere)
-[![Build Status](https://travis-ci.org/apache/incubator-shardingsphere.svg?branch=dev)](https://travis-ci.org/apache/incubator-shardingsphere)
+[![Build Status](https://builds.apache.org/job/shardingsphere-ci-dev/badge/icon)](https://builds.apache.org/job/shardingsphere-ci-dev/)
 [![Coverage Status](https://coveralls.io/repos/github/apache/incubator-shardingsphere/badge.svg?branch=dev)](https://coveralls.io/github/apache/incubator-shardingsphere?branch=dev)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/278600ed40ad48e988ab485b439abbcd)](https://www.codacy.com/app/terrymanu/sharding-sphere?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=sharding-sphere/sharding-sphere&amp;utm_campaign=Badge_Grade)
 [![snyk](https://snyk.io/test/github/apache/incubator-shardingsphere/badge.svg?targetFile=pom.xml)](https://snyk.io/test/github/apache/incubator-shardingsphere?targetFile=pom.xml)
@@ -49,7 +49,7 @@ It can be considered as an enhanced JDBC driver, which is fully compatible with 
 
 ### Sharding-Proxy
 
-[![Download](https://img.shields.io/badge/release-download-orange.svg)](https://www.apache.org/dyn/closer.cgi?path=incubator/shardingsphere/4.0.0-RC1/apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy-bin.tar.gz)
+[![Download](https://img.shields.io/badge/release-download-orange.svg)](https://www.apache.org/dyn/closer.cgi?path=incubator/shardingsphere/4.0.0-RC2/apache-shardingsphere-incubating-4.0.0-RC2-sharding-proxy-bin.tar.gz)
 [![Docker Pulls](https://img.shields.io/docker/pulls/shardingsphere/sharding-proxy.svg)](https://store.docker.com/community/images/shardingsphere/sharding-proxy)
 
 Sharding-Proxy defines itself as a transparent database proxy, providing a database server that encapsulates database binary protocol to support heterogeneous languages. 
@@ -113,7 +113,7 @@ Architects can adjust the system architecture to the most applicable one to curr
 * Orchestration & Governance
 * Data Encryption
 * Tracing & Observability
-* Elastic scaling out (Planing)
+* Elastic scaling out (Planning)
 
 ## Project Status
 

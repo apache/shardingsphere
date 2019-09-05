@@ -21,10 +21,9 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.optimize.api.segment.OptimizedInsertValue;
+import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
 import org.apache.shardingsphere.core.optimize.api.segment.Tables;
 import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 
@@ -48,30 +47,12 @@ public final class EncryptInsertOptimizedStatement implements InsertOptimizedSta
     
     private final Collection<String> columnNames;
     
-    private final List<OptimizedInsertValue> optimizedInsertValues = new LinkedList<>();
+    private final List<InsertValue> insertValues = new LinkedList<>();
     
     public EncryptInsertOptimizedStatement(final InsertStatement sqlStatement, final TableMetas tableMetas) {
         this.sqlStatement = sqlStatement;
         tables = new Tables(sqlStatement);
         columnNames = sqlStatement.useDefaultColumns() ? tableMetas.getAllColumnNames(sqlStatement.getTable().getTableName()) : sqlStatement.getColumnNames();
-    }
-    
-    /**
-     * Add optimized insert value.
-     *
-     * @param derivedColumnNames derived column names
-     * @param valueExpressions value expressions
-     * @param parameters SQL parameters
-     * @param startIndexOfAppendedParameters start index of appended parameters
-     * @return optimized insert value
-     */
-    public OptimizedInsertValue addOptimizedInsertValue(final Collection<String> derivedColumnNames,
-                                                        final ExpressionSegment[] valueExpressions, final Object[] parameters, final int startIndexOfAppendedParameters) {
-        List<String> allColumnNames = new LinkedList<>(columnNames);
-        allColumnNames.addAll(derivedColumnNames);
-        OptimizedInsertValue result = new OptimizedInsertValue(allColumnNames, valueExpressions, parameters, startIndexOfAppendedParameters);
-        optimizedInsertValues.add(result);
-        return result;
     }
     
     @Override

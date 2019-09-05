@@ -21,23 +21,21 @@ import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
-import org.apache.shardingsphere.core.optimize.api.segment.InsertValuesFactory;
-import org.apache.shardingsphere.core.optimize.api.segment.OptimizedInsertValue;
 import org.apache.shardingsphere.core.optimize.sharding.engnie.ShardingOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.sharding.segment.condition.engine.InsertClauseShardingConditionEngine;
 import org.apache.shardingsphere.core.optimize.sharding.segment.insert.GeneratedKey;
-import org.apache.shardingsphere.core.optimize.sharding.segment.insert.ShardingInsertColumns;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingInsertOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.OnDuplicateKeyColumnsSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -52,42 +50,49 @@ public final class ShardingInsertOptimizeEngine implements ShardingOptimizeEngin
     @Override
     public ShardingInsertOptimizedStatement optimize(final ShardingRule shardingRule,
                                                      final TableMetas tableMetas, final String sql, final List<Object> parameters, final InsertStatement sqlStatement) {
-        InsertClauseShardingConditionEngine shardingConditionEngine = new InsertClauseShardingConditionEngine(shardingRule);
-        ShardingInsertColumns insertColumns = new ShardingInsertColumns(shardingRule, tableMetas, sqlStatement);
-        Collection<InsertValue> insertValues = InsertValuesFactory.createInsertValues(sqlStatement);
-        Optional<GeneratedKey> generatedKey = GeneratedKey.getGenerateKey(shardingRule, parameters, sqlStatement, insertColumns);
-        boolean isGeneratedValue = generatedKey.isPresent() && generatedKey.get().isGenerated();
-        Iterator<Comparable<?>> generatedValues = isGeneratedValue ? generatedKey.get().getGeneratedValues().iterator() : null;
-        Collection<String> allColumnNames = new LinkedHashSet<>(insertColumns.getRegularColumnNames());
-        if (generatedKey.isPresent()) {
-            allColumnNames.add(generatedKey.get().getColumnName());
-        }
-        allColumnNames.addAll(shardingRule.getEncryptRule().getAssistedQueryAndPlainColumns(sqlStatement.getTable().getTableName()));
-        List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(sqlStatement, parameters, allColumnNames, insertValues, generatedKey.orNull());
-        ShardingInsertOptimizedStatement result = new ShardingInsertOptimizedStatement(sqlStatement, shardingConditions, insertColumns, generatedKey.orNull());
         String tableName = sqlStatement.getTable().getTableName();
-        checkDuplicateKeyForShardingKey(shardingRule, sqlStatement, tableName);
+        Collection<String> columnNames = sqlStatement.useDefaultColumns() ? tableMetas.getAllColumnNames(tableName) : sqlStatement.getColumnNames();
+        Optional<GeneratedKey> generatedKey = GeneratedKey.getGenerateKey(shardingRule, parameters, sqlStatement, columnNames);
+        Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(tableName);
+        boolean isGeneratedValue = generatedKey.isPresent() && generatedKey.get().isGenerated();
+        Iterator<Comparable<?>> generatedValues = null;
+        if (isGeneratedValue) {
+            columnNames.remove(generatedKey.get().getColumnName());
+            generatedValues = generatedKey.get().getGeneratedValues().iterator();
+        }
+        Collection<String> derivedColumnNames = getDerivedColumnNames(shardingRule, tableName, generatedKey.orNull());
+        Collection<String> allColumnNames = new LinkedHashSet<>(columnNames);
+        allColumnNames.addAll(derivedColumnNames);
         int derivedColumnsCount = getDerivedColumnsCount(shardingRule, tableName, isGeneratedValue);
-        int parametersCount = 0;
-        for (InsertValue each : insertValues) {
-            Object[] currentParameters = each.getParameters(parameters, parametersCount, derivedColumnsCount);
-            String generateKeyColumnName = shardingRule.findGenerateKeyColumnName(sqlStatement.getTable().getTableName()).orNull();
-            Collection<String> encryptDerivedColumnNames = shardingRule.getEncryptRule().getAssistedQueryAndPlainColumns(sqlStatement.getTable().getTableName());
-            OptimizedInsertValue optimizedInsertValue = result.createOptimizedInsertValue(
-                    generateKeyColumnName, encryptDerivedColumnNames, each.getValueExpressions(derivedColumnsCount), currentParameters, each.getParametersCount());
-            result.addOptimizedInsertValue(optimizedInsertValue);
+        InsertClauseShardingConditionEngine shardingConditionEngine = new InsertClauseShardingConditionEngine(shardingRule);
+        List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(sqlStatement, parameters, allColumnNames, generatedKey.orNull());
+        ShardingInsertOptimizedStatement result = new ShardingInsertOptimizedStatement(sqlStatement, shardingConditions, columnNames, generatedKey.orNull());
+        checkDuplicateKeyForShardingKey(shardingRule, sqlStatement, tableName);
+        int parametersOffset = 0;
+        Collection<String> encryptDerivedColumnNames = shardingRule.getEncryptRule().getAssistedQueryAndPlainColumns(tableName);
+        for (Collection<ExpressionSegment> each : sqlStatement.getAllValueExpressions()) {
+            InsertValue insertValue = createInsertValue(columnNames, generateKeyColumnName.orNull(), encryptDerivedColumnNames, each, derivedColumnsCount, parameters, parametersOffset);
+            result.getInsertValues().add(insertValue);
             if (isGeneratedValue) {
-                optimizedInsertValue.appendValue(generatedValues.next(), Arrays.asList(currentParameters));
+                insertValue.appendValue(generatedValues.next());
             }
-            if (shardingRule.getEncryptRule().containsQueryAssistedColumn(tableName)) {
-                fillAssistedQueryOptimizedInsertValue(shardingRule, tableName, insertColumns.getRegularColumnNames(), optimizedInsertValue, Arrays.asList(currentParameters));
-            }
-            if (shardingRule.getEncryptRule().containsPlainColumn(tableName)) {
-                fillPlainOptimizedInsertValue(shardingRule, tableName, insertColumns.getRegularColumnNames(), optimizedInsertValue, Arrays.asList(currentParameters));
-            }
-            parametersCount += each.getParametersCount();
+            parametersOffset += insertValue.getParametersCount();
         }
         return result;
+    }
+    
+    private Collection<String> getDerivedColumnNames(final ShardingRule shardingRule, final String tableName, final GeneratedKey generatedKey) {
+        Collection<String> result = new LinkedHashSet<>();
+        if (null != generatedKey) {
+            result.add(generatedKey.getColumnName());
+        }
+        result.addAll(shardingRule.getEncryptRule().getAssistedQueryAndPlainColumns(tableName));
+        return result;
+    }
+    
+    private int getDerivedColumnsCount(final ShardingRule shardingRule, final String tableName, final boolean isGeneratedValue) {
+        int encryptDerivedColumnsCount = shardingRule.getEncryptRule().getAssistedQueryAndPlainColumns(tableName).size();
+        return isGeneratedValue ? encryptDerivedColumnsCount + 1 : encryptDerivedColumnsCount;
     }
     
     private void checkDuplicateKeyForShardingKey(final ShardingRule shardingRule, final InsertStatement sqlStatement, final String tableName) {
@@ -106,26 +111,11 @@ public final class ShardingInsertOptimizeEngine implements ShardingOptimizeEngin
         return false;
     }
     
-    private int getDerivedColumnsCount(final ShardingRule shardingRule, final String tableName, final boolean isGeneratedValue) {
-        int assistedQueryAndPlainColumnsCount = shardingRule.getEncryptRule().getAssistedQueryAndPlainColumnCount(tableName);
-        return isGeneratedValue ? assistedQueryAndPlainColumnsCount + 1 : assistedQueryAndPlainColumnsCount;
-    }
-    
-    private void fillAssistedQueryOptimizedInsertValue(final ShardingRule shardingRule,
-                                                       final String tableName, final Collection<String> columnNames, final OptimizedInsertValue optimizedInsertValue, final List<Object> parameters) {
-        for (String each : columnNames) {
-            if (shardingRule.getEncryptRule().getAssistedQueryColumn(tableName, each).isPresent()) {
-                optimizedInsertValue.appendValue((Comparable<?>) optimizedInsertValue.getValue(each), parameters);
-            }
-        }
-    }
-    
-    private void fillPlainOptimizedInsertValue(final ShardingRule shardingRule,
-                                               final String tableName, final Collection<String> columnNames, final OptimizedInsertValue optimizedInsertValue, final List<Object> parameters) {
-        for (String each : columnNames) {
-            if (shardingRule.getEncryptRule().getPlainColumn(tableName, each).isPresent()) {
-                optimizedInsertValue.appendValue((Comparable<?>) optimizedInsertValue.getValue(each), parameters);
-            }
-        }
+    private InsertValue createInsertValue(final Collection<String> columnNames, final String generateKeyColumnName, final Collection<String> derivedColumnNames, 
+                                          final Collection<ExpressionSegment> assignments, final int derivedColumnsCount, final List<Object> parameters, final int parametersOffset) {
+        List<String> allColumnNames = new LinkedList<>(columnNames);
+        allColumnNames.add(generateKeyColumnName);
+        allColumnNames.addAll(derivedColumnNames);
+        return new InsertValue(allColumnNames, assignments, derivedColumnsCount, parameters, parametersOffset);
     }
 }

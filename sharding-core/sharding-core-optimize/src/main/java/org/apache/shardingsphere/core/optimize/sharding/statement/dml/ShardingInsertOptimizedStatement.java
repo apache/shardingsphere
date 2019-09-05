@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.optimize.sharding.statement.dml;
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.shardingsphere.core.optimize.api.segment.OptimizedInsertValue;
+import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
 import org.apache.shardingsphere.core.optimize.api.segment.Tables;
 import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.encrypt.condition.EncryptCondition;
@@ -28,8 +28,6 @@ import org.apache.shardingsphere.core.optimize.encrypt.condition.EncryptConditio
 import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingConditions;
 import org.apache.shardingsphere.core.optimize.sharding.segment.insert.GeneratedKey;
-import org.apache.shardingsphere.core.optimize.sharding.segment.insert.ShardingInsertColumns;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
 import java.util.Collection;
@@ -48,45 +46,17 @@ public final class ShardingInsertOptimizedStatement extends ShardingConditionOpt
     
     private final Tables tables;
     
-    private final ShardingInsertColumns insertColumns;
+    private final Collection<String> columnNames;
     
     private final GeneratedKey generatedKey;
     
-    private final List<OptimizedInsertValue> optimizedInsertValues = new LinkedList<>();
+    private final List<InsertValue> insertValues = new LinkedList<>();
     
-    public ShardingInsertOptimizedStatement(final SQLStatement sqlStatement, 
-                                            final List<ShardingCondition> shardingConditions, final ShardingInsertColumns insertColumns, final GeneratedKey generatedKey) {
+    public ShardingInsertOptimizedStatement(final SQLStatement sqlStatement, final List<ShardingCondition> shardingConditions, final Collection<String> columnNames, final GeneratedKey generatedKey) {
         super(sqlStatement, new ShardingConditions(shardingConditions), new EncryptConditions(Collections.<EncryptCondition>emptyList()));
         tables = new Tables(sqlStatement);
-        this.insertColumns = insertColumns;
+        this.columnNames = columnNames;
         this.generatedKey = generatedKey;
-    }
-    
-    /**
-     * Create optimized insert value.
-     *
-     * @param generateKeyColumnName generate key column name
-     * @param derivedColumnNames derived column names
-     * @param valueExpressions value expressions
-     * @param parameters SQL parameters
-     * @param startIndexOfAppendedParameters start index of appended parameters
-     * @return optimized insert value
-     */
-    public OptimizedInsertValue createOptimizedInsertValue(final String generateKeyColumnName, final Collection<String> derivedColumnNames,
-                                                           final ExpressionSegment[] valueExpressions, final Object[] parameters, final int startIndexOfAppendedParameters) {
-        List<String> allColumnNames = new LinkedList<>(insertColumns.getRegularColumnNames());
-        allColumnNames.add(generateKeyColumnName);
-        allColumnNames.addAll(derivedColumnNames);
-        return new OptimizedInsertValue(allColumnNames, valueExpressions, parameters, startIndexOfAppendedParameters);
-    }
-    
-    /**
-     * Add optimized insert value.
-     *
-     * @param  optimizedInsertValue optimized insert value
-     */
-    public void addOptimizedInsertValue(final OptimizedInsertValue optimizedInsertValue) {
-        optimizedInsertValues.add(optimizedInsertValue);
     }
     
     /**

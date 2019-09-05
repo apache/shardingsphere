@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.optimize.api.segment.OptimizedInsertValue;
+import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
 import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.InsertValuesSegment;
@@ -27,7 +27,6 @@ import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertValuesToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
-import java.util.Arrays;
 import java.util.Collection;
 
 /**
@@ -51,8 +50,8 @@ public final class InsertValuesTokenGenerator implements OptionalSQLTokenGenerat
     
     private InsertValuesToken createInsertValuesToken(final InsertOptimizedStatement optimizedStatement, final Collection<InsertValuesSegment> insertValuesSegments) {
         InsertValuesToken result = new InsertValuesToken(getStartIndex(insertValuesSegments), getStopIndex(insertValuesSegments));
-        for (OptimizedInsertValue each : optimizedStatement.getOptimizedInsertValues()) {
-            result.addInsertValueToken(Arrays.asList(each.getValueExpressions()), each.getDataNodes());
+        for (InsertValue each : optimizedStatement.getInsertValues()) {
+            result.addInsertValueToken(each.getValueExpressions(), each.getDataNodes());
         }
         return result;
     }

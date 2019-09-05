@@ -22,7 +22,7 @@ import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.core.optimize.api.segment.OptimizedInsertValue;
+import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
 import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingConditionOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingInsertOptimizedStatement;
@@ -116,7 +116,7 @@ public final class StandardRoutingEngine implements RoutingEngine {
         for (ShardingCondition each : optimizedStatement.getShardingConditions().getConditions()) {
             Collection<DataNode> dataNodes = route(tableRule, getShardingValuesFromShardingConditions(shardingRule.getDatabaseShardingStrategy(tableRule).getShardingColumns(), each),
                     getShardingValuesFromShardingConditions(shardingRule.getTableShardingStrategy(tableRule).getShardingColumns(), each));
-            reviseOptimizedInsertValue(each, dataNodes);
+            reviseInsertValue(each, dataNodes);
             result.addAll(dataNodes);
         }
         return result;
@@ -130,7 +130,7 @@ public final class StandardRoutingEngine implements RoutingEngine {
         Collection<DataNode> result = new LinkedList<>();
         for (ShardingCondition each : optimizedStatement.getShardingConditions().getConditions()) {
             Collection<DataNode> dataNodes = route(tableRule, getDatabaseShardingValues(tableRule, each), getTableShardingValues(tableRule, each));
-            reviseOptimizedInsertValue(each, dataNodes);
+            reviseInsertValue(each, dataNodes);
             result.addAll(dataNodes);
         }
         return result;
@@ -214,19 +214,19 @@ public final class StandardRoutingEngine implements RoutingEngine {
         return result;
     }
     
-    private void reviseOptimizedInsertValue(final ShardingCondition shardingCondition, final Collection<DataNode> dataNodes) {
+    private void reviseInsertValue(final ShardingCondition shardingCondition, final Collection<DataNode> dataNodes) {
         if (optimizedStatement instanceof ShardingInsertOptimizedStatement) {
-            for (OptimizedInsertValue each : ((ShardingInsertOptimizedStatement) optimizedStatement).getOptimizedInsertValues()) {
-                if (isQualifiedOptimizedInsertValue(each, shardingCondition)) {
+            for (InsertValue each : ((ShardingInsertOptimizedStatement) optimizedStatement).getInsertValues()) {
+                if (isQualifiedInsertValue(each, shardingCondition)) {
                     each.getDataNodes().addAll(dataNodes);
                 }
             }
         }
     }
     
-    private boolean isQualifiedOptimizedInsertValue(final OptimizedInsertValue optimizedInsertValue, final ShardingCondition shardingCondition) {
+    private boolean isQualifiedInsertValue(final InsertValue insertValue, final ShardingCondition shardingCondition) {
         for (RouteValue each : shardingCondition.getRouteValues()) {
-            Object value = optimizedInsertValue.getValue(each.getColumnName());
+            Object value = insertValue.getValue(each.getColumnName());
             if (!value.equals(((ListRouteValue) each).getValues().iterator().next())) {
                 return false;
             }

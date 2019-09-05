@@ -72,7 +72,7 @@ public final class InsertSetCipherColumnTokenGenerator implements CollectionSQLT
     
     private Optional<InsertSetCipherColumnToken> createInsertSetEncryptValueToken(final InsertOptimizedStatement optimizedStatement, final EncryptRule encryptRule, final AssignmentSegment segment) {
         String tableName = optimizedStatement.getTables().getSingleTableName();
-        Optional<ShardingEncryptor> shardingEncryptor = encryptRule.getShardingEncryptor(tableName, segment.getColumn().getName());
+        Optional<ShardingEncryptor> shardingEncryptor = encryptRule.findShardingEncryptor(tableName, segment.getColumn().getName());
         if (shardingEncryptor.isPresent()) {
             String cipherColumnName = encryptRule.getCipherColumn(tableName, segment.getColumn().getName());
             ExpressionSegment cipherColumnValue = getCipherColumnValue(optimizedStatement, segment);
@@ -83,6 +83,6 @@ public final class InsertSetCipherColumnTokenGenerator implements CollectionSQLT
     
     private ExpressionSegment getCipherColumnValue(final InsertOptimizedStatement optimizedStatement, final AssignmentSegment assignmentSegment) {
         return assignmentSegment.getValue() instanceof ParameterMarkerExpressionSegment
-                ? assignmentSegment.getValue() : optimizedStatement.getOptimizedInsertValues().get(0).getValueExpression(assignmentSegment.getColumn().getName());
+                ? assignmentSegment.getValue() : optimizedStatement.getInsertValues().get(0).getValueExpression(assignmentSegment.getColumn().getName());
     }
 }
