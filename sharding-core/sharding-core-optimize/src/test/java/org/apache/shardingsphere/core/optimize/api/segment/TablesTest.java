@@ -65,6 +65,15 @@ public final class TablesTest {
     }
     
     @Test
+    public void assertIsSingleTableWithNameConflictAlias() {
+        SelectStatement selectStatement = new SelectStatement();
+        selectStatement.getAllSQLSegments().add(createTableSegment("table", "tbl"));
+        selectStatement.getAllSQLSegments().add(createTableSegment("tbl", null));
+        Tables tables = new Tables(selectStatement);
+        assertTrue(tables.isSingleTable());
+    }
+    
+    @Test
     public void assertIsNotSingleTable() {
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.getAllSQLSegments().add(createTableSegment("table_1", "tbl_1"));
