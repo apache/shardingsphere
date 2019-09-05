@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.execute.sql.execute.result;
 
 import com.google.common.base.Optional;
+import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
@@ -28,6 +29,7 @@ import org.junit.Test;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -48,7 +50,7 @@ public final class QueryResultMetaDataTest {
     public void setUp() throws SQLException {
         ResultSetMetaData resultSetMetaData = getResultMetaData();
         ShardingRule shardingRule = getShardingRule();
-        queryResultMetaData = new QueryResultMetaData(resultSetMetaData, shardingRule);
+        queryResultMetaData = new QueryResultMetaData(resultSetMetaData, shardingRule, new ShardingProperties(new Properties()));
     }
     
     @SuppressWarnings("unchecked")

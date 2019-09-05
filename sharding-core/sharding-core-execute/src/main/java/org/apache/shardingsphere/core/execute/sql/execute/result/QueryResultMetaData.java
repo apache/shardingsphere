@@ -18,6 +18,9 @@
 package org.apache.shardingsphere.core.execute.sql.execute.result;
 
 import com.google.common.base.Optional;
+import lombok.Getter;
+import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
+import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
@@ -44,18 +47,23 @@ public final class QueryResultMetaData {
 
     private final Map<String, Integer> columnLabelAndIndexes;
     
-    public QueryResultMetaData(final ResultSetMetaData resultSetMetaData, final ShardingRule shardingRule) throws SQLException {
+    @Getter
+    private final boolean queryWithCipherColumn;
+    
+    public QueryResultMetaData(final ResultSetMetaData resultSetMetaData, final ShardingRule shardingRule, final ShardingProperties properties) throws SQLException {
         this.resultSetMetaData = resultSetMetaData;
         this.shardingRule = shardingRule;
         this.encryptRule = shardingRule.getEncryptRule();
         columnLabelAndIndexes = getColumnLabelAndIndexMap();
+        queryWithCipherColumn = properties.getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
     }
     
-    public QueryResultMetaData(final ResultSetMetaData resultSetMetaData, final EncryptRule encryptRule) throws SQLException {
+    public QueryResultMetaData(final ResultSetMetaData resultSetMetaData, final EncryptRule encryptRule, final ShardingProperties properties) throws SQLException {
         this.resultSetMetaData = resultSetMetaData;
         this.shardingRule = null;
         this.encryptRule = encryptRule;
         columnLabelAndIndexes = getColumnLabelAndIndexMap();
+        queryWithCipherColumn = properties.getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
     }
     
     public QueryResultMetaData(final ResultSetMetaData resultSetMetaData) throws SQLException {
@@ -63,6 +71,7 @@ public final class QueryResultMetaData {
         this.shardingRule = null;
         this.encryptRule = new EncryptRule();
         columnLabelAndIndexes = getColumnLabelAndIndexMap();
+        queryWithCipherColumn = false;
     }
     
     private Map<String, Integer> getColumnLabelAndIndexMap() throws SQLException {
