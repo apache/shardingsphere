@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.optimize.encrypt.EncryptOptimizeEngineFactory;
 import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptOptimizedStatement;
@@ -217,9 +219,12 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
     }
     
     @Override
-    @SuppressWarnings("unchecked")
+    @SneakyThrows
     protected Collection<? extends Statement> getRoutedStatements() {
-        Collection<Statement> result = new LinkedList();
+        Collection<Statement> result = new LinkedList<>();
+        if (null == preparedStatement) {
+			preparedStatement = preparedStatementGenerator.createPreparedStatement(sql);
+		}
         result.add(preparedStatement);
         return result;
     }
