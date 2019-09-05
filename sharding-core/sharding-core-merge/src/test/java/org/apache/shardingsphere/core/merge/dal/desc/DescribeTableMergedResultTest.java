@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.merge.dal.desc;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.fixture.DescribeQueryResultFixture;
@@ -29,12 +30,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -182,7 +180,7 @@ public final class DescribeTableMergedResultTest {
     private ShardingRule mockShardingRuleWithoutEncryptRule() {
         ShardingRule shardingRule = mock(ShardingRule.class);
         EncryptRule encryptRule = mock(EncryptRule.class);
-        when(encryptRule.getTables()).thenReturn(Collections.<String, EncryptTable>emptyMap());
+        when(encryptRule.findEncryptTable("user")).thenReturn(Optional.<EncryptTable>absent());
         when(shardingRule.getEncryptRule()).thenReturn(encryptRule);
         return shardingRule;
     }
@@ -191,12 +189,10 @@ public final class DescribeTableMergedResultTest {
         ShardingRule shardingRule = mock(ShardingRule.class);
         EncryptRule encryptRule = mock(EncryptRule.class);
         EncryptTable encryptTable = mock(EncryptTable.class);
-        Map<String, EncryptTable> tables = new HashMap<>();
-        tables.put("user", encryptTable);
         when(shardingRule.getEncryptRule()).thenReturn(encryptRule);
-        when(encryptRule.getTables()).thenReturn(tables);
-        when(encryptTable.getAssistedQueryColumns()).thenReturn(Arrays.asList("name_assisted"));
-        when(encryptTable.getCipherColumns()).thenReturn(Arrays.asList("name"));
+        when(encryptRule.findEncryptTable("user")).thenReturn(Optional.of(encryptTable));
+        when(encryptTable.getAssistedQueryColumns()).thenReturn(Collections.singletonList("name_assisted"));
+        when(encryptTable.getCipherColumns()).thenReturn(Collections.singletonList("name"));
         when(encryptTable.getLogicColumn("name")).thenReturn("logic_name");
         return shardingRule;
     }

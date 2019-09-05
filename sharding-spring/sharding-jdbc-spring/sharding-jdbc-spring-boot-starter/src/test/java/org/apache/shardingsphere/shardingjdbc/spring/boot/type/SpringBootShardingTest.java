@@ -74,7 +74,8 @@ public class SpringBootShardingTest {
         ShardingRuntimeContext runtimeContext = getFieldValue("runtimeContext", ShardingDataSource.class, dataSource);
         EncryptRule encryptRule = runtimeContext.getRule().getEncryptRule();
         assertThat(encryptRule.getEncryptTableNames().iterator().next(), is("t_order"));
-        assertThat(encryptRule.getTables().get("t_order").getCipherColumns().size(), is(2));
+        assertTrue(encryptRule.findEncryptTable("t_order").isPresent());
+        assertThat(encryptRule.findEncryptTable("t_order").get().getCipherColumns().size(), is(2));
         assertThat(encryptRule.getAssistedQueryAndPlainColumnCount("t_order"), is(1));
         Optional<ShardingEncryptor> shardingEncryptor = encryptRule.findShardingEncryptor("t_order", "pwd");
         assertTrue(shardingEncryptor.isPresent());

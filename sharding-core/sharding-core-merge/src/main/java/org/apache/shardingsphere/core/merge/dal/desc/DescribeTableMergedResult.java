@@ -82,16 +82,14 @@ public final class DescribeTableMergedResult extends MemoryMergedResult {
     private Optional<MemoryQueryResultRow> optimize(final QueryResult queryResult) throws SQLException {
         MemoryQueryResultRow memoryQueryResultRow = new MemoryQueryResultRow(queryResult);
         String logicTableName = optimizedStatement.getTables().getSingleTableName();
-        Map<String, EncryptTable> tables = shardingRule.getEncryptRule().getTables();
-        boolean encrypted = tables.containsKey(logicTableName);
-        if (encrypted) {
-            EncryptTable encryptTable = tables.get(logicTableName);
+        Optional<EncryptTable> encryptTable = shardingRule.getEncryptRule().findEncryptTable(logicTableName);
+        if (encryptTable.isPresent()) {
             String columnName = memoryQueryResultRow.getCell(1).toString();
-            if (encryptTable.getAssistedQueryColumns().contains(columnName)) {
+            if (encryptTable.get().getAssistedQueryColumns().contains(columnName)) {
                 return Optional.absent();
             }
-            if (encryptTable.getCipherColumns().contains(columnName)) {
-                memoryQueryResultRow.setCell(1, encryptTable.getLogicColumn(columnName));
+            if (encryptTable.get().getCipherColumns().contains(columnName)) {
+                memoryQueryResultRow.setCell(1, encryptTable.get().getLogicColumn(columnName));
             }
         }
         return Optional.of(memoryQueryResultRow);

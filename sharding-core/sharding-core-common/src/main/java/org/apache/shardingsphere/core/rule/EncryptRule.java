@@ -49,7 +49,6 @@ public final class EncryptRule implements BaseRule {
     
     private final Map<String, ShardingEncryptor> encryptors = new LinkedHashMap<>();
     
-    @Getter
     private final Map<String, EncryptTable> tables = new LinkedHashMap<>();
     
     @Getter
@@ -102,6 +101,16 @@ public final class EncryptRule implements BaseRule {
         for (Entry<String, EncryptTableRuleConfiguration> entry : tables.entrySet()) {
             this.tables.put(entry.getKey(), new EncryptTable(entry.getValue()));
         }
+    }
+    
+    /**
+     * Find encrypt table.
+     * 
+     * @param logicTable logic table
+     * @return encrypt table
+     */
+    public Optional<EncryptTable> findEncryptTable(final String logicTable) {
+        return Optional.fromNullable(tables.get(logicTable));
     }
     
     /**
