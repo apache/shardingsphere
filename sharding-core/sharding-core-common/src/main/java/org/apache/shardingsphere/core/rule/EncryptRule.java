@@ -132,7 +132,7 @@ public final class EncryptRule implements BaseRule {
      * @return plain column
      */
     public Optional<String> findPlainColumn(final String logicTable, final String logicColumn) {
-        return tables.containsKey(logicTable) ? tables.get(logicTable).getPlainColumn(logicColumn) : Optional.<String>absent();
+        return tables.containsKey(logicTable) ? tables.get(logicTable).findPlainColumn(logicColumn) : Optional.<String>absent();
     }
     
     /**
@@ -165,7 +165,7 @@ public final class EncryptRule implements BaseRule {
      * @return assisted query column
      */
     public Optional<String> findAssistedQueryColumn(final String logicTable, final String logicColumn) {
-        return tables.containsKey(logicTable) ? tables.get(logicTable).getAssistedQueryColumn(logicColumn) : Optional.<String>absent();
+        return tables.containsKey(logicTable) ? tables.get(logicTable).findAssistedQueryColumn(logicColumn) : Optional.<String>absent();
     }
     
     /**
@@ -267,7 +267,7 @@ public final class EncryptRule implements BaseRule {
         if (!tables.containsKey(logicTable)) {
             return Optional.absent();
         }
-        Optional<String> encryptor = tables.get(logicTable).getShardingEncryptor(logicColumn);
+        Optional<String> encryptor = tables.get(logicTable).findShardingEncryptor(logicColumn);
         return encryptor.isPresent() ? Optional.of(encryptors.get(encryptor.get())) : Optional.<ShardingEncryptor>absent();
     }
     

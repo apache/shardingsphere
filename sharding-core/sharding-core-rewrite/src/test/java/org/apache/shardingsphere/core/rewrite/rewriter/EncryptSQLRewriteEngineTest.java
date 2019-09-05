@@ -77,8 +77,8 @@ public final class EncryptSQLRewriteEngineTest {
     }
     
     private EncryptTableRuleConfiguration createEncryptTableConfig1() {
-        EncryptColumnRuleConfiguration columnConfig1 = new EncryptColumnRuleConfiguration("", "col1", "", "test");
-        EncryptColumnRuleConfiguration columnConfig2 = new EncryptColumnRuleConfiguration("", "col2", "", "test");
+        EncryptColumnRuleConfiguration columnConfig1 = new EncryptColumnRuleConfiguration(null, "col1", null, "test");
+        EncryptColumnRuleConfiguration columnConfig2 = new EncryptColumnRuleConfiguration(null, "col2", null, "test");
         Map<String, EncryptColumnRuleConfiguration> columns1 = new LinkedHashMap<>();
         columns1.put("col1", columnConfig1);
         columns1.put("col2", columnConfig2);
@@ -86,8 +86,8 @@ public final class EncryptSQLRewriteEngineTest {
     }
     
     private EncryptTableRuleConfiguration createEncryptTableConfig2() {
-        EncryptColumnRuleConfiguration columnConfig1 = new EncryptColumnRuleConfiguration("", "col1", "query1", "assistedTest");
-        EncryptColumnRuleConfiguration columnConfig2 = new EncryptColumnRuleConfiguration("", "col2", "query2", "assistedTest");
+        EncryptColumnRuleConfiguration columnConfig1 = new EncryptColumnRuleConfiguration(null, "col1", "query1", "assistedTest");
+        EncryptColumnRuleConfiguration columnConfig2 = new EncryptColumnRuleConfiguration(null, "col2", "query2", "assistedTest");
         Map<String, EncryptColumnRuleConfiguration> columns2 = new LinkedHashMap<>();
         columns2.put("col1", columnConfig1);
         columns2.put("col2", columnConfig2);
@@ -95,8 +95,8 @@ public final class EncryptSQLRewriteEngineTest {
     }
     
     private EncryptTableRuleConfiguration createEncryptTableConfig3() {
-        EncryptColumnRuleConfiguration columnConfig1 = new EncryptColumnRuleConfiguration("plain1", "col1", "", "test");
-        EncryptColumnRuleConfiguration columnConfig2 = new EncryptColumnRuleConfiguration("plain2", "col2", "", "test");
+        EncryptColumnRuleConfiguration columnConfig1 = new EncryptColumnRuleConfiguration("plain1", "col1", null, "test");
+        EncryptColumnRuleConfiguration columnConfig2 = new EncryptColumnRuleConfiguration("plain2", "col2", null, "test");
         Map<String, EncryptColumnRuleConfiguration> columns2 = new LinkedHashMap<>();
         columns2.put("col3", columnConfig1);
         columns2.put("col4", columnConfig2);
