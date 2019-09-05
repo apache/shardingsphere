@@ -223,8 +223,8 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
     protected Collection<? extends Statement> getRoutedStatements() {
         Collection<Statement> result = new LinkedList<>();
         if (null == preparedStatement) {
-			preparedStatement = preparedStatementGenerator.createPreparedStatement(sql);
-		}
+	    preparedStatement = preparedStatementGenerator.createPreparedStatement(sql);
+	}
         result.add(preparedStatement);
         return result;
     }
