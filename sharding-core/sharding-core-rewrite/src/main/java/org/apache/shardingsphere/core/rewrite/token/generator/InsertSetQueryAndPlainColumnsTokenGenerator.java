@@ -58,7 +58,7 @@ public final class InsertSetQueryAndPlainColumnsTokenGenerator implements Option
     
     private Optional<InsertSetQueryAndPlainColumnsToken> createInsertSetAddItemsToken(final InsertOptimizedStatement optimizedStatement, final EncryptRule encryptRule) {
         String tableName = optimizedStatement.getTables().getSingleTableName();
-        if (0 == encryptRule.getAssistedQueryAndPlainColumnCount(tableName)) {
+        if (encryptRule.getAssistedQueryAndPlainColumns(tableName).isEmpty()) {
             return Optional.absent();
         }
         List<String> encryptDerivedColumnNames = getEncryptDerivedColumnNames(tableName, encryptRule);

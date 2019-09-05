@@ -100,6 +100,6 @@ public final class InsertRegularNamesTokenGenerator implements OptionalSQLTokenG
     }
     
     private boolean isNeedToAppendAssistedQueryAndPlainColumns(final OptimizedStatement optimizedStatement, final EncryptRule encryptRule) {
-        return encryptRule.getAssistedQueryAndPlainColumnCount(optimizedStatement.getTables().getSingleTableName()) > 0;
+        return !encryptRule.getAssistedQueryAndPlainColumns(optimizedStatement.getTables().getSingleTableName()).isEmpty();
     }
 }

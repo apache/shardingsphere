@@ -91,8 +91,8 @@ public final class ShardingInsertOptimizeEngine implements ShardingOptimizeEngin
     }
     
     private int getDerivedColumnsCount(final ShardingRule shardingRule, final String tableName, final boolean isGeneratedValue) {
-        int assistedQueryAndPlainColumnsCount = shardingRule.getEncryptRule().getAssistedQueryAndPlainColumnCount(tableName);
-        return isGeneratedValue ? assistedQueryAndPlainColumnsCount + 1 : assistedQueryAndPlainColumnsCount;
+        int encryptDerivedColumnsCount = shardingRule.getEncryptRule().getAssistedQueryAndPlainColumns(tableName).size();
+        return isGeneratedValue ? encryptDerivedColumnsCount + 1 : encryptDerivedColumnsCount;
     }
     
     private void checkDuplicateKeyForShardingKey(final ShardingRule shardingRule, final InsertStatement sqlStatement, final String tableName) {

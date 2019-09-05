@@ -191,16 +191,6 @@ public final class EncryptRule implements BaseRule {
         return result;
     }
     
-    /**
-     * Get assisted query and plain column count.
-     *
-     * @param logicTable logic table name
-     * @return assisted query and plain column count
-     */
-    public Integer getAssistedQueryAndPlainColumnCount(final String logicTable) {
-        return getAssistedQueryColumns(logicTable).size() + getPlainColumns(logicTable).size();
-    }
-    
     private Collection<String> getPlainColumns(final String logicTable) {
         return tables.containsKey(logicTable) ? tables.get(logicTable).getPlainColumns() : Collections.<String>emptyList();
     }

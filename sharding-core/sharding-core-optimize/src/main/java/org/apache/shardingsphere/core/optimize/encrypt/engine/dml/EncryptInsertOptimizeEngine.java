@@ -43,9 +43,9 @@ public final class EncryptInsertOptimizeEngine implements EncryptOptimizeEngine<
         int parametersOffset = 0;
         Collection<String> encryptDerivedColumnNames = encryptRule.getAssistedQueryAndPlainColumns(tableName);
         Collection<String> columnNames = sqlStatement.useDefaultColumns() ? tableMetas.getAllColumnNames(tableName) : sqlStatement.getColumnNames();
-        int derivedColumnCount = encryptRule.getAssistedQueryAndPlainColumnCount(tableName);
+        int derivedColumnsCount = encryptRule.getAssistedQueryAndPlainColumns(tableName).size();
         for (Collection<ExpressionSegment> each : sqlStatement.getAllValueExpressions()) {
-            InsertValue insertValue = createInsertValue(columnNames, encryptDerivedColumnNames, each, derivedColumnCount, parameters, parametersOffset);
+            InsertValue insertValue = createInsertValue(columnNames, encryptDerivedColumnNames, each, derivedColumnsCount, parameters, parametersOffset);
             result.getInsertValues().add(insertValue);
             parametersOffset += insertValue.getParametersCount();
         }

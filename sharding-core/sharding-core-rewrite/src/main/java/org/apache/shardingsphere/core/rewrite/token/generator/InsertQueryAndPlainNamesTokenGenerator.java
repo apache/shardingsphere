@@ -57,7 +57,7 @@ public final class InsertQueryAndPlainNamesTokenGenerator implements OptionalSQL
             return Optional.absent();
         }
         String tableName = optimizedStatement.getTables().getSingleTableName();
-        return 0 == encryptRule.getAssistedQueryAndPlainColumnCount(tableName) ? Optional.<InsertQueryAndPlainNamesToken>absent()
+        return encryptRule.getAssistedQueryAndPlainColumns(tableName).isEmpty() ? Optional.<InsertQueryAndPlainNamesToken>absent()
                 : Optional.of(new InsertQueryAndPlainNamesToken(
                         insertColumnsSegment.get().getStopIndex(), getEncryptDerivedColumnNames(tableName, encryptRule), insertColumnsSegment.get().getColumns().isEmpty()));
     }

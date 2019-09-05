@@ -76,7 +76,7 @@ public class SpringBootShardingTest {
         assertThat(encryptRule.getEncryptTableNames().iterator().next(), is("t_order"));
         assertTrue(encryptRule.findEncryptTable("t_order").isPresent());
         assertThat(encryptRule.findEncryptTable("t_order").get().getCipherColumns().size(), is(2));
-        assertThat(encryptRule.getAssistedQueryAndPlainColumnCount("t_order"), is(1));
+        assertThat(encryptRule.getAssistedQueryAndPlainColumns("t_order").size(), is(1));
         Optional<ShardingEncryptor> shardingEncryptor = encryptRule.findShardingEncryptor("t_order", "pwd");
         assertTrue(shardingEncryptor.isPresent());
         assertThat(shardingEncryptor.get(), instanceOf(TestShardingEncryptor.class));
