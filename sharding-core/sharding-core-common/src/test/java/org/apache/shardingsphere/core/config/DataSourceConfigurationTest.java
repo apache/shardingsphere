@@ -18,12 +18,14 @@
 package org.apache.shardingsphere.core.config;
 
 import com.zaxxer.hikari.HikariDataSource;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.Test;
 
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
@@ -63,5 +65,16 @@ public final class DataSourceConfigurationTest {
         assertThat(actual.getJdbcUrl(), is("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
         assertThat(actual.getUsername(), is("root"));
         assertThat(actual.getPassword(), is("root"));
+    }
+
+    @Test
+    public void assertCreateDataSourceHaveList() {
+        Map<String, Object> properties = new HashMap<>();
+        properties.put("connectionInitSqls", "set names utf8mb4;,set serverTimezone=UTC;");
+        DataSourceConfiguration dataSourceConfig = new DataSourceConfiguration(BasicDataSource.class.getName());
+        dataSourceConfig.getProperties().putAll(properties);
+        BasicDataSource actual = (BasicDataSource) dataSourceConfig.createDataSource();
+        assertThat(actual.getConnectionInitSqls(), hasItem("set names utf8mb4;"));
+        assertThat(actual.getConnectionInitSqls(), hasItem("set serverTimezone=UTC;"));
     }
 }
