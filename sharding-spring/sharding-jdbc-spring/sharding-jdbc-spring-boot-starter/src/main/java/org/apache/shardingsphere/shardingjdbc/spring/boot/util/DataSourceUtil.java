@@ -87,14 +87,7 @@ public final class DataSourceUtil {
         }
     }
     private static List<String> strToList(String param) {
-        List<String> result;
-        if(param.startsWith("[") && param.endsWith("]")) {
-            String tempStr = param.substring(1, param.length() -1);
-            result = Arrays.asList(tempStr.split(","));
-        } else {
-            result = new ArrayList<>();
-            result.add(param);
-        }
+        List<String> result = Arrays.asList(param.split(","));
         return result;
     }
 }
