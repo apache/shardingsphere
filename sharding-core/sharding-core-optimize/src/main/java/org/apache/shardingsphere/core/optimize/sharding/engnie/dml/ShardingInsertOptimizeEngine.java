@@ -50,7 +50,6 @@ public final class ShardingInsertOptimizeEngine implements ShardingOptimizeEngin
     @Override
     public ShardingInsertOptimizedStatement optimize(final ShardingRule shardingRule,
                                                      final TableMetas tableMetas, final String sql, final List<Object> parameters, final InsertStatement sqlStatement) {
-        InsertClauseShardingConditionEngine shardingConditionEngine = new InsertClauseShardingConditionEngine(shardingRule);
         String tableName = sqlStatement.getTable().getTableName();
         Collection<String> columnNames = sqlStatement.useDefaultColumns() ? tableMetas.getAllColumnNames(tableName) : sqlStatement.getColumnNames();
         Optional<GeneratedKey> generatedKey = GeneratedKey.getGenerateKey(shardingRule, parameters, sqlStatement, columnNames);
@@ -65,6 +64,7 @@ public final class ShardingInsertOptimizeEngine implements ShardingOptimizeEngin
         Collection<String> allColumnNames = new LinkedHashSet<>(columnNames);
         allColumnNames.addAll(derivedColumnNames);
         int derivedColumnsCount = getDerivedColumnsCount(shardingRule, tableName, isGeneratedValue);
+        InsertClauseShardingConditionEngine shardingConditionEngine = new InsertClauseShardingConditionEngine(shardingRule);
         List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(sqlStatement, parameters, allColumnNames, generatedKey.orNull());
         ShardingInsertOptimizedStatement result = new ShardingInsertOptimizedStatement(sqlStatement, shardingConditions, columnNames, generatedKey.orNull());
         checkDuplicateKeyForShardingKey(shardingRule, sqlStatement, tableName);
@@ -74,7 +74,7 @@ public final class ShardingInsertOptimizeEngine implements ShardingOptimizeEngin
             InsertValue insertValue = createInsertValue(columnNames, generateKeyColumnName.orNull(), encryptDerivedColumnNames, each, derivedColumnsCount, parameters, parametersOffset);
             result.getInsertValues().add(insertValue);
             if (isGeneratedValue) {
-                insertValue.appendValue(generatedValues.next(), insertValue.getParameters());
+                insertValue.appendValue(generatedValues.next());
             }
             parametersOffset += insertValue.getParametersCount();
         }
