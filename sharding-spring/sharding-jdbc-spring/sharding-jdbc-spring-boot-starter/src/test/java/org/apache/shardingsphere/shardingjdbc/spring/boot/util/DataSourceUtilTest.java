@@ -29,7 +29,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class DataSourceUtilTest {
-    
+
     @Test
     public void assertDataSourceForDBCPAndCamel() throws ReflectiveOperationException {
         BasicDataSource actual = (BasicDataSource) DataSourceUtil
@@ -38,7 +38,7 @@ public final class DataSourceUtilTest {
         assertThat(actual.getUrl(), is("jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
         assertThat(actual.getUsername(), is("sa"));
     }
-    
+
     @Test
     public void assertDataSourceForDBCPAndHyphen() throws ReflectiveOperationException {
         BasicDataSource actual = (BasicDataSource) DataSourceUtil.getDataSource(BasicDataSource.class.getName(), getDataSourcePoolProperties("driver-class-name", "url", "username"));
@@ -46,7 +46,7 @@ public final class DataSourceUtilTest {
         assertThat(actual.getUrl(), is("jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
         assertThat(actual.getUsername(), is("sa"));
     }
-    
+
     @Test
     public void assertDataSourceForHikariCPAndCamel() throws ReflectiveOperationException {
         HikariDataSource actual = (HikariDataSource) DataSourceUtil.getDataSource(HikariDataSource.class.getName(), getDataSourcePoolProperties("driverClassName", "jdbcUrl", "username"));
@@ -54,7 +54,7 @@ public final class DataSourceUtilTest {
         assertThat(actual.getJdbcUrl(), is("jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
         assertThat(actual.getUsername(), is("sa"));
     }
-    
+
     @Test
     public void assertDataSourceForHikariCPAndHyphen() throws ReflectiveOperationException {
         HikariDataSource actual = (HikariDataSource) DataSourceUtil.getDataSource(HikariDataSource.class.getName(), getDataSourcePoolProperties("driver-class-name", "jdbc-url", "username"));
@@ -62,7 +62,7 @@ public final class DataSourceUtilTest {
         assertThat(actual.getJdbcUrl(), is("jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
         assertThat(actual.getUsername(), is("sa"));
     }
-    
+
     private Map<String, Object> getDataSourcePoolProperties(final String driverClassName, final String url, final String username) {
         Map<String, Object> result = new HashMap<>(3, 1);
         result.put(driverClassName, org.h2.Driver.class.getName());
@@ -70,7 +70,7 @@ public final class DataSourceUtilTest {
         result.put(username, "sa");
         return result;
     }
-    
+
     @Test
     public void assertDataSourceForBooleanValue() throws ReflectiveOperationException {
         Map<String, Object> dataSourceProperties = new HashMap<>(7, 1);
@@ -90,7 +90,7 @@ public final class DataSourceUtilTest {
         assertThat(actual.getTestWhileIdle(), is(Boolean.FALSE));
         assertThat(actual.isAccessToUnderlyingConnectionAllowed(), is(true));
     }
-    
+
     @Test
     public void assertDataSourceForIntValue() throws ReflectiveOperationException {
         Map<String, Object> dataSourceProperties = new HashMap<>(7, 1);
@@ -110,7 +110,7 @@ public final class DataSourceUtilTest {
         assertThat(actual.getMaxOpenPreparedStatements(), is(128));
         assertThat(actual.getNumTestsPerEvictionRun(), is(13));
     }
-    
+
     @Test
     public void assertDataSourceForLongValue() throws ReflectiveOperationException {
         Map<String, Object> dataSourceProperties = new HashMap<>(3, 1);
@@ -123,8 +123,9 @@ public final class DataSourceUtilTest {
     @Test
     public void assertDataSourceForCollectionValue() throws ReflectiveOperationException {
         Map<String, Object> dataSourceProperties = new HashMap<>(2, 1);
-        dataSourceProperties.put("connectionInitSqls", "[set names utf8mb4]");
+        dataSourceProperties.put("connectionInitSqls", "set names utf8mb4;,set serverTimezone=UTC;");
         BasicDataSource actual = (BasicDataSource) DataSourceUtil.getDataSource(BasicDataSource.class.getName(), dataSourceProperties);
-        assertThat(actual.getConnectionInitSqls(), hasItem("set names utf8mb4"));
+        assertThat(actual.getConnectionInitSqls(), hasItem("set names utf8mb4;"));
+        assertThat(actual.getConnectionInitSqls(), hasItem("set serverTimezone=UTC;"));
     }
 }
