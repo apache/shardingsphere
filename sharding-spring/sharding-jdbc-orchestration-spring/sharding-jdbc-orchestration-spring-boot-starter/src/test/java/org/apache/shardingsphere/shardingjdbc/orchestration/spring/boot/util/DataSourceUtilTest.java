@@ -124,8 +124,9 @@ public final class DataSourceUtilTest {
     @Test
     public void assertDataSourceForCollectionValue() throws ReflectiveOperationException {
         Map<String, Object> dataSourceProperties = new HashMap<>(2, 1);
-        dataSourceProperties.put("connectionInitSqls", "[set names utf8mb4]");
+        dataSourceProperties.put("connectionInitSqls", "set names utf8mb4;,set serverTimezone=UTC;");
         BasicDataSource actual = (BasicDataSource) DataSourceUtil.getDataSource(BasicDataSource.class.getName(), dataSourceProperties);
-        assertThat(actual.getConnectionInitSqls(), hasItem("set names utf8mb4"));
+        assertThat(actual.getConnectionInitSqls(), hasItem("set names utf8mb4;"));
+        assertThat(actual.getConnectionInitSqls(), hasItem("set serverTimezone=UTC;"));
     }
 }
