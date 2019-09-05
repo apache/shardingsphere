@@ -30,6 +30,7 @@ import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.TreeSet;
 
@@ -46,13 +47,27 @@ public final class Tables {
     private String schema;
     
     public Tables(final SQLStatement sqlStatement) {
+        Collection<String> aliases = new HashSet<>();
         for (TableAvailable each : sqlStatement.findSQLSegments(TableAvailable.class)) {
-            String alias = each instanceof AliasAvailable ? ((AliasAvailable) each).getAlias().orNull() : null;
-            tables.add(new Table(each.getTableName(), alias));
+            Optional<String> alias = getAlias(each);
+            if (alias.isPresent()) {
+                aliases.add(alias.get());
+            }
+        }
+        for (TableAvailable each : sqlStatement.findSQLSegments(TableAvailable.class)) {
+            Optional<String> alias = getAlias(each);
+            if (aliases.contains(each.getTableName()) && !alias.isPresent()) {
+                continue;
+            }
+            tables.add(new Table(each.getTableName(), alias.orNull()));
             if (each instanceof TableSegment) {
                 setSchema((TableSegment) each);
             }
         }
+    }
+    
+    private Optional<String> getAlias(TableAvailable table) {
+        return table instanceof AliasAvailable ? ((AliasAvailable) table).getAlias() : Optional.<String>absent();
     }
     
     private void setSchema(final TableSegment tableSegment) {
