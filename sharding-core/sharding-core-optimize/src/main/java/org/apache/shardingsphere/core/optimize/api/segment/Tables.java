@@ -66,7 +66,7 @@ public final class Tables {
         }
     }
     
-    private Optional<String> getAlias(TableAvailable table) {
+    private Optional<String> getAlias(final TableAvailable table) {
         return table instanceof AliasAvailable ? ((AliasAvailable) table).getAlias() : Optional.<String>absent();
     }
     
