@@ -553,7 +553,7 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/sharding/shard
 | --------- | --------- | ------------------------------------------------------------ |
 | column    | Attribute | Auto-increment column name                                   |
 | type      | Attribute | Auto-increment key generator `Type`; self-defined generator or internal Type generator (SNOWFLAKE or UUID) can both be selected |
-| props-ref | Attribute | Properties, Notice: when use SNOWFLAKE, `worker.id` and `max.tolerate.time.difference.milliseconds` for `SNOWFLAKE` need to be set |
+| props-ref | Attribute | Property configuration, note:<br>To use the SNOWFLAKE algorithm, you need to configure the `worker.id` and `max.tolerate.time.difference.milliseconds` properties<br> To use the LEAF_SEGMENT algorithm, you need to configure: required `serverList`, `leafKey` and optional `initialValue`, `step`, `digest`, `registryCenterType`<br> To use the LEAF_SNOWFLAKE algorithm, you need to configure: required `serverList`, `serviceId` and optional `maxTimeDifference`, `digest`, `registryCenterType` |
 
 #### \<sharding:encrypt-rules />
 
