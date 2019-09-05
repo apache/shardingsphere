@@ -220,6 +220,9 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
     @SuppressWarnings("unchecked")
     protected Collection<? extends Statement> getRoutedStatements() {
         Collection<Statement> result = new LinkedList();
+        if (null == preparedStatement) {
+            return result;
+        }
         result.add(preparedStatement);
         return result;
     }
