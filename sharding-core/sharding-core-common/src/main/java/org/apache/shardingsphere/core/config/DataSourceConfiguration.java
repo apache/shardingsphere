@@ -28,10 +28,7 @@ import lombok.SneakyThrows;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
 /**
@@ -110,9 +107,20 @@ public final class DataSourceConfiguration {
             }
             Optional<Method> setterMethod = findSetterMethod(methods, entry.getKey());
             if (setterMethod.isPresent()) {
-                setterMethod.get().invoke(result, entry.getValue());
+                Method method = setterMethod.get();
+
+                if(method.getParameterTypes()[0] == Collection.class || method.getParameterTypes()[0] == List.class) {
+                    method.invoke(result, strToList(entry.getValue().toString()));
+                }else{
+                    method.invoke(result, entry.getValue());
+                }
             }
         }
+        return result;
+    }
+
+    private static List<String> strToList(String param) {
+        List<String> result = Arrays.asList(param.split(","));
         return result;
     }
     
