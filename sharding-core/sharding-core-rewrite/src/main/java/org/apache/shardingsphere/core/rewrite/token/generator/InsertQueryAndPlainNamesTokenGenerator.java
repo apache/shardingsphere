@@ -20,15 +20,15 @@ package org.apache.shardingsphere.core.rewrite.token.generator;
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
-import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptInsertOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingInsertOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertQueryAndPlainNamesToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
+import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
 
-import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Insert assisted and plain names token generator.
@@ -56,38 +56,24 @@ public final class InsertQueryAndPlainNamesTokenGenerator implements OptionalSQL
         if (!insertColumnsSegment.isPresent()) {
             return Optional.absent();
         }
-        return 0 == encryptRule.getAssistedQueryAndPlainColumnCount(optimizedStatement.getTables().getSingleTableName())
-                ? Optional.<InsertQueryAndPlainNamesToken>absent()
-                : Optional.of(new InsertQueryAndPlainNamesToken(insertColumnsSegment.get().getStopIndex(), 
-                getAssistedQueryAndPlainColumns((InsertOptimizedStatement) optimizedStatement, encryptRule), insertColumnsSegment.get().getColumns().isEmpty()));
+        String tableName = optimizedStatement.getTables().getSingleTableName();
+        return encryptRule.getAssistedQueryAndPlainColumns(tableName).isEmpty() ? Optional.<InsertQueryAndPlainNamesToken>absent()
+                : Optional.of(new InsertQueryAndPlainNamesToken(
+                        insertColumnsSegment.get().getStopIndex(), getEncryptDerivedColumnNames(tableName, encryptRule), insertColumnsSegment.get().getColumns().isEmpty()));
     }
     
-    private Collection<String> getAssistedQueryAndPlainColumns(final InsertOptimizedStatement optimizedStatement, final EncryptRule encryptRule) {
-        Collection<String> result = new LinkedList<>();
-        result.addAll(getAssistedQueryColumns(optimizedStatement, encryptRule));
-        result.addAll(getPlainColumns(optimizedStatement, encryptRule));
-        return result;
-    }
-    
-    private Collection<String> getAssistedQueryColumns(final InsertOptimizedStatement optimizedStatement, final EncryptRule encryptRule) {
-        Collection<String> result = new LinkedList<>();
-        Collection<String> columnNames = optimizedStatement instanceof ShardingInsertOptimizedStatement
-                ? ((ShardingInsertOptimizedStatement) optimizedStatement).getColumnNames() : ((EncryptInsertOptimizedStatement) optimizedStatement).getColumnNames();
-        for (String each : columnNames) {
-            Optional<String> assistedQueryColumn = encryptRule.getAssistedQueryColumn(optimizedStatement.getTables().getSingleTableName(), each);
+    private List<String> getEncryptDerivedColumnNames(final String tableName, final EncryptRule encryptRule) {
+        Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
+        if (!encryptTable.isPresent()) {
+            return Collections.emptyList();
+        }
+        List<String> result = new LinkedList<>();
+        for (String each : encryptTable.get().getLogicColumns()) {
+            Optional<String> assistedQueryColumn = encryptRule.findAssistedQueryColumn(tableName, each);
             if (assistedQueryColumn.isPresent()) {
                 result.add(assistedQueryColumn.get());
             }
-        }
-        return result;
-    }
-    
-    private Collection<String> getPlainColumns(final InsertOptimizedStatement optimizedStatement, final EncryptRule encryptRule) {
-        Collection<String> result = new LinkedList<>();
-        Collection<String> columnNames = optimizedStatement instanceof ShardingInsertOptimizedStatement
-                ? ((ShardingInsertOptimizedStatement) optimizedStatement).getColumnNames() : ((EncryptInsertOptimizedStatement) optimizedStatement).getColumnNames();
-        for (String each : columnNames) {
-            Optional<String> plainColumn = encryptRule.getPlainColumn(optimizedStatement.getTables().getSingleTableName(), each);
+            Optional<String> plainColumn = encryptRule.findPlainColumn(tableName, each);
             if (plainColumn.isPresent()) {
                 result.add(plainColumn.get());
             }

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.execute.sql.execute.result;
 
 import com.google.common.base.Optional;
+import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
@@ -35,6 +36,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.Calendar;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -52,13 +54,13 @@ public final class StreamQueryResultTest {
 
     @Test
     public void assertConstructorWithShardingRule() throws SQLException {
-        StreamQueryResult queryResult = new StreamQueryResult(getResultSet(), getShardingRule());
+        StreamQueryResult queryResult = new StreamQueryResult(getResultSet(), getShardingRule(), new ShardingProperties(new Properties()));
         assertThat(queryResult.getQueryResultMetaData().getShardingEncryptor(1), is(Optional.fromNullable(shardingEncryptor)));
     }
     
     @Test
     public void assertConstructorWithEncryptRule() throws SQLException {
-        StreamQueryResult queryResult = new StreamQueryResult(getResultSet(), getEncryptRule());
+        StreamQueryResult queryResult = new StreamQueryResult(getResultSet(), getEncryptRule(), new ShardingProperties(new Properties()));
         assertThat(queryResult.getQueryResultMetaData().getShardingEncryptor(1), is(Optional.fromNullable(shardingEncryptor)));
     }
     
@@ -77,7 +79,7 @@ public final class StreamQueryResultTest {
     
     private EncryptRule getEncryptRule() {
         EncryptRule result = mock(EncryptRule.class);
-        when(result.getShardingEncryptor("order", "order_id")).thenReturn(Optional.fromNullable(shardingEncryptor));
+        when(result.findShardingEncryptor("order", "order_id")).thenReturn(Optional.fromNullable(shardingEncryptor));
         when(result.isCipherColumn("order", "order_id")).thenReturn(false);
         return result;
     }
@@ -106,7 +108,7 @@ public final class StreamQueryResultTest {
     @Test
     public void assertGetValueWithShardingRule() throws SQLException {
         when(shardingEncryptor.decrypt("1")).thenReturn("1");
-        StreamQueryResult queryResult = new StreamQueryResult(getResultSet(), getShardingRule());
+        StreamQueryResult queryResult = new StreamQueryResult(getResultSet(), getShardingRule(), new ShardingProperties(new Properties()));
         queryResult.next();
         assertThat(queryResult.getValue("order_id", Integer.class), Is.<Object>is("1"));
     }

@@ -46,7 +46,7 @@ public final class InsertValuesToken extends SQLToken implements Substitutable, 
     public InsertValuesToken(final int startIndex, final int stopIndex) {
         super(startIndex);
         this.stopIndex = stopIndex;
-        this.insertValueTokens = new LinkedList<>();
+        insertValueTokens = new LinkedList<>();
     }
     
     /**

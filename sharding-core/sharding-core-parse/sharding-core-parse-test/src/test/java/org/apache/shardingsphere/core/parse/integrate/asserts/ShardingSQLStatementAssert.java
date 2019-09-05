@@ -22,6 +22,7 @@ import org.apache.shardingsphere.core.parse.integrate.asserts.groupby.GroupByAss
 import org.apache.shardingsphere.core.parse.integrate.asserts.index.IndexAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.orderby.OrderByAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.pagination.PaginationAssert;
+import org.apache.shardingsphere.core.parse.integrate.asserts.predicate.PredicateAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.selectitem.SelectItemAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.table.AlterTableAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.table.TableAssert;
@@ -31,6 +32,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemsSegm
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.LimitSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.AlterTableStatement;
@@ -67,6 +69,8 @@ public final class ShardingSQLStatementAssert {
     private final AlterTableAssert alterTableAssert;
 
     private final SelectItemAssert selectItemAssert;
+
+    private final PredicateAssert predicateAssert;
     
     public ShardingSQLStatementAssert(final SQLStatement actual, final String sqlCaseId, final SQLCaseType sqlCaseType) {
         SQLStatementAssertMessage assertMessage = new SQLStatementAssertMessage(
@@ -80,6 +84,7 @@ public final class ShardingSQLStatementAssert {
         paginationAssert = new PaginationAssert(sqlCaseType, assertMessage);
         alterTableAssert = new AlterTableAssert(assertMessage);
         selectItemAssert = new SelectItemAssert(sqlCaseType, assertMessage);
+        predicateAssert = new PredicateAssert(sqlCaseType, assertMessage);
     }
     
     /**
@@ -100,7 +105,6 @@ public final class ShardingSQLStatementAssert {
     }
     
     private void assertSelectStatement(final SelectStatement actual) {
-        // TODO do select items assert
         Optional<SelectItemsSegment> selectItemsSegment = actual.findSQLSegment(SelectItemsSegment.class);
         if (selectItemsSegment.isPresent()) {
             selectItemAssert.assertSelectItems(selectItemsSegment.get(), expected.getSelectItems());
@@ -117,6 +121,10 @@ public final class ShardingSQLStatementAssert {
         if (limitSegment.isPresent()) {
             paginationAssert.assertOffset(limitSegment.get().getOffset().orNull(), expected.getOffset());
             paginationAssert.assertRowCount(limitSegment.get().getRowCount().orNull(), expected.getRowCount());
+        }
+        Optional<WhereSegment> whereSegment = actual.findSQLSegment(WhereSegment.class);
+        if (whereSegment.isPresent() && null != expected.getWhereSegment()) {
+            predicateAssert.assertPredicate(whereSegment.get(),expected.getWhereSegment());
         }
     }
     

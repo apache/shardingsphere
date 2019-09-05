@@ -31,11 +31,11 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public final class EncryptColumn {
     
-    private final String plainColumn;
-    
     private final String cipherColumn;
     
     private final String assistedQueryColumn;
+    
+    private final String plainColumn;
     
     private final String encryptor;
     

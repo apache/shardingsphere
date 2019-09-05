@@ -30,7 +30,6 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Collection;
@@ -51,7 +50,6 @@ public final class ShardingInsertOptimizeEngine implements ShardingOptimizeEngin
     @Override
     public ShardingInsertOptimizedStatement optimize(final ShardingRule shardingRule,
                                                      final TableMetas tableMetas, final String sql, final List<Object> parameters, final InsertStatement sqlStatement) {
-        InsertClauseShardingConditionEngine shardingConditionEngine = new InsertClauseShardingConditionEngine(shardingRule);
         String tableName = sqlStatement.getTable().getTableName();
         Collection<String> columnNames = sqlStatement.useDefaultColumns() ? tableMetas.getAllColumnNames(tableName) : sqlStatement.getColumnNames();
         Optional<GeneratedKey> generatedKey = GeneratedKey.getGenerateKey(shardingRule, parameters, sqlStatement, columnNames);
@@ -66,6 +64,7 @@ public final class ShardingInsertOptimizeEngine implements ShardingOptimizeEngin
         Collection<String> allColumnNames = new LinkedHashSet<>(columnNames);
         allColumnNames.addAll(derivedColumnNames);
         int derivedColumnsCount = getDerivedColumnsCount(shardingRule, tableName, isGeneratedValue);
+        InsertClauseShardingConditionEngine shardingConditionEngine = new InsertClauseShardingConditionEngine(shardingRule);
         List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(sqlStatement, parameters, allColumnNames, generatedKey.orNull());
         ShardingInsertOptimizedStatement result = new ShardingInsertOptimizedStatement(sqlStatement, shardingConditions, columnNames, generatedKey.orNull());
         checkDuplicateKeyForShardingKey(shardingRule, sqlStatement, tableName);
@@ -75,14 +74,7 @@ public final class ShardingInsertOptimizeEngine implements ShardingOptimizeEngin
             InsertValue insertValue = createInsertValue(columnNames, generateKeyColumnName.orNull(), encryptDerivedColumnNames, each, derivedColumnsCount, parameters, parametersOffset);
             result.getInsertValues().add(insertValue);
             if (isGeneratedValue) {
-                insertValue.appendValue(generatedValues.next(), insertValue.getParameters());
-            }
-            EncryptRule encryptRule = shardingRule.getEncryptRule();
-            if (encryptRule.containsQueryAssistedColumn(tableName)) {
-                fillAssistedQueryInsertValue(encryptRule, insertValue.getParameters(), tableName, columnNames, insertValue);
-            }
-            if (encryptRule.containsPlainColumn(tableName)) {
-                fillPlainInsertValue(encryptRule, insertValue.getParameters(), tableName, columnNames, insertValue);
+                insertValue.appendValue(generatedValues.next());
             }
             parametersOffset += insertValue.getParametersCount();
         }
@@ -99,8 +91,8 @@ public final class ShardingInsertOptimizeEngine implements ShardingOptimizeEngin
     }
     
     private int getDerivedColumnsCount(final ShardingRule shardingRule, final String tableName, final boolean isGeneratedValue) {
-        int assistedQueryAndPlainColumnsCount = shardingRule.getEncryptRule().getAssistedQueryAndPlainColumnCount(tableName);
-        return isGeneratedValue ? assistedQueryAndPlainColumnsCount + 1 : assistedQueryAndPlainColumnsCount;
+        int encryptDerivedColumnsCount = shardingRule.getEncryptRule().getAssistedQueryAndPlainColumns(tableName).size();
+        return isGeneratedValue ? encryptDerivedColumnsCount + 1 : encryptDerivedColumnsCount;
     }
     
     private void checkDuplicateKeyForShardingKey(final ShardingRule shardingRule, final InsertStatement sqlStatement, final String tableName) {
@@ -125,22 +117,5 @@ public final class ShardingInsertOptimizeEngine implements ShardingOptimizeEngin
         allColumnNames.add(generateKeyColumnName);
         allColumnNames.addAll(derivedColumnNames);
         return new InsertValue(allColumnNames, assignments, derivedColumnsCount, parameters, parametersOffset);
-    }
-    
-    private void fillAssistedQueryInsertValue(final EncryptRule encryptRule, 
-                                              final List<Object> parameters, final String tableName, final Collection<String> columnNames, final InsertValue insertValue) {
-        for (String each : columnNames) {
-            if (encryptRule.getAssistedQueryColumn(tableName, each).isPresent()) {
-                insertValue.appendValue((Comparable<?>) insertValue.getValue(each), parameters);
-            }
-        }
-    }
-    
-    private void fillPlainInsertValue(final EncryptRule encryptRule, final List<Object> parameters, final String tableName, final Collection<String> columnNames, final InsertValue insertValue) {
-        for (String each : columnNames) {
-            if (encryptRule.getPlainColumn(tableName, each).isPresent()) {
-                insertValue.appendValue((Comparable<?>) insertValue.getValue(each), parameters);
-            }
-        }
     }
 }

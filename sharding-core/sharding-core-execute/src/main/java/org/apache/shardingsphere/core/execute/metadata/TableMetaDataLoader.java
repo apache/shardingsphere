@@ -187,8 +187,8 @@ public final class TableMetaDataLoader {
         }
         if (encryptRule.isCipherColumn(logicTableName, columnName)) {
             String logicColumnName = encryptRule.getLogicColumn(logicTableName, columnName);
-            String plainColumnName = encryptRule.getPlainColumn(logicTableName, logicColumnName).orNull();
-            String assistedQueryColumnName = encryptRule.getAssistedQueryColumn(logicTableName, logicColumnName).orNull();
+            String plainColumnName = encryptRule.findPlainColumn(logicTableName, logicColumnName).orNull();
+            String assistedQueryColumnName = encryptRule.findAssistedQueryColumn(logicTableName, logicColumnName).orNull();
             return Optional.<ColumnMetaData>of(new EncryptColumnMetaData(logicColumnName, columnType, isPrimaryKey, columnName, plainColumnName, assistedQueryColumnName));
         }
         if (columnName.equalsIgnoreCase(generateKeyColumnName)) {

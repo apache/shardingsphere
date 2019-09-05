@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.callback;
 
 import org.apache.shardingsphere.core.constant.ConnectionMode;
+import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.execute.sql.execute.SQLExecuteCallback;
 import org.apache.shardingsphere.core.execute.sql.execute.result.MemoryQueryResult;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
@@ -35,6 +36,7 @@ import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.backend.schema.impl.EncryptSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShardingSchema;
+import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -101,11 +103,15 @@ public final class ProxySQLExecuteCallback extends SQLExecuteCallback<ExecuteRes
         LogicSchema logicSchema = backendConnection.getLogicSchema();
         if (logicSchema instanceof ShardingSchema) {
             ShardingRule shardingRule = logicSchema.getShardingRule();
-            return connectionMode == ConnectionMode.MEMORY_STRICTLY ? new StreamQueryResult(resultSet, shardingRule) : new MemoryQueryResult(resultSet, shardingRule);
+            ShardingProperties properties = ShardingProxyContext.getInstance().getShardingProperties();
+            return connectionMode == ConnectionMode.MEMORY_STRICTLY 
+                    ? new StreamQueryResult(resultSet, shardingRule, properties) : new MemoryQueryResult(resultSet, shardingRule, properties);
         }
         if (logicSchema instanceof EncryptSchema) {
             EncryptRule encryptRule = ((EncryptSchema) logicSchema).getEncryptRule();
-            return connectionMode == ConnectionMode.MEMORY_STRICTLY ? new StreamQueryResult(resultSet, encryptRule) : new MemoryQueryResult(resultSet, encryptRule);
+            ShardingProperties properties = ShardingProxyContext.getInstance().getShardingProperties();
+            return connectionMode == ConnectionMode.MEMORY_STRICTLY 
+                    ? new StreamQueryResult(resultSet, encryptRule, properties) : new MemoryQueryResult(resultSet, encryptRule, properties);
         }
         return connectionMode == ConnectionMode.MEMORY_STRICTLY ? new StreamQueryResult(resultSet) : new MemoryQueryResult(resultSet);
     }

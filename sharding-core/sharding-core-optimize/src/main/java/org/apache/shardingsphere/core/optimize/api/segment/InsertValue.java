@@ -107,19 +107,18 @@ public final class InsertValue {
     }
     
     /**
-     * Append value.
-     * 
+     * Add value.
+     *
      * @param value value
-     * @param parameters SQL parameters
      */
-    public void appendValue(final Comparable<?> value, final List<Object> parameters) {
+    public void appendValue(final Object value) {
         if (parameters.isEmpty()) {
             // TODO fix start index and stop index
             valueExpressions.add(new LiteralExpressionSegment(0, 0, value));
         } else {
             // TODO fix start index and stop index
             valueExpressions.add(new ParameterMarkerExpressionSegment(0, 0, parameters.size() - 1));
-            this.parameters.add(value);
+            parameters.add(value);
         }
     }
     
