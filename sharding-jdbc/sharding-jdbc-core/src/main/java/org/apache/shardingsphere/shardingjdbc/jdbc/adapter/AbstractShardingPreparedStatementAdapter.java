@@ -274,6 +274,7 @@ public abstract class AbstractShardingPreparedStatementAdapter extends AbstractU
     }
     
     protected final void replaySetParameter(final PreparedStatement preparedStatement, final List<Object> parameters) {
+        preparedStatement.setQueryTimeout(super.queryTimeout);
         setParameterMethodInvocations.clear();
         addParameters(parameters);
         for (SetParameterMethodInvocation each : setParameterMethodInvocations) {
@@ -297,5 +298,6 @@ public abstract class AbstractShardingPreparedStatementAdapter extends AbstractU
     public final void clearParameters() {
         parameters.clear();
         setParameterMethodInvocations.clear();
+        super.queryTimeout = 0;
     }
 }
