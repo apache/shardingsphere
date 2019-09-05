@@ -124,10 +124,6 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         if (null != currentResultSet) {
             return currentResultSet;
         }
-        if (1 == preparedStatementExecutor.getStatements().size() && sqlRouteResult.getShardingStatement().getSQLStatement() instanceof SelectStatement) {
-            currentResultSet = preparedStatementExecutor.getStatements().iterator().next().getResultSet();
-            return currentResultSet;
-        }
         List<ResultSet> resultSets = new ArrayList<>(preparedStatementExecutor.getStatements().size());
         List<QueryResult> queryResults = new ArrayList<>(preparedStatementExecutor.getStatements().size());
         for (Statement each : preparedStatementExecutor.getStatements()) {
