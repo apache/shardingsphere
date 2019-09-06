@@ -97,17 +97,6 @@ public final class InsertValue {
     }
     
     /**
-     * Get value.
-     *
-     * @param columnName column name
-     * @return value
-     */
-    public Object getValue(final String columnName) {
-        ExpressionSegment valueExpression = valueExpressions.get(columnNames.indexOf(columnName));
-        return valueExpression instanceof ParameterMarkerExpressionSegment ? parameters.get(getParameterIndex(valueExpression)) : ((LiteralExpressionSegment) valueExpression).getLiterals();
-    }
-    
-    /**
      * Get value expression.
      *
      * @param columnName column name
