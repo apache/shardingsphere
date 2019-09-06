@@ -29,6 +29,13 @@ import java.util.List;
 public interface InsertOptimizedStatement extends OptimizedStatement {
     
     /**
+     * Get column names.
+     * 
+     * @return column names
+     */
+    List<String> getColumnNames();
+    
+    /**
      * Get insert values.
      * 
      * @return insert values
