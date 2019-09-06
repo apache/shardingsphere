@@ -51,9 +51,9 @@ public final class InsertOptimizedStatementTest {
         assertThat(insertClauseOptimizedStatement.getInsertValues().get(0).getDataNodes().size(), is(0));
         assertThat(insertClauseOptimizedStatement.getInsertValues().get(0).getValue(1), is((Object) "parameter"));
         assertThat(insertClauseOptimizedStatement.getInsertValues().get(0).getValue(2), is((Object) "test"));
-        insertClauseOptimizedStatement.getInsertValues().get(0).setValue("id", 2);
+        insertClauseOptimizedStatement.getInsertValues().get(0).setValue(0, 2);
         assertThat(insertClauseOptimizedStatement.getInsertValues().get(0).getValue(0), is((Object) 2));
-        insertClauseOptimizedStatement.getInsertValues().get(0).setValue("value", "parameter1");
+        insertClauseOptimizedStatement.getInsertValues().get(0).setValue(1, "parameter1");
         assertThat(insertClauseOptimizedStatement.getInsertValues().get(0).getValue(1), is((Object) "parameter1"));
     }
 }

@@ -116,15 +116,15 @@ public final class InsertValue {
     /**
      * Set value.
      *
-     * @param columnName column name
+     * @param index index
      * @param value value
      */
-    public void setValue(final String columnName, final Object value) {
-        ExpressionSegment expressionSegment = valueExpressions.get(columnNames.indexOf(columnName));
-        if (expressionSegment instanceof ParameterMarkerExpressionSegment) {
-            parameters.set(getParameterIndex(expressionSegment), value);
+    public void setValue(final int index, final Object value) {
+        ExpressionSegment valueExpression = valueExpressions.get(index);
+        if (valueExpression instanceof ParameterMarkerExpressionSegment) {
+            parameters.set(getParameterIndex(valueExpression), value);
         } else {
-            valueExpressions.set(columnNames.indexOf(columnName), new LiteralExpressionSegment(expressionSegment.getStartIndex(), expressionSegment.getStopIndex(), value));
+            valueExpressions.set(index, new LiteralExpressionSegment(valueExpression.getStartIndex(), valueExpression.getStopIndex(), value));
         }
     }
     

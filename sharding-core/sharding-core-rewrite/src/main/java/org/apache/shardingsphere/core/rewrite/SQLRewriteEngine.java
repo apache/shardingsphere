@@ -128,7 +128,7 @@ public final class SQLRewriteEngine {
     private void encryptInsertValue(final EncryptRule encryptRule, final ShardingEncryptor shardingEncryptor, 
                                     final String tableName, final int columnIndex, final InsertValue insertValue, final String encryptLogicColumnName) {
         Object originalValue = insertValue.getValue(columnIndex);
-        insertValue.setValue(encryptLogicColumnName, shardingEncryptor.encrypt(originalValue));
+        insertValue.setValue(columnIndex, shardingEncryptor.encrypt(originalValue));
         if (shardingEncryptor instanceof ShardingQueryAssistedEncryptor) {
             Optional<String> assistedColumnName = encryptRule.findAssistedQueryColumn(tableName, encryptLogicColumnName);
             Preconditions.checkArgument(assistedColumnName.isPresent(), "Can not find assisted query Column Name");
