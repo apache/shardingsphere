@@ -56,9 +56,12 @@ public final class Pagination {
     }
     
     private long getValue(final PaginationValueSegment paginationValueSegment, final List<Object> parameters) {
-        return paginationValueSegment instanceof ParameterMarkerPaginationValueSegment
-                ? (long) parameters.get(((ParameterMarkerPaginationValueSegment) paginationValueSegment).getParameterIndex())
-                : ((NumberLiteralPaginationValueSegment) paginationValueSegment).getValue();
+        if (paginationValueSegment instanceof ParameterMarkerPaginationValueSegment) {
+            Object obj = parameters.get(((ParameterMarkerPaginationValueSegment) paginationValueSegment).getParameterIndex());
+            return obj instanceof Long ? (long) obj : (int) obj;
+        } else {
+            return ((NumberLiteralPaginationValueSegment) paginationValueSegment).getValue();
+        }
     }
     
     /**
