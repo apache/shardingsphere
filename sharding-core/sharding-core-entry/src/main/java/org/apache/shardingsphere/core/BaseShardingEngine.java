@@ -107,8 +107,7 @@ public abstract class BaseShardingEngine {
                 sqlRouteResult, sql, parameters, sqlRouteResult.getRoutingResult().isSingleRouting(), shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN));
         Collection<RouteUnit> result = new LinkedHashSet<>();
         for (RoutingUnit each : sqlRouteResult.getRoutingResult().getRoutingUnits()) {
-            result.add(new RouteUnit(each.getDataSourceName(), 
-                    rewriteEngine.generateSQL(each, getLogicAndActualTables(each, sqlRouteResult.getShardingStatement().getTables().getTableNames()))));
+            result.add(new RouteUnit(each.getDataSourceName(), rewriteEngine.generateSQL(each, getLogicAndActualTables(each, sqlRouteResult.getShardingStatement().getTables().getTableNames()))));
         }
         return result;
     }
