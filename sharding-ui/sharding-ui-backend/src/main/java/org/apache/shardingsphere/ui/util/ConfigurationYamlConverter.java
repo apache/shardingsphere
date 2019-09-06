@@ -19,7 +19,6 @@ package org.apache.shardingsphere.ui.util;
 
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -30,16 +29,13 @@ import org.apache.shardingsphere.core.rule.Authentication;
 import org.apache.shardingsphere.core.yaml.config.common.YamlAuthenticationConfiguration;
 import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingRuleConfiguration;
-import org.apache.shardingsphere.core.yaml.engine.DefaultYamlRepresenter;
 import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.core.yaml.swapper.impl.AuthenticationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.impl.MasterSlaveRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.impl.ShardingRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.yaml.config.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.orchestration.yaml.swapper.DataSourceConfigurationYamlSwapper;
-import org.yaml.snakeyaml.Yaml;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -100,19 +96,7 @@ public final class ConfigurationYamlConverter {
         Authentication result = new AuthenticationYamlSwapper().swap(YamlEngine.unmarshal(data, YamlAuthenticationConfiguration.class));
         return result;
     }
-
-    /**
-     * Load config map. 4.0.0-RC1 has removed this directory.
-     *
-     * @param data data
-     * @return config map
-     */
-    @SuppressWarnings("unchecked")
-    @Deprecated
-    public static Map<String, Object> loadConfigMap(final String data) {
-        return Strings.isNullOrEmpty(data) ? new LinkedHashMap<String, Object>() : (Map) new Yaml().load(data);
-    }
-
+    
     /**
      * Load properties configuration.
      *
@@ -122,76 +106,5 @@ public final class ConfigurationYamlConverter {
     public static Properties loadProperties(final String data) {
         return YamlEngine.unmarshalProperties(data);
     }
-
-    /**
-     * Dump data sources configuration.
-     *
-     * @param dataSourceConfigs data sources configurations
-     * @return YAML string
-     */
-    @SuppressWarnings("unchecked")
-    public static String dumpDataSourceConfigurations(final Map<String, DataSourceConfiguration> dataSourceConfigs) {
-        return new Yaml(new DefaultYamlRepresenter()).dumpAsMap(
-                Maps.transformValues(dataSourceConfigs, new Function<DataSourceConfiguration, YamlDataSourceConfiguration>() {
-
-                    @Override
-                    public YamlDataSourceConfiguration apply(final DataSourceConfiguration input) {
-                        YamlDataSourceConfiguration result = new YamlDataSourceConfiguration();
-                        result.setDataSourceClassName(input.getDataSourceClassName());
-                        result.setProperties(input.getProperties());
-                        return result;
-                    }
-                }));
-    }
-
-    /**
-     * Dump sharding rule configuration.
-     *
-     * @param shardingRuleConfig sharding rule configuration
-     * @return YAML string
-     */
-    public static String dumpShardingRuleConfiguration(final ShardingRuleConfiguration shardingRuleConfig) {
-        return new Yaml(new DefaultYamlRepresenter()).dumpAsMap(new ShardingRuleConfigurationYamlSwapper().swap(shardingRuleConfig));
-    }
-
-    /**
-     * Dump master-slave rule configuration.
-     *
-     * @param masterSlaveRuleConfig master-slave rule configuration
-     * @return YAML string
-     */
-    public static String dumpMasterSlaveRuleConfiguration(final MasterSlaveRuleConfiguration masterSlaveRuleConfig) {
-        return new Yaml(new DefaultYamlRepresenter()).dumpAsMap(new MasterSlaveRuleConfigurationYamlSwapper().swap(masterSlaveRuleConfig));
-    }
-
-    /**
-     * Dump authentication.
-     *
-     * @param authentication authentication
-     * @return YAML string
-     */
-    public static String dumpAuthentication(final Authentication authentication) {
-        return new Yaml(new DefaultYamlRepresenter()).dumpAsMap(authentication);
-    }
-
-    /**
-     * Dump config map. 4.0.0-RC1 has removed it.
-     *
-     * @param configMap config map
-     * @return YAML string
-     */
-    @Deprecated
-    public static String dumpConfigMap(final Map<String, Object> configMap) {
-        return new Yaml(new DefaultYamlRepresenter()).dumpAsMap(configMap);
-    }
-
-    /**
-     * Dump properties configuration.
-     *
-     * @param props props
-     * @return YAML string
-     */
-    public static String dumpProperties(final Properties props) {
-        return new Yaml(new DefaultYamlRepresenter()).dumpAsMap(props);
-    }
+    
 }
