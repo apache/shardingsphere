@@ -38,24 +38,23 @@ public final class EncryptInsertOptimizeEngine implements EncryptOptimizeEngine<
     
     @Override
     public EncryptInsertOptimizedStatement optimize(final EncryptRule encryptRule, final TableMetas tableMetas, final String sql, final List<Object> parameters, final InsertStatement sqlStatement) {
-        EncryptInsertOptimizedStatement result = new EncryptInsertOptimizedStatement(sqlStatement, tableMetas);
         String tableName = sqlStatement.getTable().getTableName();
-        int parametersOffset = 0;
-        Collection<String> encryptDerivedColumnNames = encryptRule.getAssistedQueryAndPlainColumns(tableName);
         Collection<String> columnNames = sqlStatement.useDefaultColumns() ? tableMetas.getAllColumnNames(tableName) : sqlStatement.getColumnNames();
+        List<String> allColumnNames = getAllColumnNames(columnNames, encryptRule.getAssistedQueryAndPlainColumns(tableName));
+        EncryptInsertOptimizedStatement result = new EncryptInsertOptimizedStatement(sqlStatement, tableMetas);
         int derivedColumnsCount = encryptRule.getAssistedQueryAndPlainColumns(tableName).size();
+        int parametersOffset = 0;
         for (Collection<ExpressionSegment> each : sqlStatement.getAllValueExpressions()) {
-            InsertValue insertValue = createInsertValue(columnNames, encryptDerivedColumnNames, each, derivedColumnsCount, parameters, parametersOffset);
+            InsertValue insertValue = new InsertValue(allColumnNames, each, derivedColumnsCount, parameters, parametersOffset);
             result.getInsertValues().add(insertValue);
             parametersOffset += insertValue.getParametersCount();
         }
         return result;
     }
     
-    private InsertValue createInsertValue(final Collection<String> columnNames, final Collection<String> derivedColumnNames, final Collection<ExpressionSegment> assignments,
-                                          final int derivedColumnsCount, final List<Object> parameters, final int parametersOffset) {
-        List<String> allColumnNames = new LinkedList<>(columnNames);
-        allColumnNames.addAll(derivedColumnNames);
-        return new InsertValue(allColumnNames, assignments, derivedColumnsCount, parameters, parametersOffset);
+    private List<String> getAllColumnNames(final Collection<String> columnNames, final Collection<String> derivedColumnNames) {
+        List<String> result = new LinkedList<>(columnNames);
+        result.addAll(derivedColumnNames);
+        return result;
     }
 }
