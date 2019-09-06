@@ -66,7 +66,7 @@ public final class ShardingInsertOptimizeEngine implements ShardingOptimizeEngin
         int derivedColumnsCount = getDerivedColumnsCount(shardingRule, tableName, isGeneratedValue);
         int parametersOffset = 0;
         for (Collection<ExpressionSegment> each : sqlStatement.getAllValueExpressions()) {
-            InsertValue insertValue = new InsertValue(allColumnNames, each, derivedColumnsCount, parameters, parametersOffset);
+            InsertValue insertValue = new InsertValue(each, derivedColumnsCount, parameters, parametersOffset);
             result.getInsertValues().add(insertValue);
             if (isGeneratedValue) {
                 insertValue.appendValue(generatedValues.next(), ShardingDerivedColumnType.KEY_GEN);

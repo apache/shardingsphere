@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.optimize.api.segment;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.optimize.api.segment.expression.DerivedLiteralExpressionSegment;
@@ -40,12 +39,9 @@ import java.util.List;
  * @author panjuan
  * @author zhangliang
  */
-@RequiredArgsConstructor
 @Getter
 @ToString(exclude = "dataNodes")
 public final class InsertValue {
-    
-    private final List<String> columnNames;
     
     private final int parametersCount;
     
@@ -55,8 +51,7 @@ public final class InsertValue {
     
     private final List<DataNode> dataNodes = new LinkedList<>();
     
-    public InsertValue(final List<String> columnNames, final Collection<ExpressionSegment> assignments, final int derivedColumnsCount, final List<Object> parameters, final int parametersOffset) {
-        this.columnNames = columnNames;
+    public InsertValue(final Collection<ExpressionSegment> assignments, final int derivedColumnsCount, final List<Object> parameters, final int parametersOffset) {
         parametersCount = calculateParametersCount(assignments);
         valueExpressions = getValueExpressions(assignments, derivedColumnsCount);
         this.parameters = getParameters(parameters, derivedColumnsCount, parametersOffset);
