@@ -43,9 +43,9 @@ public final class Pagination {
     
     private final PaginationValueSegment rowCountSegment;
     
-    private final int actualOffset;
+    private final long actualOffset;
     
-    private final Integer actualRowCount;
+    private final Long actualRowCount;
     
     public Pagination(final PaginationValueSegment offsetSegment, final PaginationValueSegment rowCountSegment, final List<Object> parameters) {
         hasPagination = null != offsetSegment || null != rowCountSegment;
@@ -55,9 +55,9 @@ public final class Pagination {
         actualRowCount = null == rowCountSegment ? null : getValue(rowCountSegment, parameters); 
     }
     
-    private int getValue(final PaginationValueSegment paginationValueSegment, final List<Object> parameters) {
+    private long getValue(final PaginationValueSegment paginationValueSegment, final List<Object> parameters) {
         return paginationValueSegment instanceof ParameterMarkerPaginationValueSegment
-                ? (int) parameters.get(((ParameterMarkerPaginationValueSegment) paginationValueSegment).getParameterIndex())
+                ? (long) parameters.get(((ParameterMarkerPaginationValueSegment) paginationValueSegment).getParameterIndex())
                 : ((NumberLiteralPaginationValueSegment) paginationValueSegment).getValue();
     }
     
@@ -84,7 +84,7 @@ public final class Pagination {
      * 
      * @return actual offset
      */
-    public int getActualOffset() {
+    public long getActualOffset() {
         if (null == offsetSegment) {
             return 0;
         }
@@ -96,7 +96,7 @@ public final class Pagination {
      *
      * @return actual row count
      */
-    public Optional<Integer> getActualRowCount() {
+    public Optional<Long> getActualRowCount() {
         if (null == rowCountSegment) {
             return Optional.absent();
         }
@@ -137,7 +137,7 @@ public final class Pagination {
      * @param shardingStatement sharding optimized statement
      * @return revised row count
      */
-    public int getRevisedRowCount(final ShardingSelectOptimizedStatement shardingStatement) {
+    public long getRevisedRowCount(final ShardingSelectOptimizedStatement shardingStatement) {
         if (isMaxRowCount(shardingStatement)) {
             return Integer.MAX_VALUE;
         }

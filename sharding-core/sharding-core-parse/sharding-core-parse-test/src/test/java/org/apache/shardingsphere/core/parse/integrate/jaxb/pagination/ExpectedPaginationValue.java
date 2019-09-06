@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 public final class ExpectedPaginationValue {
     
     @XmlAttribute
-    private Integer value;
+    private Long value;
     
     @XmlAttribute(name = "parameter-index")
     private Integer parameterIndex;
