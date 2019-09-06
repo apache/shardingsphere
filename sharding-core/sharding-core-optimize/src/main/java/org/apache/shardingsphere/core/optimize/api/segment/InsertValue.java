@@ -99,6 +99,16 @@ public final class InsertValue {
     /**
      * Get value expression.
      *
+     * @param index index
+     * @return expression segment
+     */
+    public ExpressionSegment getValueExpression(final int index) {
+        return valueExpressions.get(index);
+    }
+    
+    /**
+     * Get value expression.
+     *
      * @param columnName column name
      * @return column sql expression
      */
