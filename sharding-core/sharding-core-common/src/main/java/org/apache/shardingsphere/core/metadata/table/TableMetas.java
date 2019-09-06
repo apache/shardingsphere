@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.core.metadata.table;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -93,8 +95,8 @@ public final class TableMetas {
      * @param tableName table name
      * @return column names
      */
-    public Collection<String> getAllColumnNames(final String tableName) {
-        return tables.containsKey(tableName) ? tables.get(tableName).getColumns().keySet() : Collections.<String>emptyList();
+    public List<String> getAllColumnNames(final String tableName) {
+        return tables.containsKey(tableName) ? new ArrayList<>(tables.get(tableName).getColumns().keySet()) : Collections.<String>emptyList();
     }
     
     /**

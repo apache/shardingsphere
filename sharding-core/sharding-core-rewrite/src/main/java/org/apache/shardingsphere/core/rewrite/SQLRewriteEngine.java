@@ -40,6 +40,7 @@ import org.apache.shardingsphere.core.rule.BaseRule;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 import org.apache.shardingsphere.spi.encrypt.ShardingQueryAssistedEncryptor;
 
@@ -106,32 +107,26 @@ public final class SQLRewriteEngine {
         return optimizedStatement instanceof InsertOptimizedStatement && !encryptRule.getEncryptTableNames().isEmpty();
     }
     
-    private void encryptInsertOptimizedStatement(final EncryptRule encryptRule, final ShardingInsertOptimizedStatement insertOptimizedStatement) {
-        for (InsertValue insertValue : insertOptimizedStatement.getInsertValues()) {
-            for (String each : insertOptimizedStatement.getColumnNames()) {
-                Optional<ShardingEncryptor> shardingEncryptor = encryptRule.findShardingEncryptor(insertOptimizedStatement.getTables().getSingleTableName(), each);
-                if (shardingEncryptor.isPresent()) {
-                    encryptInsertValue(encryptRule, shardingEncryptor.get(), insertValue, insertOptimizedStatement.getTables().getSingleTableName(), each);
-                }
-            }
-        }
-    }
-    
-    private void encryptInsertOptimizedStatement(final EncryptRule encryptRule, final EncryptInsertOptimizedStatement insertOptimizedStatement) {
+    private void encryptInsertOptimizedStatement(final EncryptRule encryptRule, final InsertOptimizedStatement insertOptimizedStatement) {
         String tableName = insertOptimizedStatement.getTables().getSingleTableName();
-        for (InsertValue insertValue : insertOptimizedStatement.getInsertValues()) {
-            for (String each : insertOptimizedStatement.getColumnNames()) {
-                Optional<ShardingEncryptor> shardingEncryptor = encryptRule.findShardingEncryptor(tableName, each);
-                if (shardingEncryptor.isPresent()) {
-                    encryptInsertValue(encryptRule, shardingEncryptor.get(), insertValue, insertOptimizedStatement.getTables().getSingleTableName(), each);
+        Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
+        if (!encryptTable.isPresent()) {
+            return;
+        }
+        for (String each : encryptTable.get().getLogicColumns()) {
+            int columnIndex = insertOptimizedStatement.getColumnNames().indexOf(each);
+            Optional<ShardingEncryptor> shardingEncryptor = encryptRule.findShardingEncryptor(tableName, each);
+            if (shardingEncryptor.isPresent()) {
+                for (InsertValue insertValue : insertOptimizedStatement.getInsertValues()) {
+                    encryptInsertValue(encryptRule, shardingEncryptor.get(), tableName, columnIndex, insertValue, each);
                 }
             }
         }
     }
     
-    private void encryptInsertValue(
-            final EncryptRule encryptRule, final ShardingEncryptor shardingEncryptor, final InsertValue insertValue, final String tableName, final String encryptLogicColumnName) {
-        Object originalValue = insertValue.getValue(encryptLogicColumnName);
+    private void encryptInsertValue(final EncryptRule encryptRule, final ShardingEncryptor shardingEncryptor, 
+                                    final String tableName, final int columnIndex, final InsertValue insertValue, final String encryptLogicColumnName) {
+        Object originalValue = insertValue.getValue(columnIndex);
         insertValue.setValue(encryptLogicColumnName, shardingEncryptor.encrypt(originalValue));
         if (shardingEncryptor instanceof ShardingQueryAssistedEncryptor) {
             Optional<String> assistedColumnName = encryptRule.findAssistedQueryColumn(tableName, encryptLogicColumnName);
