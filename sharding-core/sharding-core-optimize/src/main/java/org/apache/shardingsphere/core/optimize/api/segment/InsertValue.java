@@ -21,6 +21,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.core.exception.ShardingException;
+import org.apache.shardingsphere.core.optimize.api.segment.expression.DerivedLiteralExpressionSegment;
+import org.apache.shardingsphere.core.optimize.api.segment.expression.DerivedParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -97,37 +99,16 @@ public final class InsertValue {
     }
     
     /**
-     * Get value expression.
-     *
-     * @param index index
-     * @return expression segment
-     */
-    public ExpressionSegment getValueExpression(final int index) {
-        return valueExpressions.get(index);
-    }
-    
-    /**
-     * Get value expression.
-     *
-     * @param columnName column name
-     * @return column sql expression
-     */
-    public ExpressionSegment getValueExpression(final String columnName) {
-        return valueExpressions.get(columnNames.indexOf(columnName));
-    }
-    
-    /**
      * Add value.
      *
      * @param value value
+     * @param type type of derived value
      */
-    public void appendValue(final Object value) {
+    public void appendValue(final Object value, final String type) {
         if (parameters.isEmpty()) {
-            // TODO fix start index and stop index
-            valueExpressions.add(new LiteralExpressionSegment(0, 0, value));
+            valueExpressions.add(new DerivedLiteralExpressionSegment(value, type));
         } else {
-            // TODO fix start index and stop index
-            valueExpressions.add(new ParameterMarkerExpressionSegment(0, 0, parameters.size() - 1));
+            valueExpressions.add(new DerivedParameterMarkerExpressionSegment(parameters.size() - 1, type));
             parameters.add(value);
         }
     }

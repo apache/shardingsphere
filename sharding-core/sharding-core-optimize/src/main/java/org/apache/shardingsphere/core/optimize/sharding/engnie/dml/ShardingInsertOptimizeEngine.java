@@ -21,6 +21,7 @@ import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
+import org.apache.shardingsphere.core.optimize.sharding.constant.ShardingDerivedColumnType;
 import org.apache.shardingsphere.core.optimize.sharding.engnie.ShardingOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.sharding.segment.condition.engine.InsertClauseShardingConditionEngine;
@@ -68,7 +69,7 @@ public final class ShardingInsertOptimizeEngine implements ShardingOptimizeEngin
             InsertValue insertValue = new InsertValue(allColumnNames, each, derivedColumnsCount, parameters, parametersOffset);
             result.getInsertValues().add(insertValue);
             if (isGeneratedValue) {
-                insertValue.appendValue(generatedValues.next());
+                insertValue.appendValue(generatedValues.next(), ShardingDerivedColumnType.KEY_GEN);
             }
             parametersOffset += insertValue.getParametersCount();
         }

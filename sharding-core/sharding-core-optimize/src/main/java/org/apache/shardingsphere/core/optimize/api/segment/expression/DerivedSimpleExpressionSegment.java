@@ -15,25 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple;
+package org.apache.shardingsphere.core.optimize.api.segment.expression;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.SimpleExpressionSegment;
 
 /**
- * Parameter marker expression segment.
+ * Derived simple expression segment.
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
-@Getter
-@ToString
-public class ParameterMarkerExpressionSegment implements SimpleExpressionSegment {
+public interface DerivedSimpleExpressionSegment extends SimpleExpressionSegment {
     
-    private final int startIndex;
-    
-    private final int stopIndex;
-    
-    private final int parameterMarkerIndex;
+    /**
+     * Get derived expression type.
+     * 
+     * @return derived expression type
+     */
+    String getType();
 }

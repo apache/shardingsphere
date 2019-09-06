@@ -31,7 +31,7 @@ import lombok.ToString;
 @RequiredArgsConstructor
 @Getter
 @ToString
-public final class LiteralExpressionSegment implements SimpleExpressionSegment {
+public class LiteralExpressionSegment implements SimpleExpressionSegment {
     
     private final int startIndex;
     

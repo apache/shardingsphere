@@ -60,7 +60,7 @@ public final class InsertSetGeneratedKeyColumnTokenGenerator implements Optional
     private InsertSetGeneratedKeyColumnToken createInsertSetGeneratedKeyColumnToken(
             final InsertOptimizedStatement optimizedStatement, final String generatedKeyColumn, final List<AssignmentSegment> assignments) {
         int index = optimizedStatement.getColumnNames().contains(generatedKeyColumn) ? optimizedStatement.getColumnNames().indexOf(generatedKeyColumn) : optimizedStatement.getColumnNames().size();
-        ExpressionSegment expressionSegment = optimizedStatement.getInsertValues().get(0).getValueExpression(index);
+        ExpressionSegment expressionSegment = optimizedStatement.getInsertValues().get(0).getValueExpressions().get(index);
         return new InsertSetGeneratedKeyColumnToken(assignments.get(assignments.size() - 1).getStopIndex() + 1, generatedKeyColumn, expressionSegment);
     }
     

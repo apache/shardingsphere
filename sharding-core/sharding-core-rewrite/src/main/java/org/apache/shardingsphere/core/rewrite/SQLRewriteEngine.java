@@ -22,6 +22,7 @@ import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
 import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.optimize.encrypt.constant.EncryptDerivedColumnType;
 import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptInsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingInsertOptimizedStatement;
@@ -131,10 +132,10 @@ public final class SQLRewriteEngine {
         if (shardingEncryptor instanceof ShardingQueryAssistedEncryptor) {
             Optional<String> assistedColumnName = encryptRule.findAssistedQueryColumn(tableName, encryptLogicColumnName);
             Preconditions.checkArgument(assistedColumnName.isPresent(), "Can not find assisted query Column Name");
-            insertValue.appendValue(((ShardingQueryAssistedEncryptor) shardingEncryptor).queryAssistedEncrypt(originalValue.toString()));
+            insertValue.appendValue(((ShardingQueryAssistedEncryptor) shardingEncryptor).queryAssistedEncrypt(originalValue.toString()), EncryptDerivedColumnType.ENCRYPT);
         }
         if (encryptRule.findPlainColumn(tableName, encryptLogicColumnName).isPresent()) {
-            insertValue.appendValue(originalValue);
+            insertValue.appendValue(originalValue, EncryptDerivedColumnType.ENCRYPT);
         }
     }
     
