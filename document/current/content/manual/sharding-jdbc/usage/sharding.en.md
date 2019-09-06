@@ -41,9 +41,7 @@ Sharding database and table of Sharding-JDBC configure descriptions according to
     dataSourceMap.put("ds1", dataSource2);
     
     // Configure Order table rules
-    TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
-    orderTableRuleConfig.setLogicTable("t_order");
-    orderTableRuleConfig.setActualDataNodes("ds${0..1}.t_order${0..1}");
+    TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration("t_order","ds${0..1}.t_order${0..1}");
     
     // Configure strategies for database + table sharding 
     orderTableRuleConfig.setDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "ds${user_id % 2}"));
