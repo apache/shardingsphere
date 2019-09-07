@@ -109,6 +109,7 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
         try {
             SQLUnit sqlUnit = getSQLUnit(sql);
             preparedStatement = preparedStatementGenerator.createPreparedStatement(sqlUnit.getSql());
+            replayMethodsInvocation(preparedStatement);
             replaySetParameter(preparedStatement, sqlUnit.getParameters());
             return preparedStatement.executeUpdate();
         } finally {
@@ -121,6 +122,7 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
         try {
             SQLUnit sqlUnit = getSQLUnit(sql);
             preparedStatement = preparedStatementGenerator.createPreparedStatement(sqlUnit.getSql());
+            replayMethodsInvocation(preparedStatement);
             replaySetParameter(preparedStatement, sqlUnit.getParameters());
             boolean result = preparedStatement.execute();
             this.resultSet = createEncryptResultSet(preparedStatement);

@@ -45,8 +45,6 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     
     private int fetchSize;
     
-    protected int queryTimeout;
-    
     private final ForceExecuteTemplate<Statement> forceExecuteTemplate = new ForceExecuteTemplate<>();
     
     @SuppressWarnings("unchecked")
@@ -232,7 +230,6 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     @Override
     public final void setQueryTimeout(final int seconds) throws SQLException {
         recordMethodInvocation(targetClass, "setQueryTimeout", new Class[] {int.class}, new Object[] {seconds});
-        this.queryTimeout = seconds;
         forceExecuteTemplate.execute((Collection) getRoutedStatements(), new ForceExecuteCallback<Statement>() {
         
             @Override
