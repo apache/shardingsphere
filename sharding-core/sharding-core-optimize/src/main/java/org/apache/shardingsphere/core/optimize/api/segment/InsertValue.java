@@ -18,9 +18,10 @@
 package org.apache.shardingsphere.core.optimize.api.segment;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.core.exception.ShardingException;
+import org.apache.shardingsphere.core.optimize.api.segment.expression.DerivedLiteralExpressionSegment;
+import org.apache.shardingsphere.core.optimize.api.segment.expression.DerivedParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -38,12 +39,9 @@ import java.util.List;
  * @author panjuan
  * @author zhangliang
  */
-@RequiredArgsConstructor
 @Getter
 @ToString(exclude = "dataNodes")
 public final class InsertValue {
-    
-    private final List<String> columnNames;
     
     private final int parametersCount;
     
@@ -53,8 +51,7 @@ public final class InsertValue {
     
     private final List<DataNode> dataNodes = new LinkedList<>();
     
-    public InsertValue(final List<String> columnNames, final Collection<ExpressionSegment> assignments, final int derivedColumnsCount, final List<Object> parameters, final int parametersOffset) {
-        this.columnNames = columnNames;
+    public InsertValue(final Collection<ExpressionSegment> assignments, final int derivedColumnsCount, final List<Object> parameters, final int parametersOffset) {
         parametersCount = calculateParametersCount(assignments);
         valueExpressions = getValueExpressions(assignments, derivedColumnsCount);
         this.parameters = getParameters(parameters, derivedColumnsCount, parametersOffset);
@@ -88,36 +85,25 @@ public final class InsertValue {
     /**
      * Get value.
      *
-     * @param columnName column name
+     * @param index index
      * @return value
      */
-    public Object getValue(final String columnName) {
-        ExpressionSegment valueExpression = valueExpressions.get(columnNames.indexOf(columnName));
+    public Object getValue(final int index) {
+        ExpressionSegment valueExpression = valueExpressions.get(index);
         return valueExpression instanceof ParameterMarkerExpressionSegment ? parameters.get(getParameterIndex(valueExpression)) : ((LiteralExpressionSegment) valueExpression).getLiterals();
-    }
-    
-    /**
-     * Get value expression.
-     *
-     * @param columnName column name
-     * @return column sql expression
-     */
-    public ExpressionSegment getValueExpression(final String columnName) {
-        return valueExpressions.get(columnNames.indexOf(columnName));
     }
     
     /**
      * Add value.
      *
      * @param value value
+     * @param type type of derived value
      */
-    public void appendValue(final Object value) {
+    public void appendValue(final Object value, final String type) {
         if (parameters.isEmpty()) {
-            // TODO fix start index and stop index
-            valueExpressions.add(new LiteralExpressionSegment(0, 0, value));
+            valueExpressions.add(new DerivedLiteralExpressionSegment(value, type));
         } else {
-            // TODO fix start index and stop index
-            valueExpressions.add(new ParameterMarkerExpressionSegment(0, 0, parameters.size() - 1));
+            valueExpressions.add(new DerivedParameterMarkerExpressionSegment(parameters.size() - 1, type));
             parameters.add(value);
         }
     }
@@ -125,15 +111,15 @@ public final class InsertValue {
     /**
      * Set value.
      *
-     * @param columnName column name
+     * @param index index
      * @param value value
      */
-    public void setValue(final String columnName, final Object value) {
-        ExpressionSegment expressionSegment = valueExpressions.get(columnNames.indexOf(columnName));
-        if (expressionSegment instanceof ParameterMarkerExpressionSegment) {
-            parameters.set(getParameterIndex(expressionSegment), value);
+    public void setValue(final int index, final Object value) {
+        ExpressionSegment valueExpression = valueExpressions.get(index);
+        if (valueExpression instanceof ParameterMarkerExpressionSegment) {
+            parameters.set(getParameterIndex(valueExpression), value);
         } else {
-            valueExpressions.set(columnNames.indexOf(columnName), new LiteralExpressionSegment(expressionSegment.getStartIndex(), expressionSegment.getStopIndex(), value));
+            valueExpressions.set(index, new LiteralExpressionSegment(valueExpression.getStartIndex(), valueExpression.getStopIndex(), value));
         }
     }
     

@@ -15,30 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.api.statement;
-
-import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
-
-import java.util.List;
+package org.apache.shardingsphere.core.optimize.sharding.constant;
 
 /**
- * Insert optimized statement.
+ * Derived column type for sharding.
  *
  * @author zhangliang
  */
-public interface InsertOptimizedStatement extends OptimizedStatement {
+public final class ShardingDerivedColumnType {
     
-    /**
-     * Get column names.
-     * 
-     * @return column names
-     */
-    List<String> getColumnNames();
-    
-    /**
-     * Get insert values.
-     * 
-     * @return insert values
-     */
-    List<InsertValue> getInsertValues();
+    public static final String KEY_GEN = "KEY_GEN";
 }

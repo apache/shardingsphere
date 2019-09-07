@@ -15,30 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.api.statement;
+package org.apache.shardingsphere.core.optimize.api.segment.expression;
 
-import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
-
-import java.util.List;
+import lombok.Getter;
+import lombok.ToString;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 
 /**
- * Insert optimized statement.
+ * Derived literal expression segment.
  *
  * @author zhangliang
  */
-public interface InsertOptimizedStatement extends OptimizedStatement {
+@Getter
+@ToString(callSuper = true)
+public final class DerivedLiteralExpressionSegment extends LiteralExpressionSegment implements DerivedSimpleExpressionSegment {
     
-    /**
-     * Get column names.
-     * 
-     * @return column names
-     */
-    List<String> getColumnNames();
+    private final String type;
     
-    /**
-     * Get insert values.
-     * 
-     * @return insert values
-     */
-    List<InsertValue> getInsertValues();
+    public DerivedLiteralExpressionSegment(final Object literals, final String type) {
+        super(0, 0, literals);
+        this.type = type;
+    }
 }

@@ -35,27 +35,28 @@ public final class InsertSetCipherColumnToken extends SQLToken implements Substi
     
     private final String cipherColumnName;
     
-    private final ExpressionSegment cipherColumnValue;
+    private final ExpressionSegment cipherValue;
     
-    public InsertSetCipherColumnToken(final int startIndex, final int stopIndex, final String cipherColumnName, final ExpressionSegment cipherColumnValue) {
+    public InsertSetCipherColumnToken(final int startIndex, final int stopIndex, final String cipherColumnName, final ExpressionSegment cipherValue) {
         super(startIndex);
         this.stopIndex = stopIndex;
         this.cipherColumnName = cipherColumnName;
-        this.cipherColumnValue = cipherColumnValue;
+        this.cipherValue = cipherValue;
     }
     
     @Override
     public String toString() {
-        return String.format("%s = %s", cipherColumnName, getCipherColumnValue());
+        return String.format("%s = %s", cipherColumnName, getCipherValue());
     }
     
-    private String getCipherColumnValue() {
-        if (cipherColumnValue instanceof ParameterMarkerExpressionSegment) {
+    private String getCipherValue() {
+        if (cipherValue instanceof ParameterMarkerExpressionSegment) {
             return "?";
-        } else if (cipherColumnValue instanceof LiteralExpressionSegment) {
-            Object literals = ((LiteralExpressionSegment) cipherColumnValue).getLiterals();
+        }
+        if (cipherValue instanceof LiteralExpressionSegment) {
+            Object literals = ((LiteralExpressionSegment) cipherValue).getLiterals();
             return literals instanceof String ? String.format("'%s'", literals) : literals.toString();
         }
-        return ((ComplexExpressionSegment) cipherColumnValue).getText();
+        return ((ComplexExpressionSegment) cipherValue).getText();
     } 
 }

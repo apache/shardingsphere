@@ -15,30 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.api.statement;
+package org.apache.shardingsphere.core.optimize.api.segment.expression;
 
-import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
-
-import java.util.List;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.SimpleExpressionSegment;
 
 /**
- * Insert optimized statement.
+ * Derived simple expression segment.
  *
  * @author zhangliang
  */
-public interface InsertOptimizedStatement extends OptimizedStatement {
+public interface DerivedSimpleExpressionSegment extends SimpleExpressionSegment {
     
     /**
-     * Get column names.
+     * Get derived expression type.
      * 
-     * @return column names
+     * @return derived expression type
      */
-    List<String> getColumnNames();
-    
-    /**
-     * Get insert values.
-     * 
-     * @return insert values
-     */
-    List<InsertValue> getInsertValues();
+    String getType();
 }

@@ -100,21 +100,21 @@ public final class InsertValuesToken extends SQLToken implements Substitutable, 
             StringBuilder result = new StringBuilder();
             result.append("(");
             for (int i = 0; i < values.size(); i++) {
-                result.append(getColumnValue(i)).append(", ");
+                result.append(getValue(i)).append(", ");
             }
             result.delete(result.length() - 2, result.length()).append(")");
             return result.toString();
         }
         
-        private String getColumnValue(final int index) {
-            ExpressionSegment columnValue = values.get(index);
-            if (columnValue instanceof ParameterMarkerExpressionSegment) {
+        private String getValue(final int index) {
+            ExpressionSegment expressionSegment = values.get(index);
+            if (expressionSegment instanceof ParameterMarkerExpressionSegment) {
                 return "?";
-            } else if (columnValue instanceof LiteralExpressionSegment) {
-                Object literals = ((LiteralExpressionSegment) columnValue).getLiterals();
-                return literals instanceof String ? String.format("'%s'", ((LiteralExpressionSegment) columnValue).getLiterals()) : literals.toString();
+            } else if (expressionSegment instanceof LiteralExpressionSegment) {
+                Object literals = ((LiteralExpressionSegment) expressionSegment).getLiterals();
+                return literals instanceof String ? String.format("'%s'", ((LiteralExpressionSegment) expressionSegment).getLiterals()) : literals.toString();
             }
-            return ((ComplexExpressionSegment) columnValue).getText();
+            return ((ComplexExpressionSegment) expressionSegment).getText();
         }
     }
 }

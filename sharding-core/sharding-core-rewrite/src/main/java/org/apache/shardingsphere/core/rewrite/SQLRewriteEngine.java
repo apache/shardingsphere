@@ -22,9 +22,8 @@ import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
 import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
-import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptInsertOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.encrypt.constant.EncryptDerivedColumnType;
 import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingInsertOptimizedStatement;
 import org.apache.shardingsphere.core.rewrite.builder.BaseParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.InsertParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
@@ -40,6 +39,7 @@ import org.apache.shardingsphere.core.rule.BaseRule;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 import org.apache.shardingsphere.spi.encrypt.ShardingQueryAssistedEncryptor;
 
@@ -69,7 +69,7 @@ public final class SQLRewriteEngine {
     public SQLRewriteEngine(final ShardingRule shardingRule, 
                             final SQLRouteResult sqlRouteResult, final String sql, final List<Object> parameters, final boolean isSingleRoute, final boolean isQueryWithCipherColumn) {
         baseRule = shardingRule;
-        this.optimizedStatement = encryptOptimizedStatement(shardingRule.getEncryptRule(), sqlRouteResult.getShardingStatement());
+        optimizedStatement = encryptOptimizedStatement(shardingRule.getEncryptRule(), sqlRouteResult.getShardingStatement());
         parameterBuilder = createParameterBuilder(parameters, sqlRouteResult);
         sqlTokens = createSQLTokens(isSingleRoute, isQueryWithCipherColumn);
         sqlBuilder = new SQLBuilder(sql, sqlTokens);
@@ -77,7 +77,7 @@ public final class SQLRewriteEngine {
     
     public SQLRewriteEngine(final EncryptRule encryptRule, final EncryptOptimizedStatement encryptStatement, final String sql, final List<Object> parameters, final boolean isQueryWithCipherColumn) {
         baseRule = encryptRule;
-        this.optimizedStatement = encryptOptimizedStatement(encryptRule, encryptStatement);
+        optimizedStatement = encryptOptimizedStatement(encryptRule, encryptStatement);
         parameterBuilder = createParameterBuilder(parameters);
         sqlTokens = createSQLTokens(false, isQueryWithCipherColumn);
         sqlBuilder = new SQLBuilder(sql, sqlTokens);
@@ -92,54 +92,40 @@ public final class SQLRewriteEngine {
     }
     
     private OptimizedStatement encryptOptimizedStatement(final EncryptRule encryptRule, final OptimizedStatement optimizedStatement) {
-        if (isEncryptWithInsert(encryptRule, optimizedStatement)) {
-            if (optimizedStatement instanceof ShardingInsertOptimizedStatement) {
-                encryptInsertOptimizedStatement(encryptRule, (ShardingInsertOptimizedStatement) optimizedStatement);
-            } else {
-                encryptInsertOptimizedStatement(encryptRule, (EncryptInsertOptimizedStatement) optimizedStatement);
-            }
+        if (optimizedStatement instanceof InsertOptimizedStatement && !encryptRule.getEncryptTableNames().isEmpty()) {
+            encryptInsertOptimizedStatement(encryptRule, (InsertOptimizedStatement) optimizedStatement);
         }
         return optimizedStatement;
     }
     
-    private boolean isEncryptWithInsert(final EncryptRule encryptRule, final OptimizedStatement optimizedStatement) {
-        return optimizedStatement instanceof InsertOptimizedStatement && !encryptRule.getEncryptTableNames().isEmpty();
-    }
-    
-    private void encryptInsertOptimizedStatement(final EncryptRule encryptRule, final ShardingInsertOptimizedStatement insertOptimizedStatement) {
-        for (InsertValue insertValue : insertOptimizedStatement.getInsertValues()) {
-            for (String each : insertOptimizedStatement.getColumnNames()) {
-                Optional<ShardingEncryptor> shardingEncryptor = encryptRule.findShardingEncryptor(insertOptimizedStatement.getTables().getSingleTableName(), each);
-                if (shardingEncryptor.isPresent()) {
-                    encryptInsertValue(encryptRule, shardingEncryptor.get(), insertValue, insertOptimizedStatement.getTables().getSingleTableName(), each);
-                }
-            }
-        }
-    }
-    
-    private void encryptInsertOptimizedStatement(final EncryptRule encryptRule, final EncryptInsertOptimizedStatement insertOptimizedStatement) {
+    private void encryptInsertOptimizedStatement(final EncryptRule encryptRule, final InsertOptimizedStatement insertOptimizedStatement) {
         String tableName = insertOptimizedStatement.getTables().getSingleTableName();
-        for (InsertValue insertValue : insertOptimizedStatement.getInsertValues()) {
-            for (String each : insertOptimizedStatement.getColumnNames()) {
-                Optional<ShardingEncryptor> shardingEncryptor = encryptRule.findShardingEncryptor(tableName, each);
-                if (shardingEncryptor.isPresent()) {
-                    encryptInsertValue(encryptRule, shardingEncryptor.get(), insertValue, insertOptimizedStatement.getTables().getSingleTableName(), each);
+        Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
+        if (!encryptTable.isPresent()) {
+            return;
+        }
+        for (String each : encryptTable.get().getLogicColumns()) {
+            int columnIndex = insertOptimizedStatement.getColumnNames().indexOf(each);
+            Optional<ShardingEncryptor> shardingEncryptor = encryptRule.findShardingEncryptor(tableName, each);
+            if (shardingEncryptor.isPresent()) {
+                for (InsertValue insertValue : insertOptimizedStatement.getInsertValues()) {
+                    encryptInsertValue(encryptRule, shardingEncryptor.get(), tableName, columnIndex, insertValue, each);
                 }
             }
         }
     }
     
-    private void encryptInsertValue(
-            final EncryptRule encryptRule, final ShardingEncryptor shardingEncryptor, final InsertValue insertValue, final String tableName, final String encryptLogicColumnName) {
-        Object originalValue = insertValue.getValue(encryptLogicColumnName);
-        insertValue.setValue(encryptLogicColumnName, shardingEncryptor.encrypt(originalValue));
+    private void encryptInsertValue(final EncryptRule encryptRule, final ShardingEncryptor shardingEncryptor, 
+                                    final String tableName, final int columnIndex, final InsertValue insertValue, final String encryptLogicColumnName) {
+        Object originalValue = insertValue.getValue(columnIndex);
+        insertValue.setValue(columnIndex, shardingEncryptor.encrypt(originalValue));
         if (shardingEncryptor instanceof ShardingQueryAssistedEncryptor) {
             Optional<String> assistedColumnName = encryptRule.findAssistedQueryColumn(tableName, encryptLogicColumnName);
             Preconditions.checkArgument(assistedColumnName.isPresent(), "Can not find assisted query Column Name");
-            insertValue.appendValue(((ShardingQueryAssistedEncryptor) shardingEncryptor).queryAssistedEncrypt(originalValue.toString()));
+            insertValue.appendValue(((ShardingQueryAssistedEncryptor) shardingEncryptor).queryAssistedEncrypt(originalValue.toString()), EncryptDerivedColumnType.ENCRYPT);
         }
         if (encryptRule.findPlainColumn(tableName, encryptLogicColumnName).isPresent()) {
-            insertValue.appendValue(originalValue);
+            insertValue.appendValue(originalValue, EncryptDerivedColumnType.ENCRYPT);
         }
     }
     

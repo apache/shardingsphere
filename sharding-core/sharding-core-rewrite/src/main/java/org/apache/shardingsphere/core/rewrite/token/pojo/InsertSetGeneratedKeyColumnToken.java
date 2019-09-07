@@ -33,26 +33,27 @@ public final class InsertSetGeneratedKeyColumnToken extends SQLToken implements 
     
     private final String columnName;
     
-    private final ExpressionSegment columnValue;
+    private final ExpressionSegment value;
     
-    public InsertSetGeneratedKeyColumnToken(final int startIndex, final String columnName, final ExpressionSegment columnValue) {
+    public InsertSetGeneratedKeyColumnToken(final int startIndex, final String columnName, final ExpressionSegment value) {
         super(startIndex);
         this.columnName = columnName;
-        this.columnValue = columnValue;
+        this.value = value;
     }
     
     @Override
     public String toString() {
-        return String.format(", %s = %s", columnName, getLiteralOfColumnValue());
+        return String.format(", %s = %s", columnName, getLiteralOfValue());
     }
     
-    private String getLiteralOfColumnValue() {
-        if (columnValue instanceof ParameterMarkerExpressionSegment) {
+    private String getLiteralOfValue() {
+        if (value instanceof ParameterMarkerExpressionSegment) {
             return "?";
-        } else if (columnValue instanceof LiteralExpressionSegment) {
-            Object literals = ((LiteralExpressionSegment) columnValue).getLiterals();
+        }
+        if (value instanceof LiteralExpressionSegment) {
+            Object literals = ((LiteralExpressionSegment) value).getLiterals();
             return literals instanceof String ? String.format("'%s'", literals) : literals.toString();
         }
-        return ((ComplexExpressionSegment) columnValue).getText();
+        return ((ComplexExpressionSegment) value).getText();
     }
 }

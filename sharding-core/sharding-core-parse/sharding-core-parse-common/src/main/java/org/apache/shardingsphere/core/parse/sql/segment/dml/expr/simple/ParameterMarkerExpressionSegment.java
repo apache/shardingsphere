@@ -29,7 +29,7 @@ import lombok.ToString;
 @RequiredArgsConstructor
 @Getter
 @ToString
-public final class ParameterMarkerExpressionSegment implements SimpleExpressionSegment {
+public class ParameterMarkerExpressionSegment implements SimpleExpressionSegment {
     
     private final int startIndex;
     
