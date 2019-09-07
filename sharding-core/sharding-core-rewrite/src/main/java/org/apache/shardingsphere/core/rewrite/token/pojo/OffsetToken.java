@@ -30,9 +30,9 @@ public final class OffsetToken extends SQLToken implements Substitutable {
     
     private final int stopIndex;
     
-    private final int revisedOffset;
+    private final long revisedOffset;
     
-    public OffsetToken(final int startIndex, final int stopIndex, final int revisedOffset) {
+    public OffsetToken(final int startIndex, final int stopIndex, final long revisedOffset) {
         super(startIndex);
         this.stopIndex = stopIndex;
         this.revisedOffset = revisedOffset;

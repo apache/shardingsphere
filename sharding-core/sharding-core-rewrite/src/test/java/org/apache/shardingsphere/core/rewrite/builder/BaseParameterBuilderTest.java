@@ -64,8 +64,8 @@ public final class BaseParameterBuilderTest {
     
     @Test
     public void assertGetParameters() {
-        assertThat(baseParameterBuilder.getParameters(), is(Arrays.<Object>asList(1, 2, 0, 6L, 7)));
-        assertThat(baseParameterBuilder.getParameters(mock(RoutingUnit.class)), is(Arrays.<Object>asList(1, 2, 0, 6L, 7)));
+        assertThat(baseParameterBuilder.getParameters(), is(Arrays.<Object>asList(1, 2, 0L, 6L, 7)));
+        assertThat(baseParameterBuilder.getParameters(mock(RoutingUnit.class)), is(Arrays.<Object>asList(1, 2, 0L, 6L, 7)));
     }
     
     @Test
@@ -81,7 +81,7 @@ public final class BaseParameterBuilderTest {
     @Test
     public void assertGetReplacedIndexAndParameters() {
         Map<Integer, Object> expected = new LinkedHashMap<>();
-        expected.put(2, 0);
+        expected.put(2, 0L);
         expected.put(3, 6L);
         assertThat(baseParameterBuilder.getReplacedIndexAndParameters(), is(expected));
     }

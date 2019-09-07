@@ -89,7 +89,7 @@ public final class Pagination {
      */
     public long getActualOffset() {
         if (null == offsetSegment) {
-            return 0;
+            return 0L;
         }
         return offsetSegment.isBoundOpened() ? actualOffset - 1 : actualOffset;
     }
@@ -130,8 +130,8 @@ public final class Pagination {
      *
      * @return revised offset
      */
-    public int getRevisedOffset() {
-        return 0;
+    public long getRevisedOffset() {
+        return 0L;
     }
     
     /**
