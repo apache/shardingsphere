@@ -15,25 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+package org.apache.shardingsphere.core.optimize.encrypt.constant;
 
 /**
- * Parameter marker expression segment.
+ * Derived column type for encrypt.
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
-@Getter
-@ToString
-public class ParameterMarkerExpressionSegment implements SimpleExpressionSegment {
+public final class EncryptDerivedColumnType {
     
-    private final int startIndex;
-    
-    private final int stopIndex;
-    
-    private final int parameterMarkerIndex;
+    public static final String ENCRYPT = "ENCRYPT";
 }

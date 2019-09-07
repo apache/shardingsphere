@@ -43,12 +43,12 @@ public final class QueryRow {
     }
     
     /**
-     * Get column value.
+     * Get value.
      *
      * @param columnIndex column index
-     * @return column value
+     * @return value
      */
-    public Object getColumnValue(final int columnIndex) {
+    public Object getValue(final int columnIndex) {
         return rowData.get(columnIndex - 1);
     }
     

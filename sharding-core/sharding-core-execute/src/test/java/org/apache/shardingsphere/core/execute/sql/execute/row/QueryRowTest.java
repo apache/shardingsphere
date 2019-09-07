@@ -38,8 +38,8 @@ public final class QueryRowTest {
     }
     
     @Test
-    public void assertGetColumnValue() {
-        assertThat(queryRow.getColumnValue(1), is((Object) 10));
+    public void assertGetValue() {
+        assertThat(queryRow.getValue(1), is((Object) 10));
     }
     
     @Test

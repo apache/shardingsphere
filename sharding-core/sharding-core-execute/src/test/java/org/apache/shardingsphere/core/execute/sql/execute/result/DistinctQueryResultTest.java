@@ -175,13 +175,13 @@ public final class DistinctQueryResultTest {
     
     @Test
     public void assertGetResultData() {
-        assertThat(distinctQueryResult.getResultData().next().getColumnValue(1), is((Object) 10));
+        assertThat(distinctQueryResult.getResultData().next().getValue(1), is((Object) 10));
     }
     
     @Test
     public void assertGetCurrentRow() {
         distinctQueryResult.next();
-        assertThat(distinctQueryResult.getCurrentRow().getColumnValue(1), is((Object) 10));
+        assertThat(distinctQueryResult.getCurrentRow().getValue(1), is((Object) 10));
     }
     
     @Test(expected = SQLException.class)

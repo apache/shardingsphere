@@ -19,8 +19,10 @@ package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.core.optimize.api.segment.expression.DerivedSimpleExpressionSegment;
 import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.optimize.encrypt.constant.EncryptDerivedColumnType;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
@@ -30,7 +32,6 @@ import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -62,8 +63,7 @@ public final class InsertSetQueryAndPlainColumnsTokenGenerator implements Option
             return Optional.absent();
         }
         List<String> encryptDerivedColumnNames = getEncryptDerivedColumnNames(tableName, encryptRule);
-        return Optional.of(new InsertSetQueryAndPlainColumnsToken(
-                getStartIndex(optimizedStatement), encryptDerivedColumnNames, getEncryptDerivedValues(optimizedStatement, encryptDerivedColumnNames)));
+        return Optional.of(new InsertSetQueryAndPlainColumnsToken(getStartIndex(optimizedStatement), encryptDerivedColumnNames, getEncryptDerivedValues(optimizedStatement)));
     }
     
     private List<String> getEncryptDerivedColumnNames(final String tableName, final EncryptRule encryptRule) {
@@ -92,10 +92,12 @@ public final class InsertSetQueryAndPlainColumnsTokenGenerator implements Option
         return assignments.get(assignments.size() - 1).getStopIndex() + 1;
     }
     
-    private List<ExpressionSegment> getEncryptDerivedValues(final InsertOptimizedStatement optimizedStatement, final Collection<String> encryptDerivedColumnNames) {
+    private List<ExpressionSegment> getEncryptDerivedValues(final InsertOptimizedStatement optimizedStatement) {
         List<ExpressionSegment> result = new LinkedList<>();
-        for (String each : encryptDerivedColumnNames) {
-            result.add(optimizedStatement.getInsertValues().get(0).getValueExpression(each));
+        for (ExpressionSegment each : optimizedStatement.getInsertValues().get(0).getValueExpressions()) {
+            if (each instanceof DerivedSimpleExpressionSegment && EncryptDerivedColumnType.ENCRYPT.equals(((DerivedSimpleExpressionSegment) each).getType())) { 
+                result.add(each);
+            }
         }
         return result;
     }

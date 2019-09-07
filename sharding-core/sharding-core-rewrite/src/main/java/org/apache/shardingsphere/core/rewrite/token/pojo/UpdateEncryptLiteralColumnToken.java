@@ -47,10 +47,10 @@ public final class UpdateEncryptLiteralColumnToken extends EncryptColumnToken {
      * Add update column.
      *
      * @param columnName column name
-     * @param columnValue column value
+     * @param value value
      */
-    public void addUpdateColumn(final String columnName, final Object columnValue) {
-        columns.add(new UpdateColumn(columnName, columnValue));
+    public void addUpdateColumn(final String columnName, final Object value) {
+        columns.add(new UpdateColumn(columnName, value));
     }
     
     @RequiredArgsConstructor
@@ -58,15 +58,15 @@ public final class UpdateEncryptLiteralColumnToken extends EncryptColumnToken {
         
         private final String columnName;
     
-        private final Object columnValue;
+        private final Object value;
     
         @Override
         public String toString() {
-            return String.format("%s = %s", columnName, toStringForColumnValue(columnValue));
+            return String.format("%s = %s", columnName, toStringForValue(value));
         }
     
-        private String toStringForColumnValue(final Object columnValue) {
-            return String.class == columnValue.getClass() ? String.format("'%s'", columnValue) : columnValue.toString();
+        private String toStringForValue(final Object value) {
+            return String.class == value.getClass() ? String.format("'%s'", value) : value.toString();
         }
     }
 }

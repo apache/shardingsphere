@@ -216,18 +216,18 @@ public final class EncryptRule implements BaseRule {
     }
     
     /**
-     * Get encrypt assisted column values.
+     * Get encrypt assisted query values.
      *
      * @param logicTable logic table
      * @param logicColumn logic column
-     * @param originalColumnValues original column values
-     * @return assisted column values
+     * @param originalValues original values
+     * @return assisted query values
      */
-    public List<Object> getEncryptAssistedColumnValues(final String logicTable, final String logicColumn, final List<Object> originalColumnValues) {
+    public List<Object> getEncryptAssistedQueryValues(final String logicTable, final String logicColumn, final List<Object> originalValues) {
         final Optional<ShardingEncryptor> shardingEncryptor = findShardingEncryptor(logicTable, logicColumn);
         Preconditions.checkArgument(shardingEncryptor.isPresent() && shardingEncryptor.get() instanceof ShardingQueryAssistedEncryptor,
                 String.format("Can not find ShardingQueryAssistedEncryptor by %s.%s.", logicTable, logicColumn));
-        return Lists.transform(originalColumnValues, new Function<Object, Object>() {
+        return Lists.transform(originalValues, new Function<Object, Object>() {
             
             @Override
             public Object apply(final Object input) {
@@ -237,17 +237,17 @@ public final class EncryptRule implements BaseRule {
     }
     
     /**
-     * get encrypt column values.
+     * get encrypt values.
      *
      * @param logicTable logic table
      * @param logicColumn logic column
-     * @param originalColumnValues original column values
-     * @return encrypt column values
+     * @param originalValues original values
+     * @return encrypt values
      */
-    public List<Object> getEncryptColumnValues(final String logicTable, final String logicColumn, final List<Object> originalColumnValues) {
+    public List<Object> getEncryptValues(final String logicTable, final String logicColumn, final List<Object> originalValues) {
         final Optional<ShardingEncryptor> shardingEncryptor = findShardingEncryptor(logicTable, logicColumn);
         Preconditions.checkArgument(shardingEncryptor.isPresent(), String.format("Can not find ShardingQueryAssistedEncryptor by %s.%s.", logicTable, logicColumn));
-        return Lists.transform(originalColumnValues, new Function<Object, Object>() {
+        return Lists.transform(originalValues, new Function<Object, Object>() {
             
             @Override
             public Object apply(final Object input) {
