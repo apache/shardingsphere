@@ -29,8 +29,6 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.Assignmen
 import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -44,34 +42,20 @@ public final class ShardingUpdateOptimizeEngine implements ShardingOptimizeEngin
     @Override
     public ShardingConditionOptimizedStatement optimize(final ShardingRule shardingRule,
                                                         final TableMetas tableMetas, final String sql, final List<Object> parameters, final UpdateStatement sqlStatement) {
-        checkUpdateShardKey(shardingRule, sqlStatement);
+        checkUpdateShardingKey(shardingRule, sqlStatement);
         WhereClauseShardingConditionEngine shardingConditionEngine = new WhereClauseShardingConditionEngine(shardingRule, tableMetas);
         WhereClauseEncryptConditionEngine encryptConditionEngine = new WhereClauseEncryptConditionEngine(shardingRule.getEncryptRule(), tableMetas);
         return new ShardingConditionOptimizedStatement(sqlStatement,
                 new ShardingConditions(shardingConditionEngine.createShardingConditions(sqlStatement, parameters)),
                 new EncryptConditions(encryptConditionEngine.createEncryptConditions(sqlStatement)));
     }
-
-    private void checkUpdateShardKey(final ShardingRule shardingRule, final UpdateStatement updateStatement) {
-        if (updateStatement.getTables().size() > 1) {
-            return;
-        }
+    
+    private void checkUpdateShardingKey(final ShardingRule shardingRule, final UpdateStatement updateStatement) {
         String tableName = new Tables(updateStatement).getSingleTableName();
-        Collection<String> updateColumns = extractUpdateColumns(updateStatement);
-        for (String column : updateColumns) {
-            boolean isShardingColumn = shardingRule.isShardingColumn(column, tableName);
-            if (isShardingColumn) {
-                throw new UnsupportedOperationException(String.format("Can not update shard key,logicTable: [%s],colum: [%s].", tableName, column));
+        for (AssignmentSegment each : updateStatement.getSetAssignment().getAssignments()) {
+            if (shardingRule.isShardingColumn(each.getColumn().getName(), tableName)) {
+                throw new UnsupportedOperationException(String.format("Can not update sharding key, logic table: [%s], column: [%s].", tableName, each));
             }
         }
-    }
-
-    private Collection<String> extractUpdateColumns(final UpdateStatement updateStatement) {
-        List<String> result = new LinkedList<>();
-        Collection<AssignmentSegment> assignmentSegments = updateStatement.getSetAssignment().getAssignments();
-        for (AssignmentSegment each : assignmentSegments) {
-            result.add(each.getColumn().getName());
-        }
-        return result;
     }
 }
