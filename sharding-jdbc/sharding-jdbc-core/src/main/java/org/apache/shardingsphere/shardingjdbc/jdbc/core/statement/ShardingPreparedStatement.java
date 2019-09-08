@@ -197,11 +197,18 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     private void initPreparedStatementExecutor() throws SQLException {
         preparedStatementExecutor.init(sqlRouteResult);
         setParametersForStatements();
+        replayMethodForStatements();
     }
     
     private void setParametersForStatements() {
         for (int i = 0; i < preparedStatementExecutor.getStatements().size(); i++) {
             replaySetParameter((PreparedStatement) preparedStatementExecutor.getStatements().get(i), preparedStatementExecutor.getParameterSets().get(i));
+        }
+    }
+    
+    private void replayMethodForStatements() {
+        for (Statement each : preparedStatementExecutor.getStatements()) {
+            replayMethodsInvocation(each);
         }
     }
     
