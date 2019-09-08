@@ -46,42 +46,51 @@ import java.util.concurrent.CopyOnWriteArrayList;
  *
  * @author zhaojun
  * @author zhangliang
+ * @author liya
  */
 @Getter
 @Slf4j
 public final class BackendConnection implements AutoCloseable {
-    
+
     private static final int MAXIMUM_RETRY_COUNT = 5;
-    
+
     private volatile String schemaName;
-    
+
     private LogicSchema logicSchema;
-    
+
     private TransactionType transactionType;
-    
+
+    private boolean supportHint;
+
     @Setter
     private int connectionId;
-    
+
     @Setter
     private String userName;
-    
+
     private final Multimap<String, Connection> cachedConnections = LinkedHashMultimap.create();
-    
+
     private final Collection<Statement> cachedStatements = new CopyOnWriteArrayList<>();
-    
+
     private final Collection<ResultSet> cachedResultSets = new CopyOnWriteArrayList<>();
-    
+
     private final Collection<MethodInvocation> methodInvocations = new ArrayList<>();
-    
+
     @Getter
     private final ResourceSynchronizer resourceSynchronizer = new ResourceSynchronizer();
-    
+
     private final ConnectionStateHandler stateHandler = new ConnectionStateHandler(resourceSynchronizer);
-    
+
     public BackendConnection(final TransactionType transactionType) {
         this.transactionType = transactionType;
+        this.supportHint = false;
     }
-    
+
+    public BackendConnection(final TransactionType transactionType, final boolean supportHint) {
+        this.transactionType = transactionType;
+        this.supportHint = supportHint;
+    }
+
     /**
      * Change transaction type of current channel.
      *
@@ -96,7 +105,7 @@ public final class BackendConnection implements AutoCloseable {
         }
         this.transactionType = transactionType;
     }
-    
+
     /**
      * Change logic schema of current channel.
      *
@@ -109,7 +118,7 @@ public final class BackendConnection implements AutoCloseable {
         this.schemaName = schemaName;
         this.logicSchema = LogicSchemas.getInstance().getLogicSchema(schemaName);
     }
-    
+
     @SneakyThrows
     private boolean isSwitchFailed() {
         int retryCount = 0;
@@ -124,7 +133,7 @@ public final class BackendConnection implements AutoCloseable {
         }
         return false;
     }
-    
+
     /**
      * Get connections of current thread datasource.
      *
@@ -141,7 +150,7 @@ public final class BackendConnection implements AutoCloseable {
             return getConnectionsWithoutTransaction(connectionMode, dataSourceName, connectionSize);
         }
     }
-    
+
     private List<Connection> getConnectionsWithTransaction(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
         Collection<Connection> connections;
         synchronized (cachedConnections) {
@@ -166,7 +175,7 @@ public final class BackendConnection implements AutoCloseable {
         }
         return result;
     }
-    
+
     private List<Connection> getConnectionsWithoutTransaction(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
         Preconditions.checkNotNull(logicSchema, "current logic schema is null");
         List<Connection> result = getConnectionFromUnderlying(connectionMode, dataSourceName, connectionSize);
@@ -175,7 +184,7 @@ public final class BackendConnection implements AutoCloseable {
         }
         return result;
     }
-    
+
     private List<Connection> createNewConnections(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
         Preconditions.checkNotNull(logicSchema, "current logic schema is null");
         List<Connection> result = getConnectionFromUnderlying(connectionMode, dataSourceName, connectionSize);
@@ -184,11 +193,11 @@ public final class BackendConnection implements AutoCloseable {
         }
         return result;
     }
-    
+
     private List<Connection> getConnectionFromUnderlying(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
         return logicSchema.getBackendDataSource().getConnections(connectionMode, dataSourceName, connectionSize, transactionType);
     }
-    
+
     /**
      * Whether execute SQL serial or not.
      *
@@ -197,7 +206,7 @@ public final class BackendConnection implements AutoCloseable {
     public boolean isSerialExecute() {
         return stateHandler.isInTransaction() && (TransactionType.LOCAL == transactionType || TransactionType.XA == transactionType);
     }
-    
+
     /**
      * Get connection size.
      *
@@ -206,7 +215,7 @@ public final class BackendConnection implements AutoCloseable {
     public int getConnectionSize() {
         return cachedConnections.values().size();
     }
-    
+
     /**
      * Add statement.
      *
@@ -215,7 +224,7 @@ public final class BackendConnection implements AutoCloseable {
     public void add(final Statement statement) {
         cachedStatements.add(statement);
     }
-    
+
     /**
      * Add result set.
      *
@@ -224,12 +233,12 @@ public final class BackendConnection implements AutoCloseable {
     public void add(final ResultSet resultSet) {
         cachedResultSets.add(resultSet);
     }
-    
+
     @Override
     public void close() throws SQLException {
         close(false);
     }
-    
+
     /**
      * Close cached connection.
      *
@@ -247,7 +256,7 @@ public final class BackendConnection implements AutoCloseable {
         stateHandler.doNotifyIfNecessary();
         throwSQLExceptionIfNecessary(exceptions);
     }
-    
+
     private Collection<SQLException> closeResultSets() {
         Collection<SQLException> result = new LinkedList<>();
         for (ResultSet each : cachedResultSets) {
@@ -260,7 +269,7 @@ public final class BackendConnection implements AutoCloseable {
         cachedResultSets.clear();
         return result;
     }
-    
+
     private Collection<SQLException> closeStatements() {
         Collection<SQLException> result = new LinkedList<>();
         for (Statement each : cachedStatements) {
@@ -273,7 +282,7 @@ public final class BackendConnection implements AutoCloseable {
         cachedStatements.clear();
         return result;
     }
-    
+
     Collection<SQLException> releaseConnections(final boolean forceRollback) {
         Collection<SQLException> result = new LinkedList<>();
         for (Connection each : cachedConnections.values()) {
@@ -290,7 +299,7 @@ public final class BackendConnection implements AutoCloseable {
         methodInvocations.clear();
         return result;
     }
-    
+
     private void throwSQLExceptionIfNecessary(final Collection<SQLException> exceptions) throws SQLException {
         if (exceptions.isEmpty()) {
             return;
@@ -301,7 +310,7 @@ public final class BackendConnection implements AutoCloseable {
         }
         throw ex;
     }
-    
+
     private void replayMethodsInvocation(final Object target) {
         for (MethodInvocation each : methodInvocations) {
             each.invoke(target);

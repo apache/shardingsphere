@@ -25,23 +25,25 @@ import java.util.concurrent.ExecutorService;
 
 /**
  * Command executor selector.
- * 
+ *
  * @author zhangliang
  * @author zhaojun
+ * @author liya
  */
 @RequiredArgsConstructor
 public final class CommandExecutorSelector {
-    
+
     /**
      * Get executor service.
      *
      * @param isOccupyThreadForPerConnection is occupy thread for per connection or not
+     * @param supportHint is support hint
      * @param transactionType transaction type
      * @param channelId channel ID
      * @return executor service
      */
-    public static ExecutorService getExecutor(final boolean isOccupyThreadForPerConnection, final TransactionType transactionType, final ChannelId channelId) {
-        return (isOccupyThreadForPerConnection || TransactionType.XA == transactionType || TransactionType.BASE == transactionType)
+    public static ExecutorService getExecutor(final boolean isOccupyThreadForPerConnection, final boolean supportHint, final TransactionType transactionType, final ChannelId channelId) {
+        return (isOccupyThreadForPerConnection || supportHint || TransactionType.XA == transactionType || TransactionType.BASE == transactionType)
             ? ChannelThreadExecutorGroup.getInstance().get(channelId) : UserExecutorGroup.getInstance().getExecutorService();
     }
 }
