@@ -95,7 +95,7 @@
         <postgresql.version>42.2.5</postgresql.version>
         <mssql.version>6.1.7.jre7-preview</mssql.version>
         <mariadb-java-client.version>2.4.2</mariadb-java-client.version>
-
+        
         <maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
         <maven-assembly-plugin.version>3.1.0</maven-assembly-plugin.version>
         <maven-resources-plugin.version>2.7</maven-resources-plugin.version>
@@ -200,7 +200,7 @@
                 <artifactId>transactions-jdbc</artifactId>
                 <version>${atomikos.version}</version>
             </dependency>
-    
+            
             <dependency>
                 <groupId>org.jboss.narayana.jta</groupId>
                 <artifactId>jta</artifactId>
@@ -219,14 +219,14 @@
                 <version>${jboss-transaction-spi.version}</version>
                 <scope>provided</scope>
             </dependency>
-    
+            
             <dependency>
                 <groupId>org.codehaus.btm</groupId>
                 <artifactId>btm</artifactId>
                 <version>${btm.version}</version>
                 <scope>provided</scope>
             </dependency>
-    
+            
             <dependency>
                 <groupId>io.seata</groupId>
                 <artifactId>seata-rm-datasource</artifactId>
@@ -239,7 +239,7 @@
                 <version>${seata.version}</version>
                 <scope>provided</scope>
             </dependency>
-
+            
             <dependency>
                 <groupId>org.apache.curator</groupId>
                 <artifactId>curator-framework</artifactId>
@@ -267,7 +267,7 @@
                 <artifactId>opentracing-util</artifactId>
                 <version>${opentracing.version}</version>
             </dependency>
-
+            
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-context-support</artifactId>

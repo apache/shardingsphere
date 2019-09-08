@@ -26,16 +26,16 @@
     <artifactId>sharding-ui</artifactId>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
-
+    
     <modules>
         <module>sharding-ui-frontend</module>
         <module>sharding-ui-backend</module>
     </modules>
-
+    
     <properties>
         <spring-boot.version>1.5.21.RELEASE</spring-boot.version>
     </properties>
-
+    
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -47,5 +47,4 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-
 </project>
