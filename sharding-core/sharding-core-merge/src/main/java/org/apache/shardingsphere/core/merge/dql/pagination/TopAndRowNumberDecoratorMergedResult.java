@@ -34,7 +34,7 @@ public final class TopAndRowNumberDecoratorMergedResult extends DecoratorMergedR
     
     private final boolean skipAll;
     
-    private int rowNumber;
+    private long rowNumber;
     
     public TopAndRowNumberDecoratorMergedResult(final MergedResult mergedResult, final Pagination pagination) throws SQLException {
         super(mergedResult);
@@ -43,7 +43,7 @@ public final class TopAndRowNumberDecoratorMergedResult extends DecoratorMergedR
     }
     
     private boolean skipOffset() throws SQLException {
-        int end = pagination.getActualOffset();
+        long end = pagination.getActualOffset();
         for (int i = 0; i < end; i++) {
             if (!getMergedResult().next()) {
                 return true;
