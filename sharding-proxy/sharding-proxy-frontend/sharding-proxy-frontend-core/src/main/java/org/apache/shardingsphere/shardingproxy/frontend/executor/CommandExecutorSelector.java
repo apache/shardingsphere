@@ -32,7 +32,7 @@ import java.util.concurrent.ExecutorService;
  */
 @RequiredArgsConstructor
 public final class CommandExecutorSelector {
-
+    
     /**
      * Get executor service.
      *
@@ -44,6 +44,6 @@ public final class CommandExecutorSelector {
      */
     public static ExecutorService getExecutor(final boolean isOccupyThreadForPerConnection, final boolean supportHint, final TransactionType transactionType, final ChannelId channelId) {
         return (isOccupyThreadForPerConnection || supportHint || TransactionType.XA == transactionType || TransactionType.BASE == transactionType)
-            ? ChannelThreadExecutorGroup.getInstance().get(channelId) : UserExecutorGroup.getInstance().getExecutorService();
+                ? ChannelThreadExecutorGroup.getInstance().get(channelId) : UserExecutorGroup.getInstance().getExecutorService();
     }
 }
