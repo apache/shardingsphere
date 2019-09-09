@@ -105,10 +105,6 @@ public final class ShardingStatement extends AbstractStatementAdapter {
         if (null != currentResultSet) {
             return currentResultSet;
         }
-        if (1 == statementExecutor.getStatements().size() && sqlRouteResult.getShardingStatement().getSQLStatement() instanceof SelectStatement) {
-            currentResultSet = statementExecutor.getStatements().iterator().next().getResultSet();
-            return currentResultSet;
-        }
         List<ResultSet> resultSets = new ArrayList<>(statementExecutor.getStatements().size());
         List<QueryResult> queryResults = new ArrayList<>(statementExecutor.getStatements().size());
         for (Statement each : statementExecutor.getStatements()) {
