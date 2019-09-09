@@ -53,7 +53,7 @@ public final class BaseParameterBuilderTest {
         when(pagination.isHasPagination()).thenReturn(true);
         when(pagination.getOffsetParameterIndex()).thenReturn(Optional.of(2));
         when(pagination.getRowCountParameterIndex()).thenReturn(Optional.of(3));
-        when(pagination.getRevisedRowCount(any(ShardingSelectOptimizedStatement.class))).thenReturn(6);
+        when(pagination.getRevisedRowCount(any(ShardingSelectOptimizedStatement.class))).thenReturn(6L);
         ShardingSelectOptimizedStatement shardingStatement = mock(ShardingSelectOptimizedStatement.class);
         when(shardingStatement.getPagination()).thenReturn(pagination);
         EncryptOptimizedStatement encryptStatement = mock(EncryptOptimizedStatement.class);
@@ -64,8 +64,8 @@ public final class BaseParameterBuilderTest {
     
     @Test
     public void assertGetParameters() {
-        assertThat(baseParameterBuilder.getParameters(), is(Arrays.<Object>asList(1, 2, 0, 6, 7)));
-        assertThat(baseParameterBuilder.getParameters(mock(RoutingUnit.class)), is(Arrays.<Object>asList(1, 2, 0, 6, 7)));
+        assertThat(baseParameterBuilder.getParameters(), is(Arrays.<Object>asList(1, 2, 0L, 6L, 7)));
+        assertThat(baseParameterBuilder.getParameters(mock(RoutingUnit.class)), is(Arrays.<Object>asList(1, 2, 0L, 6L, 7)));
     }
     
     @Test
@@ -81,8 +81,8 @@ public final class BaseParameterBuilderTest {
     @Test
     public void assertGetReplacedIndexAndParameters() {
         Map<Integer, Object> expected = new LinkedHashMap<>();
-        expected.put(2, 0);
-        expected.put(3, 6);
+        expected.put(2, 0L);
+        expected.put(3, 6L);
         assertThat(baseParameterBuilder.getReplacedIndexAndParameters(), is(expected));
     }
 }
