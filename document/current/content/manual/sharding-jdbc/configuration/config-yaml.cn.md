@@ -119,8 +119,8 @@ encryptRule:
         order_id:
           cipherColumn: order_cipher
           encryptor: encryptor_md5
-  props:
-    query.with.cipher.column: true #是否使用密文列查询
+props:
+  query.with.cipher.column: true #是否使用密文列查询
 ```
 
 ### 数据分片 + 读写分离
