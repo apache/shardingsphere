@@ -281,7 +281,7 @@ The implementation class of `ShardingStrategyConfiguration`, used to configure n
 | ----------------- | ---------------------------- | ------------------------------------------------------------------------------------------- |
 | column            | String                       | Column name of key generator                                                                |
 | type              | String                       | Type of key generator，use user-defined ones or built-in ones, e.g. SNOWFLAKE, UUID         |
-| props             | Properties                   | Properties, Notice: when use SNOWFLAKE, `worker.id` and `max.tolerate.time.difference.milliseconds` for `SNOWFLAKE` need to be set|
+| props             | Properties                   | Property configuration, note:<br>To use the SNOWFLAKE algorithm, you need to configure the `worker.id` and `max.tolerate.time.difference.milliseconds` properties<br> To use the LEAF_SEGMENT algorithm, you need to configure: required `serverList`, `leafKey` and optional `initialValue`, `step`, `digest`, `registryCenterType`<br> To use the LEAF_SNOWFLAKE algorithm, you need to configure: required `serverList`, `serviceId` and optional `maxTimeDifference`, `digest`, `registryCenterType`|
 
 #### EncryptRuleConfiguration
 

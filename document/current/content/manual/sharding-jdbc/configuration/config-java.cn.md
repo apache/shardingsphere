@@ -287,7 +287,7 @@ ShardingStrategyConfiguration的实现类，用于配置不分片的策略。
 | ----------------- | ---------------------------- | ------------------------------------------------------------------------------ |
 | column            | String                       | 自增列名称                                                                      |
 | type              | String                       | 自增列值生成器类型，可自定义或选择内置类型：SNOWFLAKE/UUID/LEAF_SEGMENT                          |
-| props             | Properties                   | 属性配置, 注意：使用SNOWFLAKE算法，需要配置worker.id与max.tolerate.time.difference.milliseconds属性 |  
+| props             | Properties                   | 属性配置, 注意：<br>使用SNOWFLAKE算法，需要配置worker.id与max.tolerate.time.difference.milliseconds属性<br>使用LEAF_SEGMENT算法，需要配置：必填项serverList，leafKey和选填项initialValue，step，digest，registryCenterType<br>使用LEAF_SNOWFLAKE算法，需要配置：必填项serverList，serviceId和选填项maxTimeDifference，digest，registryCenterType|  
 
 #### EncryptRuleConfiguration
 
@@ -312,11 +312,11 @@ ShardingStrategyConfiguration的实现类，用于配置不分片的策略。
 #### EncryptColumnRuleConfiguration
 
 | *名称*               |*数据类型*                    | *说明*                                                                          |
-| ------------------- | ----------------------------  ------------------------------------------------------------------------------ |
+| ------------------- | ---------------------------- | ------------------------------------------------------------------------------ |
 | plainColumn        | String                       | 存储明文的字段                                                                   |
 | cipherColumn       | String                       | 存储密文的字段                                                                   |
 | assistedQueryColumn| String                       | 辅助查询字段，针对ShardingQueryAssistedEncryptor类型的加解密器进行辅助查询            |
-| encryptor          | String                       | 加解密器名字                                                                      | 
+| encryptor          | String                       | 加解密器名字                                                                      |
 
 #### PropertiesConstant
 
