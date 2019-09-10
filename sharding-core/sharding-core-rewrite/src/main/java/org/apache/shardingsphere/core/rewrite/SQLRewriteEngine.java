@@ -24,6 +24,9 @@ import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStat
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.encrypt.constant.EncryptDerivedColumnType;
 import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.sharding.constant.ShardingDerivedColumnType;
+import org.apache.shardingsphere.core.optimize.sharding.segment.insert.GeneratedKey;
+import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingInsertOptimizedStatement;
 import org.apache.shardingsphere.core.rewrite.builder.BaseParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.InsertParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
@@ -44,6 +47,7 @@ import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 import org.apache.shardingsphere.spi.encrypt.ShardingQueryAssistedEncryptor;
 
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -70,6 +74,7 @@ public final class SQLRewriteEngine {
                             final SQLRouteResult sqlRouteResult, final String sql, final List<Object> parameters, final boolean isSingleRoute, final boolean isQueryWithCipherColumn) {
         baseRule = shardingRule;
         optimizedStatement = sqlRouteResult.getShardingStatement();
+        processGeneratedKey();
         encryptOptimizedStatement(shardingRule.getEncryptRule());
         parameterBuilder = createParameterBuilder(parameters, sqlRouteResult);
         sqlTokens = createSQLTokens(isSingleRoute, isQueryWithCipherColumn);
@@ -91,6 +96,20 @@ public final class SQLRewriteEngine {
         parameterBuilder = createParameterBuilder(Collections.emptyList());
         sqlTokens = createSQLTokens(false, false);
         sqlBuilder = new SQLBuilder(sql, sqlTokens);
+    }
+    
+    private void processGeneratedKey() {
+        if (optimizedStatement instanceof ShardingInsertOptimizedStatement) {
+            Optional<GeneratedKey> generatedKey = ((ShardingInsertOptimizedStatement) optimizedStatement).getGeneratedKey();
+            boolean isGeneratedValue = generatedKey.isPresent() && generatedKey.get().isGenerated();
+            if (!isGeneratedValue) {
+                return;
+            }
+            Iterator<Comparable<?>> generatedValues = generatedKey.get().getGeneratedValues().descendingIterator();
+            for (InsertValue each : ((ShardingInsertOptimizedStatement) optimizedStatement).getInsertValues()) {
+                each.appendValue(generatedValues.next(), ShardingDerivedColumnType.KEY_GEN);
+            }
+        }
     }
     
     private void encryptOptimizedStatement(final EncryptRule encryptRule) {
