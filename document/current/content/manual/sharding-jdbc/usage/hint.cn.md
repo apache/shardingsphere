@@ -38,8 +38,8 @@ shardingRule:
   defaultKeyGenerator:
     type: SNOWFLAKE
     column: order_id
-  props:
-      sql.show: true
+props:
+    sql.show: true
 ```
 
 ### 获取HintManager
@@ -124,4 +124,4 @@ try (
 ```
 
 ### example
-[hint-example](https://github.com/apache/incubator-shardingsphere-example/tree/dev/sharding-jdbc-example/hint-example)
+[hint-example](https://github.com/apache/incubator-shardingsphere-example/tree/4.0.0-RC2/sharding-jdbc-example/other-feature-example/hint-example)
