@@ -69,7 +69,8 @@ public final class SQLRewriteEngine {
     public SQLRewriteEngine(final ShardingRule shardingRule, 
                             final SQLRouteResult sqlRouteResult, final String sql, final List<Object> parameters, final boolean isSingleRoute, final boolean isQueryWithCipherColumn) {
         baseRule = shardingRule;
-        optimizedStatement = encryptOptimizedStatement(shardingRule.getEncryptRule(), sqlRouteResult.getShardingStatement());
+        optimizedStatement = sqlRouteResult.getShardingStatement();
+        encryptOptimizedStatement(shardingRule.getEncryptRule());
         parameterBuilder = createParameterBuilder(parameters, sqlRouteResult);
         sqlTokens = createSQLTokens(isSingleRoute, isQueryWithCipherColumn);
         sqlBuilder = new SQLBuilder(sql, sqlTokens);
@@ -77,7 +78,8 @@ public final class SQLRewriteEngine {
     
     public SQLRewriteEngine(final EncryptRule encryptRule, final EncryptOptimizedStatement encryptStatement, final String sql, final List<Object> parameters, final boolean isQueryWithCipherColumn) {
         baseRule = encryptRule;
-        optimizedStatement = encryptOptimizedStatement(encryptRule, encryptStatement);
+        optimizedStatement = encryptStatement;
+        encryptOptimizedStatement(encryptRule);
         parameterBuilder = createParameterBuilder(parameters);
         sqlTokens = createSQLTokens(false, isQueryWithCipherColumn);
         sqlBuilder = new SQLBuilder(sql, sqlTokens);
@@ -91,11 +93,10 @@ public final class SQLRewriteEngine {
         sqlBuilder = new SQLBuilder(sql, sqlTokens);
     }
     
-    private OptimizedStatement encryptOptimizedStatement(final EncryptRule encryptRule, final OptimizedStatement optimizedStatement) {
+    private void encryptOptimizedStatement(final EncryptRule encryptRule) {
         if (optimizedStatement instanceof InsertOptimizedStatement && !encryptRule.getEncryptTableNames().isEmpty()) {
             encryptInsertOptimizedStatement(encryptRule, (InsertOptimizedStatement) optimizedStatement);
         }
-        return optimizedStatement;
     }
     
     private void encryptInsertOptimizedStatement(final EncryptRule encryptRule, final InsertOptimizedStatement insertOptimizedStatement) {
