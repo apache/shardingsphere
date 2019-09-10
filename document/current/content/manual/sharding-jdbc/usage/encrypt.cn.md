@@ -66,18 +66,6 @@ encryptRule:
       type: aes
       props:
         aes.key.value: 123456
-encryptor_md5:
-      type: md5
-  tables:
-    t_encrypt:
-      columns:
-        user_id:
-          plainColumn: user_plain
-          cipherColumn: user_cipher
-          encryptor: encryptor_aes
-        order_id:
-          cipherColumn: order_cipher
-          encryptor: encryptor_md5
 props:
   query.with.cipher.column: true #是否使用密文列查询
 ```
