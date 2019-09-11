@@ -28,7 +28,6 @@ import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.TreeCache;
 import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
 import org.apache.curator.framework.recipes.cache.TreeCacheListener;
-import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.utils.CloseableUtils;
 import org.apache.shardingsphere.orchestration.config.server.api.ConfigCenter;
@@ -60,8 +59,6 @@ public final class CuratorZookeeperConfigCenter implements ConfigCenter {
     private final Map<String, TreeCache> caches = new HashMap<>();
     
     private CuratorFramework client;
-
-    private InterProcessMutex leafLock;
     
     @Getter
     @Setter
