@@ -120,8 +120,8 @@ encryptRule:
         order_id:
           cipherColumn: order_cipher
           encryptor: encryptor_md5
-  props:
-    query.with.cipher.column: true
+props:
+  query.with.cipher.column: true
 ```
 
 ### Data Sharding + Read-Write Split

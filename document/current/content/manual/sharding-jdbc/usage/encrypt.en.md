@@ -65,6 +65,8 @@ encryptRule:
       type: aes
       props:
         aes.key.value: 123456 
+props:
+  query.with.cipher.column: true
 ```
 
 ```java

@@ -66,6 +66,8 @@ encryptRule:
       type: aes
       props:
         aes.key.value: 123456
+props:
+  query.with.cipher.column: true #是否使用密文列查询
 ```
 
 ```java

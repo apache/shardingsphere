@@ -41,9 +41,7 @@ Sharding-JDBC的分库分表通过规则配置描述，以下例子是根据user
     dataSourceMap.put("ds1", dataSource2);
     
     // 配置Order表规则
-    TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
-    orderTableRuleConfig.setLogicTable("t_order");
-    orderTableRuleConfig.setActualDataNodes("ds${0..1}.t_order${0..1}");
+    TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration("t_order","ds${0..1}.t_order${0..1}");
     
     // 配置分库 + 分表策略
     orderTableRuleConfig.setDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "ds${user_id % 2}"));
