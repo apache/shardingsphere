@@ -24,7 +24,7 @@ import org.apache.shardingsphere.api.config.TypeBasedSPIConfiguration;
 import java.util.Properties;
 
 /**
- * Registry center configuration.
+ * Config center configuration.
  *
  * @author wangguangyuan
  */
@@ -33,17 +33,17 @@ import java.util.Properties;
 public final class ConfigCenterConfiguration extends TypeBasedSPIConfiguration {
     
     /**
-     * Server list of registry center.
+     * Server list of config center.
      */
     private String serverLists;
     
     /**
-     * Namespace of registry center.
+     * Namespace of config center.
      */
     private String namespace;
     
     /**
-     * Digest of registry center.
+     * Digest of config center.
      */
     private String digest;
     

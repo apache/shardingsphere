@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.orchestration.config.server.exception;
 
 /**
- * Registry center exception.
+ * Config center exception.
  * 
  * @author wangguangyuan
  */

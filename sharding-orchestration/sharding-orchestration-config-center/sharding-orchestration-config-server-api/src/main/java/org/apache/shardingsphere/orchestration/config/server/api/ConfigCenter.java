@@ -23,21 +23,21 @@ import org.apache.shardingsphere.spi.TypeBasedSPI;
 import java.util.List;
 
 /**
- * Registry center.
+ * Config center.
  * 
  * @author wangguangyuan
  */
 public interface ConfigCenter extends TypeBasedSPI {
     
     /**
-     * Initialize registry center.
+     * Initialize config center.
      * 
-     * @param config registry center configuration
+     * @param config config center configuration
      */
     void init(ConfigCenterConfiguration config);
     
     /**
-     * Get data from registry center.
+     * Get data from config center.
      * 
      * <p>Maybe use cache if existed.</p>
      * 
@@ -47,7 +47,7 @@ public interface ConfigCenter extends TypeBasedSPI {
     String get(String key);
     
     /**
-     * Get data from registry center directly.
+     * Get data from config center directly.
      * 
      * <p>Cannot use cache.</p>
      *
@@ -97,7 +97,7 @@ public interface ConfigCenter extends TypeBasedSPI {
     void persistEphemeral(String key, String value);
     
     /**
-     * Watch key or path of the registry.
+     * Watch key or path of the config server.
      *
      * @param key key of data
      * @param dataChangedEventListener data changed event listener
