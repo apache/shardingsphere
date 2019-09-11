@@ -226,15 +226,12 @@ public final class StandardRoutingEngine implements RoutingEngine {
     
     private boolean match(final ShardingInsertOptimizedStatement insertOptimizedStatement, final InsertValue insertValue, final ShardingCondition shardingCondition) {
         for (RouteValue each : shardingCondition.getRouteValues()) {
-            Object value = insertValue.getValue(getColumnIndex(insertOptimizedStatement.getColumnNames(), each));
+            Object value = insertOptimizedStatement.getGeneratedKey().isPresent() && insertOptimizedStatement.getGeneratedKey().get().isGenerated()
+                    ? insertOptimizedStatement.getGeneratedKey().get().getGeneratedValues().getLast() : insertValue.getValue(insertOptimizedStatement.getColumnNames().indexOf(each.getColumnName()));
             if (!value.equals(((ListRouteValue) each).getValues().iterator().next())) {
                 return false;
             }
         }
         return true;
-    }
-    
-    private int getColumnIndex(final List<String> columnNames, final RouteValue routeValue) {
-        return columnNames.contains(routeValue.getColumnName()) ? columnNames.indexOf(routeValue.getColumnName()) : columnNames.size();
     }
 }

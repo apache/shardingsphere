@@ -48,7 +48,7 @@ public final class GeneratedKey {
     
     private final boolean generated;
     
-    private final List<Comparable<?>> generatedValues = new LinkedList<>();
+    private final LinkedList<Comparable<?>> generatedValues = new LinkedList<>();
     
     /**
      * Get generate key.
