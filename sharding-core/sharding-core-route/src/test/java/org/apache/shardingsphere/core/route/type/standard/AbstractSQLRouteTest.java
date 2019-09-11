@@ -58,6 +58,7 @@ public abstract class AbstractSQLRouteTest {
     
     private DataSourceMetas buildDataSourceMetas() {
         Map<String, String> shardingDataSourceURLs = new LinkedHashMap<>();
+        shardingDataSourceURLs.put("main", "jdbc:mysql://127.0.0.1:3306/actual_db");
         shardingDataSourceURLs.put("ds_0", "jdbc:mysql://127.0.0.1:3306/actual_db");
         shardingDataSourceURLs.put("ds_1", "jdbc:mysql://127.0.0.1:3306/actual_db");
         return new DataSourceMetas(shardingDataSourceURLs, DatabaseTypes.getActualDatabaseType("MySQL"));
@@ -118,6 +119,8 @@ public abstract class AbstractSQLRouteTest {
         tableMetaDataMap.put("t_order_item", new TableMetaData(Arrays.asList(new ColumnMetaData("item_id", "int", true), new ColumnMetaData("order_id", "int", false),
                 new ColumnMetaData("user_id", "int", false), new ColumnMetaData("status", "varchar", false), 
                 new ColumnMetaData("c_date", "timestamp", false)), Collections.<String>emptySet()));
+        tableMetaDataMap.put("t_other", new TableMetaData(Arrays.asList(new ColumnMetaData("order_id", "int", true)), Collections.<String>emptySet()));
+        tableMetaDataMap.put("t_category", new TableMetaData(Arrays.asList(new ColumnMetaData("order_id", "int", true)), Collections.<String>emptySet()));
         return new TableMetas(tableMetaDataMap);
     }
 }
