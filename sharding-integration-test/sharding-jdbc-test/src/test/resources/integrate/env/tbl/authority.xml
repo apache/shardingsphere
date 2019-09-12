@@ -41,6 +41,16 @@
         <user-create>
             <sql>CREATE USER user_dev@localhost</sql>
             <sql>GRANT select,update,insert,delete on tbl.* to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on t_order_0 to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on t_order_1 to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on t_order_2 to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on t_order_3 to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on t_order_4 to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on t_order_5 to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on t_order_6 to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on t_order_7 to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on t_order_8 to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on t_order_9 to user_dev@localhost</sql>
         </user-create>
         <user-drop>
             <sql>DROP USER user_dev@localhost</sql>
