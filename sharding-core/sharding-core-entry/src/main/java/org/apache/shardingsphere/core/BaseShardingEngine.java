@@ -69,7 +69,7 @@ public abstract class BaseShardingEngine {
         List<Object> clonedParameters = cloneParameters(parameters);
         SQLRouteResult result = executeRoute(sql, clonedParameters);
         result.getRouteUnits().addAll(HintManager.isDatabaseShardingOnly() ? convert(sql, clonedParameters, result) : rewriteAndConvert(sql, clonedParameters, result));
-        if (shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW)) {
+        if ((boolean) shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW)) {
             boolean showSimple = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SIMPLE);
             SQLLogger.logSQL(sql, showSimple, result.getShardingStatement(), result.getRouteUnits());
         }
