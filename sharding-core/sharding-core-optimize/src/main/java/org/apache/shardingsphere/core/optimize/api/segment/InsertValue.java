@@ -49,7 +49,7 @@ public final class InsertValue {
     
     private final List<Object> parameters;
     
-    private final List<DataNode> dataNodes = new LinkedList<>();
+    private final Collection<DataNode> dataNodes = new LinkedList<>();
     
     public InsertValue(final Collection<ExpressionSegment> assignments, final int derivedColumnsCount, final List<Object> parameters, final int parametersOffset) {
         parametersCount = calculateParametersCount(assignments);

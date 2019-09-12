@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.rule.DataNode;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -34,5 +35,5 @@ public final class InsertParameterUnit {
     
     private final List<Object> parameters;
     
-    private final List<DataNode> dataNodes;
+    private final Collection<DataNode> dataNodes;
 }
