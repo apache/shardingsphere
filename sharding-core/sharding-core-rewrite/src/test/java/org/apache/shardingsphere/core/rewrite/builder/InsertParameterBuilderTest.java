@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.rewrite.builder;
 
 import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
-import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.route.type.TableUnit;
 import org.apache.shardingsphere.core.rule.DataNode;
@@ -27,6 +26,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -42,16 +42,14 @@ public final class InsertParameterBuilderTest {
         insertParameterBuilder = new InsertParameterBuilder(Arrays.<Object>asList(1, 2), createInsertOptimizedStatement());
     }
     
-    private InsertOptimizedStatement createInsertOptimizedStatement() {
+    private List<InsertValue> createInsertOptimizedStatement() {
         InsertValue insertValue1 = mock(InsertValue.class);
         when(insertValue1.getParameters()).thenReturn(Arrays.<Object>asList(3, 4));
         when(insertValue1.getDataNodes()).thenReturn(Collections.singletonList(new DataNode("db1.tb1")));
         InsertValue insertValue2 = mock(InsertValue.class);
         when(insertValue2.getParameters()).thenReturn(Arrays.<Object>asList(5, 6));
         when(insertValue2.getDataNodes()).thenReturn(Collections.singletonList(new DataNode("db2.tb2")));
-        InsertOptimizedStatement result = mock(InsertOptimizedStatement.class);
-        when(result.getInsertValues()).thenReturn(Arrays.asList(insertValue1, insertValue2));
-        return result;
+        return Arrays.asList(insertValue1, insertValue2);
     }
     
     @Test

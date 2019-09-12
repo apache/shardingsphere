@@ -102,12 +102,11 @@ public final class SQLRewriteEngine {
         if (optimizedStatement instanceof ShardingInsertOptimizedStatement) {
             Optional<GeneratedKey> generatedKey = ((ShardingInsertOptimizedStatement) optimizedStatement).getGeneratedKey();
             boolean isGeneratedValue = generatedKey.isPresent() && generatedKey.get().isGenerated();
-            if (!isGeneratedValue) {
-                return;
-            }
-            Iterator<Comparable<?>> generatedValues = generatedKey.get().getGeneratedValues().descendingIterator();
-            for (InsertValue each : ((ShardingInsertOptimizedStatement) optimizedStatement).getInsertValues()) {
-                each.appendValue(generatedValues.next(), ShardingDerivedColumnType.KEY_GEN);
+            if (isGeneratedValue) {
+                Iterator<Comparable<?>> generatedValues = generatedKey.get().getGeneratedValues().descendingIterator();
+                for (InsertValue each : ((ShardingInsertOptimizedStatement) optimizedStatement).getInsertValues()) {
+                    each.appendValue(generatedValues.next(), ShardingDerivedColumnType.KEY_GEN);
+                }
             }
         }
     }
@@ -151,14 +150,14 @@ public final class SQLRewriteEngine {
     
     private ParameterBuilder createParameterBuilder(final List<Object> parameters, final SQLRouteResult sqlRouteResult) {
         if (optimizedStatement instanceof InsertOptimizedStatement) {
-            return new InsertParameterBuilder(parameters, (InsertOptimizedStatement) optimizedStatement);
+            return new InsertParameterBuilder(parameters, ((InsertOptimizedStatement) optimizedStatement).getInsertValues());
         }
         return new BaseParameterBuilder(parameters, sqlRouteResult);
     }
     
     private ParameterBuilder createParameterBuilder(final List<Object> parameters) {
         if (optimizedStatement instanceof InsertOptimizedStatement) {
-            return new InsertParameterBuilder(parameters, (InsertOptimizedStatement) optimizedStatement);
+            return new InsertParameterBuilder(parameters, ((InsertOptimizedStatement) optimizedStatement).getInsertValues());
         }
         return new BaseParameterBuilder(parameters);
     }
