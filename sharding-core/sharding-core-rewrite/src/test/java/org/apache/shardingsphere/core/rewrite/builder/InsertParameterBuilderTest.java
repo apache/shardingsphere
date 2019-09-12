@@ -18,6 +18,10 @@
 package org.apache.shardingsphere.core.rewrite.builder;
 
 import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
+import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingCondition;
+import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingConditions;
+import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingInsertOptimizedStatement;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.route.type.TableUnit;
 import org.apache.shardingsphere.core.rule.DataNode;
@@ -25,8 +29,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -42,14 +44,20 @@ public final class InsertParameterBuilderTest {
         insertParameterBuilder = new InsertParameterBuilder(Arrays.<Object>asList(1, 2), createInsertOptimizedStatement());
     }
     
-    private List<InsertValue> createInsertOptimizedStatement() {
+    private InsertOptimizedStatement createInsertOptimizedStatement() {
         InsertValue insertValue1 = mock(InsertValue.class);
         when(insertValue1.getParameters()).thenReturn(Arrays.<Object>asList(3, 4));
-        when(insertValue1.getDataNodes()).thenReturn(Collections.singletonList(new DataNode("db1.tb1")));
         InsertValue insertValue2 = mock(InsertValue.class);
         when(insertValue2.getParameters()).thenReturn(Arrays.<Object>asList(5, 6));
-        when(insertValue2.getDataNodes()).thenReturn(Collections.singletonList(new DataNode("db2.tb2")));
-        return Arrays.asList(insertValue1, insertValue2);
+        ShardingInsertOptimizedStatement result = mock(ShardingInsertOptimizedStatement.class);
+        when(result.getInsertValues()).thenReturn(Arrays.asList(insertValue1, insertValue2));
+        ShardingCondition shardingCondition1 = new ShardingCondition();
+        shardingCondition1.getDataNodes().add(new DataNode("db1.tb1"));
+        ShardingCondition shardingCondition2 = new ShardingCondition();
+        shardingCondition2.getDataNodes().add(new DataNode("db2.tb2"));
+        ShardingConditions shardingConditions = new ShardingConditions(Arrays.asList(shardingCondition1, shardingCondition2));
+        when(result.getShardingConditions()).thenReturn(shardingConditions);
+        return result;
     }
     
     @Test

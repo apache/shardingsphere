@@ -150,14 +150,14 @@ public final class SQLRewriteEngine {
     
     private ParameterBuilder createParameterBuilder(final List<Object> parameters, final SQLRouteResult sqlRouteResult) {
         if (optimizedStatement instanceof InsertOptimizedStatement) {
-            return new InsertParameterBuilder(parameters, ((InsertOptimizedStatement) optimizedStatement).getInsertValues());
+            return new InsertParameterBuilder(parameters, (InsertOptimizedStatement) optimizedStatement);
         }
         return new BaseParameterBuilder(parameters, sqlRouteResult);
     }
     
     private ParameterBuilder createParameterBuilder(final List<Object> parameters) {
         if (optimizedStatement instanceof InsertOptimizedStatement) {
-            return new InsertParameterBuilder(parameters, ((InsertOptimizedStatement) optimizedStatement).getInsertValues());
+            return new InsertParameterBuilder(parameters, (InsertOptimizedStatement) optimizedStatement);
         }
         return new BaseParameterBuilder(parameters);
     }

@@ -47,7 +47,6 @@ public final class InsertOptimizedStatementTest {
         assertThat(actual.getInsertValues().get(0).getValueExpressions().get(1), is(assignment2));
         assertThat(actual.getInsertValues().get(0).getValueExpressions().get(2), is(assignment3));
         assertThat(actual.getInsertValues().get(0).getParameters().get(0), is((Object) "parameter"));
-        assertThat(actual.getInsertValues().get(0).getDataNodes().size(), is(0));
         assertThat(actual.getInsertValues().get(0).getValue(1), is((Object) "parameter"));
         assertThat(actual.getInsertValues().get(0).getValue(2), is((Object) "test"));
         actual.getInsertValues().get(0).setValue(0, 2);
