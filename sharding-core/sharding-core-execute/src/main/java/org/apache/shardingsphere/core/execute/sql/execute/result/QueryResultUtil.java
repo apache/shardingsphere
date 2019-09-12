@@ -52,9 +52,7 @@ public final class QueryResultUtil {
             case Types.BOOLEAN:
                 return resultSet.getBoolean(columnIndex);
             case Types.TINYINT:
-                return resultSet.getByte(columnIndex);
             case Types.SMALLINT:
-                return resultSet.getShort(columnIndex);
             case Types.INTEGER:
                 return resultSet.getInt(columnIndex);
             case Types.BIGINT:
