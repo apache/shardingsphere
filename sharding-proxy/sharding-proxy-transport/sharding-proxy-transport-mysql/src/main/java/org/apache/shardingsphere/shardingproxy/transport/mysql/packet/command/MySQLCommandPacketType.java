@@ -257,10 +257,6 @@ public enum MySQLCommandPacketType implements CommandPacketType {
      */
     COM_RESET_CONNECTION(0x1f);
 
-
-    /**
-     * Cache command type.
-     */
     private static final Map<Integer, MySQLCommandPacketType> MYSQL_COMMAND_PACKET_TYPE_CACHE = new HashMap<Integer, MySQLCommandPacketType>() {
         {
             for (MySQLCommandPacketType each : MySQLCommandPacketType.values()) {
@@ -278,10 +274,10 @@ public enum MySQLCommandPacketType implements CommandPacketType {
      * @return command packet type enum
      */
     public static MySQLCommandPacketType valueOf(final int value) {
-        MySQLCommandPacketType mySQLCommandPacketType = MYSQL_COMMAND_PACKET_TYPE_CACHE.get(value);
-        if (null == mySQLCommandPacketType) {
+        MySQLCommandPacketType result = MYSQL_COMMAND_PACKET_TYPE_CACHE.get(value);
+        if (null == result) {
             throw new IllegalArgumentException(String.format("Cannot find '%s' in command packet type", value));
         }
-        return mySQLCommandPacketType;
+        return result;
     }
 }
