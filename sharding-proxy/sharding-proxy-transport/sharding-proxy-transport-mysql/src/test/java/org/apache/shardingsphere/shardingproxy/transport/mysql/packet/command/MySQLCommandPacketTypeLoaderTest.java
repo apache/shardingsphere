@@ -26,11 +26,18 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class MySQLCommandPacketTypeLoaderTest {
-    
+
     @Test
     public void assertGetCommandPacketType() {
         MySQLPacketPayload payload = mock(MySQLPacketPayload.class);
         when(payload.readInt1()).thenReturn(0, MySQLCommandPacketType.COM_QUIT.getValue());
         assertThat(MySQLCommandPacketTypeLoader.getCommandPacketType(payload), is(MySQLCommandPacketType.COM_QUIT));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void assertGetCommandPacketTypeError() {
+        MySQLPacketPayload payload = mock(MySQLPacketPayload.class);
+        when(payload.readInt1()).thenReturn(0, 0x21);
+        MySQLCommandPacketTypeLoader.getCommandPacketType(payload);
     }
 }
