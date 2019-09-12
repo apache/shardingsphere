@@ -116,7 +116,7 @@ public final class StandardRoutingEngine implements RoutingEngine {
         for (ShardingCondition each : optimizedStatement.getShardingConditions().getConditions()) {
             Collection<DataNode> dataNodes = route0(tableRule, getShardingValuesFromShardingConditions(shardingRule.getDatabaseShardingStrategy(tableRule).getShardingColumns(), each),
                     getShardingValuesFromShardingConditions(shardingRule.getTableShardingStrategy(tableRule).getShardingColumns(), each));
-            reviseInsertValue(each, dataNodes);
+            setDataNode(each, dataNodes);
             result.addAll(dataNodes);
         }
         return result;
@@ -130,7 +130,7 @@ public final class StandardRoutingEngine implements RoutingEngine {
         Collection<DataNode> result = new LinkedList<>();
         for (ShardingCondition each : optimizedStatement.getShardingConditions().getConditions()) {
             Collection<DataNode> dataNodes = route0(tableRule, getDatabaseShardingValues(tableRule, each), getTableShardingValues(tableRule, each));
-            reviseInsertValue(each, dataNodes);
+            setDataNode(each, dataNodes);
             result.addAll(dataNodes);
         }
         return result;
@@ -214,7 +214,7 @@ public final class StandardRoutingEngine implements RoutingEngine {
         return result;
     }
     
-    private void reviseInsertValue(final ShardingCondition shardingCondition, final Collection<DataNode> dataNodes) {
+    private void setDataNode(final ShardingCondition shardingCondition, final Collection<DataNode> dataNodes) {
         if (optimizedStatement instanceof ShardingInsertOptimizedStatement) {
             for (InsertValue each : ((ShardingInsertOptimizedStatement) optimizedStatement).getInsertValues()) {
                 if (match((ShardingInsertOptimizedStatement) optimizedStatement, each, shardingCondition)) {
