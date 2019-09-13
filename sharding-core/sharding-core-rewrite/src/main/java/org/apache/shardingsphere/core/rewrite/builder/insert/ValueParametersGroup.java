@@ -31,7 +31,7 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 @Getter
-public final class ValueParametersGroup {
+final class ValueParametersGroup {
     
     private final List<Object> parameters;
     
