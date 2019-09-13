@@ -35,13 +35,13 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class InsertParameterBuilderTest {
+public final class GroupParameterBuilderTest {
     
-    private InsertParameterBuilder insertParameterBuilder;
+    private GroupParameterBuilder groupParameterBuilder;
     
     @Before
     public void setUp() {
-        insertParameterBuilder = new InsertParameterBuilder(Arrays.<Object>asList(1, 2), createInsertOptimizedStatement());
+        groupParameterBuilder = new GroupParameterBuilder(Arrays.<Object>asList(1, 2), createInsertOptimizedStatement());
     }
     
     private InsertOptimizedStatement createInsertOptimizedStatement() {
@@ -62,18 +62,18 @@ public final class InsertParameterBuilderTest {
     
     @Test
     public void assertGetParameters() {
-        assertThat(insertParameterBuilder.getParameters(), is(Arrays.<Object>asList(3, 4, 5, 6)));
+        assertThat(groupParameterBuilder.getParameters(), is(Arrays.<Object>asList(3, 4, 5, 6)));
     }
     
     @Test
     public void assertGetParametersWithRoutingUnit() {
         RoutingUnit routingUnit = new RoutingUnit("db1");
         routingUnit.getTableUnits().add(new TableUnit("tb1", "tb1"));
-        assertThat(insertParameterBuilder.getParameters(routingUnit), is(Arrays.<Object>asList(3, 4)));
+        assertThat(groupParameterBuilder.getParameters(routingUnit), is(Arrays.<Object>asList(3, 4)));
     }
     
     @Test
     public void assertGetOriginalParameters() {
-        assertThat(insertParameterBuilder.getOriginalParameters(), is(Arrays.<Object>asList(1, 2)));
+        assertThat(groupParameterBuilder.getOriginalParameters(), is(Arrays.<Object>asList(1, 2)));
     }
 }
