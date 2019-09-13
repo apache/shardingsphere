@@ -42,22 +42,22 @@ public final class InsertParameterBuilder implements ParameterBuilder {
     @Getter
     private final List<Object> originalParameters;
     
-    private final Collection<InsertParameterGroup> insertParameterGroups;
+    private final Collection<ValueParametersGroup> valueParametersGroups;
     
     public InsertParameterBuilder(final List<Object> parameters, final InsertOptimizedStatement insertOptimizedStatement) {
         originalParameters = new LinkedList<>(parameters);
-        insertParameterGroups = createInsertParameterGroups(insertOptimizedStatement);
+        valueParametersGroups = createInsertParameterGroups(insertOptimizedStatement);
     }
     
-    private Collection<InsertParameterGroup> createInsertParameterGroups(final InsertOptimizedStatement insertOptimizedStatement) {
-        Collection<InsertParameterGroup> result = new LinkedList<>();
+    private Collection<ValueParametersGroup> createInsertParameterGroups(final InsertOptimizedStatement insertOptimizedStatement) {
+        Collection<ValueParametersGroup> result = new LinkedList<>();
         Iterator<ShardingCondition> shardingConditions = null;
         if (insertOptimizedStatement instanceof ShardingInsertOptimizedStatement) {
             shardingConditions = ((ShardingInsertOptimizedStatement) insertOptimizedStatement).getShardingConditions().getConditions().iterator();
         }
         for (InsertValue each : insertOptimizedStatement.getInsertValues()) {
             Collection<DataNode> dataNodes = null == shardingConditions ? Collections.<DataNode>emptyList() : shardingConditions.next().getDataNodes();
-            result.add(new InsertParameterGroup(each.getParameters(), dataNodes));
+            result.add(new ValueParametersGroup(each.getParameters(), dataNodes));
         }
         return result;
     }
@@ -65,7 +65,7 @@ public final class InsertParameterBuilder implements ParameterBuilder {
     @Override
     public List<Object> getParameters() {
         List<Object> result = new LinkedList<>();
-        for (InsertParameterGroup each : insertParameterGroups) {
+        for (ValueParametersGroup each : valueParametersGroups) {
             result.addAll(each.getParameters());
         }
         return result;
@@ -74,7 +74,7 @@ public final class InsertParameterBuilder implements ParameterBuilder {
     @Override
     public List<Object> getParameters(final RoutingUnit routingUnit) {
         List<Object> result = new LinkedList<>();
-        for (InsertParameterGroup each : insertParameterGroups) {
+        for (ValueParametersGroup each : valueParametersGroups) {
             if (isAppendInsertParameter(each, routingUnit)) {
                 result.addAll(each.getParameters());
             }
@@ -82,12 +82,12 @@ public final class InsertParameterBuilder implements ParameterBuilder {
         return result;
     }
     
-    private boolean isAppendInsertParameter(final InsertParameterGroup insertParameterGroup, final RoutingUnit routingUnit) {
-        return insertParameterGroup.getDataNodes().isEmpty() || isInSameDataNode(insertParameterGroup, routingUnit);
+    private boolean isAppendInsertParameter(final ValueParametersGroup valueParametersGroup, final RoutingUnit routingUnit) {
+        return valueParametersGroup.getDataNodes().isEmpty() || isInSameDataNode(valueParametersGroup, routingUnit);
     }
     
-    private boolean isInSameDataNode(final InsertParameterGroup insertParameterGroup, final RoutingUnit routingUnit) {
-        for (DataNode each : insertParameterGroup.getDataNodes()) {
+    private boolean isInSameDataNode(final ValueParametersGroup valueParametersGroup, final RoutingUnit routingUnit) {
+        for (DataNode each : valueParametersGroup.getDataNodes()) {
             if (routingUnit.getTableUnit(each.getDataSourceName(), each.getTableName()).isPresent()) {
                 return true;
             }
