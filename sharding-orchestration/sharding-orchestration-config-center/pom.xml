@@ -29,6 +29,7 @@
     <artifactId>sharding-orchestration-config-center</artifactId>
     <name>${project.artifactId}</name>
     <packaging>pom</packaging>
+    
     <modules>
         <module>sharding-orchestration-config-server-api</module>
         <module>sharding-orchestration-config-server-zookeeper-curator</module>
