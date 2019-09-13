@@ -36,9 +36,9 @@ import java.util.List;
  *
  * @author panjuan
  */
-@Getter
 public final class InsertParameterBuilder implements ParameterBuilder {
     
+    @Getter
     private final List<Object> originalParameters;
     
     private final Collection<InsertParameterUnit> insertParameterUnits;

@@ -76,9 +76,4 @@ public final class InsertParameterBuilderTest {
     public void assertGetOriginalParameters() {
         assertThat(insertParameterBuilder.getOriginalParameters(), is(Arrays.<Object>asList(1, 2)));
     }
-    
-    @Test
-    public void assertGetInsertParameterUnits() {
-        assertThat(insertParameterBuilder.getInsertParameterUnits().size(), is(2));
-    }
 }
