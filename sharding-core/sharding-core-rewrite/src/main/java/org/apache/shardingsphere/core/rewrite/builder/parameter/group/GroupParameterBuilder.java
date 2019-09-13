@@ -18,10 +18,8 @@
 package org.apache.shardingsphere.core.rewrite.builder.parameter.group;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
-import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingInsertOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingConditions;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.rule.DataNode;
@@ -43,22 +41,19 @@ public final class GroupParameterBuilder implements ParameterBuilder {
     @Getter
     private final List<Object> originalParameters;
     
-    private final Collection<ValueParametersGroup> parametersGroups;
+    private final Collection<ParametersGroup> parametersGroups;
     
-    public GroupParameterBuilder(final List<Object> parameters, final InsertOptimizedStatement insertOptimizedStatement) {
-        originalParameters = new LinkedList<>(parameters);
-        parametersGroups = createParametersGroup(insertOptimizedStatement);
+    public GroupParameterBuilder(final List<Object> originalParameters, final List<List<Object>> rewritedGroupedParameters, final ShardingConditions shardingConditions) {
+        this.originalParameters = new LinkedList<>(originalParameters);
+        parametersGroups = createParametersGroup(rewritedGroupedParameters, shardingConditions);
     }
     
-    private Collection<ValueParametersGroup> createParametersGroup(final InsertOptimizedStatement insertOptimizedStatement) {
-        Collection<ValueParametersGroup> result = new LinkedList<>();
-        Iterator<ShardingCondition> shardingConditions = null;
-        if (insertOptimizedStatement instanceof ShardingInsertOptimizedStatement) {
-            shardingConditions = ((ShardingInsertOptimizedStatement) insertOptimizedStatement).getShardingConditions().getConditions().iterator();
-        }
-        for (InsertValue each : insertOptimizedStatement.getInsertValues()) {
-            Collection<DataNode> dataNodes = null == shardingConditions ? Collections.<DataNode>emptyList() : shardingConditions.next().getDataNodes();
-            result.add(new ValueParametersGroup(each.getParameters(), dataNodes));
+    private Collection<ParametersGroup> createParametersGroup(final List<List<Object>> rewritedGroupedParameters, final ShardingConditions shardingConditions) {
+        Collection<ParametersGroup> result = new LinkedList<>();
+        Iterator<ShardingCondition> shardingConditionIterator = null == shardingConditions ? null : shardingConditions.getConditions().iterator();
+        for (List<Object> each : rewritedGroupedParameters) {
+            Collection<DataNode> dataNodes = null == shardingConditions ? Collections.<DataNode>emptyList() : shardingConditionIterator.next().getDataNodes();
+            result.add(new ParametersGroup(each, dataNodes));
         }
         return result;
     }
@@ -66,7 +61,7 @@ public final class GroupParameterBuilder implements ParameterBuilder {
     @Override
     public List<Object> getParameters() {
         List<Object> result = new LinkedList<>();
-        for (ValueParametersGroup each : parametersGroups) {
+        for (ParametersGroup each : parametersGroups) {
             result.addAll(each.getParameters());
         }
         return result;
@@ -75,19 +70,19 @@ public final class GroupParameterBuilder implements ParameterBuilder {
     @Override
     public List<Object> getParameters(final RoutingUnit routingUnit) {
         List<Object> result = new LinkedList<>();
-        for (ValueParametersGroup each : parametersGroups) {
-            if (isAppendInsertParameter(each, routingUnit)) {
+        for (ParametersGroup each : parametersGroups) {
+            if (isAppendParameter(each, routingUnit)) {
                 result.addAll(each.getParameters());
             }
         }
         return result;
     }
     
-    private boolean isAppendInsertParameter(final ValueParametersGroup parametersGroup, final RoutingUnit routingUnit) {
+    private boolean isAppendParameter(final ParametersGroup parametersGroup, final RoutingUnit routingUnit) {
         return parametersGroup.getDataNodes().isEmpty() || isInSameDataNode(parametersGroup, routingUnit);
     }
     
-    private boolean isInSameDataNode(final ValueParametersGroup parametersGroup, final RoutingUnit routingUnit) {
+    private boolean isInSameDataNode(final ParametersGroup parametersGroup, final RoutingUnit routingUnit) {
         for (DataNode each : parametersGroup.getDataNodes()) {
             if (routingUnit.getTableUnit(each.getDataSourceName(), each.getTableName()).isPresent()) {
                 return true;

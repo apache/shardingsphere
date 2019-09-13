@@ -25,13 +25,14 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Value parameters group for insert statement.
+ * Parameters group.
  *
  * @author panjuan
+ * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-final class ValueParametersGroup {
+final class ParametersGroup {
     
     private final List<Object> parameters;
     

@@ -149,17 +149,21 @@ public final class SQLRewriteEngine {
     }
     
     private ParameterBuilder createParameterBuilder(final List<Object> parameters, final SQLRouteResult sqlRouteResult) {
-        if (optimizedStatement instanceof InsertOptimizedStatement) {
-            return new GroupParameterBuilder(parameters, (InsertOptimizedStatement) optimizedStatement);
-        }
-        return new BaseParameterBuilder(parameters, sqlRouteResult);
+        return optimizedStatement instanceof ShardingInsertOptimizedStatement
+                ? new GroupParameterBuilder(parameters, getGroupedParameters(), ((ShardingInsertOptimizedStatement) optimizedStatement).getShardingConditions())
+                : new BaseParameterBuilder(parameters, sqlRouteResult);
     }
     
     private ParameterBuilder createParameterBuilder(final List<Object> parameters) {
-        if (optimizedStatement instanceof InsertOptimizedStatement) {
-            return new GroupParameterBuilder(parameters, (InsertOptimizedStatement) optimizedStatement);
+        return optimizedStatement instanceof InsertOptimizedStatement ? new GroupParameterBuilder(parameters, getGroupedParameters(), null) : new BaseParameterBuilder(parameters);
+    }
+    
+    private List<List<Object>> getGroupedParameters() {
+        List<List<Object>> result = new LinkedList<>();
+        for (InsertValue each : ((InsertOptimizedStatement) optimizedStatement).getInsertValues()) {
+            result.add(each.getParameters());
         }
-        return new BaseParameterBuilder(parameters);
+        return result;
     }
     
     private List<SQLToken> createSQLTokens(final boolean isSingleRoute, final boolean isQueryWithCipherColumn) {

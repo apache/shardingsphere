@@ -17,11 +17,8 @@
 
 package org.apache.shardingsphere.core.rewrite.builder.parameter.group;
 
-import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
-import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingConditions;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingInsertOptimizedStatement;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.route.type.TableUnit;
 import org.apache.shardingsphere.core.rule.DataNode;
@@ -29,11 +26,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public final class GroupParameterBuilderTest {
     
@@ -41,23 +38,22 @@ public final class GroupParameterBuilderTest {
     
     @Before
     public void setUp() {
-        groupParameterBuilder = new GroupParameterBuilder(Arrays.<Object>asList(1, 2), createInsertOptimizedStatement());
+        groupParameterBuilder = new GroupParameterBuilder(Arrays.<Object>asList(1, 2), createGroupedParameters(), createShardingConditions());
     }
     
-    private InsertOptimizedStatement createInsertOptimizedStatement() {
-        InsertValue insertValue1 = mock(InsertValue.class);
-        when(insertValue1.getParameters()).thenReturn(Arrays.<Object>asList(3, 4));
-        InsertValue insertValue2 = mock(InsertValue.class);
-        when(insertValue2.getParameters()).thenReturn(Arrays.<Object>asList(5, 6));
-        ShardingInsertOptimizedStatement result = mock(ShardingInsertOptimizedStatement.class);
-        when(result.getInsertValues()).thenReturn(Arrays.asList(insertValue1, insertValue2));
+    private List<List<Object>> createGroupedParameters() {
+        List<List<Object>> result = new LinkedList<>();
+        result.add(Arrays.<Object>asList(3, 4));
+        result.add(Arrays.<Object>asList(5, 6));
+        return result;
+    }
+    
+    private ShardingConditions createShardingConditions() {
         ShardingCondition shardingCondition1 = new ShardingCondition();
         shardingCondition1.getDataNodes().add(new DataNode("db1.tb1"));
         ShardingCondition shardingCondition2 = new ShardingCondition();
         shardingCondition2.getDataNodes().add(new DataNode("db2.tb2"));
-        ShardingConditions shardingConditions = new ShardingConditions(Arrays.asList(shardingCondition1, shardingCondition2));
-        when(result.getShardingConditions()).thenReturn(shardingConditions);
-        return result;
+        return new ShardingConditions(Arrays.asList(shardingCondition1, shardingCondition2));
     }
     
     @Test
