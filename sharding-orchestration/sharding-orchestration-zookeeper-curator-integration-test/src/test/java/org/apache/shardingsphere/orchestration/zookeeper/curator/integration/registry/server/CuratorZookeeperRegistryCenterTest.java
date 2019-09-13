@@ -81,4 +81,18 @@ public class CuratorZookeeperRegistryCenterTest {
         List<String> childrenKeys = curatorZookeeperRegistryCenter.getChildrenKeys("/test/children");
         assertThat(childrenKeys.size(), is(3));
     }
+    
+    @Test
+    public void assertLock() {
+        curatorZookeeperRegistryCenter.initLock("/test/lock1");
+        assertThat(curatorZookeeperRegistryCenter.tryLock(), is(true));
+    }
+    
+    @Test
+    public void assertReleaseLock() {
+        curatorZookeeperRegistryCenter.initLock("/test/lock3");
+        curatorZookeeperRegistryCenter.tryLock();
+        curatorZookeeperRegistryCenter.tryRelease();
+        assertThat(curatorZookeeperRegistryCenter.tryLock(), is(true));
+    }
 }
