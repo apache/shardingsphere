@@ -81,12 +81,12 @@ public final class InsertParameterBuilder implements ParameterBuilder {
         return result;
     }
     
-    private boolean isAppendInsertParameter(final InsertParameterGroup unit, final RoutingUnit routingUnit) {
-        return unit.getDataNodes().isEmpty() || isInSameDataNode(unit, routingUnit);
+    private boolean isAppendInsertParameter(final InsertParameterGroup insertParameterGroup, final RoutingUnit routingUnit) {
+        return insertParameterGroup.getDataNodes().isEmpty() || isInSameDataNode(insertParameterGroup, routingUnit);
     }
     
-    private boolean isInSameDataNode(final InsertParameterGroup unit, final RoutingUnit routingUnit) {
-        for (DataNode each : unit.getDataNodes()) {
+    private boolean isInSameDataNode(final InsertParameterGroup insertParameterGroup, final RoutingUnit routingUnit) {
+        for (DataNode each : insertParameterGroup.getDataNodes()) {
             if (routingUnit.getTableUnit(each.getDataSourceName(), each.getTableName()).isPresent()) {
                 return true;
             }
