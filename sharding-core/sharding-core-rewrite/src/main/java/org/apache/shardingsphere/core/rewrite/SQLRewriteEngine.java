@@ -28,7 +28,7 @@ import org.apache.shardingsphere.core.optimize.sharding.constant.ShardingDerived
 import org.apache.shardingsphere.core.optimize.sharding.segment.insert.GeneratedKey;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingInsertOptimizedStatement;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.standard.StandardParameterBuilder;
-import org.apache.shardingsphere.core.rewrite.builder.parameter.group.GroupParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.builder.parameter.group.GroupedParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.sql.SQLBuilder;
 import org.apache.shardingsphere.core.rewrite.token.BaseTokenGenerateEngine;
@@ -150,12 +150,12 @@ public final class SQLRewriteEngine {
     
     private ParameterBuilder createParameterBuilder(final List<Object> parameters, final SQLRouteResult sqlRouteResult) {
         return optimizedStatement instanceof ShardingInsertOptimizedStatement
-                ? new GroupParameterBuilder(parameters, getGroupedParameters(), ((ShardingInsertOptimizedStatement) optimizedStatement).getShardingConditions())
+                ? new GroupedParameterBuilder(parameters, getGroupedParameters(), ((ShardingInsertOptimizedStatement) optimizedStatement).getShardingConditions())
                 : new StandardParameterBuilder(parameters, sqlRouteResult);
     }
     
     private ParameterBuilder createParameterBuilder(final List<Object> parameters) {
-        return optimizedStatement instanceof InsertOptimizedStatement ? new GroupParameterBuilder(parameters, getGroupedParameters(), null) : new StandardParameterBuilder(parameters);
+        return optimizedStatement instanceof InsertOptimizedStatement ? new GroupedParameterBuilder(parameters, getGroupedParameters(), null) : new StandardParameterBuilder(parameters);
     }
     
     private List<List<Object>> getGroupedParameters() {

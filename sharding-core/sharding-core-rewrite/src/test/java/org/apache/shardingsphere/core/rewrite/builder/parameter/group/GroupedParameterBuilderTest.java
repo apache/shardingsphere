@@ -32,13 +32,13 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class GroupParameterBuilderTest {
+public final class GroupedParameterBuilderTest {
     
-    private GroupParameterBuilder parameterBuilder;
+    private GroupedParameterBuilder parameterBuilder;
     
     @Before
     public void setUp() {
-        parameterBuilder = new GroupParameterBuilder(Arrays.<Object>asList(1, 2), createGroupedParameters(), createShardingConditions());
+        parameterBuilder = new GroupedParameterBuilder(Arrays.<Object>asList(1, 2), createGroupedParameters(), createShardingConditions());
     }
     
     private List<List<Object>> createGroupedParameters() {

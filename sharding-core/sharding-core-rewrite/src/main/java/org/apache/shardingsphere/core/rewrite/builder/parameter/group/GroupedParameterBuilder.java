@@ -36,14 +36,14 @@ import java.util.List;
  * @author panjuan
  * @author zhangliang
  */
-public final class GroupParameterBuilder implements ParameterBuilder {
+public final class GroupedParameterBuilder implements ParameterBuilder {
     
     @Getter
     private final List<Object> originalParameters;
     
     private final Collection<ParametersGroup> parametersGroups;
     
-    public GroupParameterBuilder(final List<Object> originalParameters, final List<List<Object>> rewritedGroupedParameters, final ShardingConditions shardingConditions) {
+    public GroupedParameterBuilder(final List<Object> originalParameters, final List<List<Object>> rewritedGroupedParameters, final ShardingConditions shardingConditions) {
         this.originalParameters = new LinkedList<>(originalParameters);
         parametersGroups = createParametersGroup(rewritedGroupedParameters, shardingConditions);
     }
