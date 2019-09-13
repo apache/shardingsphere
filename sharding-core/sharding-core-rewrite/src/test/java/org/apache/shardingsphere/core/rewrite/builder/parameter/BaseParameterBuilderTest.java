@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.builder;
+package org.apache.shardingsphere.core.rewrite.builder.parameter;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptOptimizedStatement;

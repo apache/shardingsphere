@@ -27,7 +27,7 @@ import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.Aggr
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.DerivedSelectItem;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.SelectItem;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
-import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SelectItemsToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 

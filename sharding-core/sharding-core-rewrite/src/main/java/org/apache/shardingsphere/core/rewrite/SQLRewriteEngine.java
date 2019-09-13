@@ -27,10 +27,10 @@ import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptOptimize
 import org.apache.shardingsphere.core.optimize.sharding.constant.ShardingDerivedColumnType;
 import org.apache.shardingsphere.core.optimize.sharding.segment.insert.GeneratedKey;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingInsertOptimizedStatement;
-import org.apache.shardingsphere.core.rewrite.builder.BaseParameterBuilder;
-import org.apache.shardingsphere.core.rewrite.builder.insert.InsertParameterBuilder;
-import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
-import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
+import org.apache.shardingsphere.core.rewrite.builder.parameter.BaseParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.builder.parameter.insert.InsertParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.builder.sql.SQLBuilder;
 import org.apache.shardingsphere.core.rewrite.token.BaseTokenGenerateEngine;
 import org.apache.shardingsphere.core.rewrite.token.EncryptTokenGenerateEngine;
 import org.apache.shardingsphere.core.rewrite.token.ShardingTokenGenerateEngine;

@@ -15,25 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.builder.insert;
+package org.apache.shardingsphere.core.rewrite.builder.parameter;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.rule.DataNode;
+import org.apache.shardingsphere.core.route.type.RoutingUnit;
 
-import java.util.Collection;
 import java.util.List;
 
 /**
- * Value parameters group for insert statement.
+ * Parameter builder.
  *
  * @author panjuan
  */
-@RequiredArgsConstructor
-@Getter
-final class ValueParametersGroup {
+public interface ParameterBuilder {
     
-    private final List<Object> parameters;
+    /**
+     * Get original parameters.
+     * 
+     * @return original parameters
+     */
+    List<Object> getOriginalParameters();
     
-    private final Collection<DataNode> dataNodes;
+    /**
+     * Get parameters.
+     *
+     * @return parameters
+     */
+    List<Object> getParameters();
+    
+    /**
+     * Get parameters.
+     *
+     * @param routingUnit routing unit
+     * @return parameters
+     */
+    List<Object> getParameters(RoutingUnit routingUnit);
 }
