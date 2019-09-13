@@ -65,7 +65,7 @@ import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
-import org.apache.shardingsphere.core.rewrite.builder.parameter.single.BaseParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.builder.parameter.standard.StandardParameterBuilder;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
@@ -1107,9 +1107,9 @@ public final class ShardingSQLRewriteEngineTest {
     }
     
     @SneakyThrows
-    private BaseParameterBuilder getParameterBuilder(final SQLRewriteEngine rewriteEngine) {
+    private StandardParameterBuilder getParameterBuilder(final SQLRewriteEngine rewriteEngine) {
         Field field = rewriteEngine.getClass().getDeclaredField("parameterBuilder");
         field.setAccessible(true);
-        return (BaseParameterBuilder) field.get(rewriteEngine);
+        return (StandardParameterBuilder) field.get(rewriteEngine);
     }
 }

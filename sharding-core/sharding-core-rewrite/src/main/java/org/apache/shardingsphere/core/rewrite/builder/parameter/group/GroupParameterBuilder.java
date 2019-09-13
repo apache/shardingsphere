@@ -31,7 +31,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Parameter builder for group.
+ * Grouped Parameter builder.
  *
  * @author panjuan
  * @author zhangliang
