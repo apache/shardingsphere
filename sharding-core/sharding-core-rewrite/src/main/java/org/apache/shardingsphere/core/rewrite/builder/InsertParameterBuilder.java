@@ -41,15 +41,15 @@ public final class InsertParameterBuilder implements ParameterBuilder {
     
     private final List<Object> originalParameters;
     
-    private final List<InsertParameterUnit> insertParameterUnits;
+    private final Collection<InsertParameterUnit> insertParameterUnits;
     
     public InsertParameterBuilder(final List<Object> parameters, final InsertOptimizedStatement insertOptimizedStatement) {
         originalParameters = new LinkedList<>(parameters);
         insertParameterUnits = createInsertParameterUnits(insertOptimizedStatement);
     }
     
-    private List<InsertParameterUnit> createInsertParameterUnits(final InsertOptimizedStatement insertOptimizedStatement) {
-        List<InsertParameterUnit> result = new LinkedList<>();
+    private Collection<InsertParameterUnit> createInsertParameterUnits(final InsertOptimizedStatement insertOptimizedStatement) {
+        Collection<InsertParameterUnit> result = new LinkedList<>();
         Iterator<ShardingCondition> shardingConditions = null;
         if (insertOptimizedStatement instanceof ShardingInsertOptimizedStatement) {
             shardingConditions = ((ShardingInsertOptimizedStatement) insertOptimizedStatement).getShardingConditions().getConditions().iterator();
