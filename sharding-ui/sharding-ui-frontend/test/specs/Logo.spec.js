@@ -1,6 +1,6 @@
 import { expect } from 'chai'
 import { shallowMount } from '@vue/test-utils'
-import Logo from '../src/components/Logo/index.vue'
+import Logo from '../../src/components/Logo/index.vue'
 
 describe('Logo/index.vue', () => {
   const wrapper = shallowMount(Logo)
