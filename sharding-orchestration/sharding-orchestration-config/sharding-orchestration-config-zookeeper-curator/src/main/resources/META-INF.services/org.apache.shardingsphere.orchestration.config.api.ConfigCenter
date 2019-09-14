@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.orchestration.config.server.zookeeper.curator.CuratorZookeeperConfigCenter
+org.apache.shardingsphere.orchestration.config.zookeeper.curator.CuratorZookeeperConfigCenter

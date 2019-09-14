@@ -28,13 +28,13 @@ import org.junit.Test;
 import java.util.List;
 import java.util.Properties;
 
-import static org.hamcrest.core.Is.is;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class CuratorZookeeperRegistryCenterTest {
+public class CuratorZookeeperRegistryCenterIT {
     
     private static RegistryCenter curatorZookeeperRegistryCenter = new CuratorZookeeperRegistryCenter();
-
+    
     @BeforeClass
     public static void init() {
         EmbedTestingServer.start();
@@ -45,39 +45,39 @@ public class CuratorZookeeperRegistryCenterTest {
     
     @Test
     public void assertPersist() {
-        curatorZookeeperRegistryCenter.persist("/test","value1");
+        curatorZookeeperRegistryCenter.persist("/test", "value1");
         assertThat(curatorZookeeperRegistryCenter.get("/test"), is("value1"));
     }
     
     @Test
     public void assertUpdate() {
-        curatorZookeeperRegistryCenter.persist("/test","value2");
+        curatorZookeeperRegistryCenter.persist("/test", "value2");
         assertThat(curatorZookeeperRegistryCenter.get("/test"), is("value2"));
     }
     
     @Test
     public void assertPersistEphemeral() {
-        curatorZookeeperRegistryCenter.persist("/test/ephemeral","value3");
+        curatorZookeeperRegistryCenter.persist("/test/ephemeral", "value3");
         assertThat(curatorZookeeperRegistryCenter.get("/test/ephemeral"), is("value3"));
     }
     
     @Test
     public void assertGetDirectly() {
-        curatorZookeeperRegistryCenter.persist("/test","value4");
+        curatorZookeeperRegistryCenter.persist("/test", "value4");
         assertThat(curatorZookeeperRegistryCenter.getDirectly("/test"), is("value4"));
     }
     
     @Test
     public void assertIsExisted() {
-        curatorZookeeperRegistryCenter.persist("/test/existed","value5");
+        curatorZookeeperRegistryCenter.persist("/test/existed", "value5");
         assertThat(curatorZookeeperRegistryCenter.isExisted("/test/existed"), is(true));
     }
     
     @Test
     public void assertGetChildrenKeys() {
-        curatorZookeeperRegistryCenter.persist("/test/children/1","value11");
-        curatorZookeeperRegistryCenter.persist("/test/children/2","value12");
-        curatorZookeeperRegistryCenter.persist("/test/children/3","value13");
+        curatorZookeeperRegistryCenter.persist("/test/children/1", "value11");
+        curatorZookeeperRegistryCenter.persist("/test/children/2", "value12");
+        curatorZookeeperRegistryCenter.persist("/test/children/3", "value13");
         List<String> childrenKeys = curatorZookeeperRegistryCenter.getChildrenKeys("/test/children");
         assertThat(childrenKeys.size(), is(3));
     }

@@ -25,15 +25,12 @@
         <groupId>org.apache.shardingsphere</groupId>
         <version>4.0.0-RC2-SNAPSHOT</version>
     </parent>
-    
-    <artifactId>sharding-orchestration-config-center</artifactId>
+    <artifactId>sharding-orchestration-config</artifactId>
     <name>${project.artifactId}</name>
     <packaging>pom</packaging>
     
     <modules>
-        <module>sharding-orchestration-config-server-api</module>
-        <module>sharding-orchestration-config-server-zookeeper-curator</module>
+        <module>sharding-orchestration-config-api</module>
+        <module>sharding-orchestration-config-zookeeper-curator</module>
     </modules>
-
-
 </project>
