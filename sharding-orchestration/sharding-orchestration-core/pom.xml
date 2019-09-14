@@ -43,7 +43,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-orchestration-config-server-api</artifactId>
+            <artifactId>sharding-orchestration-config-api</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

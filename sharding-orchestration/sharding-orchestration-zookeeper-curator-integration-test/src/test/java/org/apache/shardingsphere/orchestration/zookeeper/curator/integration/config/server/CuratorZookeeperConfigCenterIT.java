@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.orchestration.zookeeper.curator.integration.config.server;
 
-import org.apache.shardingsphere.orchestration.config.server.api.ConfigCenter;
-import org.apache.shardingsphere.orchestration.config.server.api.ConfigCenterConfiguration;
-import org.apache.shardingsphere.orchestration.config.server.zookeeper.curator.CuratorZookeeperConfigCenter;
+import org.apache.shardingsphere.orchestration.config.api.ConfigCenter;
+import org.apache.shardingsphere.orchestration.config.api.ConfigCenterConfiguration;
+import org.apache.shardingsphere.orchestration.config.zookeeper.curator.CuratorZookeeperConfigCenter;
 import org.apache.shardingsphere.orchestration.internal.configcenter.ConfigCenterServiceLoader;
 import org.apache.shardingsphere.orchestration.zookeeper.curator.integration.util.EmbedTestingServer;
 import org.junit.BeforeClass;

@@ -52,7 +52,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-orchestration-config-server-zookeeper-curator</artifactId>
+            <artifactId>sharding-orchestration-config-zookeeper-curator</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>

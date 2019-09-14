@@ -21,8 +21,8 @@ import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
 import org.apache.shardingsphere.core.spi.algorithm.TypeBasedSPIServiceLoader;
-import org.apache.shardingsphere.orchestration.config.server.api.ConfigCenter;
-import org.apache.shardingsphere.orchestration.config.server.api.ConfigCenterConfiguration;
+import org.apache.shardingsphere.orchestration.config.api.ConfigCenter;
+import org.apache.shardingsphere.orchestration.config.api.ConfigCenterConfiguration;
 
 
 /**
