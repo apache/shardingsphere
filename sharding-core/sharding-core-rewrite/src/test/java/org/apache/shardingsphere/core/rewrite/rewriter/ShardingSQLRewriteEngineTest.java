@@ -221,9 +221,10 @@ public final class ShardingSQLRewriteEngineTest {
         insertStatement.getAllSQLSegments().add(new TableSegment(12, 18, "table_x"));
         GeneratedKey generatedKey = new GeneratedKey("id", true);
         generatedKey.getGeneratedValues().add(1);
-        ShardingInsertOptimizedStatement shardingStatement = new ShardingInsertOptimizedStatement(insertStatement, new LinkedList<ShardingCondition>(), Arrays.asList("name", "age"), generatedKey);
         Collection<ExpressionSegment> assignments = Arrays.<ExpressionSegment>asList(new ParameterMarkerExpressionSegment(0, 0, 0), new ParameterMarkerExpressionSegment(0, 0, 1));
-        shardingStatement.getInsertValues().add(new InsertValue(assignments, 0, Arrays.<Object>asList("x", 1), 0));
+        ShardingInsertOptimizedStatement shardingStatement = new ShardingInsertOptimizedStatement(
+                insertStatement, new LinkedList<ShardingCondition>(), Arrays.asList("name", "age"), 
+                generatedKey, Collections.singletonList(new InsertValue(assignments, 0, Arrays.<Object>asList("x", 1), 0)));
         ShardingCondition shardingCondition = new ShardingCondition();
         shardingCondition.getDataNodes().add(new DataNode("db0.table_1"));
         shardingStatement.getShardingConditions().getConditions().add(shardingCondition);
@@ -249,10 +250,10 @@ public final class ShardingSQLRewriteEngineTest {
         insertStatement.getAllSQLSegments().add(new TableSegment(12, 20, "`table_x`"));
         GeneratedKey generatedKey = new GeneratedKey("id", true);
         generatedKey.getGeneratedValues().add(1);
-        ShardingInsertOptimizedStatement shardingStatement = new ShardingInsertOptimizedStatement(
-                insertStatement, new LinkedList<ShardingCondition>(), Arrays.asList("name", "id"), generatedKey);
         Collection<ExpressionSegment> assignments = Collections.<ExpressionSegment>singletonList(new ParameterMarkerExpressionSegment(0, 0, 0));
-        shardingStatement.getInsertValues().add(new InsertValue(assignments, 0, Collections.<Object>singletonList("Bill"), 0));
+        ShardingInsertOptimizedStatement shardingStatement = new ShardingInsertOptimizedStatement(
+                insertStatement, new LinkedList<ShardingCondition>(), Arrays.asList("name", "id"), generatedKey, 
+                Collections.singletonList(new InsertValue(assignments, 0, Collections.<Object>singletonList("Bill"), 0)));
         ShardingCondition shardingCondition = new ShardingCondition();
         shardingCondition.getDataNodes().add(new DataNode("db0.table_1"));
         shardingStatement.getShardingConditions().getConditions().add(shardingCondition);
@@ -278,9 +279,9 @@ public final class ShardingSQLRewriteEngineTest {
         insertStatement.getAllSQLSegments().add(new TableSegment(12, 20, "`table_x`"));
         GeneratedKey generatedKey = new GeneratedKey("id", true);
         generatedKey.getGeneratedValues().add(1);
-        ShardingInsertOptimizedStatement shardingStatement = new ShardingInsertOptimizedStatement(insertStatement, new LinkedList<ShardingCondition>(), Arrays.asList("name", "id"), generatedKey);
         Collection<ExpressionSegment> assignments = Collections.<ExpressionSegment>singletonList(new LiteralExpressionSegment(0, 0, 10));
-        shardingStatement.getInsertValues().add(new InsertValue(assignments, 0, Collections.emptyList(), 0));
+        ShardingInsertOptimizedStatement shardingStatement = new ShardingInsertOptimizedStatement(insertStatement, new LinkedList<ShardingCondition>(), 
+                Arrays.asList("name", "id"), generatedKey, Collections.singletonList(new InsertValue(assignments, 0, Collections.emptyList(), 0)));
         ShardingCondition shardingCondition = new ShardingCondition();
         shardingCondition.getDataNodes().add(new DataNode("db0.table_1"));
         shardingStatement.getShardingConditions().getConditions().add(shardingCondition);
@@ -306,10 +307,9 @@ public final class ShardingSQLRewriteEngineTest {
         insertStatement.getAllSQLSegments().add(new TableSegment(12, 20, "`table_x`"));
         GeneratedKey generatedKey = new GeneratedKey("id", true);
         generatedKey.getGeneratedValues().add(1);
-        ShardingInsertOptimizedStatement shardingStatement = new ShardingInsertOptimizedStatement(
-                insertStatement, new LinkedList<ShardingCondition>(), Arrays.asList("name", "id"), generatedKey);
         Collection<ExpressionSegment> assignments = Collections.<ExpressionSegment>singletonList(new LiteralExpressionSegment(0, 0, 10));
-        shardingStatement.getInsertValues().add(new InsertValue(assignments, 0, Collections.emptyList(), 0));
+        ShardingInsertOptimizedStatement shardingStatement = new ShardingInsertOptimizedStatement(insertStatement, new LinkedList<ShardingCondition>(), Arrays.asList("name", "id"), 
+                generatedKey, Collections.singletonList(new InsertValue(assignments, 0, Collections.emptyList(), 0)));
         ShardingCondition shardingCondition = new ShardingCondition();
         shardingCondition.getDataNodes().add(new DataNode("db0.table_1"));
         shardingStatement.getShardingConditions().getConditions().add(shardingCondition);
@@ -331,9 +331,9 @@ public final class ShardingSQLRewriteEngineTest {
         insertStatement.getColumns().add(new ColumnSegment(0, 0, "id"));
         insertStatement.setTable(new TableSegment(0, 0, "table_x"));
         insertStatement.getAllSQLSegments().add(new TableSegment(12, 20, "`table_x`"));
-        ShardingInsertOptimizedStatement shardingStatement = new ShardingInsertOptimizedStatement(insertStatement, new LinkedList<ShardingCondition>(), Arrays.asList("name", "id"), null);
         Collection<ExpressionSegment> assignments = Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(0, 0, 10), new LiteralExpressionSegment(0, 0, 1));
-        shardingStatement.getInsertValues().add(new InsertValue(assignments, 1, Collections.emptyList(), 0));
+        ShardingInsertOptimizedStatement shardingStatement = new ShardingInsertOptimizedStatement(insertStatement, new LinkedList<ShardingCondition>(), 
+                Arrays.asList("name", "id"), null, Collections.singletonList(new InsertValue(assignments, 1, Collections.emptyList(), 0)));
         ShardingCondition shardingCondition = new ShardingCondition();
         shardingCondition.getDataNodes().add(new DataNode("db0.table_1"));
         shardingStatement.getShardingConditions().getConditions().add(shardingCondition);
@@ -356,9 +356,9 @@ public final class ShardingSQLRewriteEngineTest {
         insertStatement.getAllSQLSegments().add(new TableSegment(12, 20, "`table_x`"));
         insertStatement.getAllSQLSegments().add(new InsertColumnsSegment(21, 21, Collections.<ColumnSegment>emptyList()));
         insertStatement.getAllSQLSegments().add(new InsertValuesSegment(29, 35, Collections.<ExpressionSegment>emptyList()));
-        ShardingInsertOptimizedStatement shardingStatement = new ShardingInsertOptimizedStatement(insertStatement, new LinkedList<ShardingCondition>(), Arrays.asList("name", "id"), null);
         Collection<ExpressionSegment> assignments = Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(0, 0, 10), new LiteralExpressionSegment(0, 0, 1));
-        shardingStatement.getInsertValues().add(new InsertValue(assignments, 0, Collections.emptyList(), 0));
+        ShardingInsertOptimizedStatement shardingStatement = new ShardingInsertOptimizedStatement(insertStatement, new LinkedList<ShardingCondition>(), 
+                Arrays.asList("name", "id"), null, Collections.singletonList(new InsertValue(assignments, 0, Collections.emptyList(), 0)));
         ShardingCondition shardingCondition = new ShardingCondition();
         shardingCondition.getDataNodes().add(new DataNode("db0.table_1"));
         shardingStatement.getShardingConditions().getConditions().add(shardingCondition);
@@ -383,10 +383,9 @@ public final class ShardingSQLRewriteEngineTest {
         insertStatement.getAllSQLSegments().add(new TableSegment(12, 20, "`table_x`"));
         GeneratedKey generatedKey = new GeneratedKey("id", false);
         generatedKey.getGeneratedValues().add(1);
-        ShardingInsertOptimizedStatement shardingStatement = new ShardingInsertOptimizedStatement(
-                insertStatement, new LinkedList<ShardingCondition>(), Arrays.asList("name", "id"), generatedKey);
         Collection<ExpressionSegment> assignments = Arrays.<ExpressionSegment>asList(new ParameterMarkerExpressionSegment(0, 0, 0), new ParameterMarkerExpressionSegment(0, 0, 1));
-        shardingStatement.getInsertValues().add(new InsertValue(assignments, 0, Arrays.<Object>asList("x", 1), 0));
+        ShardingInsertOptimizedStatement shardingStatement = new ShardingInsertOptimizedStatement(insertStatement, new LinkedList<ShardingCondition>(), Arrays.asList("name", "id"), generatedKey, 
+                Collections.singletonList(new InsertValue(assignments, 0, Arrays.<Object>asList("x", 1), 0)));
         ShardingCondition shardingCondition = new ShardingCondition();
         shardingCondition.getDataNodes().add(new DataNode("db0.table_1"));
         shardingStatement.getShardingConditions().getConditions().add(shardingCondition);
@@ -852,7 +851,8 @@ public final class ShardingSQLRewriteEngineTest {
         InsertStatement insertStatement = new InsertStatement();
         insertStatement.getAllSQLSegments().add(new TableSegment(12, 30, "table_x"));
         SQLRouteResult result = new SQLRouteResult(new ShardingInsertOptimizedStatement(
-                insertStatement, Collections.<ShardingCondition>emptyList(), Arrays.asList("order_id", "user_id", "status", "id"), null), new EncryptTransparentOptimizedStatement(insertStatement));
+                insertStatement, Collections.<ShardingCondition>emptyList(), Arrays.asList("order_id", "user_id", "status", "id"), 
+                null, Collections.<InsertValue>emptyList()), new EncryptTransparentOptimizedStatement(insertStatement));
         result.setRoutingResult(new RoutingResult());
         return result;
     }
@@ -988,9 +988,9 @@ public final class ShardingSQLRewriteEngineTest {
         insertStatement.getAllSQLSegments().add(new SetAssignmentsSegment(26, 34, Collections.singleton(new AssignmentSegment(26, 34, columnSegment, expressionSegment))));
         insertStatement.getAllSQLSegments().add(new TableSegment(12, 20, "`table_w`"));
         insertStatement.setTable(new TableSegment(0, 0, "table_w"));
-        ShardingInsertOptimizedStatement shardingStatement = new ShardingInsertOptimizedStatement(insertStatement, new LinkedList<ShardingCondition>(), Collections.singletonList("name"), null);
         Collection<ExpressionSegment> assignments = Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(0, 0, 10), new LiteralExpressionSegment(0, 0, 1));
-        shardingStatement.getInsertValues().add(new InsertValue(assignments, 3, Collections.emptyList(), 0));
+        ShardingInsertOptimizedStatement shardingStatement = new ShardingInsertOptimizedStatement(
+                insertStatement, new LinkedList<ShardingCondition>(), Collections.singletonList("name"), null, Collections.singletonList(new InsertValue(assignments, 3, Collections.emptyList(), 0)));
         ShardingCondition shardingCondition = new ShardingCondition();
         shardingCondition.getDataNodes().add(new DataNode("db0.table_1"));
         shardingStatement.getShardingConditions().getConditions().add(shardingCondition);
