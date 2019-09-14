@@ -64,9 +64,8 @@ public final class GeneratedKey {
         if (!generateKeyColumnName.isPresent()) {
             return Optional.absent();
         }
-        return containsGenerateKey(tableMetas, insertStatement, generateKeyColumnName.get())
-                ? findGeneratedKey(tableMetas, parameters, insertStatement, generateKeyColumnName.get())
-                : Optional.of(createGeneratedKey(shardingRule, insertStatement, generateKeyColumnName.get()));
+        return Optional.of(containsGenerateKey(tableMetas, insertStatement, generateKeyColumnName.get())
+                ? findGeneratedKey(tableMetas, parameters, insertStatement, generateKeyColumnName.get()) : createGeneratedKey(shardingRule, insertStatement, generateKeyColumnName.get()));
     }
     
     private static boolean containsGenerateKey(final TableMetas tableMetas, final InsertStatement insertStatement, final String generateKeyColumnName) {
@@ -75,31 +74,27 @@ public final class GeneratedKey {
                 : insertStatement.getColumnNames().contains(generateKeyColumnName);
     }
     
-    private static Optional<GeneratedKey> findGeneratedKey(
-            final TableMetas tableMetas, final List<Object> parameters, final InsertStatement insertStatement, final String generateKeyColumnName) {
-        GeneratedKey result = null;
+    private static GeneratedKey findGeneratedKey(final TableMetas tableMetas, final List<Object> parameters, final InsertStatement insertStatement, final String generateKeyColumnName) {
+        GeneratedKey result = new GeneratedKey(generateKeyColumnName, false);
         for (ExpressionSegment each : findGenerateKeyExpressions(tableMetas, insertStatement, generateKeyColumnName)) {
-            if (null == result) {
-                result = new GeneratedKey(generateKeyColumnName, false);
-            }
             if (each instanceof ParameterMarkerExpressionSegment) {
                 result.getGeneratedValues().add((Comparable<?>) parameters.get(((ParameterMarkerExpressionSegment) each).getParameterMarkerIndex()));
             } else if (each instanceof LiteralExpressionSegment) {
                 result.getGeneratedValues().add((Comparable<?>) ((LiteralExpressionSegment) each).getLiterals());
             }
         }
-        return Optional.fromNullable(result);
+        return result;
     }
     
     private static Collection<ExpressionSegment> findGenerateKeyExpressions(final TableMetas tableMetas, final InsertStatement insertStatement, final String generateKeyColumnName) {
         Collection<ExpressionSegment> result = new LinkedList<>();
         for (List<ExpressionSegment> each : insertStatement.getAllValueExpressions()) {
-            result.add(each.get(findGenerateKeyExpressionIndex(tableMetas, insertStatement, generateKeyColumnName.toLowerCase())));
+            result.add(each.get(findGenerateKeyIndex(tableMetas, insertStatement, generateKeyColumnName.toLowerCase())));
         }
         return result;
     }
     
-    private static int findGenerateKeyExpressionIndex(final TableMetas tableMetas, final InsertStatement insertStatement, final String generateKeyColumnName) {
+    private static int findGenerateKeyIndex(final TableMetas tableMetas, final InsertStatement insertStatement, final String generateKeyColumnName) {
         return insertStatement.getColumnNames().isEmpty()
                 ? tableMetas.getAllColumnNames(insertStatement.getTable().getTableName()).indexOf(generateKeyColumnName) : insertStatement.getColumnNames().indexOf(generateKeyColumnName);
     }
