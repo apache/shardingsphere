@@ -33,7 +33,6 @@ import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -54,9 +53,9 @@ public final class ShardingInsertOptimizeEngine implements ShardingOptimizeEngin
         boolean isGeneratedValue = generatedKey.isPresent() && generatedKey.get().isGenerated();
         if (isGeneratedValue) {
             columnNames.remove(generatedKey.get().getColumnName());
+            columnNames.add(generatedKey.get().getColumnName());
         }
-        Collection<String> allColumnNames = getAllColumnNames(columnNames, generatedKey.orNull());
-        List<ShardingCondition> shardingConditions = new InsertClauseShardingConditionEngine(shardingRule).createShardingConditions(sqlStatement, parameters, allColumnNames, generatedKey.orNull());
+        List<ShardingCondition> shardingConditions = new InsertClauseShardingConditionEngine(shardingRule).createShardingConditions(sqlStatement, parameters, columnNames, generatedKey.orNull());
         ShardingInsertOptimizedStatement result = new ShardingInsertOptimizedStatement(sqlStatement, shardingConditions, columnNames, generatedKey.orNull());
         checkDuplicateKeyForShardingKey(shardingRule, sqlStatement, tableName);
         int derivedColumnsCount = getDerivedColumnsCount(shardingRule, tableName, isGeneratedValue);
@@ -72,14 +71,6 @@ public final class ShardingInsertOptimizeEngine implements ShardingOptimizeEngin
     private int getDerivedColumnsCount(final ShardingRule shardingRule, final String tableName, final boolean isGeneratedValue) {
         int encryptDerivedColumnsCount = shardingRule.getEncryptRule().getAssistedQueryAndPlainColumns(tableName).size();
         return isGeneratedValue ? encryptDerivedColumnsCount + 1 : encryptDerivedColumnsCount;
-    }
-    
-    private Collection<String> getAllColumnNames(final Collection<String> columnNames, final GeneratedKey generatedKey) {
-        Collection<String> result = new LinkedList<>(columnNames);
-        if (null != generatedKey && generatedKey.isGenerated()) {
-            result.add(generatedKey.getColumnName());
-        }
-        return result;
     }
     
     private void checkDuplicateKeyForShardingKey(final ShardingRule shardingRule, final InsertStatement sqlStatement, final String tableName) {

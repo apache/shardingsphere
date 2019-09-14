@@ -36,17 +36,20 @@ public final class InsertGeneratedKeyNameTokenGenerator implements OptionalSQLTo
     public Optional<InsertGeneratedKeyNameToken> generateSQLToken(
             final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final ShardingRule shardingRule, final boolean isQueryWithCipherColumn) {
         Optional<InsertColumnsSegment> insertColumnsSegment = optimizedStatement.getSQLStatement().findSQLSegment(InsertColumnsSegment.class);
-        if (!(optimizedStatement instanceof ShardingInsertOptimizedStatement && insertColumnsSegment.isPresent())) {
+        if (!insertColumnsSegment.isPresent() || insertColumnsSegment.get().getColumns().isEmpty()) {
             return Optional.absent();
         }
-        return createInsertGeneratedKeyToken((ShardingInsertOptimizedStatement) optimizedStatement, insertColumnsSegment.get(), shardingRule);
+        if (optimizedStatement instanceof ShardingInsertOptimizedStatement) {
+            return createInsertGeneratedKeyToken((ShardingInsertOptimizedStatement) optimizedStatement, insertColumnsSegment.get(), shardingRule);
+        }
+        return Optional.absent();
     }
     
     private Optional<InsertGeneratedKeyNameToken> createInsertGeneratedKeyToken(
             final ShardingInsertOptimizedStatement optimizedStatement, final InsertColumnsSegment segment, final ShardingRule shardingRule) {
         String tableName = optimizedStatement.getTables().getSingleTableName();
         Optional<String> generatedKeyColumnName = shardingRule.findGenerateKeyColumnName(tableName);
-        return generatedKeyColumnName.isPresent() && !optimizedStatement.getColumnNames().contains(generatedKeyColumnName.get())
+        return generatedKeyColumnName.isPresent() && optimizedStatement.getGeneratedKey().isPresent() && optimizedStatement.getGeneratedKey().get().isGenerated()
                 ? Optional.of(new InsertGeneratedKeyNameToken(segment.getStopIndex(), generatedKeyColumnName.get(), isToAddCloseParenthesis(tableName, segment, shardingRule)))
                 : Optional.<InsertGeneratedKeyNameToken>absent();
     }

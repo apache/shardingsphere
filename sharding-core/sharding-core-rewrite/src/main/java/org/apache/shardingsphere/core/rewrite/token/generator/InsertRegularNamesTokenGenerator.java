@@ -85,12 +85,7 @@ public final class InsertRegularNamesTokenGenerator implements OptionalSQLTokenG
     }
     
     private boolean isNeedToAppendColumns(final InsertOptimizedStatement optimizedStatement, final ShardingRule shardingRule) {
-        return isNeedToAppendGeneratedKey(optimizedStatement, shardingRule) || isNeedToAppendAssistedQueryAndPlainColumns(optimizedStatement, shardingRule.getEncryptRule());
-    }
-    
-    private boolean isNeedToAppendGeneratedKey(final InsertOptimizedStatement optimizedStatement, final ShardingRule shardingRule) {
-        Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(optimizedStatement.getTables().getSingleTableName());
-        return generateKeyColumnName.isPresent() && !optimizedStatement.getColumnNames().contains(generateKeyColumnName.get());
+        return isNeedToAppendAssistedQueryAndPlainColumns(optimizedStatement, shardingRule.getEncryptRule());
     }
     
     private boolean isNeedToAppendAssistedQueryAndPlainColumns(final OptimizedStatement optimizedStatement, final EncryptRule encryptRule) {
