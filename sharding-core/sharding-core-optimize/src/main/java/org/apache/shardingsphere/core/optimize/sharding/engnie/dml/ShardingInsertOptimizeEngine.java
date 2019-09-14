@@ -55,7 +55,7 @@ public final class ShardingInsertOptimizeEngine implements ShardingOptimizeEngin
         if (isGeneratedValue) {
             columnNames.remove(generatedKey.get().getColumnName());
         }
-        List<String> allColumnNames = getAllColumnNames(columnNames, generatedKey.orNull());
+        Collection<String> allColumnNames = getAllColumnNames(columnNames, generatedKey.orNull());
         List<ShardingCondition> shardingConditions = new InsertClauseShardingConditionEngine(shardingRule).createShardingConditions(sqlStatement, parameters, allColumnNames, generatedKey.orNull());
         ShardingInsertOptimizedStatement result = new ShardingInsertOptimizedStatement(sqlStatement, shardingConditions, columnNames, generatedKey.orNull());
         checkDuplicateKeyForShardingKey(shardingRule, sqlStatement, tableName);
@@ -74,8 +74,8 @@ public final class ShardingInsertOptimizeEngine implements ShardingOptimizeEngin
         return isGeneratedValue ? encryptDerivedColumnsCount + 1 : encryptDerivedColumnsCount;
     }
     
-    private List<String> getAllColumnNames(final Collection<String> columnNames, final GeneratedKey generatedKey) {
-        List<String> result = new LinkedList<>(columnNames);
+    private Collection<String> getAllColumnNames(final Collection<String> columnNames, final GeneratedKey generatedKey) {
+        Collection<String> result = new LinkedList<>(columnNames);
         if (null != generatedKey && generatedKey.isGenerated()) {
             result.add(generatedKey.getColumnName());
         }
