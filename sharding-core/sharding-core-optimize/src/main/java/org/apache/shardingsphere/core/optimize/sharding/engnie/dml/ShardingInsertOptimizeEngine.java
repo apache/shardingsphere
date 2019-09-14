@@ -33,6 +33,7 @@ import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -47,8 +48,7 @@ public final class ShardingInsertOptimizeEngine implements ShardingOptimizeEngin
     @Override
     public ShardingInsertOptimizedStatement optimize(final ShardingRule shardingRule,
                                                      final TableMetas tableMetas, final String sql, final List<Object> parameters, final InsertStatement sqlStatement) {
-        String tableName = sqlStatement.getTable().getTableName();
-        List<String> columnNames = sqlStatement.useDefaultColumns() ? tableMetas.getAllColumnNames(tableName) : sqlStatement.getColumnNames();
+        List<String> columnNames = sqlStatement.useDefaultColumns() ? tableMetas.getAllColumnNames(sqlStatement.getTable().getTableName()) : sqlStatement.getColumnNames();
         Optional<GeneratedKey> generatedKey = GeneratedKey.getGenerateKey(shardingRule, parameters, sqlStatement, columnNames);
         boolean isGeneratedValue = generatedKey.isPresent() && generatedKey.get().isGenerated();
         if (isGeneratedValue) {
@@ -57,20 +57,9 @@ public final class ShardingInsertOptimizeEngine implements ShardingOptimizeEngin
         }
         List<ShardingCondition> shardingConditions = new InsertClauseShardingConditionEngine(shardingRule).createShardingConditions(sqlStatement, parameters, columnNames, generatedKey.orNull());
         ShardingInsertOptimizedStatement result = new ShardingInsertOptimizedStatement(sqlStatement, shardingConditions, columnNames, generatedKey.orNull());
-        checkDuplicateKeyForShardingKey(shardingRule, sqlStatement, tableName);
-        int derivedColumnsCount = getDerivedColumnsCount(shardingRule, tableName, isGeneratedValue);
-        int parametersOffset = 0;
-        for (Collection<ExpressionSegment> each : sqlStatement.getAllValueExpressions()) {
-            InsertValue insertValue = new InsertValue(each, derivedColumnsCount, parameters, parametersOffset);
-            result.getInsertValues().add(insertValue);
-            parametersOffset += insertValue.getParametersCount();
-        }
+        checkDuplicateKeyForShardingKey(shardingRule, sqlStatement, sqlStatement.getTable().getTableName());
+        result.getInsertValues().addAll(getInsertValues(shardingRule, parameters, sqlStatement, isGeneratedValue));
         return result;
-    }
-    
-    private int getDerivedColumnsCount(final ShardingRule shardingRule, final String tableName, final boolean isGeneratedValue) {
-        int encryptDerivedColumnsCount = shardingRule.getEncryptRule().getAssistedQueryAndPlainColumns(tableName).size();
-        return isGeneratedValue ? encryptDerivedColumnsCount + 1 : encryptDerivedColumnsCount;
     }
     
     private void checkDuplicateKeyForShardingKey(final ShardingRule shardingRule, final InsertStatement sqlStatement, final String tableName) {
@@ -87,5 +76,22 @@ public final class ShardingInsertOptimizeEngine implements ShardingOptimizeEngin
             }
         }
         return false;
+    }
+    
+    private List<InsertValue> getInsertValues(final ShardingRule shardingRule, final List<Object> parameters, final InsertStatement sqlStatement, final boolean isGeneratedValue) {
+        List<InsertValue> result = new LinkedList<>();
+        int derivedColumnsCount = getDerivedColumnsCount(shardingRule, sqlStatement.getTable().getTableName(), isGeneratedValue);
+        int parametersOffset = 0;
+        for (Collection<ExpressionSegment> each : sqlStatement.getAllValueExpressions()) {
+            InsertValue insertValue = new InsertValue(each, derivedColumnsCount, parameters, parametersOffset);
+            result.add(insertValue);
+            parametersOffset += insertValue.getParametersCount();
+        }
+        return result;
+    }
+    
+    private int getDerivedColumnsCount(final ShardingRule shardingRule, final String tableName, final boolean isGeneratedValue) {
+        int encryptDerivedColumnsCount = shardingRule.getEncryptRule().getAssistedQueryAndPlainColumns(tableName).size();
+        return isGeneratedValue ? encryptDerivedColumnsCount + 1 : encryptDerivedColumnsCount;
     }
 }
