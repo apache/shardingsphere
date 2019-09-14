@@ -75,7 +75,9 @@ public final class SQLRewriteEngine {
         baseRule = shardingRule;
         optimizedStatement = sqlRouteResult.getShardingStatement();
         processGeneratedKey();
-        encryptOptimizedStatement(shardingRule.getEncryptRule());
+        if (optimizedStatement instanceof InsertOptimizedStatement && !shardingRule.getEncryptRule().getEncryptTableNames().isEmpty()) {
+            encryptInsertOptimizedStatement(shardingRule.getEncryptRule(), (InsertOptimizedStatement) optimizedStatement);
+        }
         parameterBuilder = createParameterBuilder(parameters, sqlRouteResult);
         sqlTokens = createSQLTokens(isSingleRoute, isQueryWithCipherColumn);
         sqlBuilder = new SQLBuilder(sql, sqlTokens);
@@ -84,7 +86,9 @@ public final class SQLRewriteEngine {
     public SQLRewriteEngine(final EncryptRule encryptRule, final EncryptOptimizedStatement encryptStatement, final String sql, final List<Object> parameters, final boolean isQueryWithCipherColumn) {
         baseRule = encryptRule;
         optimizedStatement = encryptStatement;
-        encryptOptimizedStatement(encryptRule);
+        if (optimizedStatement instanceof InsertOptimizedStatement && !encryptRule.getEncryptTableNames().isEmpty()) {
+            encryptInsertOptimizedStatement(encryptRule, (InsertOptimizedStatement) optimizedStatement);
+        }
         parameterBuilder = createParameterBuilder(parameters);
         sqlTokens = createSQLTokens(false, isQueryWithCipherColumn);
         sqlBuilder = new SQLBuilder(sql, sqlTokens);
@@ -111,12 +115,6 @@ public final class SQLRewriteEngine {
         }
     }
     
-    private void encryptOptimizedStatement(final EncryptRule encryptRule) {
-        if (optimizedStatement instanceof InsertOptimizedStatement && !encryptRule.getEncryptTableNames().isEmpty()) {
-            encryptInsertOptimizedStatement(encryptRule, (InsertOptimizedStatement) optimizedStatement);
-        }
-    }
-    
     private void encryptInsertOptimizedStatement(final EncryptRule encryptRule, final InsertOptimizedStatement insertOptimizedStatement) {
         String tableName = insertOptimizedStatement.getTables().getSingleTableName();
         Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
@@ -132,10 +130,10 @@ public final class SQLRewriteEngine {
     }
     
     private void encryptInsertValues(final EncryptRule encryptRule, final ShardingEncryptor shardingEncryptor, 
-                                     final InsertOptimizedStatement insertOptimizedStatement, final String tableName, final String logicEncryptColumn) {
-        int columnIndex = insertOptimizedStatement.getColumnNames().indexOf(logicEncryptColumn);
+                                     final InsertOptimizedStatement insertOptimizedStatement, final String tableName, final String encryptLogicColumnName) {
+        int columnIndex = insertOptimizedStatement.getColumnNames().indexOf(encryptLogicColumnName);
         for (InsertValue each : insertOptimizedStatement.getInsertValues()) {
-            encryptInsertValue(encryptRule, shardingEncryptor, tableName, columnIndex, each, logicEncryptColumn);
+            encryptInsertValue(encryptRule, shardingEncryptor, tableName, columnIndex, each, encryptLogicColumnName);
         }
     }
     
