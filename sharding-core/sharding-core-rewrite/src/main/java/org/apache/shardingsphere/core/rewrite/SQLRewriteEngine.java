@@ -124,13 +124,18 @@ public final class SQLRewriteEngine {
             return;
         }
         for (String each : encryptTable.get().getLogicColumns()) {
-            int columnIndex = insertOptimizedStatement.getColumnNames().indexOf(each);
             Optional<ShardingEncryptor> shardingEncryptor = encryptRule.findShardingEncryptor(tableName, each);
             if (shardingEncryptor.isPresent()) {
-                for (InsertValue insertValue : insertOptimizedStatement.getInsertValues()) {
-                    encryptInsertValue(encryptRule, shardingEncryptor.get(), tableName, columnIndex, insertValue, each);
-                }
+                encryptInsertValues(encryptRule, shardingEncryptor.get(), insertOptimizedStatement, tableName, each);
             }
+        }
+    }
+    
+    private void encryptInsertValues(final EncryptRule encryptRule, final ShardingEncryptor shardingEncryptor, 
+                                     final InsertOptimizedStatement insertOptimizedStatement, final String tableName, final String logicEncryptColumn) {
+        int columnIndex = insertOptimizedStatement.getColumnNames().indexOf(logicEncryptColumn);
+        for (InsertValue each : insertOptimizedStatement.getInsertValues()) {
+            encryptInsertValue(encryptRule, shardingEncryptor, tableName, columnIndex, each, logicEncryptColumn);
         }
     }
     
