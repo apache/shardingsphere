@@ -18,7 +18,7 @@ chapter = true
 
  - 确保通过全部测试用例，确保执行`mvn clean install`可以编译和测试通过。
  - 确保覆盖率不低于dev分支。
- - 确保使用Checkstyle检查代码，违反验证规则的需要有特殊理由。模板位置在`shardingsphere-incubator/src/resources/sharding_checks.xml`，请使用checkstyle 8.8运行规则。
+ - 确保使用Checkstyle检查代码，违反验证规则的需要有特殊理由。模板位置在`https://github.com/apache/incubator-shardingsphere/blob/dev/src/resources/checkstyle.xml`，请使用checkstyle 8.8运行规则。
  - 确保遵守编码规范。
  
 ## 编码规范

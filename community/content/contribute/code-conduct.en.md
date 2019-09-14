@@ -15,7 +15,7 @@ chapter = true
 
  - Make sure all the test cases are passed, Make sure `mvn clean install` can be compiled and tested successfully.
  - Make sure the test coverage rate is not lower than the dev branch.
- - Make sure to check codes with Checkstyle. codes that violate check rules should have special reasons. Find checkstyle template from `shardingsphere-incubator/src/resources/sharding_checks.xml`, please use checkstyle `8.8` to run the rules.
+ - Make sure to check codes with Checkstyle. codes that violate check rules should have special reasons. Find checkstyle template from `https://github.com/apache/incubator-shardingsphere/blob/dev/src/resources/checkstyle.xml`, please use checkstyle `8.8` to run the rules.
 
 ## Contributor Covenant Code of Conduct
 
