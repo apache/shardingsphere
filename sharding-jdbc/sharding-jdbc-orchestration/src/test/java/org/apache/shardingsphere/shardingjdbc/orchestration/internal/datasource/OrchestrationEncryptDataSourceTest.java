@@ -82,7 +82,7 @@ public final class OrchestrationEncryptDataSourceTest {
         assertThat(encryptDataSource.getDataSource().getRuntimeContext().getRule().getEncryptTableNames().size(), is(1));
         assertThat(encryptDataSource.getDataSource().getRuntimeContext().getRule().getEncryptTableNames().iterator().next(), is("t_order_item"));
         assertThat(encryptDataSource.getDataSource().getRuntimeContext().getRule().getCipherColumn("t_order_item", "item_id"), is("cipher_item_id"));
-        assertThat(encryptDataSource.getDataSource().getRuntimeContext().getRule().getPlainColumn("t_order_item", "item_id"), is(Optional.of("plain_item_id")));
+        assertThat(encryptDataSource.getDataSource().getRuntimeContext().getRule().findPlainColumn("t_order_item", "item_id"), is(Optional.of("plain_item_id")));
         Map<String, EncryptorRuleConfiguration> encryptorRuleConfigurations = encryptDataSource.getDataSource().getRuntimeContext().getRule().getRuleConfiguration().getEncryptors();
         assertThat(encryptorRuleConfigurations.size(), is(1));
         assertTrue(encryptorRuleConfigurations.containsKey("order_encryptor"));

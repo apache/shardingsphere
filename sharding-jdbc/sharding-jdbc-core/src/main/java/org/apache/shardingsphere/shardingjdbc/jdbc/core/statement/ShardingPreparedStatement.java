@@ -124,16 +124,12 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         if (null != currentResultSet) {
             return currentResultSet;
         }
-        if (1 == preparedStatementExecutor.getStatements().size() && sqlRouteResult.getShardingStatement().getSQLStatement() instanceof SelectStatement) {
-            currentResultSet = preparedStatementExecutor.getStatements().iterator().next().getResultSet();
-            return currentResultSet;
-        }
         List<ResultSet> resultSets = new ArrayList<>(preparedStatementExecutor.getStatements().size());
         List<QueryResult> queryResults = new ArrayList<>(preparedStatementExecutor.getStatements().size());
         for (Statement each : preparedStatementExecutor.getStatements()) {
             ResultSet resultSet = each.getResultSet();
             resultSets.add(resultSet);
-            queryResults.add(new StreamQueryResult(resultSet, connection.getRuntimeContext().getRule()));
+            queryResults.add(new StreamQueryResult(resultSet, connection.getRuntimeContext().getRule(), connection.getRuntimeContext().getProps()));
         }
         if (sqlRouteResult.getShardingStatement() instanceof ShardingSelectOptimizedStatement || sqlRouteResult.getShardingStatement().getSQLStatement() instanceof DALStatement) {
             MergeEngine mergeEngine = MergeEngineFactory.newInstance(connection.getRuntimeContext().getDatabaseType(),
@@ -197,11 +193,18 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     private void initPreparedStatementExecutor() throws SQLException {
         preparedStatementExecutor.init(sqlRouteResult);
         setParametersForStatements();
+        replayMethodForStatements();
     }
     
     private void setParametersForStatements() {
         for (int i = 0; i < preparedStatementExecutor.getStatements().size(); i++) {
             replaySetParameter((PreparedStatement) preparedStatementExecutor.getStatements().get(i), preparedStatementExecutor.getParameterSets().get(i));
+        }
+    }
+    
+    private void replayMethodForStatements() {
+        for (Statement each : preparedStatementExecutor.getStatements()) {
+            replayMethodsInvocation(each);
         }
     }
     

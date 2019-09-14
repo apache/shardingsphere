@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.optimize.sharding.segment.condition.engin
 
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
 import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.sharding.segment.insert.GeneratedKey;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
@@ -52,13 +51,12 @@ public final class InsertClauseShardingConditionEngine {
      * @param insertStatement insert statement
      * @param parameters SQL parameters
      * @param columnNames column names
-     * @param values values
      * @param generatedKey generated key
      * @return sharding conditions
      */
-    public List<ShardingCondition> createShardingConditions(
-            final InsertStatement insertStatement, final List<Object> parameters, final Collection<String> columnNames, final Collection<InsertValue> values, final GeneratedKey generatedKey) {
-        List<ShardingCondition> result = getShardingConditions(insertStatement, columnNames, values, parameters);
+    public List<ShardingCondition> createShardingConditions(final InsertStatement insertStatement, 
+                                                            final List<Object> parameters, final Collection<String> columnNames, final GeneratedKey generatedKey) {
+        List<ShardingCondition> result = getShardingConditions(insertStatement, columnNames, parameters);
         Iterator<Comparable<?>> generatedValues = null == generatedKey ? Collections.<Comparable<?>>emptyList().iterator() : generatedKey.getGeneratedValues().iterator();
         for (ShardingCondition each : result) {
             if (isNeedAppendGeneratedKeyCondition(generatedKey, insertStatement.getTable().getTableName())) {
@@ -69,18 +67,18 @@ public final class InsertClauseShardingConditionEngine {
         return result;
     }
     
-    private List<ShardingCondition> getShardingConditions(
-            final InsertStatement insertStatement, final Collection<String> columnNames, final Collection<InsertValue> values, final List<Object> parameters) {
+    private List<ShardingCondition> getShardingConditions(final InsertStatement insertStatement, final Collection<String> columnNames, final List<Object> parameters) {
         List<ShardingCondition> result = new LinkedList<>();
-        for (InsertValue each : values) {
+        for (Collection<ExpressionSegment> each : insertStatement.getAllValueExpressions()) {
             result.add(getShardingCondition(insertStatement, columnNames.iterator(), each, parameters));
         }
         return result;
     }
     
-    private ShardingCondition getShardingCondition(final InsertStatement insertStatement, final Iterator<String> columnNames, final InsertValue insertValue, final List<Object> parameters) {
+    private ShardingCondition getShardingCondition(final InsertStatement insertStatement, 
+                                                   final Iterator<String> columnNames, final Collection<ExpressionSegment> valueExpressions, final List<Object> parameters) {
         ShardingCondition result = new ShardingCondition();
-        for (ExpressionSegment each : insertValue.getAssignments()) {
+        for (ExpressionSegment each : valueExpressions) {
             String columnName = columnNames.next();
             if (each instanceof SimpleExpressionSegment) {
                 fillShardingCondition(result, insertStatement.getTable().getTableName(), columnName, (SimpleExpressionSegment) each, parameters);

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.rewrite.token.pojo;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.complex.ComplexExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
@@ -45,17 +46,17 @@ public final class InsertValuesToken extends SQLToken implements Substitutable, 
     public InsertValuesToken(final int startIndex, final int stopIndex) {
         super(startIndex);
         this.stopIndex = stopIndex;
-        this.insertValueTokens = new LinkedList<>();
+        insertValueTokens = new LinkedList<>();
     }
     
     /**
      * Add insert value token.
      * 
-     * @param columnValues column values
+     * @param values values
      * @param dataNodes data nodes
      */
-    public void addInsertValueToken(final List<ExpressionSegment> columnValues, final List<DataNode> dataNodes) {
-        insertValueTokens.add(new InsertValueToken(columnValues, dataNodes));
+    public void addInsertValueToken(final List<ExpressionSegment> values, final List<DataNode> dataNodes) {
+        insertValueTokens.add(new InsertValueToken(values, dataNodes));
     }
     
     @Override
@@ -86,38 +87,34 @@ public final class InsertValuesToken extends SQLToken implements Substitutable, 
         return false;
     }
     
+    @RequiredArgsConstructor
     private final class InsertValueToken {
     
-        private final List<ExpressionSegment> columnValues;
+        private final List<ExpressionSegment> values;
     
         @Getter
         private final List<DataNode> dataNodes;
-    
-        InsertValueToken(final List<ExpressionSegment> columnValues, final List<DataNode> dataNodes) {
-            this.columnValues = columnValues;
-            this.dataNodes = dataNodes;
-        }
     
         @Override
         public String toString() {
             StringBuilder result = new StringBuilder();
             result.append("(");
-            for (int i = 0; i < columnValues.size(); i++) {
-                result.append(getColumnValue(i)).append(", ");
+            for (int i = 0; i < values.size(); i++) {
+                result.append(getValue(i)).append(", ");
             }
             result.delete(result.length() - 2, result.length()).append(")");
             return result.toString();
         }
-    
-        private String getColumnValue(final int index) {
-            ExpressionSegment columnValue = columnValues.get(index);
-            if (columnValue instanceof ParameterMarkerExpressionSegment) {
+        
+        private String getValue(final int index) {
+            ExpressionSegment expressionSegment = values.get(index);
+            if (expressionSegment instanceof ParameterMarkerExpressionSegment) {
                 return "?";
-            } else if (columnValue instanceof LiteralExpressionSegment) {
-                Object literals = ((LiteralExpressionSegment) columnValue).getLiterals();
-                return literals instanceof String ? String.format("'%s'", ((LiteralExpressionSegment) columnValue).getLiterals()) : literals.toString();
+            } else if (expressionSegment instanceof LiteralExpressionSegment) {
+                Object literals = ((LiteralExpressionSegment) expressionSegment).getLiterals();
+                return literals instanceof String ? String.format("'%s'", ((LiteralExpressionSegment) expressionSegment).getLiterals()) : literals.toString();
             }
-            return ((ComplexExpressionSegment) columnValue).getText();
+            return ((ComplexExpressionSegment) expressionSegment).getText();
         }
     }
 }

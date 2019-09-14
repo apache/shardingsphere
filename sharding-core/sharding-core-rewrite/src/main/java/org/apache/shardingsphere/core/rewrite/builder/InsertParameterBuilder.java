@@ -18,12 +18,10 @@
 package org.apache.shardingsphere.core.rewrite.builder;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.optimize.api.segment.OptimizedInsertValue;
-import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.rule.DataNode;
 
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -39,15 +37,15 @@ public final class InsertParameterBuilder implements ParameterBuilder {
     
     private final List<InsertParameterUnit> insertParameterUnits;
     
-    public InsertParameterBuilder(final List<Object> parameters, final InsertOptimizedStatement optimizedStatement) {
+    public InsertParameterBuilder(final List<Object> parameters, final List<InsertValue> insertValues) {
         originalParameters = new LinkedList<>(parameters);
-        insertParameterUnits = createInsertParameterUnits(optimizedStatement);
+        insertParameterUnits = createInsertParameterUnits(insertValues);
     }
     
-    private List<InsertParameterUnit> createInsertParameterUnits(final InsertOptimizedStatement optimizedStatement) {
+    private List<InsertParameterUnit> createInsertParameterUnits(final List<InsertValue> insertValues) {
         List<InsertParameterUnit> result = new LinkedList<>();
-        for (OptimizedInsertValue each : optimizedStatement.getOptimizedInsertValues()) {
-            result.add(new InsertParameterUnit(Arrays.asList(each.getParameters()), each.getDataNodes()));
+        for (InsertValue each : insertValues) {
+            result.add(new InsertParameterUnit(each.getParameters(), each.getDataNodes()));
         }
         return result;
     }

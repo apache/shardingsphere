@@ -1,0 +1,17 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+.el-rate__icon,.el-rate__item{position:relative;display:inline-block}.el-rate{height:20px;line-height:1}.el-rate:active,.el-rate:focus{outline-width:0}.el-rate__item{font-size:0;vertical-align:middle}.el-rate__icon{font-size:18px;margin-right:6px;color:#c0c4cc;-webkit-transition:.3s;transition:.3s}.el-rate__decimal,.el-rate__icon .path2{position:absolute;top:0;left:0}.el-rate__icon.hover{-webkit-transform:scale(1.15);transform:scale(1.15)}.el-rate__decimal{display:inline-block;overflow:hidden}.el-rate__text{font-size:14px;vertical-align:middle}

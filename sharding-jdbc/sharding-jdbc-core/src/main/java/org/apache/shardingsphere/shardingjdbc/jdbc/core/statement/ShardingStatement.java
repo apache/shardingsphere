@@ -105,16 +105,12 @@ public final class ShardingStatement extends AbstractStatementAdapter {
         if (null != currentResultSet) {
             return currentResultSet;
         }
-        if (1 == statementExecutor.getStatements().size() && sqlRouteResult.getShardingStatement().getSQLStatement() instanceof SelectStatement) {
-            currentResultSet = statementExecutor.getStatements().iterator().next().getResultSet();
-            return currentResultSet;
-        }
         List<ResultSet> resultSets = new ArrayList<>(statementExecutor.getStatements().size());
         List<QueryResult> queryResults = new ArrayList<>(statementExecutor.getStatements().size());
         for (Statement each : statementExecutor.getStatements()) {
             ResultSet resultSet = each.getResultSet();
             resultSets.add(resultSet);
-            queryResults.add(new StreamQueryResult(resultSet, connection.getRuntimeContext().getRule()));
+            queryResults.add(new StreamQueryResult(resultSet, connection.getRuntimeContext().getRule(), connection.getRuntimeContext().getProps()));
         }
         if (sqlRouteResult.getShardingStatement() instanceof ShardingSelectOptimizedStatement || sqlRouteResult.getShardingStatement().getSQLStatement() instanceof DALStatement) {
             MergeEngine mergeEngine = MergeEngineFactory.newInstance(connection.getRuntimeContext().getDatabaseType(),

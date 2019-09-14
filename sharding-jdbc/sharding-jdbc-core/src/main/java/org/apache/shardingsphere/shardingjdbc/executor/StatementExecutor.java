@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.executor;
 
 import org.apache.shardingsphere.core.constant.ConnectionMode;
+import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.execute.ShardingExecuteGroup;
 import org.apache.shardingsphere.core.execute.StatementExecuteUnit;
 import org.apache.shardingsphere.core.execute.sql.execute.SQLExecuteCallback;
@@ -102,9 +103,10 @@ public final class StatementExecutor extends AbstractStatementExecutor {
     private QueryResult getQueryResult(final RouteUnit routeUnit, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
         ResultSet resultSet = statement.executeQuery(routeUnit.getSqlUnit().getSql());
         ShardingRule shardingRule = getConnection().getRuntimeContext().getRule();
+        ShardingProperties properties = getConnection().getRuntimeContext().getProps();
         getResultSets().add(resultSet);
-        return ConnectionMode.MEMORY_STRICTLY == connectionMode ? new StreamQueryResult(resultSet, shardingRule) 
-                : new MemoryQueryResult(resultSet, shardingRule);
+        return ConnectionMode.MEMORY_STRICTLY == connectionMode ? new StreamQueryResult(resultSet, shardingRule, properties) 
+                : new MemoryQueryResult(resultSet, shardingRule, properties);
     }
     
     /**

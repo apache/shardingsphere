@@ -43,9 +43,9 @@ public final class Pagination {
     
     private final PaginationValueSegment rowCountSegment;
     
-    private final int actualOffset;
+    private final long actualOffset;
     
-    private final Integer actualRowCount;
+    private final Long actualRowCount;
     
     public Pagination(final PaginationValueSegment offsetSegment, final PaginationValueSegment rowCountSegment, final List<Object> parameters) {
         hasPagination = null != offsetSegment || null != rowCountSegment;
@@ -55,10 +55,13 @@ public final class Pagination {
         actualRowCount = null == rowCountSegment ? null : getValue(rowCountSegment, parameters); 
     }
     
-    private int getValue(final PaginationValueSegment paginationValueSegment, final List<Object> parameters) {
-        return paginationValueSegment instanceof ParameterMarkerPaginationValueSegment
-                ? (int) parameters.get(((ParameterMarkerPaginationValueSegment) paginationValueSegment).getParameterIndex())
-                : ((NumberLiteralPaginationValueSegment) paginationValueSegment).getValue();
+    private long getValue(final PaginationValueSegment paginationValueSegment, final List<Object> parameters) {
+        if (paginationValueSegment instanceof ParameterMarkerPaginationValueSegment) {
+            Object obj = parameters.get(((ParameterMarkerPaginationValueSegment) paginationValueSegment).getParameterIndex());
+            return obj instanceof Long ? (long) obj : (int) obj;
+        } else {
+            return ((NumberLiteralPaginationValueSegment) paginationValueSegment).getValue();
+        }
     }
     
     /**
@@ -84,9 +87,9 @@ public final class Pagination {
      * 
      * @return actual offset
      */
-    public int getActualOffset() {
+    public long getActualOffset() {
         if (null == offsetSegment) {
-            return 0;
+            return 0L;
         }
         return offsetSegment.isBoundOpened() ? actualOffset - 1 : actualOffset;
     }
@@ -96,7 +99,7 @@ public final class Pagination {
      *
      * @return actual row count
      */
-    public Optional<Integer> getActualRowCount() {
+    public Optional<Long> getActualRowCount() {
         if (null == rowCountSegment) {
             return Optional.absent();
         }
@@ -127,8 +130,8 @@ public final class Pagination {
      *
      * @return revised offset
      */
-    public int getRevisedOffset() {
-        return 0;
+    public long getRevisedOffset() {
+        return 0L;
     }
     
     /**
@@ -137,7 +140,7 @@ public final class Pagination {
      * @param shardingStatement sharding optimized statement
      * @return revised row count
      */
-    public int getRevisedRowCount(final ShardingSelectOptimizedStatement shardingStatement) {
+    public long getRevisedRowCount(final ShardingSelectOptimizedStatement shardingStatement) {
         if (isMaxRowCount(shardingStatement)) {
             return Integer.MAX_VALUE;
         }

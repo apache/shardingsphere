@@ -28,9 +28,9 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.NumberLit
 @Getter
 public final class NumberLiteralRowNumberValueSegment extends RowNumberValueSegment implements NumberLiteralPaginationValueSegment {
     
-    private final int value;
+    private final long value;
     
-    public NumberLiteralRowNumberValueSegment(final int startIndex, final int stopIndex, final int value, final boolean boundOpened) {
+    public NumberLiteralRowNumberValueSegment(final int startIndex, final int stopIndex, final long value, final boolean boundOpened) {
         super(startIndex, stopIndex, boundOpened);
         this.value = value;
     }

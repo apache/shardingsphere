@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.rewrite.token.pojo;
 
-import lombok.Getter;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.complex.ComplexExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
@@ -30,36 +29,36 @@ import java.util.List;
  *
  * @author panjuan
  */
-@Getter
 public final class InsertSetQueryAndPlainColumnsToken extends SQLToken implements Attachable {
     
     private final List<String> columnNames;
     
-    private final List<ExpressionSegment> columnValues;
+    private final List<ExpressionSegment> values;
     
-    public InsertSetQueryAndPlainColumnsToken(final int startIndex, final List<String> columnNames, final List<ExpressionSegment> columnValues) {
+    public InsertSetQueryAndPlainColumnsToken(final int startIndex, final List<String> columnNames, final List<ExpressionSegment> values) {
         super(startIndex);
         this.columnNames = columnNames;
-        this.columnValues = columnValues;
+        this.values = values;
     }
     
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
         for (int i = 0; i < columnNames.size(); i++) {
-            result.append(String.format(", %s = %s", columnNames.get(i), getColumnValue(i)));
+            result.append(String.format(", %s = %s", columnNames.get(i), getValue(i)));
         }
         return result.toString();
     }
     
-    private String getColumnValue(final int index) {
-        ExpressionSegment columnValue = columnValues.get(index);
-        if (columnValue instanceof ParameterMarkerExpressionSegment) {
+    private String getValue(final int index) {
+        ExpressionSegment expressionSegment = values.get(index);
+        if (expressionSegment instanceof ParameterMarkerExpressionSegment) {
             return "?";
-        } else if (columnValue instanceof LiteralExpressionSegment) {
-            Object literals = ((LiteralExpressionSegment) columnValue).getLiterals();
+        }
+        if (expressionSegment instanceof LiteralExpressionSegment) {
+            Object literals = ((LiteralExpressionSegment) expressionSegment).getLiterals();
             return literals instanceof String ? String.format("'%s'", literals) : literals.toString();
         }
-        return ((ComplexExpressionSegment) columnValue).getText();
+        return ((ComplexExpressionSegment) expressionSegment).getText();
     }
 }

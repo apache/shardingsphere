@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.optimize.api.statement;
 
-import org.apache.shardingsphere.core.optimize.api.segment.OptimizedInsertValue;
+import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
 
 import java.util.List;
 
@@ -29,9 +29,16 @@ import java.util.List;
 public interface InsertOptimizedStatement extends OptimizedStatement {
     
     /**
-     * Get optimized insert values.
+     * Get column names.
      * 
-     * @return optimized insert values
+     * @return column names
      */
-    List<OptimizedInsertValue> getOptimizedInsertValues();
+    List<String> getColumnNames();
+    
+    /**
+     * Get insert values.
+     * 
+     * @return insert values
+     */
+    List<InsertValue> getInsertValues();
 }

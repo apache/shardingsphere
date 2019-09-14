@@ -18,12 +18,14 @@
 package org.apache.shardingsphere.core.optimize.sharding.engnie.dml;
 
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
+import org.apache.shardingsphere.core.optimize.api.segment.Tables;
 import org.apache.shardingsphere.core.optimize.encrypt.condition.EncryptConditions;
 import org.apache.shardingsphere.core.optimize.encrypt.condition.engine.WhereClauseEncryptConditionEngine;
 import org.apache.shardingsphere.core.optimize.sharding.engnie.ShardingOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingConditions;
 import org.apache.shardingsphere.core.optimize.sharding.segment.condition.engine.WhereClauseShardingConditionEngine;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingConditionOptimizedStatement;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
@@ -33,16 +35,27 @@ import java.util.List;
  * Update optimize engine for sharding.
  *
  * @author zhangliang
+ * @author liya
  */
 public final class ShardingUpdateOptimizeEngine implements ShardingOptimizeEngine<UpdateStatement> {
     
     @Override
     public ShardingConditionOptimizedStatement optimize(final ShardingRule shardingRule,
                                                         final TableMetas tableMetas, final String sql, final List<Object> parameters, final UpdateStatement sqlStatement) {
+        checkUpdateShardingKey(shardingRule, sqlStatement);
         WhereClauseShardingConditionEngine shardingConditionEngine = new WhereClauseShardingConditionEngine(shardingRule, tableMetas);
         WhereClauseEncryptConditionEngine encryptConditionEngine = new WhereClauseEncryptConditionEngine(shardingRule.getEncryptRule(), tableMetas);
         return new ShardingConditionOptimizedStatement(sqlStatement,
                 new ShardingConditions(shardingConditionEngine.createShardingConditions(sqlStatement, parameters)),
                 new EncryptConditions(encryptConditionEngine.createEncryptConditions(sqlStatement)));
+    }
+    
+    private void checkUpdateShardingKey(final ShardingRule shardingRule, final UpdateStatement updateStatement) {
+        String tableName = new Tables(updateStatement).getSingleTableName();
+        for (AssignmentSegment each : updateStatement.getSetAssignment().getAssignments()) {
+            if (shardingRule.isShardingColumn(each.getColumn().getName(), tableName)) {
+                throw new UnsupportedOperationException(String.format("Can not update sharding key, logic table: [%s], column: [%s].", tableName, each));
+            }
+        }
     }
 }

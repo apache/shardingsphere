@@ -75,20 +75,20 @@ public final class InsertStatement extends DMLStatement implements TableSegmentA
      *
      * @return column names
      */
-    public Collection<String> getColumnNames() {
+    public List<String> getColumnNames() {
         return null == setAssignment ? getColumnNamesForInsertColumns() : getColumnNamesForSetAssignment();
     }
     
-    private Collection<String> getColumnNamesForInsertColumns() {
-        Collection<String> result = new LinkedList<>();
+    private List<String> getColumnNamesForInsertColumns() {
+        List<String> result = new LinkedList<>();
         for (ColumnSegment each : columns) {
             result.add(each.getName());
         }
         return result;
     }
     
-    private Collection<String> getColumnNamesForSetAssignment() {
-        Collection<String> result = new LinkedList<>();
+    private List<String> getColumnNamesForSetAssignment() {
+        List<String> result = new LinkedList<>();
         for (AssignmentSegment each : setAssignment.getAssignments()) {
             result.add(each.getColumn().getName());
         }

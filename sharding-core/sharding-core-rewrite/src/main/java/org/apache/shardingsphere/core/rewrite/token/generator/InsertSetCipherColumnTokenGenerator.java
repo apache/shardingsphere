@@ -72,17 +72,17 @@ public final class InsertSetCipherColumnTokenGenerator implements CollectionSQLT
     
     private Optional<InsertSetCipherColumnToken> createInsertSetEncryptValueToken(final InsertOptimizedStatement optimizedStatement, final EncryptRule encryptRule, final AssignmentSegment segment) {
         String tableName = optimizedStatement.getTables().getSingleTableName();
-        Optional<ShardingEncryptor> shardingEncryptor = encryptRule.getShardingEncryptor(tableName, segment.getColumn().getName());
+        Optional<ShardingEncryptor> shardingEncryptor = encryptRule.findShardingEncryptor(tableName, segment.getColumn().getName());
         if (shardingEncryptor.isPresent()) {
             String cipherColumnName = encryptRule.getCipherColumn(tableName, segment.getColumn().getName());
-            ExpressionSegment cipherColumnValue = getCipherColumnValue(optimizedStatement, segment);
-            return Optional.of(new InsertSetCipherColumnToken(segment.getStartIndex(), segment.getStopIndex(), cipherColumnName, cipherColumnValue));
+            ExpressionSegment cipherValue = getCipherValue(optimizedStatement, segment);
+            return Optional.of(new InsertSetCipherColumnToken(segment.getStartIndex(), segment.getStopIndex(), cipherColumnName, cipherValue));
         }
         return Optional.absent();
     }
     
-    private ExpressionSegment getCipherColumnValue(final InsertOptimizedStatement optimizedStatement, final AssignmentSegment assignmentSegment) {
-        return assignmentSegment.getValue() instanceof ParameterMarkerExpressionSegment
-                ? assignmentSegment.getValue() : optimizedStatement.getOptimizedInsertValues().get(0).getValueExpression(assignmentSegment.getColumn().getName());
+    private ExpressionSegment getCipherValue(final InsertOptimizedStatement optimizedStatement, final AssignmentSegment assignmentSegment) {
+        return assignmentSegment.getValue() instanceof ParameterMarkerExpressionSegment ? assignmentSegment.getValue()
+                : optimizedStatement.getInsertValues().get(0).getValueExpressions().get(optimizedStatement.getColumnNames().indexOf(assignmentSegment.getColumn().getName()));
     }
 }
