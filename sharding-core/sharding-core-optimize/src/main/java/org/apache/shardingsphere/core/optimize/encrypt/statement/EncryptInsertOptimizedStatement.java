@@ -27,7 +27,6 @@ import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStat
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -46,12 +45,13 @@ public final class EncryptInsertOptimizedStatement implements InsertOptimizedSta
     
     private final List<String> columnNames;
     
-    private final List<InsertValue> insertValues = new LinkedList<>();
+    private final List<InsertValue> insertValues;
     
-    public EncryptInsertOptimizedStatement(final InsertStatement sqlStatement, final TableMetas tableMetas) {
+    public EncryptInsertOptimizedStatement(final InsertStatement sqlStatement, final TableMetas tableMetas, final List<InsertValue> insertValues) {
         this.sqlStatement = sqlStatement;
         tables = new Tables(sqlStatement);
         columnNames = sqlStatement.useDefaultColumns() ? tableMetas.getAllColumnNames(sqlStatement.getTable().getTableName()) : sqlStatement.getColumnNames();
+        this.insertValues = insertValues;
     }
     
     @Override
