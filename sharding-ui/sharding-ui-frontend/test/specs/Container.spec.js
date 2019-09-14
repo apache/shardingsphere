@@ -3,18 +3,18 @@ import { shallowMount } from '@vue/test-utils'
 import Container from '../../src/components/Container/index.vue'
 
 describe('Container/index.vue', () => {
-  it('container组件是否存在', () => {
+  it('Container Does the component exist？', () => {
     const wrapper = shallowMount(Container)
     expect(wrapper.isVueInstance()).to.be.true
   })
 
-  it('setData()方法', () => {
+  it('setData()', () => {
     const wrapper = shallowMount(Container)
     wrapper.setData({ isCollapse: true })
     expect(wrapper.vm.isCollapse).to.equal(true)
   })
 
-  it('onTogger()方法', () => {
+  it('onTogger()', () => {
     const wrapper = shallowMount(Container)
     const sHead = wrapper.find('.s-head')
     sHead.trigger('click')
