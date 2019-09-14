@@ -48,9 +48,9 @@ public final class ShardingInsertOptimizeEngine implements ShardingOptimizeEngin
     @Override
     public ShardingInsertOptimizedStatement optimize(final ShardingRule shardingRule,
                                                      final TableMetas tableMetas, final String sql, final List<Object> parameters, final InsertStatement sqlStatement) {
-        List<String> columnNames = sqlStatement.useDefaultColumns() ? tableMetas.getAllColumnNames(sqlStatement.getTable().getTableName()) : sqlStatement.getColumnNames();
-        Optional<GeneratedKey> generatedKey = GeneratedKey.getGenerateKey(shardingRule, parameters, sqlStatement, columnNames);
+        Optional<GeneratedKey> generatedKey = GeneratedKey.getGenerateKey(shardingRule, tableMetas, parameters, sqlStatement);
         boolean isGeneratedValue = generatedKey.isPresent() && generatedKey.get().isGenerated();
+        List<String> columnNames = sqlStatement.useDefaultColumns() ? tableMetas.getAllColumnNames(sqlStatement.getTable().getTableName()) : sqlStatement.getColumnNames();
         if (isGeneratedValue) {
             columnNames.remove(generatedKey.get().getColumnName());
             columnNames.add(generatedKey.get().getColumnName());
