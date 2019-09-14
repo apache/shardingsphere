@@ -49,16 +49,20 @@ public final class ShardingInsertOptimizeEngine implements ShardingOptimizeEngin
     public ShardingInsertOptimizedStatement optimize(final ShardingRule shardingRule,
                                                      final TableMetas tableMetas, final String sql, final List<Object> parameters, final InsertStatement sqlStatement) {
         Optional<GeneratedKey> generatedKey = GeneratedKey.getGenerateKey(shardingRule, tableMetas, parameters, sqlStatement);
-        boolean isGeneratedValue = generatedKey.isPresent() && generatedKey.get().isGenerated();
-        List<String> columnNames = sqlStatement.useDefaultColumns() ? tableMetas.getAllColumnNames(sqlStatement.getTable().getTableName()) : sqlStatement.getColumnNames();
-        if (isGeneratedValue) {
-            columnNames.remove(generatedKey.get().getColumnName());
-            columnNames.add(generatedKey.get().getColumnName());
-        }
+        List<String> columnNames = getColumnNames(tableMetas, sqlStatement, generatedKey.orNull());
         List<ShardingCondition> shardingConditions = new InsertClauseShardingConditionEngine(shardingRule).createShardingConditions(sqlStatement, parameters, columnNames, generatedKey.orNull());
         ShardingInsertOptimizedStatement result = new ShardingInsertOptimizedStatement(sqlStatement, shardingConditions, columnNames, generatedKey.orNull());
         checkDuplicateKeyForShardingKey(shardingRule, sqlStatement, sqlStatement.getTable().getTableName());
-        result.getInsertValues().addAll(getInsertValues(shardingRule, parameters, sqlStatement, isGeneratedValue));
+        result.getInsertValues().addAll(getInsertValues(shardingRule, parameters, sqlStatement, generatedKey.isPresent() && generatedKey.get().isGenerated()));
+        return result;
+    }
+    
+    private List<String> getColumnNames(final TableMetas tableMetas, final InsertStatement sqlStatement, final GeneratedKey generatedKey) {
+        List<String> result = sqlStatement.useDefaultColumns() ? tableMetas.getAllColumnNames(sqlStatement.getTable().getTableName()) : sqlStatement.getColumnNames();
+        if (null != generatedKey && generatedKey.isGenerated()) {
+            result.remove(generatedKey.getColumnName());
+            result.add(generatedKey.getColumnName());
+        }
         return result;
     }
     
