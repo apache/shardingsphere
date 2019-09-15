@@ -24,7 +24,7 @@ import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSe
 import org.apache.shardingsphere.core.parse.core.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ExpressionOrderByItemSegment;
-import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.pojo.OrderByToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 

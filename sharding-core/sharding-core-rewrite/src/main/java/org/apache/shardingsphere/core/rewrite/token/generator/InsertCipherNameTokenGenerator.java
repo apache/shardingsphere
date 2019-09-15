@@ -22,7 +22,7 @@ import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStat
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
-import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertCipherNameToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 

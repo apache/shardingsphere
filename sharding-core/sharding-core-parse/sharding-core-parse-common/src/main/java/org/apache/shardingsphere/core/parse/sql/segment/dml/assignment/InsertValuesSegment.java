@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 
-import java.util.Collection;
+import java.util.List;
 
 /**
  * Insert values segment.
@@ -38,5 +38,5 @@ public final class InsertValuesSegment implements SQLSegment {
     
     private final int stopIndex;
     
-    private final Collection<ExpressionSegment> values;
+    private final List<ExpressionSegment> values;
 }

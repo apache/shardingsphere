@@ -31,7 +31,6 @@ import org.apache.shardingsphere.core.optimize.sharding.segment.insert.Generated
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -49,13 +48,15 @@ public final class ShardingInsertOptimizedStatement extends ShardingConditionOpt
     
     private final GeneratedKey generatedKey;
     
-    private final List<InsertValue> insertValues = new LinkedList<>();
+    private final List<InsertValue> insertValues;
     
-    public ShardingInsertOptimizedStatement(final SQLStatement sqlStatement, final List<ShardingCondition> shardingConditions, final List<String> columnNames, final GeneratedKey generatedKey) {
+    public ShardingInsertOptimizedStatement(final SQLStatement sqlStatement, final List<ShardingCondition> shardingConditions, 
+                                            final List<String> columnNames, final GeneratedKey generatedKey, final List<InsertValue> insertValues) {
         super(sqlStatement, new ShardingConditions(shardingConditions), new EncryptConditions(Collections.<EncryptCondition>emptyList()));
         tables = new Tables(sqlStatement);
         this.columnNames = columnNames;
         this.generatedKey = generatedKey;
+        this.insertValues = insertValues;
     }
     
     /**

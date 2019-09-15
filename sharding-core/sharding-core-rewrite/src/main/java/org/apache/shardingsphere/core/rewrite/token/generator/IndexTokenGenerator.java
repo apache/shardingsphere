@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.rewrite.token.generator;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.ddl.index.IndexSegment;
-import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.pojo.IndexToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 

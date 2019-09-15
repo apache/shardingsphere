@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.builder;
+package org.apache.shardingsphere.core.rewrite.builder.parameter;
 
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 

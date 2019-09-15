@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.builder;
+package org.apache.shardingsphere.core.rewrite.builder.parameter.standard;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.pagination.Pagination;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
+import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 
@@ -32,12 +33,12 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 
 /**
- * Base parameter builder.
+ * standard parameter builder.
  *
  * @author panjuan
  */
 @Getter
-public final class BaseParameterBuilder implements ParameterBuilder {
+public final class StandardParameterBuilder implements ParameterBuilder {
     
     private final List<Object> originalParameters = new LinkedList<>();
     
@@ -45,12 +46,12 @@ public final class BaseParameterBuilder implements ParameterBuilder {
     
     private final Map<Integer, Object> replacedIndexAndParameters = new HashMap<>();
     
-    public BaseParameterBuilder(final List<Object> parameters) {
-        originalParameters.addAll(parameters);
+    public StandardParameterBuilder(final List<Object> originalParameters) {
+        this.originalParameters.addAll(originalParameters);
     }
     
-    public BaseParameterBuilder(final List<Object> parameters, final SQLRouteResult sqlRouteResult) {
-        this(parameters);
+    public StandardParameterBuilder(final List<Object> originalParameters, final SQLRouteResult sqlRouteResult) {
+        this(originalParameters);
         setReplacedIndexAndParameters(sqlRouteResult);
     }
     

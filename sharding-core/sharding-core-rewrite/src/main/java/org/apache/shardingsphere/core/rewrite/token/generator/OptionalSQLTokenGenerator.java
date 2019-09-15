@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
-import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SQLToken;
 import org.apache.shardingsphere.core.rule.BaseRule;
 

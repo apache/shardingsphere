@@ -28,6 +28,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -36,18 +37,17 @@ public final class InsertOptimizedStatementTest {
     
     @Test
     public void assertAddInsertValueWithSet() {
-        ShardingInsertOptimizedStatement actual = new ShardingInsertOptimizedStatement(
-                new InsertStatement(), Collections.<ShardingCondition>emptyList(), Arrays.asList("id", "value", "status"), null);
         ExpressionSegment assignment1 = new LiteralExpressionSegment(0, 0, 1);
         ExpressionSegment assignment2 = new ParameterMarkerExpressionSegment(0, 0, 1);
         ExpressionSegment assignment3 = new LiteralExpressionSegment(0, 0, "test");
-        actual.getInsertValues().add(new InsertValue(Arrays.asList(assignment1, assignment2, assignment3), 1, Collections.<Object>singletonList("parameter"), 0));
+        List<InsertValue> insertValues = Collections.singletonList(new InsertValue(Arrays.asList(assignment1, assignment2, assignment3), 1, Collections.<Object>singletonList("parameter"), 0));
+        ShardingInsertOptimizedStatement actual = new ShardingInsertOptimizedStatement(
+                new InsertStatement(), Collections.<ShardingCondition>emptyList(), Arrays.asList("id", "value", "status"), null, insertValues);
         assertThat(actual.getInsertValues().get(0).getValueExpressions().size(), is(3));
         assertThat(actual.getInsertValues().get(0).getValueExpressions().get(0), is(assignment1));
         assertThat(actual.getInsertValues().get(0).getValueExpressions().get(1), is(assignment2));
         assertThat(actual.getInsertValues().get(0).getValueExpressions().get(2), is(assignment3));
         assertThat(actual.getInsertValues().get(0).getParameters().get(0), is((Object) "parameter"));
-        assertThat(actual.getInsertValues().get(0).getDataNodes().size(), is(0));
         assertThat(actual.getInsertValues().get(0).getValue(1), is((Object) "parameter"));
         assertThat(actual.getInsertValues().get(0).getValue(2), is((Object) "test"));
         actual.getInsertValues().get(0).setValue(0, 2);

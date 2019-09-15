@@ -15,24 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.builder;
+package org.apache.shardingsphere.core.rewrite.builder.parameter.group;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.rule.DataNode;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
- * Insert parameter unit.
+ * Parameters group.
  *
  * @author panjuan
+ * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-public final class InsertParameterUnit {
+final class ParametersGroup {
     
     private final List<Object> parameters;
     
-    private final List<DataNode> dataNodes;
+    private final Collection<DataNode> dataNodes;
 }

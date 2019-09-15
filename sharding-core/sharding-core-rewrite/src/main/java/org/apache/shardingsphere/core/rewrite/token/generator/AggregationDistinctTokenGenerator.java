@@ -22,7 +22,7 @@ import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.DerivedColumn;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
-import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.pojo.AggregationDistinctToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 

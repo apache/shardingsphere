@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.builder;
+package org.apache.shardingsphere.core.rewrite.builder.parameter.standard;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptOptimizedStatement;
@@ -38,14 +38,14 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class BaseParameterBuilderTest {
+public final class StandardParameterBuilderTest {
     
-    private BaseParameterBuilder baseParameterBuilder;
+    private StandardParameterBuilder parameterBuilder;
     
     @Before
     public void setUp() {
-        baseParameterBuilder = new BaseParameterBuilder(Arrays.<Object>asList(1, 2, 1, 5), createSQLRouteResult());
-        baseParameterBuilder.getAddedIndexAndParameters().putAll(Collections.singletonMap(4, 7));
+        parameterBuilder = new StandardParameterBuilder(Arrays.<Object>asList(1, 2, 1, 5), createSQLRouteResult());
+        parameterBuilder.getAddedIndexAndParameters().putAll(Collections.singletonMap(4, 7));
     }
     
     private SQLRouteResult createSQLRouteResult() {
@@ -64,18 +64,18 @@ public final class BaseParameterBuilderTest {
     
     @Test
     public void assertGetParameters() {
-        assertThat(baseParameterBuilder.getParameters(), is(Arrays.<Object>asList(1, 2, 0L, 6L, 7)));
-        assertThat(baseParameterBuilder.getParameters(mock(RoutingUnit.class)), is(Arrays.<Object>asList(1, 2, 0L, 6L, 7)));
+        assertThat(parameterBuilder.getParameters(), is(Arrays.<Object>asList(1, 2, 0L, 6L, 7)));
+        assertThat(parameterBuilder.getParameters(mock(RoutingUnit.class)), is(Arrays.<Object>asList(1, 2, 0L, 6L, 7)));
     }
     
     @Test
     public void assertGetOriginalParameters() {
-        assertThat(baseParameterBuilder.getOriginalParameters(), is(Arrays.<Object>asList(1, 2, 1, 5)));
+        assertThat(parameterBuilder.getOriginalParameters(), is(Arrays.<Object>asList(1, 2, 1, 5)));
     }
     
     @Test
     public void assertGetAddedIndexAndParameters() {
-        assertThat(baseParameterBuilder.getAddedIndexAndParameters(), is(Collections.<Integer, Object>singletonMap(4, 7)));
+        assertThat(parameterBuilder.getAddedIndexAndParameters(), is(Collections.<Integer, Object>singletonMap(4, 7)));
     }
     
     @Test
@@ -83,6 +83,6 @@ public final class BaseParameterBuilderTest {
         Map<Integer, Object> expected = new LinkedHashMap<>();
         expected.put(2, 0L);
         expected.put(3, 6L);
-        assertThat(baseParameterBuilder.getReplacedIndexAndParameters(), is(expected));
+        assertThat(parameterBuilder.getReplacedIndexAndParameters(), is(expected));
     }
 }

@@ -21,13 +21,18 @@ import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
 import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingCondition;
+import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingInsertOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertValuesToken;
+import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
 
 /**
  * Insert values token generator.
@@ -50,8 +55,13 @@ public final class InsertValuesTokenGenerator implements OptionalSQLTokenGenerat
     
     private InsertValuesToken createInsertValuesToken(final InsertOptimizedStatement optimizedStatement, final Collection<InsertValuesSegment> insertValuesSegments) {
         InsertValuesToken result = new InsertValuesToken(getStartIndex(insertValuesSegments), getStopIndex(insertValuesSegments));
+        Iterator<ShardingCondition> shardingConditions = null;
+        if (optimizedStatement instanceof ShardingInsertOptimizedStatement) {
+            shardingConditions = ((ShardingInsertOptimizedStatement) optimizedStatement).getShardingConditions().getConditions().iterator();
+        }
         for (InsertValue each : optimizedStatement.getInsertValues()) {
-            result.addInsertValueToken(each.getValueExpressions(), each.getDataNodes());
+            Collection<DataNode> dataNodes = null == shardingConditions ? Collections.<DataNode>emptyList() : shardingConditions.next().getDataNodes();
+            result.addInsertValueToken(each.getValueExpressions(), dataNodes);
         }
         return result;
     }

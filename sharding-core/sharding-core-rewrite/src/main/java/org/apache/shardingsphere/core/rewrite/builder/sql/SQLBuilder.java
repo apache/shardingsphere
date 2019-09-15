@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.builder;
+package org.apache.shardingsphere.core.rewrite.builder.sql;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.rewrite.token.pojo.Alterable;
