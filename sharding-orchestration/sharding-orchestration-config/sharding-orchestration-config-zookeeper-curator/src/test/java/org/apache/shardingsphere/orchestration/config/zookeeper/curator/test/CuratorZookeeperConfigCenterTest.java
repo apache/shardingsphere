@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.zookeeper.curator.integration.config.server;
+package org.apache.shardingsphere.orchestration.config.zookeeper.curator.test;
 
 import org.apache.shardingsphere.orchestration.config.api.ConfigCenter;
 import org.apache.shardingsphere.orchestration.config.api.ConfigCenterConfiguration;
 import org.apache.shardingsphere.orchestration.config.zookeeper.curator.CuratorZookeeperConfigCenter;
-import org.apache.shardingsphere.orchestration.internal.configcenter.ConfigCenterServiceLoader;
-import org.apache.shardingsphere.orchestration.zookeeper.curator.integration.util.EmbedTestingServer;
+import org.apache.shardingsphere.orchestration.config.zookeeper.curator.util.EmbedTestingServer;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -31,7 +30,7 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class CuratorZookeeperConfigCenterIT {
+public class CuratorZookeeperConfigCenterTest {
     
     private static ConfigCenter curatorZookeeperConfigCenter = new CuratorZookeeperConfigCenter();
     
@@ -40,7 +39,7 @@ public class CuratorZookeeperConfigCenterIT {
         EmbedTestingServer.start();
         ConfigCenterConfiguration configuration = new ConfigCenterConfiguration(curatorZookeeperConfigCenter.getType(), new Properties());
         configuration.setServerLists("127.0.0.1:3181");
-        curatorZookeeperConfigCenter = new ConfigCenterServiceLoader().load(configuration);
+        curatorZookeeperConfigCenter.init(configuration);
     }
     
     @Test

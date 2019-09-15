@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.zookeeper.curator.integration.registry.server;
+package org.apache.shardingsphere.orchestration.config.zookeeper.curator.test;
 
-import org.apache.shardingsphere.orchestration.internal.registry.RegistryCenterServiceLoader;
+import org.apache.shardingsphere.orchestration.config.zookeeper.curator.util.EmbedTestingServer;
 import org.apache.shardingsphere.orchestration.reg.api.RegistryCenter;
 import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import org.apache.shardingsphere.orchestration.reg.zookeeper.curator.CuratorZookeeperRegistryCenter;
-import org.apache.shardingsphere.orchestration.zookeeper.curator.integration.util.EmbedTestingServer;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -31,7 +30,7 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class CuratorZookeeperRegistryCenterIT {
+public class CuratorZookeeperRegistryCenterTest {
     
     private static RegistryCenter curatorZookeeperRegistryCenter = new CuratorZookeeperRegistryCenter();
     
@@ -40,7 +39,7 @@ public class CuratorZookeeperRegistryCenterIT {
         EmbedTestingServer.start();
         RegistryCenterConfiguration configuration = new RegistryCenterConfiguration(curatorZookeeperRegistryCenter.getType(), new Properties());
         configuration.setServerLists("127.0.0.1:3181");
-        curatorZookeeperRegistryCenter = new RegistryCenterServiceLoader().load(configuration);
+        curatorZookeeperRegistryCenter.init(configuration);
     }
     
     @Test
@@ -83,16 +82,21 @@ public class CuratorZookeeperRegistryCenterIT {
     }
     
     @Test
-    public void assertLock() {
+    public void assertLock(){
         curatorZookeeperRegistryCenter.initLock("/test/lock1");
-        assertThat(curatorZookeeperRegistryCenter.tryLock(), is(true));
+        assertThat(curatorZookeeperRegistryCenter.tryLock(),is(true));
     }
     
     @Test
-    public void assertReleaseLock() {
-        curatorZookeeperRegistryCenter.initLock("/test/lock3");
+    public void assertRelease(){
+        curatorZookeeperRegistryCenter.initLock("/test/lock2");
         curatorZookeeperRegistryCenter.tryLock();
         curatorZookeeperRegistryCenter.tryRelease();
-        assertThat(curatorZookeeperRegistryCenter.tryLock(), is(true));
+    }
+    
+    @Test(expected = IllegalMonitorStateException.class)
+    public void assertReleaseWithoutLock(){
+        curatorZookeeperRegistryCenter.initLock("/test/lock3");
+        curatorZookeeperRegistryCenter.tryRelease();
     }
 }
