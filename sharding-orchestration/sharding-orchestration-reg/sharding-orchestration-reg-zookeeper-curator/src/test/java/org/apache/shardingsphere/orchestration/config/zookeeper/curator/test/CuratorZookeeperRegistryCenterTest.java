@@ -82,20 +82,20 @@ public class CuratorZookeeperRegistryCenterTest {
     }
     
     @Test
-    public void assertLock(){
+    public void assertLock() {
         curatorZookeeperRegistryCenter.initLock("/test/lock1");
-        assertThat(curatorZookeeperRegistryCenter.tryLock(),is(true));
+        assertThat(curatorZookeeperRegistryCenter.tryLock(), is(true));
     }
     
     @Test
-    public void assertRelease(){
+    public void assertRelease() {
         curatorZookeeperRegistryCenter.initLock("/test/lock2");
         curatorZookeeperRegistryCenter.tryLock();
         curatorZookeeperRegistryCenter.tryRelease();
     }
     
     @Test(expected = IllegalMonitorStateException.class)
-    public void assertReleaseWithoutLock(){
+    public void assertReleaseWithoutLock() {
         curatorZookeeperRegistryCenter.initLock("/test/lock3");
         curatorZookeeperRegistryCenter.tryRelease();
     }
