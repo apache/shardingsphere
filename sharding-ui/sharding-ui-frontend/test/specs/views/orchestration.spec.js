@@ -18,7 +18,8 @@ import { expect } from 'chai'
 import { shallowMount, createLocalVue, mount } from '@vue/test-utils'
 import VueI18n from 'vue-i18n'
 import Vuex from 'vuex'
-import registConfig from '../../../src/views/index/module/registConfig.vue'
+import dataSource from '../../../src/views/orchestration/module/dataSource.vue'
+import instance from '../../../src/views/orchestration/module/instance.vue'
 import Language from '../../../src/lang/index'
 import store from '../../../src/store'
 import router from '../../../src/router'
@@ -47,9 +48,9 @@ const i18n = new VueI18n({
   }
 })
 
-describe('index/registConfig.vue', () => {
-  it('registConfig Does the pages exist？', () => {
-    const wrapper = shallowMount(registConfig, {
+describe('orchestration', () => {
+  it('dataSource Does the pages exist？', () => {
+    const wrapper = shallowMount(dataSource, {
       localVue,
       i18n,
       store,
@@ -58,15 +59,13 @@ describe('index/registConfig.vue', () => {
     expect(wrapper.isVueInstance()).to.be.true
   })
 
-  it('add()', () => {
-    const wrapper = shallowMount(registConfig, {
+  it('instance Does the pages exist？', () => {
+    const wrapper = shallowMount(instance, {
       localVue,
       i18n,
       store,
       router
     })
-    const btnPlus = wrapper.find('.btn-plus')
-    btnPlus.trigger('click')
-    expect(wrapper.vm.regustDialogVisible).to.equal(true)
+    expect(wrapper.isVueInstance()).to.be.true
   })
 })

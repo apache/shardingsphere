@@ -14,11 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { expect } from 'chai'
 import { shallowMount, createLocalVue, mount } from '@vue/test-utils'
 import VueI18n from 'vue-i18n'
 import Vuex from 'vuex'
-import registConfig from '../../../src/views/index/module/registConfig.vue'
+import authentication from '../../../src/views/config-manage/module/authentication.vue'
+import schema from '../../../src/views/config-manage/module/schema.vue'
+import props from '../../../src/views/config-manage/module/props.vue'
 import Language from '../../../src/lang/index'
 import store from '../../../src/store'
 import router from '../../../src/router'
@@ -47,9 +50,9 @@ const i18n = new VueI18n({
   }
 })
 
-describe('index/registConfig.vue', () => {
-  it('registConfig Does the pages exist？', () => {
-    const wrapper = shallowMount(registConfig, {
+describe('config-manage', () => {
+  it('authentication Does the pages exist？', () => {
+    const wrapper = shallowMount(authentication, {
       localVue,
       i18n,
       store,
@@ -58,15 +61,23 @@ describe('index/registConfig.vue', () => {
     expect(wrapper.isVueInstance()).to.be.true
   })
 
-  it('add()', () => {
-    const wrapper = shallowMount(registConfig, {
+  it('schema Does the pages exist？', () => {
+    const wrapper = shallowMount(schema, {
       localVue,
       i18n,
       store,
       router
     })
-    const btnPlus = wrapper.find('.btn-plus')
-    btnPlus.trigger('click')
-    expect(wrapper.vm.regustDialogVisible).to.equal(true)
+    expect(wrapper.isVueInstance()).to.be.true
+  })
+
+  it('props Does the pages exist？', () => {
+    const wrapper = shallowMount(props, {
+      localVue,
+      i18n,
+      store,
+      router
+    })
+    expect(wrapper.isVueInstance()).to.be.true
   })
 })
