@@ -75,31 +75,31 @@ public class ParsingSQLRoutingResultChecker implements RoutingResultChecker {
     /**
      * Check for ParsingSQLRouter's routing result.
      *
-     * @param routingEngine     routing engine
-     * @param routingResult     routing result
+     * @param routingEngine routing engine
+     * @param routingResult routing result
      */
     @Override
     public void check(final RoutingEngine routingEngine, final RoutingResult routingResult) {
         if (shardingStatement instanceof ShardingDropIndexOptimizedStatement) {
             return;
         }
-        if (routingEngine instanceof StandardRoutingEngine) {
-            checkStandardRoutingResult(shardingStatement, routingResult);
-        } else {
-            checkOthersRoutingResult(routingResult);
-        }
-    }
-    
-    /**
-     * Check other's routing result.
-     *
-     * @param routingResult routing result
-     */
-    private void checkOthersRoutingResult(final RoutingResult routingResult) {
         Multimap<RoutingUnit, TableUnit> absentRoutingUnitMap = getAbsentRoutingUnit(routingResult.getRoutingUnits());
         if (absentRoutingUnitMap.isEmpty()) {
             return;
         }
+        if (routingEngine instanceof StandardRoutingEngine) {
+            throwAbsentStandardRoutingResultException(shardingStatement, absentRoutingUnitMap);
+        } else {
+            throwOthersRoutingResultException(absentRoutingUnitMap);
+        }
+    }
+    
+    /**
+     * Throw other's absent routing result exception.
+     *
+     * @param absentRoutingUnitMap absent routingUnit map
+     */
+    private void throwOthersRoutingResultException(final Multimap<RoutingUnit, TableUnit> absentRoutingUnitMap) {
         RoutingUnit routingUnit = absentRoutingUnitMap.keySet().iterator().next();
         Collection<String> absentDataNodes = Lists.newArrayListWithExpectedSize(absentRoutingUnitMap.get(routingUnit).size());
         for (TableUnit each : absentRoutingUnitMap.get(routingUnit)) {
@@ -111,16 +111,12 @@ public class ParsingSQLRoutingResultChecker implements RoutingResultChecker {
     }
     
     /**
-     * Check StandardRoutingEngine's routing result.
+     * Throw StandardRoutingEngine's absent routing result exception.
      *
-     * @param shardingStatement sharding statement
-     * @param routingResult     routing result
+     * @param shardingStatement    sharding statement
+     * @param absentRoutingUnitMap absent routing unit map
      */
-    private void checkStandardRoutingResult(final ShardingOptimizedStatement shardingStatement, final RoutingResult routingResult) {
-        Multimap<RoutingUnit, TableUnit> absentRoutingUnitMap = getAbsentRoutingUnit(routingResult.getRoutingUnits());
-        if (absentRoutingUnitMap.isEmpty()) {
-            return;
-        }
+    private void throwAbsentStandardRoutingResultException(final ShardingOptimizedStatement shardingStatement, final Multimap<RoutingUnit, TableUnit> absentRoutingUnitMap) {
         RoutingUnit routingUnit = absentRoutingUnitMap.keySet().iterator().next();
         Collection<String> absentDataNodes = Lists.newArrayListWithExpectedSize(absentRoutingUnitMap.get(routingUnit).size());
         ShardingStrategyConfiguration databaseStrategy = null;
