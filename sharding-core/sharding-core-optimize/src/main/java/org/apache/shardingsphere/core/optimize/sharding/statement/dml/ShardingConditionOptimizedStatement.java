@@ -21,7 +21,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.optimize.api.segment.Tables;
-import org.apache.shardingsphere.core.optimize.api.statement.ConditionOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.encrypt.condition.EncryptConditions;
 import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingConditions;
 import org.apache.shardingsphere.core.optimize.sharding.statement.ShardingOptimizedStatement;
@@ -34,7 +33,7 @@ import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
  */
 @Getter
 @ToString(exclude = "sqlStatement")
-public class ShardingConditionOptimizedStatement implements ShardingOptimizedStatement, ConditionOptimizedStatement {
+public class ShardingConditionOptimizedStatement implements ShardingOptimizedStatement {
     
     @Getter(AccessLevel.NONE)
     private final SQLStatement sqlStatement;
