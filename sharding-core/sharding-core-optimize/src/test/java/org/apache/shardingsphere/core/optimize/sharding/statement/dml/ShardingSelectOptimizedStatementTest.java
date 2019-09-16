@@ -21,7 +21,6 @@ import com.google.common.collect.Lists;
 import org.apache.shardingsphere.core.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.optimize.encrypt.condition.EncryptCondition;
 import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.groupby.GroupBy;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.ColumnSelectItem;
@@ -61,7 +60,7 @@ public class ShardingSelectOptimizedStatementTest {
     @Test
     public void assertSetIndexForItemsByIndexOrderBy() {
         ShardingSelectOptimizedStatement shardingSelectOptimizedStatement = new ShardingSelectOptimizedStatement(
-            new SelectStatement(), Collections.<ShardingCondition>emptyList(), Collections.<EncryptCondition>emptyList(),
+            new SelectStatement(), Collections.<ShardingCondition>emptyList(), 
             new GroupBy(Collections.<OrderByItem>emptyList(), 0), createOrderBy(INDEX_ORDER_BY), createSelectItems(), null);
         shardingSelectOptimizedStatement.setIndexForItems(Collections.<String, Integer>emptyMap());
         assertThat(shardingSelectOptimizedStatement.getOrderBy().getItems().iterator().next().getIndex(), is(4));
@@ -70,7 +69,7 @@ public class ShardingSelectOptimizedStatementTest {
     @Test
     public void assertSetIndexForItemsByColumnOrderByWithOwner() {
         ShardingSelectOptimizedStatement shardingSelectOptimizedStatement = new ShardingSelectOptimizedStatement(
-            new SelectStatement(), Collections.<ShardingCondition>emptyList(), Collections.<EncryptCondition>emptyList(),
+            new SelectStatement(), Collections.<ShardingCondition>emptyList(), 
             new GroupBy(Collections.<OrderByItem>emptyList(), 0), createOrderBy(COLUMN_ORDER_BY_WITH_OWNER), createSelectItems(), null);
         shardingSelectOptimizedStatement.setIndexForItems(Collections.<String, Integer>emptyMap());
         assertThat(shardingSelectOptimizedStatement.getOrderBy().getItems().iterator().next().getIndex(), is(1));
@@ -79,7 +78,7 @@ public class ShardingSelectOptimizedStatementTest {
     @Test
     public void assertSetIndexForItemsByColumnOrderByWithAlias() {
         ShardingSelectOptimizedStatement shardingSelectOptimizedStatement = new ShardingSelectOptimizedStatement(
-            new SelectStatement(), Collections.<ShardingCondition>emptyList(), Collections.<EncryptCondition>emptyList(),
+            new SelectStatement(), Collections.<ShardingCondition>emptyList(), 
             new GroupBy(Collections.<OrderByItem>emptyList(), 0), createOrderBy(COLUMN_ORDER_BY_WITH_ALIAS), createSelectItems(), null);
         Map<String, Integer> columnLabelIndexMap = new HashMap<>();
         columnLabelIndexMap.put("n", 2);
@@ -90,7 +89,7 @@ public class ShardingSelectOptimizedStatementTest {
     @Test
     public void assertSetIndexForItemsByColumnOrderByWithoutAlias() {
         ShardingSelectOptimizedStatement shardingSelectOptimizedStatement = new ShardingSelectOptimizedStatement(
-            new SelectStatement(), Collections.<ShardingCondition>emptyList(), Collections.<EncryptCondition>emptyList(),
+            new SelectStatement(), Collections.<ShardingCondition>emptyList(), 
             new GroupBy(Collections.<OrderByItem>emptyList(), 0), createOrderBy(COLUMN_ORDER_BY_WITHOUT_OWNER_ALIAS), createSelectItems(), null);
         Map<String, Integer> columnLabelIndexMap = new HashMap<>();
         columnLabelIndexMap.put("id", 3);
@@ -101,7 +100,7 @@ public class ShardingSelectOptimizedStatementTest {
     @Test
     public void assertIsSameGroupByAndOrderByItems() {
         ShardingSelectOptimizedStatement shardingSelectOptimizedStatement = new ShardingSelectOptimizedStatement(
-            new SelectStatement(), Collections.<ShardingCondition>emptyList(), Collections.<EncryptCondition>emptyList(),
+            new SelectStatement(), Collections.<ShardingCondition>emptyList(), 
             new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), createSelectItems(), null);
         assertFalse(shardingSelectOptimizedStatement.isSameGroupByAndOrderByItems());
     }
