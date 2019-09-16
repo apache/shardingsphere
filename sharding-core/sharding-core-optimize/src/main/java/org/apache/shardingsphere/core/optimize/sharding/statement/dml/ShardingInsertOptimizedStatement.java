@@ -23,14 +23,11 @@ import lombok.ToString;
 import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
 import org.apache.shardingsphere.core.optimize.api.segment.Tables;
 import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.encrypt.condition.EncryptCondition;
-import org.apache.shardingsphere.core.optimize.encrypt.condition.EncryptConditions;
 import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingConditions;
 import org.apache.shardingsphere.core.optimize.sharding.segment.insert.GeneratedKey;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -52,7 +49,7 @@ public final class ShardingInsertOptimizedStatement extends ShardingConditionOpt
     
     public ShardingInsertOptimizedStatement(final SQLStatement sqlStatement, final List<ShardingCondition> shardingConditions, 
                                             final List<String> columnNames, final GeneratedKey generatedKey, final List<InsertValue> insertValues) {
-        super(sqlStatement, new ShardingConditions(shardingConditions), new EncryptConditions(Collections.<EncryptCondition>emptyList()));
+        super(sqlStatement, new ShardingConditions(shardingConditions));
         tables = new Tables(sqlStatement);
         this.columnNames = columnNames;
         this.generatedKey = generatedKey;
