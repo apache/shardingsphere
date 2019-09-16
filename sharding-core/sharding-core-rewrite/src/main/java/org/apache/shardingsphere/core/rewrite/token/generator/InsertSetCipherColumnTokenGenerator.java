@@ -26,6 +26,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegme
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertSetCipherColumnToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
@@ -43,11 +44,11 @@ public final class InsertSetCipherColumnTokenGenerator implements CollectionSQLT
     
     @Override
     public Collection<InsertSetCipherColumnToken> generateSQLTokens(
-            final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final EncryptRule encryptRule, final boolean isQueryWithCipherColumn) {
-        if (!isNeedToGenerateSQLToken(optimizedStatement)) {
+            final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder, final EncryptRule encryptRule, final boolean isQueryWithCipherColumn) {
+        if (!isNeedToGenerateSQLToken(rewriteStatement.getOptimizedStatement())) {
             return Collections.emptyList();
         }
-        return createInsertSetEncryptValueTokens((InsertOptimizedStatement) optimizedStatement, encryptRule);
+        return createInsertSetEncryptValueTokens((InsertOptimizedStatement) rewriteStatement.getOptimizedStatement(), encryptRule);
     }
     
     private boolean isNeedToGenerateSQLToken(final OptimizedStatement optimizedStatement) {

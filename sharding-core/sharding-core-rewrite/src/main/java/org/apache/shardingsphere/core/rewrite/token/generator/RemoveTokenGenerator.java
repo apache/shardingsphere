@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
-import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.generic.RemoveAvailable;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
 import org.apache.shardingsphere.core.rewrite.token.pojo.RemoveToken;
 import org.apache.shardingsphere.core.rule.BaseRule;
 
@@ -36,9 +36,9 @@ public final class RemoveTokenGenerator implements CollectionSQLTokenGenerator<B
     
     @Override
     public Collection<RemoveToken> generateSQLTokens(
-            final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final BaseRule baseRule, final boolean isQueryWithCipherColumn) {
+            final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder, final BaseRule baseRule, final boolean isQueryWithCipherColumn) {
         Collection<RemoveToken> result = new LinkedList<>();
-        for (SQLSegment each : optimizedStatement.getSQLStatement().getAllSQLSegments()) {
+        for (SQLSegment each : rewriteStatement.getOptimizedStatement().getSQLStatement().getAllSQLSegments()) {
             if (each instanceof RemoveAvailable) {
                 result.add(new RemoveToken(each.getStartIndex(), each.getStopIndex()));
             }

@@ -31,6 +31,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
 import org.apache.shardingsphere.core.rewrite.token.pojo.TableToken;
 import org.apache.shardingsphere.core.rule.BaseRule;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
@@ -49,18 +50,18 @@ public final class TableTokenGenerator implements CollectionSQLTokenGenerator<Ba
     
     @Override
     public Collection<TableToken> generateSQLTokens(
-            final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final BaseRule baseRule, final boolean isQueryWithCipherColumn) {
+            final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder, final BaseRule baseRule, final boolean isQueryWithCipherColumn) {
         Collection<TableToken> result = new LinkedList<>();
-        for (SQLSegment each : optimizedStatement.getSQLStatement().getAllSQLSegments()) {
+        for (SQLSegment each : rewriteStatement.getOptimizedStatement().getSQLStatement().getAllSQLSegments()) {
             if (each instanceof SelectItemsSegment) {
-                result.addAll(createTableTokens(optimizedStatement, baseRule, (SelectItemsSegment) each));
+                result.addAll(createTableTokens(rewriteStatement.getOptimizedStatement(), baseRule, (SelectItemsSegment) each));
             } else if (each instanceof ColumnSegment) {
-                Optional<TableToken> tableToken = createTableToken(optimizedStatement, baseRule, (ColumnSegment) each);
+                Optional<TableToken> tableToken = createTableToken(rewriteStatement.getOptimizedStatement(), baseRule, (ColumnSegment) each);
                 if (tableToken.isPresent()) {
                     result.add(tableToken.get());
                 }
             } else if (each instanceof TableAvailable) {
-                Optional<TableToken> tableToken = createTableToken(optimizedStatement.getSQLStatement(), baseRule, (TableAvailable) each);
+                Optional<TableToken> tableToken = createTableToken(rewriteStatement.getOptimizedStatement().getSQLStatement(), baseRule, (TableAvailable) each);
                 if (tableToken.isPresent()) {
                     result.add(tableToken.get());
                 }

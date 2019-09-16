@@ -23,6 +23,7 @@ import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertCipherNameToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
@@ -39,12 +40,12 @@ import java.util.Map;
 public final class InsertCipherNameTokenGenerator implements CollectionSQLTokenGenerator<EncryptRule> {
     
     @Override
-    public Collection<InsertCipherNameToken> generateSQLTokens(final OptimizedStatement optimizedStatement,
+    public Collection<InsertCipherNameToken> generateSQLTokens(final RewriteStatement rewriteStatement,
                                                                final ParameterBuilder parameterBuilder, final EncryptRule rule, final boolean isQueryWithCipherColumn) {
-        if (!isNeedToGenerateSQLToken(optimizedStatement)) {
+        if (!isNeedToGenerateSQLToken(rewriteStatement.getOptimizedStatement())) {
             return Collections.emptyList();
         }
-        return createInsertColumnTokens((InsertOptimizedStatement) optimizedStatement, rule);
+        return createInsertColumnTokens((InsertOptimizedStatement) rewriteStatement.getOptimizedStatement(), rule);
     }
     
     private boolean isNeedToGenerateSQLToken(final OptimizedStatement optimizedStatement) {

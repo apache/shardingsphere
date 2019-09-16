@@ -19,12 +19,12 @@ package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingInsertOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertSetGeneratedKeyColumnToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
@@ -40,12 +40,12 @@ public final class InsertSetGeneratedKeyColumnTokenGenerator implements Optional
     
     @Override
     public Optional<InsertSetGeneratedKeyColumnToken> generateSQLToken(
-            final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final ShardingRule shardingRule, final boolean isQueryWithCipherColumn) {
-        Optional<SetAssignmentsSegment> setAssignmentsSegment = optimizedStatement.getSQLStatement().findSQLSegment(SetAssignmentsSegment.class);
-        if (!(optimizedStatement instanceof ShardingInsertOptimizedStatement && setAssignmentsSegment.isPresent())) {
+            final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder, final ShardingRule shardingRule, final boolean isQueryWithCipherColumn) {
+        Optional<SetAssignmentsSegment> setAssignmentsSegment = rewriteStatement.getOptimizedStatement().getSQLStatement().findSQLSegment(SetAssignmentsSegment.class);
+        if (!(rewriteStatement.getOptimizedStatement() instanceof ShardingInsertOptimizedStatement && setAssignmentsSegment.isPresent())) {
             return Optional.absent();
         }
-        return createInsertSetGeneratedKeyColumnToken((ShardingInsertOptimizedStatement) optimizedStatement, shardingRule, setAssignmentsSegment.get());
+        return createInsertSetGeneratedKeyColumnToken((ShardingInsertOptimizedStatement) rewriteStatement.getOptimizedStatement(), shardingRule, setAssignmentsSegment.get());
     }
     
     private Optional<InsertSetGeneratedKeyColumnToken> createInsertSetGeneratedKeyColumnToken(

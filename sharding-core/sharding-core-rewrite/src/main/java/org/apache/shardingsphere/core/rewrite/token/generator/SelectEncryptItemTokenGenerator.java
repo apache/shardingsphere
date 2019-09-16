@@ -25,6 +25,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemsSegm
 import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SelectEncryptItemToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
@@ -41,12 +42,12 @@ import java.util.LinkedList;
 public final class SelectEncryptItemTokenGenerator implements CollectionSQLTokenGenerator<EncryptRule> {
     
     @Override
-    public Collection<SelectEncryptItemToken> generateSQLTokens(final OptimizedStatement optimizedStatement,
+    public Collection<SelectEncryptItemToken> generateSQLTokens(final RewriteStatement rewriteStatement,
                                                                 final ParameterBuilder parameterBuilder, final EncryptRule rule, final boolean isQueryWithCipherColumn) {
-        if (!isNeedToGenerateSQLToken(optimizedStatement)) {
+        if (!isNeedToGenerateSQLToken(rewriteStatement.getOptimizedStatement())) {
             return Collections.emptyList();
         }
-        return createSelectCipherItemTokens(rule, optimizedStatement, isQueryWithCipherColumn);
+        return createSelectCipherItemTokens(rule, rewriteStatement.getOptimizedStatement(), isQueryWithCipherColumn);
     }
     
     private boolean isNeedToGenerateSQLToken(final OptimizedStatement optimizedStatement) {

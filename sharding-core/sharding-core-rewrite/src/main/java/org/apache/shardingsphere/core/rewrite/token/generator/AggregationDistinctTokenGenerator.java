@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.DerivedColumn;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
 import org.apache.shardingsphere.core.rewrite.token.pojo.AggregationDistinctToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
@@ -39,12 +39,12 @@ public final class AggregationDistinctTokenGenerator implements CollectionSQLTok
     
     @Override
     public Collection<AggregationDistinctToken> generateSQLTokens(
-            final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final ShardingRule shardingRule, final boolean isQueryWithCipherColumn) {
-        if (!(optimizedStatement instanceof ShardingSelectOptimizedStatement)) {
+            final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder, final ShardingRule shardingRule, final boolean isQueryWithCipherColumn) {
+        if (!(rewriteStatement.getOptimizedStatement() instanceof ShardingSelectOptimizedStatement)) {
             return Collections.emptyList();
         }
         Collection<AggregationDistinctToken> result = new LinkedList<>();
-        for (AggregationDistinctSelectItem each : ((ShardingSelectOptimizedStatement) optimizedStatement).getSelectItems().getAggregationDistinctSelectItems()) {
+        for (AggregationDistinctSelectItem each : ((ShardingSelectOptimizedStatement) rewriteStatement.getOptimizedStatement()).getSelectItems().getAggregationDistinctSelectItems()) {
             result.add(createAggregationDistinctToken(each));
         }
         return result;
