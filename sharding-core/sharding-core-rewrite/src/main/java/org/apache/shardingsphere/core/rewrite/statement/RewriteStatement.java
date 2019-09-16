@@ -30,7 +30,7 @@ import org.apache.shardingsphere.core.optimize.sharding.segment.condition.Shardi
  */
 @RequiredArgsConstructor
 @Getter
-public final class RewriteStatement {
+public class RewriteStatement {
     
     private final OptimizedStatement optimizedStatement;
     
