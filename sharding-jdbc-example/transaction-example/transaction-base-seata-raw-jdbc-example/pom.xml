@@ -43,5 +43,13 @@
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>sharding-transaction-base-seata-at</artifactId>
         </dependency>
+        <dependency>
+            <groupId>io.seata</groupId>
+            <artifactId>seata-rm-datasource</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.seata</groupId>
+            <artifactId>seata-tm</artifactId>
+        </dependency>
     </dependencies>
 </project>

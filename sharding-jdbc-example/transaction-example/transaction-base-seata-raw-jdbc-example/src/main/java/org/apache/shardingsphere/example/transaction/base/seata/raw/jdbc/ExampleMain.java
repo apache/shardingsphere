@@ -104,10 +104,11 @@ public class ExampleMain {
     }
     
     private static Long insertOrder(final Connection connection, final Order order) {
-        String sql = "INSERT INTO t_order (user_id, status) VALUES (?, ?)";
+        String sql = "INSERT INTO t_order (user_id, address_id, status) VALUES (?, ?, ?)";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setObject(1, order.getUserId());
-            preparedStatement.setObject(2, order.getStatus());
+            preparedStatement.setObject(2, order.getAddressId());
+            preparedStatement.setObject(3, order.getStatus());
             preparedStatement.executeUpdate();
             try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
                 if (resultSet.next()) {
