@@ -108,5 +108,4 @@ public interface ConfigCenter extends TypeBasedSPI {
      * Close.
       */
     void close();
-
 }
