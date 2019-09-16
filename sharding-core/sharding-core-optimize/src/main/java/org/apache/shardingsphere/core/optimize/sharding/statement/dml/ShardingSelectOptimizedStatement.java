@@ -105,6 +105,13 @@ public final class ShardingSelectOptimizedStatement extends ShardingConditionOpt
                 each.setIndex(((IndexOrderByItemSegment) each.getSegment()).getColumnIndex());
                 continue;
             }
+            if (each.getSegment() instanceof ColumnOrderByItemSegment && ((ColumnOrderByItemSegment) each.getSegment()).getColumn().getOwner().isPresent()) {
+                Optional<Integer> itemIndex = selectItems.findItemIndex(((ColumnOrderByItemSegment) each.getSegment()).getText());
+                if (itemIndex.isPresent()) {
+                    each.setIndex(itemIndex.get());
+                    continue;
+                }
+            }
             Optional<String> alias = getAlias(((TextOrderByItemSegment) each.getSegment()).getText());
             String columnLabel = alias.isPresent() ? alias.get() : getOrderItemText((TextOrderByItemSegment) each.getSegment());
             Preconditions.checkState(columnLabelIndexMap.containsKey(columnLabel), "Can't find index: %s", each);
