@@ -395,7 +395,23 @@
     <dql-test-case sql-case-id="select_with_double_quotes">
         <assertion parameters="100001:int" expected-data-file="select_not_equal_with_single_table.xml" />
     </dql-test-case>
-    
+
+    <dql-test-case sql-case-id="select_escape_with_single_quota">
+        <assertion expected-data-file="empty_order.xml" />
+    </dql-test-case>
+
+    <dql-test-case sql-case-id="select_escape_with_double_quota">
+        <assertion expected-data-file="empty_order.xml" />
+    </dql-test-case>
+   
+    <dql-test-case sql-case-id="select_alias_as_single_quote_string">
+        <assertion expected-data-file="select_alias_as_single_quote_string.xml" />
+    </dql-test-case>
+
+    <dql-test-case sql-case-id="select_alias_as_string_double_quote">
+        <assertion expected-data-file="select_alias_as_single_quote_string.xml" />
+    </dql-test-case>
+
     <dql-test-case sql-case-id="select_distinct_with_single_column">
         <assertion expected-data-file="select_distinct_with_single_column.xml" />
     </dql-test-case>
