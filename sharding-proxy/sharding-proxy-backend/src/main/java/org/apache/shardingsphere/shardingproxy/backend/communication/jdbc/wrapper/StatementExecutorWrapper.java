@@ -36,7 +36,6 @@ import org.apache.shardingsphere.shardingproxy.backend.schema.impl.EncryptSchema
 import org.apache.shardingsphere.shardingproxy.backend.schema.impl.MasterSlaveSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShardingSchema;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
-import org.apache.shardingsphere.spi.database.DatabaseType;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -58,9 +57,9 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
     private final LogicSchema logicSchema;
     
     @Override
-    public SQLRouteResult route(final String sql, final DatabaseType databaseType) {
+    public SQLRouteResult route(final String sql) {
         if (logicSchema instanceof ShardingSchema) {
-            return doShardingRoute(sql, databaseType);
+            return doShardingRoute(sql);
         }
         if (logicSchema instanceof MasterSlaveSchema) {
             return doMasterSlaveRoute(sql);
@@ -71,9 +70,9 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
         return doTransparentRoute(sql);
     }
     
-    private SQLRouteResult doShardingRoute(final String sql, final DatabaseType databaseType) {
-        SimpleQueryShardingEngine shardingEngine = new SimpleQueryShardingEngine(logicSchema.getShardingRule(), 
-                ShardingProxyContext.getInstance().getShardingProperties(), logicSchema.getMetaData(), databaseType, logicSchema.getParseEngine());
+    private SQLRouteResult doShardingRoute(final String sql) {
+        SimpleQueryShardingEngine shardingEngine = new SimpleQueryShardingEngine(
+                logicSchema.getShardingRule(), ShardingProxyContext.getInstance().getShardingProperties(), logicSchema.getMetaData(), logicSchema.getParseEngine());
         return shardingEngine.shard(sql, Collections.emptyList());
     }
     
