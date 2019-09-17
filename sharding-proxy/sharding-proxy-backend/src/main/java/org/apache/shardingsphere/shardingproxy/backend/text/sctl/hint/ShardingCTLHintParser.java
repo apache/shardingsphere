@@ -36,31 +36,31 @@ import java.util.regex.Pattern;
  * @author liya
  */
 public final class ShardingCTLHintParser implements ShardingCTLParser<ShardingCTLHintStatement> {
-
+    
     private final String setRegex = "sctl:hint\\s+set\\s+hint_type=(DATABASE_TABLES|DATABASE_ONLY|MASTER_ONLY)\\s*$";
-
+    
     private final String setDatabaseShardingValueRegex = "sctl:hint\\s+setDatabaseShardingValue\\s+(\\S*)";
-
+    
     private final String addDatabaseShardingValueRegex = "sctl:hint\\s+addDatabaseShardingValue\\s+(\\S*)=(\\S*)";
-
+    
     private final String addTableShardingValueRegex = "sctl:hint\\s+addTableShardingValue\\s+(\\S*)=(\\S*)";
-
+    
     private final String clearRegex = "sctl:hint\\s+clear\\s*$";
-
+    
     private final String errorParameterRegex = "sctl:hint\\s+.*";
-
+    
     private final Matcher setMatcher;
-
+    
     private final Matcher setDatabaseShardingValueMatcher;
-
+    
     private final Matcher addDatabaseShardingValueMatcher;
-
+    
     private final Matcher addTableShardingValueMatcher;
-
+    
     private final Matcher errorParameterMatcher;
-
+    
     private final Matcher clearMatcher;
-
+    
     public ShardingCTLHintParser(final String sql) {
         setMatcher = Pattern.compile(setRegex, Pattern.CASE_INSENSITIVE).matcher(sql);
         setDatabaseShardingValueMatcher = Pattern.compile(setDatabaseShardingValueRegex, Pattern.CASE_INSENSITIVE).matcher(sql);
@@ -69,7 +69,7 @@ public final class ShardingCTLHintParser implements ShardingCTLParser<ShardingCT
         errorParameterMatcher = Pattern.compile(errorParameterRegex, Pattern.CASE_INSENSITIVE).matcher(sql);
         clearMatcher = Pattern.compile(clearRegex, Pattern.CASE_INSENSITIVE).matcher(sql);
     }
-
+    
     @Override
     public Optional<ShardingCTLHintStatement> doParse() {
         if (setMatcher.find()) {

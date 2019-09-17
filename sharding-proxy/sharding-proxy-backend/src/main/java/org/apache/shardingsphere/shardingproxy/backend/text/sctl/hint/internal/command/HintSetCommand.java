@@ -35,6 +35,6 @@ import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.H
 @RequiredArgsConstructor
 @Getter
 public final class HintSetCommand implements HintCommand {
-
+    
     private final HintType hintType;
 }

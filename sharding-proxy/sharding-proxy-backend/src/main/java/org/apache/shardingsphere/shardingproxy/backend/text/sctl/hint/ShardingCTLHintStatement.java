@@ -30,6 +30,6 @@ import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.H
 @RequiredArgsConstructor
 @Getter
 public final class ShardingCTLHintStatement implements ShardingCTLStatement {
-
+    
     private final HintCommand hintCommand;
 }

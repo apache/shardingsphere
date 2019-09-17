@@ -34,6 +34,6 @@ import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.H
 @RequiredArgsConstructor
 @Getter
 public final class HintSetDatabaseShardingValueCommand implements HintCommand {
-
+    
     private final String value;
 }

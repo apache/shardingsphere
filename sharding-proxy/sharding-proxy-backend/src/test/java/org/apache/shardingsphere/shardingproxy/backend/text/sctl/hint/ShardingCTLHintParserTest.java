@@ -37,7 +37,7 @@ import static org.junit.Assert.assertThat;
  * @author liya
  */
 public final class ShardingCTLHintParserTest {
-
+    
     @Test
     public void assertValidSetSql() {
         String databaseTablesSql = "sctl:hint set hint_type=DATAbase_TAbles ";
@@ -50,7 +50,7 @@ public final class ShardingCTLHintParserTest {
         assertEquals(((HintSetCommand) databaseOnlyStatement.getHintCommand()).getHintType(), HintType.DATABASE_ONLY);
         assertEquals(((HintSetCommand) masterOnlyStatement.getHintCommand()).getHintType(), HintType.MASTER_ONLY);
     }
-
+    
     @Test
     public void assertInValidSetSql() {
         String databaseTablesSql = "sctl:hint set1 hint_type=DATAbase_TAbles ";
@@ -60,20 +60,20 @@ public final class ShardingCTLHintParserTest {
         assertThat(new ShardingCTLHintParser(databaseOnlySql).doParse().get().getHintCommand(), instanceOf(HintErrorParameterCommand.class));
         assertThat(new ShardingCTLHintParser(masterOnlySql).doParse().get().getHintCommand(), instanceOf(HintErrorParameterCommand.class));
     }
-
+    
     @Test
     public void assertValidSetDatabaseShardingValueSql() {
         String sql = " sctl:HINT setDatabaseShardingValue 100  ";
         ShardingCTLHintStatement statement = new ShardingCTLHintParser(sql).doParse().get();
         assertEquals(((HintSetDatabaseShardingValueCommand) statement.getHintCommand()).getValue(), "100");
     }
-
+    
     @Test
     public void assertInValidSetDatabaseShardingValueSql() {
         String sql = " sctl:HINT setDatabaseShardingValue1 100  ";
         assertThat(new ShardingCTLHintParser(sql).doParse().get().getHintCommand(), instanceOf(HintErrorParameterCommand.class));
     }
-
+    
     @Test
     public void assertValidAddDatabaseShardingValueSql() {
         String databaseSql = " sctl:HINT addDatabaseShardingValue user=100 ";
@@ -82,13 +82,13 @@ public final class ShardingCTLHintParserTest {
         assertEquals(databaseCommand.getLogicTable(), "user");
         assertEquals(databaseCommand.getValue(), "100");
     }
-
+    
     @Test
     public void assertInValidAddDatabaseShardingValueSql() {
         String databaseSql = " sctl:HINT addDatabaseShardingValue1 user=100 ";
         assertThat(new ShardingCTLHintParser(databaseSql).doParse().get().getHintCommand(), instanceOf(HintErrorParameterCommand.class));
     }
-
+    
     @Test
     public void assertValidAddTableShardingValueSql() {
         String tableSql = " sctl:HINT addTableShardingValue order=some ";
@@ -97,13 +97,13 @@ public final class ShardingCTLHintParserTest {
         assertEquals(tableCommand.getLogicTable(), "order");
         assertEquals(tableCommand.getValue(), "some");
     }
-
+    
     @Test
     public void assertInValidAddTableShardingValueSql() {
         String databaseSql = " sctl:HINT addTableShardingValue 100 ";
         assertThat(new ShardingCTLHintParser(databaseSql).doParse().get().getHintCommand(), instanceOf(HintErrorParameterCommand.class));
     }
-
+    
     @Test
     public void assertInValidAddShardingValueSql() {
         String databaseSql = " sctl:HINT addShardingValue1 value_Type=database user=100 ";
@@ -111,21 +111,21 @@ public final class ShardingCTLHintParserTest {
         assertThat(new ShardingCTLHintParser(databaseSql).doParse().get().getHintCommand(), instanceOf(HintErrorParameterCommand.class));
         assertThat(new ShardingCTLHintParser(tableSql).doParse().get().getHintCommand(), instanceOf(HintErrorParameterCommand.class));
     }
-
+    
     @Test
     public void assertValidClearSql() {
         String sql = " sctl:HINT clear ";
         ShardingCTLHintStatement statement = new ShardingCTLHintParser(sql).doParse().get();
         assertThat(statement.getHintCommand(), instanceOf(HintClearCommand.class));
     }
-
+    
     @Test
     public void assertInValidClearSql() {
         String sql = " sctl:HINT clear xxx";
         ShardingCTLHintStatement statement = new ShardingCTLHintParser(sql).doParse().get();
         assertThat(statement.getHintCommand(), instanceOf(HintErrorParameterCommand.class));
     }
-
+    
     @Test
     public void assertNotHintSql() {
         String sql = "sctl:hint1 abcd efg hijk lmn";

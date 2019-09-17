@@ -35,8 +35,8 @@ import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.H
 @RequiredArgsConstructor
 @Getter
 public class HintAddTableShardingValueCommand implements HintCommand {
-
+    
     private final String logicTable;
-
+    
     private final String value;
 }

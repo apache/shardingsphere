@@ -42,29 +42,29 @@ import static org.mockito.Mockito.when;
  */
 @RunWith(MockitoJUnitRunner.class)
 public final class ShardingCTLHintBackendHandlerTest {
-
+    
     @Mock
     private BackendConnection backendConnection;
-
+    
     @Before
     public void setUp() {
         when(backendConnection.isSupportHint()).thenReturn(true);
     }
-
+    
     @Test
     public void assertSetHintTypeDatabaseTables() {
         String sql = "sctl:hint set hint_type=DATABASE_TABLES";
         ShardingCTLHintBackendHandler shardingCTLHintBackendHandler = new ShardingCTLHintBackendHandler(sql, backendConnection);
         assertThat(shardingCTLHintBackendHandler.execute(), instanceOf(UpdateResponse.class));
     }
-
+    
     @Test
     public void assertSetHintTypeDatabaseOnly() {
         String sql = "sctl:hint set hint_type=DATABASE_ONLY";
         ShardingCTLHintBackendHandler shardingCTLHintBackendHandler = new ShardingCTLHintBackendHandler(sql, backendConnection);
         assertThat(shardingCTLHintBackendHandler.execute(), instanceOf(UpdateResponse.class));
     }
-
+    
     @Test
     public void assertSetHintTypeMasterOnly() {
         String sql = "sctl:hint set hint_type=MASTER_ONLY";
@@ -72,7 +72,7 @@ public final class ShardingCTLHintBackendHandlerTest {
         assertThat(shardingCTLHintBackendHandler.execute(), instanceOf(UpdateResponse.class));
         assertTrue(HintManager.isMasterRouteOnly());
     }
-
+    
     @Test
     public void assertAddDatabaseShardingValue() {
         String sql = "sctl:hint addDatabaseShardingValue user=100 ";
@@ -80,7 +80,7 @@ public final class ShardingCTLHintBackendHandlerTest {
         assertThat(shardingCTLHintBackendHandler.execute(), instanceOf(UpdateResponse.class));
         assertEquals(HintManager.getDatabaseShardingValues("user").iterator().next(), "100");
     }
-
+    
     @Test
     public void assertAddTableShardingValue() {
         String sql = "sctl:hint addTableShardingValue  user=100 ";
@@ -88,7 +88,7 @@ public final class ShardingCTLHintBackendHandlerTest {
         assertThat(shardingCTLHintBackendHandler.execute(), instanceOf(UpdateResponse.class));
         assertEquals(HintManager.getTableShardingValues("user").iterator().next(), "100");
     }
-
+    
     @Test
     public void assertSetDatabaseShardingValueTable() {
         String sql = "sctl:hint setDatabaseShardingValue 100";
@@ -96,7 +96,7 @@ public final class ShardingCTLHintBackendHandlerTest {
         assertThat(shardingCTLHintBackendHandler.execute(), instanceOf(UpdateResponse.class));
         assertEquals(HintManager.getDatabaseShardingValues().iterator().next(), "100");
     }
-
+    
     @Test
     public void assertClear() {
         String sql = "sctl:hint clear ";
@@ -105,20 +105,20 @@ public final class ShardingCTLHintBackendHandlerTest {
         assertThat(HintManager.getInstance(), instanceOf(HintManager.class));
         HintManager.clear();
     }
-
+    
     @Test(expected = UnsupportedOperationException.class)
     public void assertNotSupportHint() {
         when(backendConnection.isSupportHint()).thenReturn(false);
         new ShardingCTLHintBackendHandler("", backendConnection).execute();
     }
-
+    
     @Test
     public void assertInvalidShardingCTLFormat() {
         String sql = "sctl:hint1 xx=yy";
         ShardingCTLHintBackendHandler shardingCTLHintBackendHandler = new ShardingCTLHintBackendHandler(sql, backendConnection);
         assertThat(((ErrorResponse) shardingCTLHintBackendHandler.execute()).getCause(), instanceOf(InvalidShardingCTLFormatException.class));
     }
-
+    
     @Test
     public void assertUnsupportedShardingCTLType() {
         String sql = "sctl:hint xx=yy";
