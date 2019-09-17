@@ -26,9 +26,11 @@ import org.apache.shardingsphere.core.parse.core.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -53,9 +55,10 @@ public final class InsertValuesExtractor implements CollectionSQLSegmentExtracto
         return result;
     }
     
-    private Collection<ExpressionSegment> extractExpressionSegments(final ParserRuleContext assignmentValuesNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
-        Collection<ExpressionSegment> result = new LinkedList<>();
-        for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(assignmentValuesNode, RuleName.ASSIGNMENT_VALUE)) {
+    private List<ExpressionSegment> extractExpressionSegments(final ParserRuleContext assignmentValuesNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
+        Collection<ParserRuleContext> parserRuleContexts = ExtractorUtils.getAllDescendantNodes(assignmentValuesNode, RuleName.ASSIGNMENT_VALUE);
+        List<ExpressionSegment> result = new ArrayList<>(parserRuleContexts.size());
+        for (ParserRuleContext each : parserRuleContexts) {
             Optional<? extends ExpressionSegment> expressionSegment = expressionExtractor.extract(each, parameterMarkerIndexes);
             if (expressionSegment.isPresent()) {
                 result.add(expressionSegment.get());

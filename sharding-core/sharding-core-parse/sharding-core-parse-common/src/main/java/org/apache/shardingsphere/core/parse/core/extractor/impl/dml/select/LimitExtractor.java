@@ -71,6 +71,6 @@ public final class LimitExtractor implements OptionalSQLSegmentExtractor {
         Optional<ParserRuleContext> numberLiteralsNode = ExtractorUtils.findFirstChildNode(limitValueNode, RuleName.NUMBER_LITERALS);
         Preconditions.checkState(numberLiteralsNode.isPresent());
         return new NumberLiteralLimitValueSegment(
-                limitValueNode.getStart().getStartIndex(), limitValueNode.getStop().getStopIndex(), SQLUtil.getExactlyNumber(numberLiteralsNode.get().getText(), 10).intValue());
+                limitValueNode.getStart().getStartIndex(), limitValueNode.getStop().getStopIndex(), SQLUtil.getExactlyNumber(numberLiteralsNode.get().getText(), 10).longValue());
     }
 }

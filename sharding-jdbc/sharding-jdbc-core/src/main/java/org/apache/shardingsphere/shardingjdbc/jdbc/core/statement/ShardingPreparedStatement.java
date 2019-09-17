@@ -32,7 +32,6 @@ import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingIn
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.shardingjdbc.executor.BatchPreparedStatementExecutor;
 import org.apache.shardingsphere.shardingjdbc.executor.PreparedStatementExecutor;
@@ -96,8 +95,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         this.connection = connection;
         this.sql = sql;
         ShardingRuntimeContext runtimeContext = connection.getRuntimeContext();
-        shardingEngine = new PreparedQueryShardingEngine(sql, runtimeContext.getRule(), 
-                runtimeContext.getProps(), runtimeContext.getMetaData(), runtimeContext.getDatabaseType(), runtimeContext.getParseEngine());
+        shardingEngine = new PreparedQueryShardingEngine(sql, runtimeContext.getRule(), runtimeContext.getProps(), runtimeContext.getMetaData(), runtimeContext.getParseEngine());
         preparedStatementExecutor = new PreparedStatementExecutor(resultSetType, resultSetConcurrency, resultSetHoldability, returnGeneratedKeys, connection);
         batchPreparedStatementExecutor = new BatchPreparedStatementExecutor(resultSetType, resultSetConcurrency, resultSetHoldability, returnGeneratedKeys, connection);
     }
@@ -122,10 +120,6 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     @Override
     public ResultSet getResultSet() throws SQLException {
         if (null != currentResultSet) {
-            return currentResultSet;
-        }
-        if (1 == preparedStatementExecutor.getStatements().size() && sqlRouteResult.getShardingStatement().getSQLStatement() instanceof SelectStatement) {
-            currentResultSet = preparedStatementExecutor.getStatements().iterator().next().getResultSet();
             return currentResultSet;
         }
         List<ResultSet> resultSets = new ArrayList<>(preparedStatementExecutor.getStatements().size());
@@ -197,11 +191,18 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     private void initPreparedStatementExecutor() throws SQLException {
         preparedStatementExecutor.init(sqlRouteResult);
         setParametersForStatements();
+        replayMethodForStatements();
     }
     
     private void setParametersForStatements() {
         for (int i = 0; i < preparedStatementExecutor.getStatements().size(); i++) {
             replaySetParameter((PreparedStatement) preparedStatementExecutor.getStatements().get(i), preparedStatementExecutor.getParameterSets().get(i));
+        }
+    }
+    
+    private void replayMethodForStatements() {
+        for (Statement each : preparedStatementExecutor.getStatements()) {
+            replayMethodsInvocation(each);
         }
     }
     

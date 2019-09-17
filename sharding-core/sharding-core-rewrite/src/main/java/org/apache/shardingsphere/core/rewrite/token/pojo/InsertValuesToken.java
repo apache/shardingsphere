@@ -26,6 +26,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.Paramete
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.rule.DataNode;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +56,7 @@ public final class InsertValuesToken extends SQLToken implements Substitutable, 
      * @param values values
      * @param dataNodes data nodes
      */
-    public void addInsertValueToken(final List<ExpressionSegment> values, final List<DataNode> dataNodes) {
+    public void addInsertValueToken(final List<ExpressionSegment> values, final Collection<DataNode> dataNodes) {
         insertValueTokens.add(new InsertValueToken(values, dataNodes));
     }
     
@@ -93,7 +94,7 @@ public final class InsertValuesToken extends SQLToken implements Substitutable, 
         private final List<ExpressionSegment> values;
     
         @Getter
-        private final List<DataNode> dataNodes;
+        private final Collection<DataNode> dataNodes;
     
         @Override
         public String toString() {

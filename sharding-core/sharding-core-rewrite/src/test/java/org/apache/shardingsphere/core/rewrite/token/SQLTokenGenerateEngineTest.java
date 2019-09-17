@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.core.rewrite.token;
 
 import org.apache.shardingsphere.core.optimize.encrypt.condition.EncryptCondition;
+import org.apache.shardingsphere.core.optimize.encrypt.condition.EncryptConditions;
 import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingCondition;
+import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingConditions;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.groupby.GroupBy;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.SelectItem;
@@ -30,6 +32,7 @@ import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSe
 import org.apache.shardingsphere.core.parse.core.constant.AggregationType;
 import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SQLToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SelectItemPrefixToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
@@ -53,28 +56,30 @@ public final class SQLTokenGenerateEngineTest {
     
     private SQLTokenGenerateEngine encryptTokenGenerateEngine = new EncryptTokenGenerateEngine();
     
-    private ShardingSelectOptimizedStatement optimizedStatement;
+    private RewriteStatement rewriteStatement;
     
     @Before
     public void setUp() {
         SelectStatement selectStatement = new SelectStatement();
         SelectItems selectItems = new SelectItems(1, 20, false, 
                 Collections.<SelectItem>singletonList(new AggregationDistinctSelectItem(1, 2, AggregationType.COUNT, "(DISTINCT id)", "c", "id")), Collections.<TableSegment>emptyList(), null);
-        optimizedStatement = new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(), Collections.<EncryptCondition>emptyList(), 
+        ShardingSelectOptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(selectStatement, Collections.<ShardingCondition>emptyList(),  
                 new GroupBy(Collections.<OrderByItem>emptyList(), 1), new OrderBy(Collections.<OrderByItem>emptyList(), false), selectItems, new Pagination(null, null, Collections.emptyList()));
+        rewriteStatement = new RewriteStatement(
+                optimizedStatement, new ShardingConditions(Collections.<ShardingCondition>emptyList()), new EncryptConditions(Collections.<EncryptCondition>emptyList()));
     }
     
     @SuppressWarnings("unchecked")
     @Test
     public void assertGenerateSQLTokensWithBaseTokenGenerateEngine() {
-        List<SQLToken> actual = baseTokenGenerateEngine.generateSQLTokens(optimizedStatement, null, mock(ShardingRule.class), true, false);
+        List<SQLToken> actual = baseTokenGenerateEngine.generateSQLTokens(rewriteStatement, null, mock(ShardingRule.class), true, false);
         assertThat(actual.size(), is(0));
     }
     
     @SuppressWarnings("unchecked")
     @Test
     public void assertGetSQLTokenGeneratorsWithShardingTokenGenerateEngineWithoutSingleRoute() {
-        List<SQLToken> actual = shardingTokenGenerateEngine.generateSQLTokens(optimizedStatement, null, mock(ShardingRule.class), false, false);
+        List<SQLToken> actual = shardingTokenGenerateEngine.generateSQLTokens(rewriteStatement, null, mock(ShardingRule.class), false, false);
         assertThat(actual.size(), is(2));
         assertThat(actual.get(0), CoreMatchers.<SQLToken>instanceOf(SelectItemPrefixToken.class));
     }
@@ -82,14 +87,14 @@ public final class SQLTokenGenerateEngineTest {
     @SuppressWarnings("unchecked")
     @Test
     public void assertGetSQLTokenGeneratorsWithShardingTokenGenerateEngineWithSingleRoute() {
-        List<SQLToken> actual = shardingTokenGenerateEngine.generateSQLTokens(optimizedStatement, null, mock(ShardingRule.class), true, false);
+        List<SQLToken> actual = shardingTokenGenerateEngine.generateSQLTokens(rewriteStatement, null, mock(ShardingRule.class), true, false);
         assertThat(actual.size(), is(0));
     }
     
     @SuppressWarnings("unchecked")
     @Test
     public void assertGenerateSQLTokensWithEncryptTokenGenerateEngine() {
-        List<SQLToken> actual = encryptTokenGenerateEngine.generateSQLTokens(optimizedStatement, null, mock(EncryptRule.class), true, false);
+        List<SQLToken> actual = encryptTokenGenerateEngine.generateSQLTokens(rewriteStatement, null, mock(EncryptRule.class), true, false);
         assertThat(actual.size(), is(0));
     }
 }

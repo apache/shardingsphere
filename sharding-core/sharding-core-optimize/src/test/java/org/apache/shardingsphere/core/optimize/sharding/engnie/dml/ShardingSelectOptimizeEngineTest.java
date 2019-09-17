@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.optimize.sharding.engnie.dml;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.Range;
 import org.apache.shardingsphere.core.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
@@ -38,12 +37,10 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.Pred
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateInRightValue;
 import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RangeRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
-import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
@@ -77,9 +74,6 @@ public final class ShardingSelectOptimizeEngineTest {
     @Before
     public void setUp() {
         when(shardingRule.isShardingColumn("column", "tbl")).thenReturn(true);
-        EncryptRule encryptRule = mock(EncryptRule.class);
-        when(encryptRule.findShardingEncryptor("tbl", "column")).thenReturn(Optional.<ShardingEncryptor>absent());
-        when(shardingRule.getEncryptRule()).thenReturn(encryptRule);
         selectStatement = new SelectStatement();
         selectStatement.getAllSQLSegments().add(new TableSegment(0, 0, "tbl"));
     }

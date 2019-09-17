@@ -168,40 +168,35 @@ public final class ShardingInsertOptimizeEngineTest {
     public void assertInsertValuesWithPlaceholderWithGeneratedKey() {
         ShardingInsertOptimizedStatement actual = new ShardingInsertOptimizeEngine().optimize(
                 shardingRule, mock(TableMetas.class), "", insertValuesParameters, insertValuesStatementWithPlaceholder);
-        assertThat(actual.getInsertValues().get(0).getParameters().size(), is(3));
-        assertThat(actual.getInsertValues().get(1).getParameters().size(), is(3));
+        assertThat(actual.getInsertValues().get(0).getParameters().size(), is(2));
+        assertThat(actual.getInsertValues().get(1).getParameters().size(), is(2));
         assertThat(actual.getInsertValues().get(0).getParameters().get(0), CoreMatchers.<Object>is(10));
         assertThat(actual.getInsertValues().get(0).getParameters().get(1), CoreMatchers.<Object>is("init"));
-        assertThat(actual.getInsertValues().get(0).getParameters().get(2), CoreMatchers.<Object>is(1));
         assertThat(actual.getInsertValues().get(1).getParameters().get(0), CoreMatchers.<Object>is(11));
         assertThat(actual.getInsertValues().get(1).getParameters().get(1), CoreMatchers.<Object>is("init"));
-        assertThat(actual.getInsertValues().get(1).getParameters().get(2), CoreMatchers.<Object>is(1));
     }
     
     @Test
     public void assertInsertValuesWithPlaceholderWithGeneratedKeyWithEncrypt() {
         ShardingInsertOptimizedStatement actual = new ShardingInsertOptimizeEngine().optimize(
                 shardingRule, mock(TableMetas.class), "", insertValuesParameters, insertValuesStatementWithPlaceholderWithEncrypt);
-        assertThat(actual.getInsertValues().get(1).getParameters().size(), is(3));
+        assertThat(actual.getInsertValues().get(0).getParameters().size(), is(2));
+        assertThat(actual.getInsertValues().get(1).getParameters().size(), is(2));
         assertThat(actual.getInsertValues().get(0).getParameters().get(0), CoreMatchers.<Object>is(10));
         assertThat(actual.getInsertValues().get(0).getParameters().get(1), CoreMatchers.<Object>is("init"));
-        assertThat(actual.getInsertValues().get(0).getParameters().get(2), CoreMatchers.<Object>is(1));
         assertThat(actual.getInsertValues().get(1).getParameters().get(0), CoreMatchers.<Object>is(11));
         assertThat(actual.getInsertValues().get(1).getParameters().get(1), CoreMatchers.<Object>is("init"));
-        assertThat(actual.getInsertValues().get(1).getParameters().get(2), CoreMatchers.<Object>is(1));
     }
     
     @Test
     public void assertInsertValuesWithPlaceholderWithoutGeneratedKey() {
         ShardingInsertOptimizedStatement actual = new ShardingInsertOptimizeEngine().optimize(shardingRule, mock(TableMetas.class), "", insertValuesParameters, insertValuesStatementWithPlaceholder);
-        assertThat(actual.getInsertValues().get(0).getParameters().size(), is(3));
-        assertThat(actual.getInsertValues().get(1).getParameters().size(), is(3));
+        assertThat(actual.getInsertValues().get(0).getParameters().size(), is(2));
+        assertThat(actual.getInsertValues().get(1).getParameters().size(), is(2));
         assertThat(actual.getInsertValues().get(0).getParameters().get(0), CoreMatchers.<Object>is(10));
         assertThat(actual.getInsertValues().get(0).getParameters().get(1), CoreMatchers.<Object>is("init"));
-        assertThat(actual.getInsertValues().get(0).getParameters().get(2), CoreMatchers.<Object>is(1));
         assertThat(actual.getInsertValues().get(1).getParameters().get(0), CoreMatchers.<Object>is(11));
         assertThat(actual.getInsertValues().get(1).getParameters().get(1), CoreMatchers.<Object>is("init"));
-        assertThat(actual.getInsertValues().get(1).getParameters().get(2), CoreMatchers.<Object>is(1));
     }
     
     @Test
@@ -233,10 +228,9 @@ public final class ShardingInsertOptimizeEngineTest {
         insertSetStatementWithPlaceholder.setSetAssignment(new SetAssignmentsSegment(0, 0, Arrays.asList(assignmentSegment1, assignmentSegment2)));
         ShardingInsertOptimizedStatement actual = new ShardingInsertOptimizeEngine().optimize(
                 shardingRule, mock(TableMetas.class), "", insertSetParameters, insertSetStatementWithPlaceholder);
-        assertThat(actual.getInsertValues().get(0).getParameters().size(), is(3));
+        assertThat(actual.getInsertValues().get(0).getParameters().size(), is(2));
         assertThat(actual.getInsertValues().get(0).getParameters().get(0), CoreMatchers.<Object>is(12));
         assertThat(actual.getInsertValues().get(0).getParameters().get(1), CoreMatchers.<Object>is("a"));
-        assertThat(actual.getInsertValues().get(0).getParameters().get(2), CoreMatchers.<Object>is(1));
     }
     
     @Test
@@ -246,10 +240,9 @@ public final class ShardingInsertOptimizeEngineTest {
         insertSetStatementWithPlaceholderWithQueryEncrypt.setSetAssignment(new SetAssignmentsSegment(0, 0, Arrays.asList(assignmentSegment1, assignmentSegment2)));
         ShardingInsertOptimizedStatement actual = new ShardingInsertOptimizeEngine().optimize(
                 shardingRule, mock(TableMetas.class), "", insertSetParameters, insertSetStatementWithPlaceholderWithQueryEncrypt);
-        assertThat(actual.getInsertValues().get(0).getParameters().size(), is(3));
+        assertThat(actual.getInsertValues().get(0).getParameters().size(), is(2));
         assertThat(actual.getInsertValues().get(0).getParameters().get(0), CoreMatchers.<Object>is(12));
         assertThat(actual.getInsertValues().get(0).getParameters().get(1), CoreMatchers.<Object>is("a"));
-        assertThat(actual.getInsertValues().get(0).getParameters().get(2), CoreMatchers.<Object>is(1));
     }
     
     @Test

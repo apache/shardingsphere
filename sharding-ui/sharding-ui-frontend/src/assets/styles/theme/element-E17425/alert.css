@@ -1,0 +1,17 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+.el-alert{width:100%;padding:8px 16px;margin:0;-webkit-box-sizing:border-box;box-sizing:border-box;border-radius:4px;position:relative;background-color:#fff;overflow:hidden;opacity:1;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-transition:opacity .2s;transition:opacity .2s}.el-alert.is-center{-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center}.el-alert--success{background-color:#f0f9eb;color:#67c23a}.el-alert--success .el-alert__description{color:#67c23a}.el-alert--info{background-color:#f4f4f5;color:#909399}.el-alert--info .el-alert__description{color:#909399}.el-alert--warning{background-color:#fdf6ec;color:#e6a23c}.el-alert--warning .el-alert__description{color:#e6a23c}.el-alert--error{background-color:#fef0f0;color:#f56c6c}.el-alert--error .el-alert__description{color:#f56c6c}.el-alert__content{display:table-cell;padding:0 8px}.el-alert__icon{font-size:16px;width:16px}.el-alert__icon.is-big{font-size:28px;width:28px}.el-alert__title{font-size:13px;line-height:18px}.el-alert__title.is-bold{font-weight:700}.el-alert .el-alert__description{font-size:12px;margin:5px 0 0}.el-alert__closebtn{font-size:12px;color:#c0c4cc;opacity:1;position:absolute;top:12px;right:15px;cursor:pointer}.el-alert__closebtn.is-customed{font-style:normal;font-size:13px;top:9px}.el-alert-fade-enter,.el-alert-fade-leave-active{opacity:0}
