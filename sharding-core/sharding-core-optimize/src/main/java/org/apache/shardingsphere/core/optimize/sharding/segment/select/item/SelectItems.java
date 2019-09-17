@@ -84,6 +84,23 @@ public final class SelectItems {
     }
     
     /**
+     * Find item index.
+     *
+     * @param itemName item name
+     * @return item index
+     */
+    public Optional<Integer> findItemIndex(final String itemName) {
+        int result = 1;
+        for (SelectItem each : items) {
+            if (itemName.equalsIgnoreCase(each.getExpression())) {
+                return Optional.of(result);
+            }
+            result++;
+        }
+        return Optional.absent();
+    }
+    
+    /**
      * Get aggregation select items.
      *
      * @return aggregation select items

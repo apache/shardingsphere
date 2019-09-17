@@ -21,6 +21,9 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.transport.packet.CommandPacketType;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Command packet type for MySQL.
  *
@@ -253,6 +256,14 @@ public enum MySQLCommandPacketType implements CommandPacketType {
      * @see <a href="https://dev.mysql.com/doc/internals/en/com-reset-connection.html">COM_RESET_CONNECTION</a>
      */
     COM_RESET_CONNECTION(0x1f);
+
+    private static final Map<Integer, MySQLCommandPacketType> MYSQL_COMMAND_PACKET_TYPE_CACHE = new HashMap<Integer, MySQLCommandPacketType>() {
+        {
+            for (MySQLCommandPacketType each : MySQLCommandPacketType.values()) {
+                this.put(each.value, each);
+            }
+        }
+    };
     
     private final int value;
     
@@ -263,11 +274,10 @@ public enum MySQLCommandPacketType implements CommandPacketType {
      * @return command packet type enum
      */
     public static MySQLCommandPacketType valueOf(final int value) {
-        for (MySQLCommandPacketType each : MySQLCommandPacketType.values()) {
-            if (value == each.value) {
-                return each;
-            }
+        MySQLCommandPacketType result = MYSQL_COMMAND_PACKET_TYPE_CACHE.get(value);
+        if (null == result) {
+            throw new IllegalArgumentException(String.format("Cannot find '%s' in command packet type", value));
         }
-        throw new IllegalArgumentException(String.format("Cannot find '%s' in command packet type", value));
+        return result;
     }
 }
