@@ -42,9 +42,6 @@ public final class InlineShardingStrategyConfiguration implements ShardingStrate
     
     @Override
     public String toString() {
-        return "Inline{"
-            + "shardingColumn='" + shardingColumn + '\''
-            + ", algorithmExpression='" + algorithmExpression + '\''
-            + '}';
+        return "Inline{" + "shardingColumn='" + shardingColumn + '\'' + ", algorithmExpression='" + algorithmExpression + '\'' + '}';
     }
 }

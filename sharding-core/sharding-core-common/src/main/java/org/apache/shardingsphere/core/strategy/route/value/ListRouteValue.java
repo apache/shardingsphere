@@ -41,7 +41,6 @@ public final class ListRouteValue<T extends Comparable<?>> implements RouteValue
     
     @Override
     public String toString() {
-        return tableName + "." + columnName
-            + (1 == values.size() ? " = " + new ArrayList<>(values).get(0) : " in (" + Joiner.on(",").join(values) + ")");
+        return tableName + "." + columnName + (1 == values.size() ? " = " + new ArrayList<>(values).get(0) : " in (" + Joiner.on(",").join(values) + ")");
     }
 }

@@ -130,11 +130,10 @@ public class ParsingSQLRoutingResultChecker implements RoutingResultChecker {
         for (TableUnit each : absentRoutingUnitMap.get(routingUnit)) {
             absentDataNodes.add(routingUnit.getDataSourceName() + "." + each.getActualTableName());
             Optional<TableRuleConfiguration> tableRuleConfiguration = getTableRuleConfiguration(shardingRule.getRuleConfiguration().getTableRuleConfigs(), each.getLogicTableName());
-            if (!tableRuleConfiguration.isPresent()) {
-                continue;
+            if (tableRuleConfiguration.isPresent()) {
+                databaseStrategy = tableRuleConfiguration.get().getDatabaseShardingStrategyConfig();
+                tableStrategy = tableRuleConfiguration.get().getTableShardingStrategyConfig();
             }
-            databaseStrategy = tableRuleConfiguration.get().getDatabaseShardingStrategyConfig();
-            tableStrategy = tableRuleConfiguration.get().getTableShardingStrategyConfig();
         }
         if (!absentDataNodes.isEmpty()) {
             StringBuilder detail = new StringBuilder();
@@ -143,9 +142,7 @@ public class ParsingSQLRoutingResultChecker implements RoutingResultChecker {
             }
             detail.append("TableStrategy=[").append(tableStrategy).append("], ");
             if (shardingStatement instanceof ShardingConditionOptimizedStatement) {
-                detail.append("with ")
-                    .append(getAllRouteValues(((ShardingConditionOptimizedStatement) shardingStatement).getShardingConditions().getConditions()))
-                    .append(", ");
+                detail.append("with ").append(getAllRouteValues(((ShardingConditionOptimizedStatement) shardingStatement).getShardingConditions().getConditions())).append(", ");
             }
             throwExceptionForAbsentDataNode(absentDataNodes, detail);
         }
@@ -187,8 +184,7 @@ public class ParsingSQLRoutingResultChecker implements RoutingResultChecker {
     }
     
     private void throwExceptionForAbsentDataNode(final Collection<String> absentDataNodes, final CharSequence detail) {
-        String msg = "We get some absent DataNodes=" + absentDataNodes + " in routing result, "
-            + (Strings.isNullOrEmpty(detail.toString()) ? "" : detail)
+        String msg = "We get some absent DataNodes=" + absentDataNodes + " in routing result, " + (Strings.isNullOrEmpty(detail.toString()) ? "" : detail)
             + "please check the configuration of rule and data node.";
         throw new ShardingException(msg.replace("%", "%%"));
     }
