@@ -26,6 +26,7 @@ import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingIn
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertValuesToken;
 import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.core.rule.EncryptRule;
@@ -42,11 +43,11 @@ import java.util.Iterator;
 public final class InsertValuesTokenGenerator implements OptionalSQLTokenGenerator<EncryptRule> {
     
     @Override
-    public Optional<InsertValuesToken> generateSQLToken(final OptimizedStatement optimizedStatement, 
+    public Optional<InsertValuesToken> generateSQLToken(final RewriteStatement rewriteStatement, 
                                                         final ParameterBuilder parameterBuilder, final EncryptRule encryptRule, final boolean isQueryWithCipherColumn) {
-        Collection<InsertValuesSegment> insertValuesSegments = optimizedStatement.getSQLStatement().findSQLSegments(InsertValuesSegment.class);
-        return isNeedToGenerateSQLToken(optimizedStatement, insertValuesSegments)
-                ? Optional.of(createInsertValuesToken((InsertOptimizedStatement) optimizedStatement, insertValuesSegments)) : Optional.<InsertValuesToken>absent();
+        Collection<InsertValuesSegment> insertValuesSegments = rewriteStatement.getOptimizedStatement().getSQLStatement().findSQLSegments(InsertValuesSegment.class);
+        return isNeedToGenerateSQLToken(rewriteStatement.getOptimizedStatement(), insertValuesSegments)
+                ? Optional.of(createInsertValuesToken((InsertOptimizedStatement) rewriteStatement.getOptimizedStatement(), insertValuesSegments)) : Optional.<InsertValuesToken>absent();
     }
     
     private boolean isNeedToGenerateSQLToken(final OptimizedStatement optimizedStatement, final Collection<InsertValuesSegment> insertValuesSegments) {

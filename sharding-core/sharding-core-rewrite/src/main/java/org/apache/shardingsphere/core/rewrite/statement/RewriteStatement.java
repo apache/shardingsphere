@@ -15,21 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.api.statement;
+package org.apache.shardingsphere.core.rewrite.statement;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.encrypt.condition.EncryptConditions;
+import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingConditions;
 
 /**
- * Condition optimized statement.
+ * SQL Statement for rewrite.
  *
  * @author zhangliang
  */
-public interface ConditionOptimizedStatement extends OptimizedStatement {
+@RequiredArgsConstructor
+@Getter
+public class RewriteStatement {
     
-    /**
-     * Get encrypt conditions.
-     *
-     * @return encrypt conditions
-     */
-    EncryptConditions getEncryptConditions();
+    private final OptimizedStatement optimizedStatement;
+    
+    private final ShardingConditions shardingConditions;
+    
+    private final EncryptConditions encryptConditions;
 }

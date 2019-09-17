@@ -22,6 +22,7 @@ import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStat
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertRegularNamesToken;
 import org.apache.shardingsphere.core.rule.BaseRule;
 import org.apache.shardingsphere.core.rule.EncryptRule;
@@ -40,12 +41,12 @@ import java.util.Map;
 public final class InsertRegularNamesTokenGenerator implements OptionalSQLTokenGenerator<BaseRule> {
     
     @Override
-    public Optional<InsertRegularNamesToken> generateSQLToken(final OptimizedStatement optimizedStatement,
+    public Optional<InsertRegularNamesToken> generateSQLToken(final RewriteStatement rewriteStatement,
                                                               final ParameterBuilder parameterBuilder, final BaseRule baseRule, final boolean isQueryWithCipherColumn) {
-        if (!isNeedToGenerateSQLToken(optimizedStatement, baseRule)) {
+        if (!isNeedToGenerateSQLToken(rewriteStatement.getOptimizedStatement(), baseRule)) {
             return Optional.absent();
         }
-        return createInsertColumnsToken(optimizedStatement, baseRule);
+        return createInsertColumnsToken(rewriteStatement.getOptimizedStatement(), baseRule);
     }
     
     private boolean isNeedToGenerateSQLToken(final OptimizedStatement optimizedStatement, final BaseRule baseRule) {

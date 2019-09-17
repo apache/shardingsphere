@@ -23,8 +23,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.optimize.api.segment.Tables;
-import org.apache.shardingsphere.core.optimize.encrypt.condition.EncryptCondition;
-import org.apache.shardingsphere.core.optimize.encrypt.condition.EncryptConditions;
 import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingConditions;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.groupby.GroupBy;
@@ -67,9 +65,9 @@ public final class ShardingSelectOptimizedStatement extends ShardingConditionOpt
     
     private boolean containsSubquery;
     
-    public ShardingSelectOptimizedStatement(final SQLStatement sqlStatement, final List<ShardingCondition> shardingConditions, final List<EncryptCondition> encryptConditions,
+    public ShardingSelectOptimizedStatement(final SQLStatement sqlStatement, final List<ShardingCondition> shardingConditions,
                                             final GroupBy groupBy, final OrderBy orderBy, final SelectItems selectItems, final Pagination pagination) {
-        super(sqlStatement, new ShardingConditions(shardingConditions), new EncryptConditions(encryptConditions));
+        super(sqlStatement, new ShardingConditions(shardingConditions));
         this.tables = new Tables(sqlStatement);
         this.groupBy = groupBy;
         this.orderBy = orderBy;

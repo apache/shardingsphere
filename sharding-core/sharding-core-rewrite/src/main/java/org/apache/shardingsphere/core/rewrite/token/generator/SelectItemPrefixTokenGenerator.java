@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.SelectItems;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SelectItemPrefixToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
@@ -34,11 +34,11 @@ public final class SelectItemPrefixTokenGenerator implements OptionalSQLTokenGen
     
     @Override
     public Optional<SelectItemPrefixToken> generateSQLToken(
-            final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final ShardingRule shardingRule, final boolean isQueryWithCipherColumn) {
-        if (!(optimizedStatement instanceof ShardingSelectOptimizedStatement)) {
+            final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder, final ShardingRule shardingRule, final boolean isQueryWithCipherColumn) {
+        if (!(rewriteStatement.getOptimizedStatement() instanceof ShardingSelectOptimizedStatement)) {
             return Optional.absent();
         }
-        SelectItems selectItems = ((ShardingSelectOptimizedStatement) optimizedStatement).getSelectItems();
+        SelectItems selectItems = ((ShardingSelectOptimizedStatement) rewriteStatement.getOptimizedStatement()).getSelectItems();
         return selectItems.getAggregationDistinctSelectItems().isEmpty() ? Optional.<SelectItemPrefixToken>absent() : Optional.of(new SelectItemPrefixToken(selectItems.getStartIndex()));
     }
 }

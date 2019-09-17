@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.pagination.Pagination;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.NumberLiteralPaginationValueSegment;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
 import org.apache.shardingsphere.core.rewrite.token.pojo.OffsetToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
@@ -35,11 +35,11 @@ public final class OffsetTokenGenerator implements OptionalSQLTokenGenerator<Sha
     
     @Override
     public Optional<OffsetToken> generateSQLToken(
-            final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final ShardingRule shardingRule, final boolean isQueryWithCipherColumn) {
-        if (!(optimizedStatement instanceof ShardingSelectOptimizedStatement)) {
+            final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder, final ShardingRule shardingRule, final boolean isQueryWithCipherColumn) {
+        if (!(rewriteStatement.getOptimizedStatement() instanceof ShardingSelectOptimizedStatement)) {
             return Optional.absent();
         }
-        Pagination pagination = ((ShardingSelectOptimizedStatement) optimizedStatement).getPagination();
+        Pagination pagination = ((ShardingSelectOptimizedStatement) rewriteStatement.getOptimizedStatement()).getPagination();
         return pagination.getOffsetSegment().isPresent() && pagination.getOffsetSegment().get() instanceof NumberLiteralPaginationValueSegment
                 ? Optional.of(new OffsetToken(pagination.getOffsetSegment().get().getStartIndex(), pagination.getOffsetSegment().get().getStopIndex(), pagination.getRevisedOffset()))
                 : Optional.<OffsetToken>absent();

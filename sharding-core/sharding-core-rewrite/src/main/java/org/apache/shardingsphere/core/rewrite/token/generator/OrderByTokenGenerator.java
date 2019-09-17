@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
 import org.apache.shardingsphere.core.parse.core.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
 import org.apache.shardingsphere.core.rewrite.token.pojo.OrderByToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
@@ -37,12 +37,12 @@ public final class OrderByTokenGenerator implements OptionalSQLTokenGenerator<Sh
     
     @Override
     public Optional<OrderByToken> generateSQLToken(
-            final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final ShardingRule shardingRule, final boolean isQueryWithCipherColumn) {
-        if (!(optimizedStatement instanceof ShardingSelectOptimizedStatement)) {
+            final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder, final ShardingRule shardingRule, final boolean isQueryWithCipherColumn) {
+        if (!(rewriteStatement.getOptimizedStatement() instanceof ShardingSelectOptimizedStatement)) {
             return Optional.absent();
         }
-        if (((ShardingSelectOptimizedStatement) optimizedStatement).getOrderBy().isGenerated()) {
-            return Optional.of(createOrderByToken((ShardingSelectOptimizedStatement) optimizedStatement));
+        if (((ShardingSelectOptimizedStatement) rewriteStatement.getOptimizedStatement()).getOrderBy().isGenerated()) {
+            return Optional.of(createOrderByToken((ShardingSelectOptimizedStatement) rewriteStatement.getOptimizedStatement()));
         }
         return Optional.absent();
     }

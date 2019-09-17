@@ -30,7 +30,7 @@ import org.apache.shardingsphere.core.merge.dal.show.ShowTableStatusMergedResult
 import org.apache.shardingsphere.core.merge.dal.show.ShowTablesMergedResult;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.DescribeStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.ShowCreateTableStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.ShowDatabasesStatement;
@@ -61,7 +61,7 @@ public final class DALMergeEngine implements MergeEngine {
     
     @Override
     public MergedResult merge() throws SQLException {
-        final DALStatement dalStatement = (DALStatement) optimizedStatement.getSQLStatement();
+        SQLStatement dalStatement = optimizedStatement.getSQLStatement();
         if (dalStatement instanceof ShowDatabasesStatement) {
             return new ShowDatabasesMergedResult();
         }

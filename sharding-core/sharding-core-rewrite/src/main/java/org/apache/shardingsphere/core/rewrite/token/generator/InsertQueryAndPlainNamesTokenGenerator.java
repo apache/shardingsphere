@@ -22,6 +22,7 @@ import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStat
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertQueryAndPlainNamesToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
@@ -39,11 +40,11 @@ public final class InsertQueryAndPlainNamesTokenGenerator implements OptionalSQL
     
     @Override
     public Optional<InsertQueryAndPlainNamesToken> generateSQLToken(
-            final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final EncryptRule encryptRule, final boolean isQueryWithCipherColumn) {
-        if (!isNeedToGenerateSQLToken(optimizedStatement)) {
+            final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder, final EncryptRule encryptRule, final boolean isQueryWithCipherColumn) {
+        if (!isNeedToGenerateSQLToken(rewriteStatement.getOptimizedStatement())) {
             return Optional.absent();
         }
-        return createInsertAssistedColumnsToken(optimizedStatement, encryptRule);
+        return createInsertAssistedColumnsToken(rewriteStatement.getOptimizedStatement(), encryptRule);
     }
     
     private boolean isNeedToGenerateSQLToken(final OptimizedStatement optimizedStatement) {

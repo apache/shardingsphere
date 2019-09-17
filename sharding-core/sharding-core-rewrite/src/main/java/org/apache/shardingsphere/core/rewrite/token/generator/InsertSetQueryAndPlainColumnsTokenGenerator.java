@@ -27,6 +27,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.Assignmen
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertSetQueryAndPlainColumnsToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
@@ -45,11 +46,11 @@ public final class InsertSetQueryAndPlainColumnsTokenGenerator implements Option
     
     @Override
     public Optional<InsertSetQueryAndPlainColumnsToken> generateSQLToken(
-            final OptimizedStatement optimizedStatement, final ParameterBuilder parameterBuilder, final EncryptRule encryptRule, final boolean isQueryWithCipherColumn) {
-        if (!isNeedToGenerateSQLToken(optimizedStatement)) {
+            final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder, final EncryptRule encryptRule, final boolean isQueryWithCipherColumn) {
+        if (!isNeedToGenerateSQLToken(rewriteStatement.getOptimizedStatement())) {
             return Optional.absent();
         }
-        return createInsertSetAddItemsToken((InsertOptimizedStatement) optimizedStatement, encryptRule);
+        return createInsertSetAddItemsToken((InsertOptimizedStatement) rewriteStatement.getOptimizedStatement(), encryptRule);
     }
     
     private boolean isNeedToGenerateSQLToken(final OptimizedStatement optimizedStatement) {
