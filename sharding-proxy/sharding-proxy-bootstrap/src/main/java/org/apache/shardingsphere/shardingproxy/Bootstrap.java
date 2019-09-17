@@ -109,11 +109,11 @@ public final class Bootstrap {
                                                 final Collection<String> shardingSchemaNames, final Map<String, YamlProxyRuleConfiguration> ruleConfigs, final int port) {
         try (ShardingOrchestrationFacade shardingOrchestrationFacade = new ShardingOrchestrationFacade(
                 new OrchestrationConfigurationYamlSwapper().swap(serverConfig.getOrchestration()), shardingSchemaNames)) {
+            initShardingOrchestrationFacade(serverConfig, ruleConfigs, shardingOrchestrationFacade);
             Authentication authentication = shardingOrchestrationFacade.getConfigService().loadAuthentication();
             Properties properties = shardingOrchestrationFacade.getConfigService().loadProperties();
             ConfigurationLogger.log(authentication);
             ConfigurationLogger.log(properties);
-            initShardingOrchestrationFacade(serverConfig, ruleConfigs, shardingOrchestrationFacade);
             ShardingProxyContext.getInstance().init(authentication, properties);
             LogicSchemas.getInstance().init(shardingSchemaNames, getSchemaDataSourceParameterMap(shardingOrchestrationFacade), getSchemaRules(shardingOrchestrationFacade), true);
             initOpenTracing();
