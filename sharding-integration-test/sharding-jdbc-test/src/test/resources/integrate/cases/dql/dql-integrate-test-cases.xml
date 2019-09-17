@@ -158,7 +158,15 @@
     <dql-test-case sql-case-id="select_count_with_escape_character">
         <assertion expected-data-file="select_count.xml" />
     </dql-test-case>
-    
+
+    <dql-test-case sql-case-id="select_with_block_comment">
+        <assertion expected-data-file="empty_order.xml" />
+    </dql-test-case>
+
+    <dql-test-case sql-case-id="select_with_single_comment">
+        <assertion expected-data-file="empty_order.xml" />
+    </dql-test-case>
+
     <dql-test-case sql-case-id="select_with_expression">
         <assertion expected-data-file="select_with_expression.xml" />
     </dql-test-case>
