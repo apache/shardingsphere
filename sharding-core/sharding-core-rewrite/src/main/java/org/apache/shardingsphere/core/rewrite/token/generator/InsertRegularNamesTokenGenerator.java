@@ -20,10 +20,9 @@ package org.apache.shardingsphere.core.rewrite.token.generator;
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
-import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptInsertOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingInsertOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
-import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertRegularNamesToken;
 import org.apache.shardingsphere.core.rule.BaseRule;
 import org.apache.shardingsphere.core.rule.EncryptRule;
@@ -42,12 +41,12 @@ import java.util.Map;
 public final class InsertRegularNamesTokenGenerator implements OptionalSQLTokenGenerator<BaseRule> {
     
     @Override
-    public Optional<InsertRegularNamesToken> generateSQLToken(final OptimizedStatement optimizedStatement,
+    public Optional<InsertRegularNamesToken> generateSQLToken(final RewriteStatement rewriteStatement,
                                                               final ParameterBuilder parameterBuilder, final BaseRule baseRule, final boolean isQueryWithCipherColumn) {
-        if (!isNeedToGenerateSQLToken(optimizedStatement, baseRule)) {
+        if (!isNeedToGenerateSQLToken(rewriteStatement.getOptimizedStatement(), baseRule)) {
             return Optional.absent();
         }
-        return createInsertColumnsToken(optimizedStatement, baseRule);
+        return createInsertColumnsToken(rewriteStatement.getOptimizedStatement(), baseRule);
     }
     
     private boolean isNeedToGenerateSQLToken(final OptimizedStatement optimizedStatement, final BaseRule baseRule) {
@@ -67,9 +66,7 @@ public final class InsertRegularNamesTokenGenerator implements OptionalSQLTokenG
     private Collection<String> getActualInsertColumns(final InsertOptimizedStatement optimizedStatement, final BaseRule baseRule) {
         Collection<String> result = new LinkedList<>();
         Map<String, String> logicAndCipherColumns = getEncryptRule(baseRule).getLogicAndCipherColumns(optimizedStatement.getTables().getSingleTableName());
-        Collection<String> columnNames = optimizedStatement instanceof ShardingInsertOptimizedStatement
-                ? ((ShardingInsertOptimizedStatement) optimizedStatement).getColumnNames() : ((EncryptInsertOptimizedStatement) optimizedStatement).getColumnNames();
-        for (String each : columnNames) {
+        for (String each : optimizedStatement.getColumnNames()) {
             result.add(getCipherColumn(each, logicAndCipherColumns));
         }
         return result;
@@ -89,14 +86,7 @@ public final class InsertRegularNamesTokenGenerator implements OptionalSQLTokenG
     }
     
     private boolean isNeedToAppendColumns(final InsertOptimizedStatement optimizedStatement, final ShardingRule shardingRule) {
-        return isNeedToAppendGeneratedKey(optimizedStatement, shardingRule) || isNeedToAppendAssistedQueryAndPlainColumns(optimizedStatement, shardingRule.getEncryptRule());
-    }
-    
-    private boolean isNeedToAppendGeneratedKey(final InsertOptimizedStatement optimizedStatement, final ShardingRule shardingRule) {
-        Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(optimizedStatement.getTables().getSingleTableName());
-        Collection<String> columnNames = optimizedStatement instanceof ShardingInsertOptimizedStatement
-                ? ((ShardingInsertOptimizedStatement) optimizedStatement).getColumnNames() : ((EncryptInsertOptimizedStatement) optimizedStatement).getColumnNames();
-        return generateKeyColumnName.isPresent() && !columnNames.contains(generateKeyColumnName.get());
+        return isNeedToAppendAssistedQueryAndPlainColumns(optimizedStatement, shardingRule.getEncryptRule());
     }
     
     private boolean isNeedToAppendAssistedQueryAndPlainColumns(final OptimizedStatement optimizedStatement, final EncryptRule encryptRule) {

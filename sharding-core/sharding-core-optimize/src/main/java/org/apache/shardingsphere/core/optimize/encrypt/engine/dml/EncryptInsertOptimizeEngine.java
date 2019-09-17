@@ -26,6 +26,7 @@ import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -37,13 +38,20 @@ public final class EncryptInsertOptimizeEngine implements EncryptOptimizeEngine<
     
     @Override
     public EncryptInsertOptimizedStatement optimize(final EncryptRule encryptRule, final TableMetas tableMetas, final String sql, final List<Object> parameters, final InsertStatement sqlStatement) {
-        String tableName = sqlStatement.getTable().getTableName();
-        EncryptInsertOptimizedStatement result = new EncryptInsertOptimizedStatement(sqlStatement, tableMetas);
-        int derivedColumnsCount = encryptRule.getAssistedQueryAndPlainColumns(tableName).size();
+        int derivedColumnsCount = getDerivedColumnsCount(encryptRule, sqlStatement.getTable().getTableName());
+        return new EncryptInsertOptimizedStatement(sqlStatement, tableMetas, getInsertValues(parameters, sqlStatement, derivedColumnsCount));
+    }
+    
+    private int getDerivedColumnsCount(final EncryptRule encryptRule, final String tableName) {
+        return encryptRule.getAssistedQueryAndPlainColumns(tableName).size();
+    }
+    
+    private List<InsertValue> getInsertValues(final List<Object> parameters, final InsertStatement sqlStatement, final int derivedColumnsCount) {
+        List<InsertValue> result = new LinkedList<>();
         int parametersOffset = 0;
         for (Collection<ExpressionSegment> each : sqlStatement.getAllValueExpressions()) {
             InsertValue insertValue = new InsertValue(each, derivedColumnsCount, parameters, parametersOffset);
-            result.getInsertValues().add(insertValue);
+            result.add(insertValue);
             parametersOffset += insertValue.getParametersCount();
         }
         return result;

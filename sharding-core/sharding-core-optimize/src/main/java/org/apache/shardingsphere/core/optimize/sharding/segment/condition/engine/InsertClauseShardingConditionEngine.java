@@ -57,12 +57,8 @@ public final class InsertClauseShardingConditionEngine {
     public List<ShardingCondition> createShardingConditions(final InsertStatement insertStatement, 
                                                             final List<Object> parameters, final Collection<String> columnNames, final GeneratedKey generatedKey) {
         List<ShardingCondition> result = getShardingConditions(insertStatement, columnNames, parameters);
-        Iterator<Comparable<?>> generatedValues = null == generatedKey ? Collections.<Comparable<?>>emptyList().iterator() : generatedKey.getGeneratedValues().iterator();
-        for (ShardingCondition each : result) {
-            if (isNeedAppendGeneratedKeyCondition(generatedKey, insertStatement.getTable().getTableName())) {
-                each.getRouteValues().add(
-                        new ListRouteValue<>(generatedKey.getColumnName(), insertStatement.getTable().getTableName(), Collections.<Comparable<?>>singletonList(generatedValues.next())));
-            }
+        if (isNeedAppendGeneratedKeyCondition(generatedKey, insertStatement.getTable().getTableName())) {
+            appendGeneratedKeyCondition(generatedKey, insertStatement.getTable().getTableName(), result);
         }
         return result;
     }
@@ -107,5 +103,12 @@ public final class InsertClauseShardingConditionEngine {
     
     private boolean isNeedAppendGeneratedKeyCondition(final GeneratedKey generatedKey, final String tableName) {
         return null != generatedKey && generatedKey.isGenerated() && shardingRule.isShardingColumn(generatedKey.getColumnName(), tableName);
+    }
+    
+    private void appendGeneratedKeyCondition(final GeneratedKey generatedKey, final String tableName, final List<ShardingCondition> shardingConditions) {
+        Iterator<Comparable<?>> generatedValues = generatedKey.getGeneratedValues().iterator();
+        for (ShardingCondition each : shardingConditions) {
+            each.getRouteValues().add(new ListRouteValue<>(generatedKey.getColumnName(), tableName, Collections.<Comparable<?>>singletonList(generatedValues.next())));
+        }
     }
 }

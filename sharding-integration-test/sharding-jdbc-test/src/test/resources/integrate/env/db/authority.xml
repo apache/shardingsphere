@@ -50,6 +50,16 @@
             <sql>GRANT select,update,insert,delete on db_7.* to user_dev@localhost</sql>
             <sql>GRANT select,update,insert,delete on db_8.* to user_dev@localhost</sql>
             <sql>GRANT select,update,insert,delete on db_9.* to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on db_0.t_order to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on db_1.t_order to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on db_2.t_order to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on db_3.t_order to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on db_4.t_order to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on db_5.t_order to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on db_6.t_order to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on db_7.t_order to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on db_8.t_order to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on db_9.t_order to user_dev@localhost</sql>
         </user-create>
         <user-drop>
             <sql>DROP USER user_dev@localhost</sql>

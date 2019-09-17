@@ -91,6 +91,7 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
         try {
             SQLUnit sqlUnit = getSQLUnit(sql);
             preparedStatement = preparedStatementGenerator.createPreparedStatement(sqlUnit.getSql());
+            replayMethodsInvocation(preparedStatement);
             replaySetParameter(preparedStatement, sqlUnit.getParameters());
             this.resultSet = new EncryptResultSet(preparedStatementGenerator.connection.getRuntimeContext(), encryptStatement, this, preparedStatement.executeQuery());
             return resultSet;
@@ -109,6 +110,7 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
         try {
             SQLUnit sqlUnit = getSQLUnit(sql);
             preparedStatement = preparedStatementGenerator.createPreparedStatement(sqlUnit.getSql());
+            replayMethodsInvocation(preparedStatement);
             replaySetParameter(preparedStatement, sqlUnit.getParameters());
             return preparedStatement.executeUpdate();
         } finally {
@@ -121,6 +123,7 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
         try {
             SQLUnit sqlUnit = getSQLUnit(sql);
             preparedStatement = preparedStatementGenerator.createPreparedStatement(sqlUnit.getSql());
+            replayMethodsInvocation(preparedStatement);
             replaySetParameter(preparedStatement, sqlUnit.getParameters());
             boolean result = preparedStatement.execute();
             this.resultSet = createEncryptResultSet(preparedStatement);
@@ -165,6 +168,7 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
     public int[] executeBatch() throws SQLException {
         try {
             preparedStatement = preparedStatementGenerator.createPreparedStatement(sqlUnits.iterator().next().getSql());
+            replayMethodsInvocation(preparedStatement);
             replayBatchPreparedStatement();
             return preparedStatement.executeBatch();
         } finally {
@@ -220,6 +224,9 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
     @SuppressWarnings("unchecked")
     protected Collection<? extends Statement> getRoutedStatements() {
         Collection<Statement> result = new LinkedList();
+        if (null == preparedStatement) {
+            return result;
+        }
         result.add(preparedStatement);
         return result;
     }

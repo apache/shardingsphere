@@ -23,7 +23,6 @@ import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.MergedResult;
 import org.apache.shardingsphere.core.merge.dql.DQLMergeEngine;
 import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
-import org.apache.shardingsphere.core.optimize.encrypt.condition.EncryptCondition;
 import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptTransparentOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.groupby.GroupBy;
@@ -77,8 +76,7 @@ public final class TopAndRowNumberDecoratorMergedResultTest {
     
     @Test
     public void assertNextForSkipAll() throws SQLException {
-        ShardingOptimizedStatement shardingStatement = new ShardingSelectOptimizedStatement(
-                new SelectStatement(), Collections.<ShardingCondition>emptyList(), Collections.<EncryptCondition>emptyList(), 
+        ShardingOptimizedStatement shardingStatement = new ShardingSelectOptimizedStatement(new SelectStatement(), Collections.<ShardingCondition>emptyList(),  
                 new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
                 new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<TableSegment>emptyList(), null),
                 new Pagination(new NumberLiteralRowNumberValueSegment(0, 0, Integer.MAX_VALUE, true), null, Collections.emptyList()));
@@ -90,8 +88,7 @@ public final class TopAndRowNumberDecoratorMergedResultTest {
     
     @Test
     public void assertNextWithoutOffsetWithRowCount() throws SQLException {
-        ShardingOptimizedStatement shardingStatement = new ShardingSelectOptimizedStatement(
-                new SelectStatement(), Collections.<ShardingCondition>emptyList(), Collections.<EncryptCondition>emptyList(),
+        ShardingOptimizedStatement shardingStatement = new ShardingSelectOptimizedStatement(new SelectStatement(), Collections.<ShardingCondition>emptyList(), 
                 new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
                 new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<TableSegment>emptyList(), null), 
                 new Pagination(null, new NumberLiteralLimitValueSegment(0, 0, 5), Collections.emptyList()));
@@ -106,8 +103,7 @@ public final class TopAndRowNumberDecoratorMergedResultTest {
     
     @Test
     public void assertNextWithOffsetWithoutRowCount() throws SQLException {
-        ShardingOptimizedStatement shardingStatement = new ShardingSelectOptimizedStatement(
-                new SelectStatement(), Collections.<ShardingCondition>emptyList(), Collections.<EncryptCondition>emptyList(),
+        ShardingOptimizedStatement shardingStatement = new ShardingSelectOptimizedStatement(new SelectStatement(), Collections.<ShardingCondition>emptyList(), 
                 new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
                 new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<TableSegment>emptyList(), null), 
                 new Pagination(new NumberLiteralRowNumberValueSegment(0, 0, 2, true), null, Collections.emptyList()));
@@ -122,8 +118,7 @@ public final class TopAndRowNumberDecoratorMergedResultTest {
     
     @Test
     public void assertNextWithOffsetBoundOpenedFalse() throws SQLException {
-        ShardingOptimizedStatement shardingStatement = new ShardingSelectOptimizedStatement(
-                new SelectStatement(), Collections.<ShardingCondition>emptyList(), Collections.<EncryptCondition>emptyList(),
+        ShardingOptimizedStatement shardingStatement = new ShardingSelectOptimizedStatement(new SelectStatement(), Collections.<ShardingCondition>emptyList(), 
                 new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
                 new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<TableSegment>emptyList(), null),
                 new Pagination(new NumberLiteralRowNumberValueSegment(0, 0, 2, false), new NumberLiteralLimitValueSegment(0, 0, 4), Collections.emptyList()));
@@ -137,8 +132,7 @@ public final class TopAndRowNumberDecoratorMergedResultTest {
 
     @Test
     public void assertNextWithOffsetBoundOpenedTrue() throws SQLException {
-        ShardingOptimizedStatement shardingStatement = new ShardingSelectOptimizedStatement(
-                new SelectStatement(), Collections.<ShardingCondition>emptyList(), Collections.<EncryptCondition>emptyList(),
+        ShardingOptimizedStatement shardingStatement = new ShardingSelectOptimizedStatement(new SelectStatement(), Collections.<ShardingCondition>emptyList(), 
                 new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
                 new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<TableSegment>emptyList(), null),
                 new Pagination(new NumberLiteralRowNumberValueSegment(0, 0, 2, true), new NumberLiteralLimitValueSegment(0, 0, 4), Collections.emptyList()));

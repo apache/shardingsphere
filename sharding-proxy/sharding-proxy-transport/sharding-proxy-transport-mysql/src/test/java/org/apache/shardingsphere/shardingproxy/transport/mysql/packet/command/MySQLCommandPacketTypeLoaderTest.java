@@ -33,4 +33,11 @@ public final class MySQLCommandPacketTypeLoaderTest {
         when(payload.readInt1()).thenReturn(0, MySQLCommandPacketType.COM_QUIT.getValue());
         assertThat(MySQLCommandPacketTypeLoader.getCommandPacketType(payload), is(MySQLCommandPacketType.COM_QUIT));
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void assertGetCommandPacketTypeError() {
+        MySQLPacketPayload payload = mock(MySQLPacketPayload.class);
+        when(payload.readInt1()).thenReturn(0, 0x21);
+        MySQLCommandPacketTypeLoader.getCommandPacketType(payload);
+    }
 }

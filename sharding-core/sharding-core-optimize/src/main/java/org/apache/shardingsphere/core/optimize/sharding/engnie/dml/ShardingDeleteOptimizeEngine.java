@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.core.optimize.sharding.engnie.dml;
 
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.optimize.encrypt.condition.EncryptConditions;
-import org.apache.shardingsphere.core.optimize.encrypt.condition.engine.WhereClauseEncryptConditionEngine;
 import org.apache.shardingsphere.core.optimize.sharding.engnie.ShardingOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingConditions;
 import org.apache.shardingsphere.core.optimize.sharding.segment.condition.engine.WhereClauseShardingConditionEngine;
@@ -39,10 +37,7 @@ public final class ShardingDeleteOptimizeEngine implements ShardingOptimizeEngin
     @Override
     public ShardingConditionOptimizedStatement optimize(final ShardingRule shardingRule,
                                                         final TableMetas tableMetas, final String sql, final List<Object> parameters, final DeleteStatement sqlStatement) {
-        WhereClauseShardingConditionEngine shardingConditionEngine = new WhereClauseShardingConditionEngine(shardingRule, tableMetas);
-        WhereClauseEncryptConditionEngine encryptConditionEngine = new WhereClauseEncryptConditionEngine(shardingRule.getEncryptRule(), tableMetas);
-        return new ShardingConditionOptimizedStatement(sqlStatement,
-                new ShardingConditions(shardingConditionEngine.createShardingConditions(sqlStatement, parameters)),
-                new EncryptConditions(encryptConditionEngine.createEncryptConditions(sqlStatement)));
+        return new ShardingConditionOptimizedStatement(
+                sqlStatement, new ShardingConditions(new WhereClauseShardingConditionEngine(shardingRule, tableMetas).createShardingConditions(sqlStatement, parameters)));
     }
 }

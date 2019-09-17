@@ -23,7 +23,6 @@ import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.MergedResult;
 import org.apache.shardingsphere.core.merge.dql.DQLMergeEngine;
 import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
-import org.apache.shardingsphere.core.optimize.encrypt.condition.EncryptCondition;
 import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptTransparentOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.groupby.GroupBy;
@@ -88,8 +87,7 @@ public final class GroupByMemoryMergedResultTest {
         aggregationSelectItem2.setIndex(5);
         aggregationSelectItem2.getDerivedAggregationItems().add(derivedAggregationSelectItem2);
         SelectItems selectItems = new SelectItems(0, 0, false, Arrays.<SelectItem>asList(aggregationSelectItem1, aggregationSelectItem2), Collections.<TableSegment>emptyList(), null);
-        ShardingOptimizedStatement shardingStatement = new ShardingSelectOptimizedStatement(
-                new SelectStatement(), Collections.<ShardingCondition>emptyList(), Collections.<EncryptCondition>emptyList(), 
+        ShardingOptimizedStatement shardingStatement = new ShardingSelectOptimizedStatement(new SelectStatement(), Collections.<ShardingCondition>emptyList(),  
                 new GroupBy(Collections.singletonList(createOrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, OrderDirection.ASC))), 0),
                 new OrderBy(Collections.singletonList(createOrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.DESC, OrderDirection.ASC))), false),
                 selectItems, new Pagination(null, null, Collections.emptyList()));
