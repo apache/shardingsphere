@@ -17,12 +17,19 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal;
 
+import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
+
 /**
- * Hint type.
+ * Hint command executor.
  *
  * @author liya
  */
-public enum HintType {
+public interface HintCommandExecutor {
     
-    DATABASE_TABLES, DATABASE_ONLY, MASTER_ONLY
+    /**
+     * Execute hint command.
+     *
+     * @return backend response
+     */
+    BackendResponse execute();
 }

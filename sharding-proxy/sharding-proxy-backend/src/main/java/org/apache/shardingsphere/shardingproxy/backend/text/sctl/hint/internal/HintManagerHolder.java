@@ -17,12 +17,33 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal;
 
+import org.apache.shardingsphere.api.hint.HintManager;
+
 /**
- * Hint type.
+ * HintManager Holder.
  *
  * @author liya
  */
-public enum HintType {
+public final class HintManagerHolder {
     
-    DATABASE_TABLES, DATABASE_ONLY, MASTER_ONLY
+    private static final ThreadLocal<HintManager> HINT_MANAGER_HOLDER = new ThreadLocal<>();
+    
+    /**
+     * Get a instance for {@code HintManager} from ThreadLocal,if not exist,then create new one.
+     *
+     * @return hint manager
+     */
+    public static HintManager get() {
+        if (HINT_MANAGER_HOLDER.get() == null) {
+            HINT_MANAGER_HOLDER.set(HintManager.getInstance());
+        }
+        return HINT_MANAGER_HOLDER.get();
+    }
+    
+    /**
+     * remove {@code HintManager} from ThreadLocal.
+     */
+    public static void remove() {
+        HINT_MANAGER_HOLDER.remove();
+    }
 }

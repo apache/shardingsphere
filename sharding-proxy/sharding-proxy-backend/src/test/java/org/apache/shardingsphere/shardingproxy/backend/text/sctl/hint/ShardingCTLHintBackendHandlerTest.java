@@ -25,12 +25,14 @@ import org.apache.shardingsphere.shardingproxy.backend.text.sctl.exception.Inval
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.exception.UnsupportedShardingCTLTypeException;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
@@ -38,13 +40,14 @@ import static org.mockito.Mockito.when;
  *
  * @author liya
  */
+@RunWith(MockitoJUnitRunner.class)
 public final class ShardingCTLHintBackendHandlerTest {
 
+    @Mock
     private BackendConnection backendConnection;
 
     @Before
     public void setUp() {
-        backendConnection = mock(BackendConnection.class);
         when(backendConnection.isSupportHint()).thenReturn(true);
     }
 

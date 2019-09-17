@@ -61,7 +61,7 @@ public final class ShardingCTLHintParser implements ShardingCTLParser<ShardingCT
 
     private final Matcher clearMatcher;
 
-    ShardingCTLHintParser(final String sql) {
+    public ShardingCTLHintParser(final String sql) {
         setMatcher = Pattern.compile(setRegex, Pattern.CASE_INSENSITIVE).matcher(sql);
         setDatabaseShardingValueMatcher = Pattern.compile(setDatabaseShardingValueRegex, Pattern.CASE_INSENSITIVE).matcher(sql);
         addDatabaseShardingValueMatcher = Pattern.compile(addDatabaseShardingValueRegex, Pattern.CASE_INSENSITIVE).matcher(sql);
