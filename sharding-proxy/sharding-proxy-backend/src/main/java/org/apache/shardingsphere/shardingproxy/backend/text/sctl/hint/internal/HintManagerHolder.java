@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
 
 /**
@@ -24,6 +26,7 @@ import org.apache.shardingsphere.api.hint.HintManager;
  *
  * @author liya
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class HintManagerHolder {
     
     private static final ThreadLocal<HintManager> HINT_MANAGER_HOLDER = new ThreadLocal<>();

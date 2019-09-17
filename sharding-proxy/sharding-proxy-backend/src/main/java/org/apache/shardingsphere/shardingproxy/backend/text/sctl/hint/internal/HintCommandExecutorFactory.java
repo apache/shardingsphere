@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal;
 
 import com.google.common.base.Optional;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.ShardingCTLHintParser;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.ShardingCTLHintStatement;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintAddDatabaseShardingValueCommand;
@@ -38,6 +40,7 @@ import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.e
  *
  * @author liya
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class HintCommandExecutorFactory {
     
     /**
