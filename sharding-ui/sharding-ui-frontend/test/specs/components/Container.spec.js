@@ -16,7 +16,7 @@
  */
 import { expect } from 'chai'
 import { shallowMount } from '@vue/test-utils'
-import Container from '../../src/components/Container/index.vue'
+import Container from '../../../src/components/Container/index.vue'
 
 describe('Container/index.vue', () => {
   it('Container Does the component exist？', () => {

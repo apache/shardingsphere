@@ -8,7 +8,6 @@
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
     "start": "npm run dev",
     "lint": "eslint --ext .js,.vue src",
-    "test": "cross-env NODE_ENV=mock  webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
     "build": "node build/build.js",
     "unit": "cross-env BABEL_ENV=test karma start --single-run"
   },
@@ -93,8 +92,8 @@
     "webpack-merge": "^4.1.0"
   },
   "engines": {
-    "node": ">= 6.0.0",
-    "npm": ">= 3.0.0"
+    "node": ">= 8.11.0",
+    "npm": ">= 5.6.0"
   },
   "browserslist": [
     "> 1%",

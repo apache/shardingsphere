@@ -16,7 +16,7 @@
  */
 import { expect } from 'chai'
 import { shallowMount } from '@vue/test-utils'
-import Logo from '../../src/components/Logo/index.vue'
+import Logo from '../../../src/components/Logo/index.vue'
 
 describe('Logo/index.vue', () => {
   it('Logo Does the component exist？', () => {

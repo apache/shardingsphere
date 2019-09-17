@@ -17,9 +17,9 @@
 import { expect } from 'chai'
 import { shallowMount, createLocalVue, mount } from '@vue/test-utils'
 import VueI18n from 'vue-i18n'
-import Head from '../../src/components/Head/index.vue'
-import Language from '../../src/lang/index'
-import store from '../../src/store'
+import Head from '../../../src/components/Head/index.vue'
+import Language from '../../../src/lang/index'
+import store from '../../../src/store'
 import Vuex from 'vuex'
 
 const localVue = createLocalVue()
