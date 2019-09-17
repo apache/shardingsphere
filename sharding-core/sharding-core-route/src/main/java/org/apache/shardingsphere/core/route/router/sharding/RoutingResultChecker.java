@@ -15,32 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.strategy.route.value;
+package org.apache.shardingsphere.core.route.router.sharding;
 
-import com.google.common.base.Joiner;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-import java.util.ArrayList;
-import java.util.Collection;
+import org.apache.shardingsphere.core.route.type.RoutingEngine;
+import org.apache.shardingsphere.core.route.type.RoutingResult;
 
 /**
- * Route value for list values.
- * 
- * @author zhangliang
+ * RoutingResult checker.
+ *
+ * @author sunbufu
  */
-@RequiredArgsConstructor
-@Getter
-public final class ListRouteValue<T extends Comparable<?>> implements RouteValue {
+public interface RoutingResultChecker {
     
-    private final String columnName;
-    
-    private final String tableName;
-    
-    private final Collection<T> values;
-    
-    @Override
-    public String toString() {
-        return tableName + "." + columnName + (1 == values.size() ? " = " + new ArrayList<>(values).get(0) : " in (" + Joiner.on(",").join(values) + ")");
-    }
+    /**
+     * Check routing result.
+     *
+     * @param routingEngine     routing engine
+     * @param routingResult     routing result
+     */
+    void check(RoutingEngine routingEngine, RoutingResult routingResult);
 }
