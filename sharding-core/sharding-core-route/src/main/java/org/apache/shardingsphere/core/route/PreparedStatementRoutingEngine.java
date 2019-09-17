@@ -22,7 +22,6 @@ import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.route.router.masterslave.ShardingMasterSlaveRouter;
 import org.apache.shardingsphere.core.route.router.sharding.ParsingSQLRouter;
-import org.apache.shardingsphere.core.route.router.sharding.ShardingRouter;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.List;
@@ -37,7 +36,7 @@ public final class PreparedStatementRoutingEngine {
     
     private final String logicSQL;
     
-    private final ShardingRouter shardingRouter;
+    private final ParsingSQLRouter shardingRouter;
     
     private final ShardingMasterSlaveRouter masterSlaveRouter;
     

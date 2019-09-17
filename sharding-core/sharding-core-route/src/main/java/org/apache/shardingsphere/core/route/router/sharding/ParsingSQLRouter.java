@@ -55,7 +55,7 @@ import java.util.List;
  * @author zhangyonglun
  */
 @RequiredArgsConstructor
-public final class ParsingSQLRouter implements ShardingRouter {
+public final class ParsingSQLRouter {
     
     private final ShardingRule shardingRule;
     
@@ -65,13 +65,26 @@ public final class ParsingSQLRouter implements ShardingRouter {
     
     private final List<Comparable<?>> generatedValues = new LinkedList<>();
     
-    @Override
+    /**
+     * Parse SQL.
+     *
+     * @param logicSQL logic SQL
+     * @param useCache use cache to save SQL parse result or not
+     * @return parse result
+     */
     public SQLStatement parse(final String logicSQL, final boolean useCache) {
         return parseEngine.parse(logicSQL, useCache);
     }
     
+    /**
+     * Route SQL.
+     *
+     * @param logicSQL logic SQL
+     * @param parameters SQL parameters
+     * @param sqlStatement SQL statement
+     * @return parse result
+     */
     @SuppressWarnings("unchecked")
-    @Override
     public SQLRouteResult route(final String logicSQL, final List<Object> parameters, final SQLStatement sqlStatement) {
         ShardingOptimizedStatement shardingStatement = ShardingOptimizeEngineFactory.newInstance(sqlStatement).optimize(shardingRule, metaData.getTables(), logicSQL, parameters, sqlStatement);
         boolean needMergeShardingValues = isNeedMergeShardingValues(shardingStatement);
