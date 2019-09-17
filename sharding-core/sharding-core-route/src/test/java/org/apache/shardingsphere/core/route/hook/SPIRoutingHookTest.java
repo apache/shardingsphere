@@ -49,7 +49,7 @@ public class SPIRoutingHookTest {
     private Exception exception;
     
     @Test
-    public void start() {
+    public void assertStart() {
         spiRoutingHook.start(sql);
         RoutingHook routingHook = getFixtureHook();
         assertThat(routingHook, instanceOf(RoutingHookFixture.class));
@@ -57,7 +57,7 @@ public class SPIRoutingHookTest {
     }
     
     @Test
-    public void finishSuccess() {
+    public void assertFinishSuccess() {
         spiRoutingHook.finishSuccess(sqlRouteResult, tableMetas);
         RoutingHook routingHook = getFixtureHook();
         assertThat(routingHook, instanceOf(RoutingHookFixture.class));
@@ -66,7 +66,7 @@ public class SPIRoutingHookTest {
     }
     
     @Test
-    public void finishFailure() {
+    public void assertFinishFailure() {
         spiRoutingHook.finishFailure(exception);
         RoutingHook routingHook = getFixtureHook();
         assertThat(routingHook, instanceOf(RoutingHookFixture.class));
