@@ -47,7 +47,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Sharding router with parse.
+ * Sharding router.
  *
  * @author zhangliang
  * @author maxiaoguang
@@ -55,7 +55,7 @@ import java.util.List;
  * @author zhangyonglun
  */
 @RequiredArgsConstructor
-public final class ParsingSQLRouter {
+public final class ShardingRouter {
     
     private final ShardingRule shardingRule;
     

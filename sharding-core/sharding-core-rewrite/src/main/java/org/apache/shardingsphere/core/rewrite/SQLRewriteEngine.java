@@ -128,7 +128,7 @@ public final class SQLRewriteEngine {
     /**
      * Generate SQL.
      * 
-     * @return sql unit
+     * @return SQL unit
      */
     public SQLUnit generateSQL() {
         return new SQLUnit(sqlBuilder.toSQL(), parameterBuilder.getParameters());
@@ -139,7 +139,7 @@ public final class SQLRewriteEngine {
      * 
      * @param routingUnit routing unit
      * @param logicAndActualTables logic and actual tables
-     * @return sql unit
+     * @return SQL unit
      */
     public SQLUnit generateSQL(final RoutingUnit routingUnit, final Map<String, String> logicAndActualTables) {
         return new SQLUnit(sqlBuilder.toSQL(routingUnit, logicAndActualTables), parameterBuilder.getParameters(routingUnit));

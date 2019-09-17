@@ -30,8 +30,8 @@ public interface RoutingResultChecker {
     /**
      * Check routing result.
      *
-     * @param routingEngine     routing engine
-     * @param routingResult     routing result
+     * @param routingEngine routing engine
+     * @param routingResult routing result
      */
     void check(RoutingEngine routingEngine, RoutingResult routingResult);
 }
