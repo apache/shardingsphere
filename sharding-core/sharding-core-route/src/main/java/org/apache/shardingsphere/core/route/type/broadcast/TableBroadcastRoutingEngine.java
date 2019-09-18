@@ -17,9 +17,13 @@
 
 package org.apache.shardingsphere.core.route.type.broadcast;
 
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
-import org.apache.shardingsphere.core.optimize.sharding.statement.ddl.ShardingDropIndexOptimizedStatement;
+import org.apache.shardingsphere.core.parse.sql.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.core.parse.sql.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
@@ -43,6 +47,8 @@ public final class TableBroadcastRoutingEngine implements RoutingEngine {
     
     private final ShardingRule shardingRule;
     
+    private final TableMetas tableMetas;
+    
     private final OptimizedStatement optimizedStatement;
     
     @Override
@@ -55,8 +61,27 @@ public final class TableBroadcastRoutingEngine implements RoutingEngine {
     }
     
     private Collection<String> getLogicTableNames() {
-        return optimizedStatement instanceof ShardingDropIndexOptimizedStatement
-                ? ((ShardingDropIndexOptimizedStatement) optimizedStatement).getTableNames() : optimizedStatement.getTables().getTableNames();
+        return optimizedStatement.getSQLStatement() instanceof DropIndexStatement
+                ? getTableNames((DropIndexStatement) optimizedStatement.getSQLStatement()) : optimizedStatement.getTables().getTableNames();
+    }
+    
+    private Collection<String> getTableNames(final DropIndexStatement dropIndexStatement) {
+        Collection<String> result = new LinkedList<>();
+        for (IndexSegment each : dropIndexStatement.getIndexes()) {
+            Optional<String> tableName = findLogicTableName(each.getName());
+            Preconditions.checkState(tableName.isPresent(), "Cannot find index name `%s`.", each.getName());
+            result.add(tableName.get());
+        }
+        return result;
+    }
+    
+    private Optional<String> findLogicTableName(final String logicIndexName) {
+        for (String each : tableMetas.getAllTableNames()) {
+            if (tableMetas.get(each).containsIndex(logicIndexName)) {
+                return Optional.of(each);
+            }
+        }
+        return Optional.absent();
     }
     
     private Collection<RoutingUnit> getAllRoutingUnits(final String logicTableName) {

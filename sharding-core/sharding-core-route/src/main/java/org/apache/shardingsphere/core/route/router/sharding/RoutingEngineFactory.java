@@ -21,7 +21,6 @@ import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingConditionOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
@@ -74,13 +73,13 @@ public final class RoutingEngineFactory {
             return new DatabaseBroadcastRoutingEngine(shardingRule);
         }
         if (sqlStatement instanceof DDLStatement) {
-            return new TableBroadcastRoutingEngine(shardingRule, optimizedStatement);
+            return new TableBroadcastRoutingEngine(shardingRule, metaData.getTables(), optimizedStatement);
         }
         if (sqlStatement instanceof DALStatement) {
             return getDALRoutingEngine(shardingRule, sqlStatement, tableNames);
         }
         if (sqlStatement instanceof DCLStatement) {
-            return getDCLRoutingEngine(shardingRule, optimizedStatement, metaData.getDataSources());
+            return getDCLRoutingEngine(shardingRule, optimizedStatement, metaData);
         }
         if (shardingRule.isAllInDefaultDataSource(tableNames)) {
             return new DefaultDatabaseRoutingEngine(shardingRule, tableNames);
@@ -108,17 +107,17 @@ public final class RoutingEngineFactory {
         return new DataSourceGroupBroadcastRoutingEngine(shardingRule);
     }
     
-    private static RoutingEngine getDCLRoutingEngine(final ShardingRule shardingRule, final OptimizedStatement optimizedStatement, final DataSourceMetas dataSourceMetas) {
+    private static RoutingEngine getDCLRoutingEngine(final ShardingRule shardingRule, final OptimizedStatement optimizedStatement, final ShardingSphereMetaData metaData) {
         return isGrantForSingleTable(optimizedStatement) 
-                ? new TableBroadcastRoutingEngine(shardingRule, optimizedStatement) : new MasterInstanceBroadcastRoutingEngine(shardingRule, dataSourceMetas);
+                ? new TableBroadcastRoutingEngine(shardingRule, metaData.getTables(), optimizedStatement) : new MasterInstanceBroadcastRoutingEngine(shardingRule, metaData.getDataSources());
     }
     
     private static boolean isGrantForSingleTable(final OptimizedStatement optimizedStatement) {
         return !optimizedStatement.getTables().isEmpty() && !"*".equals(optimizedStatement.getTables().getSingleTableName());
     }
     
-    private static RoutingEngine getShardingRoutingEngine(
-            final ShardingRule shardingRule, final ShardingConditionOptimizedStatement optimizedStatement, final ShardingConditions shardingConditions, final Collection<String> tableNames) {
+    private static RoutingEngine getShardingRoutingEngine(final ShardingRule shardingRule, final ShardingConditionOptimizedStatement optimizedStatement, 
+                                                          final ShardingConditions shardingConditions, final Collection<String> tableNames) {
         Collection<String> shardingTableNames = shardingRule.getShardingLogicTableNames(tableNames);
         if (1 == shardingTableNames.size() || shardingRule.isAllBindingTables(shardingTableNames)) {
             return new StandardRoutingEngine(shardingRule, shardingTableNames.iterator().next(), optimizedStatement, shardingConditions);
