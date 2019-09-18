@@ -4,6 +4,7 @@ import info.avalon566.shardingscaling.sync.jdbc.DataRecord;
 import lombok.var;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author avalon566
@@ -33,7 +34,9 @@ public class DispatcherChannel implements Channel {
     public void pushRecord(Record record) {
         if (FinishedRecord.class.equals(record.getClass())) {
             // 广播事件
-            channels.forEach((k, v) -> v.pushRecord(record));
+            for (Map.Entry<String, MemoryChannel> entry : channels.entrySet()) {
+                entry.getValue().pushRecord(record);
+            }
         } else if (DataRecord.class.equals(record.getClass())) {
             // 表名哈希
             var dataRecord = (DataRecord) record;
@@ -54,11 +57,11 @@ public class DispatcherChannel implements Channel {
     private void checkAssignment(String threadId) {
         if (!channelAssignment.containsKey(threadId)) {
             synchronized (this) {
-                channels.forEach((channelId, channel) -> {
-                    if (!channelAssignment.containsValue(channelId)) {
-                        channelAssignment.put(threadId, channelId);
+                for (Map.Entry<String, MemoryChannel> entry : channels.entrySet()) {
+                    if (!channelAssignment.containsValue(entry.getKey())) {
+                        channelAssignment.put(threadId, entry.getKey());
                     }
-                });
+                }
             }
         }
     }

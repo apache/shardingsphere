@@ -5,6 +5,7 @@ import info.avalon566.shardingscaling.job.schedule.Event;
 import info.avalon566.shardingscaling.job.schedule.EventType;
 import info.avalon566.shardingscaling.job.schedule.Reporter;
 import info.avalon566.shardingscaling.sync.core.SyncExecutor;
+import info.avalon566.shardingscaling.sync.core.Writer;
 import info.avalon566.shardingscaling.sync.mysql.MysqlReader;
 import info.avalon566.shardingscaling.sync.mysql.MysqlWriter;
 import lombok.var;
@@ -32,16 +33,19 @@ public class TableSliceSyncJob {
     public void run() {
         var reader = new MysqlReader(syncConfiguration.getReaderConfiguration());
         var writer = new MysqlWriter(syncConfiguration.getWriterConfiguration());
-        var executor = new SyncExecutor(reader, Arrays.asList(writer));
+        final var executor = new SyncExecutor(reader, Arrays.<Writer>asList(writer));
         executor.run();
-        new Thread(() -> {
-            try {
-                executor.waitFinish();
-                LOGGER.info("{} table slice sync finish", syncConfiguration.getReaderConfiguration().getTableName());
-                reporter.report(new Event(EventType.FINISHED));
-            } catch (Exception ex) {
-                LOGGER.info("{} table slice sync exception exit", syncConfiguration.getReaderConfiguration().getTableName());
-                reporter.report(new Event(EventType.FINISHED));
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    executor.waitFinish();
+                    LOGGER.info("{} table slice sync finish", syncConfiguration.getReaderConfiguration().getTableName());
+                    reporter.report(new Event(EventType.FINISHED));
+                } catch (Exception ex) {
+                    LOGGER.info("{} table slice sync exception exit", syncConfiguration.getReaderConfiguration().getTableName());
+                    reporter.report(new Event(EventType.FINISHED));
+                }
             }
         }).start();
     }

@@ -39,21 +39,21 @@ public class SyncExecutor {
         readerFuture = pool1.submit(reader);
         pool1.shutdown();
         var pool2 = Executors.newFixedThreadPool(writers.size());
-        writers.forEach(writer -> {
+        for (Writer writer : writers) {
             writer.setChannel(channel);
             writerFutures.add(pool2.submit(writer));
-        });
+        }
         pool2.shutdown();
     }
 
     public void waitFinish() {
-        writerFutures.forEach(writerFuture -> {
+        for (Future<?> writerFuture : writerFutures) {
             try {
                 writerFuture.get();
             } catch (Exception ex) {
                 //TODO: shutdown reader and other writer
                 throw new RuntimeException(ex);
             }
-        });
+        }
     }
 }

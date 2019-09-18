@@ -77,7 +77,7 @@ public abstract class AbstractJdbcWriter extends AbstractRunner implements Write
                     var insertSql = sqlBuilder.buildInsertSql(record.getTableName());
                     PreparedStatement ps = connection.prepareStatement(insertSql);
                     ps.setQueryTimeout(30);
-                    buffer.forEach(r -> {
+                    for (DataRecord r : buffer) {
                         try {
                             for (int i = 0; i < r.getColumnCount(); i++) {
                                 ps.setObject(i + 1, r.getColumn(i).getValue());
@@ -87,7 +87,7 @@ public abstract class AbstractJdbcWriter extends AbstractRunner implements Write
                         } catch (Exception ex) {
                             throw new RuntimeException(ex);
                         }
-                    });
+                    }
                 } else if ("update".equals(record.getType())) {
                     var metaData = dbMetaDataUtil.getColumNames(record.getTableName());
                     var primaryKeys = dbMetaDataUtil.getPrimaryKeys(record.getTableName());

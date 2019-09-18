@@ -31,13 +31,13 @@ public class MysqlReader extends AbstractJdbcReader {
 
     private String formatMysqlParams(Map<String, String> params) {
         var result = new StringBuilder();
-        params.forEach((k, v) -> {
-            result.append(k);
-            if (null != v) {
-                result.append("=").append(v);
+        for (Map.Entry<String, String> entry : params.entrySet()) {
+            result.append(entry.getKey());
+            if (null != entry.getValue()) {
+                result.append("=").append(entry.getValue());
             }
             result.append("&");
-        });
+        }
         result.deleteCharAt(result.length() - 1);
         return result.toString();
     }

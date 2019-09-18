@@ -36,14 +36,15 @@ public class HistoryDataSyncer {
     private List<SyncConfiguration> split(SyncConfiguration syncConfiguration) {
         List<SyncConfiguration> syncConfigurations = new ArrayList<>();
         // split by table
-        new DbMetaDataUtil(syncConfiguration.getReaderConfiguration()).getTableNames().forEach(tableName -> {
+        for (String tableName : new DbMetaDataUtil(syncConfiguration.getReaderConfiguration()).getTableNames()) {
             var readerConfig = syncConfiguration.getReaderConfiguration().clone();
             readerConfig.setTableName(tableName);
             // split by primary key range
-            new MysqlReader(readerConfig).split(syncConfiguration.getConcurrency()).forEach(sliceConfig ->
-                    syncConfigurations.add(new SyncConfiguration(SyncType.TableSlice, syncConfiguration.getConcurrency(),
-                            sliceConfig, syncConfiguration.getWriterConfiguration().clone())));
-        });
+            for(var sliceConfig : new MysqlReader(readerConfig).split(syncConfiguration.getConcurrency())) {
+                syncConfigurations.add(new SyncConfiguration(SyncType.TableSlice, syncConfiguration.getConcurrency(),
+                        sliceConfig, syncConfiguration.getWriterConfiguration().clone()));
+            }
+        }
         return syncConfigurations;
     }
 

@@ -18,13 +18,13 @@ public class InProcessScheduler implements Scheduler {
     @Override
     public Reporter schedule(List<SyncConfiguration> syncConfigurations) {
         var reporter = new InProcessReporter();
-        syncConfigurations.forEach(syncConfiguration -> {
+        for (SyncConfiguration syncConfiguration : syncConfigurations) {
             if (SyncType.Database.equals(syncConfiguration.getSyncType())) {
                 new DatabaseSyncJob(syncConfiguration).run();
             } else if (SyncType.TableSlice.equals(syncConfiguration.getSyncType())) {
                 new TableSliceSyncJob(syncConfiguration, reporter).run();
             }
-        });
+        }
         return reporter;
     }
 }

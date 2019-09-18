@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author avalon566
@@ -55,17 +56,17 @@ public class ScalingJob {
     private List<SyncConfiguration> toSyncConfigurations(CommandLine commandLine) throws FileNotFoundException {
         var ruleConfig = loadRuleConfiguration(commandLine.getOptionValue(INPUT_SHARDING_CONFIG));
         var syncConfigurations = new ArrayList<SyncConfiguration>(ruleConfig.getDataSources().size());
-        ruleConfig.getDataSources().forEach((s, yamlDataSourceParameter) -> {
+        for (Map.Entry<String, RuleConfiguration.YamlDataSourceParameter> entry : ruleConfig.getDataSources().entrySet()) {
             var readerConfiguration = new RdbmsConfiguration();
-            readerConfiguration.setJdbcUrl(yamlDataSourceParameter.getUrl());
-            readerConfiguration.setUsername(yamlDataSourceParameter.getUsername());
-            readerConfiguration.setPassword(yamlDataSourceParameter.getPassword());
+            readerConfiguration.setJdbcUrl(entry.getValue().getUrl());
+            readerConfiguration.setUsername(entry.getValue().getUsername());
+            readerConfiguration.setPassword(entry.getValue().getPassword());
             var writerConfiguration = new RdbmsConfiguration();
             writerConfiguration.setJdbcUrl(commandLine.getOptionValue(OUTPUT_JDBC_URL));
             writerConfiguration.setUsername(commandLine.getOptionValue(OUTPUT_JDBC_USERNAME));
             writerConfiguration.setPassword(commandLine.getOptionValue(OUTPUT_JDBC_PASSWORD));
             syncConfigurations.add(new SyncConfiguration(SyncType.Database, 3, readerConfiguration, writerConfiguration));
-        });
+        }
         return syncConfigurations;
     }
 
