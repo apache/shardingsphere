@@ -39,7 +39,7 @@ import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCo
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.apache.shardingsphere.core.route.router.sharding.condition.engine.InsertClauseShardingConditionEngine;
 import org.apache.shardingsphere.core.route.router.sharding.condition.engine.WhereClauseShardingConditionEngine;
-import org.apache.shardingsphere.core.route.router.sharding.validator.routingresult.RoutingResultValidator;
+import org.apache.shardingsphere.core.route.router.sharding.validator.routingresult.RoutingResultValidatorFactory;
 import org.apache.shardingsphere.core.route.router.sharding.validator.statement.ShardingStatementValidator;
 import org.apache.shardingsphere.core.route.router.sharding.validator.statement.ShardingStatementValidatorFactory;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
@@ -107,7 +107,7 @@ public final class ShardingRouter {
         }
         RoutingEngine routingEngine = RoutingEngineFactory.newInstance(shardingRule, metaData, shardingStatement, shardingConditions);
         RoutingResult routingResult = routingEngine.route();
-        new RoutingResultValidator(shardingRule, metaData, shardingStatement, shardingConditions).validate(routingEngine, routingResult);
+        RoutingResultValidatorFactory.newInstance(routingEngine, shardingRule, metaData, shardingStatement, shardingConditions).validate(routingEngine, routingResult);
         if (needMergeShardingValues) {
             Preconditions.checkState(1 == routingResult.getRoutingUnits().size(), "Must have one sharding with subquery.");
         }

@@ -33,6 +33,7 @@ import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingCo
 import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
+import org.apache.shardingsphere.core.route.router.sharding.validator.routingresult.impl.StandardRoutingResultValidator;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
@@ -59,35 +60,17 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class RoutingResultValidatorTest {
+public final class StandardRoutingResultValidatorTest {
     
     @Test
     public void assertValidateWithShardingDropIndexOptimizedStatement() {
-        new RoutingResultValidator(getShardingRule(), getMetaData(), mock(ShardingDropIndexOptimizedStatement.class), new ShardingConditions(Collections.<ShardingCondition>emptyList()))
+        new StandardRoutingResultValidator(getShardingRule(), getMetaData(), mock(ShardingDropIndexOptimizedStatement.class), new ShardingConditions(Collections.<ShardingCondition>emptyList()))
             .validate(mock(RoutingEngine.class), getRoutingResult());
-    }
-    
-    @Test
-    public void assertValidateOthersRoutingResult() {
-        new RoutingResultValidator(getShardingRule(), getMetaData(), getShardingOptimizedStatement(), new ShardingConditions(Collections.<ShardingCondition>emptyList()))
-            .validate(mock(RoutingEngine.class), getRoutingResult());
-    }
-    
-    @Test
-    public void assertValidateOthersRoutingResultWithAbsentDatabase() {
-        String msg = null;
-        try {
-            new RoutingResultValidator(getShardingRule(), getMetaData(), getShardingOptimizedStatement(), new ShardingConditions(Collections.<ShardingCondition>emptyList()))
-                .validate(mock(RoutingEngine.class), getRoutingResultWithAbsentDatabase());
-        } catch (ShardingException ex) {
-            msg = ex.getMessage();
-        }
-        assertThat(msg, is("We get some absent DataNodes=[db_2.t_order_0] in routing result, please check the configuration of rule and data node."));
     }
     
     @Test
     public void assertValidateStandardRoutingResult() {
-        new RoutingResultValidator(getShardingRule(), getMetaData(), getShardingOptimizedStatement(), new ShardingConditions(Collections.<ShardingCondition>emptyList()))
+        new StandardRoutingResultValidator(getShardingRule(), getMetaData(), getShardingOptimizedStatement(), new ShardingConditions(Collections.<ShardingCondition>emptyList()))
             .validate(mock(StandardRoutingEngine.class), getRoutingResult());
     }
     
@@ -95,7 +78,7 @@ public final class RoutingResultValidatorTest {
     public void assertValidateStandardRoutingResultWithAbsentDatabaseAndDefaultStrategy() {
         String msg = null;
         try {
-            new RoutingResultValidator(
+            new StandardRoutingResultValidator(
                     getShardingRuleWithDefaultStrategy(), getMetaData(), getShardingOptimizedStatement(), new ShardingConditions(Collections.<ShardingCondition>emptyList()))
                 .validate(mock(StandardRoutingEngine.class), getRoutingResultWithAbsentDatabase());
         } catch (ShardingException ex) {
@@ -134,7 +117,7 @@ public final class RoutingResultValidatorTest {
     public void assertValidateStandardRoutingResultWithAbsentDatabase() {
         String message = null;
         try {
-            new RoutingResultValidator(getShardingRule(), getMetaData(), getShardingOptimizedStatement(), new ShardingConditions(Collections.<ShardingCondition>emptyList()))
+            new StandardRoutingResultValidator(getShardingRule(), getMetaData(), getShardingOptimizedStatement(), new ShardingConditions(Collections.<ShardingCondition>emptyList()))
                 .validate(mock(StandardRoutingEngine.class), getRoutingResultWithAbsentDatabase());
         } catch (ShardingException ex) {
             message = ex.getMessage();
@@ -154,7 +137,7 @@ public final class RoutingResultValidatorTest {
     public void assertValidateStandardRoutingResultWithAbsentDatabaseAndRouteValues() {
         String message = null;
         try {
-            new RoutingResultValidator(getShardingRule(), getMetaData(), getShardingConditionOptimizedStatement(), getShardingConditions())
+            new StandardRoutingResultValidator(getShardingRule(), getMetaData(), getShardingConditionOptimizedStatement(), getShardingConditions())
                 .validate(mock(StandardRoutingEngine.class), getRoutingResultWithAbsentDatabase());
         } catch (ShardingException ex) {
             message = ex.getMessage();
