@@ -21,15 +21,11 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.optimize.sharding.engnie.ShardingOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.sharding.engnie.ShardingTransparentOptimizeEngine;
-import org.apache.shardingsphere.core.optimize.sharding.engnie.dml.ShardingDeleteOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.sharding.engnie.dml.ShardingInsertOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.sharding.engnie.dml.ShardingSelectOptimizeEngine;
-import org.apache.shardingsphere.core.optimize.sharding.engnie.dml.ShardingUpdateOptimizeEngine;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
 
 /**
  * Optimize engine factory for sharding.
@@ -53,12 +49,6 @@ public final class ShardingOptimizeEngineFactory {
         }
         if (sqlStatement instanceof InsertStatement) {
             return new ShardingInsertOptimizeEngine();
-        }
-        if (sqlStatement instanceof UpdateStatement) {
-            return new ShardingUpdateOptimizeEngine();
-        }
-        if (sqlStatement instanceof DeleteStatement) {
-            return new ShardingDeleteOptimizeEngine();
         }
         return new ShardingTransparentOptimizeEngine();
     }

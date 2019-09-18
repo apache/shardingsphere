@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.route.router.sharding;
 
-import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
@@ -90,8 +89,7 @@ public final class RoutingEngineFactory {
         if (optimizedStatement instanceof ShardingConditionOptimizedStatement && shardingConditions.isAlwaysFalse() || tableNames.isEmpty()) {
             return new UnicastRoutingEngine(shardingRule, tableNames);
         }
-        Preconditions.checkState(optimizedStatement instanceof ShardingConditionOptimizedStatement);
-        return getShardingRoutingEngine(shardingRule, (ShardingConditionOptimizedStatement) optimizedStatement, shardingConditions, tableNames);
+        return getShardingRoutingEngine(shardingRule, optimizedStatement, shardingConditions, tableNames);
     }
     
     private static RoutingEngine getDALRoutingEngine(final ShardingRule shardingRule, final SQLStatement sqlStatement, final Collection<String> tableNames) {
@@ -116,7 +114,7 @@ public final class RoutingEngineFactory {
         return !optimizedStatement.getTables().isEmpty() && !"*".equals(optimizedStatement.getTables().getSingleTableName());
     }
     
-    private static RoutingEngine getShardingRoutingEngine(final ShardingRule shardingRule, final ShardingConditionOptimizedStatement optimizedStatement, 
+    private static RoutingEngine getShardingRoutingEngine(final ShardingRule shardingRule, final OptimizedStatement optimizedStatement, 
                                                           final ShardingConditions shardingConditions, final Collection<String> tableNames) {
         Collection<String> shardingTableNames = shardingRule.getShardingLogicTableNames(tableNames);
         if (1 == shardingTableNames.size() || shardingRule.isAllBindingTables(shardingTableNames)) {
