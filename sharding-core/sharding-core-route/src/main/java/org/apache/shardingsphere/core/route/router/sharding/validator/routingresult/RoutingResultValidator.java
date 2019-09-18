@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.route.router.sharding.validator.routingresult;
 
-import org.apache.shardingsphere.core.route.type.RoutingEngine;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 
 /**
@@ -31,8 +30,7 @@ public interface RoutingResultValidator {
     /**
      * Validate routing result.
      *
-     * @param routingEngine routing engine
      * @param routingResult routing result
      */
-    void validate(RoutingEngine routingEngine, RoutingResult routingResult);
+    void validate(RoutingResult routingResult);
 }

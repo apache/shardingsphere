@@ -27,7 +27,6 @@ import org.apache.shardingsphere.core.optimize.sharding.statement.ddl.ShardingDr
 import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.apache.shardingsphere.core.route.router.sharding.validator.routingresult.RoutingResultValidator;
-import org.apache.shardingsphere.core.route.type.RoutingEngine;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.route.type.TableUnit;
@@ -69,7 +68,7 @@ public abstract class AbstractRoutingResultValidator implements RoutingResultVal
     }
     
     @Override
-    public final void validate(final RoutingEngine routingEngine, final RoutingResult routingResult) {
+    public final void validate(final RoutingResult routingResult) {
         if (shardingStatement instanceof ShardingDropIndexOptimizedStatement) {
             return;
         }
