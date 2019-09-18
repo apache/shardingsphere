@@ -48,6 +48,7 @@ import java.util.LinkedList;
  * Routing result validator.
  *
  * @author sunbufu
+ * @author zhangliang
  */
 public final class RoutingResultValidator {
     
@@ -69,12 +70,8 @@ public final class RoutingResultValidator {
         this.metaData = metaData;
         this.shardingStatement = shardingStatement;
         this.shardingConditions = shardingConditions;
-        if (shardingRule.getRuleConfiguration().getMasterSlaveRuleConfigs().isEmpty()) {
-            checkDataSource = true;
-        }
-        if (shardingStatement.getSQLStatement() instanceof DMLStatement) {
-            checkTable = true;
-        }
+        checkDataSource = shardingRule.getRuleConfiguration().getMasterSlaveRuleConfigs().isEmpty();
+        checkTable = shardingStatement.getSQLStatement() instanceof DMLStatement;
     }
     
     /**
