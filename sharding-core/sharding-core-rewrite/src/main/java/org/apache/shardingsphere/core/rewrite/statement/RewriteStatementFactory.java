@@ -24,8 +24,8 @@ import org.apache.shardingsphere.core.optimize.encrypt.condition.EncryptConditio
 import org.apache.shardingsphere.core.optimize.encrypt.condition.EncryptConditions;
 import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptConditionOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingConditions;
+import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
+import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;

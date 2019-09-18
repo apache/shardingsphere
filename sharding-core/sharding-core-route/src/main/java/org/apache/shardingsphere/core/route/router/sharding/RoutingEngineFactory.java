@@ -22,7 +22,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
-import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingConditions;
+import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingConditionOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;

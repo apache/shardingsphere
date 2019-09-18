@@ -15,41 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.sharding.segment.condition;
+package org.apache.shardingsphere.core.route.router.sharding.condition.generator;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import com.google.common.base.Optional;
+import org.apache.shardingsphere.core.optimize.api.segment.Column;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateRightValue;
+import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
 
 import java.util.List;
 
 /**
- * Sharding conditions.
+ * Condition value generator.
  *
  * @author zhangliang
- * @author maxiaoguang
+ * 
+ * @param <T> type of predicate right value
  */
-@RequiredArgsConstructor
-@Getter
-@ToString
-public final class ShardingConditions {
-    
-    private final List<ShardingCondition> conditions;
+public interface ConditionValueGenerator<T extends PredicateRightValue> {
     
     /**
-     * Judge sharding conditions is always false or not.
-     *
-     * @return sharding conditions is always false or not
+     * Generate route value.
+     * 
+     * @param predicateRightValue predicate right value
+     * @param column column
+     * @param parameters SQL parameters
+     * @return route value
      */
-    public boolean isAlwaysFalse() {
-        if (conditions.isEmpty()) {
-            return false;
-        }
-        for (ShardingCondition each : conditions) {
-            if (!(each instanceof AlwaysFalseShardingCondition)) {
-                return false;
-            }
-        }
-        return true;
-    }
+    Optional<RouteValue> generate(T predicateRightValue, Column column, List<Object> parameters);
 }

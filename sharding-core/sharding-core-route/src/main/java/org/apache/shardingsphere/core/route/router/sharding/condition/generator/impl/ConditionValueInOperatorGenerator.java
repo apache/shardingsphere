@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.sharding.segment.condition.generator.impl;
+package org.apache.shardingsphere.core.route.router.sharding.condition.generator.impl;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.optimize.api.segment.Column;
-import org.apache.shardingsphere.core.optimize.sharding.segment.condition.generator.ConditionValue;
-import org.apache.shardingsphere.core.optimize.sharding.segment.condition.generator.ConditionValueGenerator;
+import org.apache.shardingsphere.core.route.router.sharding.condition.generator.ConditionValue;
+import org.apache.shardingsphere.core.route.router.sharding.condition.generator.ConditionValueGenerator;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateInRightValue;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;

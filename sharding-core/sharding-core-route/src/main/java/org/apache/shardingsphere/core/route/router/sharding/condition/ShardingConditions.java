@@ -15,24 +15,41 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.sharding.segment.condition;
+package org.apache.shardingsphere.core.route.router.sharding.condition;
 
-import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
+
+import java.util.List;
 
 /**
- * Always false route value.
+ * Sharding conditions.
  *
  * @author zhangliang
+ * @author maxiaoguang
  */
-public final class AlwaysFalseRouteValue implements RouteValue {
+@RequiredArgsConstructor
+@Getter
+@ToString
+public final class ShardingConditions {
     
-    @Override
-    public String getColumnName() {
-        return "";
-    }
+    private final List<ShardingCondition> conditions;
     
-    @Override
-    public String getTableName() {
-        return "";
+    /**
+     * Judge sharding conditions is always false or not.
+     *
+     * @return sharding conditions is always false or not
+     */
+    public boolean isAlwaysFalse() {
+        if (conditions.isEmpty()) {
+            return false;
+        }
+        for (ShardingCondition each : conditions) {
+            if (!(each instanceof AlwaysFalseShardingCondition)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

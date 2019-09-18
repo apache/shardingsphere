@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.sharding.segment.condition.generator;
+package org.apache.shardingsphere.core.route.router.sharding.condition.generator;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;

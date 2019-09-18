@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.sharding.segment.condition.engine;
+package org.apache.shardingsphere.core.route.router.sharding.condition.engine;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Range;
@@ -24,10 +24,10 @@ import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.optimize.api.segment.Column;
 import org.apache.shardingsphere.core.optimize.api.segment.Tables;
-import org.apache.shardingsphere.core.optimize.sharding.segment.condition.AlwaysFalseRouteValue;
-import org.apache.shardingsphere.core.optimize.sharding.segment.condition.AlwaysFalseShardingCondition;
-import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimize.sharding.segment.condition.generator.ConditionValueGeneratorFactory;
+import org.apache.shardingsphere.core.route.router.sharding.condition.AlwaysFalseRouteValue;
+import org.apache.shardingsphere.core.route.router.sharding.condition.AlwaysFalseShardingCondition;
+import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
+import org.apache.shardingsphere.core.route.router.sharding.condition.generator.ConditionValueGeneratorFactory;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.SubqueryPredicateSegment;

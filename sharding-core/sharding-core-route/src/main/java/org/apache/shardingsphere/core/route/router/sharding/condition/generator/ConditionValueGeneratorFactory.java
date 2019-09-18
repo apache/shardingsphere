@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.sharding.segment.condition.generator;
+package org.apache.shardingsphere.core.route.router.sharding.condition.generator;
 
 import com.google.common.base.Optional;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.optimize.api.segment.Column;
-import org.apache.shardingsphere.core.optimize.sharding.segment.condition.generator.impl.ConditionValueBetweenOperatorGenerator;
-import org.apache.shardingsphere.core.optimize.sharding.segment.condition.generator.impl.ConditionValueCompareOperatorGenerator;
-import org.apache.shardingsphere.core.optimize.sharding.segment.condition.generator.impl.ConditionValueInOperatorGenerator;
+import org.apache.shardingsphere.core.route.router.sharding.condition.generator.impl.ConditionValueBetweenOperatorGenerator;
+import org.apache.shardingsphere.core.route.router.sharding.condition.generator.impl.ConditionValueCompareOperatorGenerator;
+import org.apache.shardingsphere.core.route.router.sharding.condition.generator.impl.ConditionValueInOperatorGenerator;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateBetweenRightValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateCompareRightValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateInRightValue;

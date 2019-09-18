@@ -30,8 +30,8 @@ import org.apache.shardingsphere.core.merge.dql.pagination.RowNumberDecoratorMer
 import org.apache.shardingsphere.core.merge.dql.pagination.TopAndRowNumberDecoratorMergedResult;
 import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
 import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptTransparentOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingConditions;
+import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
+import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.groupby.GroupBy;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.AggregationSelectItem;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.SelectItem;

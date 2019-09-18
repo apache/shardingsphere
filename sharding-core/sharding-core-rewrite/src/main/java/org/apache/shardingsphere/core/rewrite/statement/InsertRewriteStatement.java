@@ -24,7 +24,7 @@ import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStat
 import org.apache.shardingsphere.core.optimize.encrypt.condition.EncryptConditions;
 import org.apache.shardingsphere.core.optimize.encrypt.constant.EncryptDerivedColumnType;
 import org.apache.shardingsphere.core.optimize.sharding.constant.ShardingDerivedColumnType;
-import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingConditions;
+import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.apache.shardingsphere.core.optimize.sharding.segment.insert.GeneratedKey;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingInsertOptimizedStatement;
 import org.apache.shardingsphere.core.rule.EncryptRule;

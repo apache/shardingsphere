@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingConditions;
+import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.apache.shardingsphere.core.optimize.sharding.statement.ShardingOptimizedStatement;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 

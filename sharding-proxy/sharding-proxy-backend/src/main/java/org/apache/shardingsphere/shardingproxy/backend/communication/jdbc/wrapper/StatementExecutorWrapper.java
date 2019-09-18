@@ -23,8 +23,8 @@ import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesCons
 import org.apache.shardingsphere.core.optimize.encrypt.EncryptOptimizeEngineFactory;
 import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptTransparentOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingConditions;
+import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
+import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.apache.shardingsphere.core.optimize.sharding.statement.ShardingOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.statement.ShardingTransparentOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
