@@ -21,10 +21,9 @@ import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.route.router.masterslave.ShardingMasterSlaveRouter;
+import org.apache.shardingsphere.core.route.router.sharding.ParsingSQLRouter;
 import org.apache.shardingsphere.core.route.router.sharding.ShardingRouter;
-import org.apache.shardingsphere.core.route.router.sharding.ShardingRouterFactory;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.spi.database.DatabaseType;
 
 import java.util.List;
 
@@ -44,10 +43,9 @@ public final class PreparedStatementRoutingEngine {
     
     private SQLStatement sqlStatement;
     
-    public PreparedStatementRoutingEngine(final String logicSQL, final ShardingRule shardingRule,
-                                          final ShardingSphereMetaData metaData, final DatabaseType databaseType, final SQLParseEngine sqlParseEngine) {
+    public PreparedStatementRoutingEngine(final String logicSQL, final ShardingRule shardingRule, final ShardingSphereMetaData metaData, final SQLParseEngine sqlParseEngine) {
         this.logicSQL = logicSQL;
-        shardingRouter = ShardingRouterFactory.newInstance(shardingRule, metaData, databaseType, sqlParseEngine);
+        shardingRouter = new ParsingSQLRouter(shardingRule, metaData, sqlParseEngine);
         masterSlaveRouter = new ShardingMasterSlaveRouter(shardingRule.getMasterSlaveRules());
     }
     

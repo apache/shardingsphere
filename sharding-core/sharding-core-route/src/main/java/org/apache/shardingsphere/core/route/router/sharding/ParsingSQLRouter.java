@@ -35,6 +35,7 @@ import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSe
 import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
+import org.apache.shardingsphere.core.route.type.RoutingEngine;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 import org.apache.shardingsphere.core.rule.BindingTableRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -78,7 +79,9 @@ public final class ParsingSQLRouter implements ShardingRouter {
             checkSubqueryShardingValues(shardingStatement, ((ShardingConditionOptimizedStatement) shardingStatement).getShardingConditions());
             mergeShardingConditions(((ShardingConditionOptimizedStatement) shardingStatement).getShardingConditions());
         }
-        RoutingResult routingResult = RoutingEngineFactory.newInstance(shardingRule, metaData.getDataSources(), shardingStatement).route();
+        RoutingEngine routingEngine = RoutingEngineFactory.newInstance(shardingRule, metaData.getDataSources(), shardingStatement);
+        RoutingResult routingResult = routingEngine.route();
+        new ParsingSQLRoutingResultChecker(shardingRule, metaData, shardingStatement).check(routingEngine, routingResult);
         if (needMergeShardingValues) {
             Preconditions.checkState(1 == routingResult.getRoutingUnits().size(), "Must have one sharding with subquery.");
         }
