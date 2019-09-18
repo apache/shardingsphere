@@ -26,10 +26,6 @@ import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.encrypt.EncryptOptimizeEngineFactory;
 import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.ShardingOptimizeEngineFactory;
-import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
-import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
-import org.apache.shardingsphere.core.route.router.sharding.condition.engine.InsertClauseShardingConditionEngine;
-import org.apache.shardingsphere.core.route.router.sharding.condition.engine.WhereClauseShardingConditionEngine;
 import org.apache.shardingsphere.core.optimize.sharding.statement.ShardingOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingConditionOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingInsertOptimizedStatement;
@@ -39,6 +35,10 @@ import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
+import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
+import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
+import org.apache.shardingsphere.core.route.router.sharding.condition.engine.InsertClauseShardingConditionEngine;
+import org.apache.shardingsphere.core.route.router.sharding.condition.engine.WhereClauseShardingConditionEngine;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 import org.apache.shardingsphere.core.rule.BindingTableRule;
@@ -92,16 +92,7 @@ public final class ShardingRouter {
     @SuppressWarnings("unchecked")
     public SQLRouteResult route(final String logicSQL, final List<Object> parameters, final SQLStatement sqlStatement) {
         ShardingOptimizedStatement shardingStatement = ShardingOptimizeEngineFactory.newInstance(sqlStatement).optimize(shardingRule, metaData.getTables(), logicSQL, parameters, sqlStatement);
-        ShardingConditions shardingConditions = new ShardingConditions(Collections.<ShardingCondition>emptyList());
-        if (shardingStatement.getSQLStatement() instanceof DMLStatement) {
-            if (shardingStatement instanceof ShardingInsertOptimizedStatement) {
-                ShardingInsertOptimizedStatement shardingInsertStatement = (ShardingInsertOptimizedStatement) shardingStatement;
-                shardingConditions = new ShardingConditions(new InsertClauseShardingConditionEngine(shardingRule).createShardingConditions(
-                        (InsertStatement) shardingInsertStatement.getSQLStatement(), parameters, shardingInsertStatement.getColumnNames(), shardingInsertStatement.getGeneratedKey().orNull()));
-            } else {
-                shardingConditions = new ShardingConditions(new WhereClauseShardingConditionEngine(shardingRule, metaData.getTables()).createShardingConditions(sqlStatement, parameters));
-            }
-        }
+        ShardingConditions shardingConditions = getShardingConditions(parameters, shardingStatement);
         boolean needMergeShardingValues = isNeedMergeShardingValues(shardingStatement);
         if (shardingStatement instanceof ShardingConditionOptimizedStatement && needMergeShardingValues) {
             checkSubqueryShardingValues(shardingStatement, shardingConditions);
@@ -123,12 +114,16 @@ public final class ShardingRouter {
         return result;
     }
     
-    private void setGeneratedValues(final ShardingInsertOptimizedStatement optimizedStatement) {
-        if (optimizedStatement.getGeneratedKey().isPresent()) {
-            generatedValues.addAll(optimizedStatement.getGeneratedKey().get().getGeneratedValues());
-            optimizedStatement.getGeneratedKey().get().getGeneratedValues().clear();
-            optimizedStatement.getGeneratedKey().get().getGeneratedValues().addAll(generatedValues);
+    private ShardingConditions getShardingConditions(final List<Object> parameters, final ShardingOptimizedStatement shardingStatement) {
+        if (shardingStatement.getSQLStatement() instanceof DMLStatement) {
+            if (shardingStatement instanceof ShardingInsertOptimizedStatement) {
+                ShardingInsertOptimizedStatement shardingInsertStatement = (ShardingInsertOptimizedStatement) shardingStatement;
+                return new ShardingConditions(new InsertClauseShardingConditionEngine(shardingRule).createShardingConditions(
+                        (InsertStatement) shardingInsertStatement.getSQLStatement(), parameters, shardingInsertStatement.getColumnNames(), shardingInsertStatement.getGeneratedKey().orNull()));
+            }
+            return new ShardingConditions(new WhereClauseShardingConditionEngine(shardingRule, metaData.getTables()).createShardingConditions(shardingStatement.getSQLStatement(), parameters));
         }
+        return new ShardingConditions(Collections.<ShardingCondition>emptyList());
     }
     
     private boolean isNeedMergeShardingValues(final OptimizedStatement optimizedStatement) {
@@ -144,7 +139,7 @@ public final class ShardingRouter {
                 return;
             }
         }
-        Preconditions.checkState(null != shardingConditions.getConditions() && !shardingConditions.getConditions().isEmpty(), "Must have sharding column with subquery.");
+        Preconditions.checkState(!shardingConditions.getConditions().isEmpty(), "Must have sharding column with subquery.");
         if (shardingConditions.getConditions().size() > 1) {
             Preconditions.checkState(isSameShardingCondition(shardingConditions), "Sharding value must same with subquery.");
         }
@@ -193,6 +188,14 @@ public final class ShardingRouter {
             ShardingCondition shardingCondition = shardingConditions.getConditions().remove(shardingConditions.getConditions().size() - 1);
             shardingConditions.getConditions().clear();
             shardingConditions.getConditions().add(shardingCondition);
+        }
+    }
+    
+    private void setGeneratedValues(final ShardingInsertOptimizedStatement optimizedStatement) {
+        if (optimizedStatement.getGeneratedKey().isPresent()) {
+            generatedValues.addAll(optimizedStatement.getGeneratedKey().get().getGeneratedValues());
+            optimizedStatement.getGeneratedKey().get().getGeneratedValues().clear();
+            optimizedStatement.getGeneratedKey().get().getGeneratedValues().addAll(generatedValues);
         }
     }
 }
