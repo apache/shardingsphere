@@ -34,11 +34,9 @@ import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.apache.shardingsphere.core.route.router.sharding.validator.routingresult.impl.StandardRoutingResultValidator;
-import org.apache.shardingsphere.core.route.type.RoutingEngine;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.route.type.TableUnit;
-import org.apache.shardingsphere.core.route.type.standard.StandardRoutingEngine;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
@@ -64,23 +62,22 @@ public final class StandardRoutingResultValidatorTest {
     
     @Test
     public void assertValidateWithShardingDropIndexOptimizedStatement() {
-        new StandardRoutingResultValidator(getShardingRule(), getMetaData(), mock(ShardingDropIndexOptimizedStatement.class), new ShardingConditions(Collections.<ShardingCondition>emptyList()))
-            .validate(mock(RoutingEngine.class), getRoutingResult());
+        new StandardRoutingResultValidator(
+                getShardingRule(), getMetaData(), mock(ShardingDropIndexOptimizedStatement.class), new ShardingConditions(Collections.<ShardingCondition>emptyList())).validate(getRoutingResult());
     }
     
     @Test
     public void assertValidateStandardRoutingResult() {
-        new StandardRoutingResultValidator(getShardingRule(), getMetaData(), getShardingOptimizedStatement(), new ShardingConditions(Collections.<ShardingCondition>emptyList()))
-            .validate(mock(StandardRoutingEngine.class), getRoutingResult());
+        new StandardRoutingResultValidator(
+                getShardingRule(), getMetaData(), getShardingOptimizedStatement(), new ShardingConditions(Collections.<ShardingCondition>emptyList())).validate(getRoutingResult());
     }
     
     @Test
     public void assertValidateStandardRoutingResultWithAbsentDatabaseAndDefaultStrategy() {
         String msg = null;
         try {
-            new StandardRoutingResultValidator(
-                    getShardingRuleWithDefaultStrategy(), getMetaData(), getShardingOptimizedStatement(), new ShardingConditions(Collections.<ShardingCondition>emptyList()))
-                .validate(mock(StandardRoutingEngine.class), getRoutingResultWithAbsentDatabase());
+            new StandardRoutingResultValidator(getShardingRuleWithDefaultStrategy(), getMetaData(), getShardingOptimizedStatement(), 
+                    new ShardingConditions(Collections.<ShardingCondition>emptyList())).validate(getRoutingResultWithAbsentDatabase());
         } catch (ShardingException ex) {
             msg = ex.getMessage();
         }
@@ -117,8 +114,8 @@ public final class StandardRoutingResultValidatorTest {
     public void assertValidateStandardRoutingResultWithAbsentDatabase() {
         String message = null;
         try {
-            new StandardRoutingResultValidator(getShardingRule(), getMetaData(), getShardingOptimizedStatement(), new ShardingConditions(Collections.<ShardingCondition>emptyList()))
-                .validate(mock(StandardRoutingEngine.class), getRoutingResultWithAbsentDatabase());
+            new StandardRoutingResultValidator(
+                    getShardingRule(), getMetaData(), getShardingOptimizedStatement(), new ShardingConditions(Collections.<ShardingCondition>emptyList())).validate(getRoutingResultWithAbsentDatabase());
         } catch (ShardingException ex) {
             message = ex.getMessage();
         }
@@ -137,8 +134,7 @@ public final class StandardRoutingResultValidatorTest {
     public void assertValidateStandardRoutingResultWithAbsentDatabaseAndRouteValues() {
         String message = null;
         try {
-            new StandardRoutingResultValidator(getShardingRule(), getMetaData(), getShardingConditionOptimizedStatement(), getShardingConditions())
-                .validate(mock(StandardRoutingEngine.class), getRoutingResultWithAbsentDatabase());
+            new StandardRoutingResultValidator(getShardingRule(), getMetaData(), getShardingConditionOptimizedStatement(), getShardingConditions()).validate(getRoutingResultWithAbsentDatabase());
         } catch (ShardingException ex) {
             message = ex.getMessage();
         }

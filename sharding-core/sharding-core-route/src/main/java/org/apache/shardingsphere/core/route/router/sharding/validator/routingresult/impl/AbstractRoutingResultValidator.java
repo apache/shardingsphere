@@ -53,18 +53,12 @@ public abstract class AbstractRoutingResultValidator implements RoutingResultVal
     
     private final ShardingConditions shardingConditions;
     
-    private boolean checkDataSource;
-    
-    private boolean checkTable;
-    
     public AbstractRoutingResultValidator(final ShardingRule shardingRule,
                                           final ShardingSphereMetaData metaData, final ShardingOptimizedStatement shardingStatement, final ShardingConditions shardingConditions) {
         this.shardingRule = shardingRule;
         this.metaData = metaData;
         this.shardingStatement = shardingStatement;
         this.shardingConditions = shardingConditions;
-        checkDataSource = shardingRule.getRuleConfiguration().getMasterSlaveRuleConfigs().isEmpty();
-        checkTable = shardingStatement.getSQLStatement() instanceof DMLStatement;
     }
     
     @Override
@@ -105,10 +99,11 @@ public abstract class AbstractRoutingResultValidator implements RoutingResultVal
     }
     
     private boolean containsInMetaData(final String dataSourceName, final String actualTableName) {
-        if (checkDataSource && (null == metaData.getDataSources() || null == metaData.getDataSources().getDataSourceMetaData(dataSourceName))) {
+        if (shardingRule.getRuleConfiguration().getMasterSlaveRuleConfigs().isEmpty()
+                && (null == metaData.getDataSources() || null == metaData.getDataSources().getDataSourceMetaData(dataSourceName))) {
             return false;
         }
-        if (checkTable && (null == metaData.getTables() || !metaData.getTables().containsTable(actualTableName))) {
+        if (shardingStatement.getSQLStatement() instanceof DMLStatement && (null == metaData.getTables() || !metaData.getTables().containsTable(actualTableName))) {
             return false;
         }
         return true;

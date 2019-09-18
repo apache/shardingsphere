@@ -32,7 +32,6 @@ import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.apache.shardingsphere.core.route.router.sharding.validator.routingresult.impl.ComplexRoutingResultValidator;
-import org.apache.shardingsphere.core.route.type.RoutingEngine;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.route.type.TableUnit;
@@ -59,16 +58,16 @@ public final class ComplexRoutingResultValidatorTest {
     
     @Test
     public void assertValidateOthersRoutingResult() {
-        new ComplexRoutingResultValidator(getShardingRule(), getMetaData(), getShardingOptimizedStatement(), new ShardingConditions(Collections.<ShardingCondition>emptyList()))
-            .validate(mock(RoutingEngine.class), getRoutingResult());
+        new ComplexRoutingResultValidator(
+                getShardingRule(), getMetaData(), getShardingOptimizedStatement(), new ShardingConditions(Collections.<ShardingCondition>emptyList())).validate(getRoutingResult());
     }
     
     @Test
     public void assertValidateOthersRoutingResultWithAbsentDatabase() {
         String msg = null;
         try {
-            new ComplexRoutingResultValidator(getShardingRule(), getMetaData(), getShardingOptimizedStatement(), new ShardingConditions(Collections.<ShardingCondition>emptyList()))
-                .validate(mock(RoutingEngine.class), getRoutingResultWithAbsentDatabase());
+            new ComplexRoutingResultValidator(getShardingRule(), getMetaData(), getShardingOptimizedStatement(), 
+                    new ShardingConditions(Collections.<ShardingCondition>emptyList())).validate(getRoutingResultWithAbsentDatabase());
         } catch (ShardingException ex) {
             msg = ex.getMessage();
         }

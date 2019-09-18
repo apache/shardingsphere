@@ -107,7 +107,7 @@ public final class ShardingRouter {
         }
         RoutingEngine routingEngine = RoutingEngineFactory.newInstance(shardingRule, metaData, shardingStatement, shardingConditions);
         RoutingResult routingResult = routingEngine.route();
-        RoutingResultValidatorFactory.newInstance(routingEngine, shardingRule, metaData, shardingStatement, shardingConditions).validate(routingEngine, routingResult);
+        RoutingResultValidatorFactory.newInstance(routingEngine, shardingRule, metaData, shardingStatement, shardingConditions).validate(routingResult);
         if (needMergeShardingValues) {
             Preconditions.checkState(1 == routingResult.getRoutingUnits().size(), "Must have one sharding with subquery.");
         }
