@@ -14,14 +14,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-{
-  "presets": [
-    "@babel/preset-env"
-  ],
-  "plugins": ["transform-vue-jsx", "@babel/plugin-transform-runtime", "@babel/plugin-syntax-dynamic-import"],
-  "env": {
-    "test": {
-      "plugins": ["istanbul"]
-    }
-  }
+
+package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintCommand;
+
+/**
+ * Hint set database sharding value command.
+ *
+ * <p>
+ * example: sctl:hint set DatabaseShardingValue=yy.
+ * yy: sharding value.
+ * </p>
+ *
+ * @author liya
+ */
+@RequiredArgsConstructor
+@Getter
+public final class HintSetDatabaseShardingValueCommand implements HintCommand {
+    
+    private final String value;
 }

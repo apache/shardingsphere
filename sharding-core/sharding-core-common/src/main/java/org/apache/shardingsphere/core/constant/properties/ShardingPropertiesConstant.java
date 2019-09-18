@@ -115,6 +115,11 @@ public enum ShardingPropertiesConstant {
      * Enable opentracing for Sharding-Proxy.
      */
     PROXY_OPENTRACING_ENABLED("proxy.opentracing.enabled", String.valueOf(Boolean.FALSE), boolean.class),
+
+    /**
+     * Enable hint for Sharding-Proxy.
+     */
+    PROXY_HINT_ENABLED("proxy.hint.enabled", String.valueOf(Boolean.FALSE), boolean.class),
     
     PROXY_BACKEND_MAX_CONNECTIONS("proxy.backend.max.connections", String.valueOf(8), int.class),
     

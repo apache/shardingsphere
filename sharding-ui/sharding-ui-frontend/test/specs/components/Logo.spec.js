@@ -14,14 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-{
-  "presets": [
-    "@babel/preset-env"
-  ],
-  "plugins": ["transform-vue-jsx", "@babel/plugin-transform-runtime", "@babel/plugin-syntax-dynamic-import"],
-  "env": {
-    "test": {
-      "plugins": ["istanbul"]
-    }
-  }
-}
+import { expect } from 'chai'
+import { shallowMount } from '@vue/test-utils'
+import Logo from '../../../src/components/Logo/index.vue'
+
+describe('Logo/index.vue', () => {
+  it('Logo Does the component exist？', () => {
+    const wrapper = shallowMount(Logo)
+    expect(wrapper.find('.collapse-logo').html()).to.equal(
+      '<img src="/_karma_webpack_/static/img/logo.80b4bf4.png" alt="logo" class="collapse-logo">'
+    )
+  })
+})

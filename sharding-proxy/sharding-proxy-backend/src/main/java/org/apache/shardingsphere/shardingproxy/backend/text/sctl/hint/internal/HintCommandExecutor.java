@@ -14,14 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-{
-  "presets": [
-    "@babel/preset-env"
-  ],
-  "plugins": ["transform-vue-jsx", "@babel/plugin-transform-runtime", "@babel/plugin-syntax-dynamic-import"],
-  "env": {
-    "test": {
-      "plugins": ["istanbul"]
-    }
-  }
+
+package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal;
+
+import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
+
+/**
+ * Hint command executor.
+ *
+ * @author liya
+ */
+public interface HintCommandExecutor {
+    
+    /**
+     * Execute hint command.
+     *
+     * @return backend response
+     */
+    BackendResponse execute();
 }

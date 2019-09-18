@@ -18,7 +18,12 @@
 <template>
   <el-row class="box-card">
     <div class="btn-group">
-      <el-button type="primary" icon="el-icon-plus" @click="add">{{ $t("index.btnTxt") }}</el-button>
+      <el-button
+        class="btn-plus"
+        type="primary"
+        icon="el-icon-plus"
+        @click="add"
+      >{{ $t("index.btnTxt") }}</el-button>
     </div>
     <div class="table-wrap">
       <el-table :data="tableData" border style="width: 100%">
@@ -64,7 +69,7 @@
     >
       <el-form ref="form" :model="form" :rules="rules" label-width="150px">
         <el-form-item :label="$t('index.registDialog.name')" prop="name">
-          <el-input v-model="form.name" autocomplete="off"/>
+          <el-input v-model="form.name" autocomplete="off" />
         </el-form-item>
         <el-form-item :label="$t('index.registDialog.centerType')" prop="centerType">
           <el-radio-group v-model="form.centerType">
@@ -72,16 +77,16 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item :label="$t('index.registDialog.address')" prop="address">
-          <el-input v-model="form.address" autocomplete="off"/>
+          <el-input v-model="form.address" autocomplete="off" />
         </el-form-item>
         <el-form-item :label="$t('index.registDialog.orchestrationName')" prop="orchestrationName">
-          <el-input v-model="form.orchestrationName" autocomplete="off"/>
+          <el-input v-model="form.orchestrationName" autocomplete="off" />
         </el-form-item>
         <el-form-item :label="$t('index.registDialog.namespaces')" prop="namespaces">
-          <el-input v-model="form.namespaces" autocomplete="off"/>
+          <el-input v-model="form.namespaces" autocomplete="off" />
         </el-form-item>
         <el-form-item :label="$t('index.registDialog.digest')">
-          <el-input v-model="form.digest" autocomplete="off"/>
+          <el-input v-model="form.digest" autocomplete="off" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
