@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.core.route.router.sharding.validator.routingresult.impl;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
@@ -28,6 +26,7 @@ import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.route.type.TableUnit;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -45,18 +44,12 @@ public final class ComplexRoutingResultValidator extends AbstractRoutingResultVa
     @Override
     protected void throwException(final ShardingOptimizedStatement shardingStatement, final ShardingConditions shardingConditions, final Multimap<RoutingUnit, TableUnit> unconfiguredRoutingUnits) {
         RoutingUnit routingUnit = unconfiguredRoutingUnits.keySet().iterator().next();
-        Collection<String> absentDataNodes = Lists.newArrayListWithExpectedSize(unconfiguredRoutingUnits.get(routingUnit).size());
+        Collection<String> unconfiguredDataNodes = new ArrayList<>(unconfiguredRoutingUnits.get(routingUnit).size());
         for (TableUnit each : unconfiguredRoutingUnits.get(routingUnit)) {
-            absentDataNodes.add(routingUnit.getDataSourceName() + "." + each.getActualTableName());
+            unconfiguredDataNodes.add(routingUnit.getDataSourceName() + "." + each.getActualTableName());
         }
-        if (!absentDataNodes.isEmpty()) {
-            throwExceptionForAbsentDataNode(absentDataNodes, "");
+        if (!unconfiguredDataNodes.isEmpty()) {
+            throw new ShardingException(String.format("We get some absent DataNodes=%s in routing result, please check the configuration of rule and data node.", unconfiguredDataNodes));
         }
-    }
-    
-    private void throwExceptionForAbsentDataNode(final Collection<String> absentDataNodes, final CharSequence detail) {
-        String msg = "We get some absent DataNodes=" + absentDataNodes + " in routing result, " + (Strings.isNullOrEmpty(detail.toString()) ? "" : detail)
-            + "please check the configuration of rule and data node.";
-        throw new ShardingException(msg.replace("%", "%%"));
     }
 }
