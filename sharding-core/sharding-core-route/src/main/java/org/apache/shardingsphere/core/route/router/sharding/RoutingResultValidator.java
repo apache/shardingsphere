@@ -78,12 +78,12 @@ public final class RoutingResultValidator {
     }
     
     /**
-     * Check routing result.
+     * Validate routing result.
      *
      * @param routingEngine routing engine
      * @param routingResult routing result
      */
-    public void check(final RoutingEngine routingEngine, final RoutingResult routingResult) {
+    public void validate(final RoutingEngine routingEngine, final RoutingResult routingResult) {
         if (shardingStatement instanceof ShardingDropIndexOptimizedStatement) {
             return;
         }
