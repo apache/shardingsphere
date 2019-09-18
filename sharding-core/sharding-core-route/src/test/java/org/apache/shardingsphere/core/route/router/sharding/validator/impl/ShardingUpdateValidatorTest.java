@@ -17,57 +17,45 @@
 
 package org.apache.shardingsphere.core.route.router.sharding.validator.impl;
 
-import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.generic.TableAvailable;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
 
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public final class ShardingUpdateValidatorTest {
     
+    @Mock
     private ShardingRule shardingRule;
     
-    private UpdateStatement sqlStatement;
-    
-    @Before
-    public void setUp() {
-        shardingRule = mock(ShardingRule.class);
-        sqlStatement = mock(UpdateStatement.class);
-        TableAvailable tableAvailable = mock(TableAvailable.class);
-        AssignmentSegment assignmentSegment = mock(AssignmentSegment.class);
-        ColumnSegment columnSegment = mock(ColumnSegment.class);
-        when(columnSegment.getName()).thenReturn("id");
-        when(assignmentSegment.getColumn()).thenReturn(columnSegment);
-        when(tableAvailable.getTableName()).thenReturn("user");
-        when(sqlStatement.findSQLSegments(TableAvailable.class)).thenReturn(Collections.singletonList(tableAvailable));
-        SetAssignmentsSegment setAssignmentsSegment = mock(SetAssignmentsSegment.class);
-        when(setAssignmentsSegment.getAssignments()).thenReturn(Collections.singletonList(assignmentSegment));
-        when(sqlStatement.getSetAssignment()).thenReturn(setAssignmentsSegment);
-        when(sqlStatement.getWhere()).thenReturn(Optional.<WhereSegment>absent());
-    }
-    
     @Test
-    public void assertValidateWithoutShardingKey() {
+    public void assertValidateUpdateWithoutShardingKey() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(false);
-        ShardingUpdateValidator shardingUpdateValidator = new ShardingUpdateValidator();
-        shardingUpdateValidator.validate(shardingRule, sqlStatement);
+        new ShardingUpdateValidator().validate(shardingRule, createUpdateStatement());
     }
     
     @Test(expected = ShardingException.class)
-    public void assertValidateWithShardingKey() {
+    public void assertValidateUpdateWithShardingKey() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(true);
-        ShardingUpdateValidator shardingUpdateValidator = new ShardingUpdateValidator();
-        shardingUpdateValidator.validate(shardingRule, sqlStatement);
+        new ShardingUpdateValidator().validate(shardingRule, createUpdateStatement());
+    }
+    
+    private UpdateStatement createUpdateStatement() {
+        UpdateStatement result = new UpdateStatement();
+        result.getAllSQLSegments().add(new TableSegment(0, 0, "user"));
+        result.setSetAssignment(new SetAssignmentsSegment(0, 0, Collections.singletonList(new AssignmentSegment(0, 0, new ColumnSegment(0, 0, "id"), new LiteralExpressionSegment(0, 0, "")))));
+        return result;
     }
 }
