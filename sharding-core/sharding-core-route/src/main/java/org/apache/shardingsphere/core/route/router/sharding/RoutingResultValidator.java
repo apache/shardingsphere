@@ -45,11 +45,11 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Checker for sharding router with parse.
+ * Routing result validator.
  *
  * @author sunbufu
  */
-public final class ParsingSQLRoutingResultChecker implements RoutingResultChecker {
+public final class RoutingResultValidator implements RoutingResultChecker {
     
     private final ShardingRule shardingRule;
     
@@ -63,8 +63,8 @@ public final class ParsingSQLRoutingResultChecker implements RoutingResultChecke
     
     private boolean checkTable;
     
-    public ParsingSQLRoutingResultChecker(final ShardingRule shardingRule, 
-                                          final ShardingSphereMetaData metaData, final ShardingOptimizedStatement shardingStatement, final ShardingConditions shardingConditions) {
+    public RoutingResultValidator(final ShardingRule shardingRule,
+                                  final ShardingSphereMetaData metaData, final ShardingOptimizedStatement shardingStatement, final ShardingConditions shardingConditions) {
         this.shardingRule = shardingRule;
         this.metaData = metaData;
         this.shardingStatement = shardingStatement;

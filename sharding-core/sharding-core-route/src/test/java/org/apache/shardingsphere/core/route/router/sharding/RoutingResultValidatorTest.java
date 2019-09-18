@@ -59,25 +59,25 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class ParsingSQLRoutingResultCheckerTest {
+public final class RoutingResultValidatorTest {
     
     @Test
     public void assertCheckWithShardingDropIndexOptimizedStatement() {
-        new ParsingSQLRoutingResultChecker(getShardingRule(), getMetaData(), mock(ShardingDropIndexOptimizedStatement.class), new ShardingConditions(Collections.<ShardingCondition>emptyList()))
+        new RoutingResultValidator(getShardingRule(), getMetaData(), mock(ShardingDropIndexOptimizedStatement.class), new ShardingConditions(Collections.<ShardingCondition>emptyList()))
             .check(mock(RoutingEngine.class), getRoutingResult());
     }
     
     @Test
     public void assertCheckOthersRoutingResult() {
-        new ParsingSQLRoutingResultChecker(getShardingRule(), getMetaData(), getShardingOptimizedStatement(), new ShardingConditions(Collections.<ShardingCondition>emptyList()))
+        new RoutingResultValidator(getShardingRule(), getMetaData(), getShardingOptimizedStatement(), new ShardingConditions(Collections.<ShardingCondition>emptyList()))
             .check(mock(RoutingEngine.class), getRoutingResult());
     }
-
+    
     @Test
     public void assertCheckOthersRoutingResultWithAbsentDatabase() {
         String msg = null;
         try {
-            new ParsingSQLRoutingResultChecker(getShardingRule(), getMetaData(), getShardingOptimizedStatement(), new ShardingConditions(Collections.<ShardingCondition>emptyList()))
+            new RoutingResultValidator(getShardingRule(), getMetaData(), getShardingOptimizedStatement(), new ShardingConditions(Collections.<ShardingCondition>emptyList()))
                 .check(mock(RoutingEngine.class), getRoutingResultWithAbsentDatabase());
         } catch (ShardingException ex) {
             msg = ex.getMessage();
@@ -87,7 +87,7 @@ public class ParsingSQLRoutingResultCheckerTest {
     
     @Test
     public void assertCheckStandardRoutingResult() {
-        new ParsingSQLRoutingResultChecker(getShardingRule(), getMetaData(), getShardingOptimizedStatement(), new ShardingConditions(Collections.<ShardingCondition>emptyList()))
+        new RoutingResultValidator(getShardingRule(), getMetaData(), getShardingOptimizedStatement(), new ShardingConditions(Collections.<ShardingCondition>emptyList()))
             .check(mock(StandardRoutingEngine.class), getRoutingResult());
     }
     
@@ -95,7 +95,7 @@ public class ParsingSQLRoutingResultCheckerTest {
     public void assertCheckStandardRoutingResultWithAbsentDatabaseAndDefaultStrategy() {
         String msg = null;
         try {
-            new ParsingSQLRoutingResultChecker(
+            new RoutingResultValidator(
                     getShardingRuleWithDefaultStrategy(), getMetaData(), getShardingOptimizedStatement(), new ShardingConditions(Collections.<ShardingCondition>emptyList()))
                 .check(mock(StandardRoutingEngine.class), getRoutingResultWithAbsentDatabase());
         } catch (ShardingException ex) {
@@ -134,7 +134,7 @@ public class ParsingSQLRoutingResultCheckerTest {
     public void assertCheckStandardRoutingResultWithAbsentDatabase() {
         String message = null;
         try {
-            new ParsingSQLRoutingResultChecker(getShardingRule(), getMetaData(), getShardingOptimizedStatement(), new ShardingConditions(Collections.<ShardingCondition>emptyList()))
+            new RoutingResultValidator(getShardingRule(), getMetaData(), getShardingOptimizedStatement(), new ShardingConditions(Collections.<ShardingCondition>emptyList()))
                 .check(mock(StandardRoutingEngine.class), getRoutingResultWithAbsentDatabase());
         } catch (ShardingException ex) {
             message = ex.getMessage();
@@ -154,7 +154,7 @@ public class ParsingSQLRoutingResultCheckerTest {
     public void assertCheckStandardRoutingResultWithAbsentDatabaseAndRouteValues() {
         String message = null;
         try {
-            new ParsingSQLRoutingResultChecker(getShardingRule(), getMetaData(), getShardingConditionOptimizedStatement(), getShardingConditions())
+            new RoutingResultValidator(getShardingRule(), getMetaData(), getShardingConditionOptimizedStatement(), getShardingConditions())
                 .check(mock(StandardRoutingEngine.class), getRoutingResultWithAbsentDatabase());
         } catch (ShardingException ex) {
             message = ex.getMessage();
