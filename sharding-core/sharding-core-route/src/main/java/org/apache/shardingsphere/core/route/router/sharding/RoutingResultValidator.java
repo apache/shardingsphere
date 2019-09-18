@@ -49,7 +49,7 @@ import java.util.LinkedList;
  *
  * @author sunbufu
  */
-public final class RoutingResultValidator implements RoutingResultChecker {
+public final class RoutingResultValidator {
     
     private final ShardingRule shardingRule;
     
@@ -77,7 +77,12 @@ public final class RoutingResultValidator implements RoutingResultChecker {
         }
     }
     
-    @Override
+    /**
+     * Check routing result.
+     *
+     * @param routingEngine routing engine
+     * @param routingResult routing result
+     */
     public void check(final RoutingEngine routingEngine, final RoutingResult routingResult) {
         if (shardingStatement instanceof ShardingDropIndexOptimizedStatement) {
             return;
