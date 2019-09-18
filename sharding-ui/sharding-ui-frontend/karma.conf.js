@@ -14,14 +14,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-{
-  "presets": [
-    "@babel/preset-env"
-  ],
-  "plugins": ["transform-vue-jsx", "@babel/plugin-transform-runtime", "@babel/plugin-syntax-dynamic-import"],
-  "env": {
-    "test": {
-      "plugins": ["istanbul"]
-    }
-  }
+const webpackConfig = require('./build/webpack.unit.conf')
+
+module.exports = function(config) {
+  config.set({
+    frameworks: ['mocha'],
+
+    files: ['test/**/*.spec.js'],
+
+    preprocessors: {
+      '**/*.spec.js': ['webpack', 'sourcemap']
+    },
+
+    webpack: webpackConfig,
+
+    reporters: ['spec', 'coverage'],
+
+    coverageReporter: {
+      dir: './coverage',
+      reporters: [{ type: 'lcov', subdir: '.' }, { type: 'text-summary' }]
+    },
+
+    browsers: ['Chrome']
+  })
 }

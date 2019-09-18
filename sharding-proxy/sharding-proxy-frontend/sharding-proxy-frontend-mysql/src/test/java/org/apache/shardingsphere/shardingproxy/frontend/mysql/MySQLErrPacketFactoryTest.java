@@ -47,7 +47,7 @@ public final class MySQLErrPacketFactoryTest {
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getErrorCode(), is(11000));
         assertThat(actual.getSqlState(), is("S11000"));
-        assertThat(actual.getErrorMessage(), is("Invalid format for sharding ctl [test], should be [sctl:set key=value]."));
+        assertThat(actual.getErrorMessage(), is("Invalid format for sharding ctl [test]."));
     }
     
     @Test

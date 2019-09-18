@@ -16,8 +16,9 @@ npm run build
 npm run build --report
 ```
 
-## Test command
+## unit test command
 
 ```bash
-npm run test
+# Karma does unit testing for components and pages
+npm run unit
 ```

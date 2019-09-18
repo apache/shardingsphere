@@ -20,6 +20,7 @@ package org.apache.shardingsphere.shardingproxy.backend.text.sctl;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.explain.ShardingCTLExplainBackendHandler;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.ShardingCTLHintBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.set.ShardingCTLSetBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.show.ShardingCTLShowBackendHandler;
 
@@ -27,6 +28,7 @@ import org.apache.shardingsphere.shardingproxy.backend.text.sctl.show.ShardingCT
  * Sharding CTL backend handler factory.
  *
  * @author zhangliang
+ * @author liya
  */
 public final class ShardingCTLBackendHandlerFactory {
     
@@ -37,6 +39,8 @@ public final class ShardingCTLBackendHandlerFactory {
     private static final String SCTL_SHOW = SCTL + "SHOW";
 
     private static final String SCTL_EXPLAIN = SCTL + "EXPLAIN";
+
+    private static final String SCTL_HINT = SCTL + "HINT";
     
     /**
      * Create new instance of sharding CTL backend handler.
@@ -54,6 +58,9 @@ public final class ShardingCTLBackendHandlerFactory {
         }
         if (sql.toUpperCase().startsWith(SCTL_EXPLAIN)) {
             return new ShardingCTLExplainBackendHandler(sql, backendConnection);
+        }
+        if (sql.toUpperCase().startsWith(SCTL_HINT)) {
+            return new ShardingCTLHintBackendHandler(sql, backendConnection);
         }
         throw new IllegalArgumentException(sql);
     }

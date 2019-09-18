@@ -14,14 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-{
-  "presets": [
-    "@babel/preset-env"
-  ],
-  "plugins": ["transform-vue-jsx", "@babel/plugin-transform-runtime", "@babel/plugin-syntax-dynamic-import"],
-  "env": {
-    "test": {
-      "plugins": ["istanbul"]
-    }
-  }
+
+package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command;
+
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintCommand;
+
+/**
+ * Hint error parameter command.
+ *
+ * @author liya
+ */
+public class HintErrorParameterCommand implements HintCommand {
 }

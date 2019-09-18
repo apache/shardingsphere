@@ -28,12 +28,13 @@ import org.apache.shardingsphere.shardingproxy.error.SQLErrorCode;
  * Sharding CTL error code.
  *
  * @author zhangliang
+ * @author liya
  */
 @RequiredArgsConstructor
 @Getter
 public enum ShardingCTLErrorCode implements SQLErrorCode {
     
-    INVALID_FORMAT(11000, "S11000", "Invalid format for sharding ctl [%s], should be [sctl:set key=value]."),
+    INVALID_FORMAT(11000, "S11000", "Invalid format for sharding ctl [%s]."),
     
     UNSUPPORTED_TYPE(11001, "S11001", "Could not support sctl type [%s].");
     

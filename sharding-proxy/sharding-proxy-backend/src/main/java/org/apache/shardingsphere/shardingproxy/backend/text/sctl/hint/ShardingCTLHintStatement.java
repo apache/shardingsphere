@@ -14,14 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-{
-  "presets": [
-    "@babel/preset-env"
-  ],
-  "plugins": ["transform-vue-jsx", "@babel/plugin-transform-runtime", "@babel/plugin-syntax-dynamic-import"],
-  "env": {
-    "test": {
-      "plugins": ["istanbul"]
-    }
-  }
+
+package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.ShardingCTLStatement;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintCommand;
+
+/**
+ * Sharding CTL hint statement.
+ *
+ * @author liya
+ */
+@RequiredArgsConstructor
+@Getter
+public final class ShardingCTLHintStatement implements ShardingCTLStatement {
+    
+    private final HintCommand hintCommand;
 }
