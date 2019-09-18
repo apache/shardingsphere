@@ -1,0 +1,52 @@
+package info.avalon566.shardingscaling.sync.jdbc;
+
+import com.google.common.base.Strings;
+import lombok.var;
+
+import java.net.URI;
+import java.util.HashMap;
+
+/**
+ * @author avalon566
+ */
+public final class JdbcUri {
+
+    private final URI jdbcUri;
+
+    public JdbcUri(String jdbcUrl) {
+        this.jdbcUri = URI.create(jdbcUrl.substring(5));
+    }
+
+    public String getScheme() {
+        return jdbcUri.getScheme();
+    }
+
+    public String getHostname() {
+        return jdbcUri.getHost();
+    }
+
+    public int getPort() {
+        return -1 == jdbcUri.getPort() ? 3306 : jdbcUri.getPort();
+    }
+
+    public String getHost() {
+        return String.format("%s:%d", getHostname(), getPort());
+    }
+
+    public String getDatabase() {
+        return jdbcUri.getPath().replaceFirst("/", "");
+    }
+
+    public HashMap<String, String> getParameters() {
+        var result = new HashMap<String, String>();
+        if (Strings.isNullOrEmpty(jdbcUri.getQuery())) {
+            return result;
+        }
+        var parameters = jdbcUri.getQuery().split("&");
+        for (int i = 0; i < parameters.length; i++) {
+            var args = parameters[i].split("=");
+            result.put(args[0], 1 == args.length ? null : args[1]);
+        }
+        return result;
+    }
+}
