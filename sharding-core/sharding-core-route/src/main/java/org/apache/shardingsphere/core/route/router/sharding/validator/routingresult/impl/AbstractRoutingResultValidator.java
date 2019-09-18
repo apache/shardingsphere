@@ -56,22 +56,22 @@ public abstract class AbstractRoutingResultValidator implements RoutingResultVal
         if (shardingStatement instanceof ShardingDropIndexOptimizedStatement) {
             return;
         }
-        Multimap<RoutingUnit, TableUnit> absentRoutingUnitMap = getAbsentRoutingUnit(shardingStatement, routingResult.getRoutingUnits());
+        Multimap<RoutingUnit, TableUnit> absentRoutingUnitMap = getUnconfiguredRoutingUnit(shardingStatement, routingResult.getRoutingUnits());
         if (absentRoutingUnitMap.isEmpty()) {
             return;
         }
         throwException(shardingStatement, shardingConditions, absentRoutingUnitMap);
     }
     
-    private Multimap<RoutingUnit, TableUnit> getAbsentRoutingUnit(final ShardingOptimizedStatement shardingStatement, final Collection<RoutingUnit> routingUnits) {
+    private Multimap<RoutingUnit, TableUnit> getUnconfiguredRoutingUnit(final ShardingOptimizedStatement shardingStatement, final Collection<RoutingUnit> routingUnits) {
         Multimap<RoutingUnit, TableUnit> result = HashMultimap.create();
         for (RoutingUnit each : routingUnits) {
-            result.putAll(each, getAbsentTableUnit(shardingStatement, each));
+            result.putAll(each, getUnconfiguredTableUnit(shardingStatement, each));
         }
         return result;
     }
     
-    private Collection<TableUnit> getAbsentTableUnit(final ShardingOptimizedStatement shardingStatement, final RoutingUnit routingUnit) {
+    private Collection<TableUnit> getUnconfiguredTableUnit(final ShardingOptimizedStatement shardingStatement, final RoutingUnit routingUnit) {
         Collection<TableUnit> result = new LinkedList<>();
         for (TableUnit each : routingUnit.getTableUnits()) {
             if (!containsInShardingRule(routingUnit.getDataSourceName(), each) && !containsInMetaData(shardingStatement, routingUnit.getDataSourceName(), each.getActualTableName())) {
