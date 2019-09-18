@@ -1,9 +1,7 @@
 package info.avalon566.shardingscaling.sync.jdbc;
 
-import info.avalon566.shardingscaling.sync.core.Channel;
-import info.avalon566.shardingscaling.sync.core.FinishedRecord;
-import info.avalon566.shardingscaling.sync.core.RdbmsConfiguration;
-import info.avalon566.shardingscaling.sync.core.Writer;
+import info.avalon566.shardingscaling.sync.core.*;
+import lombok.Setter;
 import lombok.var;
 
 import java.sql.DriverManager;
@@ -15,11 +13,14 @@ import java.util.ArrayList;
 /**
  * @author avalon566
  */
-public abstract class AbstractJdbcWriter implements Writer {
+public abstract class AbstractJdbcWriter extends AbstractRunner implements Writer {
 
     private final RdbmsConfiguration rdbmsConfiguration;
     private DbMetaDataUtil dbMetaDataUtil;
     private final SqlBuilder sqlBuilder;
+
+    @Setter
+    private Channel channel;
 
     public AbstractJdbcWriter(RdbmsConfiguration rdbmsConfiguration) {
         this.rdbmsConfiguration = rdbmsConfiguration;
@@ -28,11 +29,17 @@ public abstract class AbstractJdbcWriter implements Writer {
     }
 
     @Override
+    public void run() {
+        start();
+        write(channel);
+    }
+
+    @Override
     public void write(Channel channel) {
         var buffer = new ArrayList<DataRecord>(2000);
         var lastFlushTime = System.currentTimeMillis();
         try {
-            while (true) {
+            while (running) {
                 var record = channel.popRecord();
                 if (null == record) {
                     try {

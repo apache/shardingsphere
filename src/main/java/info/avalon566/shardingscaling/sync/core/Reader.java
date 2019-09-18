@@ -5,7 +5,9 @@ import java.util.List;
 /**
  * @author avalon566
  */
-public interface Reader {
+public interface Reader extends Runner {
+
+    void setChannel(Channel channel);
 
     void read(Channel channel);
 

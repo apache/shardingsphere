@@ -7,6 +7,7 @@ import com.github.shyiko.mysql.binlog.event.UpdateRowsEventData;
 import com.github.shyiko.mysql.binlog.event.WriteRowsEventData;
 import com.github.shyiko.mysql.binlog.event.deserialization.EventDeserializer;
 import com.github.shyiko.mysql.binlog.event.deserialization.json.JsonBinary;
+import info.avalon566.shardingscaling.sync.core.AbstractRunner;
 import info.avalon566.shardingscaling.sync.core.Channel;
 import info.avalon566.shardingscaling.sync.core.RdbmsConfiguration;
 import info.avalon566.shardingscaling.sync.core.Reader;
@@ -14,6 +15,7 @@ import info.avalon566.shardingscaling.sync.jdbc.Column;
 import info.avalon566.shardingscaling.sync.jdbc.DataRecord;
 import info.avalon566.shardingscaling.sync.jdbc.DbMetaDataUtil;
 import info.avalon566.shardingscaling.sync.jdbc.JdbcUri;
+import lombok.Setter;
 import lombok.var;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +30,7 @@ import java.util.List;
 /**
  * @author avalon566
  */
-public class MysqlBinlogReader implements Reader {
+public class MysqlBinlogReader extends AbstractRunner implements Reader {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(MysqlBinlogReader.class);
 
@@ -40,9 +42,18 @@ public class MysqlBinlogReader implements Reader {
 
     private final DbMetaDataUtil dbMetaDataUtil;
 
+    @Setter
+    private Channel channel;
+
     public MysqlBinlogReader(RdbmsConfiguration rdbmsConfiguration) {
         this.rdbmsConfiguration = rdbmsConfiguration;
         this.dbMetaDataUtil = new DbMetaDataUtil(rdbmsConfiguration);
+    }
+
+    @Override
+    public void run() {
+        start();
+        read(channel);
     }
 
     public void markPosition() {

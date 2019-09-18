@@ -1,9 +1,7 @@
 package info.avalon566.shardingscaling.sync.jdbc;
 
-import info.avalon566.shardingscaling.sync.core.Channel;
-import info.avalon566.shardingscaling.sync.core.FinishedRecord;
-import info.avalon566.shardingscaling.sync.core.RdbmsConfiguration;
-import info.avalon566.shardingscaling.sync.core.Reader;
+import info.avalon566.shardingscaling.sync.core.*;
+import lombok.Setter;
 import lombok.var;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,20 +16,23 @@ import static java.sql.ResultSet.TYPE_FORWARD_ONLY;
 /**
  * @author avalon566
  */
-public abstract class AbstractJdbcReader implements Reader {
+public abstract class AbstractJdbcReader extends AbstractRunner implements Reader {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractJdbcReader.class);
 
-    private boolean running = true;
-
     protected final RdbmsConfiguration rdbmsConfiguration;
+
+    @Setter
+    private Channel channel;
 
     public AbstractJdbcReader(RdbmsConfiguration rdbmsConfiguration) {
         this.rdbmsConfiguration = rdbmsConfiguration;
     }
 
-    public void setRunning(boolean running) {
-        this.running = running;
+    @Override
+    public void run() {
+        start();
+        read(channel);
     }
 
     @Override

@@ -35,11 +35,13 @@ public class SyncExecutor {
 
     public void run() {
         var pool1 = Executors.newSingleThreadExecutor();
-        readerFuture = pool1.submit(() -> reader.read(channel));
+        reader.setChannel(channel);
+        readerFuture = pool1.submit(reader);
         pool1.shutdown();
         var pool2 = Executors.newFixedThreadPool(writers.size());
         writers.forEach(writer -> {
-            writerFutures.add(pool2.submit(() -> writer.write(channel)));
+            writer.setChannel(channel);
+            writerFutures.add(pool2.submit(writer));
         });
         pool2.shutdown();
     }
