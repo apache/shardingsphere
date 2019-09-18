@@ -30,9 +30,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+
+import com.google.common.base.Optional;
 
 public final class SelectItemsTest {
     
@@ -72,6 +76,23 @@ public final class SelectItemsTest {
         SelectItem selectItem = getColumnSelectItemWithAlias();
         SelectItems selectItems = new SelectItems(0, 0, true, Collections.singleton(selectItem), Collections.<TableSegment>emptyList(), createTableMetas());
         assertTrue(selectItems.findAlias(selectItem.getExpression()).isPresent());
+    }
+    
+    @Test
+    public void assertFindItemIndex() {
+        SelectItem selectItem = getColumnSelectItem();
+        SelectItems selectItems = new SelectItems(0, 0, true, Collections.singleton(selectItem), Collections.<TableSegment>emptyList(), createTableMetas());
+        Optional<Integer> actual = selectItems.findItemIndex(selectItem.getExpression());
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is(1));
+    }
+    
+    @Test
+    public void assertFindItemIndexFailure() {
+        SelectItem selectItem = getColumnSelectItem();
+        SelectItems selectItems = new SelectItems(0, 0, true, Collections.singleton(selectItem), Collections.<TableSegment>emptyList(), createTableMetas());
+        Optional<Integer> actual = selectItems.findItemIndex("");
+        assertFalse(actual.isPresent());
     }
     
     @Test

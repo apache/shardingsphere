@@ -25,12 +25,10 @@ import org.apache.shardingsphere.core.optimize.api.segment.expression.DerivedPar
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
-import org.apache.shardingsphere.core.rule.DataNode;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -40,7 +38,7 @@ import java.util.List;
  * @author zhangliang
  */
 @Getter
-@ToString(exclude = "dataNodes")
+@ToString
 public final class InsertValue {
     
     private final int parametersCount;
@@ -48,8 +46,6 @@ public final class InsertValue {
     private final List<ExpressionSegment> valueExpressions;
     
     private final List<Object> parameters;
-    
-    private final List<DataNode> dataNodes = new LinkedList<>();
     
     public InsertValue(final Collection<ExpressionSegment> assignments, final int derivedColumnsCount, final List<Object> parameters, final int parametersOffset) {
         parametersCount = calculateParametersCount(assignments);
