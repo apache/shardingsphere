@@ -44,4 +44,19 @@ public class BatchRouteUnitTest {
         assertThat(actual.get(0).size(), is(1));
         assertThat(actual.get(0).get(0), CoreMatchers.<Object>is(1));
     }
+    
+    @Test
+    public void assertEquals() {
+        BatchRouteUnit actual = new BatchRouteUnit(new RouteUnit(DATASOUCE_NAME, new SQLUnit(SQL, Lists.<Object>newArrayList(1))));
+        BatchRouteUnit expected = new BatchRouteUnit(new RouteUnit(DATASOUCE_NAME, new SQLUnit(SQL, Lists.<Object>newArrayList(2))));
+        assertTrue(expected.equals(actual));
+    }
+    
+    @Test
+    public void assertToString() {
+        BatchRouteUnit actual = new BatchRouteUnit(new RouteUnit(DATASOUCE_NAME, new SQLUnit(SQL, Lists.<Object>newArrayList(1))));
+        assertThat(actual.toString(), is(
+            String.format("BatchRouteUnit(routeUnit=RouteUnit(dataSourceName=%s, sqlUnit=SQLUnit(sql=%s, parameters=[%d])), jdbcAndActualAddBatchCallTimesMap={}, actualCallAddBatchTimes=0)",
+                DATASOUCE_NAME, SQL, 1)));
+    }
 }
