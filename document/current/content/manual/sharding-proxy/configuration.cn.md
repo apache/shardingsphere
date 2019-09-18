@@ -48,7 +48,7 @@ shardingRule:
           algorithmExpression: t_order${order_id % 2}
       keyGenerator:
         type: SNOWFLAKE
-        columnn: order_id
+        column: order_id
     t_order_item:
       actualDataNodes: ds${0..1}.t_order_item${0..1}
       databaseStrategy:
@@ -233,19 +233,19 @@ shardingRule:
   defaultTableStrategy:
     none:
   
-  masterSlaveRules:
-      ms_ds0:
-        masterDataSourceName: ds0
-        slaveDataSourceNames:
-          - ds0_slave0
-          - ds0_slave1
-        loadBalanceAlgorithmType: ROUND_ROBIN
-      ms_ds1:
-        masterDataSourceName: ds1
-        slaveDataSourceNames: 
-          - ds1_slave0
-          - ds1_slave1
-        loadBalanceAlgorithmType: ROUND_ROBIN
+masterSlaveRules:
+  ms_ds0:
+    masterDataSourceName: ds0
+    slaveDataSourceNames:
+      - ds0_slave0
+      - ds0_slave1
+    loadBalanceAlgorithmType: ROUND_ROBIN
+  ms_ds1:
+    masterDataSourceName: ds1
+    slaveDataSourceNames: 
+      - ds1_slave0
+      - ds1_slave1
+    loadBalanceAlgorithmType: ROUND_ROBIN
 ```
 
 ### 数据分片 + 数据脱敏
@@ -287,7 +287,7 @@ shardingRule:
           algorithmExpression: t_order${order_id % 2}
       keyGenerator:
         type: SNOWFLAKE
-        columnn: order_id
+        column: order_id
     t_order_item:
       actualDataNodes: ds${0..1}.t_order_item${0..1}
       databaseStrategy:
@@ -300,25 +300,25 @@ shardingRule:
           algorithmExpression: t_order_item${order_id % 2}
       keyGenerator:
         type: SNOWFLAKE
-        columnn: order_item_id
+        column: order_item_id
   bindingTables:
     - t_order,t_order_item
   defaultTableStrategy:
     none:
     
-  encryptRule:
-    encryptors:
-      encryptor_aes:
-        type: aes
-        props:
-          aes.key.value: 123456abc
-    tables:
-      t_order:
-        columns:
-          order_id:
-            plainColumn: order_plain
-            cipherColumn: order_cipher
-            encryptor: encryptor_aes
+encryptRule:
+  encryptors:
+    encryptor_aes:
+      type: aes
+      props:
+        aes.key.value: 123456abc
+  tables:
+    t_order:
+      columns:
+        order_id:
+          plainColumn: order_plain
+          cipherColumn: order_cipher
+          encryptor: encryptor_aes
 ```
 
 ## 全局配置示例
@@ -407,8 +407,8 @@ encryptRule:
           cipherColumn: #存储密文的字段
           assistedQueryColumn: #辅助查询字段，针对ShardingQueryAssistedEncryptor类型的加解密器进行辅助查询
           encryptor: #加密器名字
-  props:
-    query.with.cipher.column: true #是否使用密文列查询
+props:
+  query.with.cipher.column: true #是否使用密文列查询
 ```
 
 ## 全局配置项说明
