@@ -21,6 +21,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.core.optimize.sharding.statement.ShardingOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.statement.ddl.ShardingDropIndexOptimizedStatement;
@@ -42,17 +43,13 @@ import java.util.LinkedList;
  * @author sunbufu
  * @author zhangliang
  */
-@Getter
+@RequiredArgsConstructor
 public abstract class AbstractRoutingResultValidator implements RoutingResultValidator {
     
+    @Getter
     private final ShardingRule shardingRule;
     
     private final ShardingSphereMetaData metaData;
-    
-    public AbstractRoutingResultValidator(final ShardingRule shardingRule, final ShardingSphereMetaData metaData) {
-        this.shardingRule = shardingRule;
-        this.metaData = metaData;
-    }
     
     @Override
     public final void validate(final ShardingOptimizedStatement shardingStatement, final ShardingConditions shardingConditions, final RoutingResult routingResult) {
