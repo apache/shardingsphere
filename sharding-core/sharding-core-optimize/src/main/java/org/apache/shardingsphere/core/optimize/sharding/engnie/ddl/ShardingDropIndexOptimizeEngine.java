@@ -54,7 +54,7 @@ public final class ShardingDropIndexOptimizeEngine implements ShardingOptimizeEn
         Collection<String> result = new LinkedList<>();
         for (IndexSegment each : sqlStatement.getIndexes()) {
             Optional<String> tableName = findLogicTableName(tableMetas, each.getName());
-            Preconditions.checkState(tableName.isPresent(), "Cannot find table for index name `%s` from sharding rule.", each.getName());
+            Preconditions.checkState(tableName.isPresent(), "Cannot find index name `%s`.", each.getName());
             result.add(tableName.get());
         }
         return result;
