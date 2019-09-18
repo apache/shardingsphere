@@ -98,7 +98,7 @@ public final class ShardingRouter {
             checkSubqueryShardingValues(shardingStatement, shardingConditions);
             mergeShardingConditions(shardingConditions);
         }
-        RoutingEngine routingEngine = RoutingEngineFactory.newInstance(shardingRule, metaData.getDataSources(), shardingStatement, shardingConditions);
+        RoutingEngine routingEngine = RoutingEngineFactory.newInstance(shardingRule, metaData, shardingStatement, shardingConditions);
         RoutingResult routingResult = routingEngine.route();
         new ParsingSQLRoutingResultChecker(shardingRule, metaData, shardingStatement, shardingConditions).check(routingEngine, routingResult);
         if (needMergeShardingValues) {

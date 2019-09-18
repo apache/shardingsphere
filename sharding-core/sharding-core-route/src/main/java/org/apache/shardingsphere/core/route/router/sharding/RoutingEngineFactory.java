@@ -20,9 +20,9 @@ package org.apache.shardingsphere.core.route.router.sharding;
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
-import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingConditionOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
@@ -34,6 +34,7 @@ import org.apache.shardingsphere.core.parse.sql.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.tcl.TCLStatement;
+import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
 import org.apache.shardingsphere.core.route.type.broadcast.DataSourceGroupBroadcastRoutingEngine;
 import org.apache.shardingsphere.core.route.type.broadcast.DatabaseBroadcastRoutingEngine;
@@ -60,13 +61,13 @@ public final class RoutingEngineFactory {
      * Create new instance of routing engine.
      * 
      * @param shardingRule sharding rule
-     * @param dataSourceMetas data source metas
+     * @param metaData meta data of ShardingSphere
      * @param optimizedStatement optimized statement
      * @param shardingConditions shardingConditions
      * @return new instance of routing engine
      */
-    public static RoutingEngine newInstance(final ShardingRule shardingRule, 
-                                            final DataSourceMetas dataSourceMetas, final OptimizedStatement optimizedStatement, final ShardingConditions shardingConditions) {
+    public static RoutingEngine newInstance(final ShardingRule shardingRule,
+                                            final ShardingSphereMetaData metaData, final OptimizedStatement optimizedStatement, final ShardingConditions shardingConditions) {
         SQLStatement sqlStatement = optimizedStatement.getSQLStatement();
         Collection<String> tableNames = optimizedStatement.getTables().getTableNames();
         if (sqlStatement instanceof TCLStatement) {
@@ -79,7 +80,7 @@ public final class RoutingEngineFactory {
             return getDALRoutingEngine(shardingRule, sqlStatement, tableNames);
         }
         if (sqlStatement instanceof DCLStatement) {
-            return getDCLRoutingEngine(shardingRule, optimizedStatement, dataSourceMetas);
+            return getDCLRoutingEngine(shardingRule, optimizedStatement, metaData.getDataSources());
         }
         if (shardingRule.isAllInDefaultDataSource(tableNames)) {
             return new DefaultDatabaseRoutingEngine(shardingRule, tableNames);
