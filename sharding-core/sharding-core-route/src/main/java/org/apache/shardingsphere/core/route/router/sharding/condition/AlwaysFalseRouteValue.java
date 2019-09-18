@@ -15,31 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.sharding.segment.condition.generator;
+package org.apache.shardingsphere.core.route.router.sharding.condition;
 
-import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.optimize.api.segment.Column;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateRightValue;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
 
-import java.util.List;
-
 /**
- * Condition value generator.
+ * Always false route value.
  *
  * @author zhangliang
- * 
- * @param <T> type of predicate right value
  */
-public interface ConditionValueGenerator<T extends PredicateRightValue> {
+public final class AlwaysFalseRouteValue implements RouteValue {
     
-    /**
-     * Generate route value.
-     * 
-     * @param predicateRightValue predicate right value
-     * @param column column
-     * @param parameters SQL parameters
-     * @return route value
-     */
-    Optional<RouteValue> generate(T predicateRightValue, Column column, List<Object> parameters);
+    @Override
+    public String getColumnName() {
+        return "";
+    }
+    
+    @Override
+    public String getTableName() {
+        return "";
+    }
 }

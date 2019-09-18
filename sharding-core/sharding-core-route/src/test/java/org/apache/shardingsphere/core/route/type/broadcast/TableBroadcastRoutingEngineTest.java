@@ -67,6 +67,6 @@ public final class TableBroadcastRoutingEngineTest {
         CreateIndexStatement createIndexStatement = new CreateIndexStatement();
         createIndexStatement.getAllSQLSegments().add(new TableSegment(0, 0, "t_order"));
         createIndexStatement.setIndex(new IndexSegment(0, 0, "t_order_index"));
-        return new TableBroadcastRoutingEngine(shardingRule, new ShardingTransparentOptimizedStatement(createIndexStatement)).route();
+        return new TableBroadcastRoutingEngine(shardingRule, null, new ShardingTransparentOptimizedStatement(createIndexStatement)).route();
     }
 }

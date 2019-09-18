@@ -24,9 +24,8 @@ import org.apache.shardingsphere.core.optimize.encrypt.condition.EncryptConditio
 import org.apache.shardingsphere.core.optimize.encrypt.condition.EncryptConditions;
 import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptConditionOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingConditions;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingConditionOptimizedStatement;
+import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
+import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -49,13 +48,12 @@ public final class RewriteStatementFactory {
      * @return rewrite statement
      */
     public static RewriteStatement newInstance(final ShardingRule shardingRule, final SQLRouteResult sqlRouteResult) {
-        ShardingConditions shardingConditions = sqlRouteResult.getShardingStatement() instanceof ShardingConditionOptimizedStatement
-                ? ((ShardingConditionOptimizedStatement) sqlRouteResult.getShardingStatement()).getShardingConditions() : new ShardingConditions(Collections.<ShardingCondition>emptyList());
         EncryptConditions encryptConditions = sqlRouteResult.getEncryptStatement() instanceof EncryptConditionOptimizedStatement
                 ? ((EncryptConditionOptimizedStatement) sqlRouteResult.getEncryptStatement()).getEncryptConditions() : new EncryptConditions(Collections.<EncryptCondition>emptyList());
         return sqlRouteResult.getShardingStatement() instanceof InsertOptimizedStatement
-                ? new InsertRewriteStatement((InsertOptimizedStatement) sqlRouteResult.getShardingStatement(), shardingConditions, encryptConditions, shardingRule.getEncryptRule())
-                : new RewriteStatement(sqlRouteResult.getShardingStatement(), shardingConditions, encryptConditions);
+                ? new InsertRewriteStatement(
+                        (InsertOptimizedStatement) sqlRouteResult.getShardingStatement(), sqlRouteResult.getShardingConditions(), encryptConditions, shardingRule.getEncryptRule())
+                : new RewriteStatement(sqlRouteResult.getShardingStatement(), sqlRouteResult.getShardingConditions(), encryptConditions);
     }
     
     /**

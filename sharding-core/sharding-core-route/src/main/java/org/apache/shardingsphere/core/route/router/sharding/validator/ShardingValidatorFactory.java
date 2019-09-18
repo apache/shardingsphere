@@ -15,41 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.sharding;
+package org.apache.shardingsphere.core.route.router.sharding.validator;
 
+import com.google.common.base.Optional;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.core.optimize.sharding.engnie.ShardingOptimizeEngine;
-import org.apache.shardingsphere.core.optimize.sharding.engnie.ShardingTransparentOptimizeEngine;
-import org.apache.shardingsphere.core.optimize.sharding.engnie.dml.ShardingInsertOptimizeEngine;
-import org.apache.shardingsphere.core.optimize.sharding.engnie.dml.ShardingSelectOptimizeEngine;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
+import org.apache.shardingsphere.core.route.router.sharding.validator.impl.ShardingInsertValidator;
+import org.apache.shardingsphere.core.route.router.sharding.validator.impl.ShardingUpdateValidator;
 
 /**
- * Optimize engine factory for sharding.
+ * Sharding validator factory.
  *
  * @author zhangliang
- * @author maxiaoguang
- * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingOptimizeEngineFactory {
+public final class ShardingValidatorFactory {
     
     /**
-     * Create sharding optimize engine instance.
-     *
+     * New instance of sharding validator.
+     * 
      * @param sqlStatement SQL statement
-     * @return sharding optimize engine instance
+     * @return instance of sharding validator
      */
-    public static ShardingOptimizeEngine newInstance(final SQLStatement sqlStatement) {
-        if (sqlStatement instanceof SelectStatement) {
-            return new ShardingSelectOptimizeEngine();
-        }
+    public static Optional<ShardingValidator> newInstance(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof InsertStatement) {
-            return new ShardingInsertOptimizeEngine();
+            return Optional.<ShardingValidator>of(new ShardingInsertValidator());
         }
-        return new ShardingTransparentOptimizeEngine();
+        if (sqlStatement instanceof UpdateStatement) {
+            return Optional.<ShardingValidator>of(new ShardingUpdateValidator());
+        }
+        return Optional.absent();
     }
 }

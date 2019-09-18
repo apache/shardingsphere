@@ -21,7 +21,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.optimize.api.segment.Tables;
-import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingConditions;
 import org.apache.shardingsphere.core.optimize.sharding.statement.ShardingOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
@@ -39,12 +38,9 @@ public class ShardingConditionOptimizedStatement implements ShardingOptimizedSta
     
     private final Tables tables;
     
-    private final ShardingConditions shardingConditions;
-    
-    public ShardingConditionOptimizedStatement(final SQLStatement sqlStatement, final ShardingConditions shardingConditions) {
+    public ShardingConditionOptimizedStatement(final SQLStatement sqlStatement) {
         this.sqlStatement = sqlStatement;
         tables = new Tables(sqlStatement);
-        this.shardingConditions = shardingConditions;
     }
     
     @Override

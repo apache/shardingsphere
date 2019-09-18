@@ -20,7 +20,8 @@ package org.apache.shardingsphere.core.route.type.complex;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfiguration;
-import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingCondition;
+import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
+import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.groupby.GroupBy;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.SelectItem;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.SelectItems;
@@ -68,18 +69,11 @@ public final class ComplexRoutingEngineTest {
     
     @Test
     public void assertRoutingForBindingTables() {
-        List<ShardingCondition> shardingConditions = new ArrayList<>();
-        RouteValue shardingValue1 = new ListRouteValue<>("user_id", "t_order", Collections.singleton(1L));
-        RouteValue shardingValue2 = new ListRouteValue<>("order_id", "t_order", Collections.singleton(1L));
-        ShardingCondition shardingCondition = new ShardingCondition();
-        shardingCondition.getRouteValues().add(shardingValue1);
-        shardingCondition.getRouteValues().add(shardingValue2);
-        shardingConditions.add(shardingCondition);
-        ShardingSelectOptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(new SelectStatement(), shardingConditions, 
+        ShardingSelectOptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(new SelectStatement(), 
                 new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
                 new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<TableSegment>emptyList(), null),
                 new Pagination(null, null, Collections.emptyList()));
-        ComplexRoutingEngine complexRoutingEngine = new ComplexRoutingEngine(shardingRule, Arrays.asList("t_order", "t_order_item"), optimizedStatement);
+        ComplexRoutingEngine complexRoutingEngine = new ComplexRoutingEngine(shardingRule, Arrays.asList("t_order", "t_order_item"), optimizedStatement, createShardingConditions());
         RoutingResult routingResult = complexRoutingEngine.route();
         List<RoutingUnit> tableUnitList = new ArrayList<>(routingResult.getRoutingUnits());
         assertThat(routingResult, instanceOf(RoutingResult.class));
@@ -92,18 +86,11 @@ public final class ComplexRoutingEngineTest {
     
     @Test
     public void assertRoutingForShardingTableJoinBroadcastTable() {
-        List<ShardingCondition> shardingConditions = new ArrayList<>();
-        RouteValue shardingValue1 = new ListRouteValue<>("user_id", "t_order", Collections.singleton(1L));
-        RouteValue shardingValue2 = new ListRouteValue<>("order_id", "t_order", Collections.singleton(1L));
-        ShardingCondition shardingCondition = new ShardingCondition();
-        shardingCondition.getRouteValues().add(shardingValue1);
-        shardingCondition.getRouteValues().add(shardingValue2);
-        shardingConditions.add(shardingCondition);
-        ShardingSelectOptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(new SelectStatement(), shardingConditions, 
+        ShardingSelectOptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(new SelectStatement(), 
                 new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
                 new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<TableSegment>emptyList(), null),
                 new Pagination(null, null, Collections.emptyList()));
-        ComplexRoutingEngine complexRoutingEngine = new ComplexRoutingEngine(shardingRule, Arrays.asList("t_order", "t_config"), optimizedStatement);
+        ComplexRoutingEngine complexRoutingEngine = new ComplexRoutingEngine(shardingRule, Arrays.asList("t_order", "t_config"), optimizedStatement, createShardingConditions());
         RoutingResult routingResult = complexRoutingEngine.route();
         List<RoutingUnit> tableUnitList = new ArrayList<>(routingResult.getRoutingUnits());
         assertThat(routingResult, instanceOf(RoutingResult.class));
@@ -112,5 +99,16 @@ public final class ComplexRoutingEngineTest {
         assertThat(tableUnitList.get(0).getTableUnits().size(), is(1));
         assertThat(tableUnitList.get(0).getTableUnits().get(0).getActualTableName(), is("t_order_1"));
         assertThat(tableUnitList.get(0).getTableUnits().get(0).getLogicTableName(), is("t_order"));
+    }
+    
+    private ShardingConditions createShardingConditions() {
+        List<ShardingCondition> result = new ArrayList<>();
+        RouteValue shardingValue1 = new ListRouteValue<>("user_id", "t_order", Collections.singleton(1L));
+        RouteValue shardingValue2 = new ListRouteValue<>("order_id", "t_order", Collections.singleton(1L));
+        ShardingCondition shardingCondition = new ShardingCondition();
+        shardingCondition.getRouteValues().add(shardingValue1);
+        shardingCondition.getRouteValues().add(shardingValue2);
+        result.add(shardingCondition);
+        return new ShardingConditions(result);
     }
 }

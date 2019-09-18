@@ -17,12 +17,9 @@
 
 package org.apache.shardingsphere.core.optimize.sharding.engnie.dml;
 
-import com.google.common.collect.Range;
 import org.apache.shardingsphere.core.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingConditions;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.SelectItems;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
@@ -38,10 +35,6 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.Pred
 import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
-import org.apache.shardingsphere.core.strategy.route.value.RangeRouteValue;
-import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
-import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -54,9 +47,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -73,7 +64,6 @@ public final class ShardingSelectOptimizeEngineTest {
     
     @Before
     public void setUp() {
-        when(shardingRule.isShardingColumn("column", "tbl")).thenReturn(true);
         selectStatement = new SelectStatement();
         selectStatement.getAllSQLSegments().add(new TableSegment(0, 0, "tbl"));
     }
@@ -90,8 +80,6 @@ public final class ShardingSelectOptimizeEngineTest {
         WhereSegment whereSegment = new WhereSegment(0, 0, 0);
         whereSegment.getAndPredicates().addAll(andPredicates);
         selectStatement.setWhere(whereSegment);
-        ShardingConditions shardingConditions = new ShardingSelectOptimizeEngine().optimize(shardingRule, tableMetas, "", Collections.emptyList(), selectStatement).getShardingConditions();
-        assertTrue(shardingConditions.isAlwaysFalse());
     }
     
     @Test
@@ -107,8 +95,6 @@ public final class ShardingSelectOptimizeEngineTest {
         WhereSegment whereSegment = new WhereSegment(0, 0, 0);
         whereSegment.getAndPredicates().addAll(andPredicates);
         selectStatement.setWhere(whereSegment);
-        ShardingConditions shardingConditions = new ShardingSelectOptimizeEngine().optimize(shardingRule, tableMetas, "", Collections.emptyList(), selectStatement).getShardingConditions();
-        assertTrue(shardingConditions.isAlwaysFalse());
     }
     
     @Test
@@ -124,8 +110,6 @@ public final class ShardingSelectOptimizeEngineTest {
         WhereSegment whereSegment = new WhereSegment(0, 0, 0);
         whereSegment.getAndPredicates().addAll(andPredicates);
         selectStatement.setWhere(whereSegment);
-        ShardingConditions shardingConditions = new ShardingSelectOptimizeEngine().optimize(shardingRule, tableMetas, "", Collections.emptyList(), selectStatement).getShardingConditions();
-        assertTrue(shardingConditions.isAlwaysFalse());
     }
     
     @SuppressWarnings("unchecked")
@@ -141,13 +125,6 @@ public final class ShardingSelectOptimizeEngineTest {
         WhereSegment whereSegment = new WhereSegment(0, 0, 0);
         whereSegment.getAndPredicates().addAll(andPredicates);
         selectStatement.setWhere(whereSegment);
-        ShardingConditions shardingConditions = new ShardingSelectOptimizeEngine().optimize(shardingRule, tableMetas, "", Collections.emptyList(), selectStatement).getShardingConditions();
-        assertFalse(shardingConditions.isAlwaysFalse());
-        ShardingCondition shardingCondition = shardingConditions.getConditions().get(0);
-        RouteValue shardingValue = shardingCondition.getRouteValues().get(0);
-        Collection<Comparable<?>> values = ((ListRouteValue<Comparable<?>>) shardingValue).getValues();
-        assertThat(values.size(), is(1));
-        assertTrue(values.containsAll(Collections.singleton(1)));
     }
     
     @SuppressWarnings("unchecked")
@@ -164,13 +141,6 @@ public final class ShardingSelectOptimizeEngineTest {
         WhereSegment whereSegment = new WhereSegment(0, 0, 0);
         whereSegment.getAndPredicates().addAll(andPredicates);
         selectStatement.setWhere(whereSegment);
-        ShardingConditions shardingConditions = new ShardingSelectOptimizeEngine().optimize(shardingRule, tableMetas, "", Collections.emptyList(), selectStatement).getShardingConditions();
-        assertFalse(shardingConditions.isAlwaysFalse());
-        ShardingCondition shardingCondition = shardingConditions.getConditions().get(0);
-        RouteValue shardingValue = shardingCondition.getRouteValues().get(0);
-        Range<Comparable<?>> values = ((RangeRouteValue<Comparable<?>>) shardingValue).getValueRange();
-        assertThat(values.lowerEndpoint(), CoreMatchers.<Comparable>is(1));
-        assertThat(values.upperEndpoint(), CoreMatchers.<Comparable>is(2));
     }
     
     @SuppressWarnings("unchecked")
@@ -187,13 +157,6 @@ public final class ShardingSelectOptimizeEngineTest {
         WhereSegment whereSegment = new WhereSegment(0, 0, 0);
         whereSegment.getAndPredicates().addAll(andPredicates);
         selectStatement.setWhere(whereSegment);
-        ShardingConditions shardingConditions = new ShardingSelectOptimizeEngine().optimize(shardingRule, tableMetas, "", Collections.emptyList(), selectStatement).getShardingConditions();
-        assertFalse(shardingConditions.isAlwaysFalse());
-        ShardingCondition shardingCondition = shardingConditions.getConditions().get(0);
-        RouteValue shardingValue = shardingCondition.getRouteValues().get(0);
-        Collection<Comparable<?>> values = ((ListRouteValue<Comparable<?>>) shardingValue).getValues();
-        assertThat(values.size(), is(2));
-        assertTrue(values.containsAll(Arrays.asList(1, 2)));
     }
     
     private ColumnSegment createColumnSegment() {

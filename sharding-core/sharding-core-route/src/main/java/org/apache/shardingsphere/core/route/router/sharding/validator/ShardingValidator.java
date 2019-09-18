@@ -15,24 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.sharding.segment.condition;
+package org.apache.shardingsphere.core.route.router.sharding.validator;
 
-import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
+import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Always false route value.
+ * Sharding validator.
  *
  * @author zhangliang
+ * 
+ * @param <T> type of SQL statement
  */
-public final class AlwaysFalseRouteValue implements RouteValue {
+public interface ShardingValidator<T extends SQLStatement> {
     
-    @Override
-    public String getColumnName() {
-        return "";
-    }
-    
-    @Override
-    public String getTableName() {
-        return "";
-    }
+    /**
+     * Validate whether sharding operation is supported.
+     * 
+     * @param shardingRule sharding rule
+     * @param sqlStatement SQL statement
+     */
+    void validate(ShardingRule shardingRule, T sqlStatement);
 }

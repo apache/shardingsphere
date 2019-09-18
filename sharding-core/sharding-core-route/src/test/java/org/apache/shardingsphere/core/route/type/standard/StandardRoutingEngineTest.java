@@ -20,7 +20,8 @@ package org.apache.shardingsphere.core.route.type.standard;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfiguration;
-import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingCondition;
+import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
+import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.groupby.GroupBy;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.SelectItem;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.SelectItems;
@@ -57,19 +58,23 @@ public final class StandardRoutingEngineTest {
         shardingRuleConfig.getTableRuleConfigs().add(new TableRuleConfiguration("t_order", "ds_${0..1}.t_order_${0..1}"));
         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "ds_${user_id % 2}"));
         shardingRuleConfig.setDefaultTableShardingStrategyConfig(new InlineShardingStrategyConfiguration("order_id", "t_order_${order_id % 2}"));
-        List<ShardingCondition> shardingConditions = new ArrayList<>();
+        ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, Arrays.asList("ds_0", "ds_1"));
+        standardRoutingEngine = new StandardRoutingEngine(
+                shardingRule, "t_order", new ShardingSelectOptimizedStatement(new SelectStatement(), 
+                new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
+                new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<TableSegment>emptyList(), null),
+                new Pagination(null, null, Collections.emptyList())), createShardingConditions());
+    }
+    
+    private ShardingConditions createShardingConditions() {
+        List<ShardingCondition> result = new ArrayList<>();
         RouteValue shardingValue1 = new ListRouteValue<>("user_id", "t_order", Collections.singleton(1L));
         RouteValue shardingValue2 = new ListRouteValue<>("order_id", "t_order", Collections.singleton(1L));
         ShardingCondition shardingCondition = new ShardingCondition();
         shardingCondition.getRouteValues().add(shardingValue1);
         shardingCondition.getRouteValues().add(shardingValue2);
-        shardingConditions.add(shardingCondition);
-        ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, Arrays.asList("ds_0", "ds_1"));
-        standardRoutingEngine = new StandardRoutingEngine(
-                shardingRule, "t_order", new ShardingSelectOptimizedStatement(new SelectStatement(), shardingConditions,  
-                new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
-                new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<TableSegment>emptyList(), null),
-                new Pagination(null, null, Collections.emptyList())));
+        result.add(shardingCondition);
+        return new ShardingConditions(result);
     }
     
     @Test

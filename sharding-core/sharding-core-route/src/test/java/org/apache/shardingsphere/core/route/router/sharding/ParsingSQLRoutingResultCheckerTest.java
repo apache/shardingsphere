@@ -27,8 +27,8 @@ import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingConditions;
+import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
+import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.apache.shardingsphere.core.optimize.sharding.statement.ShardingOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.statement.ddl.ShardingDropIndexOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingConditionOptimizedStatement;
@@ -51,8 +51,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
@@ -63,13 +63,13 @@ public class ParsingSQLRoutingResultCheckerTest {
     
     @Test
     public void assertCheckWithShardingDropIndexOptimizedStatement() {
-        new ParsingSQLRoutingResultChecker(getShardingRule(), getMetaData(), mock(ShardingDropIndexOptimizedStatement.class))
+        new ParsingSQLRoutingResultChecker(getShardingRule(), getMetaData(), mock(ShardingDropIndexOptimizedStatement.class), new ShardingConditions(Collections.<ShardingCondition>emptyList()))
             .check(mock(RoutingEngine.class), getRoutingResult());
     }
     
     @Test
     public void assertCheckOthersRoutingResult() {
-        new ParsingSQLRoutingResultChecker(getShardingRule(), getMetaData(), getShardingOptimizedStatement())
+        new ParsingSQLRoutingResultChecker(getShardingRule(), getMetaData(), getShardingOptimizedStatement(), new ShardingConditions(Collections.<ShardingCondition>emptyList()))
             .check(mock(RoutingEngine.class), getRoutingResult());
     }
 
@@ -77,7 +77,7 @@ public class ParsingSQLRoutingResultCheckerTest {
     public void assertCheckOthersRoutingResultWithAbsentDatabase() {
         String msg = null;
         try {
-            new ParsingSQLRoutingResultChecker(getShardingRule(), getMetaData(), getShardingOptimizedStatement())
+            new ParsingSQLRoutingResultChecker(getShardingRule(), getMetaData(), getShardingOptimizedStatement(), new ShardingConditions(Collections.<ShardingCondition>emptyList()))
                 .check(mock(RoutingEngine.class), getRoutingResultWithAbsentDatabase());
         } catch (ShardingException ex) {
             msg = ex.getMessage();
@@ -87,7 +87,7 @@ public class ParsingSQLRoutingResultCheckerTest {
     
     @Test
     public void assertCheckStandardRoutingResult() {
-        new ParsingSQLRoutingResultChecker(getShardingRule(), getMetaData(), getShardingOptimizedStatement())
+        new ParsingSQLRoutingResultChecker(getShardingRule(), getMetaData(), getShardingOptimizedStatement(), new ShardingConditions(Collections.<ShardingCondition>emptyList()))
             .check(mock(StandardRoutingEngine.class), getRoutingResult());
     }
     
@@ -95,12 +95,15 @@ public class ParsingSQLRoutingResultCheckerTest {
     public void assertCheckStandardRoutingResultWithAbsentDatabaseAndDefaultStrategy() {
         String msg = null;
         try {
-            new ParsingSQLRoutingResultChecker(getShardingRuleWithDefaultStrategy(), getMetaData(), getShardingOptimizedStatement())
+            new ParsingSQLRoutingResultChecker(
+                    getShardingRuleWithDefaultStrategy(), getMetaData(), getShardingOptimizedStatement(), new ShardingConditions(Collections.<ShardingCondition>emptyList()))
                 .check(mock(StandardRoutingEngine.class), getRoutingResultWithAbsentDatabase());
         } catch (ShardingException ex) {
             msg = ex.getMessage();
         }
-        assertThat(msg, is("We get some absent DataNodes=[db_2.t_order_0] in routing result, DatabaseStrategy=[Inline{shardingColumn='order_id', algorithmExpression='t_order_${order_id % 3}'}], TableStrategy=[Inline{shardingColumn='order_id', algorithmExpression='t_order_${order_id % 3}'}], please check the configuration of rule and data node."));
+        assertThat(msg, is("We get some absent DataNodes=[db_2.t_order_0] in routing result, DatabaseStrategy=[Inline{shardingColumn='order_id', "
+                + "algorithmExpression='t_order_${order_id % 3}'}], TableStrategy=[Inline{shardingColumn='order_id', algorithmExpression='t_order_${order_id % 3}'}], "
+                + "please check the configuration of rule and data node."));
     }
     
     private ShardingRule getShardingRuleWithDefaultStrategy() {
@@ -129,14 +132,16 @@ public class ParsingSQLRoutingResultCheckerTest {
     
     @Test
     public void assertCheckStandardRoutingResultWithAbsentDatabase() {
-        String msg = null;
+        String message = null;
         try {
-            new ParsingSQLRoutingResultChecker(getShardingRule(), getMetaData(), getShardingOptimizedStatement())
+            new ParsingSQLRoutingResultChecker(getShardingRule(), getMetaData(), getShardingOptimizedStatement(), new ShardingConditions(Collections.<ShardingCondition>emptyList()))
                 .check(mock(StandardRoutingEngine.class), getRoutingResultWithAbsentDatabase());
         } catch (ShardingException ex) {
-            msg = ex.getMessage();
+            message = ex.getMessage();
         }
-        assertThat(msg, is("We get some absent DataNodes=[db_2.t_order_0] in routing result, DatabaseStrategy=[Inline{shardingColumn='order_id', algorithmExpression='t_order_${order_id % 2}'}], TableStrategy=[Inline{shardingColumn='order_id', algorithmExpression='t_order_${order_id % 2}'}], please check the configuration of rule and data node."));
+        assertThat(message, is("We get some absent DataNodes=[db_2.t_order_0] in routing result, DatabaseStrategy=[Inline{shardingColumn='order_id', "
+                + "algorithmExpression='t_order_${order_id % 2}'}], TableStrategy=[Inline{shardingColumn='order_id', algorithmExpression='t_order_${order_id % 2}'}], "
+                + "please check the configuration of rule and data node."));
     }
     
     private ShardingOptimizedStatement getShardingOptimizedStatement() {
@@ -147,19 +152,20 @@ public class ParsingSQLRoutingResultCheckerTest {
     
     @Test
     public void assertCheckStandardRoutingResultWithAbsentDatabaseAndRouteValues() {
-        String msg = null;
+        String message = null;
         try {
-            new ParsingSQLRoutingResultChecker(getShardingRule(), getMetaData(), getShardingConditionOptimizedStatement())
+            new ParsingSQLRoutingResultChecker(getShardingRule(), getMetaData(), getShardingConditionOptimizedStatement(), getShardingConditions())
                 .check(mock(StandardRoutingEngine.class), getRoutingResultWithAbsentDatabase());
         } catch (ShardingException ex) {
-            msg = ex.getMessage();
+            message = ex.getMessage();
         }
-        assertThat(msg, is("We get some absent DataNodes=[db_2.t_order_0] in routing result, DatabaseStrategy=[Inline{shardingColumn='order_id', algorithmExpression='t_order_${order_id % 2}'}], TableStrategy=[Inline{shardingColumn='order_id', algorithmExpression='t_order_${order_id % 2}'}], with [t_order_1.order_id = 1], please check the configuration of rule and data node."));
+        assertThat(message, is("We get some absent DataNodes=[db_2.t_order_0] in routing result, DatabaseStrategy=[Inline{shardingColumn='order_id', " 
+                + "algorithmExpression='t_order_${order_id % 2}'}], TableStrategy=[Inline{shardingColumn='order_id', algorithmExpression='t_order_${order_id % 2}'}], with [t_order_1.order_id = 1], "
+                + "please check the configuration of rule and data node."));
     }
     
     private ShardingOptimizedStatement getShardingConditionOptimizedStatement() {
         ShardingConditionOptimizedStatement result = mock(ShardingConditionOptimizedStatement.class);
-        doReturn(getShardingConditions()).when(result).getShardingConditions();
         doReturn(mock(DMLStatement.class)).when(result).getSQLStatement();
         return result;
     }

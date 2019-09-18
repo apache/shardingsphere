@@ -26,7 +26,8 @@ import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingCondition;
+import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
+import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.apache.shardingsphere.core.optimize.sharding.statement.ShardingOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.statement.ddl.ShardingDropIndexOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingConditionOptimizedStatement;
@@ -48,7 +49,7 @@ import java.util.LinkedList;
  *
  * @author sunbufu
  */
-public class ParsingSQLRoutingResultChecker implements RoutingResultChecker {
+public final class ParsingSQLRoutingResultChecker implements RoutingResultChecker {
     
     private final ShardingRule shardingRule;
     
@@ -56,14 +57,18 @@ public class ParsingSQLRoutingResultChecker implements RoutingResultChecker {
     
     private final ShardingOptimizedStatement shardingStatement;
     
+    private final ShardingConditions shardingConditions;
+    
     private boolean checkDataSource;
     
     private boolean checkTable;
     
-    public ParsingSQLRoutingResultChecker(final ShardingRule shardingRule, final ShardingSphereMetaData metaData, final ShardingOptimizedStatement shardingStatement) {
+    public ParsingSQLRoutingResultChecker(final ShardingRule shardingRule, 
+                                          final ShardingSphereMetaData metaData, final ShardingOptimizedStatement shardingStatement, final ShardingConditions shardingConditions) {
         this.shardingRule = shardingRule;
         this.metaData = metaData;
         this.shardingStatement = shardingStatement;
+        this.shardingConditions = shardingConditions;
         if (shardingRule.getRuleConfiguration().getMasterSlaveRuleConfigs().isEmpty()) {
             checkDataSource = true;
         }
@@ -72,12 +77,6 @@ public class ParsingSQLRoutingResultChecker implements RoutingResultChecker {
         }
     }
     
-    /**
-     * Check for ParsingSQLRouter's routing result.
-     *
-     * @param routingEngine routing engine
-     * @param routingResult routing result
-     */
     @Override
     public void check(final RoutingEngine routingEngine, final RoutingResult routingResult) {
         if (shardingStatement instanceof ShardingDropIndexOptimizedStatement) {
@@ -94,11 +93,6 @@ public class ParsingSQLRoutingResultChecker implements RoutingResultChecker {
         }
     }
     
-    /**
-     * Throw other's absent routing result exception.
-     *
-     * @param absentRoutingUnitMap absent routingUnit map
-     */
     private void throwOthersRoutingResultException(final Multimap<RoutingUnit, TableUnit> absentRoutingUnitMap) {
         RoutingUnit routingUnit = absentRoutingUnitMap.keySet().iterator().next();
         Collection<String> absentDataNodes = Lists.newArrayListWithExpectedSize(absentRoutingUnitMap.get(routingUnit).size());
@@ -110,12 +104,6 @@ public class ParsingSQLRoutingResultChecker implements RoutingResultChecker {
         }
     }
     
-    /**
-     * Throw StandardRoutingEngine's absent routing result exception.
-     *
-     * @param shardingStatement    sharding statement
-     * @param absentRoutingUnitMap absent routing unit map
-     */
     private void throwAbsentStandardRoutingResultException(final ShardingOptimizedStatement shardingStatement, final Multimap<RoutingUnit, TableUnit> absentRoutingUnitMap) {
         RoutingUnit routingUnit = absentRoutingUnitMap.keySet().iterator().next();
         Collection<String> absentDataNodes = Lists.newArrayListWithExpectedSize(absentRoutingUnitMap.get(routingUnit).size());
@@ -142,7 +130,7 @@ public class ParsingSQLRoutingResultChecker implements RoutingResultChecker {
             }
             detail.append("TableStrategy=[").append(tableStrategy).append("], ");
             if (shardingStatement instanceof ShardingConditionOptimizedStatement) {
-                detail.append("with ").append(getAllRouteValues(((ShardingConditionOptimizedStatement) shardingStatement).getShardingConditions().getConditions())).append(", ");
+                detail.append("with ").append(getAllRouteValues(shardingConditions.getConditions())).append(", ");
             }
             throwExceptionForAbsentDataNode(absentDataNodes, detail);
         }

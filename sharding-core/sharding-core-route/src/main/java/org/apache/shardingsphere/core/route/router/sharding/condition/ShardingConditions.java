@@ -15,15 +15,41 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.sharding.segment.condition;
+package org.apache.shardingsphere.core.route.router.sharding.condition;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
+import java.util.List;
+
 /**
- * Always false sharding condition.
+ * Sharding conditions.
  *
+ * @author zhangliang
  * @author maxiaoguang
  */
+@RequiredArgsConstructor
+@Getter
 @ToString
-public final class AlwaysFalseShardingCondition extends ShardingCondition {
+public final class ShardingConditions {
+    
+    private final List<ShardingCondition> conditions;
+    
+    /**
+     * Judge sharding conditions is always false or not.
+     *
+     * @return sharding conditions is always false or not
+     */
+    public boolean isAlwaysFalse() {
+        if (conditions.isEmpty()) {
+            return false;
+        }
+        for (ShardingCondition each : conditions) {
+            if (!(each instanceof AlwaysFalseShardingCondition)) {
+                return false;
+            }
+        }
+        return true;
+    }
 }
