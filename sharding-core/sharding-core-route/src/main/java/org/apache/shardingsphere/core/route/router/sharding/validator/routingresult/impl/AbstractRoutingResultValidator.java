@@ -66,16 +66,15 @@ public abstract class AbstractRoutingResultValidator implements RoutingResultVal
     private Multimap<RoutingUnit, TableUnit> getAbsentRoutingUnit(final ShardingOptimizedStatement shardingStatement, final Collection<RoutingUnit> routingUnits) {
         Multimap<RoutingUnit, TableUnit> result = HashMultimap.create();
         for (RoutingUnit each : routingUnits) {
-            String dataSourceName = each.getDataSourceName();
-            result.putAll(each, getAbsentTableUnit(shardingStatement, each, dataSourceName));
+            result.putAll(each, getAbsentTableUnit(shardingStatement, each));
         }
         return result;
     }
     
-    private Collection<TableUnit> getAbsentTableUnit(final ShardingOptimizedStatement shardingStatement, final RoutingUnit routingUnit, final String dataSourceName) {
+    private Collection<TableUnit> getAbsentTableUnit(final ShardingOptimizedStatement shardingStatement, final RoutingUnit routingUnit) {
         Collection<TableUnit> result = new LinkedList<>();
         for (TableUnit each : routingUnit.getTableUnits()) {
-            if (containsInMetaData(shardingStatement, dataSourceName, each.getActualTableName()) || containsInShardingRule(dataSourceName, each)) {
+            if (containsInMetaData(shardingStatement, routingUnit.getDataSourceName(), each.getActualTableName()) || containsInShardingRule(routingUnit.getDataSourceName(), each)) {
                 continue;
             }
             result.add(each);
