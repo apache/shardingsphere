@@ -18,10 +18,8 @@
 package org.apache.shardingsphere.core.optimize.sharding.engnie.dml;
 
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.optimize.api.segment.Tables;
 import org.apache.shardingsphere.core.optimize.sharding.engnie.ShardingOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingConditionOptimizedStatement;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
@@ -38,16 +36,6 @@ public final class ShardingUpdateOptimizeEngine implements ShardingOptimizeEngin
     @Override
     public ShardingConditionOptimizedStatement optimize(final ShardingRule shardingRule,
                                                         final TableMetas tableMetas, final String sql, final List<Object> parameters, final UpdateStatement sqlStatement) {
-        checkUpdateShardingKey(shardingRule, sqlStatement);
         return new ShardingConditionOptimizedStatement(sqlStatement);
-    }
-    
-    private void checkUpdateShardingKey(final ShardingRule shardingRule, final UpdateStatement sqlStatement) {
-        String tableName = new Tables(sqlStatement).getSingleTableName();
-        for (AssignmentSegment each : sqlStatement.getSetAssignment().getAssignments()) {
-            if (shardingRule.isShardingColumn(each.getColumn().getName(), tableName)) {
-                throw new UnsupportedOperationException(String.format("Can not update sharding key, logic table: [%s], column: [%s].", tableName, each));
-            }
-        }
     }
 }

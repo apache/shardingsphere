@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.sharding.engnie.dml;
+package org.apache.shardingsphere.core.route.router.sharding.validator.impl;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingConditionOptimizedStatement;
+import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
@@ -31,31 +30,19 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Collections;
-import java.util.List;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShardingUpdateOptimizeEngineTest {
+public final class ShardingUpdateValidatorTest {
     
     private ShardingRule shardingRule;
-    
-    private TableMetas tableMetas;
-    
-    private String sql;
-    
-    private List<Object> parameters;
     
     private UpdateStatement sqlStatement;
     
     @Before
     public void setUp() {
-        sql = "update user set id = 100";
         shardingRule = mock(ShardingRule.class);
-        tableMetas = mock(TableMetas.class);
-        parameters = Collections.emptyList();
         sqlStatement = mock(UpdateStatement.class);
         TableAvailable tableAvailable = mock(TableAvailable.class);
         AssignmentSegment assignmentSegment = mock(AssignmentSegment.class);
@@ -71,17 +58,16 @@ public final class ShardingUpdateOptimizeEngineTest {
     }
     
     @Test
-    public void assertUpdateWithoutShardingKey() {
+    public void assertValidateWithoutShardingKey() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(false);
-        ShardingUpdateOptimizeEngine shardingUpdateOptimizeEngine = new ShardingUpdateOptimizeEngine();
-        ShardingConditionOptimizedStatement optimizedStatement = shardingUpdateOptimizeEngine.optimize(shardingRule, tableMetas, sql, parameters, sqlStatement);
-        assertThat(optimizedStatement, instanceOf(ShardingConditionOptimizedStatement.class));
+        ShardingUpdateValidator shardingUpdateValidator = new ShardingUpdateValidator();
+        shardingUpdateValidator.validate(shardingRule, sqlStatement);
     }
     
-    @Test(expected = UnsupportedOperationException.class)
-    public void assertUpdateWithShardingKey() {
+    @Test(expected = ShardingException.class)
+    public void assertValidateWithShardingKey() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(true);
-        ShardingUpdateOptimizeEngine shardingUpdateOptimizeEngine = new ShardingUpdateOptimizeEngine();
-        shardingUpdateOptimizeEngine.optimize(shardingRule, tableMetas, sql, parameters, sqlStatement);
+        ShardingUpdateValidator shardingUpdateValidator = new ShardingUpdateValidator();
+        shardingUpdateValidator.validate(shardingRule, sqlStatement);
     }
 }
