@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
 
 /**
- * HintManager Holder.
+ * Holder for {@code HintManager}.
  *
  * @author liya
  */
@@ -32,7 +32,7 @@ public final class HintManagerHolder {
     private static final ThreadLocal<HintManager> HINT_MANAGER_HOLDER = new ThreadLocal<>();
     
     /**
-     * Get a instance for {@code HintManager} from ThreadLocal,if not exist,then create new one.
+     * Get a instance for {@code HintManager} from {@code ThreadLocal},if not exist,then create new one.
      *
      * @return hint manager
      */
@@ -44,7 +44,7 @@ public final class HintManagerHolder {
     }
     
     /**
-     * remove {@code HintManager} from ThreadLocal.
+     * remove {@code HintManager} from {@code ThreadLocal}.
      */
     public static void remove() {
         HINT_MANAGER_HOLDER.remove();

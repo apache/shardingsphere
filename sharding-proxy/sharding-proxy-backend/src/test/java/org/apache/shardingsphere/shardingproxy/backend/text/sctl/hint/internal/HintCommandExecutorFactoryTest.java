@@ -23,34 +23,29 @@ import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.e
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.executor.HintErrorFormatExecutor;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.executor.HintErrorParameterExecutor;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.executor.HintSetDatabaseShardingValueExecutor;
-import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.executor.HintSetExecutor;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.executor.HintSetMasterOnlyExecutor;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
-/**
- * Test for HintCommandExecutorFactory.
- *
- * @author liya
- */
 public final class HintCommandExecutorFactoryTest {
     
     @Test
     public void assertHintErrorFormatExecutor() {
-        String sql = "sctl:hint1 set hint_type=master_only";
+        String sql = "sctl:hint1 set master_only=true";
         assertThat(HintCommandExecutorFactory.newInstance(sql), instanceOf(HintErrorFormatExecutor.class));
     }
     
     @Test
-    public void assertHintSetExecutor() {
-        String sql = "sctl:hint set hint_type=master_only";
-        assertThat(HintCommandExecutorFactory.newInstance(sql), instanceOf(HintSetExecutor.class));
+    public void assertHintSetMasterOnlyExecutor() {
+        String sql = "sctl:hint set master_only=false";
+        assertThat(HintCommandExecutorFactory.newInstance(sql), instanceOf(HintSetMasterOnlyExecutor.class));
     }
     
     @Test
     public void assertHintSetDatabaseShardingValueExecutor() {
-        String sql = "sctl:hint setDatabaseShardingValue 100";
+        String sql = "sctl:hint set DatabaseShardingValue=100";
         assertThat(HintCommandExecutorFactory.newInstance(sql), instanceOf(HintSetDatabaseShardingValueExecutor.class));
     }
     

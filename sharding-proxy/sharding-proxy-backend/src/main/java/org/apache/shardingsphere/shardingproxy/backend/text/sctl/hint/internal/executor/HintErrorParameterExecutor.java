@@ -24,7 +24,7 @@ import org.apache.shardingsphere.shardingproxy.backend.text.sctl.exception.Unsup
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintCommandExecutor;
 
 /**
- * Hint Error Parameter command executor.
+ * Hint error parameter command executor.
  *
  * @author liya
  */

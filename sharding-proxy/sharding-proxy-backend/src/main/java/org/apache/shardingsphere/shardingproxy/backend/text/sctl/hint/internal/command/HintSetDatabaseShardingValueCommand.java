@@ -22,11 +22,11 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintCommand;
 
 /**
- * Hint SetDatabaseShardingValue command.
+ * Hint set database sharding value command.
  *
  * <p>
- * example: sctl:hint setDatabaseShardingValue yy.
- * yy: shardingValue.
+ * example: sctl:hint set DatabaseShardingValue=yy.
+ * yy: sharding value.
  * </p>
  *
  * @author liya

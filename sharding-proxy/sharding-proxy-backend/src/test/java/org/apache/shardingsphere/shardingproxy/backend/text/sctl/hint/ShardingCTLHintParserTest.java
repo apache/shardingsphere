@@ -17,60 +17,45 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint;
 
-import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintType;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintAddDatabaseShardingValueCommand;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintAddTableShardingValueCommand;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintClearCommand;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintErrorParameterCommand;
-import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintSetCommand;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintSetDatabaseShardingValueCommand;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintSetMasterOnlyCommand;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
-/**
- * Test for ShardingCTLHintParser.
- *
- * @author liya
- */
 public final class ShardingCTLHintParserTest {
     
     @Test
-    public void assertValidSetSql() {
-        String databaseTablesSql = "sctl:hint set hint_type=DATAbase_TAbles ";
-        String databaseOnlySql = " sctl:HINT SET hint_TYPE=database_only ";
-        String masterOnlySql = " sctl:hint set hint_type=master_only ";
-        ShardingCTLHintStatement databaseTablesStatement = new ShardingCTLHintParser(databaseTablesSql).doParse().get();
-        ShardingCTLHintStatement databaseOnlyStatement = new ShardingCTLHintParser(databaseOnlySql).doParse().get();
+    public void assertValidSetMasterOnlySql() {
+        String masterOnlySql = "sctl:hint set master_only=true ";
         ShardingCTLHintStatement masterOnlyStatement = new ShardingCTLHintParser(masterOnlySql).doParse().get();
-        assertEquals(((HintSetCommand) databaseTablesStatement.getHintCommand()).getHintType(), HintType.DATABASE_TABLES);
-        assertEquals(((HintSetCommand) databaseOnlyStatement.getHintCommand()).getHintType(), HintType.DATABASE_ONLY);
-        assertEquals(((HintSetCommand) masterOnlyStatement.getHintCommand()).getHintType(), HintType.MASTER_ONLY);
+        assertTrue(((HintSetMasterOnlyCommand) masterOnlyStatement.getHintCommand()).isMasterOnly());
     }
     
     @Test
-    public void assertInValidSetSql() {
-        String databaseTablesSql = "sctl:hint set1 hint_type=DATAbase_TAbles ";
-        String databaseOnlySql = " sctl:HINT SET hint_TYPE1=database_only ";
-        String masterOnlySql = " sctl:hint set hint_type=master_only1 ";
-        assertThat(new ShardingCTLHintParser(databaseTablesSql).doParse().get().getHintCommand(), instanceOf(HintErrorParameterCommand.class));
-        assertThat(new ShardingCTLHintParser(databaseOnlySql).doParse().get().getHintCommand(), instanceOf(HintErrorParameterCommand.class));
+    public void assertInValidSetMasterOnlySql() {
+        String masterOnlySql = "sctl:hint set master_only1=true ";
         assertThat(new ShardingCTLHintParser(masterOnlySql).doParse().get().getHintCommand(), instanceOf(HintErrorParameterCommand.class));
     }
     
     @Test
     public void assertValidSetDatabaseShardingValueSql() {
-        String sql = " sctl:HINT setDatabaseShardingValue 100  ";
+        String sql = " sctl:HINT set DatabaseShardingValue=100  ";
         ShardingCTLHintStatement statement = new ShardingCTLHintParser(sql).doParse().get();
         assertEquals(((HintSetDatabaseShardingValueCommand) statement.getHintCommand()).getValue(), "100");
     }
     
     @Test
     public void assertInValidSetDatabaseShardingValueSql() {
-        String sql = " sctl:HINT setDatabaseShardingValue1 100  ";
+        String sql = " sctl:HINT set DatabaseShardingValue1=100  ";
         assertThat(new ShardingCTLHintParser(sql).doParse().get().getHintCommand(), instanceOf(HintErrorParameterCommand.class));
     }
     

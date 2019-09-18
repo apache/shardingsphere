@@ -25,7 +25,7 @@ import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.H
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintAddTableShardingValueCommand;
 
 /**
- * Hint AddTableShardingValue command executor.
+ * Hint add sharding value for table command executor.
  *
  * @author liya
  */

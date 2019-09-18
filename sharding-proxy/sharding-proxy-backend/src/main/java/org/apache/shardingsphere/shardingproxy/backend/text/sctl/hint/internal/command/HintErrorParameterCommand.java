@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintCommand;
 
 /**
- * Hint Error Parameter command.
+ * Hint error parameter command.
  *
  * @author liya
  */

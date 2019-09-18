@@ -22,12 +22,12 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintCommand;
 
 /**
- * Hint AddDatabaseShardingValue command.
+ * Hint add sharding value for database command.
  *
  * <p>
  * example: sctl:hint addDatabaseShardingValue xx=yy.
  * xx: logicTable.
- * yy: shardingValue.
+ * yy: sharding value.
  * </p>
  *
  * @author liya

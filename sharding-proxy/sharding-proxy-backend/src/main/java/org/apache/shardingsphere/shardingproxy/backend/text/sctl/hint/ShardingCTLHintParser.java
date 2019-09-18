@@ -19,13 +19,12 @@ package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.ShardingCTLParser;
-import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintType;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintAddDatabaseShardingValueCommand;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintAddTableShardingValueCommand;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintClearCommand;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintErrorParameterCommand;
-import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintSetCommand;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintSetDatabaseShardingValueCommand;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintSetMasterOnlyCommand;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -37,9 +36,9 @@ import java.util.regex.Pattern;
  */
 public final class ShardingCTLHintParser implements ShardingCTLParser<ShardingCTLHintStatement> {
     
-    private final String setRegex = "sctl:hint\\s+set\\s+hint_type=(DATABASE_TABLES|DATABASE_ONLY|MASTER_ONLY)\\s*$";
+    private final String setMasterOnlyRegex = "sctl:hint\\s+set\\s+MASTER_ONLY=(true|false)\\s*$";
     
-    private final String setDatabaseShardingValueRegex = "sctl:hint\\s+setDatabaseShardingValue\\s+(\\S*)";
+    private final String setDatabaseShardingValueRegex = "sctl:hint\\s+set\\s+DatabaseShardingValue=(\\S*)";
     
     private final String addDatabaseShardingValueRegex = "sctl:hint\\s+addDatabaseShardingValue\\s+(\\S*)=(\\S*)";
     
@@ -49,7 +48,7 @@ public final class ShardingCTLHintParser implements ShardingCTLParser<ShardingCT
     
     private final String errorParameterRegex = "sctl:hint\\s+.*";
     
-    private final Matcher setMatcher;
+    private final Matcher setMasterOnlyMatcher;
     
     private final Matcher setDatabaseShardingValueMatcher;
     
@@ -62,7 +61,7 @@ public final class ShardingCTLHintParser implements ShardingCTLParser<ShardingCT
     private final Matcher clearMatcher;
     
     public ShardingCTLHintParser(final String sql) {
-        setMatcher = Pattern.compile(setRegex, Pattern.CASE_INSENSITIVE).matcher(sql);
+        setMasterOnlyMatcher = Pattern.compile(setMasterOnlyRegex, Pattern.CASE_INSENSITIVE).matcher(sql);
         setDatabaseShardingValueMatcher = Pattern.compile(setDatabaseShardingValueRegex, Pattern.CASE_INSENSITIVE).matcher(sql);
         addDatabaseShardingValueMatcher = Pattern.compile(addDatabaseShardingValueRegex, Pattern.CASE_INSENSITIVE).matcher(sql);
         addTableShardingValueMatcher = Pattern.compile(addTableShardingValueRegex, Pattern.CASE_INSENSITIVE).matcher(sql);
@@ -72,9 +71,9 @@ public final class ShardingCTLHintParser implements ShardingCTLParser<ShardingCT
     
     @Override
     public Optional<ShardingCTLHintStatement> doParse() {
-        if (setMatcher.find()) {
-            HintType hintType = HintType.valueOf(setMatcher.group(1).toUpperCase());
-            return Optional.of(new ShardingCTLHintStatement(new HintSetCommand(hintType)));
+        if (setMasterOnlyMatcher.find()) {
+            boolean masterOnly = Boolean.valueOf(setMasterOnlyMatcher.group(1).toUpperCase());
+            return Optional.of(new ShardingCTLHintStatement(new HintSetMasterOnlyCommand(masterOnly)));
         }
         if (setDatabaseShardingValueMatcher.find()) {
             String shardingValue = setDatabaseShardingValueMatcher.group(1);

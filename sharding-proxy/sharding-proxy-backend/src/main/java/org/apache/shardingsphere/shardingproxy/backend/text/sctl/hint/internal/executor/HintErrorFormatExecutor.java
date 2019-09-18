@@ -24,7 +24,7 @@ import org.apache.shardingsphere.shardingproxy.backend.text.sctl.exception.Inval
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintCommandExecutor;
 
 /**
- * Hint Error Format command executor.
+ * Hint error format command executor.
  *
  * @author liya
  */

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.H
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintManagerHolder;
 
 /**
- * Hint Clear command executor.
+ * Hint clear command executor.
  *
  * @author liya
  */

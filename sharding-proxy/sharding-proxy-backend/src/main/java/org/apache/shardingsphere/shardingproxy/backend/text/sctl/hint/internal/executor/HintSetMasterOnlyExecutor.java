@@ -22,28 +22,22 @@ import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintCommandExecutor;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintManagerHolder;
-import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintType;
-import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintSetCommand;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintSetMasterOnlyCommand;
 
 /**
- * Hint Set command executor.
+ * Hint set master database only command executor.
  *
  * @author liya
  */
 @RequiredArgsConstructor
-public final class HintSetExecutor implements HintCommandExecutor {
+public final class HintSetMasterOnlyExecutor implements HintCommandExecutor {
     
-    private final HintSetCommand command;
+    private final HintSetMasterOnlyCommand command;
     
     @Override
     public BackendResponse execute() {
-        HintType hintType = command.getHintType();
-        switch (hintType) {
-            case MASTER_ONLY:
-                HintManagerHolder.get().setMasterRouteOnly();
-                break;
-            default:
-                break;
+        if (command.isMasterOnly()) {
+            HintManagerHolder.get().setMasterRouteOnly();
         }
         return new UpdateResponse();
     }

@@ -15,14 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal;
+package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintCommand;
 
 /**
- * Hint type.
+ * Hint set master database only command.
+ *
+ * <p>
+ * example: sctl:hint set MASTER_ONLY=true.
+ * </p>
  *
  * @author liya
  */
-public enum HintType {
+@RequiredArgsConstructor
+@Getter
+public final class HintSetMasterOnlyCommand implements HintCommand {
     
-    DATABASE_TABLES, DATABASE_ONLY, MASTER_ONLY
+    private final boolean masterOnly;
 }

@@ -25,15 +25,15 @@ import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.ShardingCT
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintAddDatabaseShardingValueCommand;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintAddTableShardingValueCommand;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintClearCommand;
-import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintSetCommand;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintSetDatabaseShardingValueCommand;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintSetMasterOnlyCommand;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.executor.HintAddDatabaseShardingValueExecutor;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.executor.HintAddTableShardingValueExecutor;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.executor.HintClearExecutor;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.executor.HintErrorFormatExecutor;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.executor.HintErrorParameterExecutor;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.executor.HintSetDatabaseShardingValueExecutor;
-import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.executor.HintSetExecutor;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.executor.HintSetMasterOnlyExecutor;
 
 /**
  * Hint command executor factory.
@@ -55,8 +55,8 @@ public final class HintCommandExecutorFactory {
             return new HintErrorFormatExecutor(sql);
         }
         HintCommand hintCommand = shardingTCLStatement.get().getHintCommand();
-        if (hintCommand instanceof HintSetCommand) {
-            return new HintSetExecutor((HintSetCommand) hintCommand);
+        if (hintCommand instanceof HintSetMasterOnlyCommand) {
+            return new HintSetMasterOnlyExecutor((HintSetMasterOnlyCommand) hintCommand);
         }
         if (hintCommand instanceof HintSetDatabaseShardingValueCommand) {
             return new HintSetDatabaseShardingValueExecutor((HintSetDatabaseShardingValueCommand) hintCommand);

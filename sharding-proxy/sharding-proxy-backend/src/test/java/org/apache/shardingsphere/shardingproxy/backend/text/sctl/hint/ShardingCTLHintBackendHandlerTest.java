@@ -35,11 +35,6 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
-/**
- * Test for ShardingCTLHintBackendHandler.
- *
- * @author liya
- */
 @RunWith(MockitoJUnitRunner.class)
 public final class ShardingCTLHintBackendHandlerTest {
     
@@ -51,26 +46,33 @@ public final class ShardingCTLHintBackendHandlerTest {
         when(backendConnection.isSupportHint()).thenReturn(true);
     }
     
-    @Test
-    public void assertSetHintTypeDatabaseTables() {
-        String sql = "sctl:hint set hint_type=DATABASE_TABLES";
-        ShardingCTLHintBackendHandler shardingCTLHintBackendHandler = new ShardingCTLHintBackendHandler(sql, backendConnection);
-        assertThat(shardingCTLHintBackendHandler.execute(), instanceOf(UpdateResponse.class));
+    @Test(expected = UnsupportedOperationException.class)
+    public void assertNotSupportHint() {
+        when(backendConnection.isSupportHint()).thenReturn(false);
+        new ShardingCTLHintBackendHandler("", backendConnection).execute();
     }
     
     @Test
-    public void assertSetHintTypeDatabaseOnly() {
-        String sql = "sctl:hint set hint_type=DATABASE_ONLY";
+    public void assertInvalidShardingCTLFormat() {
+        String sql = "sctl:hint1 xx=yy";
         ShardingCTLHintBackendHandler shardingCTLHintBackendHandler = new ShardingCTLHintBackendHandler(sql, backendConnection);
-        assertThat(shardingCTLHintBackendHandler.execute(), instanceOf(UpdateResponse.class));
+        assertThat(((ErrorResponse) shardingCTLHintBackendHandler.execute()).getCause(), instanceOf(InvalidShardingCTLFormatException.class));
     }
     
     @Test
-    public void assertSetHintTypeMasterOnly() {
-        String sql = "sctl:hint set hint_type=MASTER_ONLY";
+    public void assertSetMasterOnly() {
+        String sql = "sctl:hint set master_only=true ";
         ShardingCTLHintBackendHandler shardingCTLHintBackendHandler = new ShardingCTLHintBackendHandler(sql, backendConnection);
         assertThat(shardingCTLHintBackendHandler.execute(), instanceOf(UpdateResponse.class));
         assertTrue(HintManager.isMasterRouteOnly());
+    }
+    
+    @Test
+    public void assertSetDatabaseShardingValueTable() {
+        String sql = "sctl:hint set databaseShardingValue=100";
+        ShardingCTLHintBackendHandler shardingCTLHintBackendHandler = new ShardingCTLHintBackendHandler(sql, backendConnection);
+        assertThat(shardingCTLHintBackendHandler.execute(), instanceOf(UpdateResponse.class));
+        assertEquals(HintManager.getDatabaseShardingValues().iterator().next(), "100");
     }
     
     @Test
@@ -90,33 +92,12 @@ public final class ShardingCTLHintBackendHandlerTest {
     }
     
     @Test
-    public void assertSetDatabaseShardingValueTable() {
-        String sql = "sctl:hint setDatabaseShardingValue 100";
-        ShardingCTLHintBackendHandler shardingCTLHintBackendHandler = new ShardingCTLHintBackendHandler(sql, backendConnection);
-        assertThat(shardingCTLHintBackendHandler.execute(), instanceOf(UpdateResponse.class));
-        assertEquals(HintManager.getDatabaseShardingValues().iterator().next(), "100");
-    }
-    
-    @Test
     public void assertClear() {
         String sql = "sctl:hint clear ";
         ShardingCTLHintBackendHandler shardingCTLHintBackendHandler = new ShardingCTLHintBackendHandler(sql, backendConnection);
         assertThat(shardingCTLHintBackendHandler.execute(), instanceOf(UpdateResponse.class));
         assertThat(HintManager.getInstance(), instanceOf(HintManager.class));
         HintManager.clear();
-    }
-    
-    @Test(expected = UnsupportedOperationException.class)
-    public void assertNotSupportHint() {
-        when(backendConnection.isSupportHint()).thenReturn(false);
-        new ShardingCTLHintBackendHandler("", backendConnection).execute();
-    }
-    
-    @Test
-    public void assertInvalidShardingCTLFormat() {
-        String sql = "sctl:hint1 xx=yy";
-        ShardingCTLHintBackendHandler shardingCTLHintBackendHandler = new ShardingCTLHintBackendHandler(sql, backendConnection);
-        assertThat(((ErrorResponse) shardingCTLHintBackendHandler.execute()).getCause(), instanceOf(InvalidShardingCTLFormatException.class));
     }
     
     @Test
