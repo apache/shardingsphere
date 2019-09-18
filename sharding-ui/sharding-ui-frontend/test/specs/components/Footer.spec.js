@@ -14,14 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-{
-  "presets": [
-    "@babel/preset-env"
-  ],
-  "plugins": ["transform-vue-jsx", "@babel/plugin-transform-runtime", "@babel/plugin-syntax-dynamic-import"],
-  "env": {
-    "test": {
-      "plugins": ["istanbul"]
-    }
-  }
-}
+import { expect } from 'chai'
+import { shallowMount } from '@vue/test-utils'
+import Footer from '../../../src/components/Footer/index.vue'
+
+describe('Footer/index.vue', () => {
+  it('Footer Does the component exist？', () => {
+    const wrapper = shallowMount(Footer)
+    expect(wrapper.find('div').text()).contains('Copyright')
+  })
+})

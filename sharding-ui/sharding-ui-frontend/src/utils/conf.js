@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-const HOST = process.env.NODE_ENV === 'mock' ? 'https://easy-mock.com/mock/5c1c861921d37d1c3c4dc5ae/ss-ui' : ''
+const HOST = ''
 
 export default {
   HOST
