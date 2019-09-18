@@ -28,16 +28,44 @@ You can report a bug, submit a new function enhancement recommendation, or submi
        - Please close the solved issue. If you do not do that in time, we will close it after 7 days.
        - Please reopen the issue closed previously, if it has new progress. Please notice that, you have only the right to reopen the issue closed by yourself, but not the one expired and shut down by us.
 
-## Submit Pull Request
+## Develop Flow
+
+### Fork shardingsphere repo
+
+ - Fork a shardingsphere repo to your own repo to work, then setting upstream.
+    - git remote add upstream https://github.com/apache/incubator-shardingsphere.git
+
+### Choose Issue
 
  - Please choose the issue to be edited. If it is a new issue discovered or a new function enhancement to offer, please create an issue and set the right label for it.
  - After choosing the relevant issue, please reply with a deadline to indicate that you are working on it.
  - Find a mentor from the [Developer List](http://incubator.apache.org/projects/shardingsphere.html) and he/she will give you feedback about the design and the implementation of function in time.
- - Fork a branch to your own repo to work.
- - Please obey the [Code of Conduct](/en/contribute/code-conduct/) during the process of development and finish the check before submitting the pull request.
+
+### Create Branch 
+
+ - Create a new branch based on upstream/dev, then push it to origin.
+   - git checkout -b dev-issueNo upstream/dev
+   - git push origin dev-issueNo
+   
+ - *Notice*：We will merge PR using squash, commit log will be different form upstream if you use old branch.
+  
+### Coding
+  
+  - Please obey the [Code of Conduct](/en/contribute/code-conduct/) during the process of development and finish the check before submitting the pull request.
+  - push code to your fork repo。
+     - git add modified-code-file
+     - git commit -m 'commit log'
+     - git push origin dev-issueNo
+     
+### Submit Pull Request
+ 
  - Send a pull request to the dev branch rather than the master branch of shardingsphere after it is finished.
  - The mentor will do code review before discussing some details (including the design, the implementation and the performance) with you. The request will be merged into the branch of current development version after the edit is well enough.
- - At last, congratulate to be an official contributor of ShardingSphere!
- - Please note that in order to show your id in the contributor list, don't forget the configurations below:
-      - git config --global user.name "username"
-      - git config --global user.email "username@mail.com"
+ - At last, congratulate to be an official contributor of ShardingSphere
+ 
+### Notice 
+
+Please note that in order to show your id in the contributor list, don't forget the configurations below:
+
+- git config --global user.name "username"
+- git config --global user.email "username@mail.com"

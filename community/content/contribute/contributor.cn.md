@@ -28,16 +28,44 @@ chapter = true
  - 如果问题已经解决，请关闭该issue。如果您不及时关闭，我们将在三天后将其关闭。
  - 如果问题有新的进展，请将之前关闭的issue再次开启。请注意，只有您自己关闭的issue可以再次开启，逾期而被我们关闭的issue您将没有再次开启该issue的权限。
 
-## 提交pull request
+## 开发流程
 
+ ### Fork分支到本地，设置upstream
+ 
+ - 从shardingsphere的repo上fork一个分支到您自己的repo来开始工作，并设置upstream为shardingsphere的repo。
+    - git remote add upstream https://github.com/apache/incubator-shardingsphere.git
+    
+ ### 选择issue
+ 
  - 请在选择您要修改的issue。如果是您新发现的问题或想提供issue中没有的功能增强，请先新建一个issue并设置正确的标签。
  - 在选中相关的issue之后，请回复以表明您当前正在这个issue上工作。并在回复的时候为自己设置一个deadline，添加至回复内容中。
  - 在[开发者列表](http://incubator.apache.org/projects/shardingsphere.html)中找到一个导师，导师会在设计与功能实现上给予即时的反馈。
- - 您需要fork一个分支到您自己的repo来开始工作。
+ 
+ ### 创建分支
+ 
+ - 基于upstream/dev创建本次修改的分支，并push到origin上。
+   - git checkout -b dev-issueNo upstream/dev
+   - git push origin dev-issueNo
+   
+  - *注意*：PR会按照squash的方式进行merge，如果不创建新分支，本地和远程的提交记录将不能保持同步。
+  
+  ### Coding
+ 
  - 请您在开发过程中遵循ShardingSphere的[开发规范](/cn/contribute/code-conduct/)。并在准备提交pull request之前完成相应的检查。
- - 完成后，发送一个pull request到ShardingSphere的dev分支，请不要提交pull request至master分支中。
+ - 将修改的代码push到fork库的分支上。
+    - git add 修改代码
+    - git commit -m 'commit log'
+    - git push origin dev-issueNo
+ 
+ ### 提交PR
+ 
+ - 发送一个pull request到ShardingSphere的dev分支，请不要提交pull request至master分支中。
  - 接着导师做CodeReview，然后他会与您讨论一些细节（包括设计，实现，性能等）。当导师对本次修改满意后，会将提交合并到当前开发版本的分支中。
  - 最后，恭喜您已经成为了ShardingSphere的官方贡献者！
- - 注意，为了让你的id显示在contributor列表中，别忘了以下设置：
-      - git config --global user.name "username"
-      - git config --global user.email "username@mail.com"
+ 
+ ### 注意
+ 
+ 为了让你的id显示在contributor列表中，别忘了以下设置：
+ 
+ - git config --global user.name "username"
+ - git config --global user.email "username@mail.com"
