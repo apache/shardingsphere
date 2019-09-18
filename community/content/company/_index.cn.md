@@ -23,7 +23,7 @@ chapter = true
 * [京东商城俄文站](https://www.jd.ru/)
 * [京东商城海外站](https://www.joybuy.com/)
 * 京东大数据与智能供应链
-* [每日优鲜便利购](https://www.imrfresh.com/)
+* [每日优鲜便利购](https://www.missfresh.cn/)
 * [大易有塑](https://www.dayi35.com/)
 * [瓜子二手车](https://www.guazi.com/)
 * [大搜车](https://www.souche.com/zh/)
@@ -32,6 +32,8 @@ chapter = true
 * [58同城](https://bj.58.com/)
 * [楚楚街](http://www.chuchujie.com/)
 * [百果园](http://www.pagoda.com.cn/)
+* [秒卖房](https://www.maifang.com/)
+* [TonySourcing ](https://TonySourcing.com/)
 
 ## 互联网金融
 
@@ -63,6 +65,8 @@ chapter = true
 * [百姓网](http://www.baixing.com/)
 * [一点资讯](https://www.yidianzixun.com/)
 * [马蜂窝](http://www.mafengwo.com/)
+* [汽车之家 ](https://www.autohome.com.cn/)
+* [携程旅游信息技术（上海）有限公司](https://www.ctrip.com/)
 
 ## O2O
 
@@ -72,6 +76,7 @@ chapter = true
 * [首汽约车](http://www.01zhuanche.com/)
 * [滴滴小桔车服](https://www.didiglobal.com/)
 * [点我达](https://www.dianwoda.com/)
+* [杭州金通科技集团股份有限公司](http://www.jtkjbike.com/ )
 
 ## 社交平台
 
@@ -85,7 +90,7 @@ chapter = true
 * [视觉中国](https://500px.me/)
 * [哔哩哔哩弹幕网](https://www.bilibili.com/)
 * [斗鱼](https://www.douyu.com/)
-* [爱奇艺世纪科技有限公司](https://www.iqiyi.com/)
+* [爱奇艺](https://www.iqiyi.com/)
 
 ## 智能硬件
 
@@ -96,6 +101,7 @@ chapter = true
 * [科大讯飞](http://www.iflytek.com/)
 * [速珂智能](http://www.supersoco.com/)
 * [vivo](http://www.vivo.com/)
+* [重庆啄木鸟网络科技有限公司](http://www.zmn.cn/)
 
 ## 企业服务
 
@@ -113,6 +119,10 @@ chapter = true
 * [海典软件](http://www.hydee.cn/)
 * [杭州康帕斯科技有限公司](http://www.compasshz.com/)
 * [杭州光云科技有限公司](http://www.raycloud.com/)
+* [上海定菱网络科技有限公司](http://www.qbaolive.com/)
+* [均瑶集团](http://www.juneyao.com/)
+* [北京新脉远望科技有限公司](http://www.cyberplus.com.cn/)
+* [高济医疗](http://www.gaojihealth.com/)
 
 ## 政府
 
@@ -129,10 +139,14 @@ chapter = true
 * [金康高科](http://www.kingcome.cn/)
 * [中辰软件](http://jszcrj.com/)
 * [智创工场](http://www.izxcs.com/)
+* [P云+ | 行业知名的互联网停车开放平台](https://4pyun.com)
+* [微脉](http://www.myweimai.com/)
+
 
 ## 物流
 
 * [中通快递](http://www.zto.com/)
+* [云路供应链](http://www.yl-scm.com/)
 
 ## UGC
 
@@ -144,10 +158,13 @@ chapter = true
 * [丽人丽妆](http://www.lrlz.com/)
 * [杭州海康威视数字技术有限公司](http://www.hikvision.com/)
 
+
 ## 在线教育
 
 * [好未来](http://www.100tal.com/)
 * [开课啦](http://www.kaike.la/)
 * [点石经纬](https://www.okayzhihui.com/)
 * [东奥教育集团](http://edu.dongao.com/)
+* [食蚁兽网络](http://www.41soo.com)
+* [北京环球网校](http://www.hqwx.com/)
 

@@ -23,7 +23,7 @@ The list here will be shown in the registered order.
 * [JD.ru](https://www.jd.ru/)
 * [Joybuy](https://www.joybuy.com/)
 * JD’s Big Data and Intelligent Supply Chain Department
-* [Imrfresh](https://www.imrfresh.com/)
+* [MissFresh](https://www.missfresh.cn/)
 * [Dayi35](https://www.dayi35.com/)
 * [GuaZi](https://www.guazi.com/)
 * [souche](https://www.souche.com/zh/)
@@ -32,6 +32,8 @@ The list here will be shown in the registered order.
 * [58](https://bj.58.com/)
 * [chuchujie](http://www.chuchujie.com/)
 * [pagoda](http://www.pagoda.com.cn/)
+* [maifang](https://www.maifang.com/)
+* [TonySourcing ](https://TonySourcing.com/)
 
 ## FinTech
 
@@ -63,6 +65,8 @@ The list here will be shown in the registered order.
 * [Baixing](http://www.baixing.com/)
 * [Yidianzixun](https://www.yidianzixun.com/)
 * [mafengwo](http://www.mafengwo.com/)
+* [AutoHome](https://www.autohome.com.cn/)
+* [CTrip](https://www.ctrip.com/)
 
 ## O2O
 
@@ -72,6 +76,7 @@ The list here will be shown in the registered order.
 * [Shouqi](http://www.01zhuanche.com/)
 * [DiDi global](https://www.didiglobal.com/)
 * [dianwoda](https://www.dianwoda.com/)
+* [jtkjbike](http://www.jtkjbike.com/ )
 
 ## SNS
 
@@ -96,6 +101,7 @@ The list here will be shown in the registered order.
 * [Iflytek](http://www.iflytek.com/)
 * [Super SOCO](http://www.supersoco.com/)
 * [vivo](http://www.vivo.com/)
+* [zmn](http://www.zmn.cn/)
 
 ## Enterprise Service
 
@@ -112,7 +118,11 @@ The list here will be shown in the registered order.
 * [Cloudansys](http://www.cloudansys.com/)
 * [HYDEE](http://www.hydee.cn/)
 * [Compasshz](http://www.compasshz.com/)
-* [raycloud](http://www.raycloud.com/)
+* [RayCloud](http://www.raycloud.com/)
+* [qbaolive](http://www.qbaolive.com/)
+* [JuneYao](http://www.juneyao.com/)
+* [CyberPlus](http://www.cyberplus.com.cn/)
+* [GaoJiHealth](http://www.gaojihealth.com/)
 
 ## Government
 
@@ -129,10 +139,13 @@ The list here will be shown in the registered order.
 * [KING COME](http://www.kingcome.cn/)
 * [ZHONGCHEN](http://jszcrj.com/)
 * [izxcs](http://www.izxcs.com/)
+* [4pyun](https://4pyun.com/)
+* [MyWeiMai](http://www.myweimai.com/)
 
 ## Express
 
 * [ZTO Express](http://www.zto.com/)
+* [yl-scm](http://www.yl-scm.com/)
 
 ## UGC
 
@@ -151,3 +164,5 @@ The list here will be shown in the registered order.
 * [KAIKE.LA](http://www.kaike.la/)
 * [Okayzhihui](https://www.okayzhihui.com/)
 * [edu.dongao](http://edu.dongao.com/)
+* [41soo](http://www.41soo.com)
+* [hqwx](http://www.hqwx.com/)
