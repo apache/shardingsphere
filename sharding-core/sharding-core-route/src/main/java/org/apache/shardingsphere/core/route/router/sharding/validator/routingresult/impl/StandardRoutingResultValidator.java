@@ -45,9 +45,8 @@ import java.util.LinkedList;
  */
 public final class StandardRoutingResultValidator extends AbstractRoutingResultValidator {
     
-    public StandardRoutingResultValidator(final ShardingRule shardingRule,
-                                          final ShardingSphereMetaData metaData, final ShardingOptimizedStatement shardingStatement, final ShardingConditions shardingConditions) {
-        super(shardingRule, metaData, shardingStatement, shardingConditions);
+    public StandardRoutingResultValidator(final ShardingRule shardingRule, final ShardingSphereMetaData metaData) {
+        super(shardingRule, metaData);
     }
     
     @Override

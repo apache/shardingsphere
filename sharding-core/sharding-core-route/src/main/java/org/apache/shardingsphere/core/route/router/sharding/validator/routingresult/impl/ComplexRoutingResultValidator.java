@@ -38,9 +38,8 @@ import java.util.Collection;
  */
 public final class ComplexRoutingResultValidator extends AbstractRoutingResultValidator {
     
-    public ComplexRoutingResultValidator(final ShardingRule shardingRule,
-                                         final ShardingSphereMetaData metaData, final ShardingOptimizedStatement shardingStatement, final ShardingConditions shardingConditions) {
-        super(shardingRule, metaData, shardingStatement, shardingConditions);
+    public ComplexRoutingResultValidator(final ShardingRule shardingRule, final ShardingSphereMetaData metaData) {
+        super(shardingRule, metaData);
     }
     
     @Override

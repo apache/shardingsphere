@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.core.route.router.sharding.validator.routingresult;
 
+import org.apache.shardingsphere.core.optimize.sharding.statement.ShardingOptimizedStatement;
+import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 
 /**
@@ -29,8 +31,10 @@ public interface RoutingResultValidator {
     
     /**
      * Validate routing result.
-     *
+     * 
+     * @param shardingStatement sharding statement
+     * @param shardingConditions sharding conditions
      * @param routingResult routing result
      */
-    void validate(RoutingResult routingResult);
+    void validate(ShardingOptimizedStatement shardingStatement, ShardingConditions shardingConditions, RoutingResult routingResult);
 }

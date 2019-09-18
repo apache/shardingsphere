@@ -59,15 +59,15 @@ public final class ComplexRoutingResultValidatorTest {
     @Test
     public void assertValidateOthersRoutingResult() {
         new ComplexRoutingResultValidator(
-                getShardingRule(), getMetaData(), getShardingOptimizedStatement(), new ShardingConditions(Collections.<ShardingCondition>emptyList())).validate(getRoutingResult());
+                getShardingRule(), getMetaData()).validate(getShardingOptimizedStatement(), new ShardingConditions(Collections.<ShardingCondition>emptyList()), getRoutingResult());
     }
     
     @Test
     public void assertValidateOthersRoutingResultWithAbsentDatabase() {
         String msg = null;
         try {
-            new ComplexRoutingResultValidator(getShardingRule(), getMetaData(), getShardingOptimizedStatement(), 
-                    new ShardingConditions(Collections.<ShardingCondition>emptyList())).validate(getRoutingResultWithAbsentDatabase());
+            new ComplexRoutingResultValidator(getShardingRule(), getMetaData()).validate(
+                    getShardingOptimizedStatement(), new ShardingConditions(Collections.<ShardingCondition>emptyList()), getRoutingResultWithAbsentDatabase());
         } catch (ShardingException ex) {
             msg = ex.getMessage();
         }

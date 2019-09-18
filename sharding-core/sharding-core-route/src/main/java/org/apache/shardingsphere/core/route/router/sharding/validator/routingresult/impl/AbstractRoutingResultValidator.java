@@ -49,43 +49,36 @@ public abstract class AbstractRoutingResultValidator implements RoutingResultVal
     
     private final ShardingSphereMetaData metaData;
     
-    private final ShardingOptimizedStatement shardingStatement;
-    
-    private final ShardingConditions shardingConditions;
-    
-    public AbstractRoutingResultValidator(final ShardingRule shardingRule,
-                                          final ShardingSphereMetaData metaData, final ShardingOptimizedStatement shardingStatement, final ShardingConditions shardingConditions) {
+    public AbstractRoutingResultValidator(final ShardingRule shardingRule, final ShardingSphereMetaData metaData) {
         this.shardingRule = shardingRule;
         this.metaData = metaData;
-        this.shardingStatement = shardingStatement;
-        this.shardingConditions = shardingConditions;
     }
     
     @Override
-    public final void validate(final RoutingResult routingResult) {
+    public final void validate(final ShardingOptimizedStatement shardingStatement, final ShardingConditions shardingConditions, final RoutingResult routingResult) {
         if (shardingStatement instanceof ShardingDropIndexOptimizedStatement) {
             return;
         }
-        Multimap<RoutingUnit, TableUnit> absentRoutingUnitMap = getAbsentRoutingUnit(routingResult.getRoutingUnits());
+        Multimap<RoutingUnit, TableUnit> absentRoutingUnitMap = getAbsentRoutingUnit(shardingStatement, routingResult.getRoutingUnits());
         if (absentRoutingUnitMap.isEmpty()) {
             return;
         }
         throwException(shardingStatement, shardingConditions, absentRoutingUnitMap);
     }
     
-    private Multimap<RoutingUnit, TableUnit> getAbsentRoutingUnit(final Collection<RoutingUnit> routingUnits) {
+    private Multimap<RoutingUnit, TableUnit> getAbsentRoutingUnit(final ShardingOptimizedStatement shardingStatement, final Collection<RoutingUnit> routingUnits) {
         Multimap<RoutingUnit, TableUnit> result = HashMultimap.create();
         for (RoutingUnit each : routingUnits) {
             String dataSourceName = each.getDataSourceName();
-            result.putAll(each, getAbsentTableUnit(each, dataSourceName));
+            result.putAll(each, getAbsentTableUnit(shardingStatement, each, dataSourceName));
         }
         return result;
     }
     
-    private Collection<TableUnit> getAbsentTableUnit(final RoutingUnit routingUnit, final String dataSourceName) {
+    private Collection<TableUnit> getAbsentTableUnit(final ShardingOptimizedStatement shardingStatement, final RoutingUnit routingUnit, final String dataSourceName) {
         Collection<TableUnit> result = new LinkedList<>();
         for (TableUnit each : routingUnit.getTableUnits()) {
-            if (containsInMetaData(dataSourceName, each.getActualTableName()) || containsInShardingRule(dataSourceName, each)) {
+            if (containsInMetaData(shardingStatement, dataSourceName, each.getActualTableName()) || containsInShardingRule(dataSourceName, each)) {
                 continue;
             }
             result.add(each);
@@ -98,7 +91,7 @@ public abstract class AbstractRoutingResultValidator implements RoutingResultVal
         return tableRule.isPresent() && tableRule.get().getActualTableNames(dataSourceName).contains(tableUnit.getActualTableName());
     }
     
-    private boolean containsInMetaData(final String dataSourceName, final String actualTableName) {
+    private boolean containsInMetaData(final ShardingOptimizedStatement shardingStatement, final String dataSourceName, final String actualTableName) {
         if (shardingRule.getRuleConfiguration().getMasterSlaveRuleConfigs().isEmpty()
                 && (null == metaData.getDataSources() || null == metaData.getDataSources().getDataSourceMetaData(dataSourceName))) {
             return false;

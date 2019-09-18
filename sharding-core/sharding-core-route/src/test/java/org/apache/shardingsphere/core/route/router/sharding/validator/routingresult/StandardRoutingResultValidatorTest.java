@@ -62,22 +62,22 @@ public final class StandardRoutingResultValidatorTest {
     
     @Test
     public void assertValidateWithShardingDropIndexOptimizedStatement() {
-        new StandardRoutingResultValidator(
-                getShardingRule(), getMetaData(), mock(ShardingDropIndexOptimizedStatement.class), new ShardingConditions(Collections.<ShardingCondition>emptyList())).validate(getRoutingResult());
+        new StandardRoutingResultValidator(getShardingRule(), getMetaData()).validate(
+                mock(ShardingDropIndexOptimizedStatement.class), new ShardingConditions(Collections.<ShardingCondition>emptyList()), getRoutingResult());
     }
     
     @Test
     public void assertValidateStandardRoutingResult() {
-        new StandardRoutingResultValidator(
-                getShardingRule(), getMetaData(), getShardingOptimizedStatement(), new ShardingConditions(Collections.<ShardingCondition>emptyList())).validate(getRoutingResult());
+        new StandardRoutingResultValidator(getShardingRule(), getMetaData()).validate(
+                getShardingOptimizedStatement(), new ShardingConditions(Collections.<ShardingCondition>emptyList()), getRoutingResult());
     }
     
     @Test
     public void assertValidateStandardRoutingResultWithAbsentDatabaseAndDefaultStrategy() {
         String msg = null;
         try {
-            new StandardRoutingResultValidator(getShardingRuleWithDefaultStrategy(), getMetaData(), getShardingOptimizedStatement(), 
-                    new ShardingConditions(Collections.<ShardingCondition>emptyList())).validate(getRoutingResultWithAbsentDatabase());
+            new StandardRoutingResultValidator(getShardingRuleWithDefaultStrategy(), getMetaData()).validate(
+                    getShardingOptimizedStatement(), new ShardingConditions(Collections.<ShardingCondition>emptyList()), getRoutingResultWithAbsentDatabase());
         } catch (ShardingException ex) {
             msg = ex.getMessage();
         }
@@ -114,8 +114,8 @@ public final class StandardRoutingResultValidatorTest {
     public void assertValidateStandardRoutingResultWithAbsentDatabase() {
         String message = null;
         try {
-            new StandardRoutingResultValidator(
-                    getShardingRule(), getMetaData(), getShardingOptimizedStatement(), new ShardingConditions(Collections.<ShardingCondition>emptyList())).validate(getRoutingResultWithAbsentDatabase());
+            new StandardRoutingResultValidator(getShardingRule(), getMetaData()).validate(
+                    getShardingOptimizedStatement(), new ShardingConditions(Collections.<ShardingCondition>emptyList()), getRoutingResultWithAbsentDatabase());
         } catch (ShardingException ex) {
             message = ex.getMessage();
         }
@@ -134,7 +134,7 @@ public final class StandardRoutingResultValidatorTest {
     public void assertValidateStandardRoutingResultWithAbsentDatabaseAndRouteValues() {
         String message = null;
         try {
-            new StandardRoutingResultValidator(getShardingRule(), getMetaData(), getShardingConditionOptimizedStatement(), getShardingConditions()).validate(getRoutingResultWithAbsentDatabase());
+            new StandardRoutingResultValidator(getShardingRule(), getMetaData()).validate(getShardingConditionOptimizedStatement(), getShardingConditions(), getRoutingResultWithAbsentDatabase());
         } catch (ShardingException ex) {
             message = ex.getMessage();
         }

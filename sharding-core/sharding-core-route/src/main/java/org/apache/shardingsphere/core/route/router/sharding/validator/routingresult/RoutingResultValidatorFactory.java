@@ -20,8 +20,6 @@ package org.apache.shardingsphere.core.route.router.sharding.validator.routingre
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.core.optimize.sharding.statement.ShardingOptimizedStatement;
-import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.apache.shardingsphere.core.route.router.sharding.validator.routingresult.impl.ComplexRoutingResultValidator;
 import org.apache.shardingsphere.core.route.router.sharding.validator.routingresult.impl.StandardRoutingResultValidator;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
@@ -42,15 +40,9 @@ public final class RoutingResultValidatorFactory {
      * @param routingEngine routing engine
      * @param shardingRule sharding rule
      * @param metaData meta data of ShardingSphere
-     * @param shardingStatement sharding optimized statement
-     * @param shardingConditions sharding conditions
      * @return routing result validator
      */
-    public static RoutingResultValidator newInstance(final RoutingEngine routingEngine, final ShardingRule shardingRule,
-                                                     final ShardingSphereMetaData metaData, final ShardingOptimizedStatement shardingStatement, final ShardingConditions shardingConditions) {
-        if (routingEngine instanceof StandardRoutingEngine) {
-            return new StandardRoutingResultValidator(shardingRule, metaData, shardingStatement, shardingConditions);
-        }
-        return new ComplexRoutingResultValidator(shardingRule, metaData, shardingStatement, shardingConditions);
+    public static RoutingResultValidator newInstance(final RoutingEngine routingEngine, final ShardingRule shardingRule, final ShardingSphereMetaData metaData) {
+        return routingEngine instanceof StandardRoutingEngine ? new StandardRoutingResultValidator(shardingRule, metaData) : new ComplexRoutingResultValidator(shardingRule, metaData);
     }
 }
