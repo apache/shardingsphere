@@ -74,10 +74,9 @@ public abstract class AbstractRoutingResultValidator implements RoutingResultVal
     private Collection<TableUnit> getAbsentTableUnit(final ShardingOptimizedStatement shardingStatement, final RoutingUnit routingUnit) {
         Collection<TableUnit> result = new LinkedList<>();
         for (TableUnit each : routingUnit.getTableUnits()) {
-            if (containsInMetaData(shardingStatement, routingUnit.getDataSourceName(), each.getActualTableName()) || containsInShardingRule(routingUnit.getDataSourceName(), each)) {
-                continue;
+            if (!containsInShardingRule(routingUnit.getDataSourceName(), each) && !containsInMetaData(shardingStatement, routingUnit.getDataSourceName(), each.getActualTableName())) {
+                result.add(each);
             }
-            result.add(each);
         }
         return result;
     }
@@ -88,11 +87,10 @@ public abstract class AbstractRoutingResultValidator implements RoutingResultVal
     }
     
     private boolean containsInMetaData(final ShardingOptimizedStatement shardingStatement, final String dataSourceName, final String actualTableName) {
-        if (shardingRule.getRuleConfiguration().getMasterSlaveRuleConfigs().isEmpty()
-                && (null == metaData.getDataSources() || null == metaData.getDataSources().getDataSourceMetaData(dataSourceName))) {
+        if (shardingRule.getRuleConfiguration().getMasterSlaveRuleConfigs().isEmpty() && null == metaData.getDataSources().getDataSourceMetaData(dataSourceName)) {
             return false;
         }
-        if (shardingStatement.getSQLStatement() instanceof DMLStatement && (null == metaData.getTables() || !metaData.getTables().containsTable(actualTableName))) {
+        if (shardingStatement.getSQLStatement() instanceof DMLStatement && !metaData.getTables().containsTable(actualTableName)) {
             return false;
         }
         return true;
