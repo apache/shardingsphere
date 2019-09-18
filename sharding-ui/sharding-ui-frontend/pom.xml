@@ -27,7 +27,7 @@
     <name>${project.artifactId}</name>
 
     <properties>
-        <node.version>v6.10.0</node.version>
+        <node.version>v8.11.0</node.version>
     </properties>
 
     <build>
