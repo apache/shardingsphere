@@ -40,8 +40,8 @@ import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCo
 import org.apache.shardingsphere.core.route.router.sharding.condition.engine.InsertClauseShardingConditionEngine;
 import org.apache.shardingsphere.core.route.router.sharding.condition.engine.WhereClauseShardingConditionEngine;
 import org.apache.shardingsphere.core.route.router.sharding.validator.routingresult.RoutingResultValidator;
-import org.apache.shardingsphere.core.route.router.sharding.validator.statement.ShardingValidator;
-import org.apache.shardingsphere.core.route.router.sharding.validator.statement.ShardingValidatorFactory;
+import org.apache.shardingsphere.core.route.router.sharding.validator.statement.ShardingStatementValidator;
+import org.apache.shardingsphere.core.route.router.sharding.validator.statement.ShardingStatementValidatorFactory;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 import org.apache.shardingsphere.core.rule.BindingTableRule;
@@ -94,9 +94,9 @@ public final class ShardingRouter {
      */
     @SuppressWarnings("unchecked")
     public SQLRouteResult route(final String logicSQL, final List<Object> parameters, final SQLStatement sqlStatement) {
-        Optional<ShardingValidator> shardingValidator = ShardingValidatorFactory.newInstance(sqlStatement);
-        if (shardingValidator.isPresent()) {
-            shardingValidator.get().validate(shardingRule, sqlStatement);
+        Optional<ShardingStatementValidator> shardingStatementValidator = ShardingStatementValidatorFactory.newInstance(sqlStatement);
+        if (shardingStatementValidator.isPresent()) {
+            shardingStatementValidator.get().validate(shardingRule, sqlStatement);
         }
         ShardingOptimizedStatement shardingStatement = ShardingOptimizeEngineFactory.newInstance(sqlStatement).optimize(shardingRule, metaData.getTables(), logicSQL, parameters, sqlStatement);
         ShardingConditions shardingConditions = getShardingConditions(parameters, shardingStatement);

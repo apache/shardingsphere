@@ -22,7 +22,7 @@ import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.route.router.sharding.validator.statement.ShardingValidator;
+import org.apache.shardingsphere.core.route.router.sharding.validator.statement.ShardingStatementValidator;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
@@ -30,7 +30,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
  *
  * @author zhangliang
  */
-public final class ShardingInsertValidator implements ShardingValidator<InsertStatement> {
+public final class ShardingInsertStatementValidator implements ShardingStatementValidator<InsertStatement> {
     
     @Override
     public void validate(final ShardingRule shardingRule, final InsertStatement sqlStatement) {

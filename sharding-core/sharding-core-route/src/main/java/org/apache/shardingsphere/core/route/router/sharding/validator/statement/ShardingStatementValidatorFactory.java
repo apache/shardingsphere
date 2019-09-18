@@ -23,29 +23,29 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.core.route.router.sharding.validator.statement.impl.ShardingInsertValidator;
-import org.apache.shardingsphere.core.route.router.sharding.validator.statement.impl.ShardingUpdateValidator;
+import org.apache.shardingsphere.core.route.router.sharding.validator.statement.impl.ShardingInsertStatementValidator;
+import org.apache.shardingsphere.core.route.router.sharding.validator.statement.impl.ShardingUpdateStatementValidator;
 
 /**
- * Sharding validator factory.
+ * Sharding statement validator factory.
  *
  * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingValidatorFactory {
+public final class ShardingStatementValidatorFactory {
     
     /**
-     * New instance of sharding validator.
+     * New instance of sharding statement validator.
      * 
      * @param sqlStatement SQL statement
-     * @return instance of sharding validator
+     * @return instance of sharding statement validator
      */
-    public static Optional<ShardingValidator> newInstance(final SQLStatement sqlStatement) {
+    public static Optional<ShardingStatementValidator> newInstance(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof InsertStatement) {
-            return Optional.<ShardingValidator>of(new ShardingInsertValidator());
+            return Optional.<ShardingStatementValidator>of(new ShardingInsertStatementValidator());
         }
         if (sqlStatement instanceof UpdateStatement) {
-            return Optional.<ShardingValidator>of(new ShardingUpdateValidator());
+            return Optional.<ShardingStatementValidator>of(new ShardingUpdateStatementValidator());
         }
         return Optional.absent();
     }

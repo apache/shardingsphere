@@ -21,13 +21,13 @@ import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Sharding validator.
+ * Sharding statement validator.
  *
  * @author zhangliang
  * 
  * @param <T> type of SQL statement
  */
-public interface ShardingValidator<T extends SQLStatement> {
+public interface ShardingStatementValidator<T extends SQLStatement> {
     
     /**
      * Validate whether sharding operation is supported.

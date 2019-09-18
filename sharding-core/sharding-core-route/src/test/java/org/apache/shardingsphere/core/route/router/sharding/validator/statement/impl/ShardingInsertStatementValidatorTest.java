@@ -18,12 +18,10 @@
 package org.apache.shardingsphere.core.route.router.sharding.validator.statement.impl;
 
 import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,27 +33,28 @@ import java.util.Collections;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class ShardingUpdateValidatorTest {
+public final class ShardingInsertStatementValidatorTest {
     
     @Mock
     private ShardingRule shardingRule;
     
     @Test
-    public void assertValidateUpdateWithoutShardingKey() {
+    public void assertValidateOnDuplicateKeyWithoutShardingKey() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(false);
-        new ShardingUpdateValidator().validate(shardingRule, createUpdateStatement());
+        new ShardingInsertStatementValidator().validate(shardingRule, createInsertStatement());
     }
     
     @Test(expected = ShardingException.class)
-    public void assertValidateUpdateWithShardingKey() {
+    public void assertValidateOnDuplicateKeyWithShardingKey() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(true);
-        new ShardingUpdateValidator().validate(shardingRule, createUpdateStatement());
+        new ShardingInsertStatementValidator().validate(shardingRule, createInsertStatement());
     }
     
-    private UpdateStatement createUpdateStatement() {
-        UpdateStatement result = new UpdateStatement();
-        result.getAllSQLSegments().add(new TableSegment(0, 0, "user"));
-        result.setSetAssignment(new SetAssignmentsSegment(0, 0, Collections.singletonList(new AssignmentSegment(0, 0, new ColumnSegment(0, 0, "id"), new LiteralExpressionSegment(0, 0, "")))));
+    private InsertStatement createInsertStatement() {
+        InsertStatement result = new InsertStatement();
+        result.setTable(new TableSegment(0, 0, "user"));
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, "id");
+        result.getAllSQLSegments().add(new OnDuplicateKeyColumnsSegment(0, 0, Collections.singletonList(columnSegment)));
         return result;
     }
 }

@@ -21,7 +21,7 @@ import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.optimize.api.segment.Tables;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.core.route.router.sharding.validator.statement.ShardingValidator;
+import org.apache.shardingsphere.core.route.router.sharding.validator.statement.ShardingStatementValidator;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
@@ -29,7 +29,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
  *
  * @author zhangliang
  */
-public final class ShardingUpdateValidator implements ShardingValidator<UpdateStatement> {
+public final class ShardingUpdateStatementValidator implements ShardingStatementValidator<UpdateStatement> {
     
     @Override
     public void validate(final ShardingRule shardingRule, final UpdateStatement sqlStatement) {
