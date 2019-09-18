@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.route.router.sharding.validator;
+package org.apache.shardingsphere.core.route.router.sharding.validator.statement;
 
 import com.google.common.base.Optional;
 import lombok.AccessLevel;
@@ -23,8 +23,8 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.core.route.router.sharding.validator.impl.ShardingInsertValidator;
-import org.apache.shardingsphere.core.route.router.sharding.validator.impl.ShardingUpdateValidator;
+import org.apache.shardingsphere.core.route.router.sharding.validator.statement.impl.ShardingInsertValidator;
+import org.apache.shardingsphere.core.route.router.sharding.validator.statement.impl.ShardingUpdateValidator;
 
 /**
  * Sharding validator factory.

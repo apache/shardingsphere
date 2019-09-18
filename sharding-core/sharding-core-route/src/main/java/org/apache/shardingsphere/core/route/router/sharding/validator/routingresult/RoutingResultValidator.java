@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.route.router.sharding;
+package org.apache.shardingsphere.core.route.router.sharding.validator.routingresult;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;

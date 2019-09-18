@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.route.router.sharding.validator.impl;
+package org.apache.shardingsphere.core.route.router.sharding.validator.statement.impl;
 
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
