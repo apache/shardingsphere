@@ -28,12 +28,16 @@ import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptOptimize
 import org.apache.shardingsphere.core.optimize.sharding.ShardingOptimizeEngineFactory;
 import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingConditions;
+import org.apache.shardingsphere.core.optimize.sharding.segment.condition.engine.InsertClauseShardingConditionEngine;
+import org.apache.shardingsphere.core.optimize.sharding.segment.condition.engine.WhereClauseShardingConditionEngine;
 import org.apache.shardingsphere.core.optimize.sharding.statement.ShardingOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingConditionOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingInsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
 import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
@@ -43,6 +47,7 @@ import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -87,14 +92,24 @@ public final class ShardingRouter {
     @SuppressWarnings("unchecked")
     public SQLRouteResult route(final String logicSQL, final List<Object> parameters, final SQLStatement sqlStatement) {
         ShardingOptimizedStatement shardingStatement = ShardingOptimizeEngineFactory.newInstance(sqlStatement).optimize(shardingRule, metaData.getTables(), logicSQL, parameters, sqlStatement);
+        ShardingConditions shardingConditions = new ShardingConditions(Collections.<ShardingCondition>emptyList());
+        if (shardingStatement.getSQLStatement() instanceof DMLStatement) {
+            if (shardingStatement instanceof ShardingInsertOptimizedStatement) {
+                ShardingInsertOptimizedStatement shardingInsertStatement = (ShardingInsertOptimizedStatement) shardingStatement;
+                shardingConditions = new ShardingConditions(new InsertClauseShardingConditionEngine(shardingRule).createShardingConditions(
+                        (InsertStatement) shardingInsertStatement.getSQLStatement(), parameters, shardingInsertStatement.getColumnNames(), shardingInsertStatement.getGeneratedKey().orNull()));
+            } else {
+                shardingConditions = new ShardingConditions(new WhereClauseShardingConditionEngine(shardingRule, metaData.getTables()).createShardingConditions(sqlStatement, parameters));
+            }
+        }
         boolean needMergeShardingValues = isNeedMergeShardingValues(shardingStatement);
         if (shardingStatement instanceof ShardingConditionOptimizedStatement && needMergeShardingValues) {
-            checkSubqueryShardingValues(shardingStatement, ((ShardingConditionOptimizedStatement) shardingStatement).getShardingConditions());
-            mergeShardingConditions(((ShardingConditionOptimizedStatement) shardingStatement).getShardingConditions());
+            checkSubqueryShardingValues(shardingStatement, shardingConditions);
+            mergeShardingConditions(shardingConditions);
         }
-        RoutingEngine routingEngine = RoutingEngineFactory.newInstance(shardingRule, metaData.getDataSources(), shardingStatement);
+        RoutingEngine routingEngine = RoutingEngineFactory.newInstance(shardingRule, metaData.getDataSources(), shardingStatement, shardingConditions);
         RoutingResult routingResult = routingEngine.route();
-        new ParsingSQLRoutingResultChecker(shardingRule, metaData, shardingStatement).check(routingEngine, routingResult);
+        new ParsingSQLRoutingResultChecker(shardingRule, metaData, shardingStatement, shardingConditions).check(routingEngine, routingResult);
         if (needMergeShardingValues) {
             Preconditions.checkState(1 == routingResult.getRoutingUnits().size(), "Must have one sharding with subquery.");
         }
@@ -103,7 +118,7 @@ public final class ShardingRouter {
         }
         EncryptOptimizedStatement encryptStatement = EncryptOptimizeEngineFactory.newInstance(sqlStatement)
                 .optimize(shardingRule.getEncryptRule(), metaData.getTables(), logicSQL, parameters, sqlStatement);
-        SQLRouteResult result = new SQLRouteResult(shardingStatement, encryptStatement);
+        SQLRouteResult result = new SQLRouteResult(shardingStatement, encryptStatement, shardingConditions);
         result.setRoutingResult(routingResult);
         return result;
     }

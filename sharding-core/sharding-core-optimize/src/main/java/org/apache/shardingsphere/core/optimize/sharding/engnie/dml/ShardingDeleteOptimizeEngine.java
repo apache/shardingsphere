@@ -19,8 +19,6 @@ package org.apache.shardingsphere.core.optimize.sharding.engnie.dml;
 
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.optimize.sharding.engnie.ShardingOptimizeEngine;
-import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingConditions;
-import org.apache.shardingsphere.core.optimize.sharding.segment.condition.engine.WhereClauseShardingConditionEngine;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingConditionOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -37,7 +35,6 @@ public final class ShardingDeleteOptimizeEngine implements ShardingOptimizeEngin
     @Override
     public ShardingConditionOptimizedStatement optimize(final ShardingRule shardingRule,
                                                         final TableMetas tableMetas, final String sql, final List<Object> parameters, final DeleteStatement sqlStatement) {
-        return new ShardingConditionOptimizedStatement(
-                sqlStatement, new ShardingConditions(new WhereClauseShardingConditionEngine(shardingRule, tableMetas).createShardingConditions(sqlStatement, parameters)));
+        return new ShardingConditionOptimizedStatement(sqlStatement);
     }
 }

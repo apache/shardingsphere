@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.optimize.sharding.segment.insert;
 
 import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
-import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingInsertOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
@@ -41,8 +40,7 @@ public final class InsertOptimizedStatementTest {
         ExpressionSegment assignment2 = new ParameterMarkerExpressionSegment(0, 0, 1);
         ExpressionSegment assignment3 = new LiteralExpressionSegment(0, 0, "test");
         List<InsertValue> insertValues = Collections.singletonList(new InsertValue(Arrays.asList(assignment1, assignment2, assignment3), 1, Collections.<Object>singletonList("parameter"), 0));
-        ShardingInsertOptimizedStatement actual = new ShardingInsertOptimizedStatement(
-                new InsertStatement(), Collections.<ShardingCondition>emptyList(), Arrays.asList("id", "value", "status"), null, insertValues);
+        ShardingInsertOptimizedStatement actual = new ShardingInsertOptimizedStatement(new InsertStatement(), Arrays.asList("id", "value", "status"), null, insertValues);
         assertThat(actual.getInsertValues().get(0).getValueExpressions().size(), is(3));
         assertThat(actual.getInsertValues().get(0).getValueExpressions().get(0), is(assignment1));
         assertThat(actual.getInsertValues().get(0).getValueExpressions().get(1), is(assignment2));

@@ -20,8 +20,6 @@ package org.apache.shardingsphere.core.optimize.sharding.engnie.dml;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.optimize.api.segment.Tables;
 import org.apache.shardingsphere.core.optimize.sharding.engnie.ShardingOptimizeEngine;
-import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingConditions;
-import org.apache.shardingsphere.core.optimize.sharding.segment.condition.engine.WhereClauseShardingConditionEngine;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingConditionOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
@@ -41,8 +39,7 @@ public final class ShardingUpdateOptimizeEngine implements ShardingOptimizeEngin
     public ShardingConditionOptimizedStatement optimize(final ShardingRule shardingRule,
                                                         final TableMetas tableMetas, final String sql, final List<Object> parameters, final UpdateStatement sqlStatement) {
         checkUpdateShardingKey(shardingRule, sqlStatement);
-        return new ShardingConditionOptimizedStatement(
-                sqlStatement, new ShardingConditions(new WhereClauseShardingConditionEngine(shardingRule, tableMetas).createShardingConditions(sqlStatement, parameters)));
+        return new ShardingConditionOptimizedStatement(sqlStatement);
     }
     
     private void checkUpdateShardingKey(final ShardingRule shardingRule, final UpdateStatement sqlStatement) {

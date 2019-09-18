@@ -22,8 +22,6 @@ import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
 import org.apache.shardingsphere.core.optimize.sharding.engnie.ShardingOptimizeEngine;
-import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimize.sharding.segment.condition.engine.InsertClauseShardingConditionEngine;
 import org.apache.shardingsphere.core.optimize.sharding.segment.insert.GeneratedKey;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingInsertOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
@@ -51,10 +49,9 @@ public final class ShardingInsertOptimizeEngine implements ShardingOptimizeEngin
         checkDuplicateKeyForShardingKey(shardingRule, sqlStatement, sqlStatement.getTable().getTableName());
         Optional<GeneratedKey> generatedKey = GeneratedKey.getGenerateKey(shardingRule, tableMetas, parameters, sqlStatement);
         List<String> columnNames = getColumnNames(tableMetas, sqlStatement, generatedKey.orNull());
-        List<ShardingCondition> shardingConditions = new InsertClauseShardingConditionEngine(shardingRule).createShardingConditions(sqlStatement, parameters, columnNames, generatedKey.orNull());
         int derivedColumnsCount = getDerivedColumnsCount(shardingRule, sqlStatement.getTable().getTableName(), generatedKey.isPresent() && generatedKey.get().isGenerated());
         List<InsertValue> insertValues = getInsertValues(parameters, sqlStatement, derivedColumnsCount);
-        return new ShardingInsertOptimizedStatement(sqlStatement, shardingConditions, columnNames, generatedKey.orNull(), insertValues);
+        return new ShardingInsertOptimizedStatement(sqlStatement, columnNames, generatedKey.orNull(), insertValues);
     }
     
     private void checkDuplicateKeyForShardingKey(final ShardingRule shardingRule, final InsertStatement sqlStatement, final String tableName) {
