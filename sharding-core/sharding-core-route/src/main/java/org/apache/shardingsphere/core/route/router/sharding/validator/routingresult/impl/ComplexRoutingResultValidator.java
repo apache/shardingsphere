@@ -43,10 +43,10 @@ public final class ComplexRoutingResultValidator extends AbstractRoutingResultVa
     }
     
     @Override
-    protected void throwException(final ShardingOptimizedStatement shardingStatement, final ShardingConditions shardingConditions, final Multimap<RoutingUnit, TableUnit> absentRoutingUnitMap) {
-        RoutingUnit routingUnit = absentRoutingUnitMap.keySet().iterator().next();
-        Collection<String> absentDataNodes = Lists.newArrayListWithExpectedSize(absentRoutingUnitMap.get(routingUnit).size());
-        for (TableUnit each : absentRoutingUnitMap.get(routingUnit)) {
+    protected void throwException(final ShardingOptimizedStatement shardingStatement, final ShardingConditions shardingConditions, final Multimap<RoutingUnit, TableUnit> unconfiguredRoutingUnits) {
+        RoutingUnit routingUnit = unconfiguredRoutingUnits.keySet().iterator().next();
+        Collection<String> absentDataNodes = Lists.newArrayListWithExpectedSize(unconfiguredRoutingUnits.get(routingUnit).size());
+        for (TableUnit each : unconfiguredRoutingUnits.get(routingUnit)) {
             absentDataNodes.add(routingUnit.getDataSourceName() + "." + each.getActualTableName());
         }
         if (!absentDataNodes.isEmpty()) {

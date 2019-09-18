@@ -56,11 +56,10 @@ public abstract class AbstractRoutingResultValidator implements RoutingResultVal
         if (shardingStatement instanceof ShardingDropIndexOptimizedStatement) {
             return;
         }
-        Multimap<RoutingUnit, TableUnit> absentRoutingUnitMap = getUnconfiguredRoutingUnit(shardingStatement, routingResult.getRoutingUnits());
-        if (absentRoutingUnitMap.isEmpty()) {
-            return;
+        Multimap<RoutingUnit, TableUnit> unconfiguredRoutingUnits = getUnconfiguredRoutingUnit(shardingStatement, routingResult.getRoutingUnits());
+        if (!unconfiguredRoutingUnits.isEmpty()) {
+            throwException(shardingStatement, shardingConditions, unconfiguredRoutingUnits);
         }
-        throwException(shardingStatement, shardingConditions, absentRoutingUnitMap);
     }
     
     private Multimap<RoutingUnit, TableUnit> getUnconfiguredRoutingUnit(final ShardingOptimizedStatement shardingStatement, final Collection<RoutingUnit> routingUnits) {
@@ -96,5 +95,5 @@ public abstract class AbstractRoutingResultValidator implements RoutingResultVal
         return true;
     }
     
-    protected abstract void throwException(ShardingOptimizedStatement shardingStatement, ShardingConditions shardingConditions, Multimap<RoutingUnit, TableUnit> absentRoutingUnitMap);
+    protected abstract void throwException(ShardingOptimizedStatement shardingStatement, ShardingConditions shardingConditions, Multimap<RoutingUnit, TableUnit> unconfiguredRoutingUnits);
 }

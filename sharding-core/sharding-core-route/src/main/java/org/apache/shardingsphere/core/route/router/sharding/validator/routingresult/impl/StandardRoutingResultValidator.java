@@ -50,9 +50,9 @@ public final class StandardRoutingResultValidator extends AbstractRoutingResultV
     }
     
     @Override
-    protected void throwException(final ShardingOptimizedStatement shardingStatement, final ShardingConditions shardingConditions, final Multimap<RoutingUnit, TableUnit> absentRoutingUnitMap) {
-        RoutingUnit routingUnit = absentRoutingUnitMap.keySet().iterator().next();
-        Collection<String> absentDataNodes = Lists.newArrayListWithExpectedSize(absentRoutingUnitMap.get(routingUnit).size());
+    protected void throwException(final ShardingOptimizedStatement shardingStatement, final ShardingConditions shardingConditions, final Multimap<RoutingUnit, TableUnit> unconfiguredRoutingUnits) {
+        RoutingUnit routingUnit = unconfiguredRoutingUnits.keySet().iterator().next();
+        Collection<String> absentDataNodes = Lists.newArrayListWithExpectedSize(unconfiguredRoutingUnits.get(routingUnit).size());
         ShardingStrategyConfiguration databaseStrategy = null;
         ShardingStrategyConfiguration tableStrategy = null;
         if (null != getShardingRule().getRuleConfiguration().getDefaultDatabaseShardingStrategyConfig()) {
@@ -61,7 +61,7 @@ public final class StandardRoutingResultValidator extends AbstractRoutingResultV
         if (null != getShardingRule().getRuleConfiguration().getDefaultTableShardingStrategyConfig()) {
             tableStrategy = getShardingRule().getRuleConfiguration().getDefaultTableShardingStrategyConfig();
         }
-        for (TableUnit each : absentRoutingUnitMap.get(routingUnit)) {
+        for (TableUnit each : unconfiguredRoutingUnits.get(routingUnit)) {
             absentDataNodes.add(routingUnit.getDataSourceName() + "." + each.getActualTableName());
             Optional<TableRuleConfiguration> tableRuleConfiguration = getTableRuleConfiguration(getShardingRule().getRuleConfiguration().getTableRuleConfigs(), each.getLogicTableName());
             if (tableRuleConfiguration.isPresent()) {
