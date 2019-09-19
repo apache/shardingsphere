@@ -181,7 +181,6 @@ public class RoutingEngineFactoryTest {
     public void assertNewInstanceForAlwaysFalse() {
         SQLStatement sqlStatement = mock(SQLStatement.class);
         when(optimizedStatement.getSQLStatement()).thenReturn(sqlStatement);
-        when(shardingConditions.isAlwaysFalse()).thenReturn(true);
         RoutingEngine actual = RoutingEngineFactory.newInstance(shardingRule, shardingSphereMetaData, optimizedStatement, shardingConditions);
         assertThat(actual, instanceOf(UnicastRoutingEngine.class));
     }

@@ -27,7 +27,6 @@ import org.apache.shardingsphere.core.optimize.encrypt.EncryptOptimizeEngineFact
 import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.ShardingOptimizeEngineFactory;
 import org.apache.shardingsphere.core.optimize.sharding.statement.ShardingOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingConditionOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingInsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
 import org.apache.shardingsphere.core.parse.SQLParseEngine;
@@ -100,7 +99,7 @@ public final class ShardingRouter {
         ShardingOptimizedStatement shardingStatement = ShardingOptimizeEngineFactory.newInstance(sqlStatement).optimize(shardingRule, metaData.getTables(), logicSQL, parameters, sqlStatement);
         ShardingConditions shardingConditions = getShardingConditions(parameters, shardingStatement);
         boolean needMergeShardingValues = isNeedMergeShardingValues(shardingStatement);
-        if (shardingStatement instanceof ShardingConditionOptimizedStatement && needMergeShardingValues) {
+        if (shardingStatement.getSQLStatement() instanceof DMLStatement && needMergeShardingValues) {
             checkSubqueryShardingValues(shardingStatement, shardingConditions);
             mergeShardingConditions(shardingConditions);
         }
