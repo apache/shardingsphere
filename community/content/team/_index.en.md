@@ -1,7 +1,7 @@
 +++
 pre = "<b>3. </b>"
 title = "Team"
-weight = 2
+weight = 3
 chapter = true
 +++
 # ShardingSphere Team
