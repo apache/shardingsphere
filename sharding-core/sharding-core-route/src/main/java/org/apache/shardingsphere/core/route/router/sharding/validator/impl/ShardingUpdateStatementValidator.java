@@ -25,7 +25,7 @@ import org.apache.shardingsphere.core.route.router.sharding.validator.ShardingSt
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Sharding update validator.
+ * Sharding update statement validator.
  *
  * @author zhangliang
  */
