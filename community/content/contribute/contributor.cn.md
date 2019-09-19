@@ -33,7 +33,10 @@ chapter = true
 ### Fork分支到本地，设置upstream
  
  - 从shardingsphere的repo上fork一个分支到您自己的repo来开始工作，并设置upstream为shardingsphere的repo。
-    - git remote add upstream https://github.com/apache/incubator-shardingsphere.git
+    
+```shell
+git remote add upstream https://github.com/apache/incubator-shardingsphere.git
+```
     
 ### 选择issue
  
@@ -44,19 +47,25 @@ chapter = true
 ### 创建分支
  
  - 切换到fork的dev分支，拉取最新代码，创建本次的分支。
-   - git checkout dev
-   - git pull upstream dev
-   - git checkout -b dev-issueNo
+
+```shell
+git checkout dev
+git pull upstream dev
+git checkout -b dev-issueNo
+```
    
-  - *注意*：PR会按照squash的方式进行merge，如果不创建新分支，本地和远程的提交记录将不能保持同步。
+ **注意** ：PR会按照squash的方式进行merge，如果不创建新分支，本地和远程的提交记录将不能保持同步。
   
-### Coding
+### 编码
  
  - 请您在开发过程中遵循ShardingSphere的[开发规范](/cn/contribute/code-conduct/)。并在准备提交pull request之前完成相应的检查。
  - 将修改的代码push到fork库的分支上。
-    - git add 修改代码
-    - git commit -m 'commit log'
-    - git push origin dev-issueNo
+
+```shell
+git add 修改代码
+git commit -m 'commit log'
+git push origin dev-issueNo
+```
  
 ### 提交PR
  
@@ -67,6 +76,8 @@ chapter = true
 ### 注意
  
  为了让你的id显示在contributor列表中，别忘了以下设置：
- 
- - git config --global user.name "username"
- - git config --global user.email "username@mail.com"
+
+```shell
+git config --global user.name "username"
+git config --global user.email "username@mail.com"
+```

@@ -33,7 +33,10 @@ You can report a bug, submit a new function enhancement recommendation, or submi
 ### Fork shardingsphere repo
 
  - Fork a shardingsphere repo to your own repo to work, then setting upstream.
-    - git remote add upstream https://github.com/apache/incubator-shardingsphere.git
+
+```shell
+git remote add upstream https://github.com/apache/incubator-shardingsphere.git
+```
 
 ### Choose Issue
 
@@ -44,19 +47,25 @@ You can report a bug, submit a new function enhancement recommendation, or submi
 ### Create Branch 
 
  - Switch to forked dev branch, pull codes from upstream, then create a new branch.
-   - git checkout dev
-   - git pull upstream dev
-   - git checkout -b dev-issueNo
-   
+
+```shell
+git checkout dev
+git pull upstream dev
+git checkout -b dev-issueNo
+```
+
  - *Notice*：We will merge PR using squash, commit log will be different form upstream if you use old branch.
   
 ### Coding
   
   - Please obey the [Code of Conduct](/en/contribute/code-conduct/) during the process of development and finish the check before submitting the pull request.
-  - push code to your fork repo。
-     - git add modified-code-file
-     - git commit -m 'commit log'
-     - git push origin dev-issueNo
+  - push code to your fork repo.
+
+```shell
+git add modified-file-names
+git commit -m 'commit log'
+git push origin dev-issueNo
+```
      
 ### Submit Pull Request
  
@@ -68,5 +77,7 @@ You can report a bug, submit a new function enhancement recommendation, or submi
 
 Please note that in order to show your id in the contributor list, don't forget the configurations below:
 
-- git config --global user.name "username"
-- git config --global user.email "username@mail.com"
+```shell
+git config --global user.name "username"
+git config --global user.email "username@mail.com"
+```
