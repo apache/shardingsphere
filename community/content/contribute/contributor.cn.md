@@ -30,18 +30,18 @@ chapter = true
 
 ## 开发流程
 
- ### Fork分支到本地，设置upstream
+### Fork分支到本地，设置upstream
  
  - 从shardingsphere的repo上fork一个分支到您自己的repo来开始工作，并设置upstream为shardingsphere的repo。
     - git remote add upstream https://github.com/apache/incubator-shardingsphere.git
     
- ### 选择issue
+### 选择issue
  
  - 请在选择您要修改的issue。如果是您新发现的问题或想提供issue中没有的功能增强，请先新建一个issue并设置正确的标签。
  - 在选中相关的issue之后，请回复以表明您当前正在这个issue上工作。并在回复的时候为自己设置一个deadline，添加至回复内容中。
  - 在[开发者列表](http://incubator.apache.org/projects/shardingsphere.html)中找到一个导师，导师会在设计与功能实现上给予即时的反馈。
  
- ### 创建分支
+### 创建分支
  
  - 切换到fork的dev分支，拉取最新代码，创建本次的分支。
    - git checkout dev
@@ -50,7 +50,7 @@ chapter = true
    
   - *注意*：PR会按照squash的方式进行merge，如果不创建新分支，本地和远程的提交记录将不能保持同步。
   
-  ### Coding
+### Coding
  
  - 请您在开发过程中遵循ShardingSphere的[开发规范](/cn/contribute/code-conduct/)。并在准备提交pull request之前完成相应的检查。
  - 将修改的代码push到fork库的分支上。
@@ -58,13 +58,13 @@ chapter = true
     - git commit -m 'commit log'
     - git push origin dev-issueNo
  
- ### 提交PR
+### 提交PR
  
  - 发送一个pull request到ShardingSphere的dev分支，请不要提交pull request至master分支中。
  - 接着导师做CodeReview，然后他会与您讨论一些细节（包括设计，实现，性能等）。当导师对本次修改满意后，会将提交合并到当前开发版本的分支中。
  - 最后，恭喜您已经成为了ShardingSphere的官方贡献者！
  
- ### 注意
+### 注意
  
  为了让你的id显示在contributor列表中，别忘了以下设置：
  
