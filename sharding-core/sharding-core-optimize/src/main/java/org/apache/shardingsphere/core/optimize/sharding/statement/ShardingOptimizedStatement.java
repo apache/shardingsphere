@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.optimize.sharding.statement;
 
+import org.apache.shardingsphere.core.optimize.api.segment.Tables;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 
 /**
@@ -25,4 +26,11 @@ import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
  * @author zhangliang
  */
 public interface ShardingOptimizedStatement extends OptimizedStatement {
+    
+    /**
+     * Get tables.
+     * 
+     * @return tables
+     */
+    Tables getTables();
 }

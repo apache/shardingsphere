@@ -24,8 +24,6 @@ import org.apache.shardingsphere.core.optimize.encrypt.condition.EncryptConditio
 import org.apache.shardingsphere.core.optimize.encrypt.condition.EncryptConditions;
 import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptConditionOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptTransparentOptimizedStatement;
-import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
-import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.apache.shardingsphere.core.optimize.sharding.segment.insert.GeneratedKey;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.groupby.GroupBy;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.AggregationDistinctSelectItem;
@@ -38,7 +36,6 @@ import org.apache.shardingsphere.core.optimize.sharding.segment.select.orderby.O
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.pagination.Pagination;
 import org.apache.shardingsphere.core.optimize.sharding.statement.ShardingOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.statement.ShardingTransparentOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingConditionOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingInsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
 import org.apache.shardingsphere.core.parse.core.constant.AggregationType;
@@ -69,6 +66,8 @@ import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.standard.StandardParameterBuilder;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
+import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
+import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.route.type.TableUnit;
@@ -866,7 +865,7 @@ public final class ShardingSQLRewriteEngineTest {
         updateStatement.getAllSQLSegments().add(new TableSegment(7, 27, "table_x"));
         updateStatement.setSetAssignment(
                 new SetAssignmentsSegment(28, 42, Collections.singleton(new AssignmentSegment(33, 42, new ColumnSegment(33, 40, "id"), new LiteralExpressionSegment(41, 42, 1)))));
-        SQLRouteResult result = new SQLRouteResult(new ShardingConditionOptimizedStatement(updateStatement), 
+        SQLRouteResult result = new SQLRouteResult(new ShardingTransparentOptimizedStatement(updateStatement), 
                 new EncryptTransparentOptimizedStatement(updateStatement), new ShardingConditions(Collections.<ShardingCondition>emptyList()));
         result.setRoutingResult(new RoutingResult());
         return result;
@@ -881,7 +880,7 @@ public final class ShardingSQLRewriteEngineTest {
     private SQLRouteResult createSQLRouteResultForTableTokenWithSchemaForDelete() {
         DeleteStatement deleteStatement = new DeleteStatement();
         deleteStatement.getAllSQLSegments().add(new TableSegment(12, 34, "`table_x`"));
-        SQLRouteResult result = new SQLRouteResult(new ShardingConditionOptimizedStatement(deleteStatement), 
+        SQLRouteResult result = new SQLRouteResult(new ShardingTransparentOptimizedStatement(deleteStatement), 
                 new EncryptTransparentOptimizedStatement(deleteStatement), new ShardingConditions(Collections.<ShardingCondition>emptyList()));
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
@@ -960,7 +959,7 @@ public final class ShardingSQLRewriteEngineTest {
                 new SetAssignmentsSegment(15, 24, Collections.singleton(new AssignmentSegment(19, 24, new ColumnSegment(19, 20, "id"), new LiteralExpressionSegment(0, 0, 1)))));
         List<EncryptCondition> encryptConditions = new LinkedList<>();
         encryptConditions.add(new EncryptCondition("id", "table_z", 32, 37, new LiteralExpressionSegment(0, 0, 2)));
-        SQLRouteResult result = new SQLRouteResult(new ShardingConditionOptimizedStatement(updateStatement), 
+        SQLRouteResult result = new SQLRouteResult(new ShardingTransparentOptimizedStatement(updateStatement), 
                 new EncryptConditionOptimizedStatement(updateStatement, new EncryptConditions(encryptConditions)), new ShardingConditions(Collections.<ShardingCondition>emptyList()));
         result.setRoutingResult(new RoutingResult());
         return result;

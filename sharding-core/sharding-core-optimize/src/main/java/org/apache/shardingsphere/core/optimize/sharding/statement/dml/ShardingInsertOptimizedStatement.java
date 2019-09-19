@@ -18,12 +18,14 @@
 package org.apache.shardingsphere.core.optimize.sharding.statement.dml;
 
 import com.google.common.base.Optional;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
 import org.apache.shardingsphere.core.optimize.api.segment.Tables;
 import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.segment.insert.GeneratedKey;
+import org.apache.shardingsphere.core.optimize.sharding.statement.ShardingOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
 import java.util.List;
@@ -35,7 +37,10 @@ import java.util.List;
  */
 @Getter
 @ToString(callSuper = true)
-public final class ShardingInsertOptimizedStatement extends ShardingConditionOptimizedStatement implements InsertOptimizedStatement {
+public final class ShardingInsertOptimizedStatement implements InsertOptimizedStatement, ShardingOptimizedStatement {
+    
+    @Getter(AccessLevel.NONE)
+    private final SQLStatement sqlStatement;
     
     private final Tables tables;
     
@@ -46,7 +51,7 @@ public final class ShardingInsertOptimizedStatement extends ShardingConditionOpt
     private final List<InsertValue> insertValues;
     
     public ShardingInsertOptimizedStatement(final SQLStatement sqlStatement, final List<String> columnNames, final GeneratedKey generatedKey, final List<InsertValue> insertValues) {
-        super(sqlStatement);
+        this.sqlStatement = sqlStatement;
         tables = new Tables(sqlStatement);
         this.columnNames = columnNames;
         this.generatedKey = generatedKey;
@@ -60,5 +65,10 @@ public final class ShardingInsertOptimizedStatement extends ShardingConditionOpt
      */
     public Optional<GeneratedKey> getGeneratedKey() {
         return Optional.fromNullable(generatedKey);
+    }
+    
+    @Override
+    public SQLStatement getSQLStatement() {
+        return sqlStatement;
     }
 }

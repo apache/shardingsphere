@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.optimize.sharding.statement.dml;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -30,6 +31,7 @@ import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.Sele
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.orderby.OrderBy;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.pagination.Pagination;
+import org.apache.shardingsphere.core.optimize.sharding.statement.ShardingOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.IndexOrderByItemSegment;
@@ -48,7 +50,10 @@ import java.util.Map;
 @Getter
 @Setter
 @ToString
-public final class ShardingSelectOptimizedStatement extends ShardingConditionOptimizedStatement {
+public final class ShardingSelectOptimizedStatement implements ShardingOptimizedStatement {
+    
+    @Getter(AccessLevel.NONE)
+    private final SQLStatement sqlStatement;
     
     private final Tables tables;
     
@@ -63,7 +68,7 @@ public final class ShardingSelectOptimizedStatement extends ShardingConditionOpt
     private boolean containsSubquery;
     
     public ShardingSelectOptimizedStatement(final SQLStatement sqlStatement, final GroupBy groupBy, final OrderBy orderBy, final SelectItems selectItems, final Pagination pagination) {
-        super(sqlStatement);
+        this.sqlStatement = sqlStatement;
         this.tables = new Tables(sqlStatement);
         this.groupBy = groupBy;
         this.orderBy = orderBy;
@@ -143,5 +148,10 @@ public final class ShardingSelectOptimizedStatement extends ShardingConditionOpt
      */
     public boolean isSameGroupByAndOrderByItems() {
         return !groupBy.getItems().isEmpty() && groupBy.getItems().equals(orderBy.getItems());
+    }
+    
+    @Override
+    public SQLStatement getSQLStatement() {
+        return sqlStatement;
     }
 }
