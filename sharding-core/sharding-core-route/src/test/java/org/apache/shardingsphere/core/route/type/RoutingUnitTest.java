@@ -100,4 +100,11 @@ public class RoutingUnitTest {
         expected.getTableUnits().addAll(mockTableUnits());
         assertTrue(expected.equals(routingUnit));
     }
+    
+    @Test
+    public void assertToString() {
+        assertThat(routingUnit.toString(), is(String.format(
+            "RoutingUnit(dataSourceName=%s, masterSlaveLogicDataSourceName=%s, tableUnits=[TableUnit(logicTableName=%s, actualTableName=%s), TableUnit(logicTableName=%s, actualTableName=%s)])",
+            DATASOURCE_NAME, DATASOURCE_NAME, LOGIC_TABLE, SHARD_TABLE_0, LOGIC_TABLE, SHARD_TABLE_1)));
+    }
 }
