@@ -43,9 +43,10 @@ You can report a bug, submit a new function enhancement recommendation, or submi
 
 ### Create Branch 
 
- - Create a new branch based on upstream/dev, then push it to origin.
-   - git checkout -b dev-issueNo upstream/dev
-   - git push origin dev-issueNo
+ - Switch to forked dev branch, pull codes from upstream, then create a new branch.
+   - git checkout dev
+   - git pull upstream dev
+   - git checkout -b dev-issueNo
    
  - *Notice*：We will merge PR using squash, commit log will be different form upstream if you use old branch.
   

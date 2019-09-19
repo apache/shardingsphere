@@ -43,9 +43,10 @@ chapter = true
  
  ### 创建分支
  
- - 基于upstream/dev创建本次修改的分支，并push到origin上。
-   - git checkout -b dev-issueNo upstream/dev
-   - git push origin dev-issueNo
+ - 切换到fork的dev分支，拉取最新代码，创建本次的分支。
+   - git checkout dev
+   - git pull upstream dev
+   - git checkout -b dev-issueNo
    
   - *注意*：PR会按照squash的方式进行merge，如果不创建新分支，本地和远程的提交记录将不能保持同步。
   
