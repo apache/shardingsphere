@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.route.router.sharding.validator.statement.impl;
+package org.apache.shardingsphere.core.route.router.sharding.validator.impl;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.route.router.sharding.validator.statement.ShardingStatementValidator;
+import org.apache.shardingsphere.core.route.router.sharding.validator.ShardingStatementValidator;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Sharding insert validator.
+ * Sharding insert statement validator.
  *
  * @author zhangliang
  */

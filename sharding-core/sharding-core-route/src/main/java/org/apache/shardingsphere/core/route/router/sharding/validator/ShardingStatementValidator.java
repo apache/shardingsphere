@@ -15,26 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.route.router.sharding.validator.routingresult;
+package org.apache.shardingsphere.core.route.router.sharding.validator;
 
-import org.apache.shardingsphere.core.optimize.sharding.statement.ShardingOptimizedStatement;
-import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
-import org.apache.shardingsphere.core.route.type.RoutingResult;
+import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Routing result validator.
+ * Sharding statement validator.
  *
- * @author sunbufu
  * @author zhangliang
+ * 
+ * @param <T> type of SQL statement
  */
-public interface RoutingResultValidator {
+public interface ShardingStatementValidator<T extends SQLStatement> {
     
     /**
-     * Validate routing result.
+     * Validate whether sharding operation is supported.
      * 
-     * @param shardingStatement sharding statement
-     * @param shardingConditions sharding conditions
-     * @param routingResult routing result
+     * @param shardingRule sharding rule
+     * @param sqlStatement SQL statement
      */
-    void validate(ShardingOptimizedStatement shardingStatement, ShardingConditions shardingConditions, RoutingResult routingResult);
+    void validate(ShardingRule shardingRule, T sqlStatement);
 }

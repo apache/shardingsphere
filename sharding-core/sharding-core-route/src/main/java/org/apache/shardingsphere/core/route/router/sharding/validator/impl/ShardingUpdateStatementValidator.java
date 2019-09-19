@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.route.router.sharding.validator.statement.impl;
+package org.apache.shardingsphere.core.route.router.sharding.validator.impl;
 
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.optimize.api.segment.Tables;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.core.route.router.sharding.validator.statement.ShardingStatementValidator;
+import org.apache.shardingsphere.core.route.router.sharding.validator.ShardingStatementValidator;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Sharding update validator.
+ * Sharding update statement validator.
  *
  * @author zhangliang
  */
