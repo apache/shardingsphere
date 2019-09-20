@@ -104,7 +104,8 @@ unreservedWord_
     | FILE_BLOCK_SIZE | EXTENT_SIZE | INITIAL_SIZE | AUTOEXTEND_SIZE | MAX_SIZE | NODEGROUP
     | WAIT | LOGFILE | UNDOFILE | UNDO_BUFFER_SIZE | REDO_BUFFER_SIZE | DEFINITION | ORGANIZATION
     | DESCRIPTION | REFERENCE | FOLLOWS | PRECEDES | NAME |CLOSE | OPEN | NEXT | HANDLER | PREV
-    | IMPORT | CONCURRENT | XML | POSITION | SHARE | DUMPFILE
+    | IMPORT | CONCURRENT | XML | POSITION | SHARE | DUMPFILE | CLONE | AGGREGATE | INSTALL | UNINSTALL
+    | RESOURCE
     ;
 
 schemaName
@@ -178,6 +179,71 @@ characterSetName_
 collationName_
    : IDENTIFIER_
    ;
+
+groupName
+    : IDENTIFIER_
+    ;
+
+shardLibraryName
+    : STRING_
+    ;
+
+componentName
+    : STRING_
+    ;
+
+pluginName
+    : IDENTIFIER_
+    ;
+
+hostName
+    : STRING_
+    ;
+
+port
+    : NUMBER_
+    ;
+
+cloneInstance
+    : userName AT_ hostName COLON_ port
+    ;
+
+cloneDir
+    : IDENTIFIER_
+    ;
+ 
+
+channelName
+    : IDENTIFIER_
+    ;
+
+logName
+    : identifier_
+    ;
+
+roleName
+    : (STRING_ | IDENTIFIER_) AT_ (STRING_ IDENTIFIER_)
+    ;
+
+engineName
+    : IDENTIFIER_
+    ;
+
+triggerName
+    : IDENTIFIER_
+    ;
+
+triggerTime
+    : BEFORE | AFTER
+    ;
+
+triggerEvent
+    : INSERT | UPDATE | DELETE
+    ;
+
+triggerOrder
+    : (FOLLOWS | PRECEDES) triggerName
+    ;
 
 expr
     : expr logicalOperator expr
