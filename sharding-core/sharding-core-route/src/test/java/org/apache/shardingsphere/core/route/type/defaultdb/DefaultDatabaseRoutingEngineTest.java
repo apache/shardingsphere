@@ -38,7 +38,7 @@ public final class DefaultDatabaseRoutingEngineTest {
     private DefaultDatabaseRoutingEngine defaultDatabaseRoutingEngine;
     
     @Before
-    public void setEngineContext() {
+    public void setUp() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.setDefaultDataSourceName("ds_0");
         ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, Arrays.asList("ds_0", "ds_1"));
