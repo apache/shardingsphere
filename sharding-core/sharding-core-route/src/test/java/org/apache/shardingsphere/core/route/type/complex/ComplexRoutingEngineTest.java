@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.route.type.complex;
 
+import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.groupby.GroupBy;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.SelectItem;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.SelectItems;
@@ -77,5 +78,11 @@ public final class ComplexRoutingEngineTest extends AbstractRoutingEngineTest {
         assertThat(tableUnitList.get(0).getTableUnits().size(), is(1));
         assertThat(tableUnitList.get(0).getTableUnits().get(0).getActualTableName(), is("t_order_1"));
         assertThat(tableUnitList.get(0).getTableUnits().get(0).getLogicTableName(), is("t_order"));
+    }
+    
+    @Test(expected = ShardingException.class)
+    public void assertRoutingForNonLogicTable() {
+        ComplexRoutingEngine complexRoutingEngine = new ComplexRoutingEngine(null, Collections.<String>emptyList(), null, createShardingConditions("t_order"));
+        complexRoutingEngine.route();
     }
 }

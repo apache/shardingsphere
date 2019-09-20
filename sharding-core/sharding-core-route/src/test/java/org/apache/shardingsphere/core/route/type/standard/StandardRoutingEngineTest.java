@@ -18,6 +18,9 @@
 package org.apache.shardingsphere.core.route.type.standard;
 
 import org.apache.shardingsphere.api.hint.HintManager;
+import org.apache.shardingsphere.core.exception.ShardingException;
+import org.apache.shardingsphere.core.optimize.api.segment.Tables;
+import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.groupby.GroupBy;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.SelectItem;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.SelectItems;
@@ -26,6 +29,7 @@ import org.apache.shardingsphere.core.optimize.sharding.segment.select.orderby.O
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.pagination.Pagination;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.fixture.AbstractRoutingEngineTest;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
@@ -43,12 +47,25 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public final class StandardRoutingEngineTest extends AbstractRoutingEngineTest {
     
     @After
     public void tearDown() {
         HintManager.clear();
+    }
+    
+    @Test(expected = ShardingException.class)
+    public void assertRouteByUnsupported() {
+        OptimizedStatement optimizedStatement = mock(OptimizedStatement.class);
+        when(optimizedStatement.getSQLStatement()).thenReturn(new InsertStatement());
+        Tables tables = mock(Tables.class);
+        when(tables.isSingleTable()).thenReturn(false);
+        when(optimizedStatement.getTables()).thenReturn(tables);
+        StandardRoutingEngine standardRoutingEngine = new StandardRoutingEngine(null, null, optimizedStatement, null);
+        standardRoutingEngine.route();
     }
     
     @Test
