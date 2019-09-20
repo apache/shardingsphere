@@ -54,7 +54,7 @@ git pull upstream dev
 git checkout -b dev-issueNo
 ```
 
- - *Notice*：We will merge PR using squash, commit log will be different form upstream if you use old branch.
+ **Notice** ：We will merge PR using squash, commit log will be different form upstream if you use old branch.
   
 ### Coding
   
