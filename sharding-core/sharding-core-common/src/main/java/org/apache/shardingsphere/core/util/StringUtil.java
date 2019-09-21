@@ -74,8 +74,7 @@ public final class StringUtil {
      * @param str to be judged string value
      * @return is empty or not
      */
-    public static boolean isEmpty(String strValue) {
+    public static boolean isEmpty(final String strValue) {
         return null == strValue || strValue.length() == 0;
     }
-
 }
