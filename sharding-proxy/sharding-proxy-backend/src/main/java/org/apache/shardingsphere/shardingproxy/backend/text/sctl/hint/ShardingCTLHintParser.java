@@ -89,7 +89,7 @@ public final class ShardingCTLHintParser implements ShardingCTLParser<ShardingCT
         }
         Optional<ShardingCTLHintStatement> queryShardingCTLHintStatement = parseQueryShardingCTLHintStatement();
         if (queryShardingCTLHintStatement.isPresent()) {
-            return updateShardingCTLHintStatement;
+            return queryShardingCTLHintStatement;
         }
         if (errorParameterMatcher.find()) {
             return Optional.of(new ShardingCTLHintStatement(new HintErrorParameterCommand()));

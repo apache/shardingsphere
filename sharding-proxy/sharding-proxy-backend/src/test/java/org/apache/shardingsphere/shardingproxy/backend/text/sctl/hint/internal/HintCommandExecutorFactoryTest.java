@@ -24,6 +24,8 @@ import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.e
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.executor.HintErrorParameterExecutor;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.executor.HintSetDatabaseShardingValueExecutor;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.executor.HintSetMasterOnlyExecutor;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.executor.HintShowStatusExecutor;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.executor.HintShowTableStatusExecutor;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -65,6 +67,18 @@ public final class HintCommandExecutorFactoryTest {
     public void assertHintClearExecutor() {
         String sql = "sctl:hint clear ";
         assertThat(HintCommandExecutorFactory.newInstance(sql), instanceOf(HintClearExecutor.class));
+    }
+    
+    @Test
+    public void assertHintShowStatusExecutor() {
+        String sql = "sctl:hint show status ";
+        assertThat(HintCommandExecutorFactory.newInstance(sql), instanceOf(HintShowStatusExecutor.class));
+    }
+    
+    @Test
+    public void assertHintShowTableStatusExecutor() {
+        String sql = "sctl:hint show table status ";
+        assertThat(HintCommandExecutorFactory.newInstance(sql), instanceOf(HintShowTableStatusExecutor.class));
     }
     
     @Test

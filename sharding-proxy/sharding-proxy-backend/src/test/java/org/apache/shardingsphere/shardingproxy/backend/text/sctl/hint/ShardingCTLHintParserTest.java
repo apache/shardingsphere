@@ -23,6 +23,8 @@ import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.c
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintErrorParameterCommand;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintSetDatabaseShardingValueCommand;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintSetMasterOnlyCommand;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintShowStatusCommand;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintShowTableStatusCommand;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -107,6 +109,34 @@ public final class ShardingCTLHintParserTest {
     @Test
     public void assertInValidClearSql() {
         String sql = " sctl:HINT clear xxx";
+        ShardingCTLHintStatement statement = new ShardingCTLHintParser(sql).doParse().get();
+        assertThat(statement.getHintCommand(), instanceOf(HintErrorParameterCommand.class));
+    }
+    
+    @Test
+    public void assertValidShowStatusSql() {
+        String sql = " sctl:HINT show status ";
+        ShardingCTLHintStatement statement = new ShardingCTLHintParser(sql).doParse().get();
+        assertThat(statement.getHintCommand(), instanceOf(HintShowStatusCommand.class));
+    }
+    
+    @Test
+    public void assertInValidShowStatusSql() {
+        String sql = " sctl:HINT show status1";
+        ShardingCTLHintStatement statement = new ShardingCTLHintParser(sql).doParse().get();
+        assertThat(statement.getHintCommand(), instanceOf(HintErrorParameterCommand.class));
+    }
+    
+    @Test
+    public void assertValidShowTableStatusSql() {
+        String sql = " sctl:HINT show table status ";
+        ShardingCTLHintStatement statement = new ShardingCTLHintParser(sql).doParse().get();
+        assertThat(statement.getHintCommand(), instanceOf(HintShowTableStatusCommand.class));
+    }
+    
+    @Test
+    public void assertInValidShowTableStatusSql() {
+        String sql = " sctl:HINT show table status1";
         ShardingCTLHintStatement statement = new ShardingCTLHintParser(sql).doParse().get();
         assertThat(statement.getHintCommand(), instanceOf(HintErrorParameterCommand.class));
     }
