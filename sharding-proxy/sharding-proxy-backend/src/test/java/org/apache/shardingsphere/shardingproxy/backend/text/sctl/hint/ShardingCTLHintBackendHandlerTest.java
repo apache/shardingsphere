@@ -147,7 +147,7 @@ public final class ShardingCTLHintBackendHandlerTest {
         assertEquals(updateQueryData.getData().get(0), "true");
         assertEquals(updateQueryData.getData().get(1), "databases_only");
     }
-
+    
     @Test
     public void assertShowTableStatus() {
         clearThreadLocal();
@@ -160,16 +160,18 @@ public final class ShardingCTLHintBackendHandlerTest {
         assertEquals(((QueryResponse) backendResponse).getQueryHeaders().get(2).getColumnLabel(), "table_sharding_values");
         assertFalse(defaultShardingCTLHintBackendHandler.next());
         String addDatabaseShardingValueSql = "sctl:hint addDatabaseshardingvalue user=100";
-        String addTableShardingValueSql = "sctl:hint addTableshardingvalue user=200";
+        String addTableShardingValueSql1 = "sctl:hint addTableshardingvalue user=200";
+        String addTableShardingValueSql2 = "sctl:hint addTableshardingvalue user=300";
         new ShardingCTLHintBackendHandler(addDatabaseShardingValueSql, backendConnection).execute();
-        new ShardingCTLHintBackendHandler(addTableShardingValueSql, backendConnection).execute();
+        new ShardingCTLHintBackendHandler(addTableShardingValueSql1, backendConnection).execute();
+        new ShardingCTLHintBackendHandler(addTableShardingValueSql2, backendConnection).execute();
         ShardingCTLHintBackendHandler updateShardingCTLHintBackendHandler = new ShardingCTLHintBackendHandler(sql, backendConnection);
         updateShardingCTLHintBackendHandler.execute();
         assertTrue(updateShardingCTLHintBackendHandler.next());
         QueryData updateQueryData = updateShardingCTLHintBackendHandler.getQueryData();
         assertEquals(updateQueryData.getData().get(0), "user");
         assertEquals(updateQueryData.getData().get(1), "100");
-        assertEquals(updateQueryData.getData().get(2), "200");
+        assertEquals(updateQueryData.getData().get(2), "200,300");
     }
     
     @Test

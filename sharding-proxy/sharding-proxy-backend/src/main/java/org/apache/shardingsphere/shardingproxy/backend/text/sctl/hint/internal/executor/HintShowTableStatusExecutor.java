@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.executor;
 
-import com.sun.deploy.util.StringUtils;
+import com.google.common.base.Joiner;
 import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
@@ -96,8 +96,8 @@ public final class HintShowTableStatusExecutor implements HintCommandExecutor {
         HintShowTableStatusResult hintShowTableStatusResult = queryResults.next();
         List<Object> row = new ArrayList<>(queryHeaders.size());
         row.add(hintShowTableStatusResult.getLogicTable());
-        row.add(StringUtils.join(hintShowTableStatusResult.getDatabaseShardingValues(), ","));
-        row.add(StringUtils.join(hintShowTableStatusResult.getTableShardingValues(), ","));
+        row.add(Joiner.on(",").join(hintShowTableStatusResult.getDatabaseShardingValues()));
+        row.add(Joiner.on(",").join(hintShowTableStatusResult.getTableShardingValues()));
         List<Integer> columnTypes = new ArrayList<>(queryHeaders.size());
         columnTypes.add(queryHeaders.get(0).getColumnType());
         columnTypes.add(queryHeaders.get(1).getColumnType());
