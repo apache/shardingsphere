@@ -35,10 +35,12 @@ import java.util.Map.Entry;
 public final class DataSourceMetas {
 
     private final Map<String, DataSourceMetaData> dataSourceMetaDataMap;
-    private final DatabaseType databaseTypeInfo;
-    public DataSourceMetas(final Map<String, String> dataSourceURLs, final DatabaseType databaseType) {
-        dataSourceMetaDataMap = getDataSourceMetaDataMap(dataSourceURLs, databaseType);
-        databaseTypeInfo = databaseType;
+
+    private final DatabaseType databaseType;
+
+    public DataSourceMetas(final Map<String, String> dataSourceURLs, final DatabaseType currDatabaseType) {
+        dataSourceMetaDataMap = getDataSourceMetaDataMap(dataSourceURLs, currDatabaseType);
+        databaseType = currDatabaseType;
     }
 
     private Map<String, DataSourceMetaData> getDataSourceMetaDataMap(final Map<String, String> dataSourceURLs, final DatabaseType databaseType) {
@@ -89,7 +91,7 @@ public final class DataSourceMetas {
         return dataSourceMetaDataMap.get(dataSourceName);
     }
 
-    public DatabaseType getDatabaseTypeInfo() {
-        return databaseTypeInfo;
+    public DatabaseType getDatabaseType() {
+        return databaseType;
     }
 }
