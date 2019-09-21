@@ -20,7 +20,6 @@ package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
-import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintCommandExecutor;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintManagerHolder;
 
 /**
@@ -29,7 +28,7 @@ import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.H
  * @author liya
  */
 @RequiredArgsConstructor
-public final class HintClearExecutor implements HintCommandExecutor {
+public final class HintClearExecutor extends AbstractHintUpdateExecutor {
     
     @Override
     public BackendResponse execute() {

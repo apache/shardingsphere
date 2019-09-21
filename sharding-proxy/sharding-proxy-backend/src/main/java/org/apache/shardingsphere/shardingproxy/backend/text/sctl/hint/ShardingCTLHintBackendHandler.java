@@ -22,7 +22,10 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connec
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintCommandExecutor;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintCommandExecutorFactory;
+
+import java.sql.SQLException;
 
 /**
  * Sharding CTL hint backend handler.
@@ -35,6 +38,8 @@ public final class ShardingCTLHintBackendHandler implements TextProtocolBackendH
     
     private final boolean supportHint;
     
+    private HintCommandExecutor hintCommandExecutor;
+    
     public ShardingCTLHintBackendHandler(final String sql, final BackendConnection backendConnection) {
         this.sql = sql;
         this.supportHint = backendConnection.isSupportHint();
@@ -45,16 +50,17 @@ public final class ShardingCTLHintBackendHandler implements TextProtocolBackendH
         if (!supportHint) {
             throw new UnsupportedOperationException(String.format("%s should be true, please check your config", ShardingPropertiesConstant.PROXY_HINT_ENABLED.getKey()));
         }
-        return HintCommandExecutorFactory.newInstance(sql).execute();
+        hintCommandExecutor = HintCommandExecutorFactory.newInstance(sql);
+        return hintCommandExecutor.execute();
     }
     
     @Override
-    public boolean next() {
-        return false;
+    public boolean next() throws SQLException {
+        return hintCommandExecutor.next();
     }
     
     @Override
-    public QueryData getQueryData() {
-        return null;
+    public QueryData getQueryData() throws SQLException {
+        return hintCommandExecutor.getQueryData();
     }
 }

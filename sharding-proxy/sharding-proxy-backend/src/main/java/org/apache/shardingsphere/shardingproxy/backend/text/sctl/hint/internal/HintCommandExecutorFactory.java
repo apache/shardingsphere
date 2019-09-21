@@ -27,6 +27,8 @@ import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.c
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintClearCommand;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintSetDatabaseShardingValueCommand;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintSetMasterOnlyCommand;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintShowStatusCommand;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintShowTableStatusCommand;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.executor.HintAddDatabaseShardingValueExecutor;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.executor.HintAddTableShardingValueExecutor;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.executor.HintClearExecutor;
@@ -34,6 +36,8 @@ import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.e
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.executor.HintErrorParameterExecutor;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.executor.HintSetDatabaseShardingValueExecutor;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.executor.HintSetMasterOnlyExecutor;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.executor.HintShowStatusExecutor;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.executor.HintShowTableStatusExecutor;
 
 /**
  * Hint command executor factory.
@@ -55,21 +59,43 @@ public final class HintCommandExecutorFactory {
             return new HintErrorFormatExecutor(sql);
         }
         HintCommand hintCommand = shardingTCLStatement.get().getHintCommand();
-        if (hintCommand instanceof HintSetMasterOnlyCommand) {
-            return new HintSetMasterOnlyExecutor((HintSetMasterOnlyCommand) hintCommand);
+        Optional<HintCommandExecutor> hintUpdateExecutor = getHintUpdateExecutor(hintCommand);
+        if (hintUpdateExecutor.isPresent()) {
+            return hintUpdateExecutor.get();
         }
-        if (hintCommand instanceof HintSetDatabaseShardingValueCommand) {
-            return new HintSetDatabaseShardingValueExecutor((HintSetDatabaseShardingValueCommand) hintCommand);
-        }
-        if (hintCommand instanceof HintAddDatabaseShardingValueCommand) {
-            return new HintAddDatabaseShardingValueExecutor((HintAddDatabaseShardingValueCommand) hintCommand);
-        }
-        if (hintCommand instanceof HintAddTableShardingValueCommand) {
-            return new HintAddTableShardingValueExecutor((HintAddTableShardingValueCommand) hintCommand);
-        }
-        if (hintCommand instanceof HintClearCommand) {
-            return new HintClearExecutor();
+        Optional<HintCommandExecutor> hintQueryExecutor = getHintQueryExecutor(hintCommand);
+        if (hintQueryExecutor.isPresent()) {
+            return hintQueryExecutor.get();
         }
         return new HintErrorParameterExecutor(sql);
+    }
+    
+    private static Optional<HintCommandExecutor> getHintUpdateExecutor(final HintCommand hintCommand) {
+        if (hintCommand instanceof HintSetMasterOnlyCommand) {
+            return Optional.of((HintCommandExecutor) new HintSetMasterOnlyExecutor((HintSetMasterOnlyCommand) hintCommand));
+        }
+        if (hintCommand instanceof HintSetDatabaseShardingValueCommand) {
+            return Optional.of((HintCommandExecutor) new HintSetDatabaseShardingValueExecutor((HintSetDatabaseShardingValueCommand) hintCommand));
+        }
+        if (hintCommand instanceof HintAddDatabaseShardingValueCommand) {
+            return Optional.of((HintCommandExecutor) new HintAddDatabaseShardingValueExecutor((HintAddDatabaseShardingValueCommand) hintCommand));
+        }
+        if (hintCommand instanceof HintAddTableShardingValueCommand) {
+            return Optional.of((HintCommandExecutor) new HintAddTableShardingValueExecutor((HintAddTableShardingValueCommand) hintCommand));
+        }
+        if (hintCommand instanceof HintClearCommand) {
+            return Optional.of((HintCommandExecutor) new HintClearExecutor());
+        }
+        return Optional.absent();
+    }
+    
+    private static Optional<HintCommandExecutor> getHintQueryExecutor(final HintCommand hintCommand) {
+        if (hintCommand instanceof HintShowStatusCommand) {
+            return Optional.of((HintCommandExecutor) new HintShowStatusExecutor());
+        }
+        if (hintCommand instanceof HintShowTableStatusCommand) {
+            return Optional.of((HintCommandExecutor) new HintShowTableStatusExecutor());
+        }
+        return Optional.absent();
     }
 }

@@ -15,40 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal;
+package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command;
 
-import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
-
-import java.sql.SQLException;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintCommand;
 
 /**
- * Hint command executor.
+ * Hint show status command.
+ *
+ * <p>
+ * example: sctl:hint show status.
+ * </p>
  *
  * @author liya
  */
-public interface HintCommandExecutor {
-    
-    /**
-     * Execute hint command.
-     *
-     * @return backend response
-     */
-    BackendResponse execute();
-    
-    /**
-     * Goto next result value.
-     *
-     * @return has more result value or not
-     * @throws SQLException SQL exception
-     */
-    boolean next() throws SQLException;
-    
-    /**
-     * Get query data.
-     *
-     * @return query data
-     * @throws SQLException SQL exception
-     */
-    QueryData getQueryData() throws SQLException;
+public final class HintShowStatusCommand implements HintCommand {
 }

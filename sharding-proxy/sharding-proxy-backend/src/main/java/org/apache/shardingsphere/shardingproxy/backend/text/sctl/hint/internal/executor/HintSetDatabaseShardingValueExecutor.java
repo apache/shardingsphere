@@ -20,7 +20,6 @@ package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
-import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintCommandExecutor;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintManagerHolder;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintSetDatabaseShardingValueCommand;
 
@@ -30,7 +29,7 @@ import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.c
  * @author liya
  */
 @RequiredArgsConstructor
-public final class HintSetDatabaseShardingValueExecutor implements HintCommandExecutor {
+public final class HintSetDatabaseShardingValueExecutor extends AbstractHintUpdateExecutor {
     
     private final HintSetDatabaseShardingValueCommand command;
     

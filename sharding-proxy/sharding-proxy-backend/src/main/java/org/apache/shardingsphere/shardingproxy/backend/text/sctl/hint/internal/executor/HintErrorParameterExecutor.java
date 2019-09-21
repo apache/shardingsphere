@@ -21,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.exception.UnsupportedShardingCTLTypeException;
-import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintCommandExecutor;
 
 /**
  * Hint error parameter command executor.
@@ -29,7 +28,7 @@ import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.H
  * @author liya
  */
 @RequiredArgsConstructor
-public final class HintErrorParameterExecutor implements HintCommandExecutor {
+public final class HintErrorParameterExecutor extends AbstractHintUpdateExecutor {
     
     private final String sql;
     
