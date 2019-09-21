@@ -44,18 +44,18 @@ public final class OracleDataSourceMetaData implements DataSourceMetaData {
     private final Pattern pattern = Pattern.compile("jdbc:oracle:(thin|oci|kprb):@(//)?([\\w\\-\\.]+):?([0-9]*)[:/]([\\w\\-\\.]+)", Pattern.CASE_INSENSITIVE);
     public OracleDataSourceMetaData(final String url) {
         Matcher matcher = pattern.matcher(url);
-        if(matcher.find()){
+        if (matcher.find()) {
             hostName = matcher.group(3);
             port = Strings.isNullOrEmpty(matcher.group(4)) ? DEFAULT_PORT : Integer.valueOf(matcher.group(4));
             schemaName = matcher.group(5);
-        }else if(url.contains("HOST") && url.contains("PORT")  && url.contains("SERVICE_NAME")){
+        } else if (url.contains("HOST") && url.contains("PORT")  && url.contains("SERVICE_NAME")) {
             String hostConfig = url.substring(url.indexOf("HOST"));
             hostName = hostConfig.substring(5, hostConfig.indexOf(")"));
             String portConfig = url.substring(url.indexOf("PORT"));
             port = Integer.valueOf(portConfig.substring(5, portConfig.indexOf(")")));
             String serviceNameConfig = url.substring(url.indexOf("SERVICE_NAME"));
-            schemaName = serviceNameConfig.substring("SERVICE_NAME".length()+1, serviceNameConfig.indexOf(")"));
-        } else{
+            schemaName = serviceNameConfig.substring("SERVICE_NAME".length() + 1, serviceNameConfig.indexOf(")"));
+        } else {
             throw new UnrecognizedDatabaseURLException(url, pattern.pattern());
         }
     }
