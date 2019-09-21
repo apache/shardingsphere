@@ -471,4 +471,12 @@
     <dql-test-case sql-case-id="select_distinct_with_count_group_by">
         <assertion expected-data-file="select_distinct_with_count_group_by.xml" />
     </dql-test-case>
+
+    <dql-test-case sql-case-id="select_special_function_nested">
+        <assertion parameters="12:int, 1000:int" expected-data-file="select_special_function_nested.xml" />
+    </dql-test-case>
+
+    <dql-test-case sql-case-id="select_with_interval_function">
+        <assertion parameters="12:int, 1000:int" expected-data-file="select_with_interval_function.xml" />
+    </dql-test-case>
 </integrate-test-cases>
