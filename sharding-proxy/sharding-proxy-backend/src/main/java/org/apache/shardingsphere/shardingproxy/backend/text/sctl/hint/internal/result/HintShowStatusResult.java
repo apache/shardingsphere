@@ -15,36 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal;
+package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.result;
 
-import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintShardingType;
 
 /**
- * Hint command executor.
+ * Hint show status result.
  *
  * @author liya
  */
-public interface HintCommandExecutor {
+@Getter
+@RequiredArgsConstructor
+public final class HintShowStatusResult {
     
-    /**
-     * Execute hint command.
-     *
-     * @return backend response
-     */
-    BackendResponse execute();
+    private final boolean masterOnly;
     
-    /**
-     * Goto next result value.
-     *
-     * @return has more result value or not
-     */
-    boolean next();
-    
-    /**
-     * Get query data.
-     *
-     * @return query data
-     */
-    QueryData getQueryData();
+    private final HintShardingType shardingType;
 }

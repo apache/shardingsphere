@@ -26,6 +26,7 @@ import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.c
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintSetDatabaseShardingValueCommand;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintSetMasterOnlyCommand;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintShowStatusCommand;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintShowTableStatusCommand;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -49,6 +50,8 @@ public final class ShardingCTLHintParser implements ShardingCTLParser<ShardingCT
     
     private final String showStatusRegex = "sctl:hint\\s+show\\s+status\\s*$";
     
+    private final String showTableStatusRegex = "sctl:hint\\s+show\\s+table\\s+status\\s*$";
+    
     private final String errorParameterRegex = "sctl:hint\\s+.*";
     
     private final Matcher setMasterOnlyMatcher;
@@ -63,6 +66,8 @@ public final class ShardingCTLHintParser implements ShardingCTLParser<ShardingCT
     
     private final Matcher showStatusMatcher;
     
+    private final Matcher showTableStatusMatcher;
+    
     private final Matcher errorParameterMatcher;
     
     public ShardingCTLHintParser(final String sql) {
@@ -72,11 +77,27 @@ public final class ShardingCTLHintParser implements ShardingCTLParser<ShardingCT
         addTableShardingValueMatcher = Pattern.compile(addTableShardingValueRegex, Pattern.CASE_INSENSITIVE).matcher(sql);
         clearMatcher = Pattern.compile(clearRegex, Pattern.CASE_INSENSITIVE).matcher(sql);
         showStatusMatcher = Pattern.compile(showStatusRegex, Pattern.CASE_INSENSITIVE).matcher(sql);
+        showTableStatusMatcher = Pattern.compile(showTableStatusRegex, Pattern.CASE_INSENSITIVE).matcher(sql);
         errorParameterMatcher = Pattern.compile(errorParameterRegex, Pattern.CASE_INSENSITIVE).matcher(sql);
     }
     
     @Override
     public Optional<ShardingCTLHintStatement> doParse() {
+        Optional<ShardingCTLHintStatement> updateShardingCTLHintStatement = parseUpdateShardingCTLHintStatement();
+        if (updateShardingCTLHintStatement.isPresent()) {
+            return updateShardingCTLHintStatement;
+        }
+        Optional<ShardingCTLHintStatement> queryShardingCTLHintStatement = parseQueryShardingCTLHintStatement();
+        if (queryShardingCTLHintStatement.isPresent()) {
+            return updateShardingCTLHintStatement;
+        }
+        if (errorParameterMatcher.find()) {
+            return Optional.of(new ShardingCTLHintStatement(new HintErrorParameterCommand()));
+        }
+        return Optional.absent();
+    }
+    
+    private Optional<ShardingCTLHintStatement> parseUpdateShardingCTLHintStatement() {
         if (setMasterOnlyMatcher.find()) {
             boolean masterOnly = Boolean.valueOf(setMasterOnlyMatcher.group(1).toUpperCase());
             return Optional.of(new ShardingCTLHintStatement(new HintSetMasterOnlyCommand(masterOnly)));
@@ -98,11 +119,15 @@ public final class ShardingCTLHintParser implements ShardingCTLParser<ShardingCT
         if (clearMatcher.find()) {
             return Optional.of(new ShardingCTLHintStatement(new HintClearCommand()));
         }
+        return Optional.absent();
+    }
+    
+    private Optional<ShardingCTLHintStatement> parseQueryShardingCTLHintStatement() {
         if (showStatusMatcher.find()) {
             return Optional.of(new ShardingCTLHintStatement(new HintShowStatusCommand()));
         }
-        if (errorParameterMatcher.find()) {
-            return Optional.of(new ShardingCTLHintStatement(new HintErrorParameterCommand()));
+        if (showTableStatusMatcher.find()) {
+            return Optional.of(new ShardingCTLHintStatement(new HintShowTableStatusCommand()));
         }
         return Optional.absent();
     }

@@ -15,36 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal;
+package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.result;
 
-import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Hint command executor.
+ * Hint show table status result.
  *
  * @author liya
  */
-public interface HintCommandExecutor {
+@Getter
+@RequiredArgsConstructor
+public final class HintShowTableStatusResult {
     
-    /**
-     * Execute hint command.
-     *
-     * @return backend response
-     */
-    BackendResponse execute();
+    private final String logicTable;
     
-    /**
-     * Goto next result value.
-     *
-     * @return has more result value or not
-     */
-    boolean next();
+    private final Collection<String> databaseShardingValues = new LinkedList<>();
     
-    /**
-     * Get query data.
-     *
-     * @return query data
-     */
-    QueryData getQueryData();
+    private final Collection<String> tableShardingValues = new LinkedList<>();
 }

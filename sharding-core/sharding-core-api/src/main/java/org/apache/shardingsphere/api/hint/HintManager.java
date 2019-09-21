@@ -25,6 +25,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 
 /**
  * The manager that use hint to inject sharding key directly through {@code ThreadLocal}.
@@ -49,7 +50,7 @@ public final class HintManager implements AutoCloseable {
     /**
      * Get a new instance for {@code HintManager}.
      *
-     * @return  {@code HintManager} instance
+     * @return {@code HintManager} instance
      */
     public static HintManager getInstance() {
         Preconditions.checkState(null == HINT_MANAGER_HOLDER.get(), "Hint has previous value, please clear first.");
@@ -77,7 +78,7 @@ public final class HintManager implements AutoCloseable {
      * <p>The sharding operator is {@code =}</p>
      *
      * @param logicTable logic table name
-     * @param value sharding value
+     * @param value      sharding value
      */
     public void addDatabaseShardingValue(final String logicTable, final Comparable<?> value) {
         databaseShardingValues.put(logicTable, value);
@@ -90,7 +91,7 @@ public final class HintManager implements AutoCloseable {
      * <p>The sharding operator is {@code =}</p>
      *
      * @param logicTable logic table name
-     * @param value sharding value
+     * @param value      sharding value
      */
     public void addTableShardingValue(final String logicTable, final Comparable<?> value) {
         tableShardingValues.put(logicTable, value);
@@ -105,7 +106,7 @@ public final class HintManager implements AutoCloseable {
     public static Collection<Comparable<?>> getDatabaseShardingValues() {
         return getDatabaseShardingValues("");
     }
-
+    
     /**
      * Get database sharding values.
      *
@@ -117,6 +118,15 @@ public final class HintManager implements AutoCloseable {
     }
     
     /**
+     * Get database sharding values map.
+     *
+     * @return database sharding values map
+     */
+    public static Map<String, Collection<Comparable<?>>> getDatabaseShardingValuesMap() {
+        return null == HINT_MANAGER_HOLDER.get() ? Collections.EMPTY_MAP : HINT_MANAGER_HOLDER.get().databaseShardingValues.asMap();
+    }
+    
+    /**
      * Get table sharding values.
      *
      * @param logicTable logic table name
@@ -124,6 +134,15 @@ public final class HintManager implements AutoCloseable {
      */
     public static Collection<Comparable<?>> getTableShardingValues(final String logicTable) {
         return null == HINT_MANAGER_HOLDER.get() ? Collections.<Comparable<?>>emptyList() : HINT_MANAGER_HOLDER.get().tableShardingValues.get(logicTable);
+    }
+    
+    /**
+     * Get table sharding values map.
+     *
+     * @return table sharding values map
+     */
+    public static Map<String, Collection<Comparable<?>>> getTableShardingValuesMap() {
+        return null == HINT_MANAGER_HOLDER.get() ? Collections.EMPTY_MAP : HINT_MANAGER_HOLDER.get().tableShardingValues.asMap();
     }
     
     /**

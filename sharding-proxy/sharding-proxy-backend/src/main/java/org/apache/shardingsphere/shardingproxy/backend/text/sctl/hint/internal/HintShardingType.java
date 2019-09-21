@@ -17,34 +17,12 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal;
 
-import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
-
 /**
- * Hint command executor.
+ * Hint sharding type.
  *
  * @author liya
  */
-public interface HintCommandExecutor {
+public enum HintShardingType {
     
-    /**
-     * Execute hint command.
-     *
-     * @return backend response
-     */
-    BackendResponse execute();
-    
-    /**
-     * Goto next result value.
-     *
-     * @return has more result value or not
-     */
-    boolean next();
-    
-    /**
-     * Get query data.
-     *
-     * @return query data
-     */
-    QueryData getQueryData();
+    DATABASES_ONLY, DATABASES_TABLES;
 }
