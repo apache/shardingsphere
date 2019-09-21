@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.frontend.mysql.auth;
 
 import com.google.common.base.Optional;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.core.rule.ProxyUser;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
@@ -33,11 +34,13 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
+import java.net.SocketAddress;
 import java.util.Collections;
 import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -63,7 +66,7 @@ public class MySQLAuthenticationEngineTest {
 
     @Test
     public void assertHandshake() {
-        ChannelHandlerContext context = mock(ChannelHandlerContext.class);
+        ChannelHandlerContext context = getContext();
         BackendConnection backendConnection = mock(BackendConnection.class);
         authenticationEngine.handshake(context, backendConnection);
         verify(context).writeAndFlush(any(MySQLHandshakePacket.class));
@@ -72,7 +75,7 @@ public class MySQLAuthenticationEngineTest {
 
     @Test
     public void assertAuthWithIncorrectPassword() throws NoSuchFieldException, IllegalAccessException {
-        ChannelHandlerContext context = mock(ChannelHandlerContext.class);
+        ChannelHandlerContext context = getContext();
         when(authenticationHandler.login("root", authResponse)).thenReturn(Optional.<ProxyUser>absent());
         authenticationEngine.auth(context, getPayload("root", "sharding_db", authResponse), mock(BackendConnection.class));
         verify(context).writeAndFlush(any(MySQLErrPacket.class));
@@ -80,7 +83,7 @@ public class MySQLAuthenticationEngineTest {
 
     @Test
     public void assertAuthWithAbsentDatabase() throws NoSuchFieldException, IllegalAccessException {
-        ChannelHandlerContext context = mock(ChannelHandlerContext.class);
+        ChannelHandlerContext context = getContext();
         when(authenticationHandler.login("root", authResponse)).thenReturn(Optional.of(new ProxyUser("root", Collections.singleton("sharding_db"))));
         setLogicSchemas(Collections.singletonMap("sharding_db", mock(LogicSchema.class)));
         authenticationEngine.auth(context, getPayload("root", "ABSENT DATABASE", authResponse), mock(BackendConnection.class));
@@ -89,7 +92,7 @@ public class MySQLAuthenticationEngineTest {
 
     @Test
     public void assertAuthWithNotAccessDatabase() throws NoSuchFieldException, IllegalAccessException {
-        ChannelHandlerContext context = mock(ChannelHandlerContext.class);
+        ChannelHandlerContext context = getContext();
         when(authenticationHandler.login("root", authResponse)).thenReturn(Optional.of(new ProxyUser("root", Collections.singleton("sharding_db_remote"))));
         setLogicSchemas(Collections.singletonMap("sharding_db", mock(LogicSchema.class)));
         authenticationEngine.auth(context, getPayload("root", "sharding_db", authResponse), mock(BackendConnection.class));
@@ -98,7 +101,7 @@ public class MySQLAuthenticationEngineTest {
 
     @Test
     public void assertAuth() throws NoSuchFieldException, IllegalAccessException {
-        ChannelHandlerContext context = mock(ChannelHandlerContext.class);
+        ChannelHandlerContext context = getContext();
         when(authenticationHandler.login("root", authResponse)).thenReturn(Optional.of(new ProxyUser("root", Collections.singleton("sharding_db"))));
         setLogicSchemas(Collections.singletonMap("sharding_db", mock(LogicSchema.class)));
         authenticationEngine.auth(context, getPayload("root", "sharding_db", authResponse), mock(BackendConnection.class));
@@ -116,6 +119,24 @@ public class MySQLAuthenticationEngineTest {
         when(result.readInt4()).thenReturn(MySQLCapabilityFlag.CLIENT_CONNECT_WITH_DB.getValue());
         when(result.readStringNul()).thenReturn(userName).thenReturn(database);
         when(result.readStringNulByBytes()).thenReturn(authResponse);
+        return result;
+    }
+
+    private ChannelHandlerContext getContext() {
+        ChannelHandlerContext result = mock(ChannelHandlerContext.class);
+        doReturn(getChannel()).when(result).channel();
+        return result;
+    }
+
+    private Channel getChannel() {
+        Channel result = mock(Channel.class);
+        doReturn(getRemoteAddress()).when(result).remoteAddress();
+        return result;
+    }
+
+    private SocketAddress getRemoteAddress() {
+        SocketAddress result = mock(SocketAddress.class);
+        when(result.toString()).thenReturn("127.0.0.1");
         return result;
     }
 }

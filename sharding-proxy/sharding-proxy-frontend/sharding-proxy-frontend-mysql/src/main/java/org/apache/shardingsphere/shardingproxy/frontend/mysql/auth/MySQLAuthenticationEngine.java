@@ -58,10 +58,7 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
         MySQLHandshakeResponse41Packet response41 = new MySQLHandshakeResponse41Packet((MySQLPacketPayload) payload);
         final Optional<ProxyUser> user = authenticationHandler.login(response41.getUsername(), response41.getAuthResponse());
         if (!user.isPresent()) {
-            SocketAddress socketAddress = context.channel().remoteAddress();
-            String hostAddress = socketAddress instanceof InetSocketAddress ? ((InetSocketAddress) socketAddress).getAddress().getHostAddress() : socketAddress.toString();
-            context.writeAndFlush(new MySQLErrPacket(response41.getSequenceId() + 1,
-                    MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR, response41.getUsername(), hostAddress, 0 == response41.getAuthResponse().length ? "NO" : "YES"));
+            context.writeAndFlush(getAccessDeniedError(context, response41));
             return true;
         }
         if (!Strings.isNullOrEmpty(response41.getDatabase())) {
@@ -70,10 +67,7 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
                 return true;
             }
             if (!user.get().getAuthorizedSchemas().isEmpty() && !user.get().getAuthorizedSchemas().contains(response41.getDatabase())) {
-                SocketAddress socketAddress = context.channel().remoteAddress();
-                String hostAddress = socketAddress instanceof InetSocketAddress ? ((InetSocketAddress) socketAddress).getAddress().getHostAddress() : socketAddress.toString();
-                context.writeAndFlush(new MySQLErrPacket(response41.getSequenceId() + 1,
-                        MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR, response41.getUsername(), hostAddress, 0 == response41.getAuthResponse().length ? "NO" : "YES"));
+                context.writeAndFlush(getAccessDeniedError(context, response41));
                 return true;
             }
         }
@@ -81,5 +75,12 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
         backendConnection.setUserName(response41.getUsername());
         context.writeAndFlush(new MySQLOKPacket(response41.getSequenceId() + 1));
         return true;
+    }
+
+    private MySQLErrPacket getAccessDeniedError(final ChannelHandlerContext context, final MySQLHandshakeResponse41Packet response41) {
+        SocketAddress socketAddress = context.channel().remoteAddress();
+        String hostAddress = socketAddress instanceof InetSocketAddress ? ((InetSocketAddress) socketAddress).getAddress().getHostAddress() : socketAddress.toString();
+        return new MySQLErrPacket(response41.getSequenceId() + 1,
+                MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR, response41.getUsername(), hostAddress, 0 == response41.getAuthResponse().length ? "NO" : "YES");
     }
 }
