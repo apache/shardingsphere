@@ -34,6 +34,9 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.
 import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.payload.PacketPayload;
 
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
+
 /**
  * Authentication engine for MySQL.
  *
@@ -55,9 +58,10 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
         MySQLHandshakeResponse41Packet response41 = new MySQLHandshakeResponse41Packet((MySQLPacketPayload) payload);
         final Optional<ProxyUser> user = authenticationHandler.login(response41.getUsername(), response41.getAuthResponse());
         if (!user.isPresent()) {
-            // TODO localhost should replace to real ip address
+            SocketAddress socketAddress = context.channel().remoteAddress();
+            String hostAddress = socketAddress instanceof InetSocketAddress ? ((InetSocketAddress) socketAddress).getAddress().getHostAddress() : socketAddress.toString();
             context.writeAndFlush(new MySQLErrPacket(response41.getSequenceId() + 1,
-                    MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR, response41.getUsername(), "localhost", 0 == response41.getAuthResponse().length ? "NO" : "YES"));
+                    MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR, response41.getUsername(), hostAddress, 0 == response41.getAuthResponse().length ? "NO" : "YES"));
             return true;
         }
         if (!Strings.isNullOrEmpty(response41.getDatabase())) {
@@ -66,9 +70,10 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
                 return true;
             }
             if (!user.get().getAuthorizedSchemas().isEmpty() && !user.get().getAuthorizedSchemas().contains(response41.getDatabase())) {
-                // TODO localhost should replace to real ip address
+                SocketAddress socketAddress = context.channel().remoteAddress();
+                String hostAddress = socketAddress instanceof InetSocketAddress ? ((InetSocketAddress) socketAddress).getAddress().getHostAddress() : socketAddress.toString();
                 context.writeAndFlush(new MySQLErrPacket(response41.getSequenceId() + 1,
-                        MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR, response41.getUsername(), "localhost", 0 == response41.getAuthResponse().length ? "NO" : "YES"));
+                        MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR, response41.getUsername(), hostAddress, 0 == response41.getAuthResponse().length ? "NO" : "YES"));
                 return true;
             }
         }
