@@ -46,9 +46,13 @@ public final class MySQLAuthenticationHandler {
      * @param authResponse connection auth response
      * @return login success or failure
      */
-    public boolean login(final String username, final byte[] authResponse) {
+    public Optional<ProxyUser> login(final String username, final byte[] authResponse) {
         Optional<ProxyUser> user = getUser(username);
-        return user.isPresent() && (Strings.isNullOrEmpty(user.get().getPassword()) || Arrays.equals(getAuthCipherBytes(user.get().getPassword()), authResponse));
+        if (user.isPresent() && (Strings.isNullOrEmpty(user.get().getPassword()) || Arrays.equals(getAuthCipherBytes(user.get().getPassword()), authResponse))) {
+            return user;
+        } else {
+            return Optional.absent();
+        }
     }
     
     private Optional<ProxyUser> getUser(final String username) {

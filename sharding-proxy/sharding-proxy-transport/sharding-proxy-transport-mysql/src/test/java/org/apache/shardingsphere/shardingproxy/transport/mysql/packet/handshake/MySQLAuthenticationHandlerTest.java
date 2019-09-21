@@ -29,6 +29,7 @@ import java.lang.reflect.Field;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -57,14 +58,21 @@ public final class MySQLAuthenticationHandlerTest {
     public void assertLoginWithPassword() {
         setAuthentication(new ProxyUser("root", Collections.singleton("db1")));
         byte[] authResponse = {-27, 89, -20, -27, 65, -120, -64, -101, 86, -100, -108, -100, 6, -125, -37, 117, 14, -43, 95, -113};
-        assertTrue(authenticationHandler.login("root", authResponse));
+        assertTrue(authenticationHandler.login("root", authResponse).isPresent());
+    }
+
+    @Test
+    public void assertLoginWithIncorrectPassword() {
+        setAuthentication(new ProxyUser("root", Collections.singleton("db1")));
+        byte[] authResponse = {0, 89, -20, -27, 65, -120, -64, -101, 86, -100, -108, -100, 6, -125, -37, 117, 14, -43, 95, -113};
+        assertFalse(authenticationHandler.login("root", authResponse).isPresent());
     }
     
     @Test
     public void assertLoginWithoutPassword() {
         setAuthentication(new ProxyUser(null, null));
         byte[] authResponse = {-27, 89, -20, -27, 65, -120, -64, -101, 86, -100, -108, -100, 6, -125, -37, 117, 14, -43, 95, -113};
-        assertTrue(authenticationHandler.login("root", authResponse));
+        assertTrue(authenticationHandler.login("root", authResponse).isPresent());
     }
     
     @SneakyThrows

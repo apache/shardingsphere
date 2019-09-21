@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.shardingproxy.frontend.mysql.auth;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import io.netty.channel.ChannelHandlerContext;
+import org.apache.shardingsphere.core.rule.ProxyUser;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.frontend.ConnectionIdGenerator;
@@ -51,19 +53,28 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
     @Override
     public boolean auth(final ChannelHandlerContext context, final PacketPayload payload, final BackendConnection backendConnection) {
         MySQLHandshakeResponse41Packet response41 = new MySQLHandshakeResponse41Packet((MySQLPacketPayload) payload);
-        if (authenticationHandler.login(response41.getUsername(), response41.getAuthResponse())) {
-            if (!Strings.isNullOrEmpty(response41.getDatabase()) && !LogicSchemas.getInstance().schemaExists(response41.getDatabase())) {
-                context.writeAndFlush(new MySQLErrPacket(response41.getSequenceId() + 1, MySQLServerErrorCode.ER_BAD_DB_ERROR, response41.getDatabase()));
-                return true;
-            }
-            backendConnection.setCurrentSchema(response41.getDatabase());
-            backendConnection.setUserName(response41.getUsername());
-            context.writeAndFlush(new MySQLOKPacket(response41.getSequenceId() + 1));
-        } else {
+        final Optional<ProxyUser> user = authenticationHandler.login(response41.getUsername(), response41.getAuthResponse());
+        if (!user.isPresent()) {
             // TODO localhost should replace to real ip address
             context.writeAndFlush(new MySQLErrPacket(response41.getSequenceId() + 1,
                     MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR, response41.getUsername(), "localhost", 0 == response41.getAuthResponse().length ? "NO" : "YES"));
+            return true;
         }
+        if (!Strings.isNullOrEmpty(response41.getDatabase())) {
+            if (!LogicSchemas.getInstance().schemaExists(response41.getDatabase())) {
+                context.writeAndFlush(new MySQLErrPacket(response41.getSequenceId() + 1, MySQLServerErrorCode.ER_BAD_DB_ERROR, response41.getDatabase()));
+                return true;
+            }
+            if (!user.get().getAuthorizedSchemas().isEmpty() && !user.get().getAuthorizedSchemas().contains(response41.getDatabase())) {
+                // TODO localhost should replace to real ip address
+                context.writeAndFlush(new MySQLErrPacket(response41.getSequenceId() + 1,
+                        MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR, response41.getUsername(), "localhost", 0 == response41.getAuthResponse().length ? "NO" : "YES"));
+                return true;
+            }
+        }
+        backendConnection.setCurrentSchema(response41.getDatabase());
+        backendConnection.setUserName(response41.getUsername());
+        context.writeAndFlush(new MySQLOKPacket(response41.getSequenceId() + 1));
         return true;
     }
 }
