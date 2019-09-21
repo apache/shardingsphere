@@ -200,9 +200,9 @@ public final class TableMetaDataLoader {
 
     private Collection<String> getLogicIndexes(final Connection connection, final String catalog, final String actualTableName) throws SQLException {
         Collection<String> result = new HashSet<>();
-        String databaseTypeNm = this.dataSourceMetas.getDatabaseTypeInfo().getName();
+        String databaseTypeNm = this.dataSourceMetas.getDatabaseType().getName();
         ResultSet resultSet = null;
-        if(!StringUtil.isEmpty(databaseTypeNm) && databaseTypeNm.equals("Oracle")){
+        if (!StringUtil.isEmpty(databaseTypeNm) && databaseTypeNm.equals("Oracle")) {
             String userName = connection.getMetaData().getUserName().toUpperCase();
             resultSet = connection.getMetaData().getIndexInfo(catalog, userName, actualTableName, false, false);
         } else {

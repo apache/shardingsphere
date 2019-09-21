@@ -117,9 +117,9 @@ public final class TableMetaDataInitializer {
     }
 
     private String getCurrentSchemaName(final Connection connection) throws SQLException {
-        String databaseTypeNm = this.dataSourceMetas.getDatabaseTypeInfo().getName();
+        String databaseTypeName = this.dataSourceMetas.getDatabaseType().getName();
         try {
-            if(!StringUtil.isEmpty(databaseTypeNm) && databaseTypeNm.equals("Oracle")){
+            if (!StringUtil.isEmpty(databaseTypeName) && databaseTypeName.equals("Oracle")) {
                 return  connection.getMetaData().getUserName().toUpperCase();
             }
             return connection.getSchema();
