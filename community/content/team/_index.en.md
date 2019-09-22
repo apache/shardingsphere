@@ -14,7 +14,7 @@ Members include Project Management Committee members and committers. The List in
 
 ### Project Management Committee
 
-| 名字           | GithubUsername          |
+| Name           | GithubUsername          |
 | :------------- | :---------------------- |
 | QingYang Chen  | beckhampu               |
 | Jun Zhao       | cherrylzhao             |
@@ -32,9 +32,11 @@ Members include Project Management Committee members and committers. The List in
 
 ### Committer
 
-| 名字       | GithubUsername |
-| :--------- | :------------- |
-| zhaoyannan | nancyzrh       |
+| Name           | GithubUsername          |
+| :------------- | :---------------------- |
+| zhaoyanan      | nancyzrh                |
+| Guangyuan Wang | wgy8283335              |
+| Haisheng Sun   | sunbufu                 |
 
 ## Contributors
 
