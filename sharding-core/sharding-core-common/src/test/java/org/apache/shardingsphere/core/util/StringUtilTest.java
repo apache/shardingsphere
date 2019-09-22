@@ -47,9 +47,10 @@ public class StringUtilTest {
     }
 
     @Test
-    public void assertIsEmpty() {
+    public void assertIsEmptyString() {
         assertTrue(StringUtil.isEmpty(""));
         assertTrue(StringUtil.isEmpty(null));
+        assertFalse(StringUtil.isEmpty("0.1"));
         assertFalse(StringUtil.isEmpty("A"));
     }
 }
