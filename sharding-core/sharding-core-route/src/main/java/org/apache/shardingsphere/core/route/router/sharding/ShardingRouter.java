@@ -32,7 +32,6 @@ import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSe
 import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
@@ -122,8 +121,7 @@ public final class ShardingRouter {
         if (shardingStatement.getSQLStatement() instanceof DMLStatement) {
             if (shardingStatement instanceof ShardingInsertOptimizedStatement) {
                 ShardingInsertOptimizedStatement shardingInsertStatement = (ShardingInsertOptimizedStatement) shardingStatement;
-                return new ShardingConditions(new InsertClauseShardingConditionEngine(shardingRule).createShardingConditions(
-                        (InsertStatement) shardingInsertStatement.getSQLStatement(), parameters, shardingInsertStatement.getColumnNames(), shardingInsertStatement.getGeneratedKey().orNull()));
+                return new ShardingConditions(new InsertClauseShardingConditionEngine(shardingRule).createShardingConditions(shardingInsertStatement, parameters));
             }
             return new ShardingConditions(new WhereClauseShardingConditionEngine(shardingRule, metaData.getTables()).createShardingConditions(shardingStatement.getSQLStatement(), parameters));
         }

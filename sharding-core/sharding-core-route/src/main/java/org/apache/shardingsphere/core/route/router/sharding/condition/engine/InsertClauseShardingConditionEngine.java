@@ -19,13 +19,14 @@ package org.apache.shardingsphere.core.route.router.sharding.condition.engine;
 
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
+import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
 import org.apache.shardingsphere.core.optimize.sharding.segment.insert.GeneratedKey;
+import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingInsertOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.SimpleExpressionSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
+import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
 
@@ -48,39 +49,37 @@ public final class InsertClauseShardingConditionEngine {
     /**
      * Create sharding conditions.
      * 
-     * @param insertStatement insert statement
+     * @param shardingStatement sharding insert optimized statement
      * @param parameters SQL parameters
-     * @param columnNames column names
-     * @param generatedKey generated key
      * @return sharding conditions
      */
-    public List<ShardingCondition> createShardingConditions(final InsertStatement insertStatement, 
-                                                            final List<Object> parameters, final Collection<String> columnNames, final GeneratedKey generatedKey) {
-        List<ShardingCondition> result = getShardingConditions(insertStatement, parameters, columnNames, generatedKey);
-        if (isNeedAppendGeneratedKeyCondition(generatedKey, insertStatement.getTable().getTableName())) {
-            appendGeneratedKeyCondition(generatedKey, insertStatement.getTable().getTableName(), result);
-        }
-        return result;
-    }
-    
-    private List<ShardingCondition> getShardingConditions(final InsertStatement insertStatement, final List<Object> parameters, final Collection<String> columnNames, final GeneratedKey generatedKey) {
+    public List<ShardingCondition> createShardingConditions(final ShardingInsertOptimizedStatement shardingStatement, final List<Object> parameters) {
         List<ShardingCondition> result = new LinkedList<>();
-        boolean isGeneratedValue = null != generatedKey && generatedKey.isGenerated();
-        for (Collection<ExpressionSegment> each : insertStatement.getAllValueExpressions()) {
-            result.add(getShardingCondition(insertStatement, columnNames.iterator(), isGeneratedValue ? generatedKey.getColumnName() : null, each, parameters));
+        String tableName = shardingStatement.getTables().getSingleTableName();
+        Collection<String> columnNames = getColumnNames(shardingStatement);
+        for (InsertValue each : shardingStatement.getInsertValues()) {
+            result.add(createShardingCondition(tableName, columnNames.iterator(), each, parameters));
+        }
+        if (shardingStatement.getGeneratedKey().isPresent() && shardingStatement.getGeneratedKey().get().isGenerated()
+                && shardingRule.isShardingColumn(shardingStatement.getGeneratedKey().get().getColumnName(), tableName)) {
+            appendGeneratedKeyCondition(shardingStatement.getGeneratedKey().get(), tableName, result);
         }
         return result;
     }
     
-    private ShardingCondition getShardingCondition(final InsertStatement insertStatement, final Iterator<String> columnNames, 
-                                                   final String generatedKeyColumnName, final Collection<ExpressionSegment> valueExpressions, final List<Object> parameters) {
+    private Collection<String> getColumnNames(final ShardingInsertOptimizedStatement shardingStatement) {
+        if (!shardingStatement.getGeneratedKey().isPresent() || !shardingStatement.getGeneratedKey().get().isGenerated()) {
+            return shardingStatement.getColumnNames();
+        }
+        Collection<String> result = new LinkedList<>(shardingStatement.getColumnNames());
+        result.remove(shardingStatement.getGeneratedKey().get().getColumnName());
+        return result;
+    }
+    
+    private ShardingCondition createShardingCondition(final String tableName, final Iterator<String> columnNames, final InsertValue insertValue, final List<Object> parameters) {
         ShardingCondition result = new ShardingCondition();
-        String tableName = insertStatement.getTable().getTableName();
-        for (ExpressionSegment each : valueExpressions) {
+        for (ExpressionSegment each : insertValue.getValueExpressions()) {
             String columnName = columnNames.next();
-            if (columnName.equalsIgnoreCase(generatedKeyColumnName)) {
-                columnName = columnNames.next();
-            }
             if (each instanceof SimpleExpressionSegment && shardingRule.isShardingColumn(columnName, tableName)) {
                 result.getRouteValues().add(new ListRouteValue<>(columnName, tableName, Collections.singletonList(getRouteValue((SimpleExpressionSegment) each, parameters))));
             }
@@ -97,10 +96,6 @@ public final class InsertClauseShardingConditionEngine {
         }
         Preconditions.checkArgument(result instanceof Comparable, "Sharding value must implements Comparable.");
         return (Comparable) result;
-    }
-    
-    private boolean isNeedAppendGeneratedKeyCondition(final GeneratedKey generatedKey, final String tableName) {
-        return null != generatedKey && generatedKey.isGenerated() && shardingRule.isShardingColumn(generatedKey.getColumnName(), tableName);
     }
     
     private void appendGeneratedKeyCondition(final GeneratedKey generatedKey, final String tableName, final List<ShardingCondition> shardingConditions) {
