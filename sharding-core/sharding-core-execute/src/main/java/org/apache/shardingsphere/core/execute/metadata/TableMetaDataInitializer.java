@@ -105,7 +105,7 @@ public final class TableMetaDataInitializer {
         DataSourceMetaData dataSourceMetaData = this.dataSourceMetas.getDataSourceMetaData(dataSourceName);
         String catalog = null == dataSourceMetaData ? null : dataSourceMetaData.getSchemaName();
         try (Connection connection = connectionManager.getConnection(dataSourceName);
-             ResultSet resultSet = connection.getMetaData().getTables(catalog, getCurrentSchemaName(connection), null, new String[]{"TABLE"})) {
+            ResultSet resultSet = connection.getMetaData().getTables(catalog, getCurrentSchemaName(connection), null, new String[]{"TABLE"})) {
             while (resultSet.next()) {
                 String tableName = resultSet.getString("TABLE_NAME");
                 if (!tableName.contains("$") && !tableName.contains("/")) {
