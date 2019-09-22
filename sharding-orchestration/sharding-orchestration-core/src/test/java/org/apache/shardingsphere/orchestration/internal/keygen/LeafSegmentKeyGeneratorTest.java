@@ -105,7 +105,7 @@ public final class LeafSegmentKeyGeneratorTest {
     
     @Test
     public void assertGenerateKeyWithMultipleThreads() throws Exception {
-        int threadNumber = Runtime.getRuntime().availableProcessors() << 1;
+        int threadNumber = 2;
         ExecutorService executor = Executors.newFixedThreadPool(threadNumber);
         Properties properties = new Properties();
         properties.setProperty("serverList", "127.0.0.1:2181");
@@ -115,7 +115,7 @@ public final class LeafSegmentKeyGeneratorTest {
         properties.setProperty("registryCenterType", "ThirdTestRegistryCenter");
         leafSegmentKeyGenerator.setProperties(properties);
         Set<Comparable<?>> actual = new HashSet<>();
-        int taskNumber = threadNumber << 2;
+        int taskNumber = threadNumber * 2;
         for (int i = 0; i < taskNumber; i++) {
             actual.add(executor.submit(new Callable<Comparable<?>>() {
 
@@ -130,7 +130,7 @@ public final class LeafSegmentKeyGeneratorTest {
     
     @Test
     public void assertGenerateKeyWithDigest() throws Exception {
-        int threadNumber = Runtime.getRuntime().availableProcessors() << 1;
+        int threadNumber = 2;
         ExecutorService executor = Executors.newFixedThreadPool(threadNumber);
         Properties properties = new Properties();
         properties.setProperty("serverList", "127.0.0.1:2181");
@@ -141,7 +141,7 @@ public final class LeafSegmentKeyGeneratorTest {
         properties.setProperty("registryCenterType", "ThirdTestRegistryCenter");
         leafSegmentKeyGenerator.setProperties(properties);
         Set<Comparable<?>> actual = new HashSet<>();
-        int taskNumber = threadNumber << 2;
+        int taskNumber = threadNumber * 2;
         for (int i = 0; i < taskNumber; i++) {
             actual.add(executor.submit(new Callable<Comparable<?>>() {
 
@@ -156,7 +156,7 @@ public final class LeafSegmentKeyGeneratorTest {
     
     @Test
     public void assertGenerateKeyWithDefaultStep() throws Exception {
-        int threadNumber = Runtime.getRuntime().availableProcessors() << 1;
+        int threadNumber = 2;
         ExecutorService executor = Executors.newFixedThreadPool(threadNumber);
         Properties properties = new Properties();
         properties.setProperty("serverList", "127.0.0.1:2181");
@@ -165,7 +165,7 @@ public final class LeafSegmentKeyGeneratorTest {
         properties.setProperty("registryCenterType", "ThirdTestRegistryCenter");
         leafSegmentKeyGenerator.setProperties(properties);
         Set<Comparable<?>> actual = new HashSet<>();
-        int taskNumber = threadNumber << 2;
+        int taskNumber = threadNumber * 2;
         for (int i = 0; i < taskNumber; i++) {
             actual.add(executor.submit(new Callable<Comparable<?>>() {
 
@@ -180,7 +180,7 @@ public final class LeafSegmentKeyGeneratorTest {
     
     @Test
     public void assertGenerateKeyWithDefaultInitialValue() throws Exception {
-        int threadNumber = Runtime.getRuntime().availableProcessors() << 1;
+        int threadNumber = 2;
         ExecutorService executor = Executors.newFixedThreadPool(threadNumber);
         Properties properties = new Properties();
         properties.setProperty("serverList", "127.0.0.1:2181");
@@ -188,7 +188,7 @@ public final class LeafSegmentKeyGeneratorTest {
         properties.setProperty("leafKey", "test_table_5");
         properties.setProperty("registryCenterType", "ThirdTestRegistryCenter");
         leafSegmentKeyGenerator.setProperties(properties);
-        int taskNumber = threadNumber << 2;
+        int taskNumber = threadNumber * 2;
         Set<Comparable<?>> actual = new HashSet<>();
         for (int i = 0; i < taskNumber; i++) {
             actual.add(executor.submit(new Callable<Comparable<?>>() {
