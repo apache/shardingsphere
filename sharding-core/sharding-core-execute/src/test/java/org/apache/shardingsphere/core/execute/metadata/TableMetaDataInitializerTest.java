@@ -51,10 +51,10 @@ public class TableMetaDataInitializerTest {
     @Before
     public void setUp() {
         shardingRule = createShardingRule();
-        ShardingExecuteEngine executeEngine = new ShardingExecuteEngine(10);
+        ShardingExecuteEngine executeEngine = new ShardingExecuteEngine(1);
         DataSourceMetas dataSourceMetas = buildDataSourceMetas();
         tableMetaDataInitializer = new TableMetaDataInitializer(dataSourceMetas, executeEngine,
-                getConnectionManager(), 2, false);
+                getConnectionManager(), 1, false);
     }
 
     private TableMetaDataConnectionManager getConnectionManager() {
