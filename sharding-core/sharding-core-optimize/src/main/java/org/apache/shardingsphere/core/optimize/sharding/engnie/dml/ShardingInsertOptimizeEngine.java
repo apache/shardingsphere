@@ -43,20 +43,11 @@ public final class ShardingInsertOptimizeEngine implements ShardingOptimizeEngin
     @Override
     public ShardingInsertOptimizedStatement optimize(final ShardingRule shardingRule, 
                                                      final TableMetas tableMetas, final String sql, final List<Object> parameters, final InsertStatement sqlStatement) {
+        List<String> columnNames = sqlStatement.useDefaultColumns() ? tableMetas.getAllColumnNames(sqlStatement.getTable().getTableName()) : sqlStatement.getColumnNames();
         Optional<GeneratedKey> generatedKey = GeneratedKey.getGenerateKey(shardingRule, tableMetas, parameters, sqlStatement);
-        List<String> columnNames = getColumnNames(tableMetas, sqlStatement, generatedKey.orNull());
         int derivedColumnsCount = getDerivedColumnsCount(shardingRule, sqlStatement.getTable().getTableName(), generatedKey.isPresent() && generatedKey.get().isGenerated());
         List<InsertValue> insertValues = getInsertValues(parameters, sqlStatement, derivedColumnsCount);
         return new ShardingInsertOptimizedStatement(sqlStatement, columnNames, generatedKey.orNull(), insertValues);
-    }
-    
-    private List<String> getColumnNames(final TableMetas tableMetas, final InsertStatement sqlStatement, final GeneratedKey generatedKey) {
-        List<String> result = sqlStatement.useDefaultColumns() ? tableMetas.getAllColumnNames(sqlStatement.getTable().getTableName()) : sqlStatement.getColumnNames();
-        if (null != generatedKey && generatedKey.isGenerated()) {
-            result.remove(generatedKey.getColumnName());
-            result.add(generatedKey.getColumnName());
-        }
-        return result;
     }
     
     private int getDerivedColumnsCount(final ShardingRule shardingRule, final String tableName, final boolean isGeneratedValue) {

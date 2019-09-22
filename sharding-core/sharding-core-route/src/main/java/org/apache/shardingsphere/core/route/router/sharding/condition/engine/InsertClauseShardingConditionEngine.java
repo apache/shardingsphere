@@ -56,26 +56,29 @@ public final class InsertClauseShardingConditionEngine {
      */
     public List<ShardingCondition> createShardingConditions(final InsertStatement insertStatement, 
                                                             final List<Object> parameters, final Collection<String> columnNames, final GeneratedKey generatedKey) {
-        List<ShardingCondition> result = getShardingConditions(insertStatement, columnNames, parameters);
+        List<ShardingCondition> result = getShardingConditions(insertStatement, columnNames, generatedKey, parameters);
         if (isNeedAppendGeneratedKeyCondition(generatedKey, insertStatement.getTable().getTableName())) {
             appendGeneratedKeyCondition(generatedKey, insertStatement.getTable().getTableName(), result);
         }
         return result;
     }
     
-    private List<ShardingCondition> getShardingConditions(final InsertStatement insertStatement, final Collection<String> columnNames, final List<Object> parameters) {
+    private List<ShardingCondition> getShardingConditions(final InsertStatement insertStatement, final Collection<String> columnNames, final GeneratedKey generatedKey, final List<Object> parameters) {
         List<ShardingCondition> result = new LinkedList<>();
         for (Collection<ExpressionSegment> each : insertStatement.getAllValueExpressions()) {
-            result.add(getShardingCondition(insertStatement, columnNames.iterator(), each, parameters));
+            result.add(getShardingCondition(insertStatement, columnNames.iterator(), generatedKey, each, parameters));
         }
         return result;
     }
     
-    private ShardingCondition getShardingCondition(final InsertStatement insertStatement, 
-                                                   final Iterator<String> columnNames, final Collection<ExpressionSegment> valueExpressions, final List<Object> parameters) {
+    private ShardingCondition getShardingCondition(final InsertStatement insertStatement, final Iterator<String> columnNames, 
+                                                   final GeneratedKey generatedKey, final Collection<ExpressionSegment> valueExpressions, final List<Object> parameters) {
         ShardingCondition result = new ShardingCondition();
         for (ExpressionSegment each : valueExpressions) {
             String columnName = columnNames.next();
+            if (null != generatedKey && generatedKey.isGenerated() && columnName.equalsIgnoreCase(generatedKey.getColumnName())) {
+                columnName = columnNames.next();
+            }
             if (each instanceof SimpleExpressionSegment) {
                 fillShardingCondition(result, insertStatement.getTable().getTableName(), columnName, (SimpleExpressionSegment) each, parameters);
             }

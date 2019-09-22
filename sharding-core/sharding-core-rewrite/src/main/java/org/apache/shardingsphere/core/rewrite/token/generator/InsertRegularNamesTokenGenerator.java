@@ -20,6 +20,7 @@ package org.apache.shardingsphere.core.rewrite.token.generator;
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingInsertOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
@@ -66,18 +67,22 @@ public final class InsertRegularNamesTokenGenerator implements OptionalSQLTokenG
     private Collection<String> getActualInsertColumns(final InsertOptimizedStatement optimizedStatement, final BaseRule baseRule) {
         Collection<String> result = new LinkedList<>();
         Map<String, String> logicAndCipherColumns = getEncryptRule(baseRule).getLogicAndCipherColumns(optimizedStatement.getTables().getSingleTableName());
+        boolean isGeneratedKey = optimizedStatement instanceof ShardingInsertOptimizedStatement 
+                && ((ShardingInsertOptimizedStatement) optimizedStatement).getGeneratedKey().isPresent() 
+                && ((ShardingInsertOptimizedStatement) optimizedStatement).getGeneratedKey().get().isGenerated();
         for (String each : optimizedStatement.getColumnNames()) {
-            result.add(getCipherColumn(each, logicAndCipherColumns));
+            if (!isGeneratedKey || !each.equalsIgnoreCase(((ShardingInsertOptimizedStatement) optimizedStatement).getGeneratedKey().get().getColumnName())) {
+                result.add(logicAndCipherColumns.keySet().contains(each) ? logicAndCipherColumns.get(each) : each);
+            }
+        }
+        if (isGeneratedKey) {
+            result.add(((ShardingInsertOptimizedStatement) optimizedStatement).getGeneratedKey().get().getColumnName());
         }
         return result;
     }
     
     private EncryptRule getEncryptRule(final BaseRule baseRule) {
         return baseRule instanceof ShardingRule ? ((ShardingRule) baseRule).getEncryptRule() : (EncryptRule) baseRule;
-    }
-    
-    private String getCipherColumn(final String column, final Map<String, String> logicAndCipherColumns) {
-        return logicAndCipherColumns.keySet().contains(column) ? logicAndCipherColumns.get(column) : column;
     }
     
     private boolean isNeedToAppendColumns(final InsertOptimizedStatement optimizedStatement, final BaseRule baseRule) {
