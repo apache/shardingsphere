@@ -43,7 +43,6 @@ import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.backend.schema.impl.EncryptSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShardingSchema;
-import org.apache.shardingsphere.spi.database.DatabaseType;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import java.sql.SQLException;
@@ -63,8 +62,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicationEngine {
     
-    private final DatabaseType databaseType = LogicSchemas.getInstance().getDatabaseType();
-    
     private final LogicSchema logicSchema;
     
     private final String sql;
@@ -78,7 +75,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     @Override
     public BackendResponse execute() {
         try {
-            SQLRouteResult routeResult = executeEngine.getJdbcExecutorWrapper().route(sql, databaseType);
+            SQLRouteResult routeResult = executeEngine.getJdbcExecutorWrapper().route(sql);
             return execute(routeResult);
         } catch (final SQLException ex) {
             return new ErrorResponse(ex);
@@ -127,7 +124,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     }
     
     private void setMergedResult(final SQLRouteResult routeResult) throws SQLException {
-        mergedResult = MergeEngineFactory.newInstance(databaseType,
+        mergedResult = MergeEngineFactory.newInstance(LogicSchemas.getInstance().getDatabaseType(),
                 logicSchema.getShardingRule(), routeResult, logicSchema.getMetaData().getTables(), ((QueryResponse) response).getQueryResults()).merge();
     }
     

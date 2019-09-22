@@ -22,14 +22,13 @@ import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
-import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingConditionOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingInsertOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
+import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
+import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
@@ -64,7 +63,9 @@ public final class StandardRoutingEngine implements RoutingEngine {
     
     private final String logicTableName;
     
-    private final ShardingConditionOptimizedStatement optimizedStatement;
+    private final OptimizedStatement optimizedStatement;
+    
+    private final ShardingConditions shardingConditions;
     
     @Override
     public RoutingResult route() {
@@ -107,30 +108,30 @@ public final class StandardRoutingEngine implements RoutingEngine {
     }
     
     private Collection<DataNode> routeByShardingConditions(final TableRule tableRule) {
-        return optimizedStatement.getShardingConditions().getConditions().isEmpty()
+        return shardingConditions.getConditions().isEmpty()
                 ? route0(tableRule, Collections.<RouteValue>emptyList(), Collections.<RouteValue>emptyList()) : routeByShardingConditionsWithCondition(tableRule);
     }
     
     private Collection<DataNode> routeByShardingConditionsWithCondition(final TableRule tableRule) {
         Collection<DataNode> result = new LinkedList<>();
-        for (ShardingCondition each : optimizedStatement.getShardingConditions().getConditions()) {
+        for (ShardingCondition each : shardingConditions.getConditions()) {
             Collection<DataNode> dataNodes = route0(tableRule, getShardingValuesFromShardingConditions(shardingRule.getDatabaseShardingStrategy(tableRule).getShardingColumns(), each),
                     getShardingValuesFromShardingConditions(shardingRule.getTableShardingStrategy(tableRule).getShardingColumns(), each));
-            reviseInsertValue(each, dataNodes);
+            each.getDataNodes().addAll(dataNodes);
             result.addAll(dataNodes);
         }
         return result;
     }
     
     private Collection<DataNode> routeByMixedConditions(final TableRule tableRule) {
-        return optimizedStatement.getShardingConditions().getConditions().isEmpty() ? routeByMixedConditionsWithHint(tableRule) : routeByMixedConditionsWithCondition(tableRule);
+        return shardingConditions.getConditions().isEmpty() ? routeByMixedConditionsWithHint(tableRule) : routeByMixedConditionsWithCondition(tableRule);
     }
     
     private Collection<DataNode> routeByMixedConditionsWithCondition(final TableRule tableRule) {
         Collection<DataNode> result = new LinkedList<>();
-        for (ShardingCondition each : optimizedStatement.getShardingConditions().getConditions()) {
+        for (ShardingCondition each : shardingConditions.getConditions()) {
             Collection<DataNode> dataNodes = route0(tableRule, getDatabaseShardingValues(tableRule, each), getTableShardingValues(tableRule, each));
-            reviseInsertValue(each, dataNodes);
+            each.getDataNodes().addAll(dataNodes);
             result.addAll(dataNodes);
         }
         return result;
@@ -193,12 +194,13 @@ public final class StandardRoutingEngine implements RoutingEngine {
     }
     
     private Collection<String> routeDataSources(final TableRule tableRule, final List<RouteValue> databaseShardingValues) {
-        Collection<String> availableTargetDatabases = tableRule.getActualDatasourceNames();
         if (databaseShardingValues.isEmpty()) {
-            return availableTargetDatabases;
+            return tableRule.getActualDatasourceNames();
         }
-        Collection<String> result = new LinkedHashSet<>(shardingRule.getDatabaseShardingStrategy(tableRule).doSharding(availableTargetDatabases, databaseShardingValues));
+        Collection<String> result = new LinkedHashSet<>(shardingRule.getDatabaseShardingStrategy(tableRule).doSharding(tableRule.getActualDatasourceNames(), databaseShardingValues));
         Preconditions.checkState(!result.isEmpty(), "no database route info");
+        Preconditions.checkState(tableRule.getActualDatasourceNames().containsAll(result), 
+                "Some routed data sources do not belong to configured data sources. routed data sources: `%s`, configured data sources: `%s`", result, tableRule.getActualDatasourceNames());
         return result;
     }
     
@@ -212,29 +214,5 @@ public final class StandardRoutingEngine implements RoutingEngine {
             result.add(new DataNode(routedDataSource, each));
         }
         return result;
-    }
-    
-    private void reviseInsertValue(final ShardingCondition shardingCondition, final Collection<DataNode> dataNodes) {
-        if (optimizedStatement instanceof ShardingInsertOptimizedStatement) {
-            for (InsertValue each : ((ShardingInsertOptimizedStatement) optimizedStatement).getInsertValues()) {
-                if (match((ShardingInsertOptimizedStatement) optimizedStatement, each, shardingCondition)) {
-                    each.getDataNodes().addAll(dataNodes);
-                }
-            }
-        }
-    }
-    
-    private boolean match(final ShardingInsertOptimizedStatement insertOptimizedStatement, final InsertValue insertValue, final ShardingCondition shardingCondition) {
-        for (RouteValue each : shardingCondition.getRouteValues()) {
-            Object value = insertValue.getValue(getColumnIndex(insertOptimizedStatement.getColumnNames(), each));
-            if (!value.equals(((ListRouteValue) each).getValues().iterator().next())) {
-                return false;
-            }
-        }
-        return true;
-    }
-    
-    private int getColumnIndex(final List<String> columnNames, final RouteValue routeValue) {
-        return columnNames.contains(routeValue.getColumnName()) ? columnNames.indexOf(routeValue.getColumnName()) : columnNames.size();
     }
 }

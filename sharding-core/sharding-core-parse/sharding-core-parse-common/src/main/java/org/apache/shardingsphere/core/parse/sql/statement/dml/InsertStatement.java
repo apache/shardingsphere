@@ -28,6 +28,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegme
 import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.generic.TableSegmentAvailable;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -82,7 +83,7 @@ public final class InsertStatement extends DMLStatement implements TableSegmentA
     private List<String> getColumnNamesForInsertColumns() {
         List<String> result = new LinkedList<>();
         for (ColumnSegment each : columns) {
-            result.add(each.getName());
+            result.add(each.getName().toLowerCase());
         }
         return result;
     }
@@ -90,7 +91,7 @@ public final class InsertStatement extends DMLStatement implements TableSegmentA
     private List<String> getColumnNamesForSetAssignment() {
         List<String> result = new LinkedList<>();
         for (AssignmentSegment each : setAssignment.getAssignments()) {
-            result.add(each.getColumn().getName());
+            result.add(each.getColumn().getName().toLowerCase());
         }
         return result;
     }
@@ -124,20 +125,20 @@ public final class InsertStatement extends DMLStatement implements TableSegmentA
      * 
      * @return all value expressions
      */
-    public Collection<Collection<ExpressionSegment>> getAllValueExpressions() {
+    public List<List<ExpressionSegment>> getAllValueExpressions() {
         return null == setAssignment ? getAllValueExpressionsFromValues() : Collections.singletonList(getAllValueExpressionsFromSetAssignment());
     }
     
-    private Collection<Collection<ExpressionSegment>> getAllValueExpressionsFromValues() {
-        Collection<Collection<ExpressionSegment>> result = new LinkedList<>();
+    private List<List<ExpressionSegment>> getAllValueExpressionsFromValues() {
+        List<List<ExpressionSegment>> result = new ArrayList<>(values.size());
         for (InsertValuesSegment each : values) {
             result.add(each.getValues());
         }
         return result;
     }
     
-    private Collection<ExpressionSegment> getAllValueExpressionsFromSetAssignment() {
-        List<ExpressionSegment> result = new LinkedList<>();
+    private List<ExpressionSegment> getAllValueExpressionsFromSetAssignment() {
+        List<ExpressionSegment> result = new ArrayList<>(setAssignment.getAssignments().size());
         for (AssignmentSegment each : setAssignment.getAssignments()) {
             result.add(each.getValue());
         }

@@ -30,7 +30,6 @@ import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingIn
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.shardingjdbc.executor.StatementExecutor;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractStatementAdapter;
@@ -247,8 +246,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     
     private void shard(final String sql) {
         ShardingRuntimeContext runtimeContext = connection.getRuntimeContext();
-        SimpleQueryShardingEngine shardingEngine = new SimpleQueryShardingEngine(runtimeContext.getRule(), 
-                runtimeContext.getProps(), runtimeContext.getMetaData(), runtimeContext.getDatabaseType(), runtimeContext.getParseEngine());
+        SimpleQueryShardingEngine shardingEngine = new SimpleQueryShardingEngine(runtimeContext.getRule(), runtimeContext.getProps(), runtimeContext.getMetaData(), runtimeContext.getParseEngine());
         sqlRouteResult = shardingEngine.shard(sql, Collections.emptyList());
     }
     

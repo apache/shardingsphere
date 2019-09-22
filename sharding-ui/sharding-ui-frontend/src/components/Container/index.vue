@@ -18,17 +18,17 @@
 <template>
   <el-container style="height: 100%;">
     <el-aside width="auto">
-      <s-menu :is-collapse="isCollapse"/>
+      <s-menu :is-collapse="isCollapse" />
     </el-aside>
     <el-container>
       <el-header style="padding: 0">
-        <s-head @on-togger="onTogger"/>
+        <s-head class="s-head" @on-togger="onTogger" />
       </el-header>
       <el-main>
-        <slot/>
+        <slot />
       </el-main>
       <el-footer>
-        <s-footer/>
+        <s-footer />
       </el-footer>
     </el-container>
   </el-container>
@@ -59,7 +59,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .el-main {
-    overflow: inherit;
-  }
+.el-main {
+  overflow: inherit;
+}
 </style>

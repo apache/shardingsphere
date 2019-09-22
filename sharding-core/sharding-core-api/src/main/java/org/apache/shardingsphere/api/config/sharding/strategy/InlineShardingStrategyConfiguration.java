@@ -39,4 +39,9 @@ public final class InlineShardingStrategyConfiguration implements ShardingStrate
         this.shardingColumn = shardingColumn;
         this.algorithmExpression = algorithmExpression;
     }
+    
+    @Override
+    public String toString() {
+        return "Inline{" + "shardingColumn='" + shardingColumn + '\'' + ", algorithmExpression='" + algorithmExpression + '\'' + '}';
+    }
 }

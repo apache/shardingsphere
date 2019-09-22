@@ -18,8 +18,8 @@
 <template>
   <div class="s-pro-components-sider-menu-index-logo">
     <a href="/">
-      <img class src="../../assets/img/sidebar-logo.png" alt="logo">
-      <img class="collapse-logo" src="../../assets/img/logo.png" alt="logo">
+      <img src="../../assets/img/sidebar-logo.png" alt="logo" />
+      <img class="collapse-logo" src="../../assets/img/logo.png" alt="logo" />
     </a>
   </div>
 </template>

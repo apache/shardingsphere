@@ -74,15 +74,15 @@ public final class QueryResultUtilTest {
     @Test
     public void assertGetValueByTinyint() throws SQLException {
         when(resultSetMetaData.getColumnType(1)).thenReturn(Types.TINYINT);
-        when(resultSet.getByte(1)).thenReturn(Byte.MAX_VALUE);
-        assertThat((byte) QueryResultUtil.getValue(resultSet, 1), is(Byte.MAX_VALUE));
+        when(resultSet.getInt(1)).thenReturn(Integer.MAX_VALUE);
+        assertThat((int) QueryResultUtil.getValue(resultSet, 1), is(Integer.MAX_VALUE));
     }
     
     @Test
     public void assertGetValueBySmallint() throws SQLException {
         when(resultSetMetaData.getColumnType(1)).thenReturn(Types.SMALLINT);
-        when(resultSet.getShort(1)).thenReturn(Short.MAX_VALUE);
-        assertThat((short) QueryResultUtil.getValue(resultSet, 1), is(Short.MAX_VALUE));
+        when(resultSet.getInt(1)).thenReturn(Integer.MAX_VALUE);
+        assertThat((int) QueryResultUtil.getValue(resultSet, 1), is(Integer.MAX_VALUE));
     }
     
     @Test

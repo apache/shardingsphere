@@ -72,6 +72,20 @@ public final class SQLLoggerTest {
     }
     
     @Test
+    public void assertLogSQLShardWithParameters() {
+        List<Object> parameters = routeUnits.iterator().next().getSqlUnit().getParameters();
+        parameters.add("parameter");
+        SQLLogger.logSQL(sql, false, null, routeUnits);
+        InOrder inOrder = inOrder(logger);
+        inOrder.verify(logger).info("Rule Type: sharding", new Object[]{});
+        inOrder.verify(logger).info("Logic SQL: {}", new Object[]{sql});
+        inOrder.verify(logger).info("SQLStatement: {}", new Object[]{null});
+        inOrder.verify(logger).info("Actual SQL: {} ::: {} ::: {}", new Object[]{"db1", sql, parameters});
+        inOrder.verify(logger).info("Actual SQL: {} ::: {}", new Object[]{"db2", sql});
+        inOrder.verify(logger).info("Actual SQL: {} ::: {}", new Object[]{"db3", sql});
+    }
+    
+    @Test
     public void assertLogSQLShardSimple() {
         SQLLogger.logSQL(sql, true, null, routeUnits);
         InOrder inOrder = inOrder(logger);

@@ -45,7 +45,7 @@ public final class DatabaseHintRoutingEngineTest {
     private DatabaseHintRoutingEngine databaseHintRoutingEngine;
     
     @Before
-    public void setEngineContext() {
+    public void setUp() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(new TableRuleConfiguration("t_order", "ds_${0..1}.t_order"));
         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new HintShardingStrategyConfiguration(new HintShardingAlgorithmFixture()));
