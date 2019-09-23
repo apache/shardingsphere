@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.sharding.engnie.dml;
+package org.apache.shardingsphere.core.optimize.sharding.engnie;
 
 import org.apache.shardingsphere.core.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;

@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.sharding.engnie.dml;
+package org.apache.shardingsphere.core.optimize.sharding.engnie;
 
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.optimize.sharding.engnie.ShardingOptimizeEngine;
+import org.apache.shardingsphere.core.optimize.api.engine.OptimizeEngine;
 import org.apache.shardingsphere.core.optimize.sharding.segment.groupby.GroupBy;
 import org.apache.shardingsphere.core.optimize.sharding.segment.groupby.GroupByEngine;
 import org.apache.shardingsphere.core.optimize.sharding.segment.item.SelectItems;
@@ -40,7 +40,7 @@ import java.util.List;
  *
  * @author zhangliang
  */
-public final class ShardingSelectOptimizeEngine implements ShardingOptimizeEngine<SelectStatement> {
+public final class ShardingSelectOptimizeEngine implements OptimizeEngine<ShardingRule, SelectStatement> {
     
     @Override
     public ShardingSelectOptimizedStatement optimize(final ShardingRule shardingRule,
