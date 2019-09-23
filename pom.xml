@@ -10,6 +10,7 @@
         <java.version>1.7</java.version>
         <lombok.version>1.18.4</lombok.version>
         <slf4j.version>1.7.28</slf4j.version>
+        <netty.version>4.1.16.Final</netty.version>
     </properties>
 
     <dependencies>
@@ -48,6 +49,11 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>18.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+            <version>${netty.version}</version>
         </dependency>
         <dependency>
             <groupId>mysql</groupId>
