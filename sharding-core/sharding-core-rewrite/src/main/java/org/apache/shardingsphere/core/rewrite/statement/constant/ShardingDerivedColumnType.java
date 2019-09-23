@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.encrypt.constant;
+package org.apache.shardingsphere.core.rewrite.statement.constant;
 
 /**
- * Derived column type for encrypt.
+ * Derived column type for sharding.
  *
  * @author zhangliang
  */
-public final class EncryptDerivedColumnType {
+public final class ShardingDerivedColumnType {
     
-    public static final String ENCRYPT = "ENCRYPT";
+    public static final String KEY_GEN = "KEY_GEN";
 }

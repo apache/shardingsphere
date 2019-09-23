@@ -63,7 +63,7 @@ public final class ShardingSelectOptimizeEngine implements OptimizeEngine<Shardi
         for (SubqueryPredicateSegment each : subqueryPredicateSegments) {
             if (!each.getAndPredicates().isEmpty()) {
                 optimizedStatement.setContainsSubquery(true);
-                break;
+                return;
             }
         }
     }
