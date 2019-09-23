@@ -32,6 +32,7 @@ import java.util.Map.Entry;
  * Authentication handler for MySQL.
  *
  * @author panjuan
+ * @author sunbufu
  */
 @Getter
 public final class MySQLAuthenticationHandler {
