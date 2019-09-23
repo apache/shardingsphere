@@ -86,7 +86,7 @@ props:
 ```
 
 ```java
-    DataSource dataSource = MasterSlaveDataSourceFactory.createDataSource(yamlFile);
+    DataSource dataSource = YamlMasterSlaveDataSourceFactory.createDataSource(yamlFile);
 ```
 
 ### Use Native JDBC
@@ -94,7 +94,7 @@ props:
 Configure objects with `MasterSlaveDataSourceFactory` to get `MasterSlaveDataSource`, which is realized by standard JDBC DataSource interface. Or choose native JDBC to develop through DataSource; or use JPA, MyBatis and other ORM tools. Take native JDBC for example:
 
 ```java
-DataSource dataSource = MasterSlaveDataSourceFactory.createDataSource(yamlFile);
+DataSource dataSource = YamlMasterSlaveDataSourceFactory.createDataSource(yamlFile);
 String sql = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id WHERE o.user_id=? AND o.order_id=?";
 try (
         Connection conn = dataSource.getConnection();
@@ -210,7 +210,7 @@ spring.shardingsphere.props.sql.show=true
     
     <master-slave:data-source id="masterSlaveDataSource" master-data-source-name="ds_master" slave-data-source-names="ds_slave0, ds_slave1" >
             <master-slave:props>
-                    <prop key="sql.show">${sql_show}</prop>
+                    <prop key="sql.show">true</prop>
                     <prop key="executor.size">10</prop>
                     <prop key="foo">bar</prop>
                 </master-slave:props>
