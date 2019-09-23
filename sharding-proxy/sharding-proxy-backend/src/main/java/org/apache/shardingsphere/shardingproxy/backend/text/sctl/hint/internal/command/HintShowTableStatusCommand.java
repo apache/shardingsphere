@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintCommand;
 
@@ -31,6 +30,5 @@ import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.H
  * @author liya
  */
 @RequiredArgsConstructor
-@Getter
 public final class HintShowTableStatusCommand implements HintCommand {
 }
