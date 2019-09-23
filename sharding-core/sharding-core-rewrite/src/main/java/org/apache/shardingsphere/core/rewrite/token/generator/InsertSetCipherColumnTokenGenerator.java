@@ -52,12 +52,12 @@ public final class InsertSetCipherColumnTokenGenerator implements CollectionSQLT
     }
     
     private boolean isNeedToGenerateSQLToken(final OptimizedStatement optimizedStatement) {
-        Optional<SetAssignmentsSegment> setAssignmentsSegment = optimizedStatement.getSQLStatement().findSQLSegment(SetAssignmentsSegment.class);
-        return optimizedStatement.getSQLStatement() instanceof InsertStatement && setAssignmentsSegment.isPresent();
+        Optional<SetAssignmentsSegment> setAssignmentsSegment = optimizedStatement.getSqlStatement().findSQLSegment(SetAssignmentsSegment.class);
+        return optimizedStatement.getSqlStatement() instanceof InsertStatement && setAssignmentsSegment.isPresent();
     }
     
     private Collection<InsertSetCipherColumnToken> createInsertSetEncryptValueTokens(final InsertOptimizedStatement optimizedStatement, final EncryptRule encryptRule) {
-        Optional<SetAssignmentsSegment> setAssignmentsSegment = optimizedStatement.getSQLStatement().findSQLSegment(SetAssignmentsSegment.class);
+        Optional<SetAssignmentsSegment> setAssignmentsSegment = optimizedStatement.getSqlStatement().findSQLSegment(SetAssignmentsSegment.class);
         if (!setAssignmentsSegment.isPresent()) {
             return Collections.emptyList();
         }

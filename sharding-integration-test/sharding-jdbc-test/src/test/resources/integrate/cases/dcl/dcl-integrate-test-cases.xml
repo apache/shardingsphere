@@ -46,6 +46,51 @@
     <dcl-test-case sql-case-id="create_role_password">
         <assertion />
     </dcl-test-case>
+    <dcl-test-case sql-case-id="alter_all_roles_reset_config">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="alter_all_roles_reset_config">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="alter_all_roles_set_config">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="alter_all_users_reset_config">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="alter_all_users_set_config">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="alter_local_user">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="alter_user">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="alter_user_with_lock_option">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="alter_user_with_options">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="alter_user_with_password">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="alter_user_with_password_option">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="alter_user_with_password_options">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="alter_user_with_resource_option">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="alter_user_with_resource_options">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="alter_users">
+        <assertion />
+    </dcl-test-case>
     <dcl-test-case sql-case-id="alter_user_identified_without_hostname">
         <assertion />
     </dcl-test-case>

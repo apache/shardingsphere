@@ -19,13 +19,17 @@ package org.apache.shardingsphere.core.optimize.sharding;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.core.optimize.sharding.engnie.ShardingOptimizeEngine;
-import org.apache.shardingsphere.core.optimize.sharding.engnie.ShardingTransparentOptimizeEngine;
-import org.apache.shardingsphere.core.optimize.sharding.engnie.dml.ShardingInsertOptimizeEngine;
-import org.apache.shardingsphere.core.optimize.sharding.engnie.dml.ShardingSelectOptimizeEngine;
+import org.apache.shardingsphere.core.metadata.table.TableMetas;
+import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.sharding.engnie.ShardingSelectOptimizeEngine;
+import org.apache.shardingsphere.core.optimize.sharding.statement.ShardingOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.sharding.statement.ShardingTransparentOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.core.rule.ShardingRule;
+
+import java.util.List;
 
 /**
  * Optimize engine factory for sharding.
@@ -40,16 +44,21 @@ public final class ShardingOptimizeEngineFactory {
     /**
      * Create sharding optimize engine instance.
      *
+     * @param shardingRule sharding rule
+     * @param tableMetas table meta data
+     * @param sql SQL
+     * @param parameters SQL parameters
      * @param sqlStatement SQL statement
      * @return sharding optimize engine instance
      */
-    public static ShardingOptimizeEngine newInstance(final SQLStatement sqlStatement) {
+    public static ShardingOptimizedStatement newInstance(final ShardingRule shardingRule, 
+                                                         final TableMetas tableMetas, final String sql, final List<Object> parameters, final SQLStatement sqlStatement) {
         if (sqlStatement instanceof SelectStatement) {
-            return new ShardingSelectOptimizeEngine();
+            return new ShardingSelectOptimizeEngine().optimize(shardingRule, tableMetas, sql, parameters, (SelectStatement) sqlStatement);
         }
         if (sqlStatement instanceof InsertStatement) {
-            return new ShardingInsertOptimizeEngine();
+            return new InsertOptimizedStatement(tableMetas, parameters, (InsertStatement) sqlStatement);
         }
-        return new ShardingTransparentOptimizeEngine();
+        return new ShardingTransparentOptimizedStatement(sqlStatement);
     }
 }

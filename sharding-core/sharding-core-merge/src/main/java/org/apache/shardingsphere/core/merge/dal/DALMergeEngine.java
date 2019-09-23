@@ -61,7 +61,7 @@ public final class DALMergeEngine implements MergeEngine {
     
     @Override
     public MergedResult merge() throws SQLException {
-        SQLStatement dalStatement = optimizedStatement.getSQLStatement();
+        SQLStatement dalStatement = optimizedStatement.getSqlStatement();
         if (dalStatement instanceof ShowDatabasesStatement) {
             return new ShowDatabasesMergedResult();
         }

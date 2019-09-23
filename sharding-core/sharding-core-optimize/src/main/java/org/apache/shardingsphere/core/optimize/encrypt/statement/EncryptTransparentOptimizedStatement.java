@@ -27,21 +27,16 @@ import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
  *
  * @author zhangliang
  */
-@ToString(exclude = "sqlStatement")
+@Getter
+@ToString
 public final class EncryptTransparentOptimizedStatement implements EncryptOptimizedStatement {
     
     private final SQLStatement sqlStatement;
     
-    @Getter
     private final Tables tables;
     
     public EncryptTransparentOptimizedStatement(final SQLStatement sqlStatement) {
         this.sqlStatement = sqlStatement;
         tables = new Tables(sqlStatement);
-    }
-    
-    @Override
-    public SQLStatement getSQLStatement() {
-        return sqlStatement;
     }
 }

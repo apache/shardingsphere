@@ -336,8 +336,7 @@ public final class EncryptSQLRewriteEngineTest {
     private SQLUnit getSQLUnit(final String sql, final List<Object> parameters, final boolean isQueryWithCipherColumn) {
         // TODO panjuan: should mock sqlStatement, do not call parse module on rewrite test case
         SQLStatement sqlStatement = parseEngine.parse(sql, false);
-        EncryptOptimizedStatement encryptStatement = EncryptOptimizeEngineFactory.newInstance(sqlStatement)
-                .optimize(encryptRule, mock(TableMetas.class), sql, parameters, sqlStatement);
+        EncryptOptimizedStatement encryptStatement = EncryptOptimizeEngineFactory.newInstance(encryptRule, mock(TableMetas.class), sql, parameters, sqlStatement);
         SQLRewriteEngine sqlRewriteEngine = new SQLRewriteEngine(encryptRule, encryptStatement, sql, parameters, isQueryWithCipherColumn);
         return sqlRewriteEngine.generateSQL();
     }

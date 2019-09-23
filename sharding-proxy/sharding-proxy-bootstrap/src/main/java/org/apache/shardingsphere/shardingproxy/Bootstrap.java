@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy;
 
+import com.google.common.primitives.Ints;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
@@ -87,11 +88,8 @@ public final class Bootstrap {
         if (0 == args.length) {
             return DEFAULT_PORT;
         }
-        try {
-            return Integer.parseInt(args[0]);
-        } catch (final NumberFormatException ex) {
-            return DEFAULT_PORT;
-        }
+        Integer paredPort = Ints.tryParse(args[0]);
+        return paredPort == null ? DEFAULT_PORT : paredPort;
     }
     
     private static void startWithoutRegistryCenter(final Map<String, YamlProxyRuleConfiguration> ruleConfigs,

@@ -23,13 +23,14 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.optimize.api.segment.Tables;
-import org.apache.shardingsphere.core.optimize.sharding.segment.select.groupby.GroupBy;
-import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.AggregationSelectItem;
-import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.SelectItem;
-import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.SelectItems;
-import org.apache.shardingsphere.core.optimize.sharding.segment.select.orderby.OrderBy;
-import org.apache.shardingsphere.core.optimize.sharding.segment.select.orderby.OrderByItem;
-import org.apache.shardingsphere.core.optimize.sharding.segment.select.pagination.Pagination;
+import org.apache.shardingsphere.core.optimize.sharding.segment.groupby.GroupBy;
+import org.apache.shardingsphere.core.optimize.sharding.segment.item.AggregationSelectItem;
+import org.apache.shardingsphere.core.optimize.sharding.segment.item.SelectItem;
+import org.apache.shardingsphere.core.optimize.sharding.segment.item.SelectItems;
+import org.apache.shardingsphere.core.optimize.sharding.segment.orderby.OrderBy;
+import org.apache.shardingsphere.core.optimize.sharding.segment.orderby.OrderByItem;
+import org.apache.shardingsphere.core.optimize.sharding.segment.pagination.Pagination;
+import org.apache.shardingsphere.core.optimize.sharding.statement.ShardingOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.IndexOrderByItemSegment;
@@ -48,7 +49,9 @@ import java.util.Map;
 @Getter
 @Setter
 @ToString
-public final class ShardingSelectOptimizedStatement extends ShardingConditionOptimizedStatement {
+public final class ShardingSelectOptimizedStatement implements ShardingOptimizedStatement {
+    
+    private final SQLStatement sqlStatement;
     
     private final Tables tables;
     
@@ -63,7 +66,7 @@ public final class ShardingSelectOptimizedStatement extends ShardingConditionOpt
     private boolean containsSubquery;
     
     public ShardingSelectOptimizedStatement(final SQLStatement sqlStatement, final GroupBy groupBy, final OrderBy orderBy, final SelectItems selectItems, final Pagination pagination) {
-        super(sqlStatement);
+        this.sqlStatement = sqlStatement;
         this.tables = new Tables(sqlStatement);
         this.groupBy = groupBy;
         this.orderBy = orderBy;

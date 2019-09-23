@@ -21,12 +21,12 @@ import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.optimize.api.segment.Tables;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
-import org.apache.shardingsphere.core.optimize.sharding.segment.select.groupby.GroupBy;
-import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.SelectItem;
-import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.SelectItems;
-import org.apache.shardingsphere.core.optimize.sharding.segment.select.orderby.OrderBy;
-import org.apache.shardingsphere.core.optimize.sharding.segment.select.orderby.OrderByItem;
-import org.apache.shardingsphere.core.optimize.sharding.segment.select.pagination.Pagination;
+import org.apache.shardingsphere.core.optimize.sharding.segment.groupby.GroupBy;
+import org.apache.shardingsphere.core.optimize.sharding.segment.item.SelectItem;
+import org.apache.shardingsphere.core.optimize.sharding.segment.item.SelectItems;
+import org.apache.shardingsphere.core.optimize.sharding.segment.orderby.OrderBy;
+import org.apache.shardingsphere.core.optimize.sharding.segment.orderby.OrderByItem;
+import org.apache.shardingsphere.core.optimize.sharding.segment.pagination.Pagination;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
@@ -60,7 +60,7 @@ public final class StandardRoutingEngineTest extends AbstractRoutingEngineTest {
     @Test(expected = ShardingException.class)
     public void assertRouteByUnsupported() {
         OptimizedStatement optimizedStatement = mock(OptimizedStatement.class);
-        when(optimizedStatement.getSQLStatement()).thenReturn(new InsertStatement());
+        when(optimizedStatement.getSqlStatement()).thenReturn(new InsertStatement());
         Tables tables = mock(Tables.class);
         when(tables.isSingleTable()).thenReturn(false);
         when(optimizedStatement.getTables()).thenReturn(tables);
@@ -192,8 +192,8 @@ public final class StandardRoutingEngineTest extends AbstractRoutingEngineTest {
     
     private StandardRoutingEngine createStandardRoutingEngine(final ShardingRule shardingRule, final String logicTableName, final ShardingConditions shardingConditions) {
         return new StandardRoutingEngine(shardingRule, logicTableName, new ShardingSelectOptimizedStatement(new SelectStatement(),
-            new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
-            new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<TableSegment>emptyList(), null),
-            new Pagination(null, null, Collections.emptyList())), shardingConditions);
+                new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
+                new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<TableSegment>emptyList(), null),
+                new Pagination(null, null, Collections.emptyList())), shardingConditions);
     }
 }
