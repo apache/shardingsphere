@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.route.type.complex;
 
+import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.optimize.sharding.segment.groupby.GroupBy;
 import org.apache.shardingsphere.core.optimize.sharding.segment.item.SelectItem;
 import org.apache.shardingsphere.core.optimize.sharding.segment.item.SelectItems;
