@@ -52,9 +52,9 @@ public final class EncryptCondition {
     
     private final ShardingOperator operator;
     
-    private final Map<Integer, Object> positionValueMap = new LinkedHashMap<>();
-    
     private final Map<Integer, Integer> positionIndexMap = new LinkedHashMap<>();
+    
+    private final Map<Integer, Object> positionValueMap = new LinkedHashMap<>();
     
     public EncryptCondition(final String columnName, final String tableName, final int startIndex, final int stopIndex, final ExpressionSegment expressionSegment) {
         this.columnName = columnName;
