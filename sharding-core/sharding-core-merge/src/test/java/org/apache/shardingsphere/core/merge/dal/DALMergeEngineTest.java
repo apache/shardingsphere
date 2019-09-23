@@ -96,7 +96,7 @@ public final class DALMergeEngineTest {
     
     private OptimizedStatement mockOptimizedStatement(final DALStatement dalStatement) {
         OptimizedStatement optimizedStatement = mock(OptimizedStatement.class);
-        when(optimizedStatement.getSQLStatement()).thenReturn(dalStatement);
+        when(optimizedStatement.getSqlStatement()).thenReturn(dalStatement);
         return optimizedStatement;
     }
 }

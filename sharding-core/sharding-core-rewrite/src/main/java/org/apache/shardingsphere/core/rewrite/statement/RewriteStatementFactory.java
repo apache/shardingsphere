@@ -52,7 +52,8 @@ public final class RewriteStatementFactory {
                 ? ((EncryptConditionOptimizedStatement) sqlRouteResult.getEncryptStatement()).getEncryptConditions() : new EncryptConditions(Collections.<EncryptCondition>emptyList());
         return sqlRouteResult.getShardingStatement() instanceof InsertOptimizedStatement
                 ? new InsertRewriteStatement(
-                        (InsertOptimizedStatement) sqlRouteResult.getShardingStatement(), sqlRouteResult.getShardingConditions(), encryptConditions, shardingRule.getEncryptRule())
+                        (InsertOptimizedStatement) sqlRouteResult.getShardingStatement(), sqlRouteResult.getShardingConditions(), encryptConditions, 
+                        sqlRouteResult.getGeneratedKey().orNull(), shardingRule.getEncryptRule())
                 : new RewriteStatement(sqlRouteResult.getShardingStatement(), sqlRouteResult.getShardingConditions(), encryptConditions);
     }
     
@@ -68,7 +69,7 @@ public final class RewriteStatementFactory {
         EncryptConditions encryptConditions = encryptStatement instanceof EncryptConditionOptimizedStatement
                 ? ((EncryptConditionOptimizedStatement) encryptStatement).getEncryptConditions() : new EncryptConditions(Collections.<EncryptCondition>emptyList());
         return encryptStatement instanceof InsertOptimizedStatement
-                ? new InsertRewriteStatement((InsertOptimizedStatement) encryptStatement, shardingConditions, encryptConditions, encryptRule)
+                ? new InsertRewriteStatement((InsertOptimizedStatement) encryptStatement, shardingConditions, encryptConditions, null, encryptRule)
                 : new RewriteStatement(encryptStatement, shardingConditions, encryptConditions);
     }
 }

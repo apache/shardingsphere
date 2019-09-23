@@ -22,11 +22,10 @@ import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
 import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.encrypt.condition.EncryptConditions;
-import org.apache.shardingsphere.core.optimize.encrypt.constant.EncryptDerivedColumnType;
-import org.apache.shardingsphere.core.optimize.sharding.constant.ShardingDerivedColumnType;
+import org.apache.shardingsphere.core.rewrite.statement.constant.EncryptDerivedColumnType;
+import org.apache.shardingsphere.core.rewrite.statement.constant.ShardingDerivedColumnType;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
-import org.apache.shardingsphere.core.optimize.sharding.segment.insert.GeneratedKey;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingInsertOptimizedStatement;
+import org.apache.shardingsphere.core.route.router.sharding.keygen.GeneratedKey;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
@@ -41,19 +40,19 @@ import java.util.Iterator;
  */
 public final class InsertRewriteStatement extends RewriteStatement {
     
+    private final GeneratedKey generatedKey;
+    
     public InsertRewriteStatement(final InsertOptimizedStatement optimizedStatement, 
-                                  final ShardingConditions shardingConditions, final EncryptConditions encryptConditions, final EncryptRule encryptRule) {
+                                  final ShardingConditions shardingConditions, final EncryptConditions encryptConditions, final GeneratedKey generatedKey, final EncryptRule encryptRule) {
         super(optimizedStatement, shardingConditions, encryptConditions);
-        if (optimizedStatement instanceof ShardingInsertOptimizedStatement) {
-            processGeneratedKey((ShardingInsertOptimizedStatement) optimizedStatement);
-        }
+        this.generatedKey = generatedKey;
+        processGeneratedKey(optimizedStatement);
         processEncrypt(optimizedStatement, encryptRule);
     }
     
-    private void processGeneratedKey(final ShardingInsertOptimizedStatement optimizedStatement) {
-        Optional<GeneratedKey> generatedKey = optimizedStatement.getGeneratedKey();
-        if (generatedKey.isPresent() && generatedKey.get().isGenerated()) {
-            Iterator<Comparable<?>> generatedValues = generatedKey.get().getGeneratedValues().descendingIterator();
+    private void processGeneratedKey(final InsertOptimizedStatement optimizedStatement) {
+        if (null != generatedKey && generatedKey.isGenerated()) {
+            Iterator<Comparable<?>> generatedValues = generatedKey.getGeneratedValues().descendingIterator();
             for (InsertValue each : optimizedStatement.getInsertValues()) {
                 each.appendValue(generatedValues.next(), ShardingDerivedColumnType.KEY_GEN);
             }
@@ -94,5 +93,14 @@ public final class InsertRewriteStatement extends RewriteStatement {
         if (encryptRule.findPlainColumn(tableName, encryptLogicColumnName).isPresent()) {
             insertValue.appendValue(originalValue, EncryptDerivedColumnType.ENCRYPT);
         }
+    }
+    
+    /**
+     * Get generated key.
+     *
+     * @return generated key
+     */
+    public Optional<GeneratedKey> getGeneratedKey() {
+        return Optional.fromNullable(generatedKey);
     }
 }

@@ -19,27 +19,23 @@ package org.apache.shardingsphere.core.rewrite.rewriter;
 
 import com.google.common.base.Preconditions;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
+import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.encrypt.condition.EncryptCondition;
 import org.apache.shardingsphere.core.optimize.encrypt.condition.EncryptConditions;
 import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptConditionOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptTransparentOptimizedStatement;
-import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
-import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
-import org.apache.shardingsphere.core.optimize.sharding.segment.insert.GeneratedKey;
-import org.apache.shardingsphere.core.optimize.sharding.segment.select.groupby.GroupBy;
-import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.AggregationDistinctSelectItem;
-import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.AggregationSelectItem;
-import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.DerivedSelectItem;
-import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.SelectItem;
-import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.SelectItems;
-import org.apache.shardingsphere.core.optimize.sharding.segment.select.orderby.OrderBy;
-import org.apache.shardingsphere.core.optimize.sharding.segment.select.orderby.OrderByItem;
-import org.apache.shardingsphere.core.optimize.sharding.segment.select.pagination.Pagination;
+import org.apache.shardingsphere.core.rewrite.statement.constant.ShardingDerivedColumnType;
+import org.apache.shardingsphere.core.optimize.sharding.segment.groupby.GroupBy;
+import org.apache.shardingsphere.core.optimize.sharding.segment.item.AggregationDistinctSelectItem;
+import org.apache.shardingsphere.core.optimize.sharding.segment.item.AggregationSelectItem;
+import org.apache.shardingsphere.core.optimize.sharding.segment.item.DerivedSelectItem;
+import org.apache.shardingsphere.core.optimize.sharding.segment.item.SelectItem;
+import org.apache.shardingsphere.core.optimize.sharding.segment.item.SelectItems;
+import org.apache.shardingsphere.core.optimize.sharding.segment.orderby.OrderBy;
+import org.apache.shardingsphere.core.optimize.sharding.segment.orderby.OrderByItem;
+import org.apache.shardingsphere.core.optimize.sharding.segment.pagination.Pagination;
 import org.apache.shardingsphere.core.optimize.sharding.statement.ShardingOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.statement.ShardingTransparentOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingConditionOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingInsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
 import org.apache.shardingsphere.core.parse.core.constant.AggregationType;
 import org.apache.shardingsphere.core.parse.core.constant.OrderDirection;
@@ -69,6 +65,9 @@ import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.standard.StandardParameterBuilder;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
+import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
+import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
+import org.apache.shardingsphere.core.route.router.sharding.keygen.GeneratedKey;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.route.type.TableUnit;
@@ -85,7 +84,6 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -135,7 +133,7 @@ public final class ShardingSQLRewriteEngineTest {
         SQLRouteResult result = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, 
                 new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
                 new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<TableSegment>emptyList(), null), new Pagination(null, null, Collections.emptyList())), 
-                new EncryptTransparentOptimizedStatement(selectStatement), new ShardingConditions(Collections.<ShardingCondition>emptyList()));
+                new EncryptTransparentOptimizedStatement(selectStatement), new ShardingConditions(Collections.<ShardingCondition>emptyList()), null);
         result.setRoutingResult(new RoutingResult());
         return result;
     }
@@ -218,16 +216,18 @@ public final class ShardingSQLRewriteEngineTest {
         insertStatement.getColumns().add(new ColumnSegment(0, 0, "name"));
         insertStatement.getColumns().add(new ColumnSegment(0, 0, "age"));
         insertStatement.getAllSQLSegments().add(new InsertColumnsSegment(30, 30, Collections.singleton(mock(ColumnSegment.class))));
-        insertStatement.getAllSQLSegments().add(new InsertValuesSegment(39, 44, Collections.<ExpressionSegment>emptyList()));
+        insertStatement.getAllSQLSegments().add(new InsertValuesSegment(39, 44, 
+                Arrays.<ExpressionSegment>asList(new ParameterMarkerExpressionSegment(0, 0, 0), new ParameterMarkerExpressionSegment(0, 0, 1))));
+        insertStatement.getValues().add(new InsertValuesSegment(39, 44, 
+                Arrays.<ExpressionSegment>asList(new ParameterMarkerExpressionSegment(0, 0, 0), new ParameterMarkerExpressionSegment(0, 0, 1))));
         insertStatement.getAllSQLSegments().add(new TableSegment(12, 18, "table_x"));
-        GeneratedKey generatedKey = new GeneratedKey("id", true);
-        generatedKey.getGeneratedValues().add(1);
-        Collection<ExpressionSegment> assignments = Arrays.<ExpressionSegment>asList(new ParameterMarkerExpressionSegment(0, 0, 0), new ParameterMarkerExpressionSegment(0, 0, 1));
-        ShardingInsertOptimizedStatement shardingStatement = new ShardingInsertOptimizedStatement(
-                insertStatement, Arrays.asList("name", "age"), generatedKey, Collections.singletonList(new InsertValue(assignments, 0, Arrays.<Object>asList("x", 1), 0)));
+        InsertOptimizedStatement shardingStatement = new InsertOptimizedStatement(null, Arrays.<Object>asList("x", 1), insertStatement);
         ShardingCondition shardingCondition = new ShardingCondition();
         shardingCondition.getDataNodes().add(new DataNode("db0.table_1"));
-        SQLRouteResult result = new SQLRouteResult(shardingStatement, new EncryptTransparentOptimizedStatement(insertStatement), new ShardingConditions(Collections.singletonList(shardingCondition)));
+        GeneratedKey generatedKey = new GeneratedKey("id", true);
+        generatedKey.getGeneratedValues().add(1);
+        SQLRouteResult result = new SQLRouteResult(
+                shardingStatement, new EncryptTransparentOptimizedStatement(insertStatement), new ShardingConditions(Collections.singletonList(shardingCondition)), generatedKey);
         result.setRoutingResult(new RoutingResult());
         return result;
     }
@@ -244,17 +244,17 @@ public final class ShardingSQLRewriteEngineTest {
         insertStatement.getColumns().add(new ColumnSegment(0, 0, "name"));
         insertStatement.getColumns().add(new ColumnSegment(0, 0, "id"));
         insertStatement.getAllSQLSegments().add(new InsertColumnsSegment(21, 21, Collections.<ColumnSegment>emptyList()));
-        insertStatement.getAllSQLSegments().add(new InsertValuesSegment(29, 31, Collections.<ExpressionSegment>emptyList()));
+        insertStatement.getAllSQLSegments().add(new InsertValuesSegment(29, 31, Collections.<ExpressionSegment>singletonList(new ParameterMarkerExpressionSegment(0, 0, 0))));
+        insertStatement.getValues().add(new InsertValuesSegment(29, 31, Collections.<ExpressionSegment>singletonList(new ParameterMarkerExpressionSegment(0, 0, 0))));
         insertStatement.setTable(new TableSegment(0, 0, "table_x"));
         insertStatement.getAllSQLSegments().add(new TableSegment(12, 20, "`table_x`"));
-        GeneratedKey generatedKey = new GeneratedKey("id", true);
-        generatedKey.getGeneratedValues().add(1);
-        Collection<ExpressionSegment> assignments = Collections.<ExpressionSegment>singletonList(new ParameterMarkerExpressionSegment(0, 0, 0));
-        ShardingInsertOptimizedStatement shardingStatement = new ShardingInsertOptimizedStatement(
-                insertStatement, Arrays.asList("name", "id"), generatedKey, Collections.singletonList(new InsertValue(assignments, 0, Collections.<Object>singletonList("Bill"), 0)));
+        InsertOptimizedStatement shardingStatement = new InsertOptimizedStatement(null, Collections.<Object>singletonList("Bill"), insertStatement);
         ShardingCondition shardingCondition = new ShardingCondition();
         shardingCondition.getDataNodes().add(new DataNode("db0.table_1"));
-        SQLRouteResult result = new SQLRouteResult(shardingStatement, new EncryptTransparentOptimizedStatement(insertStatement), new ShardingConditions(Collections.singletonList(shardingCondition)));
+        GeneratedKey generatedKey = new GeneratedKey("id", true);
+        generatedKey.getGeneratedValues().add(1);
+        SQLRouteResult result = new SQLRouteResult(
+                shardingStatement, new EncryptTransparentOptimizedStatement(insertStatement), new ShardingConditions(Collections.singletonList(shardingCondition)), generatedKey);
         result.setRoutingResult(new RoutingResult());
         return result;
     }
@@ -271,17 +271,17 @@ public final class ShardingSQLRewriteEngineTest {
         insertStatement.getColumns().add(new ColumnSegment(0, 0, "name"));
         insertStatement.getColumns().add(new ColumnSegment(0, 0, "id"));
         insertStatement.getAllSQLSegments().add(new InsertColumnsSegment(21, 21, Collections.<ColumnSegment>emptyList()));
-        insertStatement.getAllSQLSegments().add(new InsertValuesSegment(29, 32, Collections.<ExpressionSegment>emptyList()));
+        insertStatement.getAllSQLSegments().add(new InsertValuesSegment(29, 32, Collections.<ExpressionSegment>singletonList(new LiteralExpressionSegment(0, 0, 10))));
+        insertStatement.getValues().add(new InsertValuesSegment(29, 32, Collections.<ExpressionSegment>singletonList(new LiteralExpressionSegment(0, 0, 10))));
         insertStatement.setTable(new TableSegment(0, 0, "table_x"));
         insertStatement.getAllSQLSegments().add(new TableSegment(12, 20, "`table_x`"));
-        GeneratedKey generatedKey = new GeneratedKey("id", true);
-        generatedKey.getGeneratedValues().add(1);
-        Collection<ExpressionSegment> assignments = Collections.<ExpressionSegment>singletonList(new LiteralExpressionSegment(0, 0, 10));
-        ShardingInsertOptimizedStatement shardingStatement = new ShardingInsertOptimizedStatement(insertStatement, 
-                Arrays.asList("name", "id"), generatedKey, Collections.singletonList(new InsertValue(assignments, 0, Collections.emptyList(), 0)));
+        InsertOptimizedStatement shardingStatement = new InsertOptimizedStatement(null, Collections.emptyList(), insertStatement);
         ShardingCondition shardingCondition = new ShardingCondition();
         shardingCondition.getDataNodes().add(new DataNode("db0.table_1"));
-        SQLRouteResult result = new SQLRouteResult(shardingStatement, new EncryptTransparentOptimizedStatement(insertStatement), new ShardingConditions(Collections.singletonList(shardingCondition)));
+        GeneratedKey generatedKey = new GeneratedKey("id", true);
+        generatedKey.getGeneratedValues().add(1);
+        SQLRouteResult result = new SQLRouteResult(
+                shardingStatement, new EncryptTransparentOptimizedStatement(insertStatement), new ShardingConditions(Collections.singletonList(shardingCondition)), generatedKey);
         result.setRoutingResult(new RoutingResult());
         return result;
     }
@@ -298,17 +298,17 @@ public final class ShardingSQLRewriteEngineTest {
         insertStatement.getColumns().add(new ColumnSegment(0, 0, "name"));
         insertStatement.getColumns().add(new ColumnSegment(0, 0, "id"));
         insertStatement.getAllSQLSegments().add(new InsertColumnsSegment(21, 21, Collections.<ColumnSegment>emptyList()));
-        insertStatement.getAllSQLSegments().add(new InsertValuesSegment(29, 32, Collections.<ExpressionSegment>emptyList()));
+        insertStatement.getAllSQLSegments().add(new InsertValuesSegment(29, 32, Collections.<ExpressionSegment>singletonList(new LiteralExpressionSegment(0, 0, 10))));
+        insertStatement.getValues().add(new InsertValuesSegment(29, 32, Collections.<ExpressionSegment>singletonList(new LiteralExpressionSegment(0, 0, 10))));
         insertStatement.setTable(new TableSegment(0, 0, "table_x"));
         insertStatement.getAllSQLSegments().add(new TableSegment(12, 20, "`table_x`"));
-        GeneratedKey generatedKey = new GeneratedKey("id", true);
-        generatedKey.getGeneratedValues().add(1);
-        Collection<ExpressionSegment> assignments = Collections.<ExpressionSegment>singletonList(new LiteralExpressionSegment(0, 0, 10));
-        ShardingInsertOptimizedStatement shardingStatement = new ShardingInsertOptimizedStatement(
-                insertStatement, Arrays.asList("name", "id"), generatedKey, Collections.singletonList(new InsertValue(assignments, 0, Collections.emptyList(), 0)));
+        InsertOptimizedStatement shardingStatement = new InsertOptimizedStatement(null, Collections.emptyList(), insertStatement);
         ShardingCondition shardingCondition = new ShardingCondition();
         shardingCondition.getDataNodes().add(new DataNode("db0.table_1"));
-        SQLRouteResult result = new SQLRouteResult(shardingStatement, new EncryptTransparentOptimizedStatement(insertStatement), new ShardingConditions(Collections.singletonList(shardingCondition)));
+        GeneratedKey generatedKey = new GeneratedKey("id", true);
+        generatedKey.getGeneratedValues().add(1);
+        SQLRouteResult result = new SQLRouteResult(
+                shardingStatement, new EncryptTransparentOptimizedStatement(insertStatement), new ShardingConditions(Collections.singletonList(shardingCondition)), generatedKey);
         result.setRoutingResult(new RoutingResult());
         return result;
     }
@@ -326,9 +326,7 @@ public final class ShardingSQLRewriteEngineTest {
         insertStatement.getColumns().add(new ColumnSegment(0, 0, "id"));
         insertStatement.setTable(new TableSegment(0, 0, "table_x"));
         insertStatement.getAllSQLSegments().add(new TableSegment(12, 20, "`table_x`"));
-        Collection<ExpressionSegment> assignments = Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(0, 0, 10), new LiteralExpressionSegment(0, 0, 1));
-        ShardingInsertOptimizedStatement shardingStatement = new ShardingInsertOptimizedStatement(
-                insertStatement, Arrays.asList("name", "id"), null, Collections.singletonList(new InsertValue(assignments, 1, Collections.emptyList(), 0)));
+        InsertOptimizedStatement shardingStatement = new InsertOptimizedStatement(null, Collections.emptyList(), insertStatement);
         ShardingCondition shardingCondition = new ShardingCondition();
         shardingCondition.getDataNodes().add(new DataNode("db0.table_1"));
         SQLRouteResult result = new SQLRouteResult(shardingStatement, new EncryptTransparentOptimizedStatement(insertStatement), new ShardingConditions(Collections.singletonList(shardingCondition)));
@@ -349,10 +347,9 @@ public final class ShardingSQLRewriteEngineTest {
         insertStatement.setTable(new TableSegment(0, 0, "table_x"));
         insertStatement.getAllSQLSegments().add(new TableSegment(12, 20, "`table_x`"));
         insertStatement.getAllSQLSegments().add(new InsertColumnsSegment(21, 21, Collections.<ColumnSegment>emptyList()));
-        insertStatement.getAllSQLSegments().add(new InsertValuesSegment(29, 35, Collections.<ExpressionSegment>emptyList()));
-        Collection<ExpressionSegment> assignments = Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(0, 0, 10), new LiteralExpressionSegment(0, 0, 1));
-        ShardingInsertOptimizedStatement shardingStatement = new ShardingInsertOptimizedStatement(
-                insertStatement, Arrays.asList("name", "id"), null, Collections.singletonList(new InsertValue(assignments, 0, Collections.emptyList(), 0)));
+        insertStatement.getAllSQLSegments().add(new InsertValuesSegment(29, 35, Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(0, 0, 10), new LiteralExpressionSegment(0, 0, 1))));
+        insertStatement.getValues().add(new InsertValuesSegment(29, 35, Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(0, 0, 10), new LiteralExpressionSegment(0, 0, 1))));
+        InsertOptimizedStatement shardingStatement = new InsertOptimizedStatement(null, Collections.emptyList(), insertStatement);
         ShardingCondition shardingCondition = new ShardingCondition();
         shardingCondition.getDataNodes().add(new DataNode("db0.table_1"));
         SQLRouteResult result = new SQLRouteResult(shardingStatement, new EncryptTransparentOptimizedStatement(insertStatement), new ShardingConditions(Collections.singletonList(shardingCondition)));
@@ -371,17 +368,19 @@ public final class ShardingSQLRewriteEngineTest {
         insertStatement.getColumns().add(new ColumnSegment(0, 0, "name"));
         insertStatement.getColumns().add(new ColumnSegment(0, 0, "id"));
         insertStatement.getAllSQLSegments().add(new InsertColumnsSegment(21, 21, Collections.<ColumnSegment>emptyList()));
-        insertStatement.getAllSQLSegments().add(new InsertValuesSegment(29, 34, Collections.<ExpressionSegment>emptyList()));
+        insertStatement.getAllSQLSegments().add(
+                new InsertValuesSegment(29, 34, Arrays.<ExpressionSegment>asList(new ParameterMarkerExpressionSegment(0, 0, 0), new ParameterMarkerExpressionSegment(0, 0, 1))));
+        insertStatement.getValues().add(
+                new InsertValuesSegment(29, 34, Arrays.<ExpressionSegment>asList(new ParameterMarkerExpressionSegment(0, 0, 0), new ParameterMarkerExpressionSegment(0, 0, 1))));
         insertStatement.setTable(new TableSegment(0, 0, "table_x"));
         insertStatement.getAllSQLSegments().add(new TableSegment(12, 20, "`table_x`"));
-        GeneratedKey generatedKey = new GeneratedKey("id", false);
-        generatedKey.getGeneratedValues().add(1);
-        Collection<ExpressionSegment> assignments = Arrays.<ExpressionSegment>asList(new ParameterMarkerExpressionSegment(0, 0, 0), new ParameterMarkerExpressionSegment(0, 0, 1));
-        ShardingInsertOptimizedStatement shardingStatement = new ShardingInsertOptimizedStatement(
-                insertStatement, Arrays.asList("name", "id"), generatedKey, Collections.singletonList(new InsertValue(assignments, 0, Arrays.<Object>asList("x", 1), 0)));
+        InsertOptimizedStatement shardingStatement = new InsertOptimizedStatement(null, Arrays.<Object>asList("x", 1), insertStatement);
         ShardingCondition shardingCondition = new ShardingCondition();
         shardingCondition.getDataNodes().add(new DataNode("db0.table_1"));
-        SQLRouteResult result = new SQLRouteResult(shardingStatement, new EncryptTransparentOptimizedStatement(insertStatement), new ShardingConditions(Collections.singletonList(shardingCondition)));
+        GeneratedKey generatedKey = new GeneratedKey("id", false);
+        generatedKey.getGeneratedValues().add(1);
+        SQLRouteResult result = new SQLRouteResult(
+                shardingStatement, new EncryptTransparentOptimizedStatement(insertStatement), new ShardingConditions(Collections.singletonList(shardingCondition)), generatedKey);
         result.setRoutingResult(new RoutingResult());
         return result;
     }
@@ -848,8 +847,11 @@ public final class ShardingSQLRewriteEngineTest {
     private SQLRouteResult createSQLRouteResultForTableTokenWithSchemaForInsert() {
         InsertStatement insertStatement = new InsertStatement();
         insertStatement.getAllSQLSegments().add(new TableSegment(12, 30, "table_x"));
-        SQLRouteResult result = new SQLRouteResult(new ShardingInsertOptimizedStatement(insertStatement, Arrays.asList("order_id", "user_id", "status", "id"), 
-                null, Collections.<InsertValue>emptyList()), new EncryptTransparentOptimizedStatement(insertStatement), new ShardingConditions(Collections.<ShardingCondition>emptyList()));
+        insertStatement.getColumns().add(new ColumnSegment(33, 41, "order_id"));
+        insertStatement.getColumns().add(new ColumnSegment(43, 50, "user_id"));
+        insertStatement.getColumns().add(new ColumnSegment(52, 58, "status"));
+        InsertOptimizedStatement shardingStatement = new InsertOptimizedStatement(null, Collections.emptyList(), insertStatement);
+        SQLRouteResult result = new SQLRouteResult(shardingStatement, new EncryptTransparentOptimizedStatement(insertStatement), new ShardingConditions(Collections.<ShardingCondition>emptyList()));
         result.setRoutingResult(new RoutingResult());
         return result;
     }
@@ -866,7 +868,7 @@ public final class ShardingSQLRewriteEngineTest {
         updateStatement.getAllSQLSegments().add(new TableSegment(7, 27, "table_x"));
         updateStatement.setSetAssignment(
                 new SetAssignmentsSegment(28, 42, Collections.singleton(new AssignmentSegment(33, 42, new ColumnSegment(33, 40, "id"), new LiteralExpressionSegment(41, 42, 1)))));
-        SQLRouteResult result = new SQLRouteResult(new ShardingConditionOptimizedStatement(updateStatement), 
+        SQLRouteResult result = new SQLRouteResult(new ShardingTransparentOptimizedStatement(updateStatement), 
                 new EncryptTransparentOptimizedStatement(updateStatement), new ShardingConditions(Collections.<ShardingCondition>emptyList()));
         result.setRoutingResult(new RoutingResult());
         return result;
@@ -881,7 +883,7 @@ public final class ShardingSQLRewriteEngineTest {
     private SQLRouteResult createSQLRouteResultForTableTokenWithSchemaForDelete() {
         DeleteStatement deleteStatement = new DeleteStatement();
         deleteStatement.getAllSQLSegments().add(new TableSegment(12, 34, "`table_x`"));
-        SQLRouteResult result = new SQLRouteResult(new ShardingConditionOptimizedStatement(deleteStatement), 
+        SQLRouteResult result = new SQLRouteResult(new ShardingTransparentOptimizedStatement(deleteStatement), 
                 new EncryptTransparentOptimizedStatement(deleteStatement), new ShardingConditions(Collections.<ShardingCondition>emptyList()));
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
@@ -960,7 +962,7 @@ public final class ShardingSQLRewriteEngineTest {
                 new SetAssignmentsSegment(15, 24, Collections.singleton(new AssignmentSegment(19, 24, new ColumnSegment(19, 20, "id"), new LiteralExpressionSegment(0, 0, 1)))));
         List<EncryptCondition> encryptConditions = new LinkedList<>();
         encryptConditions.add(new EncryptCondition("id", "table_z", 32, 37, new LiteralExpressionSegment(0, 0, 2)));
-        SQLRouteResult result = new SQLRouteResult(new ShardingConditionOptimizedStatement(updateStatement), 
+        SQLRouteResult result = new SQLRouteResult(new ShardingTransparentOptimizedStatement(updateStatement), 
                 new EncryptConditionOptimizedStatement(updateStatement, new EncryptConditions(encryptConditions)), new ShardingConditions(Collections.<ShardingCondition>emptyList()));
         result.setRoutingResult(new RoutingResult());
         return result;
@@ -976,15 +978,15 @@ public final class ShardingSQLRewriteEngineTest {
     
     private SQLRouteResult createSQLRouteResultForInsertWithQueryAssistedShardingEncryptor() {
         InsertStatement insertStatement = new InsertStatement();
+        insertStatement.getAllSQLSegments().add(new TableSegment(12, 20, "`table_w`"));
+        insertStatement.setTable(new TableSegment(0, 0, "table_w"));
         insertStatement.getColumns().add(new ColumnSegment(0, 0, "name"));
         ColumnSegment columnSegment = new ColumnSegment(26, 29, "name");
         LiteralExpressionSegment expressionSegment = new LiteralExpressionSegment(33, 34, 10);
         insertStatement.getAllSQLSegments().add(new SetAssignmentsSegment(26, 34, Collections.singleton(new AssignmentSegment(26, 34, columnSegment, expressionSegment))));
-        insertStatement.getAllSQLSegments().add(new TableSegment(12, 20, "`table_w`"));
-        insertStatement.setTable(new TableSegment(0, 0, "table_w"));
-        Collection<ExpressionSegment> assignments = Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(0, 0, 10), new LiteralExpressionSegment(0, 0, 1));
-        ShardingInsertOptimizedStatement shardingStatement = new ShardingInsertOptimizedStatement(
-                insertStatement, Collections.singletonList("name"), null, Collections.singletonList(new InsertValue(assignments, 3, Collections.emptyList(), 0)));
+        insertStatement.setSetAssignment(new SetAssignmentsSegment(26, 34, Collections.singleton(new AssignmentSegment(26, 34, columnSegment, expressionSegment))));
+        InsertOptimizedStatement shardingStatement = new InsertOptimizedStatement(null, Collections.emptyList(), insertStatement);
+        shardingStatement.getInsertValues().get(0).appendValue(1, ShardingDerivedColumnType.KEY_GEN);
         ShardingCondition shardingCondition = new ShardingCondition();
         shardingCondition.getDataNodes().add(new DataNode("db0.table_1"));
         SQLRouteResult result = new SQLRouteResult(shardingStatement, new EncryptTransparentOptimizedStatement(insertStatement), new ShardingConditions(Collections.singletonList(shardingCondition)));

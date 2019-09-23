@@ -21,7 +21,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingConditionOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.ShowDatabasesStatement;
@@ -30,6 +29,7 @@ import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.postgresql
 import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.postgresql.SetStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
@@ -66,7 +66,7 @@ public final class RoutingEngineFactory {
      */
     public static RoutingEngine newInstance(final ShardingRule shardingRule,
                                             final ShardingSphereMetaData metaData, final OptimizedStatement optimizedStatement, final ShardingConditions shardingConditions) {
-        SQLStatement sqlStatement = optimizedStatement.getSQLStatement();
+        SQLStatement sqlStatement = optimizedStatement.getSqlStatement();
         Collection<String> tableNames = optimizedStatement.getTables().getTableNames();
         if (sqlStatement instanceof TCLStatement) {
             return new DatabaseBroadcastRoutingEngine(shardingRule);
@@ -86,7 +86,7 @@ public final class RoutingEngineFactory {
         if (shardingRule.isAllBroadcastTables(tableNames)) {
             return sqlStatement instanceof SelectStatement ? new UnicastRoutingEngine(shardingRule, tableNames) : new DatabaseBroadcastRoutingEngine(shardingRule);
         }
-        if (optimizedStatement instanceof ShardingConditionOptimizedStatement && shardingConditions.isAlwaysFalse() || tableNames.isEmpty()) {
+        if (optimizedStatement.getSqlStatement() instanceof DMLStatement && shardingConditions.isAlwaysFalse() || tableNames.isEmpty()) {
             return new UnicastRoutingEngine(shardingRule, tableNames);
         }
         return getShardingRoutingEngine(shardingRule, optimizedStatement, shardingConditions, tableNames);

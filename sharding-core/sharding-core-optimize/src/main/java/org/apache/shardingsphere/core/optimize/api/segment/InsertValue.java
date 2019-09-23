@@ -47,10 +47,10 @@ public final class InsertValue {
     
     private final List<Object> parameters;
     
-    public InsertValue(final Collection<ExpressionSegment> assignments, final int derivedColumnsCount, final List<Object> parameters, final int parametersOffset) {
+    public InsertValue(final Collection<ExpressionSegment> assignments, final List<Object> parameters, final int parametersOffset) {
         parametersCount = calculateParametersCount(assignments);
-        valueExpressions = getValueExpressions(assignments, derivedColumnsCount);
-        this.parameters = getParameters(parameters, derivedColumnsCount, parametersOffset);
+        valueExpressions = getValueExpressions(assignments);
+        this.parameters = getParameters(parameters, parametersOffset);
     }
     
     private int calculateParametersCount(final Collection<ExpressionSegment> assignments) {
@@ -63,17 +63,17 @@ public final class InsertValue {
         return result;
     }
     
-    private List<ExpressionSegment> getValueExpressions(final Collection<ExpressionSegment> assignments, final int derivedColumnsCount) {
-        List<ExpressionSegment> result = new ArrayList<>(assignments.size() + derivedColumnsCount);
+    private List<ExpressionSegment> getValueExpressions(final Collection<ExpressionSegment> assignments) {
+        List<ExpressionSegment> result = new ArrayList<>(assignments.size());
         result.addAll(assignments);
         return result;
     }
     
-    private List<Object> getParameters(final List<Object> parameters, final int derivedColumnsCount, final int parametersOffset) {
+    private List<Object> getParameters(final List<Object> parameters, final int parametersOffset) {
         if (0 == parametersCount) {
             return Collections.emptyList();
         }
-        List<Object> result = new ArrayList<>(parametersCount + derivedColumnsCount);
+        List<Object> result = new ArrayList<>(parametersCount);
         result.addAll(parameters.subList(parametersOffset, parametersOffset + parametersCount));
         return result;
     }

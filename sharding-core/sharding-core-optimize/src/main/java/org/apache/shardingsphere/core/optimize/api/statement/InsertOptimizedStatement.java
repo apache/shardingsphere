@@ -17,8 +17,18 @@
 
 package org.apache.shardingsphere.core.optimize.api.statement;
 
+import lombok.Getter;
+import lombok.ToString;
+import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
+import org.apache.shardingsphere.core.optimize.api.segment.Tables;
+import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.sharding.statement.ShardingOptimizedStatement;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -26,19 +36,33 @@ import java.util.List;
  *
  * @author zhangliang
  */
-public interface InsertOptimizedStatement extends OptimizedStatement {
+@Getter
+@ToString
+public final class InsertOptimizedStatement implements ShardingOptimizedStatement, EncryptOptimizedStatement {
     
-    /**
-     * Get column names.
-     * 
-     * @return column names
-     */
-    List<String> getColumnNames();
+    private final InsertStatement sqlStatement;
     
-    /**
-     * Get insert values.
-     * 
-     * @return insert values
-     */
-    List<InsertValue> getInsertValues();
+    private final Tables tables;
+    
+    private final List<String> columnNames;
+    
+    private final List<InsertValue> insertValues;
+    
+    public InsertOptimizedStatement(final TableMetas tableMetas, final List<Object> parameters, final InsertStatement sqlStatement) {
+        this.sqlStatement = sqlStatement;
+        tables = new Tables(sqlStatement);
+        columnNames = sqlStatement.useDefaultColumns() ? tableMetas.getAllColumnNames(tables.getSingleTableName()) : sqlStatement.getColumnNames();
+        insertValues = getInsertValues(parameters, sqlStatement);
+    }
+    
+    private List<InsertValue> getInsertValues(final List<Object> parameters, final InsertStatement sqlStatement) {
+        List<InsertValue> result = new LinkedList<>();
+        int parametersOffset = 0;
+        for (Collection<ExpressionSegment> each : sqlStatement.getAllValueExpressions()) {
+            InsertValue insertValue = new InsertValue(each, parameters, parametersOffset);
+            result.add(insertValue);
+            parametersOffset += insertValue.getParametersCount();
+        }
+        return result;
+    }
 }

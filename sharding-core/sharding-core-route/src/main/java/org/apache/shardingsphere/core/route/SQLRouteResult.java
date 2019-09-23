@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.core.route;
 
+import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptOptimizedStatement;
-import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
+import org.apache.shardingsphere.core.route.router.sharding.keygen.GeneratedKey;
 import org.apache.shardingsphere.core.optimize.sharding.statement.ShardingOptimizedStatement;
+import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 
 import java.util.Collection;
@@ -46,7 +48,22 @@ public final class SQLRouteResult {
     
     private final ShardingConditions shardingConditions;
     
+    private final GeneratedKey generatedKey;
+    
     private final Collection<RouteUnit> routeUnits = new LinkedHashSet<>();
     
     private RoutingResult routingResult;
+    
+    public SQLRouteResult(final ShardingOptimizedStatement shardingStatement, final EncryptOptimizedStatement encryptStatement, final ShardingConditions shardingConditions) {
+        this(shardingStatement, encryptStatement, shardingConditions, null);
+    }
+    
+    /**
+     * Get generated key.
+     * 
+     * @return generated key
+     */
+    public Optional<GeneratedKey> getGeneratedKey() {
+        return Optional.fromNullable(generatedKey);
+    }
 }

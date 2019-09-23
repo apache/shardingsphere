@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.route.type.broadcast;
 
+import com.google.common.collect.Lists;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
@@ -43,8 +44,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
-import com.google.common.collect.Lists;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class TableBroadcastRoutingEngineTest {
@@ -80,7 +79,7 @@ public final class TableBroadcastRoutingEngineTest {
     @Test
     public void assertRouteForNormalDDL() {
         DDLStatement ddlStatement = mock(DDLStatement.class);
-        when(optimizedStatement.getSQLStatement()).thenReturn(ddlStatement);
+        when(optimizedStatement.getSqlStatement()).thenReturn(ddlStatement);
         RoutingResult actual = tableBroadcastRoutingEngine.route();
         assertRoutingResult(actual);
     }
@@ -91,7 +90,7 @@ public final class TableBroadcastRoutingEngineTest {
         IndexSegment indexSegment = mock(IndexSegment.class);
         when(indexSegment.getName()).thenReturn("no_index");
         when(indexStatement.getIndexes()).thenReturn(Lists.newArrayList(indexSegment));
-        when(optimizedStatement.getSQLStatement()).thenReturn(indexStatement);
+        when(optimizedStatement.getSqlStatement()).thenReturn(indexStatement);
         tableBroadcastRoutingEngine.route();
     }
     
@@ -101,7 +100,7 @@ public final class TableBroadcastRoutingEngineTest {
         IndexSegment indexSegment = mock(IndexSegment.class);
         when(indexSegment.getName()).thenReturn("index_name");
         when(indexStatement.getIndexes()).thenReturn(Lists.newArrayList(indexSegment));
-        when(optimizedStatement.getSQLStatement()).thenReturn(indexStatement);
+        when(optimizedStatement.getSqlStatement()).thenReturn(indexStatement);
         RoutingResult actual = tableBroadcastRoutingEngine.route();
         assertRoutingResult(actual);
     }
