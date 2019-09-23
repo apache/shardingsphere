@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingInsertOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.statement.InsertRewriteStatement;
@@ -40,7 +40,7 @@ public final class InsertGeneratedKeyNameTokenGenerator implements OptionalSQLTo
         if (!insertColumnsSegment.isPresent() || insertColumnsSegment.get().getColumns().isEmpty()) {
             return Optional.absent();
         }
-        if (rewriteStatement.getOptimizedStatement() instanceof ShardingInsertOptimizedStatement) {
+        if (rewriteStatement.getOptimizedStatement() instanceof InsertOptimizedStatement) {
             return createInsertGeneratedKeyToken((InsertRewriteStatement) rewriteStatement, insertColumnsSegment.get(), shardingRule);
         }
         return Optional.absent();

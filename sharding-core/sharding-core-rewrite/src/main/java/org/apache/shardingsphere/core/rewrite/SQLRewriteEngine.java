@@ -23,9 +23,6 @@ import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.encrypt.condition.EncryptCondition;
 import org.apache.shardingsphere.core.optimize.encrypt.condition.EncryptConditions;
 import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptOptimizedStatement;
-import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
-import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingInsertOptimizedStatement;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.group.GroupedParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.standard.StandardParameterBuilder;
@@ -38,6 +35,8 @@ import org.apache.shardingsphere.core.rewrite.token.ShardingTokenGenerateEngine;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SQLToken;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.SQLUnit;
+import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
+import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.rule.BaseRule;
 import org.apache.shardingsphere.core.rule.EncryptRule;
@@ -94,7 +93,7 @@ public final class SQLRewriteEngine {
     }
     
     private ParameterBuilder createParameterBuilder(final List<Object> parameters, final SQLRouteResult sqlRouteResult) {
-        return rewriteStatement.getOptimizedStatement() instanceof ShardingInsertOptimizedStatement
+        return rewriteStatement.getOptimizedStatement() instanceof InsertOptimizedStatement
                 ? new GroupedParameterBuilder(parameters, getGroupedParameters(), rewriteStatement.getShardingConditions()) : new StandardParameterBuilder(parameters, sqlRouteResult);
     }
     

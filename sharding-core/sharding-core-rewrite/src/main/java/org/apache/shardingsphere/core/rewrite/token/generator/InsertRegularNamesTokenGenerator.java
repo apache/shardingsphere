@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.rewrite.token.generator;
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingInsertOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.statement.InsertRewriteStatement;
@@ -68,7 +67,7 @@ public final class InsertRegularNamesTokenGenerator implements OptionalSQLTokenG
     private Collection<String> getActualInsertColumns(final InsertRewriteStatement rewriteStatement, final BaseRule baseRule) {
         Collection<String> result = new LinkedList<>();
         Map<String, String> logicAndCipherColumns = getEncryptRule(baseRule).getLogicAndCipherColumns(rewriteStatement.getOptimizedStatement().getTables().getSingleTableName());
-        boolean isGeneratedKey = rewriteStatement.getOptimizedStatement() instanceof ShardingInsertOptimizedStatement 
+        boolean isGeneratedKey = rewriteStatement.getOptimizedStatement() instanceof InsertOptimizedStatement 
                 && (rewriteStatement.getGeneratedKey().isPresent() && (rewriteStatement.getGeneratedKey().get().isGenerated()));
         for (String each : ((InsertOptimizedStatement) rewriteStatement.getOptimizedStatement()).getColumnNames()) {
             if (!isGeneratedKey || !each.equalsIgnoreCase(rewriteStatement.getGeneratedKey().get().getColumnName())) {

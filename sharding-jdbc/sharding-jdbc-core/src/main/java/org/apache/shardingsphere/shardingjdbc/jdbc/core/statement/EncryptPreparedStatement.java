@@ -148,8 +148,7 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
     private SQLUnit getSQLUnit(final String sql) {
         EncryptConnection connection = preparedStatementGenerator.connection;
         SQLStatement sqlStatement = connection.getRuntimeContext().getParseEngine().parse(sql, true);
-        encryptStatement = EncryptOptimizeEngineFactory.newInstance(
-                sqlStatement).optimize(connection.getRuntimeContext().getRule(), connection.getRuntimeContext().getTableMetas(), sql, getParameters(), sqlStatement);
+        encryptStatement = EncryptOptimizeEngineFactory.newInstance(connection.getRuntimeContext().getRule(), connection.getRuntimeContext().getTableMetas(), sql, getParameters(), sqlStatement);
         SQLRewriteEngine encryptSQLRewriteEngine = new SQLRewriteEngine(connection.getRuntimeContext().getRule(), 
                 encryptStatement, sql, getParameters(), connection.getRuntimeContext().getProps().<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN));
         SQLUnit result = encryptSQLRewriteEngine.generateSQL();

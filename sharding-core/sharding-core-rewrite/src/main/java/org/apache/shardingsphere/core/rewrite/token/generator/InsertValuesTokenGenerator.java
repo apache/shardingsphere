@@ -21,13 +21,12 @@ import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
 import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
-import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingInsertOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertValuesToken;
+import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
 import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
@@ -57,8 +56,8 @@ public final class InsertValuesTokenGenerator implements OptionalSQLTokenGenerat
     private InsertValuesToken createInsertValuesToken(final RewriteStatement rewriteStatement, final Collection<InsertValuesSegment> insertValuesSegments) {
         InsertValuesToken result = new InsertValuesToken(getStartIndex(insertValuesSegments), getStopIndex(insertValuesSegments));
         Iterator<ShardingCondition> shardingConditions = null;
-        if (rewriteStatement.getOptimizedStatement() instanceof ShardingInsertOptimizedStatement) {
-            shardingConditions = rewriteStatement.getShardingConditions().getConditions().iterator();
+        if (rewriteStatement.getOptimizedStatement() instanceof InsertOptimizedStatement) {
+            shardingConditions = rewriteStatement.getShardingConditions().getConditions().isEmpty() ? null : rewriteStatement.getShardingConditions().getConditions().iterator();
         }
         for (InsertValue each : ((InsertOptimizedStatement) rewriteStatement.getOptimizedStatement()).getInsertValues()) {
             Collection<DataNode> dataNodes = null == shardingConditions ? Collections.<DataNode>emptyList() : shardingConditions.next().getDataNodes();

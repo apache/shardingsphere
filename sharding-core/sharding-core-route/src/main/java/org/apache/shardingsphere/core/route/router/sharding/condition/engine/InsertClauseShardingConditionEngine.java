@@ -20,13 +20,13 @@ package org.apache.shardingsphere.core.route.router.sharding.condition.engine;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
-import org.apache.shardingsphere.core.route.router.sharding.keygen.GeneratedKey;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingInsertOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.SimpleExpressionSegment;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
+import org.apache.shardingsphere.core.route.router.sharding.keygen.GeneratedKey;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
 
@@ -54,7 +54,7 @@ public final class InsertClauseShardingConditionEngine {
      * @param parameters SQL parameters
      * @return sharding conditions
      */
-    public List<ShardingCondition> createShardingConditions(final ShardingInsertOptimizedStatement shardingStatement, final GeneratedKey generatedKey, final List<Object> parameters) {
+    public List<ShardingCondition> createShardingConditions(final InsertOptimizedStatement shardingStatement, final GeneratedKey generatedKey, final List<Object> parameters) {
         List<ShardingCondition> result = new LinkedList<>();
         String tableName = shardingStatement.getTables().getSingleTableName();
         Collection<String> columnNames = getColumnNames(shardingStatement, generatedKey);
@@ -67,7 +67,7 @@ public final class InsertClauseShardingConditionEngine {
         return result;
     }
     
-    private Collection<String> getColumnNames(final ShardingInsertOptimizedStatement shardingStatement, final GeneratedKey generatedKey) {
+    private Collection<String> getColumnNames(final InsertOptimizedStatement shardingStatement, final GeneratedKey generatedKey) {
         if (null == generatedKey || !generatedKey.isGenerated()) {
             return shardingStatement.getColumnNames();
         }

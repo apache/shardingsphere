@@ -22,13 +22,12 @@ import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.encrypt.EncryptOptimizeEngineFactory;
 import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.ShardingOptimizeEngineFactory;
-import org.apache.shardingsphere.core.route.router.sharding.keygen.GeneratedKey;
 import org.apache.shardingsphere.core.optimize.sharding.statement.ShardingOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingInsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
 import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
@@ -39,6 +38,7 @@ import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCo
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.apache.shardingsphere.core.route.router.sharding.condition.engine.InsertClauseShardingConditionEngine;
 import org.apache.shardingsphere.core.route.router.sharding.condition.engine.WhereClauseShardingConditionEngine;
+import org.apache.shardingsphere.core.route.router.sharding.keygen.GeneratedKey;
 import org.apache.shardingsphere.core.route.router.sharding.validator.ShardingStatementValidator;
 import org.apache.shardingsphere.core.route.router.sharding.validator.ShardingStatementValidatorFactory;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
@@ -97,7 +97,7 @@ public final class ShardingRouter {
         if (shardingStatementValidator.isPresent()) {
             shardingStatementValidator.get().validate(shardingRule, sqlStatement);
         }
-        ShardingOptimizedStatement shardingStatement = ShardingOptimizeEngineFactory.newInstance(sqlStatement).optimize(shardingRule, metaData.getTables(), logicSQL, parameters, sqlStatement);
+        ShardingOptimizedStatement shardingStatement = ShardingOptimizeEngineFactory.newInstance(shardingRule, metaData.getTables(), logicSQL, parameters, sqlStatement);
         Optional<GeneratedKey> generatedKey = sqlStatement instanceof InsertStatement
                 ? GeneratedKey.getGenerateKey(shardingRule, metaData.getTables(), parameters, (InsertStatement) sqlStatement) : Optional.<GeneratedKey>absent();
         ShardingConditions shardingConditions = getShardingConditions(parameters, shardingStatement, generatedKey.orNull());
@@ -111,11 +111,10 @@ public final class ShardingRouter {
         if (needMergeShardingValues) {
             Preconditions.checkState(1 == routingResult.getRoutingUnits().size(), "Must have one sharding with subquery.");
         }
-        EncryptOptimizedStatement encryptStatement = EncryptOptimizeEngineFactory.newInstance(sqlStatement).optimize(
-                shardingRule.getEncryptRule(), metaData.getTables(), logicSQL, parameters, sqlStatement);
+        EncryptOptimizedStatement encryptStatement = EncryptOptimizeEngineFactory.newInstance(shardingRule.getEncryptRule(), metaData.getTables(), logicSQL, parameters, sqlStatement);
         SQLRouteResult result = new SQLRouteResult(shardingStatement, encryptStatement, shardingConditions, generatedKey.orNull());
         result.setRoutingResult(routingResult);
-        if (shardingStatement instanceof ShardingInsertOptimizedStatement) {
+        if (shardingStatement instanceof InsertOptimizedStatement) {
             setGeneratedValues(result);
         }
         return result;
@@ -123,8 +122,8 @@ public final class ShardingRouter {
     
     private ShardingConditions getShardingConditions(final List<Object> parameters, final ShardingOptimizedStatement shardingStatement, final GeneratedKey generatedKey) {
         if (shardingStatement.getSQLStatement() instanceof DMLStatement) {
-            if (shardingStatement instanceof ShardingInsertOptimizedStatement) {
-                ShardingInsertOptimizedStatement shardingInsertStatement = (ShardingInsertOptimizedStatement) shardingStatement;
+            if (shardingStatement instanceof InsertOptimizedStatement) {
+                InsertOptimizedStatement shardingInsertStatement = (InsertOptimizedStatement) shardingStatement;
                 return new ShardingConditions(new InsertClauseShardingConditionEngine(shardingRule).createShardingConditions(shardingInsertStatement, generatedKey, parameters));
             }
             return new ShardingConditions(new WhereClauseShardingConditionEngine(shardingRule, metaData.getTables()).createShardingConditions(shardingStatement.getSQLStatement(), parameters));
