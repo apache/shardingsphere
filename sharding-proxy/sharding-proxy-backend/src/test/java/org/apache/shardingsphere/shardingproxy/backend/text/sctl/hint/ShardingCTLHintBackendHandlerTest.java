@@ -19,12 +19,14 @@ package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.api.hint.HintManager;
+import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
+import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.exception.InvalidShardingCTLFormatException;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.exception.UnsupportedShardingCTLTypeException;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintManagerHolder;
@@ -41,6 +43,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -51,6 +54,10 @@ public final class ShardingCTLHintBackendHandlerTest {
     
     @Before
     public void setUp() {
+        LogicSchema logicSchema = mock(LogicSchema.class);
+        ShardingRule shardingRule = mock(ShardingRule.class);
+        when(logicSchema.getShardingRule()).thenReturn(shardingRule);
+        when(backendConnection.getLogicSchema()).thenReturn(logicSchema);
         when(backendConnection.isSupportHint()).thenReturn(true);
     }
     

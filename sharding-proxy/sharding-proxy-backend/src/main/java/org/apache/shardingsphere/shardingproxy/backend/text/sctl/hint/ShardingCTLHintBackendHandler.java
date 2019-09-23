@@ -34,21 +34,21 @@ public final class ShardingCTLHintBackendHandler implements TextProtocolBackendH
     
     private final String sql;
     
-    private final boolean supportHint;
+    private final BackendConnection backendConnection;
     
     private HintCommandExecutor hintCommandExecutor;
     
     public ShardingCTLHintBackendHandler(final String sql, final BackendConnection backendConnection) {
         this.sql = sql;
-        this.supportHint = backendConnection.isSupportHint();
+        this.backendConnection = backendConnection;
     }
     
     @Override
     public BackendResponse execute() {
-        if (!supportHint) {
+        if (!backendConnection.isSupportHint()) {
             throw new UnsupportedOperationException(String.format("%s should be true, please check your config", ShardingPropertiesConstant.PROXY_HINT_ENABLED.getKey()));
         }
-        hintCommandExecutor = HintCommandExecutorFactory.newInstance(sql);
+        hintCommandExecutor = HintCommandExecutorFactory.newInstance(backendConnection.getLogicSchema().getShardingRule(), sql);
         return hintCommandExecutor.execute();
     }
     

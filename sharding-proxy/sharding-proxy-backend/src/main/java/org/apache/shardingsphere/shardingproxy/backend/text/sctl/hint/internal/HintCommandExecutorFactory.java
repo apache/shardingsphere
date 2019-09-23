@@ -20,6 +20,7 @@ package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal;
 import com.google.common.base.Optional;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.ShardingCTLHintParser;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.ShardingCTLHintStatement;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintAddDatabaseShardingValueCommand;
@@ -50,10 +51,11 @@ public final class HintCommandExecutorFactory {
     /**
      * Create hint command executor instance.
      *
-     * @param sql SQL
+     * @param shardingRule sharding rule
+     * @param sql          SQL
      * @return hint command executor
      */
-    public static HintCommandExecutor newInstance(final String sql) {
+    public static HintCommandExecutor newInstance(final ShardingRule shardingRule, final String sql) {
         Optional<ShardingCTLHintStatement> shardingTCLStatement = new ShardingCTLHintParser(sql).doParse();
         if (!shardingTCLStatement.isPresent()) {
             return new HintErrorFormatExecutor(sql);
@@ -63,7 +65,7 @@ public final class HintCommandExecutorFactory {
         if (hintUpdateExecutor.isPresent()) {
             return hintUpdateExecutor.get();
         }
-        Optional<HintCommandExecutor> hintQueryExecutor = getHintQueryExecutor(hintCommand);
+        Optional<HintCommandExecutor> hintQueryExecutor = getHintQueryExecutor(hintCommand, shardingRule);
         if (hintQueryExecutor.isPresent()) {
             return hintQueryExecutor.get();
         }
@@ -89,12 +91,12 @@ public final class HintCommandExecutorFactory {
         return Optional.absent();
     }
     
-    private static Optional<HintCommandExecutor> getHintQueryExecutor(final HintCommand hintCommand) {
+    private static Optional<HintCommandExecutor> getHintQueryExecutor(final HintCommand hintCommand, final ShardingRule shardingRule) {
         if (hintCommand instanceof HintShowStatusCommand) {
             return Optional.of((HintCommandExecutor) new HintShowStatusExecutor());
         }
         if (hintCommand instanceof HintShowTableStatusCommand) {
-            return Optional.of((HintCommandExecutor) new HintShowTableStatusExecutor());
+            return Optional.of((HintCommandExecutor) new HintShowTableStatusExecutor(shardingRule));
         }
         return Optional.absent();
     }

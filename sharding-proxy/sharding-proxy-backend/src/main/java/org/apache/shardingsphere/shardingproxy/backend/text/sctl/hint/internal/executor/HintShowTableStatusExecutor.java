@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.executor;
 
 import com.google.common.base.Joiner;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
+import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
@@ -31,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -39,7 +42,10 @@ import java.util.Map;
  *
  * @author liya
  */
+@RequiredArgsConstructor
 public final class HintShowTableStatusExecutor implements HintCommandExecutor {
+    
+    private final ShardingRule shardingRule;
     
     private List<QueryHeader> queryHeaders;
     
@@ -57,9 +63,25 @@ public final class HintShowTableStatusExecutor implements HintCommandExecutor {
     
     private Iterator<HintShowTableStatusResult> queryHintTableStatus() {
         Map<String, HintShowTableStatusResult> results = new HashMap<>();
-        fillDatabaseShardingValues(results, HintManager.getDatabaseShardingValuesMap());
-        fillTableShardingValues(results, HintManager.getTableShardingValuesMap());
+        if (HintManager.isDatabaseShardingOnly()) {
+            fillShardingValuesDatabaseShardingOnly(results, HintManager.getDatabaseShardingValues());
+        } else {
+            fillDatabaseShardingValues(results, HintManager.getDatabaseShardingValuesMap());
+            fillTableShardingValues(results, HintManager.getTableShardingValuesMap());
+        }
         return results.values().iterator();
+    }
+    
+    private void fillShardingValuesDatabaseShardingOnly(final Map<String, HintShowTableStatusResult> results, final Collection<Comparable<?>> databaseShardingValues) {
+        List<String> stringDatabaseShardingValues = new LinkedList<>();
+        for (Comparable<?> each : databaseShardingValues) {
+            stringDatabaseShardingValues.add(String.valueOf(each));
+        }
+        for (String each : shardingRule.getLogicTableNames()) {
+            HintShowTableStatusResult hintShowTableStatusResult = new HintShowTableStatusResult(each);
+            hintShowTableStatusResult.getDatabaseShardingValues().addAll(stringDatabaseShardingValues);
+            results.put(each, hintShowTableStatusResult);
+        }
     }
     
     private void fillDatabaseShardingValues(final Map<String, HintShowTableStatusResult> results, final Map<String, Collection<Comparable<?>>> databaseShardingValuesMap) {

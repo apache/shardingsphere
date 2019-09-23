@@ -379,6 +379,19 @@ public class ShardingRule implements BaseRule {
     }
     
     /**
+     * Get logic table names.
+     *
+     * @return logic table name
+     */
+    public Collection<String> getLogicTableNames() {
+        Collection<String> result = new LinkedList<>();
+        for (TableRule each : tableRules) {
+            result.add(each.getLogicTable());
+        }
+        return result;
+    }
+    
+    /**
      * Find data node by logic table name.
      *
      * @param logicTableName logic table name
