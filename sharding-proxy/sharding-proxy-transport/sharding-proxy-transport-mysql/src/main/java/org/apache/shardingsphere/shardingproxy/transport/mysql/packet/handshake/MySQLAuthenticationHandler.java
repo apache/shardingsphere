@@ -24,8 +24,10 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shardingsphere.core.rule.ProxyUser;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Map.Entry;
 
 /**
@@ -46,15 +48,23 @@ public final class MySQLAuthenticationHandler {
      * @param response41 handshake response
      * @return login success or failure
      */
-    public boolean login(final MySQLHandshakeResponse41Packet response41) {
+    public Optional<MySQLServerErrorCode> login(final MySQLHandshakeResponse41Packet response41) {
         Optional<ProxyUser> user = getUser(response41.getUsername());
-        if (!user.isPresent()) {
-            return false;
+        if (!user.isPresent() || !isPasswordRight(user.get().getPassword(), response41.getAuthResponse())) {
+            return Optional.of(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR);
         }
-        boolean isPasswordRight = Strings.isNullOrEmpty(user.get().getPassword()) || Arrays.equals(getAuthCipherBytes(user.get().getPassword()), response41.getAuthResponse());
-        boolean isAuthorizedSchema = Strings.isNullOrEmpty(response41.getDatabase()) || CollectionUtils.isEmpty(user.get().getAuthorizedSchemas())
-                || user.get().getAuthorizedSchemas().contains(response41.getDatabase());
-        return isPasswordRight && isAuthorizedSchema;
+        if (!isAuthorizedSchema(user.get().getAuthorizedSchemas(), response41.getDatabase())) {
+            return Optional.of(MySQLServerErrorCode.ER_DBACCESS_DENIED_ERROR);
+        }
+        return Optional.absent();
+    }
+
+    private boolean isPasswordRight(final String password, final byte[] authResponse) {
+        return Strings.isNullOrEmpty(password) || Arrays.equals(getAuthCipherBytes(password), authResponse);
+    }
+
+    private boolean isAuthorizedSchema(final Collection<String> authorizedSchemas, final String schema) {
+        return Strings.isNullOrEmpty(schema) || CollectionUtils.isEmpty(authorizedSchemas) || authorizedSchemas.contains(schema);
     }
     
     private Optional<ProxyUser> getUser(final String username) {
