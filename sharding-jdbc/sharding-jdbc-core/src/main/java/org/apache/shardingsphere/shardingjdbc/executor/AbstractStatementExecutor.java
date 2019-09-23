@@ -164,15 +164,15 @@ public class AbstractStatementExecutor {
         if (null == optimizedStatement) {
             return;
         }
-        if (optimizedStatement.getSQLStatement() instanceof CreateTableStatement) {
+        if (optimizedStatement.getSqlStatement() instanceof CreateTableStatement) {
             refreshTableMetaDataForCreateTable(runtimeContext, optimizedStatement);
-        } else if (optimizedStatement.getSQLStatement() instanceof AlterTableStatement) {
+        } else if (optimizedStatement.getSqlStatement() instanceof AlterTableStatement) {
             refreshTableMetaDataForAlterTable(runtimeContext, optimizedStatement);
-        } else if (optimizedStatement.getSQLStatement() instanceof DropTableStatement) {
+        } else if (optimizedStatement.getSqlStatement() instanceof DropTableStatement) {
             refreshTableMetaDataForDropTable(runtimeContext, optimizedStatement);
-        } else if (optimizedStatement.getSQLStatement() instanceof CreateIndexStatement) {
+        } else if (optimizedStatement.getSqlStatement() instanceof CreateIndexStatement) {
             refreshTableMetaDataForCreateIndex(runtimeContext, optimizedStatement);
-        } else if (optimizedStatement.getSQLStatement() instanceof DropIndexStatement) {
+        } else if (optimizedStatement.getSqlStatement() instanceof DropIndexStatement) {
             refreshTableMetaDataForDropIndex(runtimeContext, optimizedStatement);
         }
     }
@@ -194,7 +194,7 @@ public class AbstractStatementExecutor {
     }
     
     private void refreshTableMetaDataForCreateIndex(final ShardingRuntimeContext runtimeContext, final OptimizedStatement optimizedStatement) {
-        CreateIndexStatement createIndexStatement = (CreateIndexStatement) optimizedStatement.getSQLStatement();
+        CreateIndexStatement createIndexStatement = (CreateIndexStatement) optimizedStatement.getSqlStatement();
         if (null == createIndexStatement.getIndex()) {
             return;
         }
@@ -202,7 +202,7 @@ public class AbstractStatementExecutor {
     }
     
     private void refreshTableMetaDataForDropIndex(final ShardingRuntimeContext runtimeContext, final OptimizedStatement optimizedStatement) {
-        DropIndexStatement dropIndexStatement = (DropIndexStatement) optimizedStatement.getSQLStatement();
+        DropIndexStatement dropIndexStatement = (DropIndexStatement) optimizedStatement.getSqlStatement();
         Collection<String> indexNames = getIndexNames(dropIndexStatement);
         TableMetaData tableMetaData = runtimeContext.getMetaData().getTables().get(optimizedStatement.getTables().getSingleTableName());
         if (!optimizedStatement.getTables().isEmpty()) {

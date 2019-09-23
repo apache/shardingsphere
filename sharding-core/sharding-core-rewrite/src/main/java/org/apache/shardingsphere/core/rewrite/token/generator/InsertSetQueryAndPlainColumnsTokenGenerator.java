@@ -54,7 +54,7 @@ public final class InsertSetQueryAndPlainColumnsTokenGenerator implements Option
     }
     
     private boolean isNeedToGenerateSQLToken(final OptimizedStatement optimizedStatement) {
-        Optional<SetAssignmentsSegment> setAssignmentsSegment = optimizedStatement.getSQLStatement().findSQLSegment(SetAssignmentsSegment.class);
+        Optional<SetAssignmentsSegment> setAssignmentsSegment = optimizedStatement.getSqlStatement().findSQLSegment(SetAssignmentsSegment.class);
         return optimizedStatement instanceof InsertOptimizedStatement && setAssignmentsSegment.isPresent();
     }
     
@@ -87,7 +87,7 @@ public final class InsertSetQueryAndPlainColumnsTokenGenerator implements Option
     }
     
     private int getStartIndex(final InsertOptimizedStatement optimizedStatement) {
-        Optional<SetAssignmentsSegment> setAssignmentsSegment = optimizedStatement.getSQLStatement().findSQLSegment(SetAssignmentsSegment.class);
+        Optional<SetAssignmentsSegment> setAssignmentsSegment = optimizedStatement.getSqlStatement().findSQLSegment(SetAssignmentsSegment.class);
         Preconditions.checkState(setAssignmentsSegment.isPresent());
         List<AssignmentSegment> assignments = new ArrayList<>(setAssignmentsSegment.get().getAssignments());
         return assignments.get(assignments.size() - 1).getStopIndex() + 1;

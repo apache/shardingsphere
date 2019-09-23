@@ -66,7 +66,7 @@ public final class RoutingEngineFactory {
      */
     public static RoutingEngine newInstance(final ShardingRule shardingRule,
                                             final ShardingSphereMetaData metaData, final OptimizedStatement optimizedStatement, final ShardingConditions shardingConditions) {
-        SQLStatement sqlStatement = optimizedStatement.getSQLStatement();
+        SQLStatement sqlStatement = optimizedStatement.getSqlStatement();
         Collection<String> tableNames = optimizedStatement.getTables().getTableNames();
         if (sqlStatement instanceof TCLStatement) {
             return new DatabaseBroadcastRoutingEngine(shardingRule);
@@ -86,7 +86,7 @@ public final class RoutingEngineFactory {
         if (shardingRule.isAllBroadcastTables(tableNames)) {
             return sqlStatement instanceof SelectStatement ? new UnicastRoutingEngine(shardingRule, tableNames) : new DatabaseBroadcastRoutingEngine(shardingRule);
         }
-        if (optimizedStatement.getSQLStatement() instanceof DMLStatement && shardingConditions.isAlwaysFalse() || tableNames.isEmpty()) {
+        if (optimizedStatement.getSqlStatement() instanceof DMLStatement && shardingConditions.isAlwaysFalse() || tableNames.isEmpty()) {
             return new UnicastRoutingEngine(shardingRule, tableNames);
         }
         return getShardingRoutingEngine(shardingRule, optimizedStatement, shardingConditions, tableNames);

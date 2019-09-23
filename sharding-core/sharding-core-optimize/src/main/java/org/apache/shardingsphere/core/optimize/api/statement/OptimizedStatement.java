@@ -32,7 +32,7 @@ public interface OptimizedStatement {
      * 
      * @return SQL statement
      */
-    SQLStatement getSQLStatement();
+    SQLStatement getSqlStatement();
     
     /**
      * Get tables.

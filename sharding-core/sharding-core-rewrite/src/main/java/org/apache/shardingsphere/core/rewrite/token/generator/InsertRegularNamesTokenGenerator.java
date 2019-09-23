@@ -51,13 +51,13 @@ public final class InsertRegularNamesTokenGenerator implements OptionalSQLTokenG
     }
     
     private boolean isNeedToGenerateSQLToken(final OptimizedStatement optimizedStatement, final BaseRule baseRule) {
-        Optional<InsertColumnsSegment> insertColumnsSegment = optimizedStatement.getSQLStatement().findSQLSegment(InsertColumnsSegment.class);
+        Optional<InsertColumnsSegment> insertColumnsSegment = optimizedStatement.getSqlStatement().findSQLSegment(InsertColumnsSegment.class);
         return !(baseRule instanceof MasterSlaveRule) 
                 && optimizedStatement instanceof InsertOptimizedStatement && insertColumnsSegment.isPresent() && insertColumnsSegment.get().getColumns().isEmpty();
     }
     
     private Optional<InsertRegularNamesToken> createInsertColumnsToken(final RewriteStatement rewriteStatement, final BaseRule baseRule) {
-        Optional<InsertColumnsSegment> insertColumnsSegment = rewriteStatement.getOptimizedStatement().getSQLStatement().findSQLSegment(InsertColumnsSegment.class);
+        Optional<InsertColumnsSegment> insertColumnsSegment = rewriteStatement.getOptimizedStatement().getSqlStatement().findSQLSegment(InsertColumnsSegment.class);
         return insertColumnsSegment.isPresent()
                 ? Optional.of(new InsertRegularNamesToken(insertColumnsSegment.get().getStopIndex(), 
                 getActualInsertColumns((InsertRewriteStatement) rewriteStatement, baseRule), !isNeedToAppendColumns((InsertOptimizedStatement) rewriteStatement.getOptimizedStatement(), baseRule)))

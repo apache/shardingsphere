@@ -110,7 +110,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
             resultSets.add(resultSet);
             queryResults.add(new StreamQueryResult(resultSet, connection.getRuntimeContext().getRule(), connection.getRuntimeContext().getProps()));
         }
-        if (sqlRouteResult.getShardingStatement() instanceof ShardingSelectOptimizedStatement || sqlRouteResult.getShardingStatement().getSQLStatement() instanceof DALStatement) {
+        if (sqlRouteResult.getShardingStatement() instanceof ShardingSelectOptimizedStatement || sqlRouteResult.getShardingStatement().getSqlStatement() instanceof DALStatement) {
             MergeEngine mergeEngine = MergeEngineFactory.newInstance(connection.getRuntimeContext().getDatabaseType(),
                     connection.getRuntimeContext().getRule(), sqlRouteResult, connection.getRuntimeContext().getMetaData().getTables(), queryResults);
             currentResultSet = getCurrentResultSet(resultSets, mergeEngine);
@@ -294,6 +294,6 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     }
     
     private Optional<GeneratedKey> getGeneratedKey() {
-        return null != sqlRouteResult && sqlRouteResult.getShardingStatement().getSQLStatement() instanceof InsertStatement ? sqlRouteResult.getGeneratedKey() : Optional.<GeneratedKey>absent();
+        return null != sqlRouteResult && sqlRouteResult.getShardingStatement().getSqlStatement() instanceof InsertStatement ? sqlRouteResult.getGeneratedKey() : Optional.<GeneratedKey>absent();
     }
 }

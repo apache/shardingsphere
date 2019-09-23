@@ -36,7 +36,7 @@ public final class InsertGeneratedKeyNameTokenGenerator implements OptionalSQLTo
     @Override
     public Optional<InsertGeneratedKeyNameToken> generateSQLToken(
             final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder, final ShardingRule shardingRule, final boolean isQueryWithCipherColumn) {
-        Optional<InsertColumnsSegment> insertColumnsSegment = rewriteStatement.getOptimizedStatement().getSQLStatement().findSQLSegment(InsertColumnsSegment.class);
+        Optional<InsertColumnsSegment> insertColumnsSegment = rewriteStatement.getOptimizedStatement().getSqlStatement().findSQLSegment(InsertColumnsSegment.class);
         if (!insertColumnsSegment.isPresent() || insertColumnsSegment.get().getColumns().isEmpty()) {
             return Optional.absent();
         }

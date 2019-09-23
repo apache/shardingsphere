@@ -49,12 +49,12 @@ public final class InsertCipherNameTokenGenerator implements CollectionSQLTokenG
     }
     
     private boolean isNeedToGenerateSQLToken(final OptimizedStatement optimizedStatement) {
-        Optional<InsertColumnsSegment> insertColumnsSegment = optimizedStatement.getSQLStatement().findSQLSegment(InsertColumnsSegment.class);
+        Optional<InsertColumnsSegment> insertColumnsSegment = optimizedStatement.getSqlStatement().findSQLSegment(InsertColumnsSegment.class);
         return optimizedStatement instanceof InsertOptimizedStatement && insertColumnsSegment.isPresent() && !insertColumnsSegment.get().getColumns().isEmpty();
     }
     
     private Collection<InsertCipherNameToken> createInsertColumnTokens(final InsertOptimizedStatement optimizedStatement, final EncryptRule encryptRule) {
-        Optional<InsertColumnsSegment> insertColumnsSegment = optimizedStatement.getSQLStatement().findSQLSegment(InsertColumnsSegment.class);
+        Optional<InsertColumnsSegment> insertColumnsSegment = optimizedStatement.getSqlStatement().findSQLSegment(InsertColumnsSegment.class);
         if (!insertColumnsSegment.isPresent()) {
             return Collections.emptyList();
         }

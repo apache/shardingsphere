@@ -102,7 +102,7 @@ public final class ShardingRouter {
                 ? GeneratedKey.getGenerateKey(shardingRule, metaData.getTables(), parameters, (InsertStatement) sqlStatement) : Optional.<GeneratedKey>absent();
         ShardingConditions shardingConditions = getShardingConditions(parameters, shardingStatement, generatedKey.orNull());
         boolean needMergeShardingValues = isNeedMergeShardingValues(shardingStatement);
-        if (shardingStatement.getSQLStatement() instanceof DMLStatement && needMergeShardingValues) {
+        if (shardingStatement.getSqlStatement() instanceof DMLStatement && needMergeShardingValues) {
             checkSubqueryShardingValues(shardingStatement, shardingConditions);
             mergeShardingConditions(shardingConditions);
         }
@@ -121,12 +121,12 @@ public final class ShardingRouter {
     }
     
     private ShardingConditions getShardingConditions(final List<Object> parameters, final ShardingOptimizedStatement shardingStatement, final GeneratedKey generatedKey) {
-        if (shardingStatement.getSQLStatement() instanceof DMLStatement) {
+        if (shardingStatement.getSqlStatement() instanceof DMLStatement) {
             if (shardingStatement instanceof InsertOptimizedStatement) {
                 InsertOptimizedStatement shardingInsertStatement = (InsertOptimizedStatement) shardingStatement;
                 return new ShardingConditions(new InsertClauseShardingConditionEngine(shardingRule).createShardingConditions(shardingInsertStatement, generatedKey, parameters));
             }
-            return new ShardingConditions(new WhereClauseShardingConditionEngine(shardingRule, metaData.getTables()).createShardingConditions(shardingStatement.getSQLStatement(), parameters));
+            return new ShardingConditions(new WhereClauseShardingConditionEngine(shardingRule, metaData.getTables()).createShardingConditions(shardingStatement.getSqlStatement(), parameters));
         }
         return new ShardingConditions(Collections.<ShardingCondition>emptyList());
     }

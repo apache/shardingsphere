@@ -44,13 +44,13 @@ public final class InsertValuesTokenGenerator implements OptionalSQLTokenGenerat
     @Override
     public Optional<InsertValuesToken> generateSQLToken(final RewriteStatement rewriteStatement, 
                                                         final ParameterBuilder parameterBuilder, final EncryptRule encryptRule, final boolean isQueryWithCipherColumn) {
-        Collection<InsertValuesSegment> insertValuesSegments = rewriteStatement.getOptimizedStatement().getSQLStatement().findSQLSegments(InsertValuesSegment.class);
+        Collection<InsertValuesSegment> insertValuesSegments = rewriteStatement.getOptimizedStatement().getSqlStatement().findSQLSegments(InsertValuesSegment.class);
         return isNeedToGenerateSQLToken(rewriteStatement.getOptimizedStatement(), insertValuesSegments)
                 ? Optional.of(createInsertValuesToken(rewriteStatement, insertValuesSegments)) : Optional.<InsertValuesToken>absent();
     }
     
     private boolean isNeedToGenerateSQLToken(final OptimizedStatement optimizedStatement, final Collection<InsertValuesSegment> insertValuesSegments) {
-        return optimizedStatement.getSQLStatement() instanceof InsertStatement && !insertValuesSegments.isEmpty();
+        return optimizedStatement.getSqlStatement() instanceof InsertStatement && !insertValuesSegments.isEmpty();
     }
     
     private InsertValuesToken createInsertValuesToken(final RewriteStatement rewriteStatement, final Collection<InsertValuesSegment> insertValuesSegments) {

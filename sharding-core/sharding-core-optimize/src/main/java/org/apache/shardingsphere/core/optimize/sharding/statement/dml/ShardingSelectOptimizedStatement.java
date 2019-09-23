@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.optimize.sharding.statement.dml;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -52,7 +51,6 @@ import java.util.Map;
 @ToString
 public final class ShardingSelectOptimizedStatement implements ShardingOptimizedStatement {
     
-    @Getter(AccessLevel.NONE)
     private final SQLStatement sqlStatement;
     
     private final Tables tables;
@@ -148,10 +146,5 @@ public final class ShardingSelectOptimizedStatement implements ShardingOptimized
      */
     public boolean isSameGroupByAndOrderByItems() {
         return !groupBy.getItems().isEmpty() && groupBy.getItems().equals(orderBy.getItems());
-    }
-    
-    @Override
-    public SQLStatement getSQLStatement() {
-        return sqlStatement;
     }
 }

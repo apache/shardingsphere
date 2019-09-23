@@ -115,15 +115,15 @@ public final class ShardingSchema extends LogicSchema {
         if (null == optimizedStatement) {
             return;
         }
-        if (optimizedStatement.getSQLStatement() instanceof CreateTableStatement) {
+        if (optimizedStatement.getSqlStatement() instanceof CreateTableStatement) {
             refreshTableMetaDataForCreateTable(optimizedStatement);
-        } else if (optimizedStatement.getSQLStatement() instanceof AlterTableStatement) {
+        } else if (optimizedStatement.getSqlStatement() instanceof AlterTableStatement) {
             refreshTableMetaDataForAlterTable(optimizedStatement);
-        } else if (optimizedStatement.getSQLStatement() instanceof DropTableStatement) {
+        } else if (optimizedStatement.getSqlStatement() instanceof DropTableStatement) {
             refreshTableMetaDataForDropTable(optimizedStatement);
-        } else if (optimizedStatement.getSQLStatement() instanceof CreateIndexStatement) {
+        } else if (optimizedStatement.getSqlStatement() instanceof CreateIndexStatement) {
             refreshTableMetaDataForCreateIndex(optimizedStatement);
-        } else if (optimizedStatement.getSQLStatement() instanceof DropIndexStatement) {
+        } else if (optimizedStatement.getSqlStatement() instanceof DropIndexStatement) {
             refreshTableMetaDataForDropIndex(optimizedStatement);
         }
     }
@@ -145,14 +145,14 @@ public final class ShardingSchema extends LogicSchema {
     }
     
     private void refreshTableMetaDataForCreateIndex(final OptimizedStatement optimizedStatement) {
-        CreateIndexStatement createIndexStatement = (CreateIndexStatement) optimizedStatement.getSQLStatement();
+        CreateIndexStatement createIndexStatement = (CreateIndexStatement) optimizedStatement.getSqlStatement();
         if (null != createIndexStatement.getIndex()) {
             getMetaData().getTables().get(optimizedStatement.getTables().getSingleTableName()).getIndexes().add(createIndexStatement.getIndex().getName());
         }
     }
     
     private void refreshTableMetaDataForDropIndex(final OptimizedStatement optimizedStatement) {
-        DropIndexStatement dropIndexStatement = (DropIndexStatement) optimizedStatement.getSQLStatement();
+        DropIndexStatement dropIndexStatement = (DropIndexStatement) optimizedStatement.getSqlStatement();
         Collection<String> indexNames = getIndexNames(dropIndexStatement);
         if (!optimizedStatement.getTables().isEmpty()) {
             getMetaData().getTables().get(optimizedStatement.getTables().getSingleTableName()).getIndexes().removeAll(indexNames);

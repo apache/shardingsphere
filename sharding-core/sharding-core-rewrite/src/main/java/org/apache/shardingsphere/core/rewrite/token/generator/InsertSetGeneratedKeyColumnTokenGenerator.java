@@ -40,7 +40,7 @@ public final class InsertSetGeneratedKeyColumnTokenGenerator implements Optional
     @Override
     public Optional<InsertSetGeneratedKeyColumnToken> generateSQLToken(final RewriteStatement rewriteStatement, 
                                                                        final ParameterBuilder parameterBuilder, final ShardingRule shardingRule, final boolean isQueryWithCipherColumn) {
-        Optional<SetAssignmentsSegment> setAssignmentsSegment = rewriteStatement.getOptimizedStatement().getSQLStatement().findSQLSegment(SetAssignmentsSegment.class);
+        Optional<SetAssignmentsSegment> setAssignmentsSegment = rewriteStatement.getOptimizedStatement().getSqlStatement().findSQLSegment(SetAssignmentsSegment.class);
         if (!(rewriteStatement.getOptimizedStatement() instanceof InsertOptimizedStatement && setAssignmentsSegment.isPresent())) {
             return Optional.absent();
         }

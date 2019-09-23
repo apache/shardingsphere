@@ -87,7 +87,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
             return new UpdateResponse();
         }
         ShardingOptimizedStatement shardingStatement = routeResult.getShardingStatement();
-        if (isExecuteDDLInXATransaction(shardingStatement.getSQLStatement())) {
+        if (isExecuteDDLInXATransaction(shardingStatement.getSqlStatement())) {
             return new ErrorResponse(new TableModifyInTransactionException(shardingStatement.getTables().isSingleTable() ? shardingStatement.getTables().getSingleTableName() : "unknown_table"));
         }
         response = executeEngine.execute(routeResult);

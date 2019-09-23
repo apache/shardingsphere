@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.optimize.api.statement;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
@@ -26,7 +25,6 @@ import org.apache.shardingsphere.core.optimize.api.segment.Tables;
 import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.statement.ShardingOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 
 import java.util.Collection;
@@ -42,7 +40,6 @@ import java.util.List;
 @ToString
 public final class InsertOptimizedStatement implements ShardingOptimizedStatement, EncryptOptimizedStatement {
     
-    @Getter(AccessLevel.NONE)
     private final InsertStatement sqlStatement;
     
     private final Tables tables;
@@ -67,10 +64,5 @@ public final class InsertOptimizedStatement implements ShardingOptimizedStatemen
             parametersOffset += insertValue.getParametersCount();
         }
         return result;
-    }
-    
-    @Override
-    public SQLStatement getSQLStatement() {
-        return sqlStatement;
     }
 }

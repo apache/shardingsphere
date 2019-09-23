@@ -61,8 +61,8 @@ public final class TableBroadcastRoutingEngine implements RoutingEngine {
     }
     
     private Collection<String> getLogicTableNames() {
-        return optimizedStatement.getSQLStatement() instanceof DropIndexStatement
-                ? getTableNames((DropIndexStatement) optimizedStatement.getSQLStatement()) : optimizedStatement.getTables().getTableNames();
+        return optimizedStatement.getSqlStatement() instanceof DropIndexStatement
+                ? getTableNames((DropIndexStatement) optimizedStatement.getSqlStatement()) : optimizedStatement.getTables().getTableNames();
     }
     
     private Collection<String> getTableNames(final DropIndexStatement dropIndexStatement) {

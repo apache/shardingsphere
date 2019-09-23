@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.optimize.encrypt.statement;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.optimize.api.segment.Tables;
@@ -30,10 +29,9 @@ import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
  * @author zhangliang
  */
 @Getter
-@ToString(exclude = "sqlStatement")
+@ToString
 public final class EncryptConditionOptimizedStatement implements EncryptOptimizedStatement {
     
-    @Getter(AccessLevel.NONE)
     private final SQLStatement sqlStatement;
     
     private final Tables tables;
@@ -44,10 +42,5 @@ public final class EncryptConditionOptimizedStatement implements EncryptOptimize
         this.sqlStatement = sqlStatement;
         tables = new Tables(sqlStatement);
         this.encryptConditions = encryptConditions;
-    }
-    
-    @Override
-    public SQLStatement getSQLStatement() {
-        return sqlStatement;
     }
 }
