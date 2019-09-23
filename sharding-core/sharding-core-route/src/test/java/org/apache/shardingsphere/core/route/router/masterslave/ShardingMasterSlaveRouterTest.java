@@ -66,7 +66,7 @@ public class ShardingMasterSlaveRouterTest {
     private ShardingMasterSlaveRouter shardingMasterSlaveRouter;
     
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         shardingMasterSlaveRouter = new ShardingMasterSlaveRouter(Lists.newArrayList(masterSlaveRule));
         when(masterSlaveRule.getName()).thenReturn(DATASOURCE_NAME);
         when(masterSlaveRule.getMasterDataSourceName()).thenReturn(MASTER_DATASOURCE);
@@ -99,7 +99,7 @@ public class ShardingMasterSlaveRouterTest {
     
     private SQLRouteResult mockSQLRouteResult(final SQLStatement sqlStatement) {
         when(shardingOptimizedStatement.getSQLStatement()).thenReturn(sqlStatement);
-        SQLRouteResult result = new SQLRouteResult(shardingOptimizedStatement, null, null);
+        SQLRouteResult result = new SQLRouteResult(shardingOptimizedStatement, null, null, null);
         result.setRoutingResult(mockRoutingResult());
         return result;
     }

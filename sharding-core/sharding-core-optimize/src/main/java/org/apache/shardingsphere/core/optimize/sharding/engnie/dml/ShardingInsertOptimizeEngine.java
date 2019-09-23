@@ -17,11 +17,9 @@
 
 package org.apache.shardingsphere.core.optimize.sharding.engnie.dml;
 
-import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
 import org.apache.shardingsphere.core.optimize.sharding.engnie.ShardingOptimizeEngine;
-import org.apache.shardingsphere.core.optimize.sharding.segment.insert.GeneratedKey;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingInsertOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
@@ -44,15 +42,14 @@ public final class ShardingInsertOptimizeEngine implements ShardingOptimizeEngin
     public ShardingInsertOptimizedStatement optimize(final ShardingRule shardingRule, 
                                                      final TableMetas tableMetas, final String sql, final List<Object> parameters, final InsertStatement sqlStatement) {
         List<String> columnNames = sqlStatement.useDefaultColumns() ? tableMetas.getAllColumnNames(sqlStatement.getTable().getTableName()) : sqlStatement.getColumnNames();
-        Optional<GeneratedKey> generatedKey = GeneratedKey.getGenerateKey(shardingRule, tableMetas, parameters, sqlStatement);
-        int derivedColumnsCount = getDerivedColumnsCount(shardingRule, sqlStatement.getTable().getTableName(), generatedKey.isPresent() && generatedKey.get().isGenerated());
+        int derivedColumnsCount = getDerivedColumnsCount(shardingRule, sqlStatement.getTable().getTableName());
         List<InsertValue> insertValues = getInsertValues(parameters, sqlStatement, derivedColumnsCount);
-        return new ShardingInsertOptimizedStatement(sqlStatement, columnNames, generatedKey.orNull(), insertValues);
+        return new ShardingInsertOptimizedStatement(sqlStatement, columnNames, insertValues);
     }
     
-    private int getDerivedColumnsCount(final ShardingRule shardingRule, final String tableName, final boolean isGeneratedValue) {
+    private int getDerivedColumnsCount(final ShardingRule shardingRule, final String tableName) {
         int encryptDerivedColumnsCount = shardingRule.getEncryptRule().getAssistedQueryAndPlainColumns(tableName).size();
-        return isGeneratedValue ? encryptDerivedColumnsCount + 1 : encryptDerivedColumnsCount;
+        return encryptDerivedColumnsCount + 1;
     }
     
     private List<InsertValue> getInsertValues(final List<Object> parameters, final InsertStatement sqlStatement, final int derivedColumnsCount) {

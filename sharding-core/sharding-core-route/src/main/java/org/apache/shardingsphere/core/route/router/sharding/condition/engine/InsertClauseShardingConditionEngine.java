@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.route.router.sharding.condition.engine;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
-import org.apache.shardingsphere.core.optimize.sharding.segment.insert.GeneratedKey;
+import org.apache.shardingsphere.core.route.router.sharding.keygen.GeneratedKey;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingInsertOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
@@ -50,29 +50,29 @@ public final class InsertClauseShardingConditionEngine {
      * Create sharding conditions.
      * 
      * @param shardingStatement sharding insert optimized statement
+     * @param generatedKey generated key
      * @param parameters SQL parameters
      * @return sharding conditions
      */
-    public List<ShardingCondition> createShardingConditions(final ShardingInsertOptimizedStatement shardingStatement, final List<Object> parameters) {
+    public List<ShardingCondition> createShardingConditions(final ShardingInsertOptimizedStatement shardingStatement, final GeneratedKey generatedKey, final List<Object> parameters) {
         List<ShardingCondition> result = new LinkedList<>();
         String tableName = shardingStatement.getTables().getSingleTableName();
-        Collection<String> columnNames = getColumnNames(shardingStatement);
+        Collection<String> columnNames = getColumnNames(shardingStatement, generatedKey);
         for (InsertValue each : shardingStatement.getInsertValues()) {
             result.add(createShardingCondition(tableName, columnNames.iterator(), each, parameters));
         }
-        if (shardingStatement.getGeneratedKey().isPresent() && shardingStatement.getGeneratedKey().get().isGenerated()
-                && shardingRule.isShardingColumn(shardingStatement.getGeneratedKey().get().getColumnName(), tableName)) {
-            appendGeneratedKeyCondition(shardingStatement.getGeneratedKey().get(), tableName, result);
+        if (null != generatedKey && generatedKey.isGenerated() && shardingRule.isShardingColumn(generatedKey.getColumnName(), tableName)) {
+            appendGeneratedKeyCondition(generatedKey, tableName, result);
         }
         return result;
     }
     
-    private Collection<String> getColumnNames(final ShardingInsertOptimizedStatement shardingStatement) {
-        if (!shardingStatement.getGeneratedKey().isPresent() || !shardingStatement.getGeneratedKey().get().isGenerated()) {
+    private Collection<String> getColumnNames(final ShardingInsertOptimizedStatement shardingStatement, final GeneratedKey generatedKey) {
+        if (null == generatedKey || !generatedKey.isGenerated()) {
             return shardingStatement.getColumnNames();
         }
         Collection<String> result = new LinkedList<>(shardingStatement.getColumnNames());
-        result.remove(shardingStatement.getGeneratedKey().get().getColumnName());
+        result.remove(generatedKey.getColumnName());
         return result;
     }
     

@@ -92,7 +92,7 @@ public final class MergeEngineFactoryTest {
     @Test
     public void assertNewInstanceWithOtherStatement() throws SQLException {
         SQLRouteResult routeResult = new SQLRouteResult(
-                new ShardingInsertOptimizedStatement(new InsertStatement(), Collections.<String>emptyList(), null, Collections.<InsertValue>emptyList()), 
+                new ShardingInsertOptimizedStatement(new InsertStatement(), Collections.<String>emptyList(), Collections.<InsertValue>emptyList()), 
                 new EncryptTransparentOptimizedStatement(new InsertStatement()), new ShardingConditions(Collections.<ShardingCondition>emptyList()));
         assertThat(MergeEngineFactory.newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, routeResult, null, queryResults), instanceOf(TransparentMergeEngine.class));
     }

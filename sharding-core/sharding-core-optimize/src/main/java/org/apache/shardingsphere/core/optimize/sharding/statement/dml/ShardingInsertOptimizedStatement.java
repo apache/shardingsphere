@@ -17,14 +17,12 @@
 
 package org.apache.shardingsphere.core.optimize.sharding.statement.dml;
 
-import com.google.common.base.Optional;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
 import org.apache.shardingsphere.core.optimize.api.segment.Tables;
 import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.sharding.segment.insert.GeneratedKey;
 import org.apache.shardingsphere.core.optimize.sharding.statement.ShardingOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
@@ -46,25 +44,13 @@ public final class ShardingInsertOptimizedStatement implements InsertOptimizedSt
     
     private final List<String> columnNames;
     
-    private final GeneratedKey generatedKey;
-    
     private final List<InsertValue> insertValues;
     
-    public ShardingInsertOptimizedStatement(final SQLStatement sqlStatement, final List<String> columnNames, final GeneratedKey generatedKey, final List<InsertValue> insertValues) {
+    public ShardingInsertOptimizedStatement(final SQLStatement sqlStatement, final List<String> columnNames, final List<InsertValue> insertValues) {
         this.sqlStatement = sqlStatement;
         tables = new Tables(sqlStatement);
         this.columnNames = columnNames;
-        this.generatedKey = generatedKey;
         this.insertValues = insertValues;
-    }
-    
-    /**
-     * Get generated key.
-     *
-     * @return generated key
-     */
-    public Optional<GeneratedKey> getGeneratedKey() {
-        return Optional.fromNullable(generatedKey);
     }
     
     @Override

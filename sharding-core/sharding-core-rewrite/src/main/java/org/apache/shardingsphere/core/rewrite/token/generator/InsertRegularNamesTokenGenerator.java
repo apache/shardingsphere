@@ -23,6 +23,7 @@ import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingInsertOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.statement.InsertRewriteStatement;
 import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertRegularNamesToken;
 import org.apache.shardingsphere.core.rule.BaseRule;
@@ -47,7 +48,7 @@ public final class InsertRegularNamesTokenGenerator implements OptionalSQLTokenG
         if (!isNeedToGenerateSQLToken(rewriteStatement.getOptimizedStatement(), baseRule)) {
             return Optional.absent();
         }
-        return createInsertColumnsToken(rewriteStatement.getOptimizedStatement(), baseRule);
+        return createInsertColumnsToken(rewriteStatement, baseRule);
     }
     
     private boolean isNeedToGenerateSQLToken(final OptimizedStatement optimizedStatement, final BaseRule baseRule) {
@@ -56,27 +57,26 @@ public final class InsertRegularNamesTokenGenerator implements OptionalSQLTokenG
                 && optimizedStatement instanceof InsertOptimizedStatement && insertColumnsSegment.isPresent() && insertColumnsSegment.get().getColumns().isEmpty();
     }
     
-    private Optional<InsertRegularNamesToken> createInsertColumnsToken(final OptimizedStatement optimizedStatement, final BaseRule baseRule) {
-        Optional<InsertColumnsSegment> insertColumnsSegment = optimizedStatement.getSQLStatement().findSQLSegment(InsertColumnsSegment.class);
+    private Optional<InsertRegularNamesToken> createInsertColumnsToken(final RewriteStatement rewriteStatement, final BaseRule baseRule) {
+        Optional<InsertColumnsSegment> insertColumnsSegment = rewriteStatement.getOptimizedStatement().getSQLStatement().findSQLSegment(InsertColumnsSegment.class);
         return insertColumnsSegment.isPresent()
                 ? Optional.of(new InsertRegularNamesToken(insertColumnsSegment.get().getStopIndex(), 
-                getActualInsertColumns((InsertOptimizedStatement) optimizedStatement, baseRule), !isNeedToAppendColumns((InsertOptimizedStatement) optimizedStatement, baseRule)))
+                getActualInsertColumns((InsertRewriteStatement) rewriteStatement, baseRule), !isNeedToAppendColumns((InsertOptimizedStatement) rewriteStatement.getOptimizedStatement(), baseRule)))
                 : Optional.<InsertRegularNamesToken>absent();
     }
     
-    private Collection<String> getActualInsertColumns(final InsertOptimizedStatement optimizedStatement, final BaseRule baseRule) {
+    private Collection<String> getActualInsertColumns(final InsertRewriteStatement rewriteStatement, final BaseRule baseRule) {
         Collection<String> result = new LinkedList<>();
-        Map<String, String> logicAndCipherColumns = getEncryptRule(baseRule).getLogicAndCipherColumns(optimizedStatement.getTables().getSingleTableName());
-        boolean isGeneratedKey = optimizedStatement instanceof ShardingInsertOptimizedStatement 
-                && ((ShardingInsertOptimizedStatement) optimizedStatement).getGeneratedKey().isPresent() 
-                && ((ShardingInsertOptimizedStatement) optimizedStatement).getGeneratedKey().get().isGenerated();
-        for (String each : optimizedStatement.getColumnNames()) {
-            if (!isGeneratedKey || !each.equalsIgnoreCase(((ShardingInsertOptimizedStatement) optimizedStatement).getGeneratedKey().get().getColumnName())) {
+        Map<String, String> logicAndCipherColumns = getEncryptRule(baseRule).getLogicAndCipherColumns(rewriteStatement.getOptimizedStatement().getTables().getSingleTableName());
+        boolean isGeneratedKey = rewriteStatement.getOptimizedStatement() instanceof ShardingInsertOptimizedStatement 
+                && (rewriteStatement.getGeneratedKey().isPresent() && (rewriteStatement.getGeneratedKey().get().isGenerated()));
+        for (String each : ((InsertOptimizedStatement) rewriteStatement.getOptimizedStatement()).getColumnNames()) {
+            if (!isGeneratedKey || !each.equalsIgnoreCase(rewriteStatement.getGeneratedKey().get().getColumnName())) {
                 result.add(logicAndCipherColumns.keySet().contains(each) ? logicAndCipherColumns.get(each) : each);
             }
         }
         if (isGeneratedKey) {
-            result.add(((ShardingInsertOptimizedStatement) optimizedStatement).getGeneratedKey().get().getColumnName());
+            result.add(rewriteStatement.getGeneratedKey().get().getColumnName());
         }
         return result;
     }

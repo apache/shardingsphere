@@ -59,7 +59,7 @@ public final class StandardParameterBuilderTest {
         ShardingSelectOptimizedStatement shardingStatement = mock(ShardingSelectOptimizedStatement.class);
         when(shardingStatement.getPagination()).thenReturn(pagination);
         EncryptOptimizedStatement encryptStatement = mock(EncryptOptimizedStatement.class);
-        SQLRouteResult result = new SQLRouteResult(shardingStatement, encryptStatement, new ShardingConditions(Collections.<ShardingCondition>emptyList()));
+        SQLRouteResult result = new SQLRouteResult(shardingStatement, encryptStatement, new ShardingConditions(Collections.<ShardingCondition>emptyList()), null);
         result.setRoutingResult(new RoutingResult());
         return result;
     }

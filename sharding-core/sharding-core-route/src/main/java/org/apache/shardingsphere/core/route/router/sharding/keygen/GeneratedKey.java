@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.sharding.segment.insert;
+package org.apache.shardingsphere.core.route.router.sharding.keygen;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
