@@ -78,4 +78,10 @@ public final class ComplexRoutingEngineTest extends AbstractRoutingEngineTest {
         assertThat(tableUnitList.get(0).getTableUnits().get(0).getActualTableName(), is("t_order_1"));
         assertThat(tableUnitList.get(0).getTableUnits().get(0).getLogicTableName(), is("t_order"));
     }
+    
+    @Test(expected = ShardingException.class)
+    public void assertRoutingForNonLogicTable() {
+        ComplexRoutingEngine complexRoutingEngine = new ComplexRoutingEngine(null, Collections.<String>emptyList(), null, createShardingConditions("t_order"));
+        complexRoutingEngine.route();
+    }
 }

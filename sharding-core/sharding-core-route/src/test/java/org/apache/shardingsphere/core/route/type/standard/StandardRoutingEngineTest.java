@@ -51,6 +51,17 @@ public final class StandardRoutingEngineTest extends AbstractRoutingEngineTest {
         HintManager.clear();
     }
     
+    @Test(expected = ShardingException.class)
+    public void assertRouteByUnsupported() {
+        OptimizedStatement optimizedStatement = mock(OptimizedStatement.class);
+        when(optimizedStatement.getSQLStatement()).thenReturn(new InsertStatement());
+        Tables tables = mock(Tables.class);
+        when(tables.isSingleTable()).thenReturn(false);
+        when(optimizedStatement.getTables()).thenReturn(tables);
+        StandardRoutingEngine standardRoutingEngine = new StandardRoutingEngine(null, null, optimizedStatement, null);
+        standardRoutingEngine.route();
+    }
+    
     @Test
     public void assertRouteByNonConditions() {
         StandardRoutingEngine standardRoutingEngine = createStandardRoutingEngine(createBasedShardingRule(), "t_order", new ShardingConditions(Collections.<ShardingCondition>emptyList()));
