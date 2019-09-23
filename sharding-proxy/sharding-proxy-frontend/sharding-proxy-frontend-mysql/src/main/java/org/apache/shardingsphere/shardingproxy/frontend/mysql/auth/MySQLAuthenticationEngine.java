@@ -32,6 +32,9 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.
 import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.payload.PacketPayload;
 
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
+
 /**
  * Authentication engine for MySQL.
  *
@@ -60,9 +63,10 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
             backendConnection.setUserName(response41.getUsername());
             context.writeAndFlush(new MySQLOKPacket(response41.getSequenceId() + 1));
         } else {
-            // TODO localhost should replace to real ip address
+            SocketAddress socketAddress = context.channel().remoteAddress();
+            String hostAddress = socketAddress instanceof InetSocketAddress ? ((InetSocketAddress) socketAddress).getAddress().getHostAddress() : socketAddress.toString();
             context.writeAndFlush(new MySQLErrPacket(response41.getSequenceId() + 1,
-                    MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR, response41.getUsername(), "localhost", 0 == response41.getAuthResponse().length ? "NO" : "YES"));
+                    MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR, response41.getUsername(), hostAddress, 0 == response41.getAuthResponse().length ? "NO" : "YES"));
         }
         return true;
     }

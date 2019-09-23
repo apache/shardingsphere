@@ -19,8 +19,6 @@ package org.apache.shardingsphere.core.optimize.sharding.engnie.dml;
 
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.optimize.sharding.engnie.ShardingOptimizeEngine;
-import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimize.sharding.segment.condition.engine.WhereClauseShardingConditionEngine;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.groupby.GroupBy;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.groupby.GroupByEngine;
 import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.SelectItems;
@@ -47,17 +45,15 @@ public final class ShardingSelectOptimizeEngine implements ShardingOptimizeEngin
     @Override
     public ShardingSelectOptimizedStatement optimize(final ShardingRule shardingRule,
                                                      final TableMetas tableMetas, final String sql, final List<Object> parameters, final SelectStatement sqlStatement) {
-        WhereClauseShardingConditionEngine shardingConditionEngine = new WhereClauseShardingConditionEngine(shardingRule, tableMetas);
         GroupByEngine groupByEngine = new GroupByEngine();
         OrderByEngine orderByEngine = new OrderByEngine();
         SelectItemsEngine selectItemsEngine = new SelectItemsEngine(tableMetas);
         PaginationEngine paginationEngine = new PaginationEngine();
-        List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(sqlStatement, parameters);
         GroupBy groupBy = groupByEngine.createGroupBy(sqlStatement);
         OrderBy orderBy = orderByEngine.createOrderBy(sqlStatement, groupBy);
         SelectItems selectItems = selectItemsEngine.createSelectItems(sql, sqlStatement, groupBy, orderBy);
         Pagination pagination = paginationEngine.createPagination(sqlStatement, selectItems, parameters);
-        ShardingSelectOptimizedStatement result = new ShardingSelectOptimizedStatement(sqlStatement, shardingConditions, groupBy, orderBy, selectItems, pagination);
+        ShardingSelectOptimizedStatement result = new ShardingSelectOptimizedStatement(sqlStatement, groupBy, orderBy, selectItems, pagination);
         setContainsSubquery(sqlStatement, result);
         return result;
     }

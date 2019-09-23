@@ -21,7 +21,7 @@ import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
 import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
-import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingCondition;
+import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingInsertOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
@@ -47,20 +47,20 @@ public final class InsertValuesTokenGenerator implements OptionalSQLTokenGenerat
                                                         final ParameterBuilder parameterBuilder, final EncryptRule encryptRule, final boolean isQueryWithCipherColumn) {
         Collection<InsertValuesSegment> insertValuesSegments = rewriteStatement.getOptimizedStatement().getSQLStatement().findSQLSegments(InsertValuesSegment.class);
         return isNeedToGenerateSQLToken(rewriteStatement.getOptimizedStatement(), insertValuesSegments)
-                ? Optional.of(createInsertValuesToken((InsertOptimizedStatement) rewriteStatement.getOptimizedStatement(), insertValuesSegments)) : Optional.<InsertValuesToken>absent();
+                ? Optional.of(createInsertValuesToken(rewriteStatement, insertValuesSegments)) : Optional.<InsertValuesToken>absent();
     }
     
     private boolean isNeedToGenerateSQLToken(final OptimizedStatement optimizedStatement, final Collection<InsertValuesSegment> insertValuesSegments) {
         return optimizedStatement.getSQLStatement() instanceof InsertStatement && !insertValuesSegments.isEmpty();
     }
     
-    private InsertValuesToken createInsertValuesToken(final InsertOptimizedStatement optimizedStatement, final Collection<InsertValuesSegment> insertValuesSegments) {
+    private InsertValuesToken createInsertValuesToken(final RewriteStatement rewriteStatement, final Collection<InsertValuesSegment> insertValuesSegments) {
         InsertValuesToken result = new InsertValuesToken(getStartIndex(insertValuesSegments), getStopIndex(insertValuesSegments));
         Iterator<ShardingCondition> shardingConditions = null;
-        if (optimizedStatement instanceof ShardingInsertOptimizedStatement) {
-            shardingConditions = ((ShardingInsertOptimizedStatement) optimizedStatement).getShardingConditions().getConditions().iterator();
+        if (rewriteStatement.getOptimizedStatement() instanceof ShardingInsertOptimizedStatement) {
+            shardingConditions = rewriteStatement.getShardingConditions().getConditions().iterator();
         }
-        for (InsertValue each : optimizedStatement.getInsertValues()) {
+        for (InsertValue each : ((InsertOptimizedStatement) rewriteStatement.getOptimizedStatement()).getInsertValues()) {
             Collection<DataNode> dataNodes = null == shardingConditions ? Collections.<DataNode>emptyList() : shardingConditions.next().getDataNodes();
             result.addInsertValueToken(each.getValueExpressions(), dataNodes);
         }
