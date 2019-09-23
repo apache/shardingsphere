@@ -21,6 +21,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shardingsphere.core.rule.ProxyUser;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 
@@ -44,15 +45,17 @@ public final class MySQLAuthenticationHandler {
      *
      * @param username connection username
      * @param authResponse connection auth response
+     * @param schema connection schema
      * @return login success or failure
      */
-    public Optional<ProxyUser> login(final String username, final byte[] authResponse) {
+    public boolean login(final String username, final byte[] authResponse, final String schema) {
         Optional<ProxyUser> user = getUser(username);
-        if (user.isPresent() && (Strings.isNullOrEmpty(user.get().getPassword()) || Arrays.equals(getAuthCipherBytes(user.get().getPassword()), authResponse))) {
-            return user;
-        } else {
-            return Optional.absent();
+        if (!user.isPresent()) {
+            return false;
         }
+        boolean isPasswordRight = Strings.isNullOrEmpty(user.get().getPassword()) || Arrays.equals(getAuthCipherBytes(user.get().getPassword()), authResponse);
+        boolean isAuthorizedSchema = null == schema || CollectionUtils.isEmpty(user.get().getAuthorizedSchemas()) || user.get().getAuthorizedSchemas().contains(schema);
+        return isPasswordRight && isAuthorizedSchema;
     }
     
     private Optional<ProxyUser> getUser(final String username) {

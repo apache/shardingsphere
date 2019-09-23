@@ -58,23 +58,37 @@ public final class MySQLAuthenticationHandlerTest {
     public void assertLoginWithPassword() {
         setAuthentication(new ProxyUser("root", Collections.singleton("db1")));
         byte[] authResponse = {-27, 89, -20, -27, 65, -120, -64, -101, 86, -100, -108, -100, 6, -125, -37, 117, 14, -43, 95, -113};
-        assertTrue(authenticationHandler.login("root", authResponse).isPresent());
+        assertTrue(authenticationHandler.login("root", authResponse, "db1"));
+    }
+
+    @Test
+    public void assertLoginWithAbsentUser() {
+        setAuthentication(new ProxyUser("root", Collections.singleton("db1")));
+        byte[] authResponse = {0, 89, -20, -27, 65, -120, -64, -101, 86, -100, -108, -100, 6, -125, -37, 117, 14, -43, 95, -113};
+        assertFalse(authenticationHandler.login("root1", authResponse, "db1"));
     }
 
     @Test
     public void assertLoginWithIncorrectPassword() {
         setAuthentication(new ProxyUser("root", Collections.singleton("db1")));
         byte[] authResponse = {0, 89, -20, -27, 65, -120, -64, -101, 86, -100, -108, -100, 6, -125, -37, 117, 14, -43, 95, -113};
-        assertFalse(authenticationHandler.login("root", authResponse).isPresent());
+        assertFalse(authenticationHandler.login("root", authResponse, "db1"));
     }
     
     @Test
     public void assertLoginWithoutPassword() {
         setAuthentication(new ProxyUser(null, null));
         byte[] authResponse = {-27, 89, -20, -27, 65, -120, -64, -101, 86, -100, -108, -100, 6, -125, -37, 117, 14, -43, 95, -113};
-        assertTrue(authenticationHandler.login("root", authResponse).isPresent());
+        assertTrue(authenticationHandler.login("root", authResponse, "db1"));
     }
-    
+
+    @Test
+    public void assertLoginWithUnauthorizedSchema() {
+        setAuthentication(new ProxyUser(null, Collections.singleton("db1")));
+        byte[] authResponse = {-27, 89, -20, -27, 65, -120, -64, -101, 86, -100, -108, -100, 6, -125, -37, 117, 14, -43, 95, -113};
+        assertFalse(authenticationHandler.login("root", authResponse, "db2"));
+    }
+
     @SneakyThrows
     private void setAuthentication(final ProxyUser proxyUser) {
         Authentication authentication = new Authentication();

@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.shardingproxy.frontend.mysql.auth;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import io.netty.channel.ChannelHandlerContext;
-import org.apache.shardingsphere.core.rule.ProxyUser;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.frontend.ConnectionIdGenerator;
@@ -56,31 +54,20 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
     @Override
     public boolean auth(final ChannelHandlerContext context, final PacketPayload payload, final BackendConnection backendConnection) {
         MySQLHandshakeResponse41Packet response41 = new MySQLHandshakeResponse41Packet((MySQLPacketPayload) payload);
-        final Optional<ProxyUser> user = authenticationHandler.login(response41.getUsername(), response41.getAuthResponse());
-        if (!user.isPresent()) {
-            context.writeAndFlush(getAccessDeniedError(context, response41));
+        if (!Strings.isNullOrEmpty(response41.getDatabase()) && !LogicSchemas.getInstance().schemaExists(response41.getDatabase())) {
+            context.writeAndFlush(new MySQLErrPacket(response41.getSequenceId() + 1, MySQLServerErrorCode.ER_BAD_DB_ERROR, response41.getDatabase()));
             return true;
         }
-        if (!Strings.isNullOrEmpty(response41.getDatabase())) {
-            if (!LogicSchemas.getInstance().schemaExists(response41.getDatabase())) {
-                context.writeAndFlush(new MySQLErrPacket(response41.getSequenceId() + 1, MySQLServerErrorCode.ER_BAD_DB_ERROR, response41.getDatabase()));
-                return true;
-            }
-            if (!user.get().getAuthorizedSchemas().isEmpty() && !user.get().getAuthorizedSchemas().contains(response41.getDatabase())) {
-                context.writeAndFlush(getAccessDeniedError(context, response41));
-                return true;
-            }
+        if (authenticationHandler.login(response41.getUsername(), response41.getAuthResponse(), response41.getDatabase())) {
+            backendConnection.setCurrentSchema(response41.getDatabase());
+            backendConnection.setUserName(response41.getUsername());
+            context.writeAndFlush(new MySQLOKPacket(response41.getSequenceId() + 1));
+        } else {
+            SocketAddress socketAddress = context.channel().remoteAddress();
+            String hostAddress = socketAddress instanceof InetSocketAddress ? ((InetSocketAddress) socketAddress).getAddress().getHostAddress() : socketAddress.toString();
+            context.writeAndFlush(new MySQLErrPacket(response41.getSequenceId() + 1,
+                    MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR, response41.getUsername(), hostAddress, 0 == response41.getAuthResponse().length ? "NO" : "YES"));
         }
-        backendConnection.setCurrentSchema(response41.getDatabase());
-        backendConnection.setUserName(response41.getUsername());
-        context.writeAndFlush(new MySQLOKPacket(response41.getSequenceId() + 1));
         return true;
-    }
-
-    private MySQLErrPacket getAccessDeniedError(final ChannelHandlerContext context, final MySQLHandshakeResponse41Packet response41) {
-        SocketAddress socketAddress = context.channel().remoteAddress();
-        String hostAddress = socketAddress instanceof InetSocketAddress ? ((InetSocketAddress) socketAddress).getAddress().getHostAddress() : socketAddress.toString();
-        return new MySQLErrPacket(response41.getSequenceId() + 1,
-                MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR, response41.getUsername(), hostAddress, 0 == response41.getAuthResponse().length ? "NO" : "YES");
     }
 }

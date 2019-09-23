@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.shardingproxy.frontend.mysql.auth;
 
-import com.google.common.base.Optional;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
-import org.apache.shardingsphere.core.rule.ProxyUser;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
@@ -74,9 +72,10 @@ public class MySQLAuthenticationEngineTest {
     }
 
     @Test
-    public void assertAuthWithIncorrectPassword() throws NoSuchFieldException, IllegalAccessException {
+    public void assertAuthWithLoginFail() throws NoSuchFieldException, IllegalAccessException {
         ChannelHandlerContext context = getContext();
-        when(authenticationHandler.login("root", authResponse)).thenReturn(Optional.<ProxyUser>absent());
+        setLogicSchemas(Collections.singletonMap("sharding_db", mock(LogicSchema.class)));
+        when(authenticationHandler.login("root", authResponse, "sharding_db")).thenReturn(false);
         authenticationEngine.auth(context, getPayload("root", "sharding_db", authResponse), mock(BackendConnection.class));
         verify(context).writeAndFlush(any(MySQLErrPacket.class));
     }
@@ -84,25 +83,15 @@ public class MySQLAuthenticationEngineTest {
     @Test
     public void assertAuthWithAbsentDatabase() throws NoSuchFieldException, IllegalAccessException {
         ChannelHandlerContext context = getContext();
-        when(authenticationHandler.login("root", authResponse)).thenReturn(Optional.of(new ProxyUser("root", Collections.singleton("sharding_db"))));
         setLogicSchemas(Collections.singletonMap("sharding_db", mock(LogicSchema.class)));
         authenticationEngine.auth(context, getPayload("root", "ABSENT DATABASE", authResponse), mock(BackendConnection.class));
         verify(context).writeAndFlush(any(MySQLErrPacket.class));
     }
 
     @Test
-    public void assertAuthWithNotAccessDatabase() throws NoSuchFieldException, IllegalAccessException {
-        ChannelHandlerContext context = getContext();
-        when(authenticationHandler.login("root", authResponse)).thenReturn(Optional.of(new ProxyUser("root", Collections.singleton("sharding_db_remote"))));
-        setLogicSchemas(Collections.singletonMap("sharding_db", mock(LogicSchema.class)));
-        authenticationEngine.auth(context, getPayload("root", "sharding_db", authResponse), mock(BackendConnection.class));
-        verify(context).writeAndFlush(any(MySQLErrPacket.class));
-    }
-
-    @Test
     public void assertAuth() throws NoSuchFieldException, IllegalAccessException {
         ChannelHandlerContext context = getContext();
-        when(authenticationHandler.login("root", authResponse)).thenReturn(Optional.of(new ProxyUser("root", Collections.singleton("sharding_db"))));
+        when(authenticationHandler.login("root", authResponse, "sharding_db")).thenReturn(true);
         setLogicSchemas(Collections.singletonMap("sharding_db", mock(LogicSchema.class)));
         authenticationEngine.auth(context, getPayload("root", "sharding_db", authResponse), mock(BackendConnection.class));
         verify(context).writeAndFlush(any(MySQLOKPacket.class));
