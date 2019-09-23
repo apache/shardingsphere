@@ -32,6 +32,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 
 public final class MySQLAuthenticationHandlerTest {
     
@@ -58,35 +60,43 @@ public final class MySQLAuthenticationHandlerTest {
     public void assertLoginWithPassword() {
         setAuthentication(new ProxyUser("root", Collections.singleton("db1")));
         byte[] authResponse = {-27, 89, -20, -27, 65, -120, -64, -101, 86, -100, -108, -100, 6, -125, -37, 117, 14, -43, 95, -113};
-        assertTrue(authenticationHandler.login("root", authResponse, "db1"));
+        assertTrue(authenticationHandler.login(getResponse41("root", authResponse, "db1")));
     }
 
     @Test
     public void assertLoginWithAbsentUser() {
         setAuthentication(new ProxyUser("root", Collections.singleton("db1")));
         byte[] authResponse = {0, 89, -20, -27, 65, -120, -64, -101, 86, -100, -108, -100, 6, -125, -37, 117, 14, -43, 95, -113};
-        assertFalse(authenticationHandler.login("root1", authResponse, "db1"));
+        assertFalse(authenticationHandler.login(getResponse41("root1", authResponse, "db1")));
     }
 
     @Test
     public void assertLoginWithIncorrectPassword() {
         setAuthentication(new ProxyUser("root", Collections.singleton("db1")));
         byte[] authResponse = {0, 89, -20, -27, 65, -120, -64, -101, 86, -100, -108, -100, 6, -125, -37, 117, 14, -43, 95, -113};
-        assertFalse(authenticationHandler.login("root", authResponse, "db1"));
+        assertFalse(authenticationHandler.login(getResponse41("root", authResponse, "db1")));
     }
     
     @Test
     public void assertLoginWithoutPassword() {
         setAuthentication(new ProxyUser(null, null));
         byte[] authResponse = {-27, 89, -20, -27, 65, -120, -64, -101, 86, -100, -108, -100, 6, -125, -37, 117, 14, -43, 95, -113};
-        assertTrue(authenticationHandler.login("root", authResponse, "db1"));
+        assertTrue(authenticationHandler.login(getResponse41("root", authResponse, "db1")));
     }
 
     @Test
     public void assertLoginWithUnauthorizedSchema() {
         setAuthentication(new ProxyUser(null, Collections.singleton("db1")));
         byte[] authResponse = {-27, 89, -20, -27, 65, -120, -64, -101, 86, -100, -108, -100, 6, -125, -37, 117, 14, -43, 95, -113};
-        assertFalse(authenticationHandler.login("root", authResponse, "db2"));
+        assertFalse(authenticationHandler.login(getResponse41("root", authResponse, "db2")));
+    }
+
+    private MySQLHandshakeResponse41Packet getResponse41(final String userName, final byte[] authResponse, final String database) {
+        MySQLHandshakeResponse41Packet result = mock(MySQLHandshakeResponse41Packet.class);
+        doReturn(userName).when(result).getUsername();
+        doReturn(authResponse).when(result).getAuthResponse();
+        doReturn(database).when(result).getDatabase();
+        return result;
     }
 
     @SneakyThrows

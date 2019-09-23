@@ -27,6 +27,7 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.My
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.MySQLAuthenticationHandler;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.MySQLHandshakePacket;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.MySQLHandshakeResponse41Packet;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
 import org.junit.Before;
 import org.junit.Test;
@@ -75,7 +76,7 @@ public class MySQLAuthenticationEngineTest {
     public void assertAuthWithLoginFail() throws NoSuchFieldException, IllegalAccessException {
         ChannelHandlerContext context = getContext();
         setLogicSchemas(Collections.singletonMap("sharding_db", mock(LogicSchema.class)));
-        when(authenticationHandler.login("root", authResponse, "sharding_db")).thenReturn(false);
+        when(authenticationHandler.login(any(MySQLHandshakeResponse41Packet.class))).thenReturn(false);
         authenticationEngine.auth(context, getPayload("root", "sharding_db", authResponse), mock(BackendConnection.class));
         verify(context).writeAndFlush(any(MySQLErrPacket.class));
     }
@@ -91,7 +92,7 @@ public class MySQLAuthenticationEngineTest {
     @Test
     public void assertAuth() throws NoSuchFieldException, IllegalAccessException {
         ChannelHandlerContext context = getContext();
-        when(authenticationHandler.login("root", authResponse, "sharding_db")).thenReturn(true);
+        when(authenticationHandler.login(any(MySQLHandshakeResponse41Packet.class))).thenReturn(true);
         setLogicSchemas(Collections.singletonMap("sharding_db", mock(LogicSchema.class)));
         authenticationEngine.auth(context, getPayload("root", "sharding_db", authResponse), mock(BackendConnection.class));
         verify(context).writeAndFlush(any(MySQLOKPacket.class));

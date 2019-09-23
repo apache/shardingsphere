@@ -58,7 +58,7 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
             context.writeAndFlush(new MySQLErrPacket(response41.getSequenceId() + 1, MySQLServerErrorCode.ER_BAD_DB_ERROR, response41.getDatabase()));
             return true;
         }
-        if (authenticationHandler.login(response41.getUsername(), response41.getAuthResponse(), response41.getDatabase())) {
+        if (authenticationHandler.login(response41)) {
             backendConnection.setCurrentSchema(response41.getDatabase());
             backendConnection.setUserName(response41.getUsername());
             context.writeAndFlush(new MySQLOKPacket(response41.getSequenceId() + 1));

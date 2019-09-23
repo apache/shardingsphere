@@ -43,18 +43,17 @@ public final class MySQLAuthenticationHandler {
     /**
      * Login.
      *
-     * @param username connection username
-     * @param authResponse connection auth response
-     * @param schema connection schema
+     * @param response41 handshake response
      * @return login success or failure
      */
-    public boolean login(final String username, final byte[] authResponse, final String schema) {
-        Optional<ProxyUser> user = getUser(username);
+    public boolean login(final MySQLHandshakeResponse41Packet response41) {
+        Optional<ProxyUser> user = getUser(response41.getUsername());
         if (!user.isPresent()) {
             return false;
         }
-        boolean isPasswordRight = Strings.isNullOrEmpty(user.get().getPassword()) || Arrays.equals(getAuthCipherBytes(user.get().getPassword()), authResponse);
-        boolean isAuthorizedSchema = null == schema || CollectionUtils.isEmpty(user.get().getAuthorizedSchemas()) || user.get().getAuthorizedSchemas().contains(schema);
+        boolean isPasswordRight = Strings.isNullOrEmpty(user.get().getPassword()) || Arrays.equals(getAuthCipherBytes(user.get().getPassword()), response41.getAuthResponse());
+        boolean isAuthorizedSchema = Strings.isNullOrEmpty(response41.getDatabase()) || CollectionUtils.isEmpty(user.get().getAuthorizedSchemas())
+                || user.get().getAuthorizedSchemas().contains(response41.getDatabase());
         return isPasswordRight && isAuthorizedSchema;
     }
     
