@@ -24,7 +24,6 @@ import org.apache.shardingsphere.core.optimize.encrypt.condition.EncryptConditio
 import org.apache.shardingsphere.core.optimize.encrypt.condition.EncryptConditions;
 import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptConditionOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptTransparentOptimizedStatement;
-import org.apache.shardingsphere.core.rewrite.statement.constant.ShardingDerivedColumnType;
 import org.apache.shardingsphere.core.optimize.sharding.segment.groupby.GroupBy;
 import org.apache.shardingsphere.core.optimize.sharding.segment.item.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.optimize.sharding.segment.item.AggregationSelectItem;
@@ -55,6 +54,11 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemsSegm
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.rownum.NumberLiteralRowNumberValueSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.AndPredicate;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateCompareRightValue;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateInRightValue;
 import org.apache.shardingsphere.core.parse.sql.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
@@ -64,6 +68,7 @@ import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.standard.StandardParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.statement.constant.ShardingDerivedColumnType;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
@@ -912,6 +917,12 @@ public final class ShardingSQLRewriteEngineTest {
         List<ExpressionSegment> expressionSegments = new LinkedList<>();
         expressionSegments.add(new LiteralExpressionSegment(0, 0, 3));
         expressionSegments.add(new LiteralExpressionSegment(0, 0, 5));
+        AndPredicate andPredicate = new AndPredicate();
+        andPredicate.getPredicates().add(new PredicateSegment(29, 40, new ColumnSegment(29, 31, "id"),
+                new PredicateInRightValue(Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(36, 37, 3), new LiteralExpressionSegment(38, 39, 5)))));
+        WhereSegment whereSegment = new WhereSegment(23, 51, 2);
+        whereSegment.getAndPredicates().add(andPredicate);
+        selectStatement.setWhere(whereSegment);
         List<EncryptCondition> encryptConditions = new LinkedList<>();
         encryptConditions.add(new EncryptCondition("id", "table_z", 29, 39, expressionSegments));
         SQLRouteResult result = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement,
@@ -939,6 +950,12 @@ public final class ShardingSQLRewriteEngineTest {
         List<ExpressionSegment> expressionSegments = new LinkedList<>();
         expressionSegments.add(new LiteralExpressionSegment(0, 0, 3));
         expressionSegments.add(new LiteralExpressionSegment(0, 0, 5));
+        AndPredicate andPredicate = new AndPredicate();
+        andPredicate.getPredicates().add(new PredicateSegment(35, 45, new ColumnSegment(35, 37, "id"),
+                new PredicateInRightValue(Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(42, 43, 3), new LiteralExpressionSegment(44, 45, 5)))));
+        WhereSegment whereSegment = new WhereSegment(29, 46, 0);
+        whereSegment.getAndPredicates().add(andPredicate);
+        selectStatement.setWhere(whereSegment);
         List<EncryptCondition> encryptConditions = new LinkedList<>();
         encryptConditions.add(new EncryptCondition("id", "table_k", 35, 45, expressionSegments));
         SQLRouteResult result = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, 
@@ -960,6 +977,11 @@ public final class ShardingSQLRewriteEngineTest {
         updateStatement.getAllSQLSegments().add(new TableSegment(7, 13, "table_z"));
         updateStatement.setSetAssignment(
                 new SetAssignmentsSegment(15, 24, Collections.singleton(new AssignmentSegment(19, 24, new ColumnSegment(19, 20, "id"), new LiteralExpressionSegment(0, 0, 1)))));
+        AndPredicate andPredicate = new AndPredicate();
+        andPredicate.getPredicates().add(new PredicateSegment(32, 37, new ColumnSegment(32, 34, "id"), new PredicateCompareRightValue("=", new LiteralExpressionSegment(37, 38, 2))));
+        WhereSegment whereSegment = new WhereSegment(26, 38, 0);
+        whereSegment.getAndPredicates().add(andPredicate);
+        updateStatement.setWhere(whereSegment);
         List<EncryptCondition> encryptConditions = new LinkedList<>();
         encryptConditions.add(new EncryptCondition("id", "table_z", 32, 37, new LiteralExpressionSegment(0, 0, 2)));
         SQLRouteResult result = new SQLRouteResult(new ShardingTransparentOptimizedStatement(updateStatement), 
@@ -1037,6 +1059,11 @@ public final class ShardingSQLRewriteEngineTest {
         SelectItemsSegment selectItemsSegment = new SelectItemsSegment(7, 8, false);
         selectItemsSegment.getSelectItems().add(new ColumnSelectItemSegment("id", new ColumnSegment(7, 8, "id")));
         selectStatement.getAllSQLSegments().add(selectItemsSegment);
+        AndPredicate andPredicate = new AndPredicate();
+        andPredicate.getPredicates().add(new PredicateSegment(29, 32, new ColumnSegment(29, 31, "id"), new PredicateCompareRightValue("=", new ParameterMarkerExpressionSegment(32, 33, 0))));
+        WhereSegment whereSegment = new WhereSegment(23, 44, 2);
+        whereSegment.getAndPredicates().add(andPredicate);
+        selectStatement.setWhere(whereSegment);
         List<EncryptCondition> encryptConditions = new LinkedList<>();
         encryptConditions.add(new EncryptCondition("id", "table_z", 29, 32, new ParameterMarkerExpressionSegment(0, 0, 0)));
         SQLRouteResult result = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement,
@@ -1074,6 +1101,14 @@ public final class ShardingSQLRewriteEngineTest {
         List<ExpressionSegment> expressionSegments = new LinkedList<>();
         expressionSegments.add(new ParameterMarkerExpressionSegment(0, 0, 0));
         expressionSegments.add(new ParameterMarkerExpressionSegment(0, 0, 1));
+        AndPredicate andPredicate = new AndPredicate();
+        andPredicate.getPredicates().add(new PredicateSegment(29, 40, new ColumnSegment(29, 31, "id"), 
+                new PredicateInRightValue(Arrays.<ExpressionSegment>asList(new ParameterMarkerExpressionSegment(36, 37, 0), new ParameterMarkerExpressionSegment(39, 40, 1)))));
+        andPredicate.getPredicates().add(new PredicateSegment(45, 50, new ColumnSegment(45, 47, "id"),
+                new PredicateCompareRightValue("=", new LiteralExpressionSegment(50, 51, 3))));
+        WhereSegment whereSegment = new WhereSegment(23, 51, 2);
+        whereSegment.getAndPredicates().add(andPredicate);
+        selectStatement.setWhere(whereSegment);
         List<EncryptCondition> encryptConditions = new LinkedList<>();
         encryptConditions.add(new EncryptCondition("id", "table_z", 29, 40, expressionSegments));
         encryptConditions.add(new EncryptCondition("id", "table_z", 45, 50, new LiteralExpressionSegment(0, 0, 3)));
@@ -1101,6 +1136,11 @@ public final class ShardingSQLRewriteEngineTest {
         columnSelectItemSegment.setAlias("alias");
         selectItemsSegment.getSelectItems().add(columnSelectItemSegment);
         selectStatement.getAllSQLSegments().add(selectItemsSegment);
+        AndPredicate andPredicate = new AndPredicate();
+        andPredicate.getPredicates().add(new PredicateSegment(38, 41, new ColumnSegment(38, 40, "id"), new PredicateCompareRightValue("=", new ParameterMarkerExpressionSegment(41, 42, 0))));
+        WhereSegment whereSegment = new WhereSegment(32, 53, 2);
+        whereSegment.getAndPredicates().add(andPredicate);
+        selectStatement.setWhere(whereSegment);
         List<EncryptCondition> encryptConditions = new LinkedList<>();
         encryptConditions.add(new EncryptCondition("id", "table_k", 38, 41, new ParameterMarkerExpressionSegment(0, 0, 0)));
         SQLRouteResult result = new SQLRouteResult(new ShardingSelectOptimizedStatement(selectStatement, 
@@ -1116,7 +1156,7 @@ public final class ShardingSQLRewriteEngineTest {
     }
     
     private SQLRewriteEngine createSQLRewriteEngine(final SQLRouteResult routeResult, final String sql, final List<Object> parameters, final boolean isQueryWithCipherColumn) {
-        return new SQLRewriteEngine(shardingRule, routeResult, sql, parameters, routeResult.getRoutingResult().isSingleRouting(), isQueryWithCipherColumn);
+        return new SQLRewriteEngine(shardingRule, null, routeResult, sql, parameters, routeResult.getRoutingResult().isSingleRouting(), isQueryWithCipherColumn);
     }
     
     @SneakyThrows
