@@ -25,7 +25,6 @@ import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptOptimize
 import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptTransparentOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.rule.EncryptRule;
 
 import java.util.List;
 
@@ -41,14 +40,12 @@ public final class EncryptOptimizeEngineFactory {
     /**
      * Create encrypt optimize engine instance.
      *
-     * @param encryptRule encrypt rule
      * @param tableMetas table meta data
-     * @param sql SQL
      * @param parameters SQL parameters
      * @param sqlStatement SQL statement
      * @return sharding optimize engine instance
      */
-    public static EncryptOptimizedStatement newInstance(final EncryptRule encryptRule, final TableMetas tableMetas, final String sql, final List<Object> parameters, final SQLStatement sqlStatement) {
+    public static EncryptOptimizedStatement newInstance(final TableMetas tableMetas, final List<Object> parameters, final SQLStatement sqlStatement) {
         if (sqlStatement instanceof InsertStatement) {
             return new InsertOptimizedStatement(tableMetas, parameters, (InsertStatement) sqlStatement);
         }
