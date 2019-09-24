@@ -38,6 +38,7 @@ import org.apache.shardingsphere.shardingproxy.backend.text.admin.UnicastBackend
 import org.apache.shardingsphere.shardingproxy.backend.text.admin.UseDatabaseBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.query.QueryBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.ShardingCTLBackendHandlerFactory;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.utils.SCTLUtils;
 import org.apache.shardingsphere.shardingproxy.backend.text.transaction.SkipBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.transaction.TransactionBackendHandler;
 import org.apache.shardingsphere.spi.database.DatabaseType;
@@ -50,12 +51,6 @@ import org.apache.shardingsphere.transaction.core.TransactionOperationType;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TextProtocolBackendHandlerFactory {
-
-    private static final String COMMENT_PREFIX = "/*";
-
-    private static final String COMMENT_SUFFIX = "*/";
-
-    private static final String SQL_END = ";";
     
     /**
      * Create new instance of text protocol backend handler.
@@ -66,9 +61,9 @@ public final class TextProtocolBackendHandlerFactory {
      * @return instance of text protocol backend handler
      */
     public static TextProtocolBackendHandler newInstance(final DatabaseType databaseType, final String sql, final BackendConnection backendConnection) {
-        final String trimCommentSQL = trimSqlComment(sql);
-        if (trimCommentSQL.toUpperCase().startsWith(ShardingCTLBackendHandlerFactory.SCTL)) {
-            return ShardingCTLBackendHandlerFactory.newInstance(trimCommentSQL, backendConnection);
+        final String trimSql = SCTLUtils.trimComment(sql);
+        if (trimSql.toUpperCase().startsWith(ShardingCTLBackendHandlerFactory.SCTL)) {
+            return ShardingCTLBackendHandlerFactory.newInstance(trimSql, backendConnection);
         }
         SQLStatement sqlStatement = new SQLParseKernel(ParseRuleRegistry.getInstance(), databaseType, sql).parse();
         if (sqlStatement instanceof TCLStatement) {
@@ -110,16 +105,5 @@ public final class TextProtocolBackendHandlerFactory {
             return new BroadcastBackendHandler(sql, backendConnection);
         }
         return new UnicastBackendHandler(sql, backendConnection);
-    }
-
-    private static String trimSqlComment(final String sql) {
-        String result = sql;
-        if (sql.startsWith(COMMENT_PREFIX)) {
-            result = sql.substring(sql.indexOf(COMMENT_SUFFIX) + 2).trim();
-        }
-        if (sql.endsWith(SQL_END)) {
-            result = result.substring(0, result.length() - 1);
-        }
-        return result;
     }
 }
