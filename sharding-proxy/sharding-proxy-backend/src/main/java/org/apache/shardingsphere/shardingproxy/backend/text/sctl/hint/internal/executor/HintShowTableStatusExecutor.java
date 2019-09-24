@@ -21,6 +21,7 @@ import com.google.common.base.Joiner;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
@@ -77,11 +78,19 @@ public final class HintShowTableStatusExecutor implements HintCommandExecutor {
         for (Comparable<?> each : databaseShardingValues) {
             stringDatabaseShardingValues.add(String.valueOf(each));
         }
-        for (String each : shardingRule.getLogicTableNames()) {
+        for (String each : getLogicTableNames()) {
             HintShowTableStatusResult hintShowTableStatusResult = new HintShowTableStatusResult(each);
             hintShowTableStatusResult.getDatabaseShardingValues().addAll(stringDatabaseShardingValues);
             results.put(each, hintShowTableStatusResult);
         }
+    }
+    
+    private Collection<String> getLogicTableNames() {
+        Collection<String> result = new LinkedList<>();
+        for (TableRule each : shardingRule.getTableRules()) {
+            result.add(each.getLogicTable());
+        }
+        return result;
     }
     
     private void fillDatabaseShardingValues(final Map<String, HintShowTableStatusResult> results, final Map<String, Collection<Comparable<?>>> databaseShardingValuesMap) {
