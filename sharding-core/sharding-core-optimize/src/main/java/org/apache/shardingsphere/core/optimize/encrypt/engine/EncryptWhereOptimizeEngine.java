@@ -19,8 +19,6 @@ package org.apache.shardingsphere.core.optimize.encrypt.engine;
 
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.optimize.api.engine.OptimizeEngine;
-import org.apache.shardingsphere.core.optimize.encrypt.condition.EncryptConditions;
-import org.apache.shardingsphere.core.optimize.encrypt.condition.engine.WhereClauseEncryptConditionEngine;
 import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptConditionOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.rule.EncryptRule;
@@ -36,7 +34,6 @@ public final class EncryptWhereOptimizeEngine implements OptimizeEngine<EncryptR
     
     @Override
     public EncryptConditionOptimizedStatement optimize(final EncryptRule encryptRule, final TableMetas tableMetas, final String sql, final List<Object> parameters, final DMLStatement sqlStatement) {
-        WhereClauseEncryptConditionEngine encryptConditionEngine = new WhereClauseEncryptConditionEngine(encryptRule, tableMetas);
-        return new EncryptConditionOptimizedStatement(sqlStatement, new EncryptConditions(encryptConditionEngine.createEncryptConditions(sqlStatement)));
+        return new EncryptConditionOptimizedStatement(sqlStatement);
     }
 }

@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.optimize.encrypt.statement;
 import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.optimize.api.segment.Tables;
-import org.apache.shardingsphere.core.optimize.encrypt.condition.EncryptConditions;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
 /**
@@ -36,11 +35,8 @@ public final class EncryptConditionOptimizedStatement implements EncryptOptimize
     
     private final Tables tables;
     
-    private final EncryptConditions encryptConditions;
-    
-    public EncryptConditionOptimizedStatement(final SQLStatement sqlStatement, final EncryptConditions encryptConditions) {
+    public EncryptConditionOptimizedStatement(final SQLStatement sqlStatement) {
         this.sqlStatement = sqlStatement;
         tables = new Tables(sqlStatement);
-        this.encryptConditions = encryptConditions;
     }
 }
