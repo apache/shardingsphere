@@ -23,7 +23,7 @@ import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.optimize.api.statement.CommonOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
-import org.apache.shardingsphere.core.optimize.sharding.engnie.ShardingSelectOptimizeEngine;
+import org.apache.shardingsphere.core.optimize.api.statement.SelectOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
@@ -51,7 +51,7 @@ public final class OptimizedStatementFactory {
      */
     public static OptimizedStatement newInstance(final TableMetas tableMetas, final String sql, final List<Object> parameters, final SQLStatement sqlStatement) {
         if (sqlStatement instanceof SelectStatement) {
-            return new ShardingSelectOptimizeEngine().optimize(tableMetas, sql, parameters, (SelectStatement) sqlStatement);
+            return new SelectOptimizedStatement(tableMetas, sql, parameters, (SelectStatement) sqlStatement);
         }
         if (sqlStatement instanceof InsertStatement) {
             return new InsertOptimizedStatement(tableMetas, parameters, (InsertStatement) sqlStatement);

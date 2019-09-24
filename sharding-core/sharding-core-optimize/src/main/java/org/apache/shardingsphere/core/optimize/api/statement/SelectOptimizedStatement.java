@@ -20,24 +20,31 @@ package org.apache.shardingsphere.core.optimize.api.statement;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
+import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.optimize.api.segment.Tables;
 import org.apache.shardingsphere.core.optimize.api.segment.groupby.GroupBy;
+import org.apache.shardingsphere.core.optimize.api.segment.groupby.GroupByEngine;
 import org.apache.shardingsphere.core.optimize.api.segment.item.AggregationSelectItem;
 import org.apache.shardingsphere.core.optimize.api.segment.item.SelectItem;
 import org.apache.shardingsphere.core.optimize.api.segment.item.SelectItems;
+import org.apache.shardingsphere.core.optimize.api.segment.item.engine.SelectItemsEngine;
 import org.apache.shardingsphere.core.optimize.api.segment.orderby.OrderBy;
+import org.apache.shardingsphere.core.optimize.api.segment.orderby.OrderByEngine;
 import org.apache.shardingsphere.core.optimize.api.segment.orderby.OrderByItem;
 import org.apache.shardingsphere.core.optimize.api.segment.pagination.Pagination;
+import org.apache.shardingsphere.core.optimize.api.segment.pagination.engine.PaginationEngine;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.TextOrderByItemSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.SubqueryPredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -46,7 +53,6 @@ import java.util.Map;
  * @author zhangliang
  */
 @Getter
-@Setter
 @ToString
 public final class SelectOptimizedStatement implements OptimizedStatement {
     
@@ -64,6 +70,7 @@ public final class SelectOptimizedStatement implements OptimizedStatement {
     
     private boolean containsSubquery;
     
+    @Deprecated // for test
     public SelectOptimizedStatement(final SQLStatement sqlStatement, final GroupBy groupBy, final OrderBy orderBy, final SelectItems selectItems, final Pagination pagination) {
         this.sqlStatement = sqlStatement;
         this.tables = new Tables(sqlStatement);
@@ -71,6 +78,26 @@ public final class SelectOptimizedStatement implements OptimizedStatement {
         this.orderBy = orderBy;
         this.selectItems = selectItems;
         this.pagination = pagination;
+    }
+    
+    public SelectOptimizedStatement(final TableMetas tableMetas, final String sql, final List<Object> parameters, final SelectStatement sqlStatement) {
+        this.sqlStatement = sqlStatement;
+        this.tables = new Tables(sqlStatement);
+        this.groupBy = new GroupByEngine().createGroupBy(sqlStatement);
+        this.orderBy = new OrderByEngine().createOrderBy(sqlStatement, groupBy);
+        this.selectItems = new SelectItemsEngine(tableMetas).createSelectItems(sql, sqlStatement, groupBy, orderBy);
+        this.pagination = new PaginationEngine().createPagination(sqlStatement, selectItems, parameters);
+        setContainsSubquery();
+    }
+    
+    private void setContainsSubquery() {
+        Collection<SubqueryPredicateSegment> subqueryPredicateSegments = sqlStatement.findSQLSegments(SubqueryPredicateSegment.class);
+        for (SubqueryPredicateSegment each : subqueryPredicateSegments) {
+            if (!each.getAndPredicates().isEmpty()) {
+                containsSubquery = true;
+                return;
+            }
+        }
     }
     
     /**
