@@ -21,12 +21,11 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptOptimizedStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.rewrite.encrypt.EncryptCondition;
 import org.apache.shardingsphere.core.rewrite.encrypt.EncryptConditions;
 import org.apache.shardingsphere.core.rewrite.encrypt.WhereClauseEncryptConditionEngine;
-import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptConditionOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptOptimizedStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
@@ -52,7 +51,7 @@ public final class RewriteStatementFactory {
      * @return rewrite statement
      */
     public static RewriteStatement newInstance(final ShardingRule shardingRule, final TableMetas tableMetas, final SQLRouteResult sqlRouteResult) {
-        EncryptConditions encryptConditions = sqlRouteResult.getEncryptStatement() instanceof EncryptConditionOptimizedStatement
+        EncryptConditions encryptConditions = sqlRouteResult.getEncryptStatement().getSqlStatement() instanceof DMLStatement
                 ? createEncryptConditions(shardingRule.getEncryptRule(), tableMetas, (DMLStatement) sqlRouteResult.getEncryptStatement().getSqlStatement())
                 : new EncryptConditions(Collections.<EncryptCondition>emptyList());
         return sqlRouteResult.getShardingStatement() instanceof InsertOptimizedStatement
@@ -72,7 +71,7 @@ public final class RewriteStatementFactory {
      */
     public static RewriteStatement newInstance(final EncryptRule encryptRule, final TableMetas tableMetas, final EncryptOptimizedStatement encryptStatement) {
         ShardingConditions shardingConditions = new ShardingConditions(Collections.<ShardingCondition>emptyList());
-        EncryptConditions encryptConditions = encryptStatement instanceof EncryptConditionOptimizedStatement
+        EncryptConditions encryptConditions = encryptStatement.getSqlStatement() instanceof DMLStatement
                 ? createEncryptConditions(encryptRule, tableMetas, (DMLStatement) encryptStatement.getSqlStatement()) : new EncryptConditions(Collections.<EncryptCondition>emptyList());
         return encryptStatement instanceof InsertOptimizedStatement
                 ? new InsertRewriteStatement((InsertOptimizedStatement) encryptStatement, shardingConditions, encryptConditions, null, encryptRule)

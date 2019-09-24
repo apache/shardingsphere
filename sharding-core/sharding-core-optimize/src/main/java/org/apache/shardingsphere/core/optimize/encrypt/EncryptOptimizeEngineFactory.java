@@ -21,15 +21,10 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.encrypt.engine.EncryptWhereOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptTransparentOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
 import java.util.List;
@@ -54,9 +49,6 @@ public final class EncryptOptimizeEngineFactory {
      * @return sharding optimize engine instance
      */
     public static EncryptOptimizedStatement newInstance(final EncryptRule encryptRule, final TableMetas tableMetas, final String sql, final List<Object> parameters, final SQLStatement sqlStatement) {
-        if (sqlStatement instanceof SelectStatement || sqlStatement instanceof UpdateStatement || sqlStatement instanceof DeleteStatement) {
-            return new EncryptWhereOptimizeEngine().optimize(encryptRule, tableMetas, sql, parameters, (DMLStatement) sqlStatement);
-        }
         if (sqlStatement instanceof InsertStatement) {
             return new InsertOptimizedStatement(tableMetas, parameters, (InsertStatement) sqlStatement);
         }
