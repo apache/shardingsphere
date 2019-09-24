@@ -8,7 +8,7 @@ weight = 3
 ## Pull Official Docker Clone
 
 ```
-docker pull shardingsphere/sharding-proxy
+docker pull apache/sharding-proxy
 ```
 
 ## Build Docker Clone Manually (Optional)
@@ -27,13 +27,13 @@ Create `/${your_work_dir}/conf/config.yaml` document to configure sharding rules
 ## Run Docker
 
 ```
-docker run -d -v /${your_work_dir}/conf:/opt/sharding-proxy/conf --env PORT=3308 -p13308:3308 shardingsphere/sharding-proxy:latest
+docker run -d -v /${your_work_dir}/conf:/opt/sharding-proxy/conf --env PORT=3308 -p13308:3308 apache/sharding-proxy:latest
 ```
 
 You can define port `3308` and `13308` by yourself. `3308` refers to docker port; `13308` refers to the host port.
 
 ```
-docker run -d -v /${your_work_dir}/conf:/opt/sharding-proxy/conf --env JVM_OPTS="-Djava.awt.headless=true" --env PORT=3308 -p13308:3308 shardingsphere/sharding-proxy:latest
+docker run -d -v /${your_work_dir}/conf:/opt/sharding-proxy/conf --env JVM_OPTS="-Djava.awt.headless=true" --env PORT=3308 -p13308:3308 apache/sharding-proxy:latest
 ```
 
 You can define JVM related parameters to environment variable `JVM_OPTS`.

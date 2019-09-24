@@ -233,19 +233,19 @@ shardingRule:
   defaultTableStrategy:
     none:
   
-masterSlaveRules:
-  ms_ds0:
-    masterDataSourceName: ds0
-    slaveDataSourceNames:
-      - ds0_slave0
-      - ds0_slave1
-    loadBalanceAlgorithmType: ROUND_ROBIN
-  ms_ds1:
-    masterDataSourceName: ds1
-    slaveDataSourceNames: 
-      - ds1_slave0
-      - ds1_slave1
-    loadBalanceAlgorithmType: ROUND_ROBIN
+  masterSlaveRules:
+    ms_ds0:
+      masterDataSourceName: ds0
+      slaveDataSourceNames:
+        - ds0_slave0
+        - ds0_slave1
+      loadBalanceAlgorithmType: ROUND_ROBIN
+    ms_ds1:
+      masterDataSourceName: ds1
+      slaveDataSourceNames: 
+        - ds1_slave0
+        - ds1_slave1
+      loadBalanceAlgorithmType: ROUND_ROBIN
 ```
 
 ### 数据分片 + 数据脱敏
@@ -306,19 +306,19 @@ shardingRule:
   defaultTableStrategy:
     none:
     
-encryptRule:
-  encryptors:
-    encryptor_aes:
-      type: aes
-      props:
-        aes.key.value: 123456abc
-  tables:
-    t_order:
-      columns:
-        order_id:
-          plainColumn: order_plain
-          cipherColumn: order_cipher
-          encryptor: encryptor_aes
+  encryptRule:
+    encryptors:
+      encryptor_aes:
+        type: aes
+        props:
+          aes.key.value: 123456abc
+    tables:
+      t_order:
+        columns:
+          order_id:
+            plainColumn: order_plain
+            cipherColumn: order_cipher
+            encryptor: encryptor_aes
 ```
 
 ## 全局配置示例
