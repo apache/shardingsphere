@@ -24,7 +24,7 @@ import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
-import org.apache.shardingsphere.core.optimize.sharding.ShardingOptimizeEngineFactory;
+import org.apache.shardingsphere.core.optimize.api.OptimizedStatementFactory;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
 import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
@@ -94,7 +94,7 @@ public final class ShardingRouter {
         if (shardingStatementValidator.isPresent()) {
             shardingStatementValidator.get().validate(shardingRule, sqlStatement);
         }
-        OptimizedStatement shardingStatement = ShardingOptimizeEngineFactory.newInstance(metaData.getTables(), logicSQL, parameters, sqlStatement);
+        OptimizedStatement shardingStatement = OptimizedStatementFactory.newInstance(metaData.getTables(), logicSQL, parameters, sqlStatement);
         Optional<GeneratedKey> generatedKey = sqlStatement instanceof InsertStatement
                 ? GeneratedKey.getGenerateKey(shardingRule, metaData.getTables(), parameters, (InsertStatement) sqlStatement) : Optional.<GeneratedKey>absent();
         ShardingConditions shardingConditions = getShardingConditions(parameters, shardingStatement, generatedKey.orNull());
@@ -108,7 +108,7 @@ public final class ShardingRouter {
         if (needMergeShardingValues) {
             Preconditions.checkState(1 == routingResult.getRoutingUnits().size(), "Must have one sharding with subquery.");
         }
-        OptimizedStatement encryptStatement = ShardingOptimizeEngineFactory.newInstance(metaData.getTables(), logicSQL, parameters, sqlStatement);
+        OptimizedStatement encryptStatement = OptimizedStatementFactory.newInstance(metaData.getTables(), logicSQL, parameters, sqlStatement);
         SQLRouteResult result = new SQLRouteResult(shardingStatement, encryptStatement, shardingConditions, generatedKey.orNull());
         result.setRoutingResult(routingResult);
         if (shardingStatement instanceof InsertOptimizedStatement) {

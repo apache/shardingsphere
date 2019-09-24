@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.sharding;
+package org.apache.shardingsphere.core.optimize.api;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -31,23 +31,23 @@ import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import java.util.List;
 
 /**
- * Optimize engine factory for sharding.
+ * Optimized statement factory.
  *
  * @author zhangliang
  * @author maxiaoguang
  * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingOptimizeEngineFactory {
+public final class OptimizedStatementFactory {
     
     /**
-     * Create sharding optimize engine instance.
+     * Create optimized statement.
      *
      * @param tableMetas table meta data
      * @param sql SQL
      * @param parameters SQL parameters
      * @param sqlStatement SQL statement
-     * @return sharding optimize engine instance
+     * @return optimized statement
      */
     public static OptimizedStatement newInstance(final TableMetas tableMetas, final String sql, final List<Object> parameters, final SQLStatement sqlStatement) {
         if (sqlStatement instanceof SelectStatement) {
