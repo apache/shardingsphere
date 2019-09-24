@@ -24,9 +24,7 @@ import org.apache.shardingsphere.core.merge.MergedResult;
 import org.apache.shardingsphere.core.merge.dal.show.ShowShardingCTLMergedResult;
 import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
-import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.result.HintShowTableStatusResult;
 
 import java.sql.Types;
@@ -47,17 +45,15 @@ public final class HintShowTableStatusExecutor extends AbstractHintQueryExecutor
     
     private final BackendConnection backendConnection;
     
-    @Override
-    public BackendResponse execute() {
-        setMergedResult(queryMergedResult());
-        setQueryHeaders(new ArrayList<QueryHeader>(3));
-        getQueryHeaders().add(new QueryHeader("", "", "table_name", "", 255, Types.CHAR, 0));
-        getQueryHeaders().add(new QueryHeader("", "", "database_sharding_values", "", 255, Types.CHAR, 0));
-        getQueryHeaders().add(new QueryHeader("", "", "table_sharding_values", "", 255, Types.CHAR, 0));
-        return new QueryResponse(getQueryHeaders());
+    protected List<QueryHeader> createQueryHeaders() {
+        List<QueryHeader> queryHeaders = new ArrayList<>(3);
+        queryHeaders.add(new QueryHeader("", "", "table_name", "", 255, Types.CHAR, 0));
+        queryHeaders.add(new QueryHeader("", "", "database_sharding_values", "", 255, Types.CHAR, 0));
+        queryHeaders.add(new QueryHeader("", "", "table_sharding_values", "", 255, Types.CHAR, 0));
+        return queryHeaders;
     }
     
-    private MergedResult queryMergedResult() {
+    protected MergedResult createMergedResult() {
         Map<String, HintShowTableStatusResult> results = new HashMap<>();
         if (HintManager.isDatabaseShardingOnly()) {
             fillShardingValuesDatabaseShardingOnly(results, HintManager.getDatabaseShardingValues());
@@ -65,7 +61,7 @@ public final class HintShowTableStatusExecutor extends AbstractHintQueryExecutor
             fillDatabaseShardingValues(results, HintManager.getDatabaseShardingValuesMap());
             fillTableShardingValues(results, HintManager.getTableShardingValuesMap());
         }
-        return createMergedResult(results.values());
+        return convert2MergedResult(results.values());
     }
     
     private void fillShardingValuesDatabaseShardingOnly(final Map<String, HintShowTableStatusResult> results, final Collection<Comparable<?>> databaseShardingValues) {
@@ -113,7 +109,7 @@ public final class HintShowTableStatusExecutor extends AbstractHintQueryExecutor
         }
     }
     
-    private MergedResult createMergedResult(final Collection<HintShowTableStatusResult> hintShowTableStatusResults) {
+    private MergedResult convert2MergedResult(final Collection<HintShowTableStatusResult> hintShowTableStatusResults) {
         List<List<Object>> values = new ArrayList<>(hintShowTableStatusResults.size());
         for (HintShowTableStatusResult each : hintShowTableStatusResults) {
             List<Object> row = new ArrayList<>(3);

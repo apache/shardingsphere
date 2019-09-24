@@ -20,9 +20,7 @@ package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.
 import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.merge.MergedResult;
 import org.apache.shardingsphere.core.merge.dal.show.ShowShardingCTLMergedResult;
-import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
-import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintShardingType;
 
 import java.sql.Types;
@@ -37,16 +35,14 @@ import java.util.List;
  */
 public final class HintShowStatusExecutor extends AbstractHintQueryExecutor {
     
-    @Override
-    public BackendResponse execute() {
-        setMergedResult(queryMergedResult());
-        setQueryHeaders(new ArrayList<QueryHeader>(2));
-        getQueryHeaders().add(new QueryHeader("", "", "master_only", "", 5, Types.CHAR, 0));
-        getQueryHeaders().add(new QueryHeader("", "", "sharding_type", "", 255, Types.CHAR, 0));
-        return new QueryResponse(getQueryHeaders());
+    protected List<QueryHeader> createQueryHeaders() {
+        List<QueryHeader> queryHeaders = new ArrayList<>(2);
+        queryHeaders.add(new QueryHeader("", "", "master_only", "", 5, Types.CHAR, 0));
+        queryHeaders.add(new QueryHeader("", "", "sharding_type", "", 255, Types.CHAR, 0));
+        return queryHeaders;
     }
     
-    private MergedResult queryMergedResult() {
+    protected MergedResult createMergedResult() {
         boolean masterOnly = HintManager.isMasterRouteOnly();
         boolean databaseOnly = HintManager.isDatabaseShardingOnly();
         HintShardingType shardingType = databaseOnly ? HintShardingType.DATABASES_ONLY : HintShardingType.DATABASES_TABLES;

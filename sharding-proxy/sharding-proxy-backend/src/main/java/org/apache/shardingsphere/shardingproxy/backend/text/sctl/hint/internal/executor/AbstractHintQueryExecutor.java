@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.executor;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.core.merge.MergedResult;
+import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
+import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintCommandExecutor;
 
 import java.sql.SQLException;
@@ -33,13 +33,22 @@ import java.util.List;
  *
  * @author liya
  */
-@Setter
-@Getter
 public abstract class AbstractHintQueryExecutor implements HintCommandExecutor {
     
     private List<QueryHeader> queryHeaders;
     
     private MergedResult mergedResult;
+    
+    @Override
+    public final BackendResponse execute() {
+        queryHeaders = createQueryHeaders();
+        mergedResult = createMergedResult();
+        return new QueryResponse(queryHeaders);
+    }
+    
+    protected abstract List<QueryHeader> createQueryHeaders();
+    
+    protected abstract MergedResult createMergedResult();
     
     @Override
     public final boolean next() throws SQLException {
