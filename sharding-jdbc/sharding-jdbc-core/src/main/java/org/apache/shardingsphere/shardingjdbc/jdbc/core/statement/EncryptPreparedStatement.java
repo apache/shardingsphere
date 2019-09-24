@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
-import org.apache.shardingsphere.core.optimize.encrypt.EncryptOptimizeEngineFactory;
+import org.apache.shardingsphere.core.optimize.sharding.ShardingOptimizeEngineFactory;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
 import org.apache.shardingsphere.core.route.SQLLogger;
@@ -148,7 +148,7 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
     private SQLUnit getSQLUnit(final String sql) {
         EncryptConnection connection = preparedStatementGenerator.connection;
         SQLStatement sqlStatement = connection.getRuntimeContext().getParseEngine().parse(sql, true);
-        encryptStatement = EncryptOptimizeEngineFactory.newInstance(connection.getRuntimeContext().getTableMetas(), getParameters(), sqlStatement);
+        encryptStatement = ShardingOptimizeEngineFactory.newInstance(connection.getRuntimeContext().getTableMetas(), sql, getParameters(), sqlStatement);
         SQLRewriteEngine encryptSQLRewriteEngine = new SQLRewriteEngine(connection.getRuntimeContext().getRule(), connection.getRuntimeContext().getTableMetas(), 
                 encryptStatement, sql, getParameters(), connection.getRuntimeContext().getProps().<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN));
         SQLUnit result = encryptSQLRewriteEngine.generateSQL();
