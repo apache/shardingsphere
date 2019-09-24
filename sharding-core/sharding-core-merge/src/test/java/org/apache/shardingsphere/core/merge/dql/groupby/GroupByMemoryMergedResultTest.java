@@ -87,7 +87,7 @@ public final class GroupByMemoryMergedResultTest {
         AggregationSelectItem derivedAggregationSelectItem2 = new AggregationSelectItem(AggregationType.SUM, "(num)", "AVG_DERIVED_SUM_0");
         aggregationSelectItem2.setIndex(5);
         aggregationSelectItem2.getDerivedAggregationItems().add(derivedAggregationSelectItem2);
-        SelectItems selectItems = new SelectItems(0, 0, false, Arrays.<SelectItem>asList(aggregationSelectItem1, aggregationSelectItem2), Collections.<TableSegment>emptyList(), null);
+        SelectItems selectItems = new SelectItems(0, 0, false, Arrays.<SelectItem>asList(aggregationSelectItem1, aggregationSelectItem2), Collections.<TableSegment>emptyList());
         OptimizedStatement shardingStatement = new SelectOptimizedStatement(new SelectStatement(), 
                 new GroupBy(Collections.singletonList(createOrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, OrderDirection.ASC))), 0),
                 new OrderBy(Collections.singletonList(createOrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.DESC, OrderDirection.ASC))), false),
@@ -116,14 +116,14 @@ public final class GroupByMemoryMergedResultTest {
     
     @Test
     public void assertNextForResultSetsAllEmpty() throws SQLException {
-        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), routeResult, queryResults);
+        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), null, routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertFalse(actual.next());
     }
     
     @Test
     public void assertNextForSomeResultSetsEmpty() throws SQLException {
-        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), routeResult, queryResults);
+        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), null, routeResult, queryResults);
         when(resultSets.get(0).next()).thenReturn(true, false);
         when(resultSets.get(0).getObject(1)).thenReturn(20);
         when(resultSets.get(0).getObject(2)).thenReturn(0);

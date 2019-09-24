@@ -40,7 +40,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Getter
 @Setter
-@ToString(exclude = "tableMetas")
+@ToString
 public final class SelectItems {
     
     private final int startIndex;
@@ -52,8 +52,6 @@ public final class SelectItems {
     private final Collection<SelectItem> items;
     
     private final Collection<TableSegment> tables;
-    
-    private final TableMetas tableMetas;
     
     /**
      * Judge is unqualified shorthand item or not.
@@ -135,13 +133,14 @@ public final class SelectItems {
     /**
      * Get column labels.
      * 
+     * @param tableMetas table metas
      * @return column labels
      */
-    public List<String> getColumnLabels() {
+    public List<String> getColumnLabels(final TableMetas tableMetas) {
         List<String> result = new ArrayList<>(items.size());
         for (SelectItem each : items) {
             if (each instanceof ShorthandSelectItem) {
-                result.addAll(getShorthandColumnLabels((ShorthandSelectItem) each));
+                result.addAll(getShorthandColumnLabels(tableMetas, (ShorthandSelectItem) each));
             } else {
                 result.add(each.getColumnLabel());
             }
@@ -149,11 +148,11 @@ public final class SelectItems {
         return result;
     }
     
-    private Collection<String> getShorthandColumnLabels(final ShorthandSelectItem shorthandSelectItem) {
-        return shorthandSelectItem.getOwner().isPresent() ? getQualifiedShorthandColumnLabels(shorthandSelectItem.getOwner().get()) : getUnqualifiedShorthandColumnLabels();
+    private Collection<String> getShorthandColumnLabels(final TableMetas tableMetas, final ShorthandSelectItem shorthandSelectItem) {
+        return shorthandSelectItem.getOwner().isPresent() ? getQualifiedShorthandColumnLabels(tableMetas, shorthandSelectItem.getOwner().get()) : getUnqualifiedShorthandColumnLabels(tableMetas);
     }
     
-    private Collection<String> getQualifiedShorthandColumnLabels(final String owner) {
+    private Collection<String> getQualifiedShorthandColumnLabels(final TableMetas tableMetas, final String owner) {
         for (TableSegment each : tables) {
             if (owner.equalsIgnoreCase(each.getAlias().or(each.getTableName()))) {
                 return tableMetas.get(each.getTableName()).getColumns().keySet();
@@ -162,7 +161,7 @@ public final class SelectItems {
         return Collections.emptyList();
     }
     
-    private Collection<String> getUnqualifiedShorthandColumnLabels() {
+    private Collection<String> getUnqualifiedShorthandColumnLabels(final TableMetas tableMetas) {
         Collection<String> result = new LinkedList<>();
         for (TableSegment each : tables) {
             result.addAll(tableMetas.get(each.getTableName()).getColumns().keySet());

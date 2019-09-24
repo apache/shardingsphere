@@ -33,6 +33,7 @@ import org.apache.shardingsphere.core.merge.dql.orderby.OrderByStreamMergedResul
 import org.apache.shardingsphere.core.merge.dql.pagination.LimitDecoratorMergedResult;
 import org.apache.shardingsphere.core.merge.dql.pagination.RowNumberDecoratorMergedResult;
 import org.apache.shardingsphere.core.merge.dql.pagination.TopAndRowNumberDecoratorMergedResult;
+import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.optimize.segment.item.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.optimize.segment.pagination.Pagination;
 import org.apache.shardingsphere.core.optimize.statement.impl.SelectOptimizedStatement;
@@ -64,15 +65,15 @@ public final class DQLMergeEngine implements MergeEngine {
     @Getter
     private final Map<String, Integer> columnLabelIndexMap;
     
-    public DQLMergeEngine(final DatabaseType databaseType, final SQLRouteResult routeResult, final List<QueryResult> queryResults) throws SQLException {
+    public DQLMergeEngine(final DatabaseType databaseType, final TableMetas tableMetas, final SQLRouteResult routeResult, final List<QueryResult> queryResults) throws SQLException {
         this.databaseType = databaseType;
         this.routeResult = routeResult;
         this.shardingStatement = (SelectOptimizedStatement) routeResult.getShardingStatement();
-        this.queryResults = getRealQueryResults(queryResults);
+        this.queryResults = getRealQueryResults(tableMetas, queryResults);
         columnLabelIndexMap = getColumnLabelIndexMap(this.queryResults.get(0));
     }
     
-    private List<QueryResult> getRealQueryResults(final List<QueryResult> queryResults) throws SQLException {
+    private List<QueryResult> getRealQueryResults(final TableMetas tableMetas, final List<QueryResult> queryResults) throws SQLException {
         List<QueryResult> result = queryResults;
         if (1 == result.size()) {
             return result;
@@ -82,7 +83,7 @@ public final class DQLMergeEngine implements MergeEngine {
             result = getDividedQueryResults(new AggregationDistinctQueryResult(queryResults, aggregationDistinctSelectItems));
         }
         if (isDistinctRowSelectItems()) {
-            result = getDividedQueryResults(new DistinctQueryResult(queryResults, shardingStatement.getSelectItems().getColumnLabels()));
+            result = getDividedQueryResults(new DistinctQueryResult(queryResults, shardingStatement.getSelectItems().getColumnLabels(tableMetas)));
         }
         return result.isEmpty() ? queryResults : result;
     }

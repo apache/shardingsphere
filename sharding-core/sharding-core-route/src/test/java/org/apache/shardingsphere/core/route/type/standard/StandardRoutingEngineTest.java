@@ -193,7 +193,7 @@ public final class StandardRoutingEngineTest extends AbstractRoutingEngineTest {
     private StandardRoutingEngine createStandardRoutingEngine(final ShardingRule shardingRule, final String logicTableName, final ShardingConditions shardingConditions) {
         return new StandardRoutingEngine(shardingRule, logicTableName, new SelectOptimizedStatement(new SelectStatement(),
                 new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
-                new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<TableSegment>emptyList(), null),
+                new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<TableSegment>emptyList()),
                 new Pagination(null, null, Collections.emptyList())), shardingConditions);
     }
 }

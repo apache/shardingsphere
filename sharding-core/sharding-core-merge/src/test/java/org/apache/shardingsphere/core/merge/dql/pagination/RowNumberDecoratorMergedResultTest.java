@@ -78,11 +78,11 @@ public final class RowNumberDecoratorMergedResultTest {
     public void assertNextForSkipAll() throws SQLException {
         OptimizedStatement shardingStatement = new SelectOptimizedStatement(new SelectStatement(), 
                 new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
-                new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<TableSegment>emptyList(), null),
+                new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<TableSegment>emptyList()),
                 new Pagination(new NumberLiteralRowNumberValueSegment(0, 0, Integer.MAX_VALUE, true), null, Collections.emptyList()));
         SQLRouteResult routeResult = new SQLRouteResult(
                 shardingStatement, new CommonOptimizedStatement(new SelectStatement()), new ShardingConditions(Collections.<ShardingCondition>emptyList()));
-        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("Oracle"), routeResult, queryResults);
+        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("Oracle"), null, routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertFalse(actual.next());
     }
@@ -91,10 +91,10 @@ public final class RowNumberDecoratorMergedResultTest {
     public void assertNextWithoutOffsetWithoutRowCount() throws SQLException {
         OptimizedStatement shardingStatement = new SelectOptimizedStatement(new SelectStatement(), 
                 new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
-                new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<TableSegment>emptyList(), null), new Pagination(null, null, Collections.emptyList()));
+                new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<TableSegment>emptyList()), new Pagination(null, null, Collections.emptyList()));
         SQLRouteResult routeResult = new SQLRouteResult(
                 shardingStatement, new CommonOptimizedStatement(new SelectStatement()), new ShardingConditions(Collections.<ShardingCondition>emptyList()));
-        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("Oracle"), routeResult, queryResults);
+        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("Oracle"), null, routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
         for (int i = 0; i < 8; i++) {
             assertTrue(actual.next());
@@ -106,11 +106,11 @@ public final class RowNumberDecoratorMergedResultTest {
     public void assertNextForRowCountBoundOpenedFalse() throws SQLException {
         OptimizedStatement shardingStatement = new SelectOptimizedStatement(new SelectStatement(), 
                 new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
-                new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<TableSegment>emptyList(), null),
+                new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<TableSegment>emptyList()),
                 new Pagination(new NumberLiteralRowNumberValueSegment(0, 0, 2, true), new NumberLiteralRowNumberValueSegment(0, 0, 4, false), Collections.emptyList()));
         SQLRouteResult routeResult = new SQLRouteResult(
                 shardingStatement, new CommonOptimizedStatement(new SelectStatement()), new ShardingConditions(Collections.<ShardingCondition>emptyList()));
-        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("Oracle"), routeResult, queryResults);
+        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("Oracle"), null, routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertTrue(actual.next());
         assertTrue(actual.next());
@@ -121,11 +121,11 @@ public final class RowNumberDecoratorMergedResultTest {
     public void assertNextForRowCountBoundOpenedTrue() throws SQLException {
         OptimizedStatement shardingStatement = new SelectOptimizedStatement(new SelectStatement(), 
                 new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
-                new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<TableSegment>emptyList(), null),
+                new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<TableSegment>emptyList()),
                 new Pagination(new NumberLiteralRowNumberValueSegment(0, 0, 2, true), new NumberLiteralRowNumberValueSegment(0, 0, 4, true), Collections.emptyList()));
         SQLRouteResult routeResult = new SQLRouteResult(
                 shardingStatement, new CommonOptimizedStatement(new SelectStatement()), new ShardingConditions(Collections.<ShardingCondition>emptyList()));
-        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("Oracle"), routeResult, queryResults);
+        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("Oracle"), null, routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertTrue(actual.next());
         assertTrue(actual.next());

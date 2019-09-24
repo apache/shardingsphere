@@ -18,9 +18,6 @@
 package org.apache.shardingsphere.core.optimize.statement.impl;
 
 import com.google.common.collect.Lists;
-import org.apache.shardingsphere.core.metadata.column.ColumnMetaData;
-import org.apache.shardingsphere.core.metadata.table.TableMetaData;
-import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.optimize.segment.groupby.GroupBy;
 import org.apache.shardingsphere.core.optimize.segment.item.ColumnSelectItem;
 import org.apache.shardingsphere.core.optimize.segment.item.SelectItem;
@@ -39,7 +36,6 @@ import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.junit.Test;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -147,7 +143,7 @@ public final class SelectOptimizedStatementTest {
     
     private SelectItems createSelectItems() {
         Collection<SelectItem> selectItems = Lists.newArrayList(getColumnSelectItemWithoutOwner(), getColumnSelectItemWithoutOwner(true), getColumnSelectItemWithoutOwner(false));
-        return new SelectItems(0, 0, true, selectItems, Collections.<TableSegment>emptyList(), createTableMetas());
+        return new SelectItems(0, 0, true, selectItems, Collections.<TableSegment>emptyList());
     }
     
     private SelectItem getColumnSelectItemWithoutOwner() {
@@ -156,11 +152,5 @@ public final class SelectOptimizedStatementTest {
     
     private SelectItem getColumnSelectItemWithoutOwner(final boolean hasAlias) {
         return new ColumnSelectItem(null, hasAlias ? "name" : "id", hasAlias ? "n" : null);
-    }
-    
-    private TableMetas createTableMetas() {
-        Map<String, TableMetaData> tables = new HashMap<>(1, 1);
-        tables.put("table", new TableMetaData(Arrays.asList(new ColumnMetaData("id", "number", true), new ColumnMetaData("name", "varchar", false)), Collections.<String>emptyList()));
-        return new TableMetas(tables);
     }
 }

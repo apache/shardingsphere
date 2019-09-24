@@ -70,7 +70,7 @@ public final class OrderByStreamMergedResultTest {
         OptimizedStatement shardingStatement = new SelectOptimizedStatement(new SelectStatement(), 
                 new GroupBy(Collections.<OrderByItem>emptyList(), 0), 
                 new OrderBy(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC))), false), 
-                new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<TableSegment>emptyList(), null), new Pagination(null, null, Collections.emptyList()));
+                new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<TableSegment>emptyList()), new Pagination(null, null, Collections.emptyList()));
         routeResult = new SQLRouteResult(shardingStatement, new CommonOptimizedStatement(new SelectStatement()), new ShardingConditions(Collections.<ShardingCondition>emptyList()));
     }
     
@@ -83,14 +83,14 @@ public final class OrderByStreamMergedResultTest {
     
     @Test
     public void assertNextForResultSetsAllEmpty() throws SQLException {
-        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), routeResult, queryResults);
+        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), null, routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertFalse(actual.next());
     }
     
     @Test
     public void assertNextForSomeResultSetsEmpty() throws SQLException {
-        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), routeResult, queryResults);
+        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), null, routeResult, queryResults);
         when(queryResults.get(0).next()).thenReturn(true, false);
         when(queryResults.get(0).getValue(1, Object.class)).thenReturn("2");
         when(queryResults.get(2).next()).thenReturn(true, true, false);
@@ -107,7 +107,7 @@ public final class OrderByStreamMergedResultTest {
     
     @Test
     public void assertNextForMix() throws SQLException {
-        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), routeResult, queryResults);
+        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), null, routeResult, queryResults);
         when(queryResults.get(0).next()).thenReturn(true, false);
         when(queryResults.get(0).getValue(1, Object.class)).thenReturn("2");
         when(queryResults.get(1).next()).thenReturn(true, true, true, false);
@@ -141,7 +141,7 @@ public final class OrderByStreamMergedResultTest {
         when(queryResults.get(2).next()).thenReturn(true, false);
         when(queryResults.get(2).isCaseSensitive(1)).thenReturn(true);
         when(queryResults.get(2).getValue(1, Object.class)).thenReturn("A");
-        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), routeResult, queryResults);
+        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), null, routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class).toString(), is("A"));
@@ -165,7 +165,7 @@ public final class OrderByStreamMergedResultTest {
         when(queryResults.get(2).next()).thenReturn(true, false);
         when(queryResults.get(2).isCaseSensitive(1)).thenReturn(false);
         when(queryResults.get(2).getValue(1, Object.class)).thenReturn("A");
-        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), routeResult, queryResults);
+        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), null, routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class).toString(), is("a"));
