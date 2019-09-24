@@ -25,7 +25,7 @@ import org.apache.shardingsphere.core.merge.dql.groupby.aggregation.AggregationU
 import org.apache.shardingsphere.core.merge.dql.groupby.aggregation.AggregationUnitFactory;
 import org.apache.shardingsphere.core.merge.dql.orderby.OrderByStreamMergedResult;
 import org.apache.shardingsphere.core.optimize.segment.item.AggregationSelectItem;
-import org.apache.shardingsphere.core.optimize.statement.SelectOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.impl.SelectOptimizedStatement;
 
 import java.sql.SQLException;
 import java.util.ArrayList;

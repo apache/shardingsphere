@@ -24,7 +24,7 @@ import org.apache.shardingsphere.core.optimize.segment.item.SelectItems;
 import org.apache.shardingsphere.core.optimize.segment.orderby.OrderBy;
 import org.apache.shardingsphere.core.optimize.segment.orderby.OrderByItem;
 import org.apache.shardingsphere.core.optimize.segment.pagination.Pagination;
-import org.apache.shardingsphere.core.optimize.statement.SelectOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.impl.SelectOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.fixture.AbstractRoutingEngineTest;

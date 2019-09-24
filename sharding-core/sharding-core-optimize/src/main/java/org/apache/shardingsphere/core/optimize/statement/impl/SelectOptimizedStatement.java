@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.statement;
+package org.apache.shardingsphere.core.optimize.statement.impl;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
@@ -34,6 +34,7 @@ import org.apache.shardingsphere.core.optimize.segment.orderby.OrderByEngine;
 import org.apache.shardingsphere.core.optimize.segment.orderby.OrderByItem;
 import org.apache.shardingsphere.core.optimize.segment.pagination.Pagination;
 import org.apache.shardingsphere.core.optimize.segment.pagination.engine.PaginationEngine;
+import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.IndexOrderByItemSegment;

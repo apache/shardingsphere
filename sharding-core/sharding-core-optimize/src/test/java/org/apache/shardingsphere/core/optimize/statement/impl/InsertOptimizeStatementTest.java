@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.statement;
+package org.apache.shardingsphere.core.optimize.statement.impl;
 
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
+import org.apache.shardingsphere.core.optimize.statement.impl.InsertOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.optimize.segment.pagination;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
-import org.apache.shardingsphere.core.optimize.statement.SelectOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.impl.SelectOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.NumberLiteralPaginationValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.ParameterMarkerPaginationValueSegment;

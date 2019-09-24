@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.rewrite.statement;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.optimize.statement.InsertOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.impl.InsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.rewrite.encrypt.EncryptCondition;

@@ -35,7 +35,7 @@ import org.apache.shardingsphere.core.merge.dql.pagination.RowNumberDecoratorMer
 import org.apache.shardingsphere.core.merge.dql.pagination.TopAndRowNumberDecoratorMergedResult;
 import org.apache.shardingsphere.core.optimize.segment.item.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.optimize.segment.pagination.Pagination;
-import org.apache.shardingsphere.core.optimize.statement.SelectOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.impl.SelectOptimizedStatement;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.spi.database.DatabaseType;

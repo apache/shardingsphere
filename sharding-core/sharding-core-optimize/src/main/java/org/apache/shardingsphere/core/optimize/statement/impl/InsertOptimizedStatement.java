@@ -15,13 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.statement;
+package org.apache.shardingsphere.core.optimize.statement.impl;
 
 import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.optimize.segment.InsertValue;
 import org.apache.shardingsphere.core.optimize.segment.Tables;
+import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 
