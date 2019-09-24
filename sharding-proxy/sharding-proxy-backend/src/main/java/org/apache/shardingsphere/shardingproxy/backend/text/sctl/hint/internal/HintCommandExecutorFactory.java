@@ -61,43 +61,27 @@ public final class HintCommandExecutorFactory {
             return new HintErrorFormatExecutor(sql);
         }
         HintCommand hintCommand = shardingTCLStatement.get().getHintCommand();
-        Optional<HintCommandExecutor> hintUpdateExecutor = getHintUpdateExecutor(hintCommand);
-        if (hintUpdateExecutor.isPresent()) {
-            return hintUpdateExecutor.get();
-        }
-        Optional<HintCommandExecutor> hintQueryExecutor = getHintQueryExecutor(hintCommand, backendConnection);
-        if (hintQueryExecutor.isPresent()) {
-            return hintQueryExecutor.get();
-        }
-        return new HintErrorParameterExecutor(sql);
-    }
-    
-    private static Optional<HintCommandExecutor> getHintUpdateExecutor(final HintCommand hintCommand) {
         if (hintCommand instanceof HintSetMasterOnlyCommand) {
-            return Optional.of((HintCommandExecutor) new HintSetMasterOnlyExecutor((HintSetMasterOnlyCommand) hintCommand));
+            return new HintSetMasterOnlyExecutor((HintSetMasterOnlyCommand) hintCommand);
         }
         if (hintCommand instanceof HintSetDatabaseShardingValueCommand) {
-            return Optional.of((HintCommandExecutor) new HintSetDatabaseShardingValueExecutor((HintSetDatabaseShardingValueCommand) hintCommand));
+            return new HintSetDatabaseShardingValueExecutor((HintSetDatabaseShardingValueCommand) hintCommand);
         }
         if (hintCommand instanceof HintAddDatabaseShardingValueCommand) {
-            return Optional.of((HintCommandExecutor) new HintAddDatabaseShardingValueExecutor((HintAddDatabaseShardingValueCommand) hintCommand));
+            return new HintAddDatabaseShardingValueExecutor((HintAddDatabaseShardingValueCommand) hintCommand);
         }
         if (hintCommand instanceof HintAddTableShardingValueCommand) {
-            return Optional.of((HintCommandExecutor) new HintAddTableShardingValueExecutor((HintAddTableShardingValueCommand) hintCommand));
+            return new HintAddTableShardingValueExecutor((HintAddTableShardingValueCommand) hintCommand);
         }
         if (hintCommand instanceof HintClearCommand) {
-            return Optional.of((HintCommandExecutor) new HintClearExecutor());
+            return new HintClearExecutor();
         }
-        return Optional.absent();
-    }
-    
-    private static Optional<HintCommandExecutor> getHintQueryExecutor(final HintCommand hintCommand, final BackendConnection backendConnection) {
         if (hintCommand instanceof HintShowStatusCommand) {
-            return Optional.of((HintCommandExecutor) new HintShowStatusExecutor());
+            return new HintShowStatusExecutor();
         }
         if (hintCommand instanceof HintShowTableStatusCommand) {
-            return Optional.of((HintCommandExecutor) new HintShowTableStatusExecutor(backendConnection));
+            return new HintShowTableStatusExecutor(backendConnection);
         }
-        return Optional.absent();
+        return new HintErrorParameterExecutor(sql);
     }
 }
