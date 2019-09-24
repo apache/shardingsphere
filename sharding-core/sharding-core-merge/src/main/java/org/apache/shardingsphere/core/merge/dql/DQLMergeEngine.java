@@ -35,7 +35,7 @@ import org.apache.shardingsphere.core.merge.dql.pagination.RowNumberDecoratorMer
 import org.apache.shardingsphere.core.merge.dql.pagination.TopAndRowNumberDecoratorMergedResult;
 import org.apache.shardingsphere.core.optimize.sharding.segment.item.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.optimize.sharding.segment.pagination.Pagination;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.api.statement.SelectOptimizedStatement;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.spi.database.DatabaseType;
@@ -57,7 +57,7 @@ public final class DQLMergeEngine implements MergeEngine {
     
     private final SQLRouteResult routeResult;
     
-    private final ShardingSelectOptimizedStatement shardingStatement;
+    private final SelectOptimizedStatement shardingStatement;
     
     private final List<QueryResult> queryResults;
     
@@ -67,7 +67,7 @@ public final class DQLMergeEngine implements MergeEngine {
     public DQLMergeEngine(final DatabaseType databaseType, final SQLRouteResult routeResult, final List<QueryResult> queryResults) throws SQLException {
         this.databaseType = databaseType;
         this.routeResult = routeResult;
-        this.shardingStatement = (ShardingSelectOptimizedStatement) routeResult.getShardingStatement();
+        this.shardingStatement = (SelectOptimizedStatement) routeResult.getShardingStatement();
         this.queryResults = getRealQueryResults(queryResults);
         columnLabelIndexMap = getColumnLabelIndexMap(this.queryResults.get(0));
     }
@@ -134,7 +134,7 @@ public final class DQLMergeEngine implements MergeEngine {
     }
     
     private MergedResult decorate(final MergedResult mergedResult) throws SQLException {
-        Pagination pagination = ((ShardingSelectOptimizedStatement) routeResult.getShardingStatement()).getPagination();
+        Pagination pagination = ((SelectOptimizedStatement) routeResult.getShardingStatement()).getPagination();
         if (!pagination.isHasPagination() || 1 == queryResults.size()) {
             return mergedResult;
         }

@@ -25,7 +25,7 @@ import org.apache.shardingsphere.core.merge.dql.groupby.aggregation.AggregationU
 import org.apache.shardingsphere.core.merge.dql.groupby.aggregation.AggregationUnitFactory;
 import org.apache.shardingsphere.core.merge.dql.orderby.OrderByStreamMergedResult;
 import org.apache.shardingsphere.core.optimize.sharding.segment.item.AggregationSelectItem;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.api.statement.SelectOptimizedStatement;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -44,14 +44,14 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
     
     private final Map<String, Integer> labelAndIndexMap;
     
-    private final ShardingSelectOptimizedStatement optimizedStatement;
+    private final SelectOptimizedStatement optimizedStatement;
     
     private final List<Object> currentRow;
     
     private List<?> currentGroupByValues;
     
     public GroupByStreamMergedResult(
-            final Map<String, Integer> labelAndIndexMap, final List<QueryResult> queryResults, final ShardingSelectOptimizedStatement optimizedStatement) throws SQLException {
+            final Map<String, Integer> labelAndIndexMap, final List<QueryResult> queryResults, final SelectOptimizedStatement optimizedStatement) throws SQLException {
         super(queryResults, optimizedStatement.getOrderBy().getItems());
         this.labelAndIndexMap = labelAndIndexMap;
         this.optimizedStatement = optimizedStatement;

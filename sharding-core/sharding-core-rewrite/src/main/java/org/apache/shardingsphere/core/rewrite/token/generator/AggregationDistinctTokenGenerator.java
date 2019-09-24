@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.rewrite.token.generator;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.core.optimize.sharding.segment.item.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.optimize.sharding.segment.item.DerivedColumn;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.api.statement.SelectOptimizedStatement;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
 import org.apache.shardingsphere.core.rewrite.token.pojo.AggregationDistinctToken;
@@ -40,11 +40,11 @@ public final class AggregationDistinctTokenGenerator implements CollectionSQLTok
     @Override
     public Collection<AggregationDistinctToken> generateSQLTokens(
             final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder, final ShardingRule shardingRule, final boolean isQueryWithCipherColumn) {
-        if (!(rewriteStatement.getOptimizedStatement() instanceof ShardingSelectOptimizedStatement)) {
+        if (!(rewriteStatement.getOptimizedStatement() instanceof SelectOptimizedStatement)) {
             return Collections.emptyList();
         }
         Collection<AggregationDistinctToken> result = new LinkedList<>();
-        for (AggregationDistinctSelectItem each : ((ShardingSelectOptimizedStatement) rewriteStatement.getOptimizedStatement()).getSelectItems().getAggregationDistinctSelectItems()) {
+        for (AggregationDistinctSelectItem each : ((SelectOptimizedStatement) rewriteStatement.getOptimizedStatement()).getSelectItems().getAggregationDistinctSelectItems()) {
             result.add(createAggregationDistinctToken(each));
         }
         return result;

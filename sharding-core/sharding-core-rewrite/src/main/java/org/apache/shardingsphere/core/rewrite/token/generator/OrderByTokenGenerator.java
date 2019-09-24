@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.optimize.sharding.segment.orderby.OrderByItem;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.api.statement.SelectOptimizedStatement;
 import org.apache.shardingsphere.core.parse.core.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ExpressionOrderByItemSegment;
@@ -38,16 +38,16 @@ public final class OrderByTokenGenerator implements OptionalSQLTokenGenerator<Sh
     @Override
     public Optional<OrderByToken> generateSQLToken(
             final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder, final ShardingRule shardingRule, final boolean isQueryWithCipherColumn) {
-        if (!(rewriteStatement.getOptimizedStatement() instanceof ShardingSelectOptimizedStatement)) {
+        if (!(rewriteStatement.getOptimizedStatement() instanceof SelectOptimizedStatement)) {
             return Optional.absent();
         }
-        if (((ShardingSelectOptimizedStatement) rewriteStatement.getOptimizedStatement()).getOrderBy().isGenerated()) {
-            return Optional.of(createOrderByToken((ShardingSelectOptimizedStatement) rewriteStatement.getOptimizedStatement()));
+        if (((SelectOptimizedStatement) rewriteStatement.getOptimizedStatement()).getOrderBy().isGenerated()) {
+            return Optional.of(createOrderByToken((SelectOptimizedStatement) rewriteStatement.getOptimizedStatement()));
         }
         return Optional.absent();
     }
     
-    private OrderByToken createOrderByToken(final ShardingSelectOptimizedStatement optimizedStatement) {
+    private OrderByToken createOrderByToken(final SelectOptimizedStatement optimizedStatement) {
         OrderByToken result = new OrderByToken(optimizedStatement.getGroupBy().getLastIndex() + 1);
         String columnLabel;
         for (OrderByItem each : optimizedStatement.getOrderBy().getItems()) {

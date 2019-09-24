@@ -22,7 +22,7 @@ import org.apache.shardingsphere.core.optimize.sharding.segment.item.Aggregation
 import org.apache.shardingsphere.core.optimize.sharding.segment.item.SelectItems;
 import org.apache.shardingsphere.core.optimize.sharding.segment.orderby.OrderByItem;
 import org.apache.shardingsphere.core.optimize.sharding.segment.groupby.GroupBy;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.api.statement.SelectOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.ParameterMarkerLimitValueSegment;
@@ -128,7 +128,7 @@ public class PaginationTest {
     
     @Test
     public void getRevisedRowCount() {
-        ShardingSelectOptimizedStatement shardingStatement = mock(ShardingSelectOptimizedStatement.class);
+        SelectOptimizedStatement shardingStatement = mock(SelectOptimizedStatement.class);
         Mockito.doReturn(getSelectItemsWithEmptyAggregationSelectItems()).when(shardingStatement).getSelectItems();
         doReturn(getGroupByWithEmptyItems()).when(shardingStatement).getGroupBy();
         assertThat(new Pagination(getOffsetSegment(), getRowCountSegment(), getParameters()).getRevisedRowCount(shardingStatement), is(50L));
@@ -148,7 +148,7 @@ public class PaginationTest {
     
     @Test
     public void getRevisedRowCountWithMax() {
-        ShardingSelectOptimizedStatement shardingStatement = mock(ShardingSelectOptimizedStatement.class);
+        SelectOptimizedStatement shardingStatement = mock(SelectOptimizedStatement.class);
         doReturn(getSelectItemsWithEmptyAggregationSelectItems()).when(shardingStatement).getSelectItems();
         doReturn(getGroupBy()).when(shardingStatement).getGroupBy();
         doReturn(false).when(shardingStatement).isSameGroupByAndOrderByItems();
