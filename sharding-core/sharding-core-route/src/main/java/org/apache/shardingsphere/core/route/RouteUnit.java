@@ -31,7 +31,6 @@ import lombok.ToString;
  */
 @RequiredArgsConstructor
 @Getter
-@Setter
 @EqualsAndHashCode
 @ToString
 public final class RouteUnit {
