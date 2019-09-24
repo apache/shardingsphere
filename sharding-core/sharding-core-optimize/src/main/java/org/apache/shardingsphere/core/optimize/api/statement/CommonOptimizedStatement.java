@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.sharding.statement;
+package org.apache.shardingsphere.core.optimize.api.statement;
 
 import lombok.Getter;
 import lombok.ToString;
@@ -23,19 +23,19 @@ import org.apache.shardingsphere.core.optimize.api.segment.Tables;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
 /**
- * Transparent optimized statement for sharding.
+ * Common optimized statement.
  *
  * @author zhangliang
  */
 @Getter
 @ToString
-public final class ShardingTransparentOptimizedStatement implements ShardingOptimizedStatement {
+public final class CommonOptimizedStatement implements OptimizedStatement {
     
     private final SQLStatement sqlStatement;
     
     private final Tables tables;
     
-    public ShardingTransparentOptimizedStatement(final SQLStatement sqlStatement) {
+    public CommonOptimizedStatement(final SQLStatement sqlStatement) {
         this.sqlStatement = sqlStatement;
         tables = new Tables(sqlStatement);
     }

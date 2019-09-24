@@ -27,7 +27,7 @@ import org.apache.shardingsphere.core.merge.dql.common.MemoryQueryResultRow;
 import org.apache.shardingsphere.core.merge.dql.groupby.aggregation.AggregationUnit;
 import org.apache.shardingsphere.core.merge.dql.groupby.aggregation.AggregationUnitFactory;
 import org.apache.shardingsphere.core.optimize.sharding.segment.item.AggregationSelectItem;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.api.statement.SelectOptimizedStatement;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -46,12 +46,12 @@ import java.util.Map.Entry;
  */
 public final class GroupByMemoryMergedResult extends MemoryMergedResult {
     
-    private final ShardingSelectOptimizedStatement optimizedStatement;
+    private final SelectOptimizedStatement optimizedStatement;
     
     private final Iterator<MemoryQueryResultRow> memoryResultSetRows;
     
     public GroupByMemoryMergedResult(
-            final Map<String, Integer> labelAndIndexMap, final List<QueryResult> queryResults, final ShardingSelectOptimizedStatement optimizedStatement) throws SQLException {
+            final Map<String, Integer> labelAndIndexMap, final List<QueryResult> queryResults, final SelectOptimizedStatement optimizedStatement) throws SQLException {
         super(labelAndIndexMap);
         this.optimizedStatement = optimizedStatement;
         memoryResultSetRows = init(queryResults);

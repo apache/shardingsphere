@@ -27,7 +27,7 @@ import org.apache.shardingsphere.core.optimize.sharding.segment.item.SelectItems
 import org.apache.shardingsphere.core.optimize.sharding.segment.orderby.OrderBy;
 import org.apache.shardingsphere.core.optimize.sharding.segment.orderby.OrderByItem;
 import org.apache.shardingsphere.core.optimize.sharding.segment.pagination.Pagination;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.api.statement.SelectOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
@@ -191,7 +191,7 @@ public final class StandardRoutingEngineTest extends AbstractRoutingEngineTest {
     }
     
     private StandardRoutingEngine createStandardRoutingEngine(final ShardingRule shardingRule, final String logicTableName, final ShardingConditions shardingConditions) {
-        return new StandardRoutingEngine(shardingRule, logicTableName, new ShardingSelectOptimizedStatement(new SelectStatement(),
+        return new StandardRoutingEngine(shardingRule, logicTableName, new SelectOptimizedStatement(new SelectStatement(),
                 new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
                 new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<TableSegment>emptyList(), null),
                 new Pagination(null, null, Collections.emptyList())), shardingConditions);

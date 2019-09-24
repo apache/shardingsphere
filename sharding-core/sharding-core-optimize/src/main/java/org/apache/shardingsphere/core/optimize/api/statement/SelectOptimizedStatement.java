@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.sharding.statement.dml;
+package org.apache.shardingsphere.core.optimize.api.statement;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
@@ -30,7 +30,6 @@ import org.apache.shardingsphere.core.optimize.sharding.segment.item.SelectItems
 import org.apache.shardingsphere.core.optimize.sharding.segment.orderby.OrderBy;
 import org.apache.shardingsphere.core.optimize.sharding.segment.orderby.OrderByItem;
 import org.apache.shardingsphere.core.optimize.sharding.segment.pagination.Pagination;
-import org.apache.shardingsphere.core.optimize.sharding.statement.ShardingOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.IndexOrderByItemSegment;
@@ -42,14 +41,14 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * Select optimized statement for sharding.
+ * Select optimized statement.
  *
  * @author zhangliang
  */
 @Getter
 @Setter
 @ToString
-public final class ShardingSelectOptimizedStatement implements ShardingOptimizedStatement {
+public final class SelectOptimizedStatement implements OptimizedStatement {
     
     private final SQLStatement sqlStatement;
     
@@ -65,7 +64,7 @@ public final class ShardingSelectOptimizedStatement implements ShardingOptimized
     
     private boolean containsSubquery;
     
-    public ShardingSelectOptimizedStatement(final SQLStatement sqlStatement, final GroupBy groupBy, final OrderBy orderBy, final SelectItems selectItems, final Pagination pagination) {
+    public SelectOptimizedStatement(final SQLStatement sqlStatement, final GroupBy groupBy, final OrderBy orderBy, final SelectItems selectItems, final Pagination pagination) {
         this.sqlStatement = sqlStatement;
         this.tables = new Tables(sqlStatement);
         this.groupBy = groupBy;

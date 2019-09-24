@@ -15,50 +15,47 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.sharding;
+package org.apache.shardingsphere.core.optimize.api;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
+import org.apache.shardingsphere.core.optimize.api.statement.CommonOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.engnie.ShardingSelectOptimizeEngine;
-import org.apache.shardingsphere.core.optimize.sharding.statement.ShardingOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.sharding.statement.ShardingTransparentOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.List;
 
 /**
- * Optimize engine factory for sharding.
+ * Optimized statement factory.
  *
  * @author zhangliang
  * @author maxiaoguang
  * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingOptimizeEngineFactory {
+public final class OptimizedStatementFactory {
     
     /**
-     * Create sharding optimize engine instance.
+     * Create optimized statement.
      *
-     * @param shardingRule sharding rule
      * @param tableMetas table meta data
      * @param sql SQL
      * @param parameters SQL parameters
      * @param sqlStatement SQL statement
-     * @return sharding optimize engine instance
+     * @return optimized statement
      */
-    public static ShardingOptimizedStatement newInstance(final ShardingRule shardingRule, 
-                                                         final TableMetas tableMetas, final String sql, final List<Object> parameters, final SQLStatement sqlStatement) {
+    public static OptimizedStatement newInstance(final TableMetas tableMetas, final String sql, final List<Object> parameters, final SQLStatement sqlStatement) {
         if (sqlStatement instanceof SelectStatement) {
-            return new ShardingSelectOptimizeEngine().optimize(shardingRule, tableMetas, sql, parameters, (SelectStatement) sqlStatement);
+            return new ShardingSelectOptimizeEngine().optimize(tableMetas, sql, parameters, (SelectStatement) sqlStatement);
         }
         if (sqlStatement instanceof InsertStatement) {
             return new InsertOptimizedStatement(tableMetas, parameters, (InsertStatement) sqlStatement);
         }
-        return new ShardingTransparentOptimizedStatement(sqlStatement);
+        return new CommonOptimizedStatement(sqlStatement);
     }
 }

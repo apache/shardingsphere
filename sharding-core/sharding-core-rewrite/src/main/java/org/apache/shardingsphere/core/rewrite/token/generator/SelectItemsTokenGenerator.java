@@ -25,7 +25,7 @@ import org.apache.shardingsphere.core.optimize.sharding.segment.item.Aggregation
 import org.apache.shardingsphere.core.optimize.sharding.segment.item.AggregationSelectItem;
 import org.apache.shardingsphere.core.optimize.sharding.segment.item.DerivedSelectItem;
 import org.apache.shardingsphere.core.optimize.sharding.segment.item.SelectItem;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.api.statement.SelectOptimizedStatement;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SelectItemsToken;
@@ -44,16 +44,16 @@ public final class SelectItemsTokenGenerator implements OptionalSQLTokenGenerato
     @Override
     public Optional<SelectItemsToken> generateSQLToken(
             final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder, final ShardingRule shardingRule, final boolean isQueryWithCipherColumn) {
-        if (!(rewriteStatement.getOptimizedStatement() instanceof ShardingSelectOptimizedStatement)) {
+        if (!(rewriteStatement.getOptimizedStatement() instanceof SelectOptimizedStatement)) {
             return Optional.absent();
         }
-        Collection<String> derivedItemTexts = getDerivedItemTexts((ShardingSelectOptimizedStatement) rewriteStatement.getOptimizedStatement());
+        Collection<String> derivedItemTexts = getDerivedItemTexts((SelectOptimizedStatement) rewriteStatement.getOptimizedStatement());
         return derivedItemTexts.isEmpty() ? Optional.<SelectItemsToken>absent()
                 : Optional.of(
-                        new SelectItemsToken(((ShardingSelectOptimizedStatement) rewriteStatement.getOptimizedStatement()).getSelectItems().getStopIndex() + 1 + " ".length(), derivedItemTexts));
+                        new SelectItemsToken(((SelectOptimizedStatement) rewriteStatement.getOptimizedStatement()).getSelectItems().getStopIndex() + 1 + " ".length(), derivedItemTexts));
     }
     
-    private Collection<String> getDerivedItemTexts(final ShardingSelectOptimizedStatement optimizedStatement) {
+    private Collection<String> getDerivedItemTexts(final SelectOptimizedStatement optimizedStatement) {
         Collection<String> result = new LinkedList<>();
         for (SelectItem each : optimizedStatement.getSelectItems().getItems()) {
             if (each instanceof AggregationSelectItem && !((AggregationSelectItem) each).getDerivedAggregationItems().isEmpty()) {

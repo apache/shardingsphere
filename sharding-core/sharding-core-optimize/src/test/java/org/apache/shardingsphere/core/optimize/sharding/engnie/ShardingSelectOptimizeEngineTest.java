@@ -34,7 +34,6 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.Pred
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateInRightValue;
 import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,9 +52,6 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class ShardingSelectOptimizeEngineTest {
-    
-    @Mock
-    private ShardingRule shardingRule;
     
     @Mock
     private TableMetas tableMetas;
@@ -170,7 +166,7 @@ public final class ShardingSelectOptimizeEngineTest {
         when(tableMetas.get("tbl")).thenReturn(createTableMetaData());
         selectStatement.setSelectItems(createSelectItemsSegment());
         selectStatement.getTables().add(new TableSegment(0, 0, "tbl"));
-        SelectItems selectItems = new ShardingSelectOptimizeEngine().optimize(shardingRule, tableMetas, "", Collections.emptyList(), selectStatement).getSelectItems();
+        SelectItems selectItems = new ShardingSelectOptimizeEngine().optimize(tableMetas, "", Collections.emptyList(), selectStatement).getSelectItems();
         assertThat(selectItems.getColumnLabels().size(), is(2));
         assertThat(selectItems.getColumnLabels().get(0), is("id"));
         assertThat(selectItems.getColumnLabels().get(1), is("user_id"));

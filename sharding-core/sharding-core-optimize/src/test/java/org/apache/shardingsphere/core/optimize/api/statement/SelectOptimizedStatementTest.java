@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.sharding.statement.dml;
+package org.apache.shardingsphere.core.optimize.api.statement;
 
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.core.metadata.column.ColumnMetaData;
@@ -46,7 +46,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
-public final class ShardingSelectOptimizedStatementTest {
+public final class SelectOptimizedStatementTest {
     
     private static final String INDEX_ORDER_BY = "IndexOrderBy";
     
@@ -58,45 +58,45 @@ public final class ShardingSelectOptimizedStatementTest {
     
     @Test
     public void assertSetIndexForItemsByIndexOrderBy() {
-        ShardingSelectOptimizedStatement shardingSelectOptimizedStatement = new ShardingSelectOptimizedStatement(
+        SelectOptimizedStatement selectOptimizedStatement = new SelectOptimizedStatement(
                 new SelectStatement(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), createOrderBy(INDEX_ORDER_BY), createSelectItems(), null);
-        shardingSelectOptimizedStatement.setIndexForItems(Collections.<String, Integer>emptyMap());
-        assertThat(shardingSelectOptimizedStatement.getOrderBy().getItems().iterator().next().getIndex(), is(4));
+        selectOptimizedStatement.setIndexForItems(Collections.<String, Integer>emptyMap());
+        assertThat(selectOptimizedStatement.getOrderBy().getItems().iterator().next().getIndex(), is(4));
     }
     
     @Test
     public void assertSetIndexForItemsByColumnOrderByWithOwner() {
-        ShardingSelectOptimizedStatement shardingSelectOptimizedStatement = new ShardingSelectOptimizedStatement(
+        SelectOptimizedStatement selectOptimizedStatement = new SelectOptimizedStatement(
                 new SelectStatement(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), createOrderBy(COLUMN_ORDER_BY_WITH_OWNER), createSelectItems(), null);
-        shardingSelectOptimizedStatement.setIndexForItems(Collections.<String, Integer>emptyMap());
-        assertThat(shardingSelectOptimizedStatement.getOrderBy().getItems().iterator().next().getIndex(), is(1));
+        selectOptimizedStatement.setIndexForItems(Collections.<String, Integer>emptyMap());
+        assertThat(selectOptimizedStatement.getOrderBy().getItems().iterator().next().getIndex(), is(1));
     }
     
     @Test
     public void assertSetIndexForItemsByColumnOrderByWithAlias() {
-        ShardingSelectOptimizedStatement shardingSelectOptimizedStatement = new ShardingSelectOptimizedStatement(
+        SelectOptimizedStatement selectOptimizedStatement = new SelectOptimizedStatement(
                 new SelectStatement(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), createOrderBy(COLUMN_ORDER_BY_WITH_ALIAS), createSelectItems(), null);
         Map<String, Integer> columnLabelIndexMap = new HashMap<>();
         columnLabelIndexMap.put("n", 2);
-        shardingSelectOptimizedStatement.setIndexForItems(columnLabelIndexMap);
-        assertThat(shardingSelectOptimizedStatement.getOrderBy().getItems().iterator().next().getIndex(), is(2));
+        selectOptimizedStatement.setIndexForItems(columnLabelIndexMap);
+        assertThat(selectOptimizedStatement.getOrderBy().getItems().iterator().next().getIndex(), is(2));
     }
     
     @Test
     public void assertSetIndexForItemsByColumnOrderByWithoutAlias() {
-        ShardingSelectOptimizedStatement shardingSelectOptimizedStatement = new ShardingSelectOptimizedStatement(
+        SelectOptimizedStatement selectOptimizedStatement = new SelectOptimizedStatement(
                 new SelectStatement(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), createOrderBy(COLUMN_ORDER_BY_WITHOUT_OWNER_ALIAS), createSelectItems(), null);
         Map<String, Integer> columnLabelIndexMap = new HashMap<>();
         columnLabelIndexMap.put("id", 3);
-        shardingSelectOptimizedStatement.setIndexForItems(columnLabelIndexMap);
-        assertThat(shardingSelectOptimizedStatement.getOrderBy().getItems().iterator().next().getIndex(), is(3));
+        selectOptimizedStatement.setIndexForItems(columnLabelIndexMap);
+        assertThat(selectOptimizedStatement.getOrderBy().getItems().iterator().next().getIndex(), is(3));
     }
     
     @Test
     public void assertIsSameGroupByAndOrderByItems() {
-        ShardingSelectOptimizedStatement shardingSelectOptimizedStatement = new ShardingSelectOptimizedStatement(
+        SelectOptimizedStatement selectOptimizedStatement = new SelectOptimizedStatement(
                 new SelectStatement(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), createSelectItems(), null);
-        assertFalse(shardingSelectOptimizedStatement.isSameGroupByAndOrderByItems());
+        assertFalse(selectOptimizedStatement.isSameGroupByAndOrderByItems());
     }
     
     private OrderBy createOrderBy(final String type) {

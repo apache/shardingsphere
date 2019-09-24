@@ -23,19 +23,19 @@ import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.MergedResult;
 import org.apache.shardingsphere.core.merge.dql.DQLMergeEngine;
 import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
-import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptTransparentOptimizedStatement;
-import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
-import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
+import org.apache.shardingsphere.core.optimize.api.statement.CommonOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.segment.groupby.GroupBy;
 import org.apache.shardingsphere.core.optimize.sharding.segment.item.SelectItem;
 import org.apache.shardingsphere.core.optimize.sharding.segment.item.SelectItems;
 import org.apache.shardingsphere.core.optimize.sharding.segment.orderby.OrderBy;
 import org.apache.shardingsphere.core.optimize.sharding.segment.orderby.OrderByItem;
 import org.apache.shardingsphere.core.optimize.sharding.segment.pagination.Pagination;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.api.statement.SelectOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
+import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
+import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -64,10 +64,10 @@ public final class IteratorStreamMergedResultTest {
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
         when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
         queryResults = Lists.<QueryResult>newArrayList(new TestQueryResult(resultSet), new TestQueryResult(mock(ResultSet.class)), new TestQueryResult(mock(ResultSet.class)));
-        routeResult = new SQLRouteResult(new ShardingSelectOptimizedStatement(new SelectStatement(), 
+        routeResult = new SQLRouteResult(new SelectOptimizedStatement(new SelectStatement(), 
                 new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
                 new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<TableSegment>emptyList(), null), new Pagination(null, null, Collections.emptyList())), 
-                new EncryptTransparentOptimizedStatement(new SelectStatement()), new ShardingConditions(Collections.<ShardingCondition>emptyList()));
+                new CommonOptimizedStatement(new SelectStatement()), new ShardingConditions(Collections.<ShardingCondition>emptyList()));
     }
     
     @Test

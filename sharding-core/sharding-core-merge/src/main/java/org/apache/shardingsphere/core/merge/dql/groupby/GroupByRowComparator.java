@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.merge.dql.common.MemoryQueryResultRow;
 import org.apache.shardingsphere.core.merge.dql.orderby.CompareUtil;
 import org.apache.shardingsphere.core.optimize.sharding.segment.orderby.OrderByItem;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.api.statement.SelectOptimizedStatement;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -37,7 +37,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class GroupByRowComparator implements Comparator<MemoryQueryResultRow> {
     
-    private final ShardingSelectOptimizedStatement optimizedStatement;
+    private final SelectOptimizedStatement optimizedStatement;
     
     private final List<Boolean> valueCaseSensitive;
     

@@ -23,9 +23,8 @@ import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.MergedResult;
 import org.apache.shardingsphere.core.merge.dql.DQLMergeEngine;
 import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
-import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptTransparentOptimizedStatement;
-import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
-import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
+import org.apache.shardingsphere.core.optimize.api.statement.CommonOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.segment.groupby.GroupBy;
 import org.apache.shardingsphere.core.optimize.sharding.segment.item.AggregationSelectItem;
 import org.apache.shardingsphere.core.optimize.sharding.segment.item.SelectItem;
@@ -33,14 +32,15 @@ import org.apache.shardingsphere.core.optimize.sharding.segment.item.SelectItems
 import org.apache.shardingsphere.core.optimize.sharding.segment.orderby.OrderBy;
 import org.apache.shardingsphere.core.optimize.sharding.segment.orderby.OrderByItem;
 import org.apache.shardingsphere.core.optimize.sharding.segment.pagination.Pagination;
-import org.apache.shardingsphere.core.optimize.sharding.statement.ShardingOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.api.statement.SelectOptimizedStatement;
 import org.apache.shardingsphere.core.parse.core.constant.AggregationType;
 import org.apache.shardingsphere.core.parse.core.constant.OrderDirection;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
+import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
+import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -90,11 +90,11 @@ public final class GroupByStreamMergedResultTest {
         aggregationSelectItem2.setIndex(6);
         aggregationSelectItem2.getDerivedAggregationItems().add(derivedAggregationSelectItem2);
         SelectItems selectItems = new SelectItems(0, 0, false, Arrays.<SelectItem>asList(aggregationSelectItem1, aggregationSelectItem2), Collections.<TableSegment>emptyList(), null);
-        ShardingOptimizedStatement shardingStatement = new ShardingSelectOptimizedStatement(new SelectStatement(), 
+        OptimizedStatement shardingStatement = new SelectOptimizedStatement(new SelectStatement(), 
                 new GroupBy(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, OrderDirection.ASC))), 0),
                 new OrderBy(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, OrderDirection.ASC))), false),
                 selectItems, new Pagination(null, null, Collections.emptyList()));
-        routeResult = new SQLRouteResult(shardingStatement, new EncryptTransparentOptimizedStatement(new SelectStatement()), new ShardingConditions(Collections.<ShardingCondition>emptyList()));
+        routeResult = new SQLRouteResult(shardingStatement, new CommonOptimizedStatement(new SelectStatement()), new ShardingConditions(Collections.<ShardingCondition>emptyList()));
     }
     
     private ResultSet mockResultSet() throws SQLException {

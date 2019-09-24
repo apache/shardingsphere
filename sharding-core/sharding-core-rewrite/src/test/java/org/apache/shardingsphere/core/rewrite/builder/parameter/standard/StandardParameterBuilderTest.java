@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.core.rewrite.builder.parameter.standard;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.optimize.sharding.segment.pagination.Pagination;
+import org.apache.shardingsphere.core.optimize.api.statement.SelectOptimizedStatement;
+import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
-import org.apache.shardingsphere.core.optimize.sharding.segment.pagination.Pagination;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
-import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.junit.Before;
@@ -55,10 +55,10 @@ public final class StandardParameterBuilderTest {
         when(pagination.isHasPagination()).thenReturn(true);
         when(pagination.getOffsetParameterIndex()).thenReturn(Optional.of(2));
         when(pagination.getRowCountParameterIndex()).thenReturn(Optional.of(3));
-        when(pagination.getRevisedRowCount(any(ShardingSelectOptimizedStatement.class))).thenReturn(6L);
-        ShardingSelectOptimizedStatement shardingStatement = mock(ShardingSelectOptimizedStatement.class);
+        when(pagination.getRevisedRowCount(any(SelectOptimizedStatement.class))).thenReturn(6L);
+        SelectOptimizedStatement shardingStatement = mock(SelectOptimizedStatement.class);
         when(shardingStatement.getPagination()).thenReturn(pagination);
-        EncryptOptimizedStatement encryptStatement = mock(EncryptOptimizedStatement.class);
+        OptimizedStatement encryptStatement = mock(OptimizedStatement.class);
         SQLRouteResult result = new SQLRouteResult(shardingStatement, encryptStatement, new ShardingConditions(Collections.<ShardingCondition>emptyList()), null);
         result.setRoutingResult(new RoutingResult());
         return result;

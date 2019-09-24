@@ -22,8 +22,6 @@ import lombok.ToString;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
 import org.apache.shardingsphere.core.optimize.api.segment.Tables;
-import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.sharding.statement.ShardingOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 
@@ -38,7 +36,7 @@ import java.util.List;
  */
 @Getter
 @ToString
-public final class InsertOptimizedStatement implements ShardingOptimizedStatement, EncryptOptimizedStatement {
+public final class InsertOptimizedStatement implements OptimizedStatement {
     
     private final InsertStatement sqlStatement;
     

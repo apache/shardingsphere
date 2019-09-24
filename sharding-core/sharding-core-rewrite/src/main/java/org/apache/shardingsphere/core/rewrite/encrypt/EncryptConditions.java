@@ -15,22 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.sharding.statement;
+package org.apache.shardingsphere.core.rewrite.encrypt;
 
-import org.apache.shardingsphere.core.optimize.api.segment.Tables;
-import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
+
+import java.util.List;
 
 /**
- * Optimized statement for sharding.
+ * Encrypt conditions.
  *
  * @author zhangliang
  */
-public interface ShardingOptimizedStatement extends OptimizedStatement {
+@RequiredArgsConstructor
+@Getter
+@ToString
+public final class EncryptConditions {
     
-    /**
-     * Get tables.
-     * 
-     * @return tables
-     */
-    Tables getTables();
+    private final List<EncryptCondition> conditions;
 }

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.route.router.masterslave;
 
 import com.google.common.collect.Lists;
-import org.apache.shardingsphere.core.optimize.sharding.statement.ShardingOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
@@ -34,6 +34,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
 import java.util.Iterator;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -55,7 +56,7 @@ public class ShardingMasterSlaveRouterTest {
     private MasterSlaveRule masterSlaveRule;
     
     @Mock
-    private ShardingOptimizedStatement shardingOptimizedStatement;
+    private OptimizedStatement shardingOptimizedStatement;
     
     @Mock
     private InsertStatement insertStatement;

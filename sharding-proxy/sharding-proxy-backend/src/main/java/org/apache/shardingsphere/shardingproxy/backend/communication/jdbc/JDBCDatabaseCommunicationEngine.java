@@ -23,7 +23,6 @@ import org.apache.shardingsphere.core.merge.MergedResult;
 import org.apache.shardingsphere.core.merge.dal.show.ShowTablesMergedResult;
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.segment.item.DerivedColumn;
-import org.apache.shardingsphere.core.optimize.sharding.statement.ShardingOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
@@ -86,7 +85,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         if (routeResult.getRouteUnits().isEmpty()) {
             return new UpdateResponse();
         }
-        ShardingOptimizedStatement shardingStatement = routeResult.getShardingStatement();
+        OptimizedStatement shardingStatement = routeResult.getShardingStatement();
         if (isExecuteDDLInXATransaction(shardingStatement.getSqlStatement())) {
             return new ErrorResponse(new TableModifyInTransactionException(shardingStatement.getTables().isSingleTable() ? shardingStatement.getTables().getSingleTableName() : "unknown_table"));
         }
