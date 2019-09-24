@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.core.rewrite.builder.parameter.standard;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
-import org.apache.shardingsphere.core.optimize.api.segment.pagination.Pagination;
-import org.apache.shardingsphere.core.optimize.api.statement.SelectOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.optimize.segment.pagination.Pagination;
+import org.apache.shardingsphere.core.optimize.statement.SelectOptimizedStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
