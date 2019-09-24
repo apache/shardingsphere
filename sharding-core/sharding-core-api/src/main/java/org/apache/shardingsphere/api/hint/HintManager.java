@@ -97,6 +97,9 @@ public final class HintManager implements AutoCloseable {
      * @param value sharding value
      */
     public void addTableShardingValue(final String logicTable, final Comparable<?> value) {
+        if (databaseShardingOnly) {
+            databaseShardingValues.removeAll("");
+        }
         tableShardingValues.put(logicTable, value);
         databaseShardingOnly = false;
     }
