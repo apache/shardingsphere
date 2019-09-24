@@ -95,7 +95,7 @@ public final class ShardingRouter {
         if (shardingStatementValidator.isPresent()) {
             shardingStatementValidator.get().validate(shardingRule, sqlStatement);
         }
-        OptimizedStatement shardingStatement = ShardingOptimizeEngineFactory.newInstance(shardingRule, metaData.getTables(), logicSQL, parameters, sqlStatement);
+        OptimizedStatement shardingStatement = ShardingOptimizeEngineFactory.newInstance(metaData.getTables(), logicSQL, parameters, sqlStatement);
         Optional<GeneratedKey> generatedKey = sqlStatement instanceof InsertStatement
                 ? GeneratedKey.getGenerateKey(shardingRule, metaData.getTables(), parameters, (InsertStatement) sqlStatement) : Optional.<GeneratedKey>absent();
         ShardingConditions shardingConditions = getShardingConditions(parameters, shardingStatement, generatedKey.orNull());

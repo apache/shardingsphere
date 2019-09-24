@@ -27,7 +27,6 @@ import org.apache.shardingsphere.core.optimize.sharding.engnie.ShardingSelectOpt
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.List;
 
@@ -44,17 +43,15 @@ public final class ShardingOptimizeEngineFactory {
     /**
      * Create sharding optimize engine instance.
      *
-     * @param shardingRule sharding rule
      * @param tableMetas table meta data
      * @param sql SQL
      * @param parameters SQL parameters
      * @param sqlStatement SQL statement
      * @return sharding optimize engine instance
      */
-    public static OptimizedStatement newInstance(final ShardingRule shardingRule,
-                                                 final TableMetas tableMetas, final String sql, final List<Object> parameters, final SQLStatement sqlStatement) {
+    public static OptimizedStatement newInstance(final TableMetas tableMetas, final String sql, final List<Object> parameters, final SQLStatement sqlStatement) {
         if (sqlStatement instanceof SelectStatement) {
-            return new ShardingSelectOptimizeEngine().optimize(shardingRule, tableMetas, sql, parameters, (SelectStatement) sqlStatement);
+            return new ShardingSelectOptimizeEngine().optimize(tableMetas, sql, parameters, (SelectStatement) sqlStatement);
         }
         if (sqlStatement instanceof InsertStatement) {
             return new InsertOptimizedStatement(tableMetas, parameters, (InsertStatement) sqlStatement);

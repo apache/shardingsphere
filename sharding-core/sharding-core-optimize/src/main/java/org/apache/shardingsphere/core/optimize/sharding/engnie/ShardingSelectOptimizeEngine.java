@@ -30,7 +30,6 @@ import org.apache.shardingsphere.core.optimize.sharding.segment.pagination.engin
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.SubqueryPredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Collection;
 import java.util.List;
@@ -40,11 +39,10 @@ import java.util.List;
  *
  * @author zhangliang
  */
-public final class ShardingSelectOptimizeEngine implements OptimizeEngine<ShardingRule, SelectStatement> {
+public final class ShardingSelectOptimizeEngine implements OptimizeEngine<SelectStatement> {
     
     @Override
-    public ShardingSelectOptimizedStatement optimize(final ShardingRule shardingRule,
-                                                     final TableMetas tableMetas, final String sql, final List<Object> parameters, final SelectStatement sqlStatement) {
+    public ShardingSelectOptimizedStatement optimize(final TableMetas tableMetas, final String sql, final List<Object> parameters, final SelectStatement sqlStatement) {
         GroupByEngine groupByEngine = new GroupByEngine();
         OrderByEngine orderByEngine = new OrderByEngine();
         SelectItemsEngine selectItemsEngine = new SelectItemsEngine(tableMetas);
