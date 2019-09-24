@@ -48,7 +48,7 @@ public final class ShardingCTLHintBackendHandler implements TextProtocolBackendH
         if (!backendConnection.isSupportHint()) {
             throw new UnsupportedOperationException(String.format("%s should be true, please check your config", ShardingPropertiesConstant.PROXY_HINT_ENABLED.getKey()));
         }
-        hintCommandExecutor = HintCommandExecutorFactory.newInstance(backendConnection.getLogicSchema().getShardingRule(), sql);
+        hintCommandExecutor = HintCommandExecutorFactory.newInstance(backendConnection, sql);
         return hintCommandExecutor.execute();
     }
     

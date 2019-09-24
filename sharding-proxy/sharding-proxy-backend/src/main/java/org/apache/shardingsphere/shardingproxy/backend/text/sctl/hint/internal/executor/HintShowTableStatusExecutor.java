@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
+import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
@@ -46,7 +47,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public final class HintShowTableStatusExecutor implements HintCommandExecutor {
     
-    private final ShardingRule shardingRule;
+    private final BackendConnection backendConnection;
     
     private List<QueryHeader> queryHeaders;
     
@@ -87,7 +88,8 @@ public final class HintShowTableStatusExecutor implements HintCommandExecutor {
     
     private Collection<String> getLogicTableNames() {
         Collection<String> result = new LinkedList<>();
-        for (TableRule each : shardingRule.getTableRules()) {
+        Collection<TableRule> tableRules = backendConnection.getLogicSchema().getShardingRule().getTableRules();
+        for (TableRule each : tableRules) {
             result.add(each.getLogicTable());
         }
         return result;
