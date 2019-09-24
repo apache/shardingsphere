@@ -19,14 +19,12 @@ package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.api.hint.HintManager;
-import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
-import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.exception.InvalidShardingCTLFormatException;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.exception.UnsupportedShardingCTLTypeException;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintManagerHolder;
@@ -43,7 +41,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -54,10 +51,6 @@ public final class ShardingCTLHintBackendHandlerTest {
     
     @Before
     public void setUp() {
-        LogicSchema logicSchema = mock(LogicSchema.class);
-        ShardingRule shardingRule = mock(ShardingRule.class);
-        when(logicSchema.getShardingRule()).thenReturn(shardingRule);
-        when(backendConnection.getLogicSchema()).thenReturn(logicSchema);
         when(backendConnection.isSupportHint()).thenReturn(true);
     }
     
@@ -142,6 +135,7 @@ public final class ShardingCTLHintBackendHandlerTest {
         assertEquals(defaultQueryData.getColumnTypes().get(1), Integer.valueOf(Types.CHAR));
         assertEquals(defaultQueryData.getData().get(0), "false");
         assertEquals(defaultQueryData.getData().get(1), "databases_tables");
+        assertFalse(defaultShardingCTLHintBackendHandler.next());
         String setMasterOnlySql = "sctl:hint set master_only=true";
         String setDatabaseOnlySql = "sctl:hint set DatabaseShardingValue=100";
         new ShardingCTLHintBackendHandler(setMasterOnlySql, backendConnection).execute();
@@ -150,12 +144,13 @@ public final class ShardingCTLHintBackendHandlerTest {
         updateShardingCTLHintBackendHandler.execute();
         assertTrue(updateShardingCTLHintBackendHandler.next());
         QueryData updateQueryData = updateShardingCTLHintBackendHandler.getQueryData();
-        System.out.println(HintManager.isMasterRouteOnly());
         assertEquals(updateQueryData.getData().get(0), "true");
         assertEquals(updateQueryData.getData().get(1), "databases_only");
+        assertFalse(updateShardingCTLHintBackendHandler.next());
     }
     
     @Test
+    @SneakyThrows
     public void assertShowTableStatus() {
         clearThreadLocal();
         String sql = "sctl:hint show table status";
@@ -179,6 +174,7 @@ public final class ShardingCTLHintBackendHandlerTest {
         assertEquals(updateQueryData.getData().get(0), "user");
         assertEquals(updateQueryData.getData().get(1), "100");
         assertEquals(updateQueryData.getData().get(2), "200,300");
+        assertFalse(updateShardingCTLHintBackendHandler.next());
     }
     
     @Test

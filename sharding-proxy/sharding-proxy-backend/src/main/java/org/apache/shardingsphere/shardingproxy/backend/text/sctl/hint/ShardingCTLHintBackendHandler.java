@@ -25,6 +25,8 @@ import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendH
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintCommandExecutor;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintCommandExecutorFactory;
 
+import java.sql.SQLException;
+
 /**
  * Sharding CTL hint backend handler.
  *
@@ -53,12 +55,12 @@ public final class ShardingCTLHintBackendHandler implements TextProtocolBackendH
     }
     
     @Override
-    public boolean next() {
+    public boolean next() throws SQLException {
         return hintCommandExecutor.next();
     }
     
     @Override
-    public QueryData getQueryData() {
+    public QueryData getQueryData() throws SQLException {
         return hintCommandExecutor.getQueryData();
     }
 }

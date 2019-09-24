@@ -18,18 +18,16 @@
 package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.executor;
 
 import org.apache.shardingsphere.api.hint.HintManager;
+import org.apache.shardingsphere.core.merge.MergedResult;
+import org.apache.shardingsphere.core.merge.dal.show.ShowShardingCTLMergedResult;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryResponse;
-import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintCommandExecutor;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintShardingType;
-import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.result.HintShowStatusResult;
 
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -37,43 +35,24 @@ import java.util.List;
  *
  * @author liya
  */
-public final class HintShowStatusExecutor implements HintCommandExecutor {
-    
-    private List<QueryHeader> queryHeaders;
-    
-    private Iterator<HintShowStatusResult> queryResults;
+public final class HintShowStatusExecutor extends AbstractHintQueryExecutor {
     
     @Override
     public BackendResponse execute() {
-        queryResults = queryHintStatus();
-        queryHeaders = new ArrayList<>(2);
-        queryHeaders.add(new QueryHeader("", "", "master_only", "", 5, Types.CHAR, 0));
-        queryHeaders.add(new QueryHeader("", "", "sharding_type", "", 255, Types.CHAR, 0));
-        return new QueryResponse(queryHeaders);
+        setMergedResult(queryMergedResult());
+        setQueryHeaders(new ArrayList<QueryHeader>(2));
+        getQueryHeaders().add(new QueryHeader("", "", "master_only", "", 5, Types.CHAR, 0));
+        getQueryHeaders().add(new QueryHeader("", "", "sharding_type", "", 255, Types.CHAR, 0));
+        return new QueryResponse(getQueryHeaders());
     }
     
-    private Iterator<HintShowStatusResult> queryHintStatus() {
+    private MergedResult queryMergedResult() {
         boolean masterOnly = HintManager.isMasterRouteOnly();
         boolean databaseOnly = HintManager.isDatabaseShardingOnly();
         HintShardingType shardingType = databaseOnly ? HintShardingType.DATABASES_ONLY : HintShardingType.DATABASES_TABLES;
-        HintShowStatusResult hintShowStatusResult = new HintShowStatusResult(masterOnly, shardingType);
-        return Collections.singletonList(hintShowStatusResult).iterator();
-    }
-    
-    @Override
-    public boolean next() {
-        return null != queryResults && queryResults.hasNext();
-    }
-    
-    @Override
-    public QueryData getQueryData() {
-        HintShowStatusResult hintShowStatusResult = queryResults.next();
-        List<Object> row = new ArrayList<>(queryHeaders.size());
-        row.add(String.valueOf(hintShowStatusResult.isMasterOnly()).toLowerCase());
-        row.add(String.valueOf(hintShowStatusResult.getShardingType()).toLowerCase());
-        List<Integer> columnTypes = new ArrayList<>(queryHeaders.size());
-        columnTypes.add(queryHeaders.get(0).getColumnType());
-        columnTypes.add(queryHeaders.get(1).getColumnType());
-        return new QueryData(columnTypes, row);
+        List<Object> row = new ArrayList<>(2);
+        row.add(String.valueOf(masterOnly).toLowerCase());
+        row.add(String.valueOf(shardingType).toLowerCase());
+        return new ShowShardingCTLMergedResult(Collections.singletonList(row));
     }
 }

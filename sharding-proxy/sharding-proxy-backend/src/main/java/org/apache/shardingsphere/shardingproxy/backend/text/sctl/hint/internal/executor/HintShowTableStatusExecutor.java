@@ -20,21 +20,19 @@ package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.
 import com.google.common.base.Joiner;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
-import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.merge.MergedResult;
+import org.apache.shardingsphere.core.merge.dal.show.ShowShardingCTLMergedResult;
 import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryResponse;
-import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintCommandExecutor;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.result.HintShowTableStatusResult;
 
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -45,25 +43,21 @@ import java.util.Map;
  * @author liya
  */
 @RequiredArgsConstructor
-public final class HintShowTableStatusExecutor implements HintCommandExecutor {
+public final class HintShowTableStatusExecutor extends AbstractHintQueryExecutor {
     
     private final BackendConnection backendConnection;
     
-    private List<QueryHeader> queryHeaders;
-    
-    private Iterator<HintShowTableStatusResult> queryResults;
-    
     @Override
     public BackendResponse execute() {
-        queryResults = queryHintTableStatus();
-        queryHeaders = new ArrayList<>(3);
-        queryHeaders.add(new QueryHeader("", "", "table_name", "", 255, Types.CHAR, 0));
-        queryHeaders.add(new QueryHeader("", "", "database_sharding_values", "", 255, Types.CHAR, 0));
-        queryHeaders.add(new QueryHeader("", "", "table_sharding_values", "", 255, Types.CHAR, 0));
-        return new QueryResponse(queryHeaders);
+        setMergedResult(queryMergedResult());
+        setQueryHeaders(new ArrayList<QueryHeader>(3));
+        getQueryHeaders().add(new QueryHeader("", "", "table_name", "", 255, Types.CHAR, 0));
+        getQueryHeaders().add(new QueryHeader("", "", "database_sharding_values", "", 255, Types.CHAR, 0));
+        getQueryHeaders().add(new QueryHeader("", "", "table_sharding_values", "", 255, Types.CHAR, 0));
+        return new QueryResponse(getQueryHeaders());
     }
     
-    private Iterator<HintShowTableStatusResult> queryHintTableStatus() {
+    private MergedResult queryMergedResult() {
         Map<String, HintShowTableStatusResult> results = new HashMap<>();
         if (HintManager.isDatabaseShardingOnly()) {
             fillShardingValuesDatabaseShardingOnly(results, HintManager.getDatabaseShardingValues());
@@ -71,7 +65,7 @@ public final class HintShowTableStatusExecutor implements HintCommandExecutor {
             fillDatabaseShardingValues(results, HintManager.getDatabaseShardingValuesMap());
             fillTableShardingValues(results, HintManager.getTableShardingValuesMap());
         }
-        return results.values().iterator();
+        return createMergedResult(results.values());
     }
     
     private void fillShardingValuesDatabaseShardingOnly(final Map<String, HintShowTableStatusResult> results, final Collection<Comparable<?>> databaseShardingValues) {
@@ -119,22 +113,15 @@ public final class HintShowTableStatusExecutor implements HintCommandExecutor {
         }
     }
     
-    @Override
-    public boolean next() {
-        return null != queryResults && queryResults.hasNext();
-    }
-    
-    @Override
-    public QueryData getQueryData() {
-        HintShowTableStatusResult hintShowTableStatusResult = queryResults.next();
-        List<Object> row = new ArrayList<>(queryHeaders.size());
-        row.add(hintShowTableStatusResult.getLogicTable());
-        row.add(Joiner.on(",").join(hintShowTableStatusResult.getDatabaseShardingValues()));
-        row.add(Joiner.on(",").join(hintShowTableStatusResult.getTableShardingValues()));
-        List<Integer> columnTypes = new ArrayList<>(queryHeaders.size());
-        columnTypes.add(queryHeaders.get(0).getColumnType());
-        columnTypes.add(queryHeaders.get(1).getColumnType());
-        columnTypes.add(queryHeaders.get(2).getColumnType());
-        return new QueryData(columnTypes, row);
+    private MergedResult createMergedResult(final Collection<HintShowTableStatusResult> hintShowTableStatusResults) {
+        List<List<Object>> values = new ArrayList<>(hintShowTableStatusResults.size());
+        for (HintShowTableStatusResult each : hintShowTableStatusResults) {
+            List<Object> row = new ArrayList<>(3);
+            row.add(each.getLogicTable());
+            row.add(Joiner.on(",").join(each.getDatabaseShardingValues()));
+            row.add(Joiner.on(",").join(each.getTableShardingValues()));
+            values.add(row);
+        }
+        return new ShowShardingCTLMergedResult(values);
     }
 }
