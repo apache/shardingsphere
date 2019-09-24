@@ -15,25 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.segment.item;
+package org.apache.shardingsphere.core.optimize.segment.item.impl;
 
-import org.apache.shardingsphere.core.parse.core.constant.AggregationType;
-import org.junit.Test;
+import com.google.common.base.Optional;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
+import org.apache.shardingsphere.core.optimize.segment.item.SelectItem;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+/**
+ * Expression select item.
+ *
+ * @author sunbufu
+ */
+@RequiredArgsConstructor
+@Getter
+@EqualsAndHashCode
+@ToString
+public final class ExpressionSelectItem implements SelectItem {
 
-public final class AggregationDistinctSelectItemTest {
-    
-    private final AggregationDistinctSelectItem aggregationDistinctSelectItem = new AggregationDistinctSelectItem(0, 0, AggregationType.COUNT, "(DISTINCT order_id)", "c", "order_id");
-    
-    @Test
-    public void assertGetDistinctColumnLabel() {
-        assertThat(aggregationDistinctSelectItem.getDistinctColumnLabel(), is("c"));
+    private final String expression;
+
+    private final String alias;
+
+    @Override
+    public Optional<String> getAlias() {
+        return Optional.fromNullable(alias);
     }
-    
-    @Test
-    public void assertGetDistinctColumnName() {
-        assertThat(aggregationDistinctSelectItem.getDistinctInnerExpression(), is("order_id"));
+
+    @Override
+    public String getColumnLabel() {
+        return getAlias().or(getExpression());
     }
 }

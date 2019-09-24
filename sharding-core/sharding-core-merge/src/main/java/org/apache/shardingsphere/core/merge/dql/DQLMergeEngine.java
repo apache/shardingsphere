@@ -34,7 +34,7 @@ import org.apache.shardingsphere.core.merge.dql.pagination.LimitDecoratorMergedR
 import org.apache.shardingsphere.core.merge.dql.pagination.RowNumberDecoratorMergedResult;
 import org.apache.shardingsphere.core.merge.dql.pagination.TopAndRowNumberDecoratorMergedResult;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.optimize.segment.item.AggregationDistinctSelectItem;
+import org.apache.shardingsphere.core.optimize.segment.item.impl.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.optimize.segment.pagination.Pagination;
 import org.apache.shardingsphere.core.optimize.statement.impl.SelectOptimizedStatement;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;

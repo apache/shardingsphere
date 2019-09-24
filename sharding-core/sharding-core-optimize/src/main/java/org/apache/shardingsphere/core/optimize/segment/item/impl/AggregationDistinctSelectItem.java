@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.segment.item;
+package org.apache.shardingsphere.core.optimize.segment.item.impl;
 
 import lombok.Getter;
 import org.apache.shardingsphere.core.parse.core.constant.AggregationType;

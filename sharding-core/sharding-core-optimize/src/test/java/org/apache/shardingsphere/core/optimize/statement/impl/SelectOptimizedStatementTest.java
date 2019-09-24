@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.optimize.statement.impl;
 
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.core.optimize.segment.groupby.GroupBy;
-import org.apache.shardingsphere.core.optimize.segment.item.ColumnSelectItem;
+import org.apache.shardingsphere.core.optimize.segment.item.impl.ColumnSelectItem;
 import org.apache.shardingsphere.core.optimize.segment.item.SelectItem;
 import org.apache.shardingsphere.core.optimize.segment.item.SelectItems;
 import org.apache.shardingsphere.core.optimize.segment.orderby.OrderBy;

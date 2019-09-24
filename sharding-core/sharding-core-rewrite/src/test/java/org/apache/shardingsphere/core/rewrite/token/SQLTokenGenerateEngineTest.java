@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.rewrite.token;
 
 import org.apache.shardingsphere.core.optimize.segment.groupby.GroupBy;
-import org.apache.shardingsphere.core.optimize.segment.item.AggregationDistinctSelectItem;
+import org.apache.shardingsphere.core.optimize.segment.item.impl.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.optimize.segment.item.SelectItem;
 import org.apache.shardingsphere.core.optimize.segment.item.SelectItems;
 import org.apache.shardingsphere.core.optimize.segment.orderby.OrderBy;

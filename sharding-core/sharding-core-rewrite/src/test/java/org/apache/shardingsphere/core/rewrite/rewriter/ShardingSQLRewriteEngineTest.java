@@ -23,9 +23,9 @@ import org.apache.shardingsphere.core.optimize.statement.impl.CommonOptimizedSta
 import org.apache.shardingsphere.core.optimize.statement.impl.InsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.segment.groupby.GroupBy;
-import org.apache.shardingsphere.core.optimize.segment.item.AggregationDistinctSelectItem;
-import org.apache.shardingsphere.core.optimize.segment.item.AggregationSelectItem;
-import org.apache.shardingsphere.core.optimize.segment.item.DerivedSelectItem;
+import org.apache.shardingsphere.core.optimize.segment.item.impl.AggregationDistinctSelectItem;
+import org.apache.shardingsphere.core.optimize.segment.item.impl.AggregationSelectItem;
+import org.apache.shardingsphere.core.optimize.segment.item.impl.DerivedSelectItem;
 import org.apache.shardingsphere.core.optimize.segment.item.SelectItem;
 import org.apache.shardingsphere.core.optimize.segment.item.SelectItems;
 import org.apache.shardingsphere.core.optimize.segment.orderby.OrderBy;

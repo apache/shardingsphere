@@ -15,37 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.segment.item;
+package org.apache.shardingsphere.core.optimize.segment.item.impl;
 
-import com.google.common.base.Optional;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import org.apache.shardingsphere.core.parse.core.constant.AggregationType;
+import org.junit.Test;
 
-/**
- * Derived common select item.
- *
- * @author zhangliang
- * @author sunbufu
- */
-@RequiredArgsConstructor
-@Getter
-@EqualsAndHashCode
-@ToString
-public final class DerivedSelectItem implements SelectItem {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
-    private final String expression;
-
-    private final String alias;
-
-    @Override
-    public Optional<String> getAlias() {
-        return Optional.fromNullable(alias);
+public final class AggregationDistinctSelectItemTest {
+    
+    private final AggregationDistinctSelectItem aggregationDistinctSelectItem = new AggregationDistinctSelectItem(0, 0, AggregationType.COUNT, "(DISTINCT order_id)", "c", "order_id");
+    
+    @Test
+    public void assertGetDistinctColumnLabel() {
+        assertThat(aggregationDistinctSelectItem.getDistinctColumnLabel(), is("c"));
     }
-
-    @Override
-    public String getColumnLabel() {
-        return getAlias().or(getExpression());
+    
+    @Test
+    public void assertGetDistinctColumnName() {
+        assertThat(aggregationDistinctSelectItem.getDistinctInnerExpression(), is("order_id"));
     }
 }

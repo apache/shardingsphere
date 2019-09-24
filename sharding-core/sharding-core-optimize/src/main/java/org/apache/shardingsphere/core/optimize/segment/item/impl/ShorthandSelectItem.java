@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.segment.item;
+package org.apache.shardingsphere.core.optimize.segment.item.impl;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
@@ -23,6 +23,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import org.apache.shardingsphere.core.optimize.segment.item.SelectItem;
 
 /**
  * Shorthand select item.

@@ -15,59 +15,45 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.segment.item;
+package org.apache.shardingsphere.core.optimize.segment.item.impl;
 
 import com.google.common.base.Optional;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.core.parse.core.constant.AggregationType;
-import org.apache.shardingsphere.core.parse.util.SQLUtil;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.apache.shardingsphere.core.optimize.segment.item.SelectItem;
 
 /**
- * Aggregation select item.
+ * Common select item.
  *
  * @author zhangliang
+ * @author sunbufu
  */
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
 @ToString
-public class AggregationSelectItem implements SelectItem {
-    
-    private final AggregationType type;
-    
-    private final String innerExpression;
-    
+public final class ColumnSelectItem implements SelectItem {
+
+    private final String owner;
+
+    private final String name;
+
     private final String alias;
-    
-    private final List<AggregationSelectItem> derivedAggregationItems = new ArrayList<>(2);
-    
-    @Setter
-    private int index = -1;
-    
-    @Override
-    public final String getExpression() {
-        return SQLUtil.getExactlyValue(type.name() + innerExpression);
-    }
 
     @Override
-    public final Optional<String> getAlias() {
-        return Optional.fromNullable(alias);
+    public String getExpression() {
+        return null == owner ? name : owner + "." + name;
     }
 
-    /**
-     * Get column label.
-     *
-     * @return column label
-     */
     @Override
     public String getColumnLabel() {
-        return getAlias().or(getExpression());
+        return getAlias().or(name);
+    }
+
+    @Override
+    public Optional<String> getAlias() {
+        return Optional.fromNullable(alias);
     }
 }

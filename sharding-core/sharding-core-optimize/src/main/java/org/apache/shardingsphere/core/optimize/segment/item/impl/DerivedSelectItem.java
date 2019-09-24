@@ -15,24 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.segment.item;
+package org.apache.shardingsphere.core.optimize.segment.item.impl;
 
 import com.google.common.base.Optional;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import org.apache.shardingsphere.core.optimize.segment.item.SelectItem;
 
 /**
- * Expression select item.
+ * Derived common select item.
  *
+ * @author zhangliang
  * @author sunbufu
  */
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
 @ToString
-public final class ExpressionSelectItem implements SelectItem {
+public final class DerivedSelectItem implements SelectItem {
 
     private final String expression;
 

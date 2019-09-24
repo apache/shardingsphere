@@ -30,7 +30,7 @@ import org.apache.shardingsphere.core.merge.dql.pagination.RowNumberDecoratorMer
 import org.apache.shardingsphere.core.merge.dql.pagination.TopAndRowNumberDecoratorMergedResult;
 import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
 import org.apache.shardingsphere.core.optimize.segment.groupby.GroupBy;
-import org.apache.shardingsphere.core.optimize.segment.item.AggregationSelectItem;
+import org.apache.shardingsphere.core.optimize.segment.item.impl.AggregationSelectItem;
 import org.apache.shardingsphere.core.optimize.segment.item.SelectItem;
 import org.apache.shardingsphere.core.optimize.segment.item.SelectItems;
 import org.apache.shardingsphere.core.optimize.segment.orderby.OrderBy;

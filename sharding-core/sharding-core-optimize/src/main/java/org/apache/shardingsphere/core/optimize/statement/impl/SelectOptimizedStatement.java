@@ -24,7 +24,7 @@ import lombok.ToString;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.optimize.segment.groupby.GroupBy;
 import org.apache.shardingsphere.core.optimize.segment.groupby.engine.GroupByEngine;
-import org.apache.shardingsphere.core.optimize.segment.item.AggregationSelectItem;
+import org.apache.shardingsphere.core.optimize.segment.item.impl.AggregationSelectItem;
 import org.apache.shardingsphere.core.optimize.segment.item.SelectItem;
 import org.apache.shardingsphere.core.optimize.segment.item.SelectItems;
 import org.apache.shardingsphere.core.optimize.segment.item.engine.SelectItemsEngine;

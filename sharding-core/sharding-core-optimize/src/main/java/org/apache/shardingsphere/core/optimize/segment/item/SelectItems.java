@@ -23,6 +23,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
+import org.apache.shardingsphere.core.optimize.segment.item.impl.AggregationDistinctSelectItem;
+import org.apache.shardingsphere.core.optimize.segment.item.impl.AggregationSelectItem;
+import org.apache.shardingsphere.core.optimize.segment.item.impl.ShorthandSelectItem;
 import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 
 import java.util.ArrayList;

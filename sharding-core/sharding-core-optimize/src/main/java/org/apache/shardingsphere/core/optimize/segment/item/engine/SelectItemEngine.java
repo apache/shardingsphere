@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.core.optimize.segment.item.engine;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.optimize.segment.item.AggregationDistinctSelectItem;
-import org.apache.shardingsphere.core.optimize.segment.item.AggregationSelectItem;
-import org.apache.shardingsphere.core.optimize.segment.item.ColumnSelectItem;
+import org.apache.shardingsphere.core.optimize.segment.item.impl.AggregationDistinctSelectItem;
+import org.apache.shardingsphere.core.optimize.segment.item.impl.AggregationSelectItem;
+import org.apache.shardingsphere.core.optimize.segment.item.impl.ColumnSelectItem;
 import org.apache.shardingsphere.core.optimize.segment.item.DerivedColumn;
-import org.apache.shardingsphere.core.optimize.segment.item.ExpressionSelectItem;
+import org.apache.shardingsphere.core.optimize.segment.item.impl.ExpressionSelectItem;
 import org.apache.shardingsphere.core.optimize.segment.item.SelectItem;
-import org.apache.shardingsphere.core.optimize.segment.item.ShorthandSelectItem;
+import org.apache.shardingsphere.core.optimize.segment.item.impl.ShorthandSelectItem;
 import org.apache.shardingsphere.core.parse.core.constant.AggregationType;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.AggregationDistinctSelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.AggregationSelectItemSegment;
