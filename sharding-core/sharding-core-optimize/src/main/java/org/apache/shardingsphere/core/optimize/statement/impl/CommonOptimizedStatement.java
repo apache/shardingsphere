@@ -30,7 +30,7 @@ import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
  */
 @Getter
 @ToString
-public final class CommonOptimizedStatement implements OptimizedStatement {
+public class CommonOptimizedStatement implements OptimizedStatement {
     
     private final SQLStatement sqlStatement;
     

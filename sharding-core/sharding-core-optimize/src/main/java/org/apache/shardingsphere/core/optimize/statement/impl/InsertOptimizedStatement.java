@@ -21,8 +21,6 @@ import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.optimize.segment.InsertValue;
-import org.apache.shardingsphere.core.optimize.segment.Tables;
-import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 
@@ -36,28 +34,23 @@ import java.util.List;
  * @author zhangliang
  */
 @Getter
-@ToString
-public final class InsertOptimizedStatement implements OptimizedStatement {
-    
-    private final InsertStatement sqlStatement;
-    
-    private final Tables tables;
+@ToString(callSuper = true)
+public final class InsertOptimizedStatement extends CommonOptimizedStatement {
     
     private final List<String> columnNames;
     
     private final List<InsertValue> insertValues;
     
     public InsertOptimizedStatement(final TableMetas tableMetas, final List<Object> parameters, final InsertStatement sqlStatement) {
-        this.sqlStatement = sqlStatement;
-        tables = new Tables(sqlStatement);
-        columnNames = sqlStatement.useDefaultColumns() ? tableMetas.getAllColumnNames(tables.getSingleTableName()) : sqlStatement.getColumnNames();
-        insertValues = getInsertValues(parameters, sqlStatement);
+        super(sqlStatement);
+        columnNames = sqlStatement.useDefaultColumns() ? tableMetas.getAllColumnNames(getTables().getSingleTableName()) : sqlStatement.getColumnNames();
+        insertValues = getInsertValues(parameters);
     }
     
-    private List<InsertValue> getInsertValues(final List<Object> parameters, final InsertStatement sqlStatement) {
+    private List<InsertValue> getInsertValues(final List<Object> parameters) {
         List<InsertValue> result = new LinkedList<>();
         int parametersOffset = 0;
-        for (Collection<ExpressionSegment> each : sqlStatement.getAllValueExpressions()) {
+        for (Collection<ExpressionSegment> each : ((InsertStatement) getSqlStatement()).getAllValueExpressions()) {
             InsertValue insertValue = new InsertValue(each, parameters, parametersOffset);
             result.add(insertValue);
             parametersOffset += insertValue.getParametersCount();
