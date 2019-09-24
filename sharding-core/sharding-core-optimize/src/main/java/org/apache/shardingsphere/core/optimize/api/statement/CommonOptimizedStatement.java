@@ -15,27 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.encrypt.statement;
+package org.apache.shardingsphere.core.optimize.api.statement;
 
 import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.optimize.api.segment.Tables;
+import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.sharding.statement.ShardingOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
 /**
- * Transparent optimized statement for encrypt.
+ * Common optimized statement.
  *
  * @author zhangliang
  */
 @Getter
 @ToString
-public final class EncryptTransparentOptimizedStatement implements EncryptOptimizedStatement {
+public final class CommonOptimizedStatement implements ShardingOptimizedStatement, EncryptOptimizedStatement {
     
     private final SQLStatement sqlStatement;
     
     private final Tables tables;
     
-    public EncryptTransparentOptimizedStatement(final SQLStatement sqlStatement) {
+    public CommonOptimizedStatement(final SQLStatement sqlStatement) {
         this.sqlStatement = sqlStatement;
         tables = new Tables(sqlStatement);
     }
