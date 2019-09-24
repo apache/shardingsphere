@@ -15,42 +15,43 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.segment.orderby;
+package org.apache.shardingsphere.core.optimize.segment.groupby.engine;
 
 import org.apache.shardingsphere.core.optimize.segment.groupby.GroupBy;
+import org.apache.shardingsphere.core.optimize.segment.orderby.OrderByItem;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
- * Order by engine.
+ * Group by engine.
  *
  * @author zhangliang
  */
-public final class OrderByEngine {
+public final class GroupByEngine {
     
     /**
-     * Create order by.
-     * 
+     * Create group by.
+     *
      * @param selectStatement select statement
-     * @param groupBy group by
-     * @return order by
+     * @return group by
      */
-    public OrderBy createOrderBy(final SelectStatement selectStatement, final GroupBy groupBy) {
-        if (!selectStatement.getOrderBy().isPresent() || selectStatement.getOrderBy().get().getOrderByItems().isEmpty()) {
-            return new OrderBy(groupBy.getItems(), !groupBy.getItems().isEmpty());
+    public GroupBy createGroupBy(final SelectStatement selectStatement) {
+        if (!selectStatement.getGroupBy().isPresent()) {
+            return new GroupBy(Collections.<OrderByItem>emptyList(), 0);
         }
-        List<OrderByItem> orderByItems = new LinkedList<>();
-        for (OrderByItemSegment each : selectStatement.getOrderBy().get().getOrderByItems()) {
+        Collection<OrderByItem> groupByItems = new LinkedList<>();
+        for (OrderByItemSegment each : selectStatement.getGroupBy().get().getGroupByItems()) {
             OrderByItem orderByItem = new OrderByItem(each);
             if (each instanceof IndexOrderByItemSegment) {
                 orderByItem.setIndex(((IndexOrderByItemSegment) each).getColumnIndex());
             }
-            orderByItems.add(orderByItem);
+            groupByItems.add(orderByItem);
         }
-        return new OrderBy(orderByItems, false);
+        return new GroupBy(groupByItems, selectStatement.getGroupBy().get().getStopIndex());
     }
 }
