@@ -25,7 +25,6 @@ import org.apache.shardingsphere.core.optimize.segment.orderby.OrderBy;
 import org.apache.shardingsphere.core.optimize.segment.orderby.OrderByItem;
 import org.apache.shardingsphere.core.optimize.segment.pagination.Pagination;
 import org.apache.shardingsphere.core.optimize.statement.impl.SelectOptimizedStatement;
-import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.fixture.AbstractRoutingEngineTest;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
@@ -49,7 +48,7 @@ public final class ComplexRoutingEngineTest extends AbstractRoutingEngineTest {
         ShardingRule shardingRule = createBindingShardingRule();
         SelectOptimizedStatement optimizedStatement = new SelectOptimizedStatement(new SelectStatement(),
                 new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
-                new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<TableSegment>emptyList()),
+                new SelectItems(0, 0, false, Collections.<SelectItem>emptyList()),
                 new Pagination(null, null, Collections.emptyList()));
         ComplexRoutingEngine complexRoutingEngine = new ComplexRoutingEngine(shardingRule, Arrays.asList("t_order", "t_order_item"), optimizedStatement, createShardingConditions("t_order"));
         RoutingResult routingResult = complexRoutingEngine.route();
@@ -67,7 +66,7 @@ public final class ComplexRoutingEngineTest extends AbstractRoutingEngineTest {
         ShardingRule shardingRule = createBroadcastShardingRule();
         SelectOptimizedStatement optimizedStatement = new SelectOptimizedStatement(new SelectStatement(),
                 new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
-                new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<TableSegment>emptyList()),
+                new SelectItems(0, 0, false, Collections.<SelectItem>emptyList()),
                 new Pagination(null, null, Collections.emptyList()));
         ComplexRoutingEngine complexRoutingEngine = new ComplexRoutingEngine(shardingRule, Arrays.asList("t_order", "t_config"), optimizedStatement, createShardingConditions("t_order"));
         RoutingResult routingResult = complexRoutingEngine.route();

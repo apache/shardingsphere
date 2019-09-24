@@ -83,7 +83,7 @@ public final class DQLMergeEngine implements MergeEngine {
             result = getDividedQueryResults(new AggregationDistinctQueryResult(queryResults, aggregationDistinctSelectItems));
         }
         if (isDistinctRowSelectItems()) {
-            result = getDividedQueryResults(new DistinctQueryResult(queryResults, shardingStatement.getSelectItems().getColumnLabels(tableMetas)));
+            result = getDividedQueryResults(new DistinctQueryResult(queryResults, shardingStatement.getColumnLabels(tableMetas)));
         }
         return result.isEmpty() ? queryResults : result;
     }

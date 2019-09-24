@@ -38,7 +38,6 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.Expressio
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.TextOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.SubqueryPredicateSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
@@ -66,7 +65,7 @@ public final class SelectOptimizedStatement extends CommonOptimizedStatement {
     private final boolean containsSubquery;
     
     @Deprecated // for test
-    public SelectOptimizedStatement(final SQLStatement sqlStatement, final GroupBy groupBy, final OrderBy orderBy, final SelectItems selectItems, final Pagination pagination) {
+    public SelectOptimizedStatement(final SelectStatement sqlStatement, final GroupBy groupBy, final OrderBy orderBy, final SelectItems selectItems, final Pagination pagination) {
         super(sqlStatement);
         this.groupBy = groupBy;
         this.orderBy = orderBy;
@@ -157,6 +156,16 @@ public final class SelectOptimizedStatement extends CommonOptimizedStatement {
     private String getOrderItemText(final TextOrderByItemSegment orderByItemSegment) {
         return orderByItemSegment instanceof ColumnOrderByItemSegment
                 ? ((ColumnOrderByItemSegment) orderByItemSegment).getColumn().getName() : ((ExpressionOrderByItemSegment) orderByItemSegment).getExpression();
+    }
+    
+    /**
+     * Get column labels.
+     *
+     * @param tableMetas table metas
+     * @return column labels
+     */
+    public List<String> getColumnLabels(final TableMetas tableMetas) {
+        return selectItems.getColumnLabels(tableMetas, ((SelectStatement) getSqlStatement()).getTables());
     }
     
     /**

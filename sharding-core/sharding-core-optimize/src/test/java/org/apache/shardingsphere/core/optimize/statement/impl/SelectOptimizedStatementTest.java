@@ -143,7 +143,7 @@ public final class SelectOptimizedStatementTest {
     
     private SelectItems createSelectItems() {
         Collection<SelectItem> selectItems = Lists.newArrayList(getColumnSelectItemWithoutOwner(), getColumnSelectItemWithoutOwner(true), getColumnSelectItemWithoutOwner(false));
-        return new SelectItems(0, 0, true, selectItems, Collections.<TableSegment>emptyList());
+        return new SelectItems(0, 0, true, selectItems);
     }
     
     private SelectItem getColumnSelectItemWithoutOwner() {
