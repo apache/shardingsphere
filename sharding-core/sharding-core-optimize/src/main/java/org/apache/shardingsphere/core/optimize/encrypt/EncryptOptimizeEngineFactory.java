@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.optimize.api.statement.CommonOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 
@@ -45,7 +45,7 @@ public final class EncryptOptimizeEngineFactory {
      * @param sqlStatement SQL statement
      * @return sharding optimize engine instance
      */
-    public static EncryptOptimizedStatement newInstance(final TableMetas tableMetas, final List<Object> parameters, final SQLStatement sqlStatement) {
+    public static OptimizedStatement newInstance(final TableMetas tableMetas, final List<Object> parameters, final SQLStatement sqlStatement) {
         if (sqlStatement instanceof InsertStatement) {
             return new InsertOptimizedStatement(tableMetas, parameters, (InsertStatement) sqlStatement);
         }

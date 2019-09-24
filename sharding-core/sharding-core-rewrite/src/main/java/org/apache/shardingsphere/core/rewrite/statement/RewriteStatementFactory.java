@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.rewrite.encrypt.EncryptCondition;
 import org.apache.shardingsphere.core.rewrite.encrypt.EncryptConditions;
@@ -69,7 +69,7 @@ public final class RewriteStatementFactory {
      * @param encryptStatement encrypt statement
      * @return rewrite statement
      */
-    public static RewriteStatement newInstance(final EncryptRule encryptRule, final TableMetas tableMetas, final EncryptOptimizedStatement encryptStatement) {
+    public static RewriteStatement newInstance(final EncryptRule encryptRule, final TableMetas tableMetas, final OptimizedStatement encryptStatement) {
         ShardingConditions shardingConditions = new ShardingConditions(Collections.<ShardingCondition>emptyList());
         EncryptConditions encryptConditions = encryptStatement.getSqlStatement() instanceof DMLStatement
                 ? createEncryptConditions(encryptRule, tableMetas, (DMLStatement) encryptStatement.getSqlStatement()) : new EncryptConditions(Collections.<EncryptCondition>emptyList());

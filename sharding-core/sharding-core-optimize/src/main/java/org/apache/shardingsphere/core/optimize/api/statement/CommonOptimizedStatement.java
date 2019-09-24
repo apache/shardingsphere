@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.optimize.api.statement;
 import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.optimize.api.segment.Tables;
-import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.statement.ShardingOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
@@ -31,7 +30,7 @@ import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
  */
 @Getter
 @ToString
-public final class CommonOptimizedStatement implements ShardingOptimizedStatement, EncryptOptimizedStatement {
+public final class CommonOptimizedStatement implements ShardingOptimizedStatement {
     
     private final SQLStatement sqlStatement;
     
