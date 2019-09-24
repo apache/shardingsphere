@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.optimize.sharding.engnie;
 import org.apache.shardingsphere.core.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.optimize.sharding.segment.item.SelectItems;
+import org.apache.shardingsphere.core.optimize.api.segment.item.SelectItems;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;

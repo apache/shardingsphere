@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.optimize.sharding.segment.pagination.Pagination;
+import org.apache.shardingsphere.core.optimize.api.segment.pagination.Pagination;
 import org.apache.shardingsphere.core.optimize.api.statement.SelectOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.NumberLiteralPaginationValueSegment;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
