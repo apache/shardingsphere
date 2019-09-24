@@ -15,5 +15,6 @@
     
     <modules>
         <module>sharding-proxy-boot-mybatis-example</module>
+        <module>sharding-proxy-hint-example</module>
     </modules>
 </project>

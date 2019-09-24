@@ -1,0 +1,40 @@
+schemaName: databases_tables
+
+dataSources:
+  ds_0:
+    url: jdbc:mysql://localhost:3306/demo_ds_0
+    username: root
+    password:
+  ds_1:
+    url: jdbc:mysql://localhost:3306/demo_ds_1
+    username: root
+    password:
+
+shardingRule:
+  tables:
+    t_order:
+      actualDataNodes: ds_${0..1}.t_order_${0..1}
+      databaseStrategy:
+        hint:
+          algorithmClassName: org.apache.shardingsphere.example.proxy.hint.ModuloHintShardingAlgorithm
+      tableStrategy:
+        hint:
+          algorithmClassName: org.apache.shardingsphere.example.proxy.hint.ModuloHintShardingAlgorithm
+      keyGenerator:
+        type: SNOWFLAKE
+        column: order_id
+        props:
+          worker.id: 123
+    t_order_item:
+      actualDataNodes: ds_${0..1}.t_order_item_${0..1}
+  bindingTables:
+  - t_order,t_order_item
+  broadcastTables:
+  - t_address
+
+  defaultDatabaseStrategy:
+    inline:
+      shardingColumn: user_id
+      algorithmExpression: ds_${user_id % 2}
+  defaultTableStrategy:
+    none:
