@@ -22,8 +22,8 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.optimize.api.statement.CommonOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.engnie.ShardingSelectOptimizeEngine;
-import org.apache.shardingsphere.core.optimize.sharding.statement.ShardingOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
@@ -51,8 +51,8 @@ public final class ShardingOptimizeEngineFactory {
      * @param sqlStatement SQL statement
      * @return sharding optimize engine instance
      */
-    public static ShardingOptimizedStatement newInstance(final ShardingRule shardingRule, 
-                                                         final TableMetas tableMetas, final String sql, final List<Object> parameters, final SQLStatement sqlStatement) {
+    public static OptimizedStatement newInstance(final ShardingRule shardingRule,
+                                                 final TableMetas tableMetas, final String sql, final List<Object> parameters, final SQLStatement sqlStatement) {
         if (sqlStatement instanceof SelectStatement) {
             return new ShardingSelectOptimizeEngine().optimize(shardingRule, tableMetas, sql, parameters, (SelectStatement) sqlStatement);
         }

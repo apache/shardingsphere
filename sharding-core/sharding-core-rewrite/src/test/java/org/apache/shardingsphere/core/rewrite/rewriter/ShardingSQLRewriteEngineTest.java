@@ -21,6 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.optimize.api.statement.CommonOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.segment.groupby.GroupBy;
 import org.apache.shardingsphere.core.optimize.sharding.segment.item.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.optimize.sharding.segment.item.AggregationSelectItem;
@@ -30,7 +31,6 @@ import org.apache.shardingsphere.core.optimize.sharding.segment.item.SelectItems
 import org.apache.shardingsphere.core.optimize.sharding.segment.orderby.OrderBy;
 import org.apache.shardingsphere.core.optimize.sharding.segment.orderby.OrderByItem;
 import org.apache.shardingsphere.core.optimize.sharding.segment.pagination.Pagination;
-import org.apache.shardingsphere.core.optimize.sharding.statement.ShardingOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
 import org.apache.shardingsphere.core.parse.core.constant.AggregationType;
 import org.apache.shardingsphere.core.parse.core.constant.OrderDirection;
@@ -394,7 +394,7 @@ public final class ShardingSQLRewriteEngineTest {
     private SQLRouteResult createRouteResultForLimit() {
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.getAllSQLSegments().add(new TableSegment(17, 23, "table_x"));
-        ShardingOptimizedStatement shardingStatement = new ShardingSelectOptimizedStatement(selectStatement, 
+        OptimizedStatement shardingStatement = new ShardingSelectOptimizedStatement(selectStatement, 
                 new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
                 new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<TableSegment>emptyList(), null),
                 new Pagination(new NumberLiteralLimitValueSegment(33, 33, 2), new NumberLiteralLimitValueSegment(36, 36, 2), Collections.emptyList()));
@@ -414,7 +414,7 @@ public final class ShardingSQLRewriteEngineTest {
     private SQLRouteResult createRouteResultForRowNumber() {
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.getAllSQLSegments().add(new TableSegment(68, 74, "table_x"));
-        ShardingOptimizedStatement shardingStatement = new ShardingSelectOptimizedStatement(selectStatement, 
+        OptimizedStatement shardingStatement = new ShardingSelectOptimizedStatement(selectStatement, 
                 new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
                 new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<TableSegment>emptyList(), null),
                 new Pagination(new NumberLiteralRowNumberValueSegment(119, 119, 2, true), new NumberLiteralRowNumberValueSegment(98, 98, 4, false), Collections.emptyList()));
@@ -434,7 +434,7 @@ public final class ShardingSQLRewriteEngineTest {
     private SQLRouteResult createRouteResultForTopAndRowNumber() {
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.getAllSQLSegments().add(new TableSegment(85, 91, "table_x"));
-        ShardingOptimizedStatement shardingStatement = new ShardingSelectOptimizedStatement(selectStatement, 
+        OptimizedStatement shardingStatement = new ShardingSelectOptimizedStatement(selectStatement, 
                 new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
                 new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<TableSegment>emptyList(), null),
                 new Pagination(new NumberLiteralRowNumberValueSegment(123, 123, 2, true), new NumberLiteralRowNumberValueSegment(26, 26, 4, false), Collections.emptyList()));
@@ -454,7 +454,7 @@ public final class ShardingSQLRewriteEngineTest {
         ColumnSegment columnSegment = new ColumnSegment(0, 0, "id");
         columnSegment.setOwner(new TableSegment(0, 0, "x"));
         selectStatement.getAllSQLSegments().add(new TableSegment(17, 23, "table_x"));
-        ShardingOptimizedStatement shardingStatement = new ShardingSelectOptimizedStatement(selectStatement, 
+        OptimizedStatement shardingStatement = new ShardingSelectOptimizedStatement(selectStatement, 
                 new GroupBy(Collections.singletonList(new OrderByItem(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.DESC, OrderDirection.ASC))), 0),
                 new OrderBy(Collections.singletonList(new OrderByItem(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.ASC, OrderDirection.ASC))), false),
                 new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<TableSegment>emptyList(), null),
@@ -477,7 +477,7 @@ public final class ShardingSQLRewriteEngineTest {
         selectStatement.getAllSQLSegments().add(new TableSegment(68, 74, "table_x"));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, "id");
         columnSegment.setOwner(new TableSegment(0, 0, "x"));
-        ShardingOptimizedStatement shardingStatement = new ShardingSelectOptimizedStatement(selectStatement,  
+        OptimizedStatement shardingStatement = new ShardingSelectOptimizedStatement(selectStatement,  
                 new GroupBy(Collections.singletonList(new OrderByItem(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.DESC, OrderDirection.ASC))), 0),
                 new OrderBy(Collections.singletonList(new OrderByItem(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.ASC, OrderDirection.ASC))), false), 
                 new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<TableSegment>emptyList(), null),
@@ -500,7 +500,7 @@ public final class ShardingSQLRewriteEngineTest {
         selectStatement.getAllSQLSegments().add(new TableSegment(85, 91, "table_x"));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, "id");
         columnSegment.setOwner(new TableSegment(0, 0, "x"));
-        ShardingOptimizedStatement shardingStatement = new ShardingSelectOptimizedStatement(selectStatement, 
+        OptimizedStatement shardingStatement = new ShardingSelectOptimizedStatement(selectStatement, 
                 new GroupBy(Collections.singletonList(new OrderByItem(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.DESC, OrderDirection.ASC))), 0),
                 new OrderBy(Collections.singletonList(new OrderByItem(new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.ASC, OrderDirection.ASC))), false), 
                 new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<TableSegment>emptyList(), null),
@@ -519,7 +519,7 @@ public final class ShardingSQLRewriteEngineTest {
     private SQLRouteResult createRouteResultForLimitForNotRewritePagination() {
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.getAllSQLSegments().add(new TableSegment(17, 23, "table_x"));
-        ShardingOptimizedStatement shardingStatement = new ShardingSelectOptimizedStatement(selectStatement, 
+        OptimizedStatement shardingStatement = new ShardingSelectOptimizedStatement(selectStatement, 
                 new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
                 new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<TableSegment>emptyList(), null),
                 new Pagination(new NumberLiteralLimitValueSegment(33, 33, 2), new NumberLiteralLimitValueSegment(36, 36, 2), Collections.emptyList()));
@@ -541,7 +541,7 @@ public final class ShardingSQLRewriteEngineTest {
     private SQLRouteResult createRouteResultForRowNumForNotRewritePagination() {
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.getAllSQLSegments().add(new TableSegment(68, 74, "table_x"));
-        ShardingOptimizedStatement shardingStatement = new ShardingSelectOptimizedStatement(selectStatement, 
+        OptimizedStatement shardingStatement = new ShardingSelectOptimizedStatement(selectStatement, 
                 new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
                 new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<TableSegment>emptyList(), null),
                 new Pagination(new NumberLiteralRowNumberValueSegment(119, 119, 2, true), new NumberLiteralRowNumberValueSegment(98, 98, 4, false), Collections.emptyList()));
@@ -564,7 +564,7 @@ public final class ShardingSQLRewriteEngineTest {
     private SQLRouteResult createRouteResultForTopAndRowNumberForNotRewritePagination() {
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.getAllSQLSegments().add(new TableSegment(85, 91, "table_x"));
-        ShardingOptimizedStatement shardingStatement = new ShardingSelectOptimizedStatement(selectStatement, 
+        OptimizedStatement shardingStatement = new ShardingSelectOptimizedStatement(selectStatement, 
                 new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
                 new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<TableSegment>emptyList(), null),
                 new Pagination(new NumberLiteralRowNumberValueSegment(123, 123, 2, true), new NumberLiteralRowNumberValueSegment(26, 26, 4, false), Collections.emptyList()));
@@ -588,7 +588,7 @@ public final class ShardingSQLRewriteEngineTest {
         columnSegment1.setOwner(new TableSegment(0, 0, "x"));
         ColumnSegment columnSegment2 = new ColumnSegment(0, 0, "name");
         columnSegment2.setOwner(new TableSegment(0, 0, "x"));
-        ShardingOptimizedStatement shardingStatement = new ShardingSelectOptimizedStatement(selectStatement, 
+        OptimizedStatement shardingStatement = new ShardingSelectOptimizedStatement(selectStatement, 
                 new GroupBy(Arrays.asList(
                         new OrderByItem(new ColumnOrderByItemSegment(0, 0, columnSegment1, OrderDirection.ASC, OrderDirection.ASC)),
                         new OrderByItem(new ColumnOrderByItemSegment(0, 0, columnSegment2, OrderDirection.DESC, OrderDirection.ASC))), 60),

@@ -26,7 +26,6 @@ import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStat
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.optimize.encrypt.EncryptOptimizeEngineFactory;
 import org.apache.shardingsphere.core.optimize.sharding.ShardingOptimizeEngineFactory;
-import org.apache.shardingsphere.core.optimize.sharding.statement.ShardingOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
 import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
@@ -96,7 +95,7 @@ public final class ShardingRouter {
         if (shardingStatementValidator.isPresent()) {
             shardingStatementValidator.get().validate(shardingRule, sqlStatement);
         }
-        ShardingOptimizedStatement shardingStatement = ShardingOptimizeEngineFactory.newInstance(shardingRule, metaData.getTables(), logicSQL, parameters, sqlStatement);
+        OptimizedStatement shardingStatement = ShardingOptimizeEngineFactory.newInstance(shardingRule, metaData.getTables(), logicSQL, parameters, sqlStatement);
         Optional<GeneratedKey> generatedKey = sqlStatement instanceof InsertStatement
                 ? GeneratedKey.getGenerateKey(shardingRule, metaData.getTables(), parameters, (InsertStatement) sqlStatement) : Optional.<GeneratedKey>absent();
         ShardingConditions shardingConditions = getShardingConditions(parameters, shardingStatement, generatedKey.orNull());
@@ -119,7 +118,7 @@ public final class ShardingRouter {
         return result;
     }
     
-    private ShardingConditions getShardingConditions(final List<Object> parameters, final ShardingOptimizedStatement shardingStatement, final GeneratedKey generatedKey) {
+    private ShardingConditions getShardingConditions(final List<Object> parameters, final OptimizedStatement shardingStatement, final GeneratedKey generatedKey) {
         if (shardingStatement.getSqlStatement() instanceof DMLStatement) {
             if (shardingStatement instanceof InsertOptimizedStatement) {
                 InsertOptimizedStatement shardingInsertStatement = (InsertOptimizedStatement) shardingStatement;

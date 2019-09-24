@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.route.router.sharding;
 
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.core.optimize.api.segment.Tables;
-import org.apache.shardingsphere.core.optimize.sharding.statement.ShardingOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.ShowDatabasesStatement;
@@ -65,7 +65,7 @@ public class RoutingEngineFactoryTest {
     private ShardingSphereMetaData shardingSphereMetaData;
     
     @Mock
-    private ShardingOptimizedStatement optimizedStatement;
+    private OptimizedStatement optimizedStatement;
     
     @Mock
     private Tables tables;
