@@ -27,9 +27,11 @@ import org.apache.shardingsphere.core.optimize.segment.item.SelectItem;
 import org.apache.shardingsphere.core.optimize.segment.item.SelectItems;
 import org.apache.shardingsphere.core.optimize.segment.orderby.OrderBy;
 import org.apache.shardingsphere.core.optimize.segment.orderby.OrderByItem;
-import org.apache.shardingsphere.core.optimize.statement.impl.SelectOptimizedStatement;
 import org.apache.shardingsphere.core.parse.core.constant.OrderDirection;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemsSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.order.GroupBySegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.OrderByItemSegment;
@@ -46,6 +48,7 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class SelectOptimizedStatementTest {
     
@@ -95,8 +98,29 @@ public final class SelectOptimizedStatementTest {
     
     @Test
     public void assertIsSameGroupByAndOrderByItems() {
-        SelectOptimizedStatement selectOptimizedStatement = new SelectOptimizedStatement(
-                new SelectStatement(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), createSelectItems(), null);
+        SelectStatement selectStatement = new SelectStatement();
+        selectStatement.setSelectItems(new SelectItemsSegment(0, 0, false));
+        selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.<OrderByItemSegment>singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.DESC))));
+        selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.<OrderByItemSegment>singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.DESC))));
+        SelectOptimizedStatement selectOptimizedStatement = new SelectOptimizedStatement(null, "", Collections.emptyList(), selectStatement);
+        assertTrue(selectOptimizedStatement.isSameGroupByAndOrderByItems());
+    }
+    
+    @Test
+    public void assertIsNotSameGroupByAndOrderByItemsWhenEmptyGroupBy() {
+        SelectStatement selectStatement = new SelectStatement();
+        selectStatement.setSelectItems(new SelectItemsSegment(0, 0, false));
+        SelectOptimizedStatement selectOptimizedStatement = new SelectOptimizedStatement(null, "", Collections.emptyList(), selectStatement);
+        assertFalse(selectOptimizedStatement.isSameGroupByAndOrderByItems());
+    }
+    
+    @Test
+    public void assertIsNotSameGroupByAndOrderByItemsWhenDifferentGroupByAndOrderBy() {
+        SelectStatement selectStatement = new SelectStatement();
+        selectStatement.setSelectItems(new SelectItemsSegment(0, 0, false));
+        selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.<OrderByItemSegment>singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.DESC))));
+        selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.<OrderByItemSegment>singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.DESC))));
+        SelectOptimizedStatement selectOptimizedStatement = new SelectOptimizedStatement(null, "", Collections.emptyList(), selectStatement);
         assertFalse(selectOptimizedStatement.isSameGroupByAndOrderByItems());
     }
     
