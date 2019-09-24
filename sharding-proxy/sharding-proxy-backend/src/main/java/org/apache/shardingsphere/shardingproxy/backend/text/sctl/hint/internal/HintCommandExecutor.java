@@ -27,14 +27,15 @@ import java.sql.SQLException;
  *
  * @author liya
  */
-public interface HintCommandExecutor {
+public interface HintCommandExecutor<T extends HintCommand> {
     
     /**
      * Execute hint command.
      *
+     * @param hintCommand hint command
      * @return backend response
      */
-    BackendResponse execute();
+    BackendResponse execute(T hintCommand);
     
     /**
      * Goto next result value.

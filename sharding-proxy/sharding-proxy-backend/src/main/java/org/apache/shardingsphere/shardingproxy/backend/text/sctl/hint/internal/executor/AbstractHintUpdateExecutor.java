@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.executor;
 
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintCommand;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintCommandExecutor;
 
 /**
@@ -25,7 +26,7 @@ import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.H
  *
  * @author liya
  */
-public abstract class AbstractHintUpdateExecutor implements HintCommandExecutor {
+public abstract class AbstractHintUpdateExecutor<T extends HintCommand> implements HintCommandExecutor<T> {
     
     @Override
     public final boolean next() {

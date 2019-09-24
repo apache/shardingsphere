@@ -22,6 +22,7 @@ import org.apache.shardingsphere.core.merge.MergedResult;
 import org.apache.shardingsphere.core.merge.dal.show.ShowShardingCTLMergedResult;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintShardingType;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintShowStatusCommand;
 
 import java.sql.Types;
 import java.util.ArrayList;
@@ -33,8 +34,9 @@ import java.util.List;
  *
  * @author liya
  */
-public final class HintShowStatusExecutor extends AbstractHintQueryExecutor {
+public final class HintShowStatusExecutor extends AbstractHintQueryExecutor<HintShowStatusCommand> {
     
+    @Override
     protected List<QueryHeader> createQueryHeaders() {
         List<QueryHeader> queryHeaders = new ArrayList<>(2);
         queryHeaders.add(new QueryHeader("", "", "master_only", "", 5, Types.CHAR, 0));
@@ -42,13 +44,17 @@ public final class HintShowStatusExecutor extends AbstractHintQueryExecutor {
         return queryHeaders;
     }
     
+    @Override
     protected MergedResult createMergedResult() {
-        boolean masterOnly = HintManager.isMasterRouteOnly();
-        boolean databaseOnly = HintManager.isDatabaseShardingOnly();
-        HintShardingType shardingType = databaseOnly ? HintShardingType.DATABASES_ONLY : HintShardingType.DATABASES_TABLES;
+        HintShardingType shardingType = HintManager.isDatabaseShardingOnly() ? HintShardingType.DATABASES_ONLY : HintShardingType.DATABASES_TABLES;
+        List<Object> row = createRow(HintManager.isMasterRouteOnly(), shardingType);
+        return new ShowShardingCTLMergedResult(Collections.singletonList(row));
+    }
+    
+    private List<Object> createRow(final boolean masterOnly, final HintShardingType shardingType) {
         List<Object> row = new ArrayList<>(2);
         row.add(String.valueOf(masterOnly).toLowerCase());
         row.add(String.valueOf(shardingType).toLowerCase());
-        return new ShowShardingCTLMergedResult(Collections.singletonList(row));
+        return row;
     }
 }

@@ -17,11 +17,15 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint;
 
+import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
+import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.exception.InvalidShardingCTLFormatException;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintCommand;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintCommandExecutor;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintCommandExecutorFactory;
 
@@ -50,8 +54,13 @@ public final class ShardingCTLHintBackendHandler implements TextProtocolBackendH
         if (!backendConnection.isSupportHint()) {
             throw new UnsupportedOperationException(String.format("%s should be true, please check your config", ShardingPropertiesConstant.PROXY_HINT_ENABLED.getKey()));
         }
-        hintCommandExecutor = HintCommandExecutorFactory.newInstance(backendConnection, sql);
-        return hintCommandExecutor.execute();
+        Optional<ShardingCTLHintStatement> shardingTCLStatement = new ShardingCTLHintParser(sql).doParse();
+        if (!shardingTCLStatement.isPresent()) {
+            return new ErrorResponse(new InvalidShardingCTLFormatException(sql));
+        }
+        HintCommand hintCommand = shardingTCLStatement.get().getHintCommand();
+        hintCommandExecutor = HintCommandExecutorFactory.newInstance(hintCommand, backendConnection, sql);
+        return hintCommandExecutor.execute(hintCommand);
     }
     
     @Override

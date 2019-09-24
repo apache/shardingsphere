@@ -29,12 +29,10 @@ import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.c
  * @author liya
  */
 @RequiredArgsConstructor
-public final class HintAddTableShardingValueExecutor extends AbstractHintUpdateExecutor {
-    
-    private final HintAddTableShardingValueCommand command;
+public final class HintAddTableShardingValueExecutor extends AbstractHintUpdateExecutor<HintAddTableShardingValueCommand> {
     
     @Override
-    public BackendResponse execute() {
+    public BackendResponse execute(final HintAddTableShardingValueCommand command) {
         HintManagerHolder.get().addTableShardingValue(command.getLogicTable(), command.getValue());
         return new UpdateResponse();
     }

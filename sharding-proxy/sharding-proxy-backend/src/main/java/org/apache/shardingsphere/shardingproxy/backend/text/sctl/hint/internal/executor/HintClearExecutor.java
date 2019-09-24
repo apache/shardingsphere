@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintManagerHolder;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintClearCommand;
 
 /**
  * Hint clear command executor.
@@ -28,10 +29,10 @@ import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.H
  * @author liya
  */
 @RequiredArgsConstructor
-public final class HintClearExecutor extends AbstractHintUpdateExecutor {
+public final class HintClearExecutor extends AbstractHintUpdateExecutor<HintClearCommand> {
     
     @Override
-    public BackendResponse execute() {
+    public BackendResponse execute(final HintClearCommand command) {
         HintManagerHolder.get().close();
         HintManagerHolder.remove();
         return new UpdateResponse();

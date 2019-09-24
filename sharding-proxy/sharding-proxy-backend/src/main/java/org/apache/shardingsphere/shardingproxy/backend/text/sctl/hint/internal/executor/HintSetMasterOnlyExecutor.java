@@ -29,12 +29,10 @@ import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.c
  * @author liya
  */
 @RequiredArgsConstructor
-public final class HintSetMasterOnlyExecutor extends AbstractHintUpdateExecutor {
-    
-    private final HintSetMasterOnlyCommand command;
+public final class HintSetMasterOnlyExecutor extends AbstractHintUpdateExecutor<HintSetMasterOnlyCommand> {
     
     @Override
-    public BackendResponse execute() {
+    public BackendResponse execute(final HintSetMasterOnlyCommand command) {
         if (command.isMasterOnly()) {
             HintManagerHolder.get().setMasterRouteOnly();
         }

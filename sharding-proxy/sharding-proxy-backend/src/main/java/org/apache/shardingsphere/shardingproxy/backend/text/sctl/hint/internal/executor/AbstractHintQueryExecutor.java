@@ -22,6 +22,7 @@ import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryResponse;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintCommand;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintCommandExecutor;
 
 import java.sql.SQLException;
@@ -33,14 +34,14 @@ import java.util.List;
  *
  * @author liya
  */
-public abstract class AbstractHintQueryExecutor implements HintCommandExecutor {
+public abstract class AbstractHintQueryExecutor<T extends HintCommand> implements HintCommandExecutor<T> {
     
     private List<QueryHeader> queryHeaders;
     
     private MergedResult mergedResult;
     
     @Override
-    public final BackendResponse execute() {
+    public final BackendResponse execute(final T command) {
         queryHeaders = createQueryHeaders();
         mergedResult = createMergedResult();
         return new QueryResponse(queryHeaders);

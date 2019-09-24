@@ -25,11 +25,13 @@ import org.apache.shardingsphere.core.merge.dal.show.ShowShardingCTLMergedResult
 import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintShowTableStatusCommand;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.result.HintShowTableStatusResult;
 
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -41,10 +43,11 @@ import java.util.Map;
  * @author liya
  */
 @RequiredArgsConstructor
-public final class HintShowTableStatusExecutor extends AbstractHintQueryExecutor {
+public final class HintShowTableStatusExecutor extends AbstractHintQueryExecutor<HintShowTableStatusCommand> {
     
     private final BackendConnection backendConnection;
     
+    @Override
     protected List<QueryHeader> createQueryHeaders() {
         List<QueryHeader> queryHeaders = new ArrayList<>(3);
         queryHeaders.add(new QueryHeader("", "", "table_name", "", 255, Types.CHAR, 0));
@@ -53,26 +56,32 @@ public final class HintShowTableStatusExecutor extends AbstractHintQueryExecutor
         return queryHeaders;
     }
     
+    @Override
     protected MergedResult createMergedResult() {
         Map<String, HintShowTableStatusResult> results = new HashMap<>();
-        if (HintManager.isDatabaseShardingOnly()) {
-            fillShardingValuesDatabaseShardingOnly(results, HintManager.getDatabaseShardingValues());
-        } else {
-            fillDatabaseShardingValues(results, HintManager.getDatabaseShardingValuesMap());
-            fillTableShardingValues(results, HintManager.getTableShardingValuesMap());
+        for (String each : getLogicTableNames()) {
+            if (HintManager.isDatabaseShardingOnly()) {
+                fillShardingValues(results, each, HintManager.getDatabaseShardingValues(), Collections.<Comparable<?>>emptyList());
+            } else {
+                fillShardingValues(results, each, HintManager.getDatabaseShardingValues(each), HintManager.getTableShardingValues(each));
+            }
         }
         return convert2MergedResult(results.values());
     }
     
-    private void fillShardingValuesDatabaseShardingOnly(final Map<String, HintShowTableStatusResult> results, final Collection<Comparable<?>> databaseShardingValues) {
-        List<String> stringDatabaseShardingValues = new LinkedList<>();
+    private void fillShardingValues(final Map<String, HintShowTableStatusResult> results, final String logicTable,
+                                    final Collection<Comparable<?>> databaseShardingValues, final Collection<Comparable<?>> tableShardingValues) {
         for (Comparable<?> each : databaseShardingValues) {
-            stringDatabaseShardingValues.add(String.valueOf(each));
+            if (!results.containsKey(logicTable)) {
+                results.put(logicTable, new HintShowTableStatusResult(logicTable));
+            }
+            results.get(logicTable).getDatabaseShardingValues().add(each.toString());
         }
-        for (String each : getLogicTableNames()) {
-            HintShowTableStatusResult hintShowTableStatusResult = new HintShowTableStatusResult(each);
-            hintShowTableStatusResult.getDatabaseShardingValues().addAll(stringDatabaseShardingValues);
-            results.put(each, hintShowTableStatusResult);
+        for (Comparable<?> each : tableShardingValues) {
+            if (!results.containsKey(logicTable)) {
+                results.put(logicTable, new HintShowTableStatusResult(logicTable));
+            }
+            results.get(logicTable).getTableShardingValues().add(each.toString());
         }
     }
     
@@ -85,39 +94,19 @@ public final class HintShowTableStatusExecutor extends AbstractHintQueryExecutor
         return result;
     }
     
-    private void fillDatabaseShardingValues(final Map<String, HintShowTableStatusResult> results, final Map<String, Collection<Comparable<?>>> databaseShardingValuesMap) {
-        for (Map.Entry<String, Collection<Comparable<?>>> entry : databaseShardingValuesMap.entrySet()) {
-            String logicTable = entry.getKey();
-            if (!results.containsKey(logicTable)) {
-                results.put(logicTable, new HintShowTableStatusResult(logicTable));
-            }
-            for (Comparable<?> each : entry.getValue()) {
-                results.get(logicTable).getDatabaseShardingValues().add(each.toString());
-            }
-        }
-    }
-    
-    private void fillTableShardingValues(final Map<String, HintShowTableStatusResult> results, final Map<String, Collection<Comparable<?>>> tableShardingValuesMap) {
-        for (Map.Entry<String, Collection<Comparable<?>>> entry : tableShardingValuesMap.entrySet()) {
-            String logicTable = entry.getKey();
-            if (!results.containsKey(logicTable)) {
-                results.put(logicTable, new HintShowTableStatusResult(logicTable));
-            }
-            for (Comparable<?> each : entry.getValue()) {
-                results.get(logicTable).getTableShardingValues().add(each.toString());
-            }
-        }
-    }
-    
     private MergedResult convert2MergedResult(final Collection<HintShowTableStatusResult> hintShowTableStatusResults) {
         List<List<Object>> values = new ArrayList<>(hintShowTableStatusResults.size());
         for (HintShowTableStatusResult each : hintShowTableStatusResults) {
-            List<Object> row = new ArrayList<>(3);
-            row.add(each.getLogicTable());
-            row.add(Joiner.on(",").join(each.getDatabaseShardingValues()));
-            row.add(Joiner.on(",").join(each.getTableShardingValues()));
-            values.add(row);
+            values.add(createRow(each));
         }
         return new ShowShardingCTLMergedResult(values);
+    }
+    
+    private List<Object> createRow(final HintShowTableStatusResult hintShowTableStatusResult) {
+        List<Object> row = new ArrayList<>(3);
+        row.add(hintShowTableStatusResult.getLogicTable());
+        row.add(Joiner.on(",").join(hintShowTableStatusResult.getDatabaseShardingValues()));
+        row.add(Joiner.on(",").join(hintShowTableStatusResult.getTableShardingValues()));
+        return row;
     }
 }
