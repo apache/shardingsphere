@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.parse.sql.statement.dml;
 
-import lombok.Getter;
 import org.apache.shardingsphere.core.parse.sql.statement.generic.AbstractSQLStatement;
 
 /**
@@ -25,6 +24,5 @@ import org.apache.shardingsphere.core.parse.sql.statement.generic.AbstractSQLSta
  *
  * @author zhangliang
  */
-@Getter
 public abstract class DMLStatement extends AbstractSQLStatement {
 }

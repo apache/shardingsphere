@@ -52,7 +52,7 @@ public final class TableTokenGenerator implements CollectionSQLTokenGenerator<Ba
     public Collection<TableToken> generateSQLTokens(
             final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder, final BaseRule baseRule, final boolean isQueryWithCipherColumn) {
         Collection<TableToken> result = new LinkedList<>();
-        for (SQLSegment each : rewriteStatement.getOptimizedStatement().getSQLStatement().getAllSQLSegments()) {
+        for (SQLSegment each : rewriteStatement.getOptimizedStatement().getSqlStatement().getAllSQLSegments()) {
             if (each instanceof SelectItemsSegment) {
                 result.addAll(createTableTokens(rewriteStatement.getOptimizedStatement(), baseRule, (SelectItemsSegment) each));
             } else if (each instanceof ColumnSegment) {
@@ -61,7 +61,7 @@ public final class TableTokenGenerator implements CollectionSQLTokenGenerator<Ba
                     result.add(tableToken.get());
                 }
             } else if (each instanceof TableAvailable) {
-                Optional<TableToken> tableToken = createTableToken(rewriteStatement.getOptimizedStatement().getSQLStatement(), baseRule, (TableAvailable) each);
+                Optional<TableToken> tableToken = createTableToken(rewriteStatement.getOptimizedStatement().getSqlStatement(), baseRule, (TableAvailable) each);
                 if (tableToken.isPresent()) {
                     result.add(tableToken.get());
                 }

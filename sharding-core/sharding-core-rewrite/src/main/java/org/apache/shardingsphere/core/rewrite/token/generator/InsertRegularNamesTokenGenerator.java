@@ -22,6 +22,7 @@ import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStat
 import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.statement.InsertRewriteStatement;
 import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertRegularNamesToken;
 import org.apache.shardingsphere.core.rule.BaseRule;
@@ -46,38 +47,41 @@ public final class InsertRegularNamesTokenGenerator implements OptionalSQLTokenG
         if (!isNeedToGenerateSQLToken(rewriteStatement.getOptimizedStatement(), baseRule)) {
             return Optional.absent();
         }
-        return createInsertColumnsToken(rewriteStatement.getOptimizedStatement(), baseRule);
+        return createInsertColumnsToken(rewriteStatement, baseRule);
     }
     
     private boolean isNeedToGenerateSQLToken(final OptimizedStatement optimizedStatement, final BaseRule baseRule) {
-        Optional<InsertColumnsSegment> insertColumnsSegment = optimizedStatement.getSQLStatement().findSQLSegment(InsertColumnsSegment.class);
+        Optional<InsertColumnsSegment> insertColumnsSegment = optimizedStatement.getSqlStatement().findSQLSegment(InsertColumnsSegment.class);
         return !(baseRule instanceof MasterSlaveRule) 
                 && optimizedStatement instanceof InsertOptimizedStatement && insertColumnsSegment.isPresent() && insertColumnsSegment.get().getColumns().isEmpty();
     }
     
-    private Optional<InsertRegularNamesToken> createInsertColumnsToken(final OptimizedStatement optimizedStatement, final BaseRule baseRule) {
-        Optional<InsertColumnsSegment> insertColumnsSegment = optimizedStatement.getSQLStatement().findSQLSegment(InsertColumnsSegment.class);
+    private Optional<InsertRegularNamesToken> createInsertColumnsToken(final RewriteStatement rewriteStatement, final BaseRule baseRule) {
+        Optional<InsertColumnsSegment> insertColumnsSegment = rewriteStatement.getOptimizedStatement().getSqlStatement().findSQLSegment(InsertColumnsSegment.class);
         return insertColumnsSegment.isPresent()
                 ? Optional.of(new InsertRegularNamesToken(insertColumnsSegment.get().getStopIndex(), 
-                getActualInsertColumns((InsertOptimizedStatement) optimizedStatement, baseRule), !isNeedToAppendColumns((InsertOptimizedStatement) optimizedStatement, baseRule)))
+                getActualInsertColumns((InsertRewriteStatement) rewriteStatement, baseRule), !isNeedToAppendColumns((InsertOptimizedStatement) rewriteStatement.getOptimizedStatement(), baseRule)))
                 : Optional.<InsertRegularNamesToken>absent();
     }
     
-    private Collection<String> getActualInsertColumns(final InsertOptimizedStatement optimizedStatement, final BaseRule baseRule) {
+    private Collection<String> getActualInsertColumns(final InsertRewriteStatement rewriteStatement, final BaseRule baseRule) {
         Collection<String> result = new LinkedList<>();
-        Map<String, String> logicAndCipherColumns = getEncryptRule(baseRule).getLogicAndCipherColumns(optimizedStatement.getTables().getSingleTableName());
-        for (String each : optimizedStatement.getColumnNames()) {
-            result.add(getCipherColumn(each, logicAndCipherColumns));
+        Map<String, String> logicAndCipherColumns = getEncryptRule(baseRule).getLogicAndCipherColumns(rewriteStatement.getOptimizedStatement().getTables().getSingleTableName());
+        boolean isGeneratedKey = rewriteStatement.getOptimizedStatement() instanceof InsertOptimizedStatement 
+                && (rewriteStatement.getGeneratedKey().isPresent() && (rewriteStatement.getGeneratedKey().get().isGenerated()));
+        for (String each : ((InsertOptimizedStatement) rewriteStatement.getOptimizedStatement()).getColumnNames()) {
+            if (!isGeneratedKey || !each.equalsIgnoreCase(rewriteStatement.getGeneratedKey().get().getColumnName())) {
+                result.add(logicAndCipherColumns.keySet().contains(each) ? logicAndCipherColumns.get(each) : each);
+            }
+        }
+        if (isGeneratedKey) {
+            result.add(rewriteStatement.getGeneratedKey().get().getColumnName());
         }
         return result;
     }
     
     private EncryptRule getEncryptRule(final BaseRule baseRule) {
         return baseRule instanceof ShardingRule ? ((ShardingRule) baseRule).getEncryptRule() : (EncryptRule) baseRule;
-    }
-    
-    private String getCipherColumn(final String column, final Map<String, String> logicAndCipherColumns) {
-        return logicAndCipherColumns.keySet().contains(column) ? logicAndCipherColumns.get(column) : column;
     }
     
     private boolean isNeedToAppendColumns(final InsertOptimizedStatement optimizedStatement, final BaseRule baseRule) {

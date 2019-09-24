@@ -54,17 +54,17 @@ public final class SelectEncryptItemTokenGenerator implements CollectionSQLToken
         if (!isSelectStatementWithTable(optimizedStatement)) {
             return false;
         }
-        Optional<SelectItemsSegment> selectItemsSegment = optimizedStatement.getSQLStatement().findSQLSegment(SelectItemsSegment.class);
+        Optional<SelectItemsSegment> selectItemsSegment = optimizedStatement.getSqlStatement().findSQLSegment(SelectItemsSegment.class);
         return selectItemsSegment.isPresent() && !selectItemsSegment.get().getSelectItems().isEmpty();
     }
     
     private boolean isSelectStatementWithTable(final OptimizedStatement optimizedStatement) {
-        return optimizedStatement.getSQLStatement() instanceof SelectStatement && !optimizedStatement.getTables().isEmpty();
+        return optimizedStatement.getSqlStatement() instanceof SelectStatement && !optimizedStatement.getTables().isEmpty();
     }
     
     private Collection<SelectEncryptItemToken> createSelectCipherItemTokens(final EncryptRule encryptRule, final OptimizedStatement optimizedStatement, final boolean isQueryWithCipherColumn) {
         Collection<SelectEncryptItemToken> result = new LinkedList<>();
-        Optional<SelectItemsSegment> selectItemsSegment = optimizedStatement.getSQLStatement().findSQLSegment(SelectItemsSegment.class);
+        Optional<SelectItemsSegment> selectItemsSegment = optimizedStatement.getSqlStatement().findSQLSegment(SelectItemsSegment.class);
         if (!selectItemsSegment.isPresent()) {
             return Collections.emptyList();
         }
