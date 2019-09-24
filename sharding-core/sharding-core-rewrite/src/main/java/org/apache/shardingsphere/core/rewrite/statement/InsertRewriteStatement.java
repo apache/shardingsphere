@@ -21,7 +21,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.core.optimize.api.segment.InsertValue;
 import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.encrypt.condition.EncryptConditions;
+import org.apache.shardingsphere.core.rewrite.encrypt.EncryptConditions;
 import org.apache.shardingsphere.core.rewrite.statement.constant.EncryptDerivedColumnType;
 import org.apache.shardingsphere.core.rewrite.statement.constant.ShardingDerivedColumnType;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;

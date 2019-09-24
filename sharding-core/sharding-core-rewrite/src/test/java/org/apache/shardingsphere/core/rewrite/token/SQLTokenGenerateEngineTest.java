@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.core.rewrite.token;
 
-import org.apache.shardingsphere.core.optimize.encrypt.condition.EncryptCondition;
-import org.apache.shardingsphere.core.optimize.encrypt.condition.EncryptConditions;
+import org.apache.shardingsphere.core.rewrite.encrypt.EncryptCondition;
+import org.apache.shardingsphere.core.rewrite.encrypt.EncryptConditions;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.apache.shardingsphere.core.optimize.sharding.segment.groupby.GroupBy;

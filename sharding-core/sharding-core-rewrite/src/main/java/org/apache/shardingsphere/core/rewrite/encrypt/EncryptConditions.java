@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.encrypt.condition;
+package org.apache.shardingsphere.core.rewrite.encrypt;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
