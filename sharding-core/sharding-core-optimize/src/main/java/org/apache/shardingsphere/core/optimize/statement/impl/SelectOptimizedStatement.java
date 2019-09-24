@@ -63,7 +63,7 @@ public final class SelectOptimizedStatement extends CommonOptimizedStatement {
     
     private final Pagination pagination;
     
-    private boolean containsSubquery;
+    private final boolean containsSubquery;
     
     @Deprecated // for test
     public SelectOptimizedStatement(final SQLStatement sqlStatement, final GroupBy groupBy, final OrderBy orderBy, final SelectItems selectItems, final Pagination pagination) {
@@ -72,6 +72,7 @@ public final class SelectOptimizedStatement extends CommonOptimizedStatement {
         this.orderBy = orderBy;
         this.selectItems = selectItems;
         this.pagination = pagination;
+        containsSubquery = containsSubquery();
     }
     
     public SelectOptimizedStatement(final TableMetas tableMetas, final String sql, final List<Object> parameters, final SelectStatement sqlStatement) {
@@ -80,17 +81,17 @@ public final class SelectOptimizedStatement extends CommonOptimizedStatement {
         this.orderBy = new OrderByEngine().createOrderBy(sqlStatement, groupBy);
         this.selectItems = new SelectItemsEngine(tableMetas).createSelectItems(sql, sqlStatement, groupBy, orderBy);
         this.pagination = new PaginationEngine().createPagination(sqlStatement, selectItems, parameters);
-        setContainsSubquery();
+        containsSubquery = containsSubquery();
     }
     
-    private void setContainsSubquery() {
+    private boolean containsSubquery() {
         Collection<SubqueryPredicateSegment> subqueryPredicateSegments = getSqlStatement().findSQLSegments(SubqueryPredicateSegment.class);
         for (SubqueryPredicateSegment each : subqueryPredicateSegments) {
             if (!each.getAndPredicates().isEmpty()) {
-                containsSubquery = true;
-                return;
+                return true;
             }
         }
+        return false;
     }
     
     /**
