@@ -90,7 +90,7 @@ props:
 
 ### 使用原生JDBC
 
-通过MasterSlaveDataSourceFactory工厂和规则配置对象获取MasterSlaveDataSource，MasterSlaveDataSource实现自JDBC的标准接口DataSource。然后可通过DataSource选择使用原生JDBC开发，或者使用JPA, MyBatis等ORM工具。
+通过YamlMasterSlaveDataSourceFactory工厂和规则配置对象获取MasterSlaveDataSource，MasterSlaveDataSource实现自JDBC的标准接口DataSource。然后可通过DataSource选择使用原生JDBC开发，或者使用JPA, MyBatis等ORM工具。
 以JDBC原生实现为例：
 
 ```java

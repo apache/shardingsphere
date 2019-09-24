@@ -45,7 +45,7 @@ ShardingSphere中已经整合了Saga和Seata两种BASE类型的事务
 </dependency>
 ```
 
-${shardingsphere-spi-impl.version}` 的jar暂未发布到maven中央仓，因此需要您根据源码自行部署。项目地址: [shardingsphere-spi-impl](https://github.com/sharding-sphere/shardingsphere-spi-impl)
+${shardingsphere-spi-impl.version} 的jar暂未发布到maven中央仓，因此需要您根据源码自行部署。项目地址: [shardingsphere-spi-impl](https://github.com/sharding-sphere/shardingsphere-spi-impl)
 
 ```xml
 <!-- seata柔性事务 -->

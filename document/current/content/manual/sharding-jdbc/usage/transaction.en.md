@@ -46,7 +46,7 @@ Currently, we have integrated saga and seata into shardingsphere.
 </dependency>
 ```
 
-`${shardingsphere-spi-impl.version}` mentioned has not been posted to the central maven repository, so you need to install it by yourself.
+`${shardingsphere-spi-impl.version}` mentioned has not been posted to the central maven repository, so you need to install it by yourself.Project Address: [shardingsphere-spi-impl](https://github.com/sharding-sphere/shardingsphere-spi-impl)
 
 ```xml
 <!-- seata at transaction -->

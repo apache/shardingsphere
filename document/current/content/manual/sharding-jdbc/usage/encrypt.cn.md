@@ -50,7 +50,7 @@ weight = 6
 ```yaml
 dataSource:  !!org.apache.commons.dbcp2.BasicDataSource
   driverClassName: com.mysql.jdbc.Driver
-  jdbcUrl: jdbc:mysql://127.0.0.1:3306/encrypt?serverTimezone=UTC&useSSL=false
+  url: jdbc:mysql://127.0.0.1:3306/encrypt?serverTimezone=UTC&useSSL=false
   username: root
   password:
 
@@ -178,7 +178,7 @@ spring.shardingsphere.props.query.with.cipher.comlum=true
             </encrypt:encryptors>
         </encrypt:encrypt-rule>
         <encrypt:props>
-            <prop key="sql.show">${sql_show}</prop>
+            <prop key="sql.show">true</prop>
             <prop key="query.with.cipher.column">true</prop>
         </encrypt:props>
     </encrypt:data-source>

@@ -10,33 +10,33 @@ The ShardingSphere team is comprised of Members and Contributors. Members have d
 
 ## Members
 
-Members include Project Management Committee members and committers. The List in alphabeta order.
+Members include Project Management Committee members and committers. The List in alphabet order.
 
 ### Project Management Committee
 
-| Name           | GithubUsername          |
+| Name           | GitHub ID          |
 | :------------- | :---------------------- |
-| QingYang Chen  | beckhampu               |
-| Jun Zhao       | cherrylzhao             |
+| Hao Cao        | haocao                  |
 | Hongjun Du     | codefairy08             |
 | Hongtao Gao    | hanahmily               |
-| Hao Cao        | haocao                  |
-| Yang Yi        | KomachiSion             |
-| Xiaoguang Ma   | maxiaoguang64           |
-| Yongsheng Peng | peng-yongsheng          |
-| Liang Zhang    | terrymanu               |
 | Juan Pan       | tristaZero              |
-| Yonglun Zhang  | tuohai666, zhangyonglun |
-| Sheng Wu       | wu-sheng                |
+| Jun Zhao       | cherrylzhao             |
+| Liang Zhang    | terrymanu               |
 | Ling Yue       | yue530tom               |
+| QingYang Chen  | beckhampu               |
+| Sheng Wu       | wu-sheng                |
+| Xiaoguang Ma   | maxiaoguang64           |
+| Yang Yi        | KomachiSion             |
+| Yonglun Zhang  | tuohai666, zhangyonglun |
+| Yongsheng Peng | peng-yongsheng          |
 
 ### Committer
 
-| Name           | GithubUsername          |
-| :------------- | :---------------------- |
-| zhaoyanan      | nancyzrh                |
-| Guangyuan Wang | wgy8283335              |
-| Haisheng Sun   | sunbufu                 |
+| Name            | GitHub ID          |
+| :-------------  | :---------------------- |
+| Yanan Zhao      | nancyzrh                |
+| Guangyuan Wang  | wgy8283335              |
+| Haisheng Sun    | sunbufu                 |
 
 ## Contributors
 

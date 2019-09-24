@@ -91,7 +91,7 @@ props:
 
 ### Use Native JDBC
 
-Configure objects with `MasterSlaveDataSourceFactory` to get `MasterSlaveDataSource`, which is realized by standard JDBC DataSource interface. Or choose native JDBC to develop through DataSource; or use JPA, MyBatis and other ORM tools. Take native JDBC for example:
+Configure objects with `YamlMasterSlaveDataSourceFactory` to get `MasterSlaveDataSource`, which is realized by standard JDBC DataSource interface. Or choose native JDBC to develop through DataSource; or use JPA, MyBatis and other ORM tools. Take native JDBC for example:
 
 ```java
 DataSource dataSource = YamlMasterSlaveDataSourceFactory.createDataSource(yamlFile);

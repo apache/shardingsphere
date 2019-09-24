@@ -9,7 +9,7 @@ weight = 4
 Inline expression identifier can can use `${...} ` or `$->{...}`, but the former one clashes with the placeholder in property documents of Spring, so it is suggested to use `$->{...}` for inline expression identifier under Spring environment.
 
 ## Example
-
+example: [shardingsphere-example](https://github.com/apache/incubator-shardingsphere-example/tree/dev/sharding-jdbc-example/sharding-example/sharding-spring-namespace-jpa-example/src/main/resources/META-INF)
 ### Sharding
 
 ```xml
@@ -20,22 +20,22 @@ Inline expression identifier can can use `${...} ` or `$->{...}`, but the former
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
                         http://www.springframework.org/schema/beans/spring-beans.xsd
-                        http://shardingsphere.apache.org/schema/shardingsphere/sharding 
+                        http://shardingsphere.apache.org/schema/shardingsphere/sharding
                         http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
                         http://www.springframework.org/schema/context
                         http://www.springframework.org/schema/context/spring-context.xsd
                         http://www.springframework.org/schema/tx
                         http://www.springframework.org/schema/tx/spring-tx.xsd">
     <context:annotation-config />
-    
+
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
         <property name="dataSource" ref="shardingDataSource" />
         <property name="jpaVendorAdapter">
             <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" p:database="MYSQL" />
         </property>
-        <property name="packagesToScan" value="org.apache.shardingsphere.example.spring.namespace.jpa.entity" />
+        <property name="packagesToScan" value="org.apache.shardingsphere.example.core.jpa.entity" />
         <property name="jpaProperties">
             <props>
                 <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
@@ -46,30 +46,30 @@ Inline expression identifier can can use `${...} ` or `$->{...}`, but the former
     </bean>
     <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager" p:entityManagerFactory-ref="entityManagerFactory" />
     <tx:annotation-driven />
-    
+
     <bean id="ds0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
         <property name="url" value="jdbc:mysql://localhost:3306/ds0" />
         <property name="username" value="root" />
         <property name="password" value="" />
     </bean>
-    
+
     <bean id="ds1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
         <property name="url" value="jdbc:mysql://localhost:3306/ds1" />
         <property name="username" value="root" />
         <property name="password" value="" />
     </bean>
-    
-    <bean id="preciseModuloDatabaseShardingAlgorithm" class="org.apache.shardingsphere.example.spring.namespace.jpa.algorithm.PreciseModuloDatabaseShardingAlgorithm" />
-    <bean id="preciseModuloTableShardingAlgorithm" class="org.apache.shardingsphere.example.spring.namespace.jpa.algorithm.PreciseModuloTableShardingAlgorithm" />
-    
+
+    <bean id="preciseModuloDatabaseShardingAlgorithm" class="org.apache.shardingsphere.example.algorithm.PreciseModuloShardingDatabaseAlgorithm" />
+    <bean id="preciseModuloTableShardingAlgorithm" class="org.apache.shardingsphere.example.algorithm.PreciseModuloShardingTableAlgorithm" />
+
     <sharding:standard-strategy id="databaseShardingStrategy" sharding-column="user_id" precise-algorithm-ref="preciseModuloDatabaseShardingAlgorithm" />
     <sharding:standard-strategy id="tableShardingStrategy" sharding-column="order_id" precise-algorithm-ref="preciseModuloTableShardingAlgorithm" />
-    
+
     <sharding:key-generator id="orderKeyGenerator" type="SNOWFLAKE" column="order_id" />
     <sharding:key-generator id="itemKeyGenerator" type="SNOWFLAKE" column="order_item_id" />
-    
+
     <sharding:data-source id="shardingDataSource">
         <sharding:sharding-rule data-source-names="ds0,ds1">
             <sharding:table-rules>
@@ -97,23 +97,23 @@ Inline expression identifier can can use `${...} ` or `$->{...}`, but the former
        xmlns:p="http://www.springframework.org/schema/p"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:master-slave="http://shardingsphere.apache.org/schema/shardingsphere/masterslave"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans 
-                        http://www.springframework.org/schema/beans/spring-beans.xsd 
-                        http://www.springframework.org/schema/context 
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                        http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://www.springframework.org/schema/context
                         http://www.springframework.org/schema/context/spring-context.xsd
-                        http://www.springframework.org/schema/tx 
+                        http://www.springframework.org/schema/tx
                         http://www.springframework.org/schema/tx/spring-tx.xsd
-                        http://shardingsphere.apache.org/schema/shardingsphere/masterslave  
+                        http://shardingsphere.apache.org/schema/shardingsphere/masterslave
                         http://shardingsphere.apache.org/schema/shardingsphere/masterslave/master-slave.xsd">
     <context:annotation-config />
-    <context:component-scan base-package="org.apache.shardingsphere.example.spring.namespace.jpa" />
-    
+    <context:component-scan base-package="org.apache.shardingsphere.example.core.jpa" />
+
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
         <property name="dataSource" ref="masterSlaveDataSource" />
         <property name="jpaVendorAdapter">
             <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" p:database="MYSQL" />
         </property>
-        <property name="packagesToScan" value="org.apache.shardingsphere.example.spring.namespace.jpa.entity" />
+        <property name="packagesToScan" value="org.apache.shardingsphere.example.core.jpa.entity" />
         <property name="jpaProperties">
             <props>
                 <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
@@ -124,40 +124,40 @@ Inline expression identifier can can use `${...} ` or `$->{...}`, but the former
     </bean>
     <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager" p:entityManagerFactory-ref="entityManagerFactory" />
     <tx:annotation-driven />
-    
+
     <bean id="ds_master" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
         <property name="url" value="jdbc:mysql://localhost:3306/ds_master" />
         <property name="username" value="root" />
         <property name="password" value="" />
     </bean>
-    
+
     <bean id="ds_slave0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
         <property name="url" value="jdbc:mysql://localhost:3306/ds_slave0" />
         <property name="username" value="root" />
         <property name="password" value="" />
     </bean>
-    
+
     <bean id="ds_slave1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
         <property name="url" value="jdbc:mysql://localhost:3306/ds_slave1" />
         <property name="username" value="root" />
         <property name="password" value="" />
     </bean>
-    
+
     <!-- 4.0.0-RC1 version load balance algorithm configuration -->
     <!-- <bean id="randomStrategy" class="org.apache.shardingsphere.example.spring.namespace.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm" /> -->
-    
+
     <!-- 4.0.0-RC2 and later version load balance algorithm configuration -->
     <master-slave:load-balance-algorithm id="randomStrategy" type="RANDOM" />
-        
+
     <master-slave:data-source id="masterSlaveDataSource" master-data-source-name="ds_master" slave-data-source-names="ds_slave0, ds_slave1" strategy-ref="randomStrategy">
-            <master-slave:props>
-                <prop key="sql.show">${sql_show}</prop>
-                <prop key="executor.size">10</prop>
-                <prop key="foo">bar</prop>
-            </master-slave:props>
+        <master-slave:props>
+            <prop key="sql.show">true</prop>
+            <prop key="executor.size">10</prop>
+            <prop key="foo">bar</prop>
+        </master-slave:props>
     </master-slave:data-source>
 </beans>
 ```
@@ -202,7 +202,7 @@ Inline expression identifier can can use `${...} ` or `$->{...}`, but the former
             </encrypt:encryptors>
         </encrypt:encrypt-rule>
         <encrypt:props>
-            <prop key="sql.show">${sql_show}</prop>
+            <prop key="sql.show">true</prop>
             <prop key="query.with.cipher.column">true</prop>
         </encrypt:props>
     </encrypt:data-source>
@@ -219,23 +219,26 @@ Inline expression identifier can can use `${...} ` or `$->{...}`, but the former
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+       xmlns:master-slave="http://shardingsphere.apache.org/schema/shardingsphere/masterslave"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
                         http://www.springframework.org/schema/beans/spring-beans.xsd
                         http://www.springframework.org/schema/context
                         http://www.springframework.org/schema/context/spring-context.xsd
                         http://www.springframework.org/schema/tx
                         http://www.springframework.org/schema/tx/spring-tx.xsd
-                        http://shardingsphere.apache.org/schema/shardingsphere/sharding 
-                        http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd">
+                        http://shardingsphere.apache.org/schema/shardingsphere/sharding
+                        http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
+                        http://shardingsphere.apache.org/schema/shardingsphere/masterslave
+                        http://shardingsphere.apache.org/schema/shardingsphere/masterslave/master-slave.xsd">
     <context:annotation-config />
-    <context:component-scan base-package="org.apache.shardingsphere.example.spring.namespace.jpa" />
-    
+    <context:component-scan base-package="org.apache.shardingsphere.example.core.jpa" />
+
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
         <property name="dataSource" ref="shardingDataSource" />
         <property name="jpaVendorAdapter">
             <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" p:database="MYSQL" />
         </property>
-        <property name="packagesToScan" value="org.apache.shardingsphere.example.spring.namespace.jpa.entity" />
+        <property name="packagesToScan" value="org.apache.shardingsphere.example.core.jpa.entity" />
         <property name="jpaProperties">
             <props>
                 <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
@@ -246,62 +249,62 @@ Inline expression identifier can can use `${...} ` or `$->{...}`, but the former
     </bean>
     <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager" p:entityManagerFactory-ref="entityManagerFactory" />
     <tx:annotation-driven />
-    
+
     <bean id="ds_master0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
         <property name="url" value="jdbc:mysql://localhost:3306/ds_master0" />
         <property name="username" value="root" />
         <property name="password" value="" />
     </bean>
-    
+
     <bean id="ds_master0_slave0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
         <property name="url" value="jdbc:mysql://localhost:3306/ds_master0_slave0" />
         <property name="username" value="root" />
         <property name="password" value="" />
     </bean>
-    
+
     <bean id="ds_master0_slave1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
         <property name="url" value="jdbc:mysql://localhost:3306/ds_master0_slave1" />
         <property name="username" value="root" />
         <property name="password" value="" />
     </bean>
-    
+
     <bean id="ds_master1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
         <property name="url" value="jdbc:mysql://localhost:3306/ds_master1" />
         <property name="username" value="root" />
         <property name="password" value="" />
     </bean>
-    
+
     <bean id="ds_master1_slave0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
         <property name="url" value="jdbc:mysql://localhost:3306/ds_master1_slave0" />
         <property name="username" value="root" />
         <property name="password" value="" />
     </bean>
-    
+
     <bean id="ds_master1_slave1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
         <property name="url" value="jdbc:mysql://localhost:3306/ds_master1_slave1" />
         <property name="username" value="root" />
         <property name="password" value="" />
     </bean>
-    
+
     <!-- 4.0.0-RC1 version load balance algorithm configuration -->
     <!-- <bean id="randomStrategy" class="org.apache.shardingsphere.example.spring.namespace.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm" /> -->
-    
+
     <!-- 4.0.0-RC2 and later version load balance algorithm configuration -->
     <master-slave:load-balance-algorithm id="randomStrategy" type="RANDOM" />
-    
+
     <sharding:inline-strategy id="databaseStrategy" sharding-column="user_id" algorithm-expression="ds_ms$->{user_id % 2}" />
     <sharding:inline-strategy id="orderTableStrategy" sharding-column="order_id" algorithm-expression="t_order$->{order_id % 2}" />
     <sharding:inline-strategy id="orderItemTableStrategy" sharding-column="order_id" algorithm-expression="t_order_item$->{order_id % 2}" />
-    
+
     <sharding:key-generator id="orderKeyGenerator" type="SNOWFLAKE" column="order_id" />
     <sharding:key-generator id="itemKeyGenerator" type="SNOWFLAKE" column="order_item_id" />
-    
+
     <sharding:data-source id="shardingDataSource">
         <sharding:sharding-rule data-source-names="ds_master0,ds_master0_slave0,ds_master0_slave1,ds_master1,ds_master1_slave0,ds_master1_slave1">
             <sharding:master-slave-rules>
@@ -331,26 +334,31 @@ Inline expression identifier can can use `${...} ` or `$->{...}`, but the former
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:p="http://www.springframework.org/schema/p"
        xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:encrypt="http://shardingsphere.apache.org/schema/shardingsphere/encrypt"
        xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:bean="http://www.springframework.org/schema/util"
        xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
                         http://www.springframework.org/schema/beans/spring-beans.xsd
-                        http://shardingsphere.apache.org/schema/shardingsphere/sharding 
+                        http://shardingsphere.apache.org/schema/shardingsphere/sharding
                         http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
                         http://www.springframework.org/schema/context
                         http://www.springframework.org/schema/context/spring-context.xsd
+                        http://shardingsphere.apache.org/schema/shardingsphere/encrypt
+                        http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd
                         http://www.springframework.org/schema/tx
-                        http://www.springframework.org/schema/tx/spring-tx.xsd">
+                        http://www.springframework.org/schema/tx/spring-tx.xsd
+                        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
     <import resource="classpath:META-INF/shardingTransaction.xml"/>
     <context:annotation-config />
-    <context:component-scan base-package="io.shardingsphere.example.repository.jpa"/>
+    <context:component-scan base-package="org.apache.shardingsphere.example.core.jpa"/>
 
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
         <property name="dataSource" ref="shardingDataSource" />
         <property name="jpaVendorAdapter">
             <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" p:database="MYSQL" />
         </property>
-        <property name="packagesToScan" value="io.shardingsphere.example.repository.jpa.entity" />
+        <property name="packagesToScan" value="org.apache.shardingsphere.example.core.jpa.entity" />
         <property name="jpaProperties">
             <props>
                 <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
@@ -361,13 +369,13 @@ Inline expression identifier can can use `${...} ` or `$->{...}`, but the former
     </bean>
     <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager" p:entityManagerFactory-ref="entityManagerFactory" />
     <tx:annotation-driven />
-    
+
     <bean id="demo_ds_0" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
         <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds_0"/>
         <property name="username" value="root"/>
         <property name="password" value=""/>
-        <property name="maxActive" value="16"/>
+        <property name="maximumPoolSize" value="16"/>
     </bean>
     
     <bean id="demo_ds_1" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
@@ -375,21 +383,21 @@ Inline expression identifier can can use `${...} ` or `$->{...}`, but the former
         <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds_1"/>
         <property name="username" value="root"/>
         <property name="password" value=""/>
-        <property name="maxActive" value="16"/>
+        <property name="maximumPoolSize" value="16"/>
     </bean>
-    
+
     <sharding:inline-strategy id="databaseStrategy" sharding-column="user_id" algorithm-expression="demo_ds_${user_id % 2}" />
     <sharding:inline-strategy id="orderTableStrategy" sharding-column="order_id" algorithm-expression="t_order_${order_id % 2}" />
     <sharding:inline-strategy id="orderItemTableStrategy" sharding-column="order_id" algorithm-expression="t_order_item_${order_id % 2}" />
     <sharding:inline-strategy id="orderEncryptTableStrategy" sharding-column="order_id" algorithm-expression="t_order_encrypt_${order_id % 2}" />
-    
+
     <sharding:key-generator id="orderKeyGenerator" type="SNOWFLAKE" column="order_id" />
     <sharding:key-generator id="itemKeyGenerator" type="SNOWFLAKE" column="order_item_id" />
-    
+
     <bean:properties id="dataProtectorProps">
         <prop key="appToken">business</prop>
     </bean:properties>
-    
+
     <sharding:data-source id="shardingDataSource">
         <sharding:sharding-rule data-source-names="demo_ds_0, demo_ds_1">
             <sharding:table-rules>
@@ -404,15 +412,20 @@ Inline expression identifier can can use `${...} ` or `$->{...}`, but the former
                     </encrypt:table>
                 </encrypt:tables>
                 <encrypt:encryptors>
-                    <encrypt:encryptor id="encryptor_aes" type="AES" props-ref="props"/>
+                    <encrypt:encryptor id="encryptor_aes" type="AES"  props-ref="props"/>
                     <encrypt:encryptor id="encryptor_md5" type="MD5" />
                 </encrypt:encryptors>
             </sharding:encrypt-rule>
+
         </sharding:sharding-rule>
+
         <sharding:props>
             <prop key="sql.show">true</prop>
         </sharding:props>
     </sharding:data-source>
+     <bean:properties id="props">
+        <prop key="aes.key.value">123456</prop>
+    </bean:properties>
 </beans>
 ```
 

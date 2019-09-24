@@ -14,29 +14,29 @@ ShardingSphere团队由项目成员和提交者组成。成员可以直接访问
 
 ### 项目管理委员会
 
-| 名字           | GithubUsername          |
+| 名字           | GitHub ID          |
 | :------------- | :---------------------- |
-| QingYang Chen  | beckhampu               |
-| Jun Zhao       | cherrylzhao             |
+| Hao Cao        | haocao                  |
 | Hongjun Du     | codefairy08             |
 | Hongtao Gao    | hanahmily               |
-| Hao Cao        | haocao                  |
-| Yang Yi        | KomachiSion             |
-| Xiaoguang Ma   | maxiaoguang64           |
-| Yongsheng Peng | peng-yongsheng          |
-| Liang Zhang    | terrymanu               |
 | Juan Pan       | tristaZero              |
-| Yonglun Zhang  | tuohai666, zhangyonglun |
-| Sheng Wu       | wu-sheng                |
+| Jun Zhao       | cherrylzhao             |
+| Liang Zhang    | terrymanu               |
 | Ling Yue       | yue530tom               |
+| QingYang Chen  | beckhampu               |
+| Sheng Wu       | wu-sheng                |
+| Xiaoguang Ma   | maxiaoguang64           |
+| Yang Yi        | KomachiSion             |
+| Yonglun Zhang  | tuohai666, zhangyonglun |
+| Yongsheng Peng | peng-yongsheng          |
 
 ### 提交者
 
-| 名字            | GithubUsername          |
-| :-------------- | :---------------------- |
-| zhaoyanan       | nancyzrh                |
-| Guangyuan Wang  | wgy8283335              |
-| Haisheng Sun    | sunbufu                 |
+| 名字             | GitHub ID          |
+| :--------------  | :---------------------- |
+| Yanan Zhao       | nancyzrh                |
+| Guangyuan Wang   | wgy8283335              |
+| Haisheng Sun     | sunbufu                 |
 
 ## 贡献者
 

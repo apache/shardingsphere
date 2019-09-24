@@ -20,6 +20,7 @@ Using orchestration requires designating a registry center, in which all the con
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
+    <version>${sharding-sphere.version}</version>
 </dependency>
 ```
 
@@ -38,7 +39,7 @@ Using orchestration requires designating a registry center, in which all the con
     OrchestrationConfiguration orchConfig = new OrchestrationConfiguration("orchestration-sharding-data-source", regConfig, false);
 
     // Get data source
-    DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig, new ConcurrentHashMap(), new Properties(), orchConfig);
+    DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig, new Properties(), orchConfig);
 ```
 
 ### Rule Configuration Based on Yaml
