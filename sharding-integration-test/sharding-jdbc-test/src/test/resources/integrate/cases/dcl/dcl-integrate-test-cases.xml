@@ -64,9 +64,6 @@
     <dcl-test-case sql-case-id="alter_local_user">
         <assertion />
     </dcl-test-case>
-    <dcl-test-case sql-case-id="alter_user">
-        <assertion />
-    </dcl-test-case>
     <dcl-test-case sql-case-id="alter_user_identified_without_hostname">
         <assertion />
     </dcl-test-case>
@@ -372,6 +369,24 @@
         <assertion />
     </dcl-test-case>
     <dcl-test-case sql-case-id="deny_user">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="deny_all">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="deny_crud">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="deny_select">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="deny_select_column">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="deny_select_to_users">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="drop_role_if_exists">
         <assertion />
     </dcl-test-case>
     <dcl-test-case sql-case-id="drop_user_without_hostname">
