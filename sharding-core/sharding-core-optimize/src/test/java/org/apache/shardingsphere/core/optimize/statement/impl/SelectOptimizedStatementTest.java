@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.core.optimize.statement.impl;
 
 import com.google.common.collect.Lists;
-import org.apache.shardingsphere.core.optimize.segment.groupby.GroupBy;
-import org.apache.shardingsphere.core.optimize.segment.item.impl.ColumnSelectItem;
-import org.apache.shardingsphere.core.optimize.segment.item.SelectItem;
-import org.apache.shardingsphere.core.optimize.segment.item.SelectItems;
-import org.apache.shardingsphere.core.optimize.segment.orderby.OrderBy;
-import org.apache.shardingsphere.core.optimize.segment.orderby.OrderByItem;
+import org.apache.shardingsphere.core.optimize.segment.select.groupby.GroupBy;
+import org.apache.shardingsphere.core.optimize.segment.select.item.impl.ColumnSelectItem;
+import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItem;
+import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItems;
+import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderBy;
+import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.core.parse.core.constant.OrderDirection;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemsSegment;

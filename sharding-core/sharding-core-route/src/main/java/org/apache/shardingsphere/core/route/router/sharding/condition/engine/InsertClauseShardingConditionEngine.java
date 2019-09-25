@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.route.router.sharding.condition.engine;
 
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.optimize.segment.InsertValue;
+import org.apache.shardingsphere.core.optimize.segment.insert.InsertValue;
 import org.apache.shardingsphere.core.optimize.statement.impl.InsertOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;

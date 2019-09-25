@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.rewrite;
 
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.optimize.segment.InsertValue;
+import org.apache.shardingsphere.core.optimize.segment.insert.InsertValue;
 import org.apache.shardingsphere.core.optimize.statement.impl.InsertOptimizedStatement;
 import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;

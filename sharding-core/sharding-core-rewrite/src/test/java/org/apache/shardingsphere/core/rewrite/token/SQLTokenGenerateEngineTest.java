@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.core.rewrite.token;
 
-import org.apache.shardingsphere.core.optimize.segment.groupby.GroupBy;
-import org.apache.shardingsphere.core.optimize.segment.item.impl.AggregationDistinctSelectItem;
-import org.apache.shardingsphere.core.optimize.segment.item.SelectItem;
-import org.apache.shardingsphere.core.optimize.segment.item.SelectItems;
-import org.apache.shardingsphere.core.optimize.segment.orderby.OrderBy;
-import org.apache.shardingsphere.core.optimize.segment.orderby.OrderByItem;
-import org.apache.shardingsphere.core.optimize.segment.pagination.Pagination;
+import org.apache.shardingsphere.core.optimize.segment.select.groupby.GroupBy;
+import org.apache.shardingsphere.core.optimize.segment.select.item.impl.AggregationDistinctSelectItem;
+import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItem;
+import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItems;
+import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderBy;
+import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderByItem;
+import org.apache.shardingsphere.core.optimize.segment.select.pagination.Pagination;
 import org.apache.shardingsphere.core.optimize.statement.impl.SelectOptimizedStatement;
 import org.apache.shardingsphere.core.parse.core.constant.AggregationType;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
