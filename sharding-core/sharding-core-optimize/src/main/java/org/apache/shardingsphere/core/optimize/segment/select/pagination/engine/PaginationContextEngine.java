@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.optimize.segment.select.pagination.engine;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItems;
+import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItemsContext;
 import org.apache.shardingsphere.core.optimize.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.top.TopSegment;
@@ -44,7 +44,7 @@ public final class PaginationContextEngine {
      * @param parameters SQL parameters
      * @return pagination context
      */
-    public PaginationContext createPaginationContext(final SelectStatement selectStatement, final SelectItems selectItems, final List<Object> parameters) {
+    public PaginationContext createPaginationContext(final SelectStatement selectStatement, final SelectItemsContext selectItems, final List<Object> parameters) {
         Optional<LimitSegment> limitSegment = selectStatement.findSQLSegment(LimitSegment.class);
         if (limitSegment.isPresent()) {
             return new LimitPaginationContextEngine().createPaginationContext(limitSegment.get(), parameters);
@@ -52,7 +52,8 @@ public final class PaginationContextEngine {
         Optional<TopSegment> topSegment = selectStatement.findSQLSegment(TopSegment.class);
         Optional<WhereSegment> whereSegment = selectStatement.findSQLSegment(WhereSegment.class);
         if (topSegment.isPresent()) {
-            return new TopPaginationContextEngine().createPaginationContext(topSegment.get(), whereSegment.isPresent() ? whereSegment.get().getAndPredicates() : Collections.<AndPredicate>emptyList(), parameters);
+            return new TopPaginationContextEngine().createPaginationContext(
+                    topSegment.get(), whereSegment.isPresent() ? whereSegment.get().getAndPredicates() : Collections.<AndPredicate>emptyList(), parameters);
         }
         if (whereSegment.isPresent()) {
             return new RowNumberPaginationContextEngine().createPaginationContext(whereSegment.get().getAndPredicates(), selectItems, parameters);

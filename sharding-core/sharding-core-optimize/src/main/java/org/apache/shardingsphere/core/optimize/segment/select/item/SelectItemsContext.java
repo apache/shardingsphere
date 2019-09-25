@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.optimize.segment.select.item;
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.optimize.segment.select.item.impl.AggregationDistinctSelectItem;
@@ -35,16 +34,15 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Select items.
+ * Select items context.
  *
  * @author zhangliang
  * @author sunbufu
  */
 @RequiredArgsConstructor
 @Getter
-@Setter
 @ToString
-public final class SelectItems {
+public final class SelectItemsContext {
     
     private final int startIndex;
     

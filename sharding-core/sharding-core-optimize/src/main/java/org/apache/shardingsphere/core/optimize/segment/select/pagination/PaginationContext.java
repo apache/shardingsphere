@@ -149,6 +149,6 @@ public final class PaginationContext {
     
     private boolean isMaxRowCount(final SelectSQLStatementContext shardingStatement) {
         return (!shardingStatement.getGroupByContext().getItems().isEmpty()
-                || !shardingStatement.getSelectItems().getAggregationSelectItems().isEmpty()) && !shardingStatement.isSameGroupByAndOrderByItems();
+                || !shardingStatement.getSelectItemsContext().getAggregationSelectItems().isEmpty()) && !shardingStatement.isSameGroupByAndOrderByItems();
     }
 }

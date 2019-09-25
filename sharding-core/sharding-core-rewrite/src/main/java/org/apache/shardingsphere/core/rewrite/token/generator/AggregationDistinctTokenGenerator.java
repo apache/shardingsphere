@@ -44,7 +44,7 @@ public final class AggregationDistinctTokenGenerator implements CollectionSQLTok
             return Collections.emptyList();
         }
         Collection<AggregationDistinctToken> result = new LinkedList<>();
-        for (AggregationDistinctSelectItem each : ((SelectSQLStatementContext) rewriteStatement.getSqlStatementContext()).getSelectItems().getAggregationDistinctSelectItems()) {
+        for (AggregationDistinctSelectItem each : ((SelectSQLStatementContext) rewriteStatement.getSqlStatementContext()).getSelectItemsContext().getAggregationDistinctSelectItems()) {
             result.add(createAggregationDistinctToken(each));
         }
         return result;

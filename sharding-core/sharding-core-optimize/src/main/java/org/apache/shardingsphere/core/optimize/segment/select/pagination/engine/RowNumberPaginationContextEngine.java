@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.optimize.segment.select.pagination.engine;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItems;
+import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItemsContext;
 import org.apache.shardingsphere.core.optimize.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
@@ -58,7 +58,7 @@ public final class RowNumberPaginationContextEngine {
      * @param parameters SQL parameters
      * @return pagination context
      */
-    public PaginationContext createPaginationContext(final Collection<AndPredicate> andPredicates, final SelectItems selectItems, final List<Object> parameters) {
+    public PaginationContext createPaginationContext(final Collection<AndPredicate> andPredicates, final SelectItemsContext selectItems, final List<Object> parameters) {
         Optional<String> rowNumberAlias = isRowNumberAlias(selectItems);
         if (!rowNumberAlias.isPresent()) {
             return new PaginationContext(null, null, parameters);
@@ -79,7 +79,7 @@ public final class RowNumberPaginationContextEngine {
         return result;
     }
     
-    private Optional<String> isRowNumberAlias(final SelectItems selectItems) {
+    private Optional<String> isRowNumberAlias(final SelectItemsContext selectItems) {
         for (String each : ROW_NUMBER_IDENTIFIERS) {
             Optional<String> result = selectItems.findAlias(each);
             if (result.isPresent()) {

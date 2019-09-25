@@ -26,8 +26,8 @@ import org.apache.shardingsphere.core.optimize.segment.select.groupby.GroupByCon
 import org.apache.shardingsphere.core.optimize.segment.select.groupby.engine.GroupByContextEngine;
 import org.apache.shardingsphere.core.optimize.segment.select.item.impl.AggregationSelectItem;
 import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItem;
-import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItems;
-import org.apache.shardingsphere.core.optimize.segment.select.item.engine.SelectItemsEngine;
+import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItemsContext;
+import org.apache.shardingsphere.core.optimize.segment.select.item.engine.SelectItemsContextEngine;
 import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.core.optimize.segment.select.orderby.engine.OrderByContextEngine;
@@ -58,19 +58,19 @@ public final class SelectSQLStatementContext extends CommonSQLStatementContext {
     
     private final OrderByContext orderByContext;
     
-    private final SelectItems selectItems;
+    private final SelectItemsContext selectItemsContext;
     
     private final PaginationContext paginationContext;
     
     private final boolean containsSubquery;
     
     // TODO to be remove, for test case only
-    public SelectSQLStatementContext(final SelectStatement sqlStatement, 
-                                     final GroupByContext groupByContext, final OrderByContext orderByContext, final SelectItems selectItems, final PaginationContext paginationContext) {
+    public SelectSQLStatementContext(final SelectStatement sqlStatement,
+                                     final GroupByContext groupByContext, final OrderByContext orderByContext, final SelectItemsContext selectItemsContext, final PaginationContext paginationContext) {
         super(sqlStatement);
         this.groupByContext = groupByContext;
         this.orderByContext = orderByContext;
-        this.selectItems = selectItems;
+        this.selectItemsContext = selectItemsContext;
         this.paginationContext = paginationContext;
         containsSubquery = containsSubquery();
     }
@@ -79,8 +79,8 @@ public final class SelectSQLStatementContext extends CommonSQLStatementContext {
         super(sqlStatement);
         groupByContext = new GroupByContextEngine().createGroupByContext(sqlStatement);
         orderByContext = new OrderByContextEngine().createOrderBy(sqlStatement, groupByContext);
-        selectItems = new SelectItemsEngine(tableMetas).createSelectItems(sql, sqlStatement, groupByContext, orderByContext);
-        paginationContext = new PaginationContextEngine().createPaginationContext(sqlStatement, selectItems, parameters);
+        selectItemsContext = new SelectItemsContextEngine(tableMetas).createSelectItemsContext(sql, sqlStatement, groupByContext, orderByContext);
+        paginationContext = new PaginationContextEngine().createPaginationContext(sqlStatement, selectItemsContext, parameters);
         containsSubquery = containsSubquery();
     }
     
@@ -106,7 +106,7 @@ public final class SelectSQLStatementContext extends CommonSQLStatementContext {
     }
     
     private void setIndexForAggregationItem(final Map<String, Integer> columnLabelIndexMap) {
-        for (AggregationSelectItem each : selectItems.getAggregationSelectItems()) {
+        for (AggregationSelectItem each : selectItemsContext.getAggregationSelectItems()) {
             Preconditions.checkState(columnLabelIndexMap.containsKey(each.getColumnLabel()), "Can't find index: %s, please add alias for aggregate selections", each);
             each.setIndex(columnLabelIndexMap.get(each.getColumnLabel()));
             for (AggregationSelectItem derived : each.getDerivedAggregationItems()) {
@@ -123,7 +123,7 @@ public final class SelectSQLStatementContext extends CommonSQLStatementContext {
                 continue;
             }
             if (each.getSegment() instanceof ColumnOrderByItemSegment && ((ColumnOrderByItemSegment) each.getSegment()).getColumn().getOwner().isPresent()) {
-                Optional<Integer> itemIndex = selectItems.findItemIndex(((ColumnOrderByItemSegment) each.getSegment()).getText());
+                Optional<Integer> itemIndex = selectItemsContext.findItemIndex(((ColumnOrderByItemSegment) each.getSegment()).getText());
                 if (itemIndex.isPresent()) {
                     each.setIndex(itemIndex.get());
                     continue;
@@ -139,11 +139,11 @@ public final class SelectSQLStatementContext extends CommonSQLStatementContext {
     }
     
     private Optional<String> getAlias(final String name) {
-        if (selectItems.isUnqualifiedShorthandItem()) {
+        if (selectItemsContext.isUnqualifiedShorthandItem()) {
             return Optional.absent();
         }
         String rawName = SQLUtil.getExactlyValue(name);
-        for (SelectItem each : selectItems.getItems()) {
+        for (SelectItem each : selectItemsContext.getItems()) {
             if (SQLUtil.getExactlyExpression(rawName).equalsIgnoreCase(SQLUtil.getExactlyExpression(SQLUtil.getExactlyValue(each.getExpression())))) {
                 return each.getAlias();
             }
@@ -166,7 +166,7 @@ public final class SelectSQLStatementContext extends CommonSQLStatementContext {
      * @return column labels
      */
     public List<String> getColumnLabels(final TableMetas tableMetas) {
-        return selectItems.getColumnLabels(tableMetas, ((SelectStatement) getSqlStatement()).getTables());
+        return selectItemsContext.getColumnLabels(tableMetas, ((SelectStatement) getSqlStatement()).getTables());
     }
     
     /**

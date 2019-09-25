@@ -78,7 +78,7 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
     private boolean aggregateCurrentGroupByRowAndNext() throws SQLException {
         boolean result = false;
         Map<AggregationSelectItem, AggregationUnit> aggregationUnitMap = Maps.toMap(
-                selectSQLStatementContext.getSelectItems().getAggregationSelectItems(), new Function<AggregationSelectItem, AggregationUnit>() {
+                selectSQLStatementContext.getSelectItemsContext().getAggregationSelectItems(), new Function<AggregationSelectItem, AggregationUnit>() {
                     
                     @Override
                     public AggregationUnit apply(final AggregationSelectItem input) {

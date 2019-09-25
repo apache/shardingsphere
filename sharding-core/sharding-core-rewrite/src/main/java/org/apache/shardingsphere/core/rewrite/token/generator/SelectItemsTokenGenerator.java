@@ -50,12 +50,12 @@ public final class SelectItemsTokenGenerator implements OptionalSQLTokenGenerato
         Collection<String> derivedItemTexts = getDerivedItemTexts((SelectSQLStatementContext) rewriteStatement.getSqlStatementContext());
         return derivedItemTexts.isEmpty() ? Optional.<SelectItemsToken>absent()
                 : Optional.of(
-                        new SelectItemsToken(((SelectSQLStatementContext) rewriteStatement.getSqlStatementContext()).getSelectItems().getStopIndex() + 1 + " ".length(), derivedItemTexts));
+                        new SelectItemsToken(((SelectSQLStatementContext) rewriteStatement.getSqlStatementContext()).getSelectItemsContext().getStopIndex() + 1 + " ".length(), derivedItemTexts));
     }
     
     private Collection<String> getDerivedItemTexts(final SelectSQLStatementContext selectSQLStatementContext) {
         Collection<String> result = new LinkedList<>();
-        for (SelectItem each : selectSQLStatementContext.getSelectItems().getItems()) {
+        for (SelectItem each : selectSQLStatementContext.getSelectItemsContext().getItems()) {
             if (each instanceof AggregationSelectItem && !((AggregationSelectItem) each).getDerivedAggregationItems().isEmpty()) {
                 result.addAll(Lists.transform(((AggregationSelectItem) each).getDerivedAggregationItems(), new Function<AggregationSelectItem, String>() {
                     

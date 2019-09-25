@@ -82,7 +82,8 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult {
             dataMap.put(groupByValue, new MemoryQueryResultRow(queryResult));
         }
         if (!aggregationMap.containsKey(groupByValue)) {
-            Map<AggregationSelectItem, AggregationUnit> map = Maps.toMap(selectSQLStatementContext.getSelectItems().getAggregationSelectItems(), new Function<AggregationSelectItem, AggregationUnit>() {
+            Map<AggregationSelectItem, AggregationUnit> map = Maps.toMap(
+                    selectSQLStatementContext.getSelectItemsContext().getAggregationSelectItems(), new Function<AggregationSelectItem, AggregationUnit>() {
                 
                 @Override
                 public AggregationUnit apply(final AggregationSelectItem input) {
@@ -94,7 +95,7 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult {
     }
     
     private void aggregate(final QueryResult queryResult, final GroupByValue groupByValue, final Map<GroupByValue, Map<AggregationSelectItem, AggregationUnit>> aggregationMap) throws SQLException {
-        for (AggregationSelectItem each : selectSQLStatementContext.getSelectItems().getAggregationSelectItems()) {
+        for (AggregationSelectItem each : selectSQLStatementContext.getSelectItemsContext().getAggregationSelectItems()) {
             List<Comparable<?>> values = new ArrayList<>(2);
             if (each.getDerivedAggregationItems().isEmpty()) {
                 values.add(getAggregationValue(queryResult, each));
@@ -115,7 +116,7 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult {
     
     private void setAggregationValueToMemoryRow(final Map<GroupByValue, MemoryQueryResultRow> dataMap, final Map<GroupByValue, Map<AggregationSelectItem, AggregationUnit>> aggregationMap) {
         for (Entry<GroupByValue, MemoryQueryResultRow> entry : dataMap.entrySet()) {
-            for (AggregationSelectItem each : selectSQLStatementContext.getSelectItems().getAggregationSelectItems()) {
+            for (AggregationSelectItem each : selectSQLStatementContext.getSelectItemsContext().getAggregationSelectItems()) {
                 entry.getValue().setCell(each.getIndex(), aggregationMap.get(entry.getKey()).get(each).getResult());
             }
         }

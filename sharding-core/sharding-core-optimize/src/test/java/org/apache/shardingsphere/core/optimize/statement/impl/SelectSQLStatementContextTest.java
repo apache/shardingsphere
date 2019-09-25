@@ -21,7 +21,7 @@ import com.google.common.collect.Lists;
 import org.apache.shardingsphere.core.optimize.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.core.optimize.segment.select.item.impl.ColumnSelectItem;
 import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItem;
-import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItems;
+import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItemsContext;
 import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.core.parse.core.constant.OrderDirection;
@@ -141,9 +141,9 @@ public final class SelectSQLStatementContextTest {
         }
     }
     
-    private SelectItems createSelectItems() {
+    private SelectItemsContext createSelectItems() {
         Collection<SelectItem> selectItems = Lists.newArrayList(getColumnSelectItemWithoutOwner(), getColumnSelectItemWithoutOwner(true), getColumnSelectItemWithoutOwner(false));
-        return new SelectItems(0, 0, true, selectItems);
+        return new SelectItemsContext(0, 0, true, selectItems);
     }
     
     private SelectItem getColumnSelectItemWithoutOwner() {

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItems;
+import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItemsContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
@@ -38,7 +38,7 @@ public final class SelectItemPrefixTokenGenerator implements OptionalSQLTokenGen
         if (!(rewriteStatement.getSqlStatementContext() instanceof SelectSQLStatementContext)) {
             return Optional.absent();
         }
-        SelectItems selectItems = ((SelectSQLStatementContext) rewriteStatement.getSqlStatementContext()).getSelectItems();
+        SelectItemsContext selectItems = ((SelectSQLStatementContext) rewriteStatement.getSqlStatementContext()).getSelectItemsContext();
         return selectItems.getAggregationDistinctSelectItems().isEmpty() ? Optional.<SelectItemPrefixToken>absent() : Optional.of(new SelectItemPrefixToken(selectItems.getStartIndex()));
     }
 }
