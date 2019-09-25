@@ -56,14 +56,24 @@ public final class ClientAuthenticationPacket extends AbstractPacket {
     private byte[] scrumbleBuff;
     
     private String authPluginName;
-
+    
+    /**
+     * Set database name.
+     *
+     * @param databaseName database name
+     */
     public void setDatabaseName(final String databaseName) {
         this.databaseName = databaseName;
         if (databaseName != null) {
             this.clientCapability |= CapabilityFlags.CLIENT_CONNECT_WITH_DB;
         }
     }
-
+    
+    /**
+     * Set auth plugin name.
+     *
+     * @param authPluginName auth plugin name
+     */
     public void setAuthPluginName(final String authPluginName) {
         this.authPluginName = authPluginName;
         if (authPluginName != null) {
