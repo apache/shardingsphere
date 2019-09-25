@@ -24,6 +24,5 @@ public class MysqlBinlogEventPacketDecoder extends ByteToMessageDecoder {
         LOGGER.info(Byte.toString(eventHeader.getTypeCode()));
         LOGGER.info("readable:{},length:{}", in.readableBytes(), eventHeader.getEventLength() - 19);
         in.readBytes(eventHeader.getEventLength() - 19);
-        return;
     }
 }
