@@ -23,15 +23,27 @@ import io.netty.buffer.ByteBuf;
 import lombok.Data;
 
 /**
+ * MySQL result set packet header.
+ *
+ * <p>
+ *     There is no define for result set packet header.
+ *
+ *     MySQL Internals Manual  /  MySQL Client/Server Protocol  /  Prepared Statements  /  Binary Protocol Resultset
+ *     https://dev.mysql.com/doc/internals/en/binary-protocol-resultset.html
+ * </p>
+ *
  * @author avalon566
+ * @author yangyi
  */
 @Data
-public class ResultSetHeaderPacket extends AbstractPacket {
+public final class ResultSetHeaderPacket extends AbstractPacket {
+    
     private long columnCount;
+    
     private long extra;
     
     @Override
-    public void fromByteBuf(ByteBuf data) {
+    public void fromByteBuf(final ByteBuf data) {
         columnCount = DataTypesCodec.readLengthCoded(data);
         if (data.readableBytes() > 0) {
             extra = DataTypesCodec.readLengthCoded(data);

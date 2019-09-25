@@ -23,18 +23,31 @@ import io.netty.buffer.ByteBuf;
 import lombok.Data;
 
 /**
+ * MySQL ERROR packet.
+ *
+ * <p>
+ *     MySQL Internals Manual  /  MySQL Client/Server Protocol  /  Overview  /  Generic Response Packets  /  ERR_Packet
+ *     https://dev.mysql.com/doc/internals/en/packet-ERR_Packet.html
+ * </p>
+ *
  * @author avalon566
+ * @author yangyi
  */
 @Data
-public class ErrorPacket extends AbstractPacket {
+public final class ErrorPacket extends AbstractPacket {
+    
     private byte fieldCount;
+    
     private int errorNumber;
+    
     private byte sqlStateMarker;
+    
     private byte[] sqlState;
+    
     private String message;
 
     @Override
-    public void fromByteBuf(ByteBuf data) {
+    public void fromByteBuf(final ByteBuf data) {
         this.fieldCount = DataTypesCodec.readByte(data);
         this.errorNumber = DataTypesCodec.readShort(data);
         this.sqlStateMarker = DataTypesCodec.readByte(data);

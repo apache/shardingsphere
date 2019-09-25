@@ -23,15 +23,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Internal Result Set.
+ *
  * @author avalon566
+ * @author yangyi
  */
 @Data
-public class InternalResultSet {
+public final class InternalResultSet {
+    
     private ResultSetHeaderPacket header;
+    
     private List<FieldPacket> fieldDescriptors = new ArrayList<>();
+    
     private List<RowDataPacket> fieldValues = new ArrayList<>();
 
-    public InternalResultSet(ResultSetHeaderPacket header) {
+    public InternalResultSet(final ResultSetHeaderPacket header) {
         this.header = header;
     }
 }

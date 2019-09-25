@@ -22,13 +22,15 @@ import io.netty.buffer.ByteBuf;
 import lombok.Data;
 
 /**
- * Binlog event header
+ * Binlog event header.
  *
- * https://github.com/mysql/mysql-server/blob/5.7/sql/log_event.h
- * +---------+---------+---------+------------+-----------+-------+
- * |timestamp|type code|server_id|event_length|end_log_pos|flags  |
- * |4 bytes  |1 byte   |4 bytes  |4 bytes     |4 bytes    |2 bytes|
- * +---------+---------+---------+------------+-----------+-------+
+ * <p>
+ *     https://github.com/mysql/mysql-server/blob/5.7/sql/log_event.h
+ *     +---------+---------+---------+------------+-----------+-------+
+ *     |timestamp|type code|server_id|event_length|end_log_pos|flags  |
+ *     |4 bytes  |1 byte   |4 bytes  |4 bytes     |4 bytes    |2 bytes|
+ *     +---------+---------+---------+------------+-----------+-------+
+ * </p>
  *
  * @author avalon566
  * @author yangyi

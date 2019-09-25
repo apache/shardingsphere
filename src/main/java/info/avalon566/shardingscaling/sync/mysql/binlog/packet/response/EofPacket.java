@@ -23,16 +23,27 @@ import io.netty.buffer.ByteBuf;
 import lombok.Data;
 
 /**
+ * MySQL EOF packet.
+ *
+ * <p>
+ *     MySQL Internals Manual  /  MySQL Client/Server Protocol  /  Overview  /  Generic Response Packets  /  EOF_Packet
+ *     https://dev.mysql.com/doc/internals/en/packet-EOF_Packet.html
+ * </p>
+ *
  * @author avalon566
+ * @author yangyi
  */
 @Data
-public class EofPacket extends AbstractPacket {
-    public byte fieldCount;
-    public int warningCount;
-    public int statusFlag;
+public final class EofPacket extends AbstractPacket {
+    
+    private byte fieldCount;
+    
+    private int warningCount;
+    
+    private int statusFlag;
 
     @Override
-    public void fromByteBuf(ByteBuf data) {
+    public void fromByteBuf(final ByteBuf data) {
         fieldCount = DataTypesCodec.readByte(data);
         warningCount = DataTypesCodec.readShort(data);
         this.statusFlag = DataTypesCodec.readShort(data);

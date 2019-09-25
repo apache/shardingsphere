@@ -23,20 +23,34 @@ import io.netty.buffer.ByteBuf;
 import lombok.Data;
 
 /**
+ * MySQL OK packet.
+ *
+ * <p>
+ *     MySQL Internals Manual  /  MySQL Client/Server Protocol  /  Overview  /  Generic Response Packets  /  OK_Packet
+ *     https://dev.mysql.com/doc/internals/en/packet-OK_Packet.html
+ * </p>
+ *
  * @author avalon566
+ * @author yangyi
  */
 @Data
-public class OkPacket extends AbstractPacket {
+public final class OkPacket extends AbstractPacket {
+    
     private byte fieldCount;
+    
     private long affectedRows;
+    
     private long insertId;
+    
     private int serverStatus;
+    
     private int warningCount;
+    
     private String message;
 
     @Override
-    public void fromByteBuf(ByteBuf data) {
-        this.fieldCount =  DataTypesCodec.readByte(data);
+    public void fromByteBuf(final ByteBuf data) {
+        this.fieldCount = DataTypesCodec.readByte(data);
         this.affectedRows = DataTypesCodec.readLengthCoded(data);
         this.insertId = DataTypesCodec.readLengthCoded(data);
         this.serverStatus = DataTypesCodec.readShort(data);

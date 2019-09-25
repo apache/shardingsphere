@@ -23,25 +23,45 @@ import io.netty.buffer.ByteBuf;
 import lombok.Data;
 
 /**
+ * MySQL field packet.
+ *
+ * <p>
+ *     MySQL Internals Manual  /  MySQL Client/Server Protocol  /  Text Protocol  /  COM_QUERY  /  COM_QUERY Response
+ *     https://dev.mysql.com/doc/internals/en/com-query-response.html#packet-Protocol::ColumnDefinition41
+ * </p>
+ *
  * @author avalon566
+ * @author yangyi
  */
 @Data
-public class FieldPacket extends AbstractPacket {
+public final class FieldPacket extends AbstractPacket {
+    
     private String catalog;
+    
     private String db;
+    
     private String table;
+    
     private String originalTable;
+    
     private String name;
+    
     private String originalName;
+    
     private int character;
+    
     private long length;
+    
     private byte type;
+    
     private int flags;
+    
     private byte decimals;
+    
     private String definition;
 
     @Override
-    public void fromByteBuf(ByteBuf data) {
+    public void fromByteBuf(final ByteBuf data) {
         catalog = DataTypesCodec.readLengthCodedString(data);
         db = DataTypesCodec.readLengthCodedString(data);
         table = DataTypesCodec.readLengthCodedString(data);

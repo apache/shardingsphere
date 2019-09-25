@@ -26,14 +26,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * MySQL row data packet.
+ *
+ * <p>
+ *     MySQL Internals Manual  /  MySQL Client/Server Protocol  /  Text Protocol  /  COM_QUERY  /  COM_QUERY Response
+ *     https://dev.mysql.com/doc/internals/en/com-query-response.html#packet-ProtocolText::ResultsetRow
+ * </p>
+ *
  * @author avalon566
+ * @author yangyi
  */
 @Data
-public class RowDataPacket extends AbstractPacket {
+public final class RowDataPacket extends AbstractPacket {
+    
     private List<String> columns = new ArrayList<>();
 
     @Override
-    public void fromByteBuf(ByteBuf data) {
+    public void fromByteBuf(final ByteBuf data) {
         while (data.isReadable()) {
             columns.add(DataTypesCodec.readLengthCodedString(data));
         }
