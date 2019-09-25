@@ -21,12 +21,24 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 /**
+ * MySQL Password Encryptor.
+ *
  * @author avalon566
+ * @author yangyi
  */
 public class MySQLPasswordEncryptor {
-    public static final byte[] scramble411(byte[] pass, byte[] seed) throws NoSuchAlgorithmException {
+    
+    /**
+     * Encrypt password.
+     *
+     * @param password password
+     * @param seed seed
+     * @return encrypted password
+     * @throws NoSuchAlgorithmException no such algorithm exception
+     */
+    public static byte[] scramble411(final byte[] password, final byte[] seed) throws NoSuchAlgorithmException {
         MessageDigest md = MessageDigest.getInstance("SHA-1");
-        byte[] pass1 = md.digest(pass);
+        byte[] pass1 = md.digest(password);
         md.reset();
         byte[] pass2 = md.digest(pass1);
         md.reset();

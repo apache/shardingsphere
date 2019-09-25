@@ -27,45 +27,61 @@ import info.avalon566.shardingscaling.sync.mysql.binlog.packet.response.ErrorPac
 import info.avalon566.shardingscaling.sync.mysql.binlog.packet.response.OkPacket;
 import info.avalon566.shardingscaling.sync.mysql.binlog.packet.response.InternalResultSet;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.*;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.util.concurrent.DefaultPromise;
 import io.netty.util.concurrent.Promise;
+import lombok.extern.slf4j.Slf4j;
 import lombok.var;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
 import java.nio.ByteOrder;
 import java.util.concurrent.ExecutionException;
 
 /**
+ * MySQL Connector.
+ *
  * @author avalon566
+ * @author yangyi
  */
+@Slf4j
 public final class MySQLConnector {
-
-    private Logger LOGGER = LoggerFactory.getLogger(MySQLConnector.class);
-
+    
     private final int serverId;
+    
     private final String host;
+    
     private final int port;
+    
     private final String username;
+    
     private final String password;
+    
     private EventLoopGroup eventLoopGroup = new NioEventLoopGroup(1);
+    
     private Channel channel;
+    
     private Promise<Object> responseCallback;
 
-    public MySQLConnector(int serverId, String host, int port, String username, String password) {
+    public MySQLConnector(final int serverId, final String host, final int port, final String username, final String password) {
         this.serverId = serverId;
         this.host = host;
         this.port = port;
         this.username = username;
         this.password = password;
     }
-
+    
+    /**
+     * Connect to MySQL.
+     */
     public synchronized void connect() {
         responseCallback = new DefaultPromise<>(eventLoopGroup.next());
         channel = new Bootstrap()
@@ -73,21 +89,22 @@ public final class MySQLConnector {
                 .channel(NioSocketChannel.class)
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
-                    protected void initChannel(SocketChannel socketChannel) {
+                    protected void initChannel(final SocketChannel socketChannel) {
                         socketChannel.pipeline().addLast(new LengthFieldBasedFrameDecoder(ByteOrder.LITTLE_ENDIAN, Integer.MAX_VALUE, 0, 3, 1, 4, true));
                         socketChannel.pipeline().addLast(MySQLLengthFieldBasedFrameEncoder.class.getSimpleName(), new MySQLLengthFieldBasedFrameEncoder());
                         socketChannel.pipeline().addLast(new MySQLCommandPacketDecoder());
                         socketChannel.pipeline().addLast(new MySQLNegotiateHandler(username, password, responseCallback));
                         socketChannel.pipeline().addLast(new ChannelInboundHandlerAdapter() {
+                            
                             @Override
-                            public void channelRead(ChannelHandlerContext ctx, Object msg) {
+                            public void channelRead(final ChannelHandlerContext ctx, final Object msg) {
                                 if (null != responseCallback) {
                                     responseCallback.setSuccess(msg);
                                 }
                             }
 
                             @Override
-                            public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+                            public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) {
                                 if (null != responseCallback) {
                                     responseCallback.setFailure(cause);
                                 }
@@ -99,32 +116,56 @@ public final class MySQLConnector {
                 .connect(host, port).channel();
         waitExpectedResponse(OkPacket.class);
     }
-
-    public synchronized boolean execute(String queryString) {
-        responseCallback = new DefaultPromise<Object>(eventLoopGroup.next());
+    
+    /**
+     * Execute command.
+     *
+     * @param queryString query string
+     * @return true if execute successfully, otherwise false
+     */
+    public synchronized boolean execute(final String queryString) {
+        responseCallback = new DefaultPromise<>(eventLoopGroup.next());
         var queryCommandPacket = new QueryCommandPacket();
         queryCommandPacket.setQueryString(queryString);
         channel.writeAndFlush(queryCommandPacket);
         return null != waitExpectedResponse(OkPacket.class);
     }
-
-    public synchronized int executeUpdate(String queryString) {
+    
+    /**
+     * Execute update.
+     *
+     * @param queryString query string
+     * @return affected rows
+     */
+    public synchronized int executeUpdate(final String queryString) {
         responseCallback = new DefaultPromise<>(eventLoopGroup.next());
         var queryCommandPacket = new QueryCommandPacket();
         queryCommandPacket.setQueryString(queryString);
         channel.writeAndFlush(queryCommandPacket);
         return (int) waitExpectedResponse(OkPacket.class).getAffectedRows();
     }
-
-    public synchronized InternalResultSet executeQuery(String queryString) {
+    
+    /**
+     * Execute query.
+     *
+     * @param queryString query string
+     * @return result set
+     */
+    public synchronized InternalResultSet executeQuery(final String queryString) {
         responseCallback = new DefaultPromise<>(eventLoopGroup.next());
         var queryCommandPacket = new QueryCommandPacket();
         queryCommandPacket.setQueryString(queryString);
         channel.writeAndFlush(queryCommandPacket);
         return waitExpectedResponse(InternalResultSet.class);
     }
-
-    public synchronized void dump(String binlogFileName, long binlogPosition) {
+    
+    /**
+     * Dump binlog.
+     *
+     * @param binlogFileName binlog file name
+     * @param binlogPosition binlog position
+     */
+    public synchronized void dump(final String binlogFileName, final long binlogPosition) {
         initDumpConnectSession();
         registerSlave();
         responseCallback = null;
@@ -152,20 +193,20 @@ public final class MySQLConnector {
     private void registerSlave() {
         responseCallback = new DefaultPromise<>(eventLoopGroup.next());
         RegisterSlaveCommandPacket cmd = new RegisterSlaveCommandPacket();
-        var localAddress = (InetSocketAddress)channel.localAddress();
-        cmd.reportHost = localAddress.getHostName();
-        cmd.reportPort = (short) localAddress.getPort();
-        cmd.reportPasswd = password;
-        cmd.reportUser = username;
-        cmd.serverId = 123456;
+        var localAddress = (InetSocketAddress) channel.localAddress();
+        cmd.setReportHost(localAddress.getHostName());
+        cmd.setReportPort((short) localAddress.getPort());
+        cmd.setReportPassword(password);
+        cmd.setReportUser(username);
+        cmd.setServerId(123456);
         channel.writeAndFlush(cmd);
         waitExpectedResponse(OkPacket.class);
     }
 
-    private <T> T waitExpectedResponse(Class<T> type) {
+    private <T> T waitExpectedResponse(final Class<T> type) {
         try {
             var response = responseCallback.get();
-            if(null == response) {
+            if (null == response) {
                 return null;
             }
             if (type.equals(response.getClass())) {
@@ -175,9 +216,7 @@ public final class MySQLConnector {
                 throw new RuntimeException(((ErrorPacket) response).getMessage());
             }
             throw new RuntimeException("unexpected response type");
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        } catch (ExecutionException e) {
+        } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
     }

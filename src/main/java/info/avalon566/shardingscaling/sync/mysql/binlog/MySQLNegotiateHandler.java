@@ -27,24 +27,29 @@ import io.netty.util.concurrent.Promise;
 import lombok.var;
 
 /**
+ * MySQL Negotiate Handler.
+ *
  * @author avalon566
+ * @author yangyi
  */
-public class MySQLNegotiateHandler extends ChannelInboundHandlerAdapter {
+public final class MySQLNegotiateHandler extends ChannelInboundHandlerAdapter {
 
     private final String username;
+    
     private final String password;
+    
     private final Promise<Object> authResultCallback;
 
-    public MySQLNegotiateHandler(String username, String password, Promise<Object> authResultCallback) {
+    public MySQLNegotiateHandler(final String username, final String password, final Promise<Object> authResultCallback) {
         this.username = username;
         this.password = password;
         this.authResultCallback = authResultCallback;
     }
 
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) {
+    public void channelRead(final ChannelHandlerContext ctx, final Object msg) {
         if (msg instanceof HandshakeInitializationPacket) {
-            var handshake = (HandshakeInitializationPacket)msg;
+            var handshake = (HandshakeInitializationPacket) msg;
             var clientAuth = new ClientAuthenticationPacket();
             clientAuth.setSequenceNumber((byte) (handshake.getSequenceNumber() + 1));
             clientAuth.setCharsetNumber((byte) 33);
@@ -63,12 +68,12 @@ public class MySQLNegotiateHandler extends ChannelInboundHandlerAdapter {
             authResultCallback.setSuccess(null);
             return;
         }
-        var error = (ErrorPacket)msg;
+        var error = (ErrorPacket) msg;
         ctx.channel().close();
         throw new RuntimeException(error.getMessage());
     }
 
-    private byte[] joinAndCreateScrumbleBuff(HandshakeInitializationPacket handshakePacket) {
+    private byte[] joinAndCreateScrumbleBuff(final HandshakeInitializationPacket handshakePacket) {
         byte[] dest = new byte[handshakePacket.getScramble().length + handshakePacket.getRestOfScramble().length];
         System.arraycopy(handshakePacket.getScramble(), 0, dest, 0, handshakePacket.getScramble().length);
         System.arraycopy(handshakePacket.getRestOfScramble(),
