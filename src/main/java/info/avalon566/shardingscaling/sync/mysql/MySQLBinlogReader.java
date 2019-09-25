@@ -37,19 +37,23 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.Serializable;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
+ * MySQL binlog reader.
+ *
  * @author avalon566
+ * @author yangyi
  */
-public class MySQLBinlogReader extends AbstractRunner implements Reader {
+public final class MySQLBinlogReader extends AbstractRunner implements Reader {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(MySQLBinlogReader.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MySQLBinlogReader.class);
 
-    private final HashMap<Long, String> tableMapCache = new HashMap<>();
+    private final Map<Long, String> tableMapCache = new HashMap<>();
 
     private final BinlogPosition binlogPosition = new BinlogPosition();
 
@@ -60,7 +64,7 @@ public class MySQLBinlogReader extends AbstractRunner implements Reader {
     @Setter
     private Channel channel;
 
-    public MySQLBinlogReader(RdbmsConfiguration rdbmsConfiguration) {
+    public MySQLBinlogReader(final RdbmsConfiguration rdbmsConfiguration) {
         this.rdbmsConfiguration = rdbmsConfiguration;
         this.dbMetaDataUtil = new DbMetaDataUtil(rdbmsConfiguration);
     }
@@ -70,7 +74,10 @@ public class MySQLBinlogReader extends AbstractRunner implements Reader {
         start();
         read(channel);
     }
-
+    
+    /**
+     * mark binlog position.
+     */
     public void markPosition() {
         try {
             try (var connection = DriverManager.getConnection(rdbmsConfiguration.getJdbcUrl(), rdbmsConfiguration.getUsername(), rdbmsConfiguration.getPassword())) {
@@ -84,7 +91,7 @@ public class MySQLBinlogReader extends AbstractRunner implements Reader {
                 rs.next();
                 binlogPosition.setServerId(rs.getString(2));
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             throw new RuntimeException("markPosition error", e);
         }
     }
@@ -99,7 +106,7 @@ public class MySQLBinlogReader extends AbstractRunner implements Reader {
         client.setEventDeserializer(eventDeserializer);
         client.registerEventListener(new BinaryLogClient.EventListener() {
             @Override
-            public void onEvent(Event event) {
+            public void onEvent(final Event event) {
                 if (null != event.getData()) {
                     if (event.getData() instanceof WriteRowsEventData) {
                         var wred = (WriteRowsEventData) event.getData();
@@ -154,21 +161,21 @@ public class MySQLBinlogReader extends AbstractRunner implements Reader {
         });
         try {
             client.connect();
-        } catch (Exception ex) {
+        } catch (IOException ex) {
             // retry
         }
     }
 
     @Override
-    public List<RdbmsConfiguration> split(int concurrency) {
+    public List<RdbmsConfiguration> split(final int concurrency) {
         return Arrays.asList(rdbmsConfiguration);
     }
 
-    private boolean filter(String database, String fullTableName) {
+    private boolean filter(final String database, final String fullTableName) {
         return !fullTableName.startsWith(database);
     }
 
-    private Object getColumnValue(String tableName, int index, Serializable data) {
+    private Object getColumnValue(final String tableName, final int index, final Serializable data) {
         var columns = dbMetaDataUtil.getColumNames(tableName);
         try {
             var type = columns.get(index).getColumnTypeName();

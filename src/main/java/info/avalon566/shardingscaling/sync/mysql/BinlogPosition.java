@@ -20,11 +20,17 @@ package info.avalon566.shardingscaling.sync.mysql;
 import lombok.Data;
 
 /**
+ * Binlog Position.
+ *
  * @author avalon566
+ * @author yangyi
  */
 @Data
 public class BinlogPosition {
+    
     private String serverId;
+    
     private String filename;
+    
     private long position;
 }

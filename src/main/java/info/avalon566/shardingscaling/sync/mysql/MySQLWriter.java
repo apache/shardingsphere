@@ -21,11 +21,14 @@ import info.avalon566.shardingscaling.sync.core.RdbmsConfiguration;
 import info.avalon566.shardingscaling.sync.jdbc.AbstractJdbcWriter;
 
 /**
+ * MySQL writer.
+ *
  * @author avalon566
+ * @author yangyi
  */
 public class MySQLWriter extends AbstractJdbcWriter {
 
-    public MySQLWriter(RdbmsConfiguration rdbmsConfiguration) {
+    public MySQLWriter(final RdbmsConfiguration rdbmsConfiguration) {
         super(rdbmsConfiguration);
     }
 }

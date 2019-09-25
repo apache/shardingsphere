@@ -23,7 +23,7 @@ import info.avalon566.shardingscaling.job.schedule.EventType;
 import info.avalon566.shardingscaling.job.schedule.Reporter;
 import info.avalon566.shardingscaling.job.schedule.standalone.InProcessScheduler;
 import info.avalon566.shardingscaling.sync.jdbc.DbMetaDataUtil;
-import info.avalon566.shardingscaling.sync.mysql.MySQLReader;
+import info.avalon566.shardingscaling.sync.mysql.MySQLJdbcReader;
 import lombok.var;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,7 +57,7 @@ public class HistoryDataSyncer {
             var readerConfig = syncConfiguration.getReaderConfiguration().clone();
             readerConfig.setTableName(tableName);
             // split by primary key range
-            for(var sliceConfig : new MySQLReader(readerConfig).split(syncConfiguration.getConcurrency())) {
+            for(var sliceConfig : new MySQLJdbcReader(readerConfig).split(syncConfiguration.getConcurrency())) {
                 syncConfigurations.add(new SyncConfiguration(SyncType.TableSlice, syncConfiguration.getConcurrency(),
                         sliceConfig, syncConfiguration.getWriterConfiguration().clone()));
             }

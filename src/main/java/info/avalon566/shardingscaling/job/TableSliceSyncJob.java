@@ -23,7 +23,7 @@ import info.avalon566.shardingscaling.job.schedule.EventType;
 import info.avalon566.shardingscaling.job.schedule.Reporter;
 import info.avalon566.shardingscaling.sync.core.SyncExecutor;
 import info.avalon566.shardingscaling.sync.core.Writer;
-import info.avalon566.shardingscaling.sync.mysql.MySQLReader;
+import info.avalon566.shardingscaling.sync.mysql.MySQLJdbcReader;
 import info.avalon566.shardingscaling.sync.mysql.MySQLWriter;
 import lombok.var;
 import org.slf4j.Logger;
@@ -48,7 +48,7 @@ public class TableSliceSyncJob {
     }
 
     public void run() {
-        var reader = new MySQLReader(syncConfiguration.getReaderConfiguration());
+        var reader = new MySQLJdbcReader(syncConfiguration.getReaderConfiguration());
         var writer = new MySQLWriter(syncConfiguration.getWriterConfiguration());
         final var executor = new SyncExecutor(reader, Arrays.<Writer>asList(writer));
         executor.run();
