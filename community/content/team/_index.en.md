@@ -7,7 +7,14 @@ chapter = true
 # ShardingSphere Team
 
 The ShardingSphere team is comprised of Members and Contributors. Members have direct access to the source of ShardingSphere project and actively evolve the code-base. Contributors improve the project through submission of patches and suggestions to the Members. The number of Contributors to the project is unbounded. All contributions to ShardingSphere are greatly appreciated, whether it's contributing code, solving issues, answering questions, or modifying supplementary documents. Before becoming a contributor, please read the [Contributors’ Guide](https://shardingsphere.apache.org/community/en/contribute/contributor/) and the [Code of Conduct](https://shardingsphere.apache.org/community/en/contribute/code-conduct/). If you want to be a committer , please read [Committers’ Guide](https://shardingsphere.apache.org/community/en/contribute/committer/). Thank you for attend ShardingSphere.
+## Mentors
 
+| Name                    | GitHub ID               |
+| :-------------          | :---------------------- |
+| Benjamin Hindman        |                         |
+| Craig L Russell         | craiglrussell, clr      |
+| vongosling              | vongosling               |
+| Willem Ning Jiang       | WillemJiang              |
 ## Members
 
 Members include Project Management Committee members and committers. The List in alphabet order.
@@ -32,12 +39,12 @@ Members include Project Management Committee members and committers. The List in
 
 ### Committer
 
-| Name           | GithubUsername          |
-| :------------- | :---------------------- |
-| Yanan Zhao     | nancyzrh                |
-| Guangyuan Wang | wgy8283335              |
-| Haisheng Sun   | sunbufu                 |
-| Qi Wang        | wqzwh                   |
+| Name            | GitHub ID               |
+| :-------------  | :---------------------- |
+| Guangyuan Wang  | wgy8283335              |
+| Haisheng Sun    | sunbufu                 |
+| Qi Wang         | wqzwh                   |
+| Yanan Zhao      | nancyzrh                |
 
 ## Contributors
 
