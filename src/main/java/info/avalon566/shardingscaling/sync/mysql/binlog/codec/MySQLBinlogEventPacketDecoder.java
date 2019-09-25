@@ -1,6 +1,6 @@
 package info.avalon566.shardingscaling.sync.mysql.binlog.codec;
 
-import info.avalon566.shardingscaling.sync.mysql.binlog.packet.binlog.EventHeader;
+import info.avalon566.shardingscaling.sync.mysql.binlog.packet.binlog.BinlogEventHeader;
 import lombok.extern.slf4j.Slf4j;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -20,7 +20,7 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
     @Override
     protected void decode(final ChannelHandlerContext ctx, final ByteBuf in, final List<Object> out) {
         in.readByte();
-        EventHeader eventHeader = new EventHeader();
+        BinlogEventHeader eventHeader = new BinlogEventHeader();
         eventHeader.fromBytes(in);
         log.info(Byte.toString(eventHeader.getTypeCode()));
         log.info("readable:{},length:{}", in.readableBytes(), eventHeader.getEventLength() - 19);

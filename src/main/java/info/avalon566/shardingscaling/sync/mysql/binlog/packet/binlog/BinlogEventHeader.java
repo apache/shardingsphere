@@ -5,23 +5,33 @@ import io.netty.buffer.ByteBuf;
 import lombok.Data;
 
 /**
- * @author avalon566
+ * Binlog event header
+ *
  * https://github.com/mysql/mysql-server/blob/5.7/sql/log_event.h
  * +---------+---------+---------+------------+-----------+-------+
  * |timestamp|type code|server_id|event_length|end_log_pos|flags  |
  * |4 bytes  |1 byte   |4 bytes  |4 bytes     |4 bytes    |2 bytes|
  * +---------+---------+---------+------------+-----------+-------+
+ *
+ * @author avalon566
+ * @author yangyi
  */
 @Data
-public class EventHeader {
+public final class BinlogEventHeader {
+    
     private int timeStamp;
+    
     private byte typeCode;
+    
     private int serverId;
+    
     private int eventLength;
+    
     private int endLogPos;
+    
     private short flags;
 
-    public void fromBytes(ByteBuf data) {
+    public void fromBytes(final ByteBuf data) {
         timeStamp = DataTypesCodec.readInt(data);
         typeCode = DataTypesCodec.readByte(data);
         serverId = DataTypesCodec.readInt(data);
