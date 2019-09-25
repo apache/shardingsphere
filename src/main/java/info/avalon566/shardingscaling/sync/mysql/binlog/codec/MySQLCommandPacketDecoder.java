@@ -11,13 +11,13 @@ import lombok.var;
 import java.util.List;
 
 /**
- * MySQL Command Packet decoder
+ * MySQL Command Packet decoder.
  *
  * @author avalon566
  * @author yangyi
  */
 @Slf4j
-public class MySQLCommandPacketDecoder extends ByteToMessageDecoder {
+public final class MySQLCommandPacketDecoder extends ByteToMessageDecoder {
     
     private enum States {Initiate, ResponsePacket, FieldPacket, RowDataPacket}
     
@@ -26,7 +26,7 @@ public class MySQLCommandPacketDecoder extends ByteToMessageDecoder {
     private InternalResultSet internalResultSet = null;
 
     @Override
-    protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) {
+    protected void decode(final ChannelHandlerContext ctx, final ByteBuf in, final List<Object> out) {
         // first packet from server is handshake initialization packet
         if (States.Initiate.equals(currentState)) {
             out.add(decodeHandshakeInitializationPacket(in));

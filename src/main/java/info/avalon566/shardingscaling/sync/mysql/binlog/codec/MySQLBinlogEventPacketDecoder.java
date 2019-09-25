@@ -1,28 +1,29 @@
 package info.avalon566.shardingscaling.sync.mysql.binlog.codec;
 
 import info.avalon566.shardingscaling.sync.mysql.binlog.packet.binlog.EventHeader;
+import lombok.extern.slf4j.Slf4j;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 /**
+ * MySQL binlog event packet decoder.
+ *
  * @author avalon566
+ * @author yangyi
  */
-public class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
-
-    private Logger LOGGER = LoggerFactory.getLogger(MySQLBinlogEventPacketDecoder.class);
-
+@Slf4j
+public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
+    
     @Override
-    protected void decode(ChannelHandlerContext ctx, ByteBuf in, List out) {
+    protected void decode(final ChannelHandlerContext ctx, final ByteBuf in, final List<Object> out) {
         in.readByte();
         EventHeader eventHeader = new EventHeader();
         eventHeader.fromBytes(in);
-        LOGGER.info(Byte.toString(eventHeader.getTypeCode()));
-        LOGGER.info("readable:{},length:{}", in.readableBytes(), eventHeader.getEventLength() - 19);
+        log.info(Byte.toString(eventHeader.getTypeCode()));
+        log.info("readable:{},length:{}", in.readableBytes(), eventHeader.getEventLength() - 19);
         in.readBytes(eventHeader.getEventLength() - 19);
     }
 }
