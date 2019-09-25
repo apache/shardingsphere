@@ -23,13 +23,13 @@ import lombok.RequiredArgsConstructor;
 import java.util.Collection;
 
 /**
- * Order by.
+ * Order by context.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-public final class OrderBy {
+public final class OrderByContext {
     
     private final Collection<OrderByItem> items;
     

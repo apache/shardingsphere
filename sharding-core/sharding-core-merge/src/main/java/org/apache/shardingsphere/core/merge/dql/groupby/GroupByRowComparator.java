@@ -43,8 +43,8 @@ public final class GroupByRowComparator implements Comparator<MemoryQueryResultR
     
     @Override
     public int compare(final MemoryQueryResultRow o1, final MemoryQueryResultRow o2) {
-        if (!selectSQLStatementContext.getOrderBy().getItems().isEmpty()) {
-            return compare(o1, o2, selectSQLStatementContext.getOrderBy().getItems());
+        if (!selectSQLStatementContext.getOrderByContext().getItems().isEmpty()) {
+            return compare(o1, o2, selectSQLStatementContext.getOrderByContext().getItems());
         }
         return compare(o1, o2, selectSQLStatementContext.getGroupByContext().getItems());
     }

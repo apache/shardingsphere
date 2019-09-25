@@ -30,7 +30,7 @@ import org.apache.shardingsphere.core.optimize.segment.select.item.impl.Shorthan
 import org.apache.shardingsphere.core.optimize.segment.select.item.impl.DerivedSelectItem;
 import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.core.optimize.segment.select.groupby.GroupByContext;
-import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderBy;
+import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrderByItemSegment;
@@ -61,16 +61,16 @@ public final class SelectItemsEngine {
      * @param sql SQL
      * @param selectStatement SQL statement
      * @param groupByContext group by context
-     * @param orderBy order by context
+     * @param orderByContext order by context
      * @return select items
      */
-    public SelectItems createSelectItems(final String sql, final SelectStatement selectStatement, final GroupByContext groupByContext, final OrderBy orderBy) {
+    public SelectItems createSelectItems(final String sql, final SelectStatement selectStatement, final GroupByContext groupByContext, final OrderByContext orderByContext) {
         SelectItemsSegment selectItemsSegment = selectStatement.getSelectItems();
         Collection<SelectItem> items = getSelectItemList(sql, selectItemsSegment);
         SelectItems result = new SelectItems(selectItemsSegment.getStartIndex(), selectItemsSegment.getStopIndex(), selectItemsSegment.isDistinctRow(), items);
         TablesContext tablesContext = new TablesContext(selectStatement);
         result.getItems().addAll(getDerivedGroupByColumns(tablesContext, items, groupByContext));
-        result.getItems().addAll(getDerivedOrderByColumns(tablesContext, items, orderBy));
+        result.getItems().addAll(getDerivedOrderByColumns(tablesContext, items, orderByContext));
         return result;
     }
     
@@ -89,8 +89,8 @@ public final class SelectItemsEngine {
         return getDerivedOrderColumns(tablesContext, selectItems, groupByContext.getItems(), DerivedColumn.GROUP_BY_ALIAS);
     }
     
-    private Collection<SelectItem> getDerivedOrderByColumns(final TablesContext tablesContext, final Collection<SelectItem> selectItems, final OrderBy orderBy) {
-        return getDerivedOrderColumns(tablesContext, selectItems, orderBy.getItems(), DerivedColumn.ORDER_BY_ALIAS);
+    private Collection<SelectItem> getDerivedOrderByColumns(final TablesContext tablesContext, final Collection<SelectItem> selectItems, final OrderByContext orderByContext) {
+        return getDerivedOrderColumns(tablesContext, selectItems, orderByContext.getItems(), DerivedColumn.ORDER_BY_ALIAS);
     }
     
     private Collection<SelectItem> getDerivedOrderColumns(final TablesContext tablesContext, 

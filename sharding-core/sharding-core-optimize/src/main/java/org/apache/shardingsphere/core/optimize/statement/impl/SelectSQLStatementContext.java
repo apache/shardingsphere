@@ -28,9 +28,9 @@ import org.apache.shardingsphere.core.optimize.segment.select.item.impl.Aggregat
 import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItem;
 import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItems;
 import org.apache.shardingsphere.core.optimize.segment.select.item.engine.SelectItemsEngine;
-import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderBy;
+import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderByItem;
-import org.apache.shardingsphere.core.optimize.segment.select.orderby.engine.OrderByEngine;
+import org.apache.shardingsphere.core.optimize.segment.select.orderby.engine.OrderByContextEngine;
 import org.apache.shardingsphere.core.optimize.segment.select.pagination.Pagination;
 import org.apache.shardingsphere.core.optimize.segment.select.pagination.engine.PaginationEngine;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrderByItemSegment;
@@ -56,7 +56,7 @@ public final class SelectSQLStatementContext extends CommonSQLStatementContext {
     
     private final GroupByContext groupByContext;
     
-    private final OrderBy orderBy;
+    private final OrderByContext orderByContext;
     
     private final SelectItems selectItems;
     
@@ -65,10 +65,11 @@ public final class SelectSQLStatementContext extends CommonSQLStatementContext {
     private final boolean containsSubquery;
     
     // TODO to be remove, for test case only
-    public SelectSQLStatementContext(final SelectStatement sqlStatement, final GroupByContext groupByContext, final OrderBy orderBy, final SelectItems selectItems, final Pagination pagination) {
+    public SelectSQLStatementContext(final SelectStatement sqlStatement, 
+                                     final GroupByContext groupByContext, final OrderByContext orderByContext, final SelectItems selectItems, final Pagination pagination) {
         super(sqlStatement);
         this.groupByContext = groupByContext;
-        this.orderBy = orderBy;
+        this.orderByContext = orderByContext;
         this.selectItems = selectItems;
         this.pagination = pagination;
         containsSubquery = containsSubquery();
@@ -76,10 +77,10 @@ public final class SelectSQLStatementContext extends CommonSQLStatementContext {
     
     public SelectSQLStatementContext(final TableMetas tableMetas, final String sql, final List<Object> parameters, final SelectStatement sqlStatement) {
         super(sqlStatement);
-        this.groupByContext = new GroupByContextEngine().createGroupByContext(sqlStatement);
-        this.orderBy = new OrderByEngine().createOrderBy(sqlStatement, groupByContext);
-        this.selectItems = new SelectItemsEngine(tableMetas).createSelectItems(sql, sqlStatement, groupByContext, orderBy);
-        this.pagination = new PaginationEngine().createPagination(sqlStatement, selectItems, parameters);
+        groupByContext = new GroupByContextEngine().createGroupByContext(sqlStatement);
+        orderByContext = new OrderByContextEngine().createOrderBy(sqlStatement, groupByContext);
+        selectItems = new SelectItemsEngine(tableMetas).createSelectItems(sql, sqlStatement, groupByContext, orderByContext);
+        pagination = new PaginationEngine().createPagination(sqlStatement, selectItems, parameters);
         containsSubquery = containsSubquery();
     }
     
@@ -100,7 +101,7 @@ public final class SelectSQLStatementContext extends CommonSQLStatementContext {
      */
     public void setIndexForItems(final Map<String, Integer> columnLabelIndexMap) {
         setIndexForAggregationItem(columnLabelIndexMap);
-        setIndexForOrderItem(columnLabelIndexMap, orderBy.getItems());
+        setIndexForOrderItem(columnLabelIndexMap, orderByContext.getItems());
         setIndexForOrderItem(columnLabelIndexMap, groupByContext.getItems());
     }
     
@@ -174,6 +175,6 @@ public final class SelectSQLStatementContext extends CommonSQLStatementContext {
      * @return group by and order by sequence is same or not
      */
     public boolean isSameGroupByAndOrderByItems() {
-        return !groupByContext.getItems().isEmpty() && groupByContext.getItems().equals(orderBy.getItems());
+        return !groupByContext.getItems().isEmpty() && groupByContext.getItems().equals(orderByContext.getItems());
     }
 }

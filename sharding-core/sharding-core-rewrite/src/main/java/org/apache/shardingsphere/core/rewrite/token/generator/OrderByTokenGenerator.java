@@ -41,7 +41,7 @@ public final class OrderByTokenGenerator implements OptionalSQLTokenGenerator<Sh
         if (!(rewriteStatement.getSqlStatementContext() instanceof SelectSQLStatementContext)) {
             return Optional.absent();
         }
-        if (((SelectSQLStatementContext) rewriteStatement.getSqlStatementContext()).getOrderBy().isGenerated()) {
+        if (((SelectSQLStatementContext) rewriteStatement.getSqlStatementContext()).getOrderByContext().isGenerated()) {
             return Optional.of(createOrderByToken((SelectSQLStatementContext) rewriteStatement.getSqlStatementContext()));
         }
         return Optional.absent();
@@ -50,7 +50,7 @@ public final class OrderByTokenGenerator implements OptionalSQLTokenGenerator<Sh
     private OrderByToken createOrderByToken(final SelectSQLStatementContext selectSQLStatementContext) {
         OrderByToken result = new OrderByToken(selectSQLStatementContext.getGroupByContext().getLastIndex() + 1);
         String columnLabel;
-        for (OrderByItem each : selectSQLStatementContext.getOrderBy().getItems()) {
+        for (OrderByItem each : selectSQLStatementContext.getOrderByContext().getItems()) {
             if (each.getSegment() instanceof ColumnOrderByItemSegment) {
                 ColumnOrderByItemSegment columnOrderByItemSegment = (ColumnOrderByItemSegment) each.getSegment();
                 QuoteCharacter quoteCharacter = columnOrderByItemSegment.getColumn().getQuoteCharacter();

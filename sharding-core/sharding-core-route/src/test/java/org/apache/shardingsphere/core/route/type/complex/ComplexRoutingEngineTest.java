@@ -21,7 +21,7 @@ import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.optimize.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItem;
 import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItems;
-import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderBy;
+import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.core.optimize.segment.select.pagination.Pagination;
 import org.apache.shardingsphere.core.optimize.statement.impl.SelectSQLStatementContext;
@@ -47,7 +47,7 @@ public final class ComplexRoutingEngineTest extends AbstractRoutingEngineTest {
     public void assertRoutingForBindingTables() {
         ShardingRule shardingRule = createBindingShardingRule();
         SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(),
-                new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
+                new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderByContext(Collections.<OrderByItem>emptyList(), false), 
                 new SelectItems(0, 0, false, Collections.<SelectItem>emptyList()),
                 new Pagination(null, null, Collections.emptyList()));
         ComplexRoutingEngine complexRoutingEngine = new ComplexRoutingEngine(shardingRule, Arrays.asList("t_order", "t_order_item"), selectSQLStatementContext, createShardingConditions("t_order"));
@@ -65,7 +65,7 @@ public final class ComplexRoutingEngineTest extends AbstractRoutingEngineTest {
     public void assertRoutingForShardingTableJoinBroadcastTable() {
         ShardingRule shardingRule = createBroadcastShardingRule();
         SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(),
-                new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
+                new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderByContext(Collections.<OrderByItem>emptyList(), false), 
                 new SelectItems(0, 0, false, Collections.<SelectItem>emptyList()),
                 new Pagination(null, null, Collections.emptyList()));
         ComplexRoutingEngine complexRoutingEngine = new ComplexRoutingEngine(shardingRule, Arrays.asList("t_order", "t_config"), selectSQLStatementContext, createShardingConditions("t_order"));

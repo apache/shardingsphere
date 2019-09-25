@@ -22,7 +22,7 @@ import org.apache.shardingsphere.core.optimize.segment.select.groupby.GroupByCon
 import org.apache.shardingsphere.core.optimize.segment.select.item.impl.ColumnSelectItem;
 import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItem;
 import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItems;
-import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderBy;
+import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.core.parse.core.constant.OrderDirection;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
@@ -61,7 +61,7 @@ public final class SelectSQLStatementContextTest {
         SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(
                 new SelectStatement(), new GroupByContext(Collections.<OrderByItem>emptyList(), 0), createOrderBy(INDEX_ORDER_BY), createSelectItems(), null);
         selectSQLStatementContext.setIndexForItems(Collections.<String, Integer>emptyMap());
-        assertThat(selectSQLStatementContext.getOrderBy().getItems().iterator().next().getIndex(), is(4));
+        assertThat(selectSQLStatementContext.getOrderByContext().getItems().iterator().next().getIndex(), is(4));
     }
     
     @Test
@@ -69,7 +69,7 @@ public final class SelectSQLStatementContextTest {
         SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(
                 new SelectStatement(), new GroupByContext(Collections.<OrderByItem>emptyList(), 0), createOrderBy(COLUMN_ORDER_BY_WITH_OWNER), createSelectItems(), null);
         selectSQLStatementContext.setIndexForItems(Collections.<String, Integer>emptyMap());
-        assertThat(selectSQLStatementContext.getOrderBy().getItems().iterator().next().getIndex(), is(1));
+        assertThat(selectSQLStatementContext.getOrderByContext().getItems().iterator().next().getIndex(), is(1));
     }
     
     @Test
@@ -79,7 +79,7 @@ public final class SelectSQLStatementContextTest {
         Map<String, Integer> columnLabelIndexMap = new HashMap<>();
         columnLabelIndexMap.put("n", 2);
         selectSQLStatementContext.setIndexForItems(columnLabelIndexMap);
-        assertThat(selectSQLStatementContext.getOrderBy().getItems().iterator().next().getIndex(), is(2));
+        assertThat(selectSQLStatementContext.getOrderByContext().getItems().iterator().next().getIndex(), is(2));
     }
     
     @Test
@@ -89,7 +89,7 @@ public final class SelectSQLStatementContextTest {
         Map<String, Integer> columnLabelIndexMap = new HashMap<>();
         columnLabelIndexMap.put("id", 3);
         selectSQLStatementContext.setIndexForItems(columnLabelIndexMap);
-        assertThat(selectSQLStatementContext.getOrderBy().getItems().iterator().next().getIndex(), is(3));
+        assertThat(selectSQLStatementContext.getOrderByContext().getItems().iterator().next().getIndex(), is(3));
     }
     
     @Test
@@ -120,10 +120,10 @@ public final class SelectSQLStatementContextTest {
         assertFalse(selectSQLStatementContext.isSameGroupByAndOrderByItems());
     }
     
-    private OrderBy createOrderBy(final String type) {
+    private OrderByContext createOrderBy(final String type) {
         OrderByItemSegment orderByItemSegment = createOrderByItemSegment(type);
         OrderByItem orderByItem = new OrderByItem(orderByItemSegment);
-        return new OrderBy(Lists.newArrayList(orderByItem), true);
+        return new OrderByContext(Lists.newArrayList(orderByItem), true);
     }
     
     private OrderByItemSegment createOrderByItemSegment(final String type) {
