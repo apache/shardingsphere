@@ -15,14 +15,20 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.sync.core;
+package info.avalon566.shardingscaling.sync.mysql;
+
+import info.avalon566.shardingscaling.sync.core.RdbmsConfiguration;
+import info.avalon566.shardingscaling.sync.jdbc.AbstractJdbcWriter;
 
 /**
+ * MySQL writer.
+ *
  * @author avalon566
+ * @author yangyi
  */
-public interface Writer extends Runner {
+public class MySQLWriter extends AbstractJdbcWriter {
 
-    void setChannel(Channel channel);
-
-    void write(Channel channel);
+    public MySQLWriter(final RdbmsConfiguration rdbmsConfiguration) {
+        super(rdbmsConfiguration);
+    }
 }
