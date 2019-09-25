@@ -24,13 +24,16 @@ import io.netty.buffer.ByteBufAllocator;
 import lombok.Data;
 import lombok.var;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 /**
+ * Mysql Query command packet.
+ *
  * @author avalon566
+ * @author yangyi
  */
 @Data
-public class QueryCommandPacket extends AbstractCommandPacket {
+public final class QueryCommandPacket extends AbstractCommandPacket {
 
     private String queryString;
 
@@ -42,11 +45,7 @@ public class QueryCommandPacket extends AbstractCommandPacket {
     public ByteBuf toByteBuf() {
         var out = ByteBufAllocator.DEFAULT.heapBuffer();
         DataTypesCodec.writeByte(getCommand(), out);
-        try {
-            DataTypesCodec.writeBytes(getQueryString().getBytes("UTF-8"), out);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+        DataTypesCodec.writeBytes(getQueryString().getBytes(StandardCharsets.UTF_8), out);
         return out;
     }
 }

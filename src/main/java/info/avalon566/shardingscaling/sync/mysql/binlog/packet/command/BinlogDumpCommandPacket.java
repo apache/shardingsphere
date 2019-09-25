@@ -26,13 +26,20 @@ import lombok.Data;
 import lombok.var;
 
 /**
+ * MySQL binlog dump command packet.
+ *
  * @author avalon566
+ * @author yangyi
  */
 @Data
-public class BinlogDumpCommandPacket extends AbstractCommandPacket {
+public final class BinlogDumpCommandPacket extends AbstractCommandPacket {
+    
     private static final int BINLOG_SEND_ANNOTATE_ROWS_EVENT = 2;
+    
     private long binlogPosition;
+    
     private int slaveServerId;
+    
     private String binlogFileName;
 
     public BinlogDumpCommandPacket() {
@@ -41,17 +48,17 @@ public class BinlogDumpCommandPacket extends AbstractCommandPacket {
 
     @Override
     public ByteBuf toByteBuf() {
-        var out = ByteBufAllocator.DEFAULT.heapBuffer();
-        DataTypesCodec.writeByte(getCommand(), out);
-        DataTypesCodec.writeInt((int) binlogPosition, out);
+        var result = ByteBufAllocator.DEFAULT.heapBuffer();
+        DataTypesCodec.writeByte(getCommand(), result);
+        DataTypesCodec.writeInt((int) binlogPosition, result);
         byte binlogFlags = 0;
         binlogFlags |= BINLOG_SEND_ANNOTATE_ROWS_EVENT;
-        DataTypesCodec.writeByte(binlogFlags, out);
-        DataTypesCodec.writeByte((byte) 0x00, out);
-        DataTypesCodec.writeInt(this.slaveServerId, out);
+        DataTypesCodec.writeByte(binlogFlags, result);
+        DataTypesCodec.writeByte((byte) 0x00, result);
+        DataTypesCodec.writeInt(this.slaveServerId, result);
         if (!Strings.isNullOrEmpty(this.binlogFileName)) {
-            DataTypesCodec.writeBytes(this.binlogFileName.getBytes(), out);
+            DataTypesCodec.writeBytes(this.binlogFileName.getBytes(), result);
         }
-        return out;
+        return result;
     }
 }

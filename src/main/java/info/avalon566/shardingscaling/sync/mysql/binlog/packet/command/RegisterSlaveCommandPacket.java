@@ -25,15 +25,23 @@ import lombok.Data;
 import lombok.var;
 
 /**
+ * Register salve command packet.
+ *
  * @author avalon566
+ * @author yangyi
  */
 @Data
-public class RegisterSlaveCommandPacket extends AbstractCommandPacket {
-    public String reportHost;
-    public short reportPort;
-    public String reportUser;
-    public String reportPasswd;
-    public int serverId;
+public final class RegisterSlaveCommandPacket extends AbstractCommandPacket {
+    
+    private String reportHost;
+    
+    private short reportPort;
+    
+    private String reportUser;
+    
+    private String reportPassword;
+    
+    private int serverId;
 
     public RegisterSlaveCommandPacket() {
         setCommand((byte) 0x15);
@@ -48,8 +56,8 @@ public class RegisterSlaveCommandPacket extends AbstractCommandPacket {
         DataTypesCodec.writeBytes(reportHost.getBytes(), out);
         DataTypesCodec.writeByte((byte) reportUser.getBytes().length, out);
         DataTypesCodec.writeBytes(reportUser.getBytes(), out);
-        DataTypesCodec.writeByte((byte) reportPasswd.getBytes().length, out);
-        DataTypesCodec.writeBytes(reportPasswd.getBytes(), out);
+        DataTypesCodec.writeByte((byte) reportPassword.getBytes().length, out);
+        DataTypesCodec.writeBytes(reportPassword.getBytes(), out);
         DataTypesCodec.writeShort(reportPort, out);
         DataTypesCodec.writeInt(0, out);
         DataTypesCodec.writeInt(0, out);
