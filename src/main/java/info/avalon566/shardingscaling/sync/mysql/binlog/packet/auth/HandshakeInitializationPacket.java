@@ -6,7 +6,8 @@ import io.netty.buffer.ByteBuf;
 import lombok.Data;
 
 /**
- * @author avalon566
+ * MySQL handshake initializetion packet.
+ *
  * https://github.com/mysql/mysql-server/blob/5.7/sql/auth/sql_authentication.cc
  * Bytes       Content
  * -----       ----
@@ -23,9 +24,13 @@ import lombok.Data;
  * 10          reserved, always 0
  * n           rest of the plugin provided data (at least 12 bytes)
  * 1           \0 byte, terminating the second part of a scramble
+ *
+ * @author avalon566
+ * @author yangyi
  */
 @Data
-public class HandshakeInitializationPacket extends AbstractPacket {
+public final class HandshakeInitializationPacket extends AbstractPacket {
+    
     private byte protocolVersion = 0x0a;
     private String serverVersion;
     private long threadId;
@@ -38,13 +43,12 @@ public class HandshakeInitializationPacket extends AbstractPacket {
     private String authPluginName;
 
     @Override
-    public void fromByteBuf(ByteBuf data) {
+    public void fromByteBuf(final ByteBuf data) {
         protocolVersion = DataTypesCodec.readByte(data);
         serverVersion = DataTypesCodec.readNullTerminatedString(data);
         threadId = DataTypesCodec.readInt(data);
         scramble = DataTypesCodec.readBytes(8, data);
-        // terminated
-        DataTypesCodec.readByte(data);
+        readTerminated(data);
         serverCapabilities = DataTypesCodec.readShort(data);
         if (data.isReadable()) {
             serverCharsetSet = DataTypesCodec.readByte(data);
@@ -56,11 +60,14 @@ public class HandshakeInitializationPacket extends AbstractPacket {
             if ((capabilities & 0x00008000) != 0) {
                 restOfScramble = DataTypesCodec.readBytes(12, data);
             }
-            // terminated
-            DataTypesCodec.readByte(data);
+            readTerminated(data);
             if ((capabilities & 0x00080000) != 0) {
                 authPluginName = DataTypesCodec.readNullTerminatedString(data);
             }
         }
+    }
+    
+    private void readTerminated(final ByteBuf data) {
+        DataTypesCodec.readByte(data);
     }
 }

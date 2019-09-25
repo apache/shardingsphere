@@ -13,30 +13,41 @@ import lombok.var;
 import java.security.NoSuchAlgorithmException;
 
 /**
+ * MySQL client authentication packet.
+ *
  * @author avalon566
+ * @author yangyi
  */
 @Data
-public class ClientAuthenticationPacket extends AbstractPacket {
+public final class ClientAuthenticationPacket extends AbstractPacket {
+    
     private int clientCapability = Capability.CLIENT_LONG_PASSWORD | Capability.CLIENT_LONG_FLAG
             | Capability.CLIENT_PROTOCOL_41 | Capability.CLIENT_INTERACTIVE
             | Capability.CLIENT_TRANSACTIONS | Capability.CLIENT_SECURE_CONNECTION
             | Capability.CLIENT_MULTI_STATEMENTS | Capability.CLIENT_PLUGIN_AUTH;
+    
     private String username;
+    
     private String password;
+    
     private byte charsetNumber;
+    
     private String databaseName;
+    
     private int serverCapabilities;
+    
     private byte[] scrumbleBuff;
+    
     private String authPluginName;
 
-    public void setDatabaseName(String databaseName) {
+    public void setDatabaseName(final String databaseName) {
         this.databaseName = databaseName;
         if (databaseName != null) {
             this.clientCapability |= Capability.CLIENT_CONNECT_WITH_DB;
         }
     }
 
-    public void setAuthPluginName(String authPluginName) {
+    public void setAuthPluginName(final String authPluginName) {
         this.authPluginName = authPluginName;
         if (authPluginName != null) {
             this.clientCapability |= Capability.CLIENT_PLUGIN_AUTH;
@@ -45,29 +56,29 @@ public class ClientAuthenticationPacket extends AbstractPacket {
 
     @Override
     public ByteBuf toByteBuf() {
-        var out = ByteBufAllocator.DEFAULT.heapBuffer();
-        DataTypesCodec.writeInt(clientCapability, out);
-        DataTypesCodec.writeInt(1 << 24, out);
-        DataTypesCodec.writeByte(charsetNumber, out);
-        DataTypesCodec.writeBytes(new byte[23], out);
-        DataTypesCodec.writeBytes(getUsername().getBytes(), out);
-        DataTypesCodec.writeByte((byte) 0x00, out);
+        var result = ByteBufAllocator.DEFAULT.heapBuffer();
+        DataTypesCodec.writeInt(clientCapability, result);
+        DataTypesCodec.writeInt(1 << 24, result);
+        DataTypesCodec.writeByte(charsetNumber, result);
+        DataTypesCodec.writeBytes(new byte[23], result);
+        DataTypesCodec.writeBytes(getUsername().getBytes(), result);
+        DataTypesCodec.writeByte((byte) 0x00, result);
         if (Strings.isNullOrEmpty(getPassword())) {
-            DataTypesCodec.writeByte((byte) 0x00, out);
+            DataTypesCodec.writeByte((byte) 0x00, result);
         } else {
             try {
                 byte[] encryptedPassword = MySQLPasswordEncryptor.scramble411(getPassword().getBytes(), scrumbleBuff);
-                DataTypesCodec.writeLengthCodedBinary(encryptedPassword, out);
+                DataTypesCodec.writeLengthCodedBinary(encryptedPassword, result);
             } catch (NoSuchAlgorithmException e) {
                 throw new RuntimeException("can't encrypt password that will be sent to MySQL server.", e);
             }
         }
         if (getDatabaseName() != null) {
-            DataTypesCodec.writeNullTerminatedString(getDatabaseName(), out);
+            DataTypesCodec.writeNullTerminatedString(getDatabaseName(), result);
         }
         if (getAuthPluginName() != null) {
-            DataTypesCodec.writeNullTerminatedString(getAuthPluginName(), out);
+            DataTypesCodec.writeNullTerminatedString(getAuthPluginName(), result);
         }
-        return out;
+        return result;
     }
 }
