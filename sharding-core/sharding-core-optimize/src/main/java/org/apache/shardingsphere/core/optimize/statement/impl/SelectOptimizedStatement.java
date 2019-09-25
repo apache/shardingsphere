@@ -64,7 +64,7 @@ public final class SelectOptimizedStatement extends CommonOptimizedStatement {
     
     private final boolean containsSubquery;
     
-    @Deprecated // for test
+    // TODO to be remove, for test case only
     public SelectOptimizedStatement(final SelectStatement sqlStatement, final GroupBy groupBy, final OrderBy orderBy, final SelectItems selectItems, final Pagination pagination) {
         super(sqlStatement);
         this.groupBy = groupBy;
