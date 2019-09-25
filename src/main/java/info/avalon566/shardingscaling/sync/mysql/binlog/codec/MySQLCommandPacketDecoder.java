@@ -18,10 +18,16 @@
 package info.avalon566.shardingscaling.sync.mysql.binlog.codec;
 
 import info.avalon566.shardingscaling.sync.mysql.binlog.packet.auth.HandshakeInitializationPacket;
-import info.avalon566.shardingscaling.sync.mysql.binlog.packet.response.*;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
+import info.avalon566.shardingscaling.sync.mysql.binlog.packet.response.EofPacket;
+import info.avalon566.shardingscaling.sync.mysql.binlog.packet.response.ErrorPacket;
+import info.avalon566.shardingscaling.sync.mysql.binlog.packet.response.FieldPacket;
+import info.avalon566.shardingscaling.sync.mysql.binlog.packet.response.InternalResultSet;
+import info.avalon566.shardingscaling.sync.mysql.binlog.packet.response.OkPacket;
+import info.avalon566.shardingscaling.sync.mysql.binlog.packet.response.ResultSetHeaderPacket;
+import info.avalon566.shardingscaling.sync.mysql.binlog.packet.response.RowDataPacket;
 import lombok.extern.slf4j.Slf4j;
 import lombok.var;
 
@@ -36,11 +42,11 @@ import java.util.List;
 @Slf4j
 public final class MySQLCommandPacketDecoder extends ByteToMessageDecoder {
     
-    private enum States {Initiate, ResponsePacket, FieldPacket, RowDataPacket}
+    private enum States { Initiate, ResponsePacket, FieldPacket, RowDataPacket }
     
     private States currentState = States.Initiate;
     
-    private InternalResultSet internalResultSet = null;
+    private InternalResultSet internalResultSet;
 
     @Override
     protected void decode(final ChannelHandlerContext ctx, final ByteBuf in, final List<Object> out) {

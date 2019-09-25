@@ -18,17 +18,17 @@
 package info.avalon566.shardingscaling.sync.mysql.binlog.codec;
 
 /**
- * MySQL Capability flags.
+ * MySQL capability flags.
  *
  * <p>
- *     MySQL Internals Manual  /  MySQL Client/Server Protocol  /  Connection Phase  /  Capability Flags
+ *     MySQL Internals Manual  /  MySQL Client/Server Protocol  /  Connection Phase  /  CapabilityFlags Flags
  *     https://dev.mysql.com/doc/internals/en/capability-flags.html#flag-CLIENT_PROTOCOL_41
  * </p>
  *
  * @author avalon566
  * @author yangyi
  */
-public final class Capability {
+public final class CapabilityFlags {
     
     public static final int CLIENT_LONG_PASSWORD = 0x00000001;
     

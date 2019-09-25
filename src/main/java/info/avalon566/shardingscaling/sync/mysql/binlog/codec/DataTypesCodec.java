@@ -91,12 +91,13 @@ public final class DataTypesCodec {
     /**
      * Read byte array from {@code ByteBuf}.
      *
+     * @param length length
      * @param in byte buffer
      * @return byte array
      */
     public static byte[] readBytes(final int length, final ByteBuf in) {
         var buffer = new byte[length];
-        in.readBytes(buffer, 0 , length);
+        in.readBytes(buffer, 0, length);
         return buffer;
     }
     

@@ -18,7 +18,7 @@
 package info.avalon566.shardingscaling.sync.mysql.binlog.packet.auth;
 
 import com.google.common.base.Strings;
-import info.avalon566.shardingscaling.sync.mysql.binlog.codec.Capability;
+import info.avalon566.shardingscaling.sync.mysql.binlog.codec.CapabilityFlags;
 import info.avalon566.shardingscaling.sync.mysql.binlog.MySQLPasswordEncryptor;
 import info.avalon566.shardingscaling.sync.mysql.binlog.codec.DataTypesCodec;
 import info.avalon566.shardingscaling.sync.mysql.binlog.packet.AbstractPacket;
@@ -38,10 +38,10 @@ import java.security.NoSuchAlgorithmException;
 @Data
 public final class ClientAuthenticationPacket extends AbstractPacket {
     
-    private int clientCapability = Capability.CLIENT_LONG_PASSWORD | Capability.CLIENT_LONG_FLAG
-            | Capability.CLIENT_PROTOCOL_41 | Capability.CLIENT_INTERACTIVE
-            | Capability.CLIENT_TRANSACTIONS | Capability.CLIENT_SECURE_CONNECTION
-            | Capability.CLIENT_MULTI_STATEMENTS | Capability.CLIENT_PLUGIN_AUTH;
+    private int clientCapability = CapabilityFlags.CLIENT_LONG_PASSWORD | CapabilityFlags.CLIENT_LONG_FLAG
+            | CapabilityFlags.CLIENT_PROTOCOL_41 | CapabilityFlags.CLIENT_INTERACTIVE
+            | CapabilityFlags.CLIENT_TRANSACTIONS | CapabilityFlags.CLIENT_SECURE_CONNECTION
+            | CapabilityFlags.CLIENT_MULTI_STATEMENTS | CapabilityFlags.CLIENT_PLUGIN_AUTH;
     
     private String username;
     
@@ -60,14 +60,14 @@ public final class ClientAuthenticationPacket extends AbstractPacket {
     public void setDatabaseName(final String databaseName) {
         this.databaseName = databaseName;
         if (databaseName != null) {
-            this.clientCapability |= Capability.CLIENT_CONNECT_WITH_DB;
+            this.clientCapability |= CapabilityFlags.CLIENT_CONNECT_WITH_DB;
         }
     }
 
     public void setAuthPluginName(final String authPluginName) {
         this.authPluginName = authPluginName;
         if (authPluginName != null) {
-            this.clientCapability |= Capability.CLIENT_PLUGIN_AUTH;
+            this.clientCapability |= CapabilityFlags.CLIENT_PLUGIN_AUTH;
         }
     }
 

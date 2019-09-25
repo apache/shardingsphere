@@ -18,10 +18,12 @@
 package info.avalon566.shardingscaling.sync.mysql.binlog.codec;
 
 /**
- * MySQL client/server protocol Authentication Method
+ * MySQL client/server protocol Authentication Method.
  *
- * MySQL Internals Manual  /  MySQL Client/Server Protocol  /  Authentication Method  /  SHA256
- * https://dev.mysql.com/doc/internals/en/sha256.html
+ * <p>
+ *     MySQL Internals Manual  /  MySQL Client/Server Protocol  /  Authentication Method  /  SHA256
+ *     https://dev.mysql.com/doc/internals/en/sha256.html
+ * </p>
  *
  * @author yangyi
  */

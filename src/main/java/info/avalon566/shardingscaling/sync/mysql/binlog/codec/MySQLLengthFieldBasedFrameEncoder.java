@@ -36,10 +36,10 @@ public final class MySQLLengthFieldBasedFrameEncoder extends MessageToByteEncode
     
     @Override
     protected void encode(final ChannelHandlerContext ctx, final Object msg, final ByteBuf out) {
-        var bb = ((AbstractPacket)msg).toByteBuf();
+        var bb = ((AbstractPacket) msg).toByteBuf();
         HeaderPacket h = new HeaderPacket();
         h.setPacketBodyLength(bb.readableBytes());
-        h.setPacketSequenceNumber(((AbstractPacket)msg).getSequenceNumber());
+        h.setPacketSequenceNumber(((AbstractPacket) msg).getSequenceNumber());
         out.writeBytes(h.toByteBuf());
         out.writeBytes(bb);
     }
