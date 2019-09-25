@@ -46,7 +46,7 @@ public final class GroupByRowComparator implements Comparator<MemoryQueryResultR
         if (!selectSQLStatementContext.getOrderBy().getItems().isEmpty()) {
             return compare(o1, o2, selectSQLStatementContext.getOrderBy().getItems());
         }
-        return compare(o1, o2, selectSQLStatementContext.getGroupBy().getItems());
+        return compare(o1, o2, selectSQLStatementContext.getGroupByContext().getItems());
     }
     
     private int compare(final MemoryQueryResultRow o1, final MemoryQueryResultRow o2, final Collection<OrderByItem> orderByItems) {

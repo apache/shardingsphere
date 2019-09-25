@@ -23,7 +23,7 @@ import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.MergedResult;
 import org.apache.shardingsphere.core.merge.dql.DQLMergeEngine;
 import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
-import org.apache.shardingsphere.core.optimize.segment.select.groupby.GroupBy;
+import org.apache.shardingsphere.core.optimize.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItem;
 import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItems;
 import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderBy;
@@ -67,7 +67,7 @@ public final class OrderByStreamMergedResultTest {
         queryResults = Lists.<QueryResult>newArrayList(
                 new TestQueryResult(mockResultSet()), new TestQueryResult(mockResultSet()), new TestQueryResult(mockResultSet()));
         SQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
-                new GroupBy(Collections.<OrderByItem>emptyList(), 0), 
+                new GroupByContext(Collections.<OrderByItem>emptyList(), 0), 
                 new OrderBy(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC))), false), 
                 new SelectItems(0, 0, false, Collections.<SelectItem>emptyList()), new Pagination(null, null, Collections.emptyList()));
         routeResult = new SQLRouteResult(selectSQLStatementContext, new CommonSQLStatementContext(new SelectStatement()), new ShardingConditions(Collections.<ShardingCondition>emptyList()));

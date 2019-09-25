@@ -23,7 +23,7 @@ import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.MergedResult;
 import org.apache.shardingsphere.core.merge.dql.DQLMergeEngine;
 import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
-import org.apache.shardingsphere.core.optimize.segment.select.groupby.GroupBy;
+import org.apache.shardingsphere.core.optimize.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItem;
 import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItems;
 import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderBy;
@@ -76,7 +76,7 @@ public final class RowNumberDecoratorMergedResultTest {
     @Test
     public void assertNextForSkipAll() throws SQLException {
         SQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
-                new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
+                new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
                 new SelectItems(0, 0, false, Collections.<SelectItem>emptyList()),
                 new Pagination(new NumberLiteralRowNumberValueSegment(0, 0, Integer.MAX_VALUE, true), null, Collections.emptyList()));
         SQLRouteResult routeResult = new SQLRouteResult(
@@ -89,7 +89,7 @@ public final class RowNumberDecoratorMergedResultTest {
     @Test
     public void assertNextWithoutOffsetWithoutRowCount() throws SQLException {
         SQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
-                new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
+                new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
                 new SelectItems(0, 0, false, Collections.<SelectItem>emptyList()), new Pagination(null, null, Collections.emptyList()));
         SQLRouteResult routeResult = new SQLRouteResult(
                 selectSQLStatementContext, new CommonSQLStatementContext(new SelectStatement()), new ShardingConditions(Collections.<ShardingCondition>emptyList()));
@@ -104,7 +104,7 @@ public final class RowNumberDecoratorMergedResultTest {
     @Test
     public void assertNextForRowCountBoundOpenedFalse() throws SQLException {
         SQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
-                new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
+                new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
                 new SelectItems(0, 0, false, Collections.<SelectItem>emptyList()),
                 new Pagination(new NumberLiteralRowNumberValueSegment(0, 0, 2, true), new NumberLiteralRowNumberValueSegment(0, 0, 4, false), Collections.emptyList()));
         SQLRouteResult routeResult = new SQLRouteResult(
@@ -119,7 +119,7 @@ public final class RowNumberDecoratorMergedResultTest {
     @Test
     public void assertNextForRowCountBoundOpenedTrue() throws SQLException {
         SQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
-                new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
+                new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
                 new SelectItems(0, 0, false, Collections.<SelectItem>emptyList()),
                 new Pagination(new NumberLiteralRowNumberValueSegment(0, 0, 2, true), new NumberLiteralRowNumberValueSegment(0, 0, 4, true), Collections.emptyList()));
         SQLRouteResult routeResult = new SQLRouteResult(

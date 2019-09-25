@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.optimize.segment.select.pagination;
 
 import com.google.common.collect.Lists;
-import org.apache.shardingsphere.core.optimize.segment.select.groupby.GroupBy;
+import org.apache.shardingsphere.core.optimize.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.core.optimize.segment.select.item.impl.AggregationSelectItem;
 import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItems;
 import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderByItem;
@@ -130,12 +130,12 @@ public class PaginationTest {
     public void getRevisedRowCount() {
         SelectSQLStatementContext selectSQLStatementContext = mock(SelectSQLStatementContext.class);
         Mockito.doReturn(getSelectItemsWithEmptyAggregationSelectItems()).when(selectSQLStatementContext).getSelectItems();
-        doReturn(getGroupByWithEmptyItems()).when(selectSQLStatementContext).getGroupBy();
+        doReturn(getGroupByWithEmptyItems()).when(selectSQLStatementContext).getGroupByContext();
         assertThat(new Pagination(getOffsetSegment(), getRowCountSegment(), getParameters()).getRevisedRowCount(selectSQLStatementContext), is(50L));
     }
     
-    private GroupBy getGroupByWithEmptyItems() {
-        GroupBy groupBy = mock(GroupBy.class);
+    private GroupByContext getGroupByWithEmptyItems() {
+        GroupByContext groupBy = mock(GroupByContext.class);
         when(groupBy.getItems()).thenReturn(Collections.<OrderByItem>emptyList());
         return groupBy;
     }
@@ -150,13 +150,13 @@ public class PaginationTest {
     public void getRevisedRowCountWithMax() {
         SelectSQLStatementContext selectSQLStatementContext = mock(SelectSQLStatementContext.class);
         doReturn(getSelectItemsWithEmptyAggregationSelectItems()).when(selectSQLStatementContext).getSelectItems();
-        doReturn(getGroupBy()).when(selectSQLStatementContext).getGroupBy();
+        doReturn(getGroupBy()).when(selectSQLStatementContext).getGroupByContext();
         doReturn(false).when(selectSQLStatementContext).isSameGroupByAndOrderByItems();
         assertThat(new Pagination(getOffsetSegment(), getRowCountSegment(), getParameters()).getRevisedRowCount(selectSQLStatementContext), is((long) Integer.MAX_VALUE));
     }
     
-    private GroupBy getGroupBy() {
-        GroupBy groupBy = mock(GroupBy.class);
+    private GroupByContext getGroupBy() {
+        GroupByContext groupBy = mock(GroupByContext.class);
         List items = mock(List.class);
         when(items.isEmpty()).thenReturn(false);
         when(groupBy.getItems()).thenReturn(items);

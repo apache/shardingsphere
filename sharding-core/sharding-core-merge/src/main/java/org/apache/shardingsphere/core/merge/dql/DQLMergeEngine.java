@@ -99,7 +99,7 @@ public final class DQLMergeEngine implements MergeEngine {
     }
     
     private boolean isDistinctRowSelectItems() {
-        return selectSQLStatementContext.getSelectItems().isDistinctRow() && selectSQLStatementContext.getGroupBy().getItems().isEmpty();
+        return selectSQLStatementContext.getSelectItems().isDistinctRow() && selectSQLStatementContext.getGroupByContext().getItems().isEmpty();
     }
     
     private Map<String, Integer> getColumnLabelIndexMap(final QueryResult queryResult) throws SQLException {
@@ -120,7 +120,7 @@ public final class DQLMergeEngine implements MergeEngine {
     }
     
     private MergedResult build() throws SQLException {
-        if (!selectSQLStatementContext.getGroupBy().getItems().isEmpty() || !selectSQLStatementContext.getSelectItems().getAggregationSelectItems().isEmpty()) {
+        if (!selectSQLStatementContext.getGroupByContext().getItems().isEmpty() || !selectSQLStatementContext.getSelectItems().getAggregationSelectItems().isEmpty()) {
             return getGroupByMergedResult();
         }
         if (!selectSQLStatementContext.getOrderBy().getItems().isEmpty()) {

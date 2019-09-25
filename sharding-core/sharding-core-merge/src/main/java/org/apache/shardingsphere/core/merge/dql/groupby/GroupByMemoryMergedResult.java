@@ -62,7 +62,7 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult {
         Map<GroupByValue, Map<AggregationSelectItem, AggregationUnit>> aggregationMap = new HashMap<>(1024);
         for (QueryResult each : queryResults) {
             while (each.next()) {
-                GroupByValue groupByValue = new GroupByValue(each, selectSQLStatementContext.getGroupBy().getItems());
+                GroupByValue groupByValue = new GroupByValue(each, selectSQLStatementContext.getGroupByContext().getItems());
                 initForFirstGroupByValue(each, groupByValue, dataMap, aggregationMap);
                 aggregate(each, groupByValue, aggregationMap);
             }

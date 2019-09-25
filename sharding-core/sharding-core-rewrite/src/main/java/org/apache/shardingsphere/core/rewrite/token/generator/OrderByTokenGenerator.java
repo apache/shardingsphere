@@ -48,7 +48,7 @@ public final class OrderByTokenGenerator implements OptionalSQLTokenGenerator<Sh
     }
     
     private OrderByToken createOrderByToken(final SelectSQLStatementContext selectSQLStatementContext) {
-        OrderByToken result = new OrderByToken(selectSQLStatementContext.getGroupBy().getLastIndex() + 1);
+        OrderByToken result = new OrderByToken(selectSQLStatementContext.getGroupByContext().getLastIndex() + 1);
         String columnLabel;
         for (OrderByItem each : selectSQLStatementContext.getOrderBy().getItems()) {
             if (each.getSegment() instanceof ColumnOrderByItemSegment) {

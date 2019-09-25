@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.rewrite.token;
 
-import org.apache.shardingsphere.core.optimize.segment.select.groupby.GroupBy;
+import org.apache.shardingsphere.core.optimize.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.core.optimize.segment.select.item.impl.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItem;
 import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItems;
@@ -63,7 +63,7 @@ public final class SQLTokenGenerateEngineTest {
         SelectItems selectItems = new SelectItems(1, 20, false, 
                 Collections.<SelectItem>singletonList(new AggregationDistinctSelectItem(1, 2, AggregationType.COUNT, "(DISTINCT id)", "c", "id")));
         SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(selectStatement,  
-                new GroupBy(Collections.<OrderByItem>emptyList(), 1), new OrderBy(Collections.<OrderByItem>emptyList(), false), selectItems, new Pagination(null, null, Collections.emptyList()));
+                new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), selectItems, new Pagination(null, null, Collections.emptyList()));
         rewriteStatement = new RewriteStatement(
                 selectSQLStatementContext, new ShardingConditions(Collections.<ShardingCondition>emptyList()), new EncryptConditions(Collections.<EncryptCondition>emptyList()));
     }

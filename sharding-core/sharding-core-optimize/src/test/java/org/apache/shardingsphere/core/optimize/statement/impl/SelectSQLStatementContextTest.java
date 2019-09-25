@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.optimize.statement.impl;
 
 import com.google.common.collect.Lists;
-import org.apache.shardingsphere.core.optimize.segment.select.groupby.GroupBy;
+import org.apache.shardingsphere.core.optimize.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.core.optimize.segment.select.item.impl.ColumnSelectItem;
 import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItem;
 import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItems;
@@ -59,7 +59,7 @@ public final class SelectSQLStatementContextTest {
     @Test
     public void assertSetIndexForItemsByIndexOrderBy() {
         SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(
-                new SelectStatement(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), createOrderBy(INDEX_ORDER_BY), createSelectItems(), null);
+                new SelectStatement(), new GroupByContext(Collections.<OrderByItem>emptyList(), 0), createOrderBy(INDEX_ORDER_BY), createSelectItems(), null);
         selectSQLStatementContext.setIndexForItems(Collections.<String, Integer>emptyMap());
         assertThat(selectSQLStatementContext.getOrderBy().getItems().iterator().next().getIndex(), is(4));
     }
@@ -67,7 +67,7 @@ public final class SelectSQLStatementContextTest {
     @Test
     public void assertSetIndexForItemsByColumnOrderByWithOwner() {
         SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(
-                new SelectStatement(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), createOrderBy(COLUMN_ORDER_BY_WITH_OWNER), createSelectItems(), null);
+                new SelectStatement(), new GroupByContext(Collections.<OrderByItem>emptyList(), 0), createOrderBy(COLUMN_ORDER_BY_WITH_OWNER), createSelectItems(), null);
         selectSQLStatementContext.setIndexForItems(Collections.<String, Integer>emptyMap());
         assertThat(selectSQLStatementContext.getOrderBy().getItems().iterator().next().getIndex(), is(1));
     }
@@ -75,7 +75,7 @@ public final class SelectSQLStatementContextTest {
     @Test
     public void assertSetIndexForItemsByColumnOrderByWithAlias() {
         SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(
-                new SelectStatement(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), createOrderBy(COLUMN_ORDER_BY_WITH_ALIAS), createSelectItems(), null);
+                new SelectStatement(), new GroupByContext(Collections.<OrderByItem>emptyList(), 0), createOrderBy(COLUMN_ORDER_BY_WITH_ALIAS), createSelectItems(), null);
         Map<String, Integer> columnLabelIndexMap = new HashMap<>();
         columnLabelIndexMap.put("n", 2);
         selectSQLStatementContext.setIndexForItems(columnLabelIndexMap);
@@ -85,7 +85,7 @@ public final class SelectSQLStatementContextTest {
     @Test
     public void assertSetIndexForItemsByColumnOrderByWithoutAlias() {
         SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(
-                new SelectStatement(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), createOrderBy(COLUMN_ORDER_BY_WITHOUT_OWNER_ALIAS), createSelectItems(), null);
+                new SelectStatement(), new GroupByContext(Collections.<OrderByItem>emptyList(), 0), createOrderBy(COLUMN_ORDER_BY_WITHOUT_OWNER_ALIAS), createSelectItems(), null);
         Map<String, Integer> columnLabelIndexMap = new HashMap<>();
         columnLabelIndexMap.put("id", 3);
         selectSQLStatementContext.setIndexForItems(columnLabelIndexMap);

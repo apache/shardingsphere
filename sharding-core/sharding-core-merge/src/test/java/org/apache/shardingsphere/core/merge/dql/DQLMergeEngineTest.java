@@ -29,7 +29,7 @@ import org.apache.shardingsphere.core.merge.dql.pagination.LimitDecoratorMergedR
 import org.apache.shardingsphere.core.merge.dql.pagination.RowNumberDecoratorMergedResult;
 import org.apache.shardingsphere.core.merge.dql.pagination.TopAndRowNumberDecoratorMergedResult;
 import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
-import org.apache.shardingsphere.core.optimize.segment.select.groupby.GroupBy;
+import org.apache.shardingsphere.core.optimize.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.core.optimize.segment.select.item.impl.AggregationSelectItem;
 import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItem;
 import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItems;
@@ -98,7 +98,7 @@ public final class DQLMergeEngineTest {
     @Test
     public void assertBuildIteratorStreamMergedResult() throws SQLException {
         SQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
-                new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
+                new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
                 new SelectItems(0, 0, false, Collections.<SelectItem>emptyList()), new Pagination(null, null, Collections.emptyList()));
         SQLRouteResult routeResult = new SQLRouteResult(
                 selectSQLStatementContext, new CommonSQLStatementContext(new SelectStatement()), new ShardingConditions(Collections.<ShardingCondition>emptyList()));
@@ -109,7 +109,7 @@ public final class DQLMergeEngineTest {
     @Test
     public void assertBuildIteratorStreamMergedResultWithLimit() throws SQLException {
         SQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
-                new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
+                new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
                 new SelectItems(0, 0, false, Collections.<SelectItem>emptyList()), 
                 new Pagination(new NumberLiteralLimitValueSegment(0, 0, 1), null, Collections.emptyList()));
         SQLRouteResult routeResult = new SQLRouteResult(
@@ -121,7 +121,7 @@ public final class DQLMergeEngineTest {
     @Test
     public void assertBuildIteratorStreamMergedResultWithMySQLLimit() throws SQLException {
         SQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
-                new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
+                new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
                 new SelectItems(0, 0, false, Collections.<SelectItem>emptyList()), 
                 new Pagination(new NumberLiteralLimitValueSegment(0, 0, 1), null, Collections.emptyList()));
         SQLRouteResult routeResult = new SQLRouteResult(
@@ -135,7 +135,7 @@ public final class DQLMergeEngineTest {
     @Test
     public void assertBuildIteratorStreamMergedResultWithOracleLimit() throws SQLException {
         SQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
-                new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
+                new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
                 new SelectItems(0, 0, false, Collections.<SelectItem>emptyList()), 
                 new Pagination(new NumberLiteralRowNumberValueSegment(0, 0, 1, true), null, Collections.emptyList()));
         SQLRouteResult routeResult = new SQLRouteResult(
@@ -149,7 +149,7 @@ public final class DQLMergeEngineTest {
     @Test
     public void assertBuildIteratorStreamMergedResultWithSQLServerLimit() throws SQLException {
         SQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
-                new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
+                new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
                 new SelectItems(0, 0, false, Collections.<SelectItem>emptyList()), 
                 new Pagination(new NumberLiteralLimitValueSegment(0, 0, 1), null, Collections.emptyList()));
         SQLRouteResult routeResult = new SQLRouteResult(
@@ -163,7 +163,7 @@ public final class DQLMergeEngineTest {
     @Test
     public void assertBuildOrderByStreamMergedResult() throws SQLException {
         SQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(
-                new SelectStatement(), new GroupBy(Collections.<OrderByItem>emptyList(), 0),
+                new SelectStatement(), new GroupByContext(Collections.<OrderByItem>emptyList(), 0),
                 new OrderBy(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), false),
                 new SelectItems(0, 0, false, Collections.<SelectItem>emptyList()), new Pagination(null, null, Collections.emptyList()));
         SQLRouteResult routeResult = new SQLRouteResult(
@@ -175,7 +175,7 @@ public final class DQLMergeEngineTest {
     @Test
     public void assertBuildOrderByStreamMergedResultWithMySQLLimit() throws SQLException {
         SQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(
-                new SelectStatement(), new GroupBy(Collections.<OrderByItem>emptyList(), 0),
+                new SelectStatement(), new GroupByContext(Collections.<OrderByItem>emptyList(), 0),
                 new OrderBy(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), false),
                 new SelectItems(0, 0, false, Collections.<SelectItem>emptyList()), 
                 new Pagination(new NumberLiteralLimitValueSegment(0, 0, 1), null, Collections.emptyList()));
@@ -190,7 +190,7 @@ public final class DQLMergeEngineTest {
     @Test
     public void assertBuildOrderByStreamMergedResultWithOracleLimit() throws SQLException {
         SQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(
-                new SelectStatement(), new GroupBy(Collections.<OrderByItem>emptyList(), 0),
+                new SelectStatement(), new GroupByContext(Collections.<OrderByItem>emptyList(), 0),
                 new OrderBy(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), false),
                 new SelectItems(0, 0, false, Collections.<SelectItem>emptyList()), 
                 new Pagination(new NumberLiteralRowNumberValueSegment(0, 0, 1, true), null, Collections.emptyList()));
@@ -205,7 +205,7 @@ public final class DQLMergeEngineTest {
     @Test
     public void assertBuildOrderByStreamMergedResultWithSQLServerLimit() throws SQLException {
         SQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(
-                new SelectStatement(), new GroupBy(Collections.<OrderByItem>emptyList(), 0),
+                new SelectStatement(), new GroupByContext(Collections.<OrderByItem>emptyList(), 0),
                 new OrderBy(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), false),
                 new SelectItems(0, 0, false, Collections.<SelectItem>emptyList()), 
                 new Pagination(new NumberLiteralRowNumberValueSegment(0, 0, 1, true), null, Collections.emptyList()));
@@ -220,7 +220,7 @@ public final class DQLMergeEngineTest {
     @Test
     public void assertBuildGroupByStreamMergedResult() throws SQLException {
         SQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(),   
-                new GroupBy(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), 0),
+                new GroupByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), 0),
                 new OrderBy(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), false),
                 new SelectItems(0, 0, false, Collections.<SelectItem>emptyList()), new Pagination(null, null, Collections.emptyList()));
         SQLRouteResult routeResult = new SQLRouteResult(
@@ -232,7 +232,7 @@ public final class DQLMergeEngineTest {
     @Test
     public void assertBuildGroupByStreamMergedResultWithMySQLLimit() throws SQLException {
         SQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
-                new GroupBy(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), 0),
+                new GroupByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), 0),
                 new OrderBy(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), false),
                 new SelectItems(0, 0, false, Collections.<SelectItem>emptyList()), 
                 new Pagination(new NumberLiteralLimitValueSegment(0, 0, 1), null, Collections.emptyList()));
@@ -247,7 +247,7 @@ public final class DQLMergeEngineTest {
     @Test
     public void assertBuildGroupByStreamMergedResultWithOracleLimit() throws SQLException {
         SQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
-                new GroupBy(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), 0),
+                new GroupByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), 0),
                 new OrderBy(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), false),
                 new SelectItems(0, 0, false, Collections.<SelectItem>emptyList()), 
                 new Pagination(new NumberLiteralRowNumberValueSegment(0, 0, 1, true), null, Collections.emptyList()));
@@ -262,7 +262,7 @@ public final class DQLMergeEngineTest {
     @Test
     public void assertBuildGroupByStreamMergedResultWithSQLServerLimit() throws SQLException {
         SQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
-                new GroupBy(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), 0),
+                new GroupByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), 0),
                 new OrderBy(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), false),
                 new SelectItems(0, 0, false, Collections.<SelectItem>emptyList()), 
                 new Pagination(new NumberLiteralRowNumberValueSegment(0, 0, 1, true), null, Collections.emptyList()));
@@ -277,7 +277,7 @@ public final class DQLMergeEngineTest {
     @Test
     public void assertBuildGroupByMemoryMergedResult() throws SQLException {
         SQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
-                new GroupBy(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), 0), 
+                new GroupByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), 0), 
                 new OrderBy(Collections.<OrderByItem>emptyList(), false), new SelectItems(0, 0, false, Collections.<SelectItem>emptyList()), 
                 new Pagination(null, null, Collections.emptyList()));
         SQLRouteResult routeResult = new SQLRouteResult(
@@ -289,7 +289,7 @@ public final class DQLMergeEngineTest {
     @Test
     public void assertBuildGroupByMemoryMergedResultWithMySQLLimit() throws SQLException {
         SQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
-                new GroupBy(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), 0), 
+                new GroupByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), 0), 
                 new OrderBy(Collections.<OrderByItem>emptyList(), false), new SelectItems(0, 0, false, Collections.<SelectItem>emptyList()),
                 new Pagination(new NumberLiteralLimitValueSegment(0, 0, 1), null, Collections.emptyList()));
         SQLRouteResult routeResult = new SQLRouteResult(
@@ -303,7 +303,7 @@ public final class DQLMergeEngineTest {
     @Test
     public void assertBuildGroupByMemoryMergedResultWithOracleLimit() throws SQLException {
         SQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
-                new GroupBy(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), 0),
+                new GroupByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), 0),
                 new OrderBy(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC))), false),
                 new SelectItems(0, 0, false, Collections.<SelectItem>emptyList()), 
                 new Pagination(new NumberLiteralRowNumberValueSegment(0, 0, 1, true), null, Collections.emptyList()));
@@ -318,7 +318,7 @@ public final class DQLMergeEngineTest {
     @Test
     public void assertBuildGroupByMemoryMergedResultWithSQLServerLimit() throws SQLException {
         SQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
-                new GroupBy(Arrays.asList(
+                new GroupByContext(Arrays.asList(
                         new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC)), 
                         new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC))), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
                 new SelectItems(0, 0, false, Collections.<SelectItem>emptyList()), 
@@ -336,7 +336,7 @@ public final class DQLMergeEngineTest {
         SelectItems selectItems = new SelectItems(
                 0, 0, false, Collections.<SelectItem>singletonList(new AggregationSelectItem(AggregationType.COUNT, "(*)", null)));
         SQLRouteResult routeResult = new SQLRouteResult(
-                new SelectSQLStatementContext(new SelectStatement(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
+                new SelectSQLStatementContext(new SelectStatement(), new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
                         selectItems, new Pagination(null, null, Collections.emptyList())), 
                 new CommonSQLStatementContext(new SelectStatement()), new ShardingConditions(Collections.<ShardingCondition>emptyList()));
         mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), null, routeResult, queryResults);
@@ -348,7 +348,7 @@ public final class DQLMergeEngineTest {
         SelectItems selectItems = new SelectItems(
                 0, 0, false, Collections.<SelectItem>singletonList(new AggregationSelectItem(AggregationType.COUNT, "(*)", null)));
         SQLRouteResult routeResult = new SQLRouteResult(
-                new SelectSQLStatementContext(new SelectStatement(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
+                new SelectSQLStatementContext(new SelectStatement(), new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
                         selectItems, new Pagination(new NumberLiteralLimitValueSegment(0, 0, 1), null, Collections.emptyList())), 
                 new CommonSQLStatementContext(new SelectStatement()), new ShardingConditions(Collections.<ShardingCondition>emptyList()));
         mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), null, routeResult, queryResults);
@@ -362,7 +362,7 @@ public final class DQLMergeEngineTest {
         SelectItems selectItems = new SelectItems(
                 0, 0, false, Collections.<SelectItem>singletonList(new AggregationSelectItem(AggregationType.COUNT, "(*)", null)));
         SQLRouteResult routeResult = new SQLRouteResult(
-                new SelectSQLStatementContext(new SelectStatement(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
+                new SelectSQLStatementContext(new SelectStatement(), new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
                         selectItems, new Pagination(new NumberLiteralRowNumberValueSegment(0, 0, 1, true), null, Collections.emptyList())), 
                 new CommonSQLStatementContext(new SelectStatement()), new ShardingConditions(Collections.<ShardingCondition>emptyList()));
         mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("Oracle"), null, routeResult, queryResults);
@@ -376,7 +376,7 @@ public final class DQLMergeEngineTest {
         SelectItems selectItems = new SelectItems(
                 0, 0, false, Collections.<SelectItem>singletonList(new AggregationSelectItem(AggregationType.COUNT, "(*)", null)));
         SQLRouteResult routeResult = new SQLRouteResult(
-                new SelectSQLStatementContext(new SelectStatement(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
+                new SelectSQLStatementContext(new SelectStatement(), new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
                         selectItems, new Pagination(new NumberLiteralRowNumberValueSegment(0, 0, 1, true), null, Collections.emptyList())), 
                 new CommonSQLStatementContext(new SelectStatement()), new ShardingConditions(Collections.<ShardingCondition>emptyList()));
         mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("SQLServer"), null, routeResult, queryResults);

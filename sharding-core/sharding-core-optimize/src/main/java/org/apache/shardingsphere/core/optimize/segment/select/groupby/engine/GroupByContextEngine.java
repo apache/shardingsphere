@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.optimize.segment.select.groupby.engine;
 
-import org.apache.shardingsphere.core.optimize.segment.select.groupby.GroupBy;
+import org.apache.shardingsphere.core.optimize.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.OrderByItemSegment;
@@ -28,21 +28,21 @@ import java.util.Collections;
 import java.util.LinkedList;
 
 /**
- * Group by engine.
+ * Group by context engine.
  *
  * @author zhangliang
  */
-public final class GroupByEngine {
+public final class GroupByContextEngine {
     
     /**
-     * Create group by.
+     * Create group by context.
      *
      * @param selectStatement select statement
-     * @return group by
+     * @return group by context
      */
-    public GroupBy createGroupBy(final SelectStatement selectStatement) {
+    public GroupByContext createGroupByContext(final SelectStatement selectStatement) {
         if (!selectStatement.getGroupBy().isPresent()) {
-            return new GroupBy(Collections.<OrderByItem>emptyList(), 0);
+            return new GroupByContext(Collections.<OrderByItem>emptyList(), 0);
         }
         Collection<OrderByItem> groupByItems = new LinkedList<>();
         for (OrderByItemSegment each : selectStatement.getGroupBy().get().getGroupByItems()) {
@@ -52,6 +52,6 @@ public final class GroupByEngine {
             }
             groupByItems.add(orderByItem);
         }
-        return new GroupBy(groupByItems, selectStatement.getGroupBy().get().getStopIndex());
+        return new GroupByContext(groupByItems, selectStatement.getGroupBy().get().getStopIndex());
     }
 }

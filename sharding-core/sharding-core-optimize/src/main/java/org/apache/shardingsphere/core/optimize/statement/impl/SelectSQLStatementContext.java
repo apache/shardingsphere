@@ -22,8 +22,8 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.optimize.segment.select.groupby.GroupBy;
-import org.apache.shardingsphere.core.optimize.segment.select.groupby.engine.GroupByEngine;
+import org.apache.shardingsphere.core.optimize.segment.select.groupby.GroupByContext;
+import org.apache.shardingsphere.core.optimize.segment.select.groupby.engine.GroupByContextEngine;
 import org.apache.shardingsphere.core.optimize.segment.select.item.impl.AggregationSelectItem;
 import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItem;
 import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItems;
@@ -54,7 +54,7 @@ import java.util.Map;
 @ToString(callSuper = true)
 public final class SelectSQLStatementContext extends CommonSQLStatementContext {
     
-    private final GroupBy groupBy;
+    private final GroupByContext groupByContext;
     
     private final OrderBy orderBy;
     
@@ -65,9 +65,9 @@ public final class SelectSQLStatementContext extends CommonSQLStatementContext {
     private final boolean containsSubquery;
     
     // TODO to be remove, for test case only
-    public SelectSQLStatementContext(final SelectStatement sqlStatement, final GroupBy groupBy, final OrderBy orderBy, final SelectItems selectItems, final Pagination pagination) {
+    public SelectSQLStatementContext(final SelectStatement sqlStatement, final GroupByContext groupByContext, final OrderBy orderBy, final SelectItems selectItems, final Pagination pagination) {
         super(sqlStatement);
-        this.groupBy = groupBy;
+        this.groupByContext = groupByContext;
         this.orderBy = orderBy;
         this.selectItems = selectItems;
         this.pagination = pagination;
@@ -76,9 +76,9 @@ public final class SelectSQLStatementContext extends CommonSQLStatementContext {
     
     public SelectSQLStatementContext(final TableMetas tableMetas, final String sql, final List<Object> parameters, final SelectStatement sqlStatement) {
         super(sqlStatement);
-        this.groupBy = new GroupByEngine().createGroupBy(sqlStatement);
-        this.orderBy = new OrderByEngine().createOrderBy(sqlStatement, groupBy);
-        this.selectItems = new SelectItemsEngine(tableMetas).createSelectItems(sql, sqlStatement, groupBy, orderBy);
+        this.groupByContext = new GroupByContextEngine().createGroupByContext(sqlStatement);
+        this.orderBy = new OrderByEngine().createOrderBy(sqlStatement, groupByContext);
+        this.selectItems = new SelectItemsEngine(tableMetas).createSelectItems(sql, sqlStatement, groupByContext, orderBy);
         this.pagination = new PaginationEngine().createPagination(sqlStatement, selectItems, parameters);
         containsSubquery = containsSubquery();
     }
@@ -101,7 +101,7 @@ public final class SelectSQLStatementContext extends CommonSQLStatementContext {
     public void setIndexForItems(final Map<String, Integer> columnLabelIndexMap) {
         setIndexForAggregationItem(columnLabelIndexMap);
         setIndexForOrderItem(columnLabelIndexMap, orderBy.getItems());
-        setIndexForOrderItem(columnLabelIndexMap, groupBy.getItems());
+        setIndexForOrderItem(columnLabelIndexMap, groupByContext.getItems());
     }
     
     private void setIndexForAggregationItem(final Map<String, Integer> columnLabelIndexMap) {
@@ -174,6 +174,6 @@ public final class SelectSQLStatementContext extends CommonSQLStatementContext {
      * @return group by and order by sequence is same or not
      */
     public boolean isSameGroupByAndOrderByItems() {
-        return !groupBy.getItems().isEmpty() && groupBy.getItems().equals(orderBy.getItems());
+        return !groupByContext.getItems().isEmpty() && groupByContext.getItems().equals(orderBy.getItems());
     }
 }
