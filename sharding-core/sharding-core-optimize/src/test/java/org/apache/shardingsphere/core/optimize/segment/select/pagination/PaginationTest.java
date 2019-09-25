@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.optimize.segment.select.pagination;
 
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.core.optimize.segment.select.groupby.GroupByContext;
-import org.apache.shardingsphere.core.optimize.segment.select.item.impl.AggregationSelectItem;
 import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItems;
 import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.core.optimize.statement.impl.SelectSQLStatementContext;
@@ -27,7 +26,6 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.Paginatio
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.ParameterMarkerLimitValueSegment;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import java.util.Collections;
 import java.util.List;
@@ -36,11 +34,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class PaginationTest {
+public final class PaginationTest {
     
     @Test
     public void assertSegmentWithNullOffsetSegment() {
@@ -129,37 +126,16 @@ public class PaginationTest {
     @Test
     public void getRevisedRowCount() {
         SelectSQLStatementContext selectSQLStatementContext = mock(SelectSQLStatementContext.class);
-        Mockito.doReturn(getSelectItemsWithEmptyAggregationSelectItems()).when(selectSQLStatementContext).getSelectItems();
-        doReturn(getGroupByWithEmptyItems()).when(selectSQLStatementContext).getGroupByContext();
+        when(selectSQLStatementContext.getSelectItems()).thenReturn(mock(SelectItems.class));
+        when(selectSQLStatementContext.getGroupByContext()).thenReturn(new GroupByContext(Collections.<OrderByItem>emptyList(), 0));
         assertThat(new Pagination(getOffsetSegment(), getRowCountSegment(), getParameters()).getRevisedRowCount(selectSQLStatementContext), is(50L));
-    }
-    
-    private GroupByContext getGroupByWithEmptyItems() {
-        GroupByContext groupBy = mock(GroupByContext.class);
-        when(groupBy.getItems()).thenReturn(Collections.<OrderByItem>emptyList());
-        return groupBy;
-    }
-    
-    private SelectItems getSelectItemsWithEmptyAggregationSelectItems() {
-        SelectItems selectItems = mock(SelectItems.class);
-        when(selectItems.getAggregationSelectItems()).thenReturn(Collections.<AggregationSelectItem>emptyList());
-        return selectItems;
     }
     
     @Test
     public void getRevisedRowCountWithMax() {
         SelectSQLStatementContext selectSQLStatementContext = mock(SelectSQLStatementContext.class);
-        doReturn(getSelectItemsWithEmptyAggregationSelectItems()).when(selectSQLStatementContext).getSelectItems();
-        doReturn(getGroupBy()).when(selectSQLStatementContext).getGroupByContext();
-        doReturn(false).when(selectSQLStatementContext).isSameGroupByAndOrderByItems();
+        when(selectSQLStatementContext.getSelectItems()).thenReturn(mock(SelectItems.class));
+        when(selectSQLStatementContext.getGroupByContext()).thenReturn(new GroupByContext(Collections.singletonList(mock(OrderByItem.class)), 1));
         assertThat(new Pagination(getOffsetSegment(), getRowCountSegment(), getParameters()).getRevisedRowCount(selectSQLStatementContext), is((long) Integer.MAX_VALUE));
-    }
-    
-    private GroupByContext getGroupBy() {
-        GroupByContext groupBy = mock(GroupByContext.class);
-        List items = mock(List.class);
-        when(items.isEmpty()).thenReturn(false);
-        when(groupBy.getItems()).thenReturn(items);
-        return groupBy;
     }
 }
