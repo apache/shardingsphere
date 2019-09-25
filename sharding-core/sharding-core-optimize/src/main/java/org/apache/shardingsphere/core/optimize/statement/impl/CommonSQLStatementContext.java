@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.optimize.statement.impl;
 
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.shardingsphere.core.optimize.segment.TablesContext;
+import org.apache.shardingsphere.core.optimize.segment.table.TablesContext;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 

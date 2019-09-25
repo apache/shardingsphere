@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.route.type.standard;
 
 import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.core.optimize.segment.TablesContext;
+import org.apache.shardingsphere.core.optimize.segment.table.TablesContext;
 import org.apache.shardingsphere.core.optimize.segment.select.groupby.GroupBy;
 import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItem;
 import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItems;

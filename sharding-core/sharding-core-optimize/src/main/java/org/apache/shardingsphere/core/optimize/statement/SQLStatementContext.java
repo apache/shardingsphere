@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.optimize.statement;
 
-import org.apache.shardingsphere.core.optimize.segment.TablesContext;
+import org.apache.shardingsphere.core.optimize.segment.table.TablesContext;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
 /**

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.segment;
+package org.apache.shardingsphere.core.optimize.segment.table;
 
 import com.google.common.base.Optional;
 import lombok.EqualsAndHashCode;
