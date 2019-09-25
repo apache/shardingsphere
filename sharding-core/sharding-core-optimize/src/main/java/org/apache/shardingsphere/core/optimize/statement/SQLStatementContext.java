@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.optimize.statement;
 
-import org.apache.shardingsphere.core.optimize.segment.Tables;
+import org.apache.shardingsphere.core.optimize.segment.TablesContext;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
 /**
@@ -35,9 +35,9 @@ public interface SQLStatementContext {
     SQLStatement getSqlStatement();
     
     /**
-     * Get tables.
+     * Get tables context.
      *
-     * @return tables
+     * @return tables context
      */
-    Tables getTables();
+    TablesContext getTablesContext();
 }

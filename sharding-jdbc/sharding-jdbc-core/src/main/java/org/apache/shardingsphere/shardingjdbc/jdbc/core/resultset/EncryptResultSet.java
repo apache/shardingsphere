@@ -82,7 +82,7 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     private Map<String, String> createLogicAndCipherColumns() {
         Map<String, String> result = new LinkedHashMap<>();
-        for (String each : sqlStatementContext.getTables().getTableNames()) {
+        for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
             result.putAll(encryptRule.getLogicAndCipherColumns(each));
         }
         return result;
@@ -90,7 +90,7 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     private Map<String, String> createLogicAndPlainColumns() {
         Map<String, String> result = new LinkedHashMap<>();
-        for (String each : sqlStatementContext.getTables().getTableNames()) {
+        for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
             result.putAll(encryptRule.getLogicAndPlainColumns(each));
         }
         return result;

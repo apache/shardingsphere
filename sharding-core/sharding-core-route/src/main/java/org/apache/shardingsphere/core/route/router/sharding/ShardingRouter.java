@@ -130,11 +130,11 @@ public final class ShardingRouter {
     
     private boolean isNeedMergeShardingValues(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof SelectSQLStatementContext && ((SelectSQLStatementContext) sqlStatementContext).isContainsSubquery() 
-                && !shardingRule.getShardingLogicTableNames(sqlStatementContext.getTables().getTableNames()).isEmpty();
+                && !shardingRule.getShardingLogicTableNames(sqlStatementContext.getTablesContext().getTableNames()).isEmpty();
     }
     
     private void checkSubqueryShardingValues(final SQLStatementContext sqlStatementContext, final ShardingConditions shardingConditions) {
-        for (String each : sqlStatementContext.getTables().getTableNames()) {
+        for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
             Optional<TableRule> tableRule = shardingRule.findTableRule(each);
             if (tableRule.isPresent() && shardingRule.isRoutingByHint(tableRule.get()) && !HintManager.getDatabaseShardingValues(each).isEmpty()
                     && !HintManager.getTableShardingValues(each).isEmpty()) {

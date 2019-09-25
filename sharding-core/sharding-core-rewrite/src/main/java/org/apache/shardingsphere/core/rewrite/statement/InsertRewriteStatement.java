@@ -60,7 +60,7 @@ public final class InsertRewriteStatement extends RewriteStatement {
     }
     
     private void processEncrypt(final InsertSQLStatementContext insertSQLStatementContext, final EncryptRule encryptRule) {
-        String tableName = insertSQLStatementContext.getTables().getSingleTableName();
+        String tableName = insertSQLStatementContext.getTablesContext().getSingleTableName();
         Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
         if (!encryptTable.isPresent()) {
             return;

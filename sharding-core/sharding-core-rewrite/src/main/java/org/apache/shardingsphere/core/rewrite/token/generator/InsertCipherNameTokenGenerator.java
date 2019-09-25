@@ -58,7 +58,7 @@ public final class InsertCipherNameTokenGenerator implements CollectionSQLTokenG
         if (!insertColumnsSegment.isPresent()) {
             return Collections.emptyList();
         }
-        Map<String, String> logicAndCipherColumns = encryptRule.getLogicAndCipherColumns(insertSQLStatementContext.getTables().getSingleTableName());
+        Map<String, String> logicAndCipherColumns = encryptRule.getLogicAndCipherColumns(insertSQLStatementContext.getTablesContext().getSingleTableName());
         Collection<InsertCipherNameToken> result = new LinkedList<>();
         for (ColumnSegment each : insertColumnsSegment.get().getColumns()) {
             if (logicAndCipherColumns.keySet().contains(each.getName())) {

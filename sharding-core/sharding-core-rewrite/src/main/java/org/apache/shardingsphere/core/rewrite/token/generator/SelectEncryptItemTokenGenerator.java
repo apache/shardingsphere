@@ -59,7 +59,7 @@ public final class SelectEncryptItemTokenGenerator implements CollectionSQLToken
     }
     
     private boolean isSelectStatementWithTable(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext.getSqlStatement() instanceof SelectStatement && !sqlStatementContext.getTables().isEmpty();
+        return sqlStatementContext.getSqlStatement() instanceof SelectStatement && !sqlStatementContext.getTablesContext().isEmpty();
     }
     
     private Collection<SelectEncryptItemToken> createSelectCipherItemTokens(final EncryptRule encryptRule, final SQLStatementContext sqlStatementContext, final boolean isQueryWithCipherColumn) {
@@ -68,7 +68,7 @@ public final class SelectEncryptItemTokenGenerator implements CollectionSQLToken
         if (!selectItemsSegment.isPresent()) {
             return Collections.emptyList();
         }
-        String tableName = sqlStatementContext.getTables().getSingleTableName();
+        String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
         Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
         if (!encryptTable.isPresent()) {
             return Collections.emptyList();

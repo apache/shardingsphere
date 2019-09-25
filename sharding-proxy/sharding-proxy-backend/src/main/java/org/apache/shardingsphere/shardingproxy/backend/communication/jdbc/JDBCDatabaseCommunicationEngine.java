@@ -87,7 +87,8 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         }
         SQLStatementContext shardingStatementContext = routeResult.getShardingStatementContext();
         if (isExecuteDDLInXATransaction(shardingStatementContext.getSqlStatement())) {
-            return new ErrorResponse(new TableModifyInTransactionException(shardingStatementContext.getTables().isSingleTable() ? shardingStatementContext.getTables().getSingleTableName() : "unknown_table"));
+            return new ErrorResponse(new TableModifyInTransactionException(
+                    shardingStatementContext.getTablesContext().isSingleTable() ? shardingStatementContext.getTablesContext().getSingleTableName() : "unknown_table"));
         }
         response = executeEngine.execute(routeResult);
         if (logicSchema instanceof ShardingSchema) {
@@ -119,7 +120,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     }
     
     private boolean isAllBroadcastTables(final SQLStatementContext sqlStatementContext) {
-        return logicSchema instanceof ShardingSchema && logicSchema.getShardingRule().isAllBroadcastTables(sqlStatementContext.getTables().getTableNames());
+        return logicSchema instanceof ShardingSchema && logicSchema.getShardingRule().isAllBroadcastTables(sqlStatementContext.getTablesContext().getTableNames());
     }
     
     private void setMergedResult(final SQLRouteResult routeResult) throws SQLException {
@@ -165,7 +166,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     private Collection<String> getAssistedQueryColumns(final SQLRouteResult routeResult) {
         Collection<String> result = new LinkedList<>();
         EncryptRule encryptRule = getEncryptRule();
-        for (String each : routeResult.getShardingStatementContext().getTables().getTableNames()) {
+        for (String each : routeResult.getShardingStatementContext().getTablesContext().getTableNames()) {
             result.addAll(encryptRule.getAssistedQueryColumns(each));
         }
         return result;

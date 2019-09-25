@@ -73,7 +73,7 @@ public final class ShardingResultSetMetaData extends WrapperAdapter implements R
     
     private Collection<String> getAssistedQueryColumns() {
         Collection<String> result = new LinkedList<>();
-        for (String each : sqlStatementContext.getTables().getTableNames()) {
+        for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
             result.addAll(shardingRule.getEncryptRule().getAssistedQueryColumns(each));
         }
         return result;

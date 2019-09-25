@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.route.type.standard;
 
 import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.core.optimize.segment.Tables;
+import org.apache.shardingsphere.core.optimize.segment.TablesContext;
 import org.apache.shardingsphere.core.optimize.segment.select.groupby.GroupBy;
 import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItem;
 import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItems;
@@ -60,9 +60,9 @@ public final class StandardRoutingEngineTest extends AbstractRoutingEngineTest {
     public void assertRouteByUnsupported() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(new InsertStatement());
-        Tables tables = mock(Tables.class);
-        when(tables.isSingleTable()).thenReturn(false);
-        when(sqlStatementContext.getTables()).thenReturn(tables);
+        TablesContext tablesContext = mock(TablesContext.class);
+        when(tablesContext.isSingleTable()).thenReturn(false);
+        when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
         StandardRoutingEngine standardRoutingEngine = new StandardRoutingEngine(null, null, sqlStatementContext, null);
         standardRoutingEngine.route();
     }

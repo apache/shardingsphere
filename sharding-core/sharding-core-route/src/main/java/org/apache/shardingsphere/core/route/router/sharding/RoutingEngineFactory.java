@@ -67,7 +67,7 @@ public final class RoutingEngineFactory {
     public static RoutingEngine newInstance(final ShardingRule shardingRule,
                                             final ShardingSphereMetaData metaData, final SQLStatementContext sqlStatementContext, final ShardingConditions shardingConditions) {
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
-        Collection<String> tableNames = sqlStatementContext.getTables().getTableNames();
+        Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         if (sqlStatement instanceof TCLStatement) {
             return new DatabaseBroadcastRoutingEngine(shardingRule);
         }
@@ -111,7 +111,7 @@ public final class RoutingEngineFactory {
     }
     
     private static boolean isGrantForSingleTable(final SQLStatementContext sqlStatementContext) {
-        return !sqlStatementContext.getTables().isEmpty() && !"*".equals(sqlStatementContext.getTables().getSingleTableName());
+        return !sqlStatementContext.getTablesContext().isEmpty() && !"*".equals(sqlStatementContext.getTablesContext().getSingleTableName());
     }
     
     private static RoutingEngine getShardingRoutingEngine(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext, 

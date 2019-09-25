@@ -66,7 +66,7 @@ public final class InsertRegularNamesTokenGenerator implements OptionalSQLTokenG
     
     private Collection<String> getActualInsertColumns(final InsertRewriteStatement rewriteStatement, final BaseRule baseRule) {
         Collection<String> result = new LinkedList<>();
-        Map<String, String> logicAndCipherColumns = getEncryptRule(baseRule).getLogicAndCipherColumns(rewriteStatement.getSqlStatementContext().getTables().getSingleTableName());
+        Map<String, String> logicAndCipherColumns = getEncryptRule(baseRule).getLogicAndCipherColumns(rewriteStatement.getSqlStatementContext().getTablesContext().getSingleTableName());
         boolean isGeneratedKey = rewriteStatement.getSqlStatementContext() instanceof InsertSQLStatementContext 
                 && (rewriteStatement.getGeneratedKey().isPresent() && (rewriteStatement.getGeneratedKey().get().isGenerated()));
         for (String each : ((InsertSQLStatementContext) rewriteStatement.getSqlStatementContext()).getColumnNames()) {
@@ -94,6 +94,6 @@ public final class InsertRegularNamesTokenGenerator implements OptionalSQLTokenG
     }
     
     private boolean isNeedToAppendAssistedQueryAndPlainColumns(final SQLStatementContext sqlStatementContext, final EncryptRule encryptRule) {
-        return !encryptRule.getAssistedQueryAndPlainColumns(sqlStatementContext.getTables().getSingleTableName()).isEmpty();
+        return !encryptRule.getAssistedQueryAndPlainColumns(sqlStatementContext.getTablesContext().getSingleTableName()).isEmpty();
     }
 }

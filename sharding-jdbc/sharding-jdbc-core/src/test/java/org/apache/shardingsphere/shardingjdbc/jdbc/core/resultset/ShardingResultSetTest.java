@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.merge.MergedResult;
-import org.apache.shardingsphere.core.optimize.segment.Tables;
+import org.apache.shardingsphere.core.optimize.segment.TablesContext;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.EncryptRule;
@@ -76,9 +76,9 @@ public final class ShardingResultSetTest {
     private SQLRouteResult createSQLRouteResult() {
         SQLRouteResult result = mock(SQLRouteResult.class);
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
-        Tables tables = mock(Tables.class);
-        when(tables.getTableNames()).thenReturn(Collections.<String>emptyList());
-        when(sqlStatementContext.getTables()).thenReturn(tables);
+        TablesContext tablesContext = mock(TablesContext.class);
+        when(tablesContext.getTableNames()).thenReturn(Collections.<String>emptyList());
+        when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
         when(result.getShardingStatementContext()).thenReturn(sqlStatementContext);
         return result;
     }

@@ -73,7 +73,7 @@ public final class InsertSetCipherColumnTokenGenerator implements CollectionSQLT
     
     private Optional<InsertSetCipherColumnToken> createInsertSetEncryptValueToken(final InsertSQLStatementContext insertSQLStatementContext, 
                                                                                   final EncryptRule encryptRule, final AssignmentSegment segment) {
-        String tableName = insertSQLStatementContext.getTables().getSingleTableName();
+        String tableName = insertSQLStatementContext.getTablesContext().getSingleTableName();
         Optional<ShardingEncryptor> shardingEncryptor = encryptRule.findShardingEncryptor(tableName, segment.getColumn().getName());
         if (shardingEncryptor.isPresent()) {
             String cipherColumnName = encryptRule.getCipherColumn(tableName, segment.getColumn().getName());

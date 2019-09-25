@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.optimize.statement.impl;
 
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.shardingsphere.core.optimize.segment.Tables;
+import org.apache.shardingsphere.core.optimize.segment.TablesContext;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
@@ -34,10 +34,10 @@ public class CommonSQLStatementContext implements SQLStatementContext {
     
     private final SQLStatement sqlStatement;
     
-    private final Tables tables;
+    private final TablesContext tablesContext;
     
     public CommonSQLStatementContext(final SQLStatement sqlStatement) {
         this.sqlStatement = sqlStatement;
-        tables = new Tables(sqlStatement);
+        tablesContext = new TablesContext(sqlStatement);
     }
 }

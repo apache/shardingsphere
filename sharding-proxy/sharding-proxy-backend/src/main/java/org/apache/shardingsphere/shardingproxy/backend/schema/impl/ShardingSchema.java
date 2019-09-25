@@ -129,17 +129,17 @@ public final class ShardingSchema extends LogicSchema {
     }
     
     private void refreshTableMetaDataForCreateTable(final SQLStatementContext sqlStatementContext) throws SQLException {
-        String tableName = sqlStatementContext.getTables().getSingleTableName();
+        String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
         getMetaData().getTables().put(tableName, getTableMetaDataInitializer(metaData.getDataSources()).load(tableName, shardingRule));
     }
     
     private void refreshTableMetaDataForAlterTable(final SQLStatementContext sqlStatementContext) throws SQLException {
-        String tableName = sqlStatementContext.getTables().getSingleTableName();
+        String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
         getMetaData().getTables().put(tableName, getTableMetaDataInitializer(metaData.getDataSources()).load(tableName, shardingRule));
     }
     
     private void refreshTableMetaDataForDropTable(final SQLStatementContext sqlStatementContext) {
-        for (String each : sqlStatementContext.getTables().getTableNames()) {
+        for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
             getMetaData().getTables().remove(each);
         }
     }
@@ -147,20 +147,20 @@ public final class ShardingSchema extends LogicSchema {
     private void refreshTableMetaDataForCreateIndex(final SQLStatementContext sqlStatementContext) {
         CreateIndexStatement createIndexStatement = (CreateIndexStatement) sqlStatementContext.getSqlStatement();
         if (null != createIndexStatement.getIndex()) {
-            getMetaData().getTables().get(sqlStatementContext.getTables().getSingleTableName()).getIndexes().add(createIndexStatement.getIndex().getName());
+            getMetaData().getTables().get(sqlStatementContext.getTablesContext().getSingleTableName()).getIndexes().add(createIndexStatement.getIndex().getName());
         }
     }
     
     private void refreshTableMetaDataForDropIndex(final SQLStatementContext sqlStatementContext) {
         DropIndexStatement dropIndexStatement = (DropIndexStatement) sqlStatementContext.getSqlStatement();
         Collection<String> indexNames = getIndexNames(dropIndexStatement);
-        if (!sqlStatementContext.getTables().isEmpty()) {
-            getMetaData().getTables().get(sqlStatementContext.getTables().getSingleTableName()).getIndexes().removeAll(indexNames);
+        if (!sqlStatementContext.getTablesContext().isEmpty()) {
+            getMetaData().getTables().get(sqlStatementContext.getTablesContext().getSingleTableName()).getIndexes().removeAll(indexNames);
         }
         for (String each : indexNames) {
             Optional<String> logicTableName = findLogicTableName(getMetaData().getTables(), each);
             if (logicTableName.isPresent()) {
-                getMetaData().getTables().get(sqlStatementContext.getTables().getSingleTableName()).getIndexes().remove(each);
+                getMetaData().getTables().get(sqlStatementContext.getTablesContext().getSingleTableName()).getIndexes().remove(each);
             }
         }
     }

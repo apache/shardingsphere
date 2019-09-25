@@ -59,7 +59,7 @@ public final class InsertSetQueryAndPlainColumnsTokenGenerator implements Option
     }
     
     private Optional<InsertSetQueryAndPlainColumnsToken> createInsertSetAddItemsToken(final InsertSQLStatementContext insertSQLStatementContext, final EncryptRule encryptRule) {
-        String tableName = insertSQLStatementContext.getTables().getSingleTableName();
+        String tableName = insertSQLStatementContext.getTablesContext().getSingleTableName();
         if (encryptRule.getAssistedQueryAndPlainColumns(tableName).isEmpty()) {
             return Optional.absent();
         }

@@ -35,18 +35,18 @@ import java.util.LinkedHashSet;
 import java.util.TreeSet;
 
 /**
- * Tables.
+ * Tables context.
  * 
  * @author zhangliang
  */
 @ToString
-public final class Tables {
+public final class TablesContext {
     
     private final Collection<Table> tables = new ArrayList<>();
     
     private String schema;
     
-    public Tables(final SQLStatement sqlStatement) {
+    public TablesContext(final SQLStatement sqlStatement) {
         Collection<String> aliases = new HashSet<>();
         for (TableAvailable each : sqlStatement.findSQLSegments(TableAvailable.class)) {
             Optional<String> alias = getAlias(each);

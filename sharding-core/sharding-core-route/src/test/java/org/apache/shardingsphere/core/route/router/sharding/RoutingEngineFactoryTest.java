@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.route.router.sharding;
 
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.core.optimize.segment.Tables;
+import org.apache.shardingsphere.core.optimize.segment.TablesContext;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
@@ -68,7 +68,7 @@ public class RoutingEngineFactoryTest {
     private SQLStatementContext sqlStatementContext;
     
     @Mock
-    private Tables tables;
+    private TablesContext tablesContext;
     
     @Mock
     private ShardingConditions shardingConditions;
@@ -77,9 +77,9 @@ public class RoutingEngineFactoryTest {
     
     @Before
     public void setUp() {
-        when(sqlStatementContext.getTables()).thenReturn(tables);
+        when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
         tableNames = new ArrayList<>();
-        when(tables.getTableNames()).thenReturn(tableNames);
+        when(tablesContext.getTableNames()).thenReturn(tableNames);
     }
     
     @Test
@@ -133,8 +133,8 @@ public class RoutingEngineFactoryTest {
     
     @Test
     public void assertNewInstanceForDCLForSingleTable() {
-        when(tables.isEmpty()).thenReturn(false);
-        when(tables.getSingleTableName()).thenReturn("");
+        when(tablesContext.isEmpty()).thenReturn(false);
+        when(tablesContext.getSingleTableName()).thenReturn("");
         DCLStatement dclStatement = mock(DCLStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(dclStatement);
         RoutingEngine actual = RoutingEngineFactory.newInstance(shardingRule, shardingSphereMetaData, sqlStatementContext, shardingConditions);
@@ -143,7 +143,7 @@ public class RoutingEngineFactoryTest {
     
     @Test
     public void assertNewInstanceForDCLForNoSingleTable() {
-        when(tables.isEmpty()).thenReturn(true);
+        when(tablesContext.isEmpty()).thenReturn(true);
         DCLStatement dclStatement = mock(DCLStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(dclStatement);
         RoutingEngine actual = RoutingEngineFactory.newInstance(shardingRule, shardingSphereMetaData, sqlStatementContext, shardingConditions);

@@ -71,7 +71,7 @@ public final class EncryptResultSetMetaData extends WrapperAdapter implements Re
     
     private Collection<String> getAssistedQueryColumns() {
         Collection<String> result = new LinkedList<>();
-        for (String each : sqlStatementContext.getTables().getTableNames()) {
+        for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
             result.addAll(encryptRule.getAssistedQueryColumns(each));
         }
         return result;

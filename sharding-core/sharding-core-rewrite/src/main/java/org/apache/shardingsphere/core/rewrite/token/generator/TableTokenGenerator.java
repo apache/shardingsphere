@@ -103,7 +103,7 @@ public final class TableTokenGenerator implements CollectionSQLTokenGenerator<Ba
     
     private boolean isToGenerateTableToken(final SQLStatementContext sqlStatementContext, final BaseRule baseRule, final TableSegment tableSegment) {
         if (baseRule instanceof ShardingRule) {
-            Optional<Table> table = sqlStatementContext.getTables().find(tableSegment.getTableName());
+            Optional<Table> table = sqlStatementContext.getTablesContext().find(tableSegment.getTableName());
             return table.isPresent() && !table.get().getAlias().isPresent() && ((ShardingRule) baseRule).findTableRule(table.get().getName()).isPresent(); 
         }
         return baseRule instanceof MasterSlaveRule;

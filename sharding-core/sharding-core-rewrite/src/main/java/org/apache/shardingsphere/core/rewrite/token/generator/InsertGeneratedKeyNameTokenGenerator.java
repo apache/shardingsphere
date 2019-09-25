@@ -48,7 +48,7 @@ public final class InsertGeneratedKeyNameTokenGenerator implements OptionalSQLTo
     
     private Optional<InsertGeneratedKeyNameToken> createInsertGeneratedKeyToken(
             final InsertRewriteStatement rewriteStatement, final InsertColumnsSegment segment, final ShardingRule shardingRule) {
-        String tableName = rewriteStatement.getSqlStatementContext().getTables().getSingleTableName();
+        String tableName = rewriteStatement.getSqlStatementContext().getTablesContext().getSingleTableName();
         Optional<String> generatedKeyColumnName = shardingRule.findGenerateKeyColumnName(tableName);
         return generatedKeyColumnName.isPresent() && rewriteStatement.getGeneratedKey().isPresent() && rewriteStatement.getGeneratedKey().get().isGenerated()
                 ? Optional.of(new InsertGeneratedKeyNameToken(segment.getStopIndex(), generatedKeyColumnName.get(), isToAddCloseParenthesis(tableName, segment, shardingRule)))
