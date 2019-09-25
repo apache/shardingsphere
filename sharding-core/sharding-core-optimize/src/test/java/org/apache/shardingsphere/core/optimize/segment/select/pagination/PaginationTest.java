@@ -22,8 +22,7 @@ import org.apache.shardingsphere.core.optimize.segment.select.groupby.GroupBy;
 import org.apache.shardingsphere.core.optimize.segment.select.item.impl.AggregationSelectItem;
 import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItems;
 import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderByItem;
-import org.apache.shardingsphere.core.optimize.segment.select.pagination.Pagination;
-import org.apache.shardingsphere.core.optimize.statement.impl.SelectOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.ParameterMarkerLimitValueSegment;
@@ -129,10 +128,10 @@ public class PaginationTest {
     
     @Test
     public void getRevisedRowCount() {
-        SelectOptimizedStatement shardingStatement = mock(SelectOptimizedStatement.class);
-        Mockito.doReturn(getSelectItemsWithEmptyAggregationSelectItems()).when(shardingStatement).getSelectItems();
-        doReturn(getGroupByWithEmptyItems()).when(shardingStatement).getGroupBy();
-        assertThat(new Pagination(getOffsetSegment(), getRowCountSegment(), getParameters()).getRevisedRowCount(shardingStatement), is(50L));
+        SelectSQLStatementContext selectSQLStatementContext = mock(SelectSQLStatementContext.class);
+        Mockito.doReturn(getSelectItemsWithEmptyAggregationSelectItems()).when(selectSQLStatementContext).getSelectItems();
+        doReturn(getGroupByWithEmptyItems()).when(selectSQLStatementContext).getGroupBy();
+        assertThat(new Pagination(getOffsetSegment(), getRowCountSegment(), getParameters()).getRevisedRowCount(selectSQLStatementContext), is(50L));
     }
     
     private GroupBy getGroupByWithEmptyItems() {
@@ -149,11 +148,11 @@ public class PaginationTest {
     
     @Test
     public void getRevisedRowCountWithMax() {
-        SelectOptimizedStatement shardingStatement = mock(SelectOptimizedStatement.class);
-        doReturn(getSelectItemsWithEmptyAggregationSelectItems()).when(shardingStatement).getSelectItems();
-        doReturn(getGroupBy()).when(shardingStatement).getGroupBy();
-        doReturn(false).when(shardingStatement).isSameGroupByAndOrderByItems();
-        assertThat(new Pagination(getOffsetSegment(), getRowCountSegment(), getParameters()).getRevisedRowCount(shardingStatement), is((long) Integer.MAX_VALUE));
+        SelectSQLStatementContext selectSQLStatementContext = mock(SelectSQLStatementContext.class);
+        doReturn(getSelectItemsWithEmptyAggregationSelectItems()).when(selectSQLStatementContext).getSelectItems();
+        doReturn(getGroupBy()).when(selectSQLStatementContext).getGroupBy();
+        doReturn(false).when(selectSQLStatementContext).isSameGroupByAndOrderByItems();
+        assertThat(new Pagination(getOffsetSegment(), getRowCountSegment(), getParameters()).getRevisedRowCount(selectSQLStatementContext), is((long) Integer.MAX_VALUE));
     }
     
     private GroupBy getGroupBy() {

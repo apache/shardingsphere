@@ -36,7 +36,7 @@ import org.apache.shardingsphere.core.merge.dql.pagination.TopAndRowNumberDecora
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.optimize.segment.select.item.impl.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.optimize.segment.select.pagination.Pagination;
-import org.apache.shardingsphere.core.optimize.statement.impl.SelectOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.spi.database.DatabaseType;
@@ -58,7 +58,7 @@ public final class DQLMergeEngine implements MergeEngine {
     
     private final SQLRouteResult routeResult;
     
-    private final SelectOptimizedStatement shardingStatement;
+    private final SelectSQLStatementContext selectSQLStatementContext;
     
     private final List<QueryResult> queryResults;
     
@@ -68,7 +68,7 @@ public final class DQLMergeEngine implements MergeEngine {
     public DQLMergeEngine(final DatabaseType databaseType, final TableMetas tableMetas, final SQLRouteResult routeResult, final List<QueryResult> queryResults) throws SQLException {
         this.databaseType = databaseType;
         this.routeResult = routeResult;
-        this.shardingStatement = (SelectOptimizedStatement) routeResult.getShardingStatement();
+        this.selectSQLStatementContext = (SelectSQLStatementContext) routeResult.getShardingStatementContext();
         this.queryResults = getRealQueryResults(tableMetas, queryResults);
         columnLabelIndexMap = getColumnLabelIndexMap(this.queryResults.get(0));
     }
@@ -78,12 +78,12 @@ public final class DQLMergeEngine implements MergeEngine {
         if (1 == result.size()) {
             return result;
         }
-        List<AggregationDistinctSelectItem> aggregationDistinctSelectItems = shardingStatement.getSelectItems().getAggregationDistinctSelectItems();
+        List<AggregationDistinctSelectItem> aggregationDistinctSelectItems = selectSQLStatementContext.getSelectItems().getAggregationDistinctSelectItems();
         if (!aggregationDistinctSelectItems.isEmpty()) {
             result = getDividedQueryResults(new AggregationDistinctQueryResult(queryResults, aggregationDistinctSelectItems));
         }
         if (isDistinctRowSelectItems()) {
-            result = getDividedQueryResults(new DistinctQueryResult(queryResults, shardingStatement.getColumnLabels(tableMetas)));
+            result = getDividedQueryResults(new DistinctQueryResult(queryResults, selectSQLStatementContext.getColumnLabels(tableMetas)));
         }
         return result.isEmpty() ? queryResults : result;
     }
@@ -99,7 +99,7 @@ public final class DQLMergeEngine implements MergeEngine {
     }
     
     private boolean isDistinctRowSelectItems() {
-        return shardingStatement.getSelectItems().isDistinctRow() && shardingStatement.getGroupBy().getItems().isEmpty();
+        return selectSQLStatementContext.getSelectItems().isDistinctRow() && selectSQLStatementContext.getGroupBy().getItems().isEmpty();
     }
     
     private Map<String, Integer> getColumnLabelIndexMap(final QueryResult queryResult) throws SQLException {
@@ -115,27 +115,27 @@ public final class DQLMergeEngine implements MergeEngine {
         if (1 == queryResults.size()) {
             return new IteratorStreamMergedResult(queryResults);
         }
-        shardingStatement.setIndexForItems(columnLabelIndexMap);
+        selectSQLStatementContext.setIndexForItems(columnLabelIndexMap);
         return decorate(build());
     }
     
     private MergedResult build() throws SQLException {
-        if (!shardingStatement.getGroupBy().getItems().isEmpty() || !shardingStatement.getSelectItems().getAggregationSelectItems().isEmpty()) {
+        if (!selectSQLStatementContext.getGroupBy().getItems().isEmpty() || !selectSQLStatementContext.getSelectItems().getAggregationSelectItems().isEmpty()) {
             return getGroupByMergedResult();
         }
-        if (!shardingStatement.getOrderBy().getItems().isEmpty()) {
-            return new OrderByStreamMergedResult(queryResults, shardingStatement.getOrderBy().getItems());
+        if (!selectSQLStatementContext.getOrderBy().getItems().isEmpty()) {
+            return new OrderByStreamMergedResult(queryResults, selectSQLStatementContext.getOrderBy().getItems());
         }
         return new IteratorStreamMergedResult(queryResults);
     }
     
     private MergedResult getGroupByMergedResult() throws SQLException {
-        return shardingStatement.isSameGroupByAndOrderByItems()
-                ? new GroupByStreamMergedResult(columnLabelIndexMap, queryResults, shardingStatement) : new GroupByMemoryMergedResult(columnLabelIndexMap, queryResults, shardingStatement);
+        return selectSQLStatementContext.isSameGroupByAndOrderByItems()
+                ? new GroupByStreamMergedResult(columnLabelIndexMap, queryResults, selectSQLStatementContext) : new GroupByMemoryMergedResult(columnLabelIndexMap, queryResults, selectSQLStatementContext);
     }
     
     private MergedResult decorate(final MergedResult mergedResult) throws SQLException {
-        Pagination pagination = ((SelectOptimizedStatement) routeResult.getShardingStatement()).getPagination();
+        Pagination pagination = ((SelectSQLStatementContext) routeResult.getShardingStatementContext()).getPagination();
         if (!pagination.isHasPagination() || 1 == queryResults.size()) {
             return mergedResult;
         }

@@ -29,9 +29,9 @@ import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItems;
 import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderBy;
 import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.core.optimize.segment.select.pagination.Pagination;
-import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.impl.CommonOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.impl.SelectOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
+import org.apache.shardingsphere.core.optimize.statement.impl.CommonSQLStatementContext;
+import org.apache.shardingsphere.core.optimize.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
@@ -75,12 +75,12 @@ public final class LimitDecoratorMergedResultTest {
     
     @Test
     public void assertNextForSkipAll() throws SQLException {
-        OptimizedStatement shardingStatement = new SelectOptimizedStatement(new SelectStatement(), 
+        SQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
                 new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
                 new SelectItems(0, 0, false, Collections.<SelectItem>emptyList()), 
                 new Pagination(new NumberLiteralLimitValueSegment(0, 0, Integer.MAX_VALUE), null, Collections.emptyList()));
         SQLRouteResult routeResult = new SQLRouteResult(
-                shardingStatement, new CommonOptimizedStatement(new SelectStatement()), new ShardingConditions(Collections.<ShardingCondition>emptyList()));
+                selectSQLStatementContext, new CommonSQLStatementContext(new SelectStatement()), new ShardingConditions(Collections.<ShardingCondition>emptyList()));
         mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), null, routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertFalse(actual.next());
@@ -88,12 +88,12 @@ public final class LimitDecoratorMergedResultTest {
     
     @Test
     public void assertNextWithoutRowCount() throws SQLException {
-        OptimizedStatement shardingStatement = new SelectOptimizedStatement(new SelectStatement(), 
+        SQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
                 new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
                 new SelectItems(0, 0, false, Collections.<SelectItem>emptyList()), 
                 new Pagination(new NumberLiteralLimitValueSegment(0, 0, 2), null, Collections.emptyList()));
         SQLRouteResult routeResult = new SQLRouteResult(
-                shardingStatement, new CommonOptimizedStatement(new SelectStatement()), new ShardingConditions(Collections.<ShardingCondition>emptyList()));
+                selectSQLStatementContext, new CommonSQLStatementContext(new SelectStatement()), new ShardingConditions(Collections.<ShardingCondition>emptyList()));
         mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), null, routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
         for (int i = 0; i < 6; i++) {
@@ -104,12 +104,12 @@ public final class LimitDecoratorMergedResultTest {
     
     @Test
     public void assertNextWithRowCount() throws SQLException {
-        OptimizedStatement shardingStatement = new SelectOptimizedStatement(new SelectStatement(), 
+        SQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
                 new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
                 new SelectItems(0, 0, false, Collections.<SelectItem>emptyList()),
                 new Pagination(new NumberLiteralLimitValueSegment(0, 0, 2), new NumberLiteralLimitValueSegment(0, 0, 2), Collections.emptyList()));
         SQLRouteResult routeResult = new SQLRouteResult(
-                shardingStatement, new CommonOptimizedStatement(new SelectStatement()), new ShardingConditions(Collections.<ShardingCondition>emptyList()));
+                selectSQLStatementContext, new CommonSQLStatementContext(new SelectStatement()), new ShardingConditions(Collections.<ShardingCondition>emptyList()));
         mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), null, routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertTrue(actual.next());

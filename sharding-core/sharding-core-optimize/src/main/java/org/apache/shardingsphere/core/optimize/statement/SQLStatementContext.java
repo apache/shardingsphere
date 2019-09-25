@@ -21,11 +21,11 @@ import org.apache.shardingsphere.core.optimize.segment.Tables;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
 /**
- * Optimized statement.
+ * SQL statement context.
  *
  * @author zhangliang
  */
-public interface OptimizedStatement {
+public interface SQLStatementContext {
     
     /**
      * Get SQL statement.

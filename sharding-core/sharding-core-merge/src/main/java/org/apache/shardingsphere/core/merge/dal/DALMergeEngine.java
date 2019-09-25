@@ -29,7 +29,7 @@ import org.apache.shardingsphere.core.merge.dal.show.ShowOtherMergedResult;
 import org.apache.shardingsphere.core.merge.dal.show.ShowTableStatusMergedResult;
 import org.apache.shardingsphere.core.merge.dal.show.ShowTablesMergedResult;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.DescribeStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.ShowCreateTableStatement;
@@ -55,13 +55,13 @@ public final class DALMergeEngine implements MergeEngine {
     
     private final List<QueryResult> queryResults;
     
-    private final OptimizedStatement optimizedStatement;
+    private final SQLStatementContext sqlStatementContext;
     
     private final TableMetas tableMetas;
     
     @Override
     public MergedResult merge() throws SQLException {
-        SQLStatement dalStatement = optimizedStatement.getSqlStatement();
+        SQLStatement dalStatement = sqlStatementContext.getSqlStatement();
         if (dalStatement instanceof ShowDatabasesStatement) {
             return new ShowDatabasesMergedResult();
         }
@@ -78,7 +78,7 @@ public final class DALMergeEngine implements MergeEngine {
             return new ShowIndexMergedResult(shardingRule, queryResults, tableMetas);
         }
         if (dalStatement instanceof DescribeStatement) {
-            return new DescribeTableMergedResult(shardingRule, queryResults, optimizedStatement);
+            return new DescribeTableMergedResult(shardingRule, queryResults, sqlStatementContext);
         }
         return new ShowOtherMergedResult(queryResults.get(0));
     }

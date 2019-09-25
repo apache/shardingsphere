@@ -20,23 +20,23 @@ package org.apache.shardingsphere.core.optimize.statement.impl;
 import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.optimize.segment.Tables;
-import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
 /**
- * Common optimized statement.
+ * Common SQL statement context.
  *
  * @author zhangliang
  */
 @Getter
 @ToString
-public class CommonOptimizedStatement implements OptimizedStatement {
+public class CommonSQLStatementContext implements SQLStatementContext {
     
     private final SQLStatement sqlStatement;
     
     private final Tables tables;
     
-    public CommonOptimizedStatement(final SQLStatement sqlStatement) {
+    public CommonSQLStatementContext(final SQLStatement sqlStatement) {
         this.sqlStatement = sqlStatement;
         tables = new Tables(sqlStatement);
     }

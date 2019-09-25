@@ -26,8 +26,8 @@ import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItems;
 import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderBy;
 import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.core.optimize.segment.select.pagination.Pagination;
-import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.impl.SelectOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
+import org.apache.shardingsphere.core.optimize.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.fixture.AbstractRoutingEngineTest;
@@ -58,12 +58,12 @@ public final class StandardRoutingEngineTest extends AbstractRoutingEngineTest {
     
     @Test(expected = ShardingException.class)
     public void assertRouteByUnsupported() {
-        OptimizedStatement optimizedStatement = mock(OptimizedStatement.class);
-        when(optimizedStatement.getSqlStatement()).thenReturn(new InsertStatement());
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(new InsertStatement());
         Tables tables = mock(Tables.class);
         when(tables.isSingleTable()).thenReturn(false);
-        when(optimizedStatement.getTables()).thenReturn(tables);
-        StandardRoutingEngine standardRoutingEngine = new StandardRoutingEngine(null, null, optimizedStatement, null);
+        when(sqlStatementContext.getTables()).thenReturn(tables);
+        StandardRoutingEngine standardRoutingEngine = new StandardRoutingEngine(null, null, sqlStatementContext, null);
         standardRoutingEngine.route();
     }
     
@@ -190,7 +190,7 @@ public final class StandardRoutingEngineTest extends AbstractRoutingEngineTest {
     }
     
     private StandardRoutingEngine createStandardRoutingEngine(final ShardingRule shardingRule, final String logicTableName, final ShardingConditions shardingConditions) {
-        return new StandardRoutingEngine(shardingRule, logicTableName, new SelectOptimizedStatement(new SelectStatement(),
+        return new StandardRoutingEngine(shardingRule, logicTableName, new SelectSQLStatementContext(new SelectStatement(),
                 new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
                 new SelectItems(0, 0, false, Collections.<SelectItem>emptyList()),
                 new Pagination(null, null, Collections.emptyList())), shardingConditions);

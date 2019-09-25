@@ -29,8 +29,8 @@ import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItems;
 import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderBy;
 import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.core.optimize.segment.select.pagination.Pagination;
-import org.apache.shardingsphere.core.optimize.statement.impl.CommonOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.impl.SelectOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.impl.CommonSQLStatementContext;
+import org.apache.shardingsphere.core.optimize.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
@@ -63,10 +63,10 @@ public final class IteratorStreamMergedResultTest {
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
         when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
         queryResults = Lists.<QueryResult>newArrayList(new TestQueryResult(resultSet), new TestQueryResult(mock(ResultSet.class)), new TestQueryResult(mock(ResultSet.class)));
-        routeResult = new SQLRouteResult(new SelectOptimizedStatement(new SelectStatement(), 
+        routeResult = new SQLRouteResult(new SelectSQLStatementContext(new SelectStatement(), 
                 new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false), 
                 new SelectItems(0, 0, false, Collections.<SelectItem>emptyList()), new Pagination(null, null, Collections.emptyList())), 
-                new CommonOptimizedStatement(new SelectStatement()), new ShardingConditions(Collections.<ShardingCondition>emptyList()));
+                new CommonSQLStatementContext(new SelectStatement()), new ShardingConditions(Collections.<ShardingCondition>emptyList()));
     }
     
     @Test

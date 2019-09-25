@@ -24,7 +24,7 @@ import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItems;
 import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderBy;
 import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.core.optimize.segment.select.pagination.Pagination;
-import org.apache.shardingsphere.core.optimize.statement.impl.SelectOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.core.parse.core.constant.AggregationType;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.rewrite.encrypt.EncryptCondition;
@@ -62,10 +62,10 @@ public final class SQLTokenGenerateEngineTest {
         SelectStatement selectStatement = new SelectStatement();
         SelectItems selectItems = new SelectItems(1, 20, false, 
                 Collections.<SelectItem>singletonList(new AggregationDistinctSelectItem(1, 2, AggregationType.COUNT, "(DISTINCT id)", "c", "id")));
-        SelectOptimizedStatement optimizedStatement = new SelectOptimizedStatement(selectStatement,  
+        SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(selectStatement,  
                 new GroupBy(Collections.<OrderByItem>emptyList(), 1), new OrderBy(Collections.<OrderByItem>emptyList(), false), selectItems, new Pagination(null, null, Collections.emptyList()));
         rewriteStatement = new RewriteStatement(
-                optimizedStatement, new ShardingConditions(Collections.<ShardingCondition>emptyList()), new EncryptConditions(Collections.<EncryptCondition>emptyList()));
+                selectSQLStatementContext, new ShardingConditions(Collections.<ShardingCondition>emptyList()), new EncryptConditions(Collections.<EncryptCondition>emptyList()));
     }
     
     @SuppressWarnings("unchecked")

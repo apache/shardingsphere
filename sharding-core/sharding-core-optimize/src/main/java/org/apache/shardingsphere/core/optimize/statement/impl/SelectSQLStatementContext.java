@@ -46,13 +46,13 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Select optimized statement.
+ * Select SQL statement context.
  *
  * @author zhangliang
  */
 @Getter
 @ToString(callSuper = true)
-public final class SelectOptimizedStatement extends CommonOptimizedStatement {
+public final class SelectSQLStatementContext extends CommonSQLStatementContext {
     
     private final GroupBy groupBy;
     
@@ -65,7 +65,7 @@ public final class SelectOptimizedStatement extends CommonOptimizedStatement {
     private final boolean containsSubquery;
     
     // TODO to be remove, for test case only
-    public SelectOptimizedStatement(final SelectStatement sqlStatement, final GroupBy groupBy, final OrderBy orderBy, final SelectItems selectItems, final Pagination pagination) {
+    public SelectSQLStatementContext(final SelectStatement sqlStatement, final GroupBy groupBy, final OrderBy orderBy, final SelectItems selectItems, final Pagination pagination) {
         super(sqlStatement);
         this.groupBy = groupBy;
         this.orderBy = orderBy;
@@ -74,7 +74,7 @@ public final class SelectOptimizedStatement extends CommonOptimizedStatement {
         containsSubquery = containsSubquery();
     }
     
-    public SelectOptimizedStatement(final TableMetas tableMetas, final String sql, final List<Object> parameters, final SelectStatement sqlStatement) {
+    public SelectSQLStatementContext(final TableMetas tableMetas, final String sql, final List<Object> parameters, final SelectStatement sqlStatement) {
         super(sqlStatement);
         this.groupBy = new GroupByEngine().createGroupBy(sqlStatement);
         this.orderBy = new OrderByEngine().createOrderBy(sqlStatement, groupBy);

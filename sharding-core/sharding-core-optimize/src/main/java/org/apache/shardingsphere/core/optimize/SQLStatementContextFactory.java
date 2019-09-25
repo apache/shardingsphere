@@ -20,10 +20,10 @@ package org.apache.shardingsphere.core.optimize;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.optimize.statement.impl.CommonOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.impl.InsertOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.impl.SelectOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.impl.CommonSQLStatementContext;
+import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
+import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
+import org.apache.shardingsphere.core.optimize.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
@@ -31,31 +31,31 @@ import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import java.util.List;
 
 /**
- * Optimized statement factory.
+ * SQL statement context factory.
  *
  * @author zhangliang
  * @author maxiaoguang
  * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class OptimizedStatementFactory {
+public final class SQLStatementContextFactory {
     
     /**
-     * Create optimized statement.
+     * Create SQL statement context.
      *
      * @param tableMetas table meta data
      * @param sql SQL
      * @param parameters SQL parameters
      * @param sqlStatement SQL statement
-     * @return optimized statement
+     * @return SQL statement context
      */
-    public static OptimizedStatement newInstance(final TableMetas tableMetas, final String sql, final List<Object> parameters, final SQLStatement sqlStatement) {
+    public static SQLStatementContext newInstance(final TableMetas tableMetas, final String sql, final List<Object> parameters, final SQLStatement sqlStatement) {
         if (sqlStatement instanceof SelectStatement) {
-            return new SelectOptimizedStatement(tableMetas, sql, parameters, (SelectStatement) sqlStatement);
+            return new SelectSQLStatementContext(tableMetas, sql, parameters, (SelectStatement) sqlStatement);
         }
         if (sqlStatement instanceof InsertStatement) {
-            return new InsertOptimizedStatement(tableMetas, parameters, (InsertStatement) sqlStatement);
+            return new InsertSQLStatementContext(tableMetas, parameters, (InsertStatement) sqlStatement);
         }
-        return new CommonOptimizedStatement(sqlStatement);
+        return new CommonSQLStatementContext(sqlStatement);
     }
 }

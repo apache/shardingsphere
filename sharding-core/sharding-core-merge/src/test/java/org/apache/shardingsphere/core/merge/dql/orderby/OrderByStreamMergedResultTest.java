@@ -29,9 +29,9 @@ import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItems;
 import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderBy;
 import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.core.optimize.segment.select.pagination.Pagination;
-import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.impl.CommonOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.impl.SelectOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
+import org.apache.shardingsphere.core.optimize.statement.impl.CommonSQLStatementContext;
+import org.apache.shardingsphere.core.optimize.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.core.parse.core.constant.OrderDirection;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
@@ -66,11 +66,11 @@ public final class OrderByStreamMergedResultTest {
     public void setUp() throws SQLException {
         queryResults = Lists.<QueryResult>newArrayList(
                 new TestQueryResult(mockResultSet()), new TestQueryResult(mockResultSet()), new TestQueryResult(mockResultSet()));
-        OptimizedStatement shardingStatement = new SelectOptimizedStatement(new SelectStatement(), 
+        SQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
                 new GroupBy(Collections.<OrderByItem>emptyList(), 0), 
                 new OrderBy(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC))), false), 
                 new SelectItems(0, 0, false, Collections.<SelectItem>emptyList()), new Pagination(null, null, Collections.emptyList()));
-        routeResult = new SQLRouteResult(shardingStatement, new CommonOptimizedStatement(new SelectStatement()), new ShardingConditions(Collections.<ShardingCondition>emptyList()));
+        routeResult = new SQLRouteResult(selectSQLStatementContext, new CommonSQLStatementContext(new SelectStatement()), new ShardingConditions(Collections.<ShardingCondition>emptyList()));
     }
     
     private ResultSet mockResultSet() throws SQLException {

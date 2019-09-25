@@ -29,19 +29,19 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Insert optimized statement.
+ * Insert SQL statement context.
  *
  * @author zhangliang
  */
 @Getter
 @ToString(callSuper = true)
-public final class InsertOptimizedStatement extends CommonOptimizedStatement {
+public final class InsertSQLStatementContext extends CommonSQLStatementContext {
     
     private final List<String> columnNames;
     
     private final List<InsertValue> insertValues;
     
-    public InsertOptimizedStatement(final TableMetas tableMetas, final List<Object> parameters, final InsertStatement sqlStatement) {
+    public InsertSQLStatementContext(final TableMetas tableMetas, final List<Object> parameters, final InsertStatement sqlStatement) {
         super(sqlStatement);
         columnNames = sqlStatement.useDefaultColumns() ? tableMetas.getAllColumnNames(getTables().getSingleTableName()) : sqlStatement.getColumnNames();
         insertValues = getInsertValues(parameters);
