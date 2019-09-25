@@ -28,13 +28,13 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.Lim
 import java.util.List;
 
 /**
- * Pagination.
+ * Pagination context.
  *
  * @author zhangliang
  * @author caohao
  * @author zhangyonglun
  */
-public final class Pagination {
+public final class PaginationContext {
     
     @Getter
     private final boolean hasPagination;
@@ -47,7 +47,7 @@ public final class Pagination {
     
     private final Long actualRowCount;
     
-    public Pagination(final PaginationValueSegment offsetSegment, final PaginationValueSegment rowCountSegment, final List<Object> parameters) {
+    public PaginationContext(final PaginationValueSegment offsetSegment, final PaginationValueSegment rowCountSegment, final List<Object> parameters) {
         hasPagination = null != offsetSegment || null != rowCountSegment;
         this.offsetSegment = offsetSegment;
         this.rowCountSegment = rowCountSegment;

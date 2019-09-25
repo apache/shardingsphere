@@ -35,7 +35,7 @@ import org.apache.shardingsphere.core.merge.dql.pagination.RowNumberDecoratorMer
 import org.apache.shardingsphere.core.merge.dql.pagination.TopAndRowNumberDecoratorMergedResult;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.optimize.segment.select.item.impl.AggregationDistinctSelectItem;
-import org.apache.shardingsphere.core.optimize.segment.select.pagination.Pagination;
+import org.apache.shardingsphere.core.optimize.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
@@ -136,19 +136,19 @@ public final class DQLMergeEngine implements MergeEngine {
     }
     
     private MergedResult decorate(final MergedResult mergedResult) throws SQLException {
-        Pagination pagination = ((SelectSQLStatementContext) routeResult.getShardingStatementContext()).getPagination();
-        if (!pagination.isHasPagination() || 1 == queryResults.size()) {
+        PaginationContext paginationContext = ((SelectSQLStatementContext) routeResult.getShardingStatementContext()).getPaginationContext();
+        if (!paginationContext.isHasPagination() || 1 == queryResults.size()) {
             return mergedResult;
         }
         String trunkDatabaseName = DatabaseTypes.getTrunkDatabaseType(databaseType.getName()).getName();
         if ("MySQL".equals(trunkDatabaseName) || "PostgreSQL".equals(trunkDatabaseName)) {
-            return new LimitDecoratorMergedResult(mergedResult, pagination);
+            return new LimitDecoratorMergedResult(mergedResult, paginationContext);
         }
         if ("Oracle".equals(trunkDatabaseName)) {
-            return new RowNumberDecoratorMergedResult(mergedResult, pagination);
+            return new RowNumberDecoratorMergedResult(mergedResult, paginationContext);
         }
         if ("SQLServer".equals(trunkDatabaseName)) {
-            return new TopAndRowNumberDecoratorMergedResult(mergedResult, pagination);
+            return new TopAndRowNumberDecoratorMergedResult(mergedResult, paginationContext);
         }
         return mergedResult;
     }

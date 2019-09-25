@@ -31,8 +31,8 @@ import org.apache.shardingsphere.core.optimize.segment.select.item.engine.Select
 import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.core.optimize.segment.select.orderby.engine.OrderByContextEngine;
-import org.apache.shardingsphere.core.optimize.segment.select.pagination.Pagination;
-import org.apache.shardingsphere.core.optimize.segment.select.pagination.engine.PaginationEngine;
+import org.apache.shardingsphere.core.optimize.segment.select.pagination.PaginationContext;
+import org.apache.shardingsphere.core.optimize.segment.select.pagination.engine.PaginationContextEngine;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.IndexOrderByItemSegment;
@@ -60,18 +60,18 @@ public final class SelectSQLStatementContext extends CommonSQLStatementContext {
     
     private final SelectItems selectItems;
     
-    private final Pagination pagination;
+    private final PaginationContext paginationContext;
     
     private final boolean containsSubquery;
     
     // TODO to be remove, for test case only
     public SelectSQLStatementContext(final SelectStatement sqlStatement, 
-                                     final GroupByContext groupByContext, final OrderByContext orderByContext, final SelectItems selectItems, final Pagination pagination) {
+                                     final GroupByContext groupByContext, final OrderByContext orderByContext, final SelectItems selectItems, final PaginationContext paginationContext) {
         super(sqlStatement);
         this.groupByContext = groupByContext;
         this.orderByContext = orderByContext;
         this.selectItems = selectItems;
-        this.pagination = pagination;
+        this.paginationContext = paginationContext;
         containsSubquery = containsSubquery();
     }
     
@@ -80,7 +80,7 @@ public final class SelectSQLStatementContext extends CommonSQLStatementContext {
         groupByContext = new GroupByContextEngine().createGroupByContext(sqlStatement);
         orderByContext = new OrderByContextEngine().createOrderBy(sqlStatement, groupByContext);
         selectItems = new SelectItemsEngine(tableMetas).createSelectItems(sql, sqlStatement, groupByContext, orderByContext);
-        pagination = new PaginationEngine().createPagination(sqlStatement, selectItems, parameters);
+        paginationContext = new PaginationContextEngine().createPaginationContext(sqlStatement, selectItems, parameters);
         containsSubquery = containsSubquery();
     }
     

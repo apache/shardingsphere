@@ -17,26 +17,26 @@
 
 package org.apache.shardingsphere.core.optimize.segment.select.pagination.engine;
 
-import org.apache.shardingsphere.core.optimize.segment.select.pagination.Pagination;
+import org.apache.shardingsphere.core.optimize.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.LimitSegment;
 
 import java.util.List;
 
 /**
- * Pagination engine for limit.
+ * Pagination context engine for limit.
  *
  * @author zhangliang
  */
-public final class LimitPaginationEngine {
+public final class LimitPaginationContextEngine {
     
     /**
-     * Create pagination.
+     * Create pagination context.
      * 
      * @param limitSegment limit segment
      * @param parameters SQL parameters
-     * @return pagination
+     * @return pagination context
      */
-    public Pagination createPagination(final LimitSegment limitSegment, final List<Object> parameters) {
-        return new Pagination(limitSegment.getOffset().orNull(), limitSegment.getRowCount().orNull(), parameters);
+    public PaginationContext createPaginationContext(final LimitSegment limitSegment, final List<Object> parameters) {
+        return new PaginationContext(limitSegment.getOffset().orNull(), limitSegment.getRowCount().orNull(), parameters);
     }
 }

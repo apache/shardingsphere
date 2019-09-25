@@ -37,55 +37,56 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class PaginationTest {
+public final class PaginationContextTest {
     
     @Test
     public void assertSegmentWithNullOffsetSegment() {
         PaginationValueSegment rowCountSegment = getRowCountSegment();
-        Pagination pagination = new Pagination(null, rowCountSegment, getParameters());
-        assertTrue(pagination.isHasPagination());
-        assertNull(pagination.getOffsetSegment().orNull());
-        assertThat(pagination.getRowCountSegment().orNull(), is(rowCountSegment));
+        PaginationContext paginationContext = new PaginationContext(null, rowCountSegment, getParameters());
+        assertTrue(paginationContext.isHasPagination());
+        assertNull(paginationContext.getOffsetSegment().orNull());
+        assertThat(paginationContext.getRowCountSegment().orNull(), is(rowCountSegment));
     }
     
     @Test
     public void assertGetSegmentWithRowCountSegment() {
         PaginationValueSegment offsetSegment = getOffsetSegment();
-        Pagination pagination = new Pagination(offsetSegment, null, getParameters());
-        assertTrue(pagination.isHasPagination());
-        assertThat(pagination.getOffsetSegment().orNull(), is(offsetSegment));
-        assertNull(pagination.getRowCountSegment().orNull());
+        PaginationContext paginationContext = new PaginationContext(offsetSegment, null, getParameters());
+        assertTrue(paginationContext.isHasPagination());
+        assertThat(paginationContext.getOffsetSegment().orNull(), is(offsetSegment));
+        assertNull(paginationContext.getRowCountSegment().orNull());
     }
     
     @Test
     public void assertGetActualOffset() {
-        assertThat(new Pagination(getOffsetSegment(), getRowCountSegment(), getParameters()).getActualOffset(), is(30L));
+        assertThat(new PaginationContext(getOffsetSegment(), getRowCountSegment(), getParameters()).getActualOffset(), is(30L));
     }
     
     @Test
     public void assertGetActualOffsetWithNumberLiteralPaginationValueSegment() {
-        assertThat(new Pagination(getOffsetSegmentWithNumberLiteralPaginationValueSegment(), getRowCountSegmentWithNumberLiteralPaginationValueSegment(), getParameters()).getActualOffset(), is(30L));
+        assertThat(new PaginationContext(getOffsetSegmentWithNumberLiteralPaginationValueSegment(), 
+                getRowCountSegmentWithNumberLiteralPaginationValueSegment(), getParameters()).getActualOffset(), is(30L));
     }
     
     @Test
     public void assertGetActualOffsetWithNullOffsetSegment() {
-        assertThat(new Pagination(null, getRowCountSegment(), getParameters()).getActualOffset(), is(0L));
+        assertThat(new PaginationContext(null, getRowCountSegment(), getParameters()).getActualOffset(), is(0L));
     }
     
     @Test
     public void assertGetActualRowCount() {
-        assertThat(new Pagination(getOffsetSegment(), getRowCountSegment(), getParameters()).getActualRowCount().orNull(), is(20L));
+        assertThat(new PaginationContext(getOffsetSegment(), getRowCountSegment(), getParameters()).getActualRowCount().orNull(), is(20L));
     }
     
     @Test
     public void assertGetActualRowCountWithNumberLiteralPaginationValueSegment() {
-        assertThat(new Pagination(getOffsetSegmentWithNumberLiteralPaginationValueSegment(),
+        assertThat(new PaginationContext(getOffsetSegmentWithNumberLiteralPaginationValueSegment(),
             getRowCountSegmentWithNumberLiteralPaginationValueSegment(), getParameters()).getActualRowCount().orNull(), is(20L));
     }
     
     @Test
     public void assertGetActualRowCountWithNullRowCountSegment() {
-        assertNull(new Pagination(getOffsetSegment(), null, getParameters()).getActualRowCount().orNull());
+        assertNull(new PaginationContext(getOffsetSegment(), null, getParameters()).getActualRowCount().orNull());
     }
     
     private PaginationValueSegment getOffsetSegmentWithNumberLiteralPaginationValueSegment() {
@@ -98,12 +99,12 @@ public final class PaginationTest {
     
     @Test
     public void assertGetOffsetParameterIndex() {
-        assertThat(new Pagination(getOffsetSegment(), getRowCountSegment(), getParameters()).getOffsetParameterIndex().orNull(), is(0));
+        assertThat(new PaginationContext(getOffsetSegment(), getRowCountSegment(), getParameters()).getOffsetParameterIndex().orNull(), is(0));
     }
     
     @Test
     public void assertGetRowCountParameterIndex() {
-        assertThat(new Pagination(getOffsetSegment(), getRowCountSegment(), getParameters()).getRowCountParameterIndex().orNull(), is(1));
+        assertThat(new PaginationContext(getOffsetSegment(), getRowCountSegment(), getParameters()).getRowCountParameterIndex().orNull(), is(1));
     }
     
     private PaginationValueSegment getOffsetSegment() {
@@ -120,7 +121,7 @@ public final class PaginationTest {
     
     @Test
     public void assertGetRevisedOffset() {
-        assertThat(new Pagination(getOffsetSegment(), getRowCountSegment(), getParameters()).getRevisedOffset(), is(0L));
+        assertThat(new PaginationContext(getOffsetSegment(), getRowCountSegment(), getParameters()).getRevisedOffset(), is(0L));
     }
     
     @Test
@@ -128,7 +129,7 @@ public final class PaginationTest {
         SelectSQLStatementContext selectSQLStatementContext = mock(SelectSQLStatementContext.class);
         when(selectSQLStatementContext.getSelectItems()).thenReturn(mock(SelectItems.class));
         when(selectSQLStatementContext.getGroupByContext()).thenReturn(new GroupByContext(Collections.<OrderByItem>emptyList(), 0));
-        assertThat(new Pagination(getOffsetSegment(), getRowCountSegment(), getParameters()).getRevisedRowCount(selectSQLStatementContext), is(50L));
+        assertThat(new PaginationContext(getOffsetSegment(), getRowCountSegment(), getParameters()).getRevisedRowCount(selectSQLStatementContext), is(50L));
     }
     
     @Test
@@ -136,6 +137,6 @@ public final class PaginationTest {
         SelectSQLStatementContext selectSQLStatementContext = mock(SelectSQLStatementContext.class);
         when(selectSQLStatementContext.getSelectItems()).thenReturn(mock(SelectItems.class));
         when(selectSQLStatementContext.getGroupByContext()).thenReturn(new GroupByContext(Collections.singletonList(mock(OrderByItem.class)), 1));
-        assertThat(new Pagination(getOffsetSegment(), getRowCountSegment(), getParameters()).getRevisedRowCount(selectSQLStatementContext), is((long) Integer.MAX_VALUE));
+        assertThat(new PaginationContext(getOffsetSegment(), getRowCountSegment(), getParameters()).getRevisedRowCount(selectSQLStatementContext), is((long) Integer.MAX_VALUE));
     }
 }
