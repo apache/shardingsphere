@@ -21,16 +21,15 @@ import com.google.common.collect.Lists;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.dql.common.MemoryQueryResultRow;
 import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
-import org.apache.shardingsphere.core.optimize.sharding.segment.groupby.GroupBy;
-import org.apache.shardingsphere.core.optimize.sharding.segment.item.SelectItem;
-import org.apache.shardingsphere.core.optimize.sharding.segment.item.SelectItems;
-import org.apache.shardingsphere.core.optimize.sharding.segment.orderby.OrderBy;
-import org.apache.shardingsphere.core.optimize.sharding.segment.orderby.OrderByItem;
-import org.apache.shardingsphere.core.optimize.sharding.segment.pagination.Pagination;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.segment.select.groupby.GroupBy;
+import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItem;
+import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItems;
+import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderBy;
+import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderByItem;
+import org.apache.shardingsphere.core.optimize.segment.select.pagination.Pagination;
+import org.apache.shardingsphere.core.optimize.statement.impl.SelectOptimizedStatement;
 import org.apache.shardingsphere.core.parse.core.constant.OrderDirection;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.IndexOrderByItemSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.junit.Test;
 
@@ -53,14 +52,14 @@ public final class GroupByRowComparatorTest {
     
     @Test
     public void assertCompareToForAscWithOrderByItems() throws SQLException {
-        ShardingSelectOptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(new SelectStatement(), 
+        SelectOptimizedStatement optimizedStatement = new SelectOptimizedStatement(new SelectStatement(), 
                 new GroupBy(Arrays.asList(
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC)), 
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC))), 0),
                 new OrderBy(Arrays.asList(
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC)),
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.ASC, OrderDirection.ASC))), false),
-                new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<TableSegment>emptyList(), null), new Pagination(null, null, Collections.emptyList()));
+                new SelectItems(0, 0, false, Collections.<SelectItem>emptyList()), new Pagination(null, null, Collections.emptyList()));
         GroupByRowComparator groupByRowComparator = new GroupByRowComparator(optimizedStatement, caseSensitives);
         MemoryQueryResultRow o1 = new MemoryQueryResultRow(mockQueryResult("1", "2"));
         MemoryQueryResultRow o2 = new MemoryQueryResultRow(mockQueryResult("3", "4"));
@@ -69,14 +68,14 @@ public final class GroupByRowComparatorTest {
     
     @Test
     public void assertCompareToForDecsWithOrderByItems() throws SQLException {
-        ShardingSelectOptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(new SelectStatement(), 
+        SelectOptimizedStatement optimizedStatement = new SelectOptimizedStatement(new SelectStatement(), 
                 new GroupBy(Arrays.asList(
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC)),
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.ASC, OrderDirection.ASC))), 0),
                 new OrderBy(Arrays.asList(
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC)),
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC))), false),
-                new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<TableSegment>emptyList(), null), new Pagination(null, null, Collections.emptyList()));
+                new SelectItems(0, 0, false, Collections.<SelectItem>emptyList()), new Pagination(null, null, Collections.emptyList()));
         GroupByRowComparator groupByRowComparator = new GroupByRowComparator(optimizedStatement, caseSensitives);
         MemoryQueryResultRow o1 = new MemoryQueryResultRow(mockQueryResult("1", "2"));
         MemoryQueryResultRow o2 = new MemoryQueryResultRow(mockQueryResult("3", "4"));
@@ -85,14 +84,14 @@ public final class GroupByRowComparatorTest {
     
     @Test
     public void assertCompareToForEqualWithOrderByItems() throws SQLException {
-        ShardingSelectOptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(new SelectStatement(), 
+        SelectOptimizedStatement optimizedStatement = new SelectOptimizedStatement(new SelectStatement(), 
                 new GroupBy(Arrays.asList(
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC)),
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.ASC, OrderDirection.ASC))), 0),
                 new OrderBy(Arrays.asList(
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC)),
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC))), false),
-                new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<TableSegment>emptyList(), null), new Pagination(null, null, Collections.emptyList()));
+                new SelectItems(0, 0, false, Collections.<SelectItem>emptyList()), new Pagination(null, null, Collections.emptyList()));
         GroupByRowComparator groupByRowComparator = new GroupByRowComparator(optimizedStatement, caseSensitives);
         MemoryQueryResultRow o1 = new MemoryQueryResultRow(mockQueryResult("1", "2"));
         MemoryQueryResultRow o2 = new MemoryQueryResultRow(mockQueryResult("1", "2"));
@@ -101,11 +100,11 @@ public final class GroupByRowComparatorTest {
     
     @Test
     public void assertCompareToForAscWithGroupByItems() throws SQLException {
-        ShardingSelectOptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(new SelectStatement(), 
+        SelectOptimizedStatement optimizedStatement = new SelectOptimizedStatement(new SelectStatement(), 
                 new GroupBy(Arrays.asList(
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC)),
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.ASC, OrderDirection.ASC))), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
-                new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<TableSegment>emptyList(), null), new Pagination(null, null, Collections.emptyList()));
+                new SelectItems(0, 0, false, Collections.<SelectItem>emptyList()), new Pagination(null, null, Collections.emptyList()));
         GroupByRowComparator groupByRowComparator = new GroupByRowComparator(optimizedStatement, caseSensitives);
         MemoryQueryResultRow o1 = new MemoryQueryResultRow(mockQueryResult("1", "2"));
         MemoryQueryResultRow o2 = new MemoryQueryResultRow(mockQueryResult("3", "4"));
@@ -114,11 +113,11 @@ public final class GroupByRowComparatorTest {
     
     @Test
     public void assertCompareToForDecsWithGroupByItems() throws SQLException {
-        ShardingSelectOptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(new SelectStatement(), 
+        SelectOptimizedStatement optimizedStatement = new SelectOptimizedStatement(new SelectStatement(), 
                 new GroupBy(Arrays.asList(
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC)),
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC))), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
-                new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<TableSegment>emptyList(), null), new Pagination(null, null, Collections.emptyList()));
+                new SelectItems(0, 0, false, Collections.<SelectItem>emptyList()), new Pagination(null, null, Collections.emptyList()));
         GroupByRowComparator groupByRowComparator = new GroupByRowComparator(optimizedStatement, caseSensitives);
         MemoryQueryResultRow o1 = new MemoryQueryResultRow(mockQueryResult("1", "2"));
         MemoryQueryResultRow o2 = new MemoryQueryResultRow(mockQueryResult("3", "4"));
@@ -127,11 +126,11 @@ public final class GroupByRowComparatorTest {
     
     @Test
     public void assertCompareToForEqualWithGroupByItems() throws SQLException {
-        ShardingSelectOptimizedStatement optimizedStatement = new ShardingSelectOptimizedStatement(new SelectStatement(), 
+        SelectOptimizedStatement optimizedStatement = new SelectOptimizedStatement(new SelectStatement(), 
                 new GroupBy(Arrays.asList(
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC)),
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC))), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
-                new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<TableSegment>emptyList(), null), new Pagination(null, null, Collections.emptyList()));
+                new SelectItems(0, 0, false, Collections.<SelectItem>emptyList()), new Pagination(null, null, Collections.emptyList()));
         GroupByRowComparator groupByRowComparator = new GroupByRowComparator(optimizedStatement, caseSensitives);
         MemoryQueryResultRow o1 = new MemoryQueryResultRow(mockQueryResult("1", "2"));
         MemoryQueryResultRow o2 = new MemoryQueryResultRow(mockQueryResult("1", "2"));

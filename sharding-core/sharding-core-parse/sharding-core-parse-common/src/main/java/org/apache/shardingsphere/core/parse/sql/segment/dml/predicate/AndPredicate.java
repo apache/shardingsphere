@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.parse.sql.segment.dml.predicate;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -28,7 +27,6 @@ import java.util.LinkedList;
  * 
  * @author duhongjun
  */
-@RequiredArgsConstructor
 @Getter
 public final class AndPredicate {
     
