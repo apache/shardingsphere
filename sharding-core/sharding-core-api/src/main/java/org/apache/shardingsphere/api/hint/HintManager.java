@@ -67,6 +67,7 @@ public final class HintManager implements AutoCloseable {
      */
     public void setDatabaseShardingValue(final Comparable<?> value) {
         databaseShardingValues.clear();
+        tableShardingValues.clear();
         databaseShardingValues.put("", value);
         databaseShardingOnly = true;
     }
