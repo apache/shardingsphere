@@ -6,7 +6,7 @@ import java.security.NoSuchAlgorithmException;
 /**
  * @author avalon566
  */
-public class MysqlPasswordEncrypter {
+public class MySQLPasswordEncryptor {
     public static final byte[] scramble411(byte[] pass, byte[] seed) throws NoSuchAlgorithmException {
         MessageDigest md = MessageDigest.getInstance("SHA-1");
         byte[] pass1 = md.digest(pass);

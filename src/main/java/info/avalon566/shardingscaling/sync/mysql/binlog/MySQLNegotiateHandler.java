@@ -12,13 +12,13 @@ import lombok.var;
 /**
  * @author avalon566
  */
-public class MysqlNegotiateHandler extends ChannelInboundHandlerAdapter {
+public class MySQLNegotiateHandler extends ChannelInboundHandlerAdapter {
 
     private final String username;
     private final String password;
     private final Promise<Object> authResultCallback;
 
-    public MysqlNegotiateHandler(String username, String password, Promise<Object> authResultCallback) {
+    public MySQLNegotiateHandler(String username, String password, Promise<Object> authResultCallback) {
         this.username = username;
         this.password = password;
         this.authResultCallback = authResultCallback;

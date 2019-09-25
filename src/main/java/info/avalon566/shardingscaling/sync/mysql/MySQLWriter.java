@@ -6,9 +6,9 @@ import info.avalon566.shardingscaling.sync.jdbc.AbstractJdbcWriter;
 /**
  * @author avalon566
  */
-public class MysqlWriter extends AbstractJdbcWriter {
+public class MySQLWriter extends AbstractJdbcWriter {
 
-    public MysqlWriter(RdbmsConfiguration rdbmsConfiguration) {
+    public MySQLWriter(RdbmsConfiguration rdbmsConfiguration) {
         super(rdbmsConfiguration);
     }
 }

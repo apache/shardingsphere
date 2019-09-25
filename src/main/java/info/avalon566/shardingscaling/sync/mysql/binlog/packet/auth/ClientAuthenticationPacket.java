@@ -2,7 +2,7 @@ package info.avalon566.shardingscaling.sync.mysql.binlog.packet.auth;
 
 import com.google.common.base.Strings;
 import info.avalon566.shardingscaling.sync.mysql.binlog.codec.Capability;
-import info.avalon566.shardingscaling.sync.mysql.binlog.MysqlPasswordEncrypter;
+import info.avalon566.shardingscaling.sync.mysql.binlog.MySQLPasswordEncryptor;
 import info.avalon566.shardingscaling.sync.mysql.binlog.codec.DataTypesCodec;
 import info.avalon566.shardingscaling.sync.mysql.binlog.packet.AbstractPacket;
 import io.netty.buffer.ByteBuf;
@@ -56,7 +56,7 @@ public class ClientAuthenticationPacket extends AbstractPacket {
             DataTypesCodec.writeByte((byte) 0x00, out);
         } else {
             try {
-                byte[] encryptedPassword = MysqlPasswordEncrypter.scramble411(getPassword().getBytes(), scrumbleBuff);
+                byte[] encryptedPassword = MySQLPasswordEncryptor.scramble411(getPassword().getBytes(), scrumbleBuff);
                 DataTypesCodec.writeLengthCodedBinary(encryptedPassword, out);
             } catch (NoSuchAlgorithmException e) {
                 throw new RuntimeException("can't encrypt password that will be sent to MySQL server.", e);

@@ -28,9 +28,9 @@ import java.util.Map;
 /**
  * @author avalon566
  */
-public class MysqlBinlogReader extends AbstractRunner implements Reader {
+public class MySQLBinlogReader extends AbstractRunner implements Reader {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(MysqlBinlogReader.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(MySQLBinlogReader.class);
 
     private final HashMap<Long, String> tableMapCache = new HashMap<>();
 
@@ -43,7 +43,7 @@ public class MysqlBinlogReader extends AbstractRunner implements Reader {
     @Setter
     private Channel channel;
 
-    public MysqlBinlogReader(RdbmsConfiguration rdbmsConfiguration) {
+    public MySQLBinlogReader(RdbmsConfiguration rdbmsConfiguration) {
         this.rdbmsConfiguration = rdbmsConfiguration;
         this.dbMetaDataUtil = new DbMetaDataUtil(rdbmsConfiguration);
     }

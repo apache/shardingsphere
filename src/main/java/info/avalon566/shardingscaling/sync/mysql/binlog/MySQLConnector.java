@@ -1,8 +1,8 @@
 package info.avalon566.shardingscaling.sync.mysql.binlog;
 
-import info.avalon566.shardingscaling.sync.mysql.binlog.codec.MysqlBinlogEventPacketDecoder;
-import info.avalon566.shardingscaling.sync.mysql.binlog.codec.MysqlCommandPacketDecoder;
-import info.avalon566.shardingscaling.sync.mysql.binlog.codec.MysqlLengthFieldBasedFrameEncoder;
+import info.avalon566.shardingscaling.sync.mysql.binlog.codec.MySQLBinlogEventPacketDecoder;
+import info.avalon566.shardingscaling.sync.mysql.binlog.codec.MySQLCommandPacketDecoder;
+import info.avalon566.shardingscaling.sync.mysql.binlog.codec.MySQLLengthFieldBasedFrameEncoder;
 import info.avalon566.shardingscaling.sync.mysql.binlog.packet.command.BinlogDumpCommandPacket;
 import info.avalon566.shardingscaling.sync.mysql.binlog.packet.command.QueryCommandPacket;
 import info.avalon566.shardingscaling.sync.mysql.binlog.packet.command.RegisterSlaveCommandPacket;
@@ -28,9 +28,9 @@ import java.util.concurrent.ExecutionException;
 /**
  * @author avalon566
  */
-public final class MysqlConnector {
+public final class MySQLConnector {
 
-    private Logger LOGGER = LoggerFactory.getLogger(MysqlConnector.class);
+    private Logger LOGGER = LoggerFactory.getLogger(MySQLConnector.class);
 
     private final int serverId;
     private final String host;
@@ -41,7 +41,7 @@ public final class MysqlConnector {
     private Channel channel;
     private Promise<Object> responseCallback;
 
-    public MysqlConnector(int serverId, String host, int port, String username, String password) {
+    public MySQLConnector(int serverId, String host, int port, String username, String password) {
         this.serverId = serverId;
         this.host = host;
         this.port = port;
@@ -58,9 +58,9 @@ public final class MysqlConnector {
                     @Override
                     protected void initChannel(SocketChannel socketChannel) {
                         socketChannel.pipeline().addLast(new LengthFieldBasedFrameDecoder(ByteOrder.LITTLE_ENDIAN, Integer.MAX_VALUE, 0, 3, 1, 4, true));
-                        socketChannel.pipeline().addLast(MysqlLengthFieldBasedFrameEncoder.class.getSimpleName(), new MysqlLengthFieldBasedFrameEncoder());
-                        socketChannel.pipeline().addLast(new MysqlCommandPacketDecoder());
-                        socketChannel.pipeline().addLast(new MysqlNegotiateHandler(username, password, responseCallback));
+                        socketChannel.pipeline().addLast(MySQLLengthFieldBasedFrameEncoder.class.getSimpleName(), new MySQLLengthFieldBasedFrameEncoder());
+                        socketChannel.pipeline().addLast(new MySQLCommandPacketDecoder());
+                        socketChannel.pipeline().addLast(new MySQLNegotiateHandler(username, password, responseCallback));
                         socketChannel.pipeline().addLast(new ChannelInboundHandlerAdapter() {
                             @Override
                             public void channelRead(ChannelHandlerContext ctx, Object msg) {
@@ -115,11 +115,11 @@ public final class MysqlConnector {
         binlogDumpCmd.setBinlogFileName(binlogFileName);
         binlogDumpCmd.setBinlogPosition(binlogPosition);
         binlogDumpCmd.setSlaveServerId(serverId);
-        channel.pipeline().remove(MysqlCommandPacketDecoder.class);
+        channel.pipeline().remove(MySQLCommandPacketDecoder.class);
         channel.pipeline().addAfter(
-                MysqlLengthFieldBasedFrameEncoder.class.getSimpleName(),
-                MysqlBinlogEventPacketDecoder.class.getSimpleName(),
-                new MysqlBinlogEventPacketDecoder());
+                MySQLLengthFieldBasedFrameEncoder.class.getSimpleName(),
+                MySQLBinlogEventPacketDecoder.class.getSimpleName(),
+                new MySQLBinlogEventPacketDecoder());
         channel.writeAndFlush(binlogDumpCmd);
         try {
             Thread.sleep(Long.MAX_VALUE);

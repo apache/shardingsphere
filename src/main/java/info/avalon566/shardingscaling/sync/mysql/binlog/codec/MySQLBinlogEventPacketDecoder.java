@@ -12,9 +12,9 @@ import java.util.List;
 /**
  * @author avalon566
  */
-public class MysqlBinlogEventPacketDecoder extends ByteToMessageDecoder {
+public class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
 
-    private Logger LOGGER = LoggerFactory.getLogger(MysqlBinlogEventPacketDecoder.class);
+    private Logger LOGGER = LoggerFactory.getLogger(MySQLBinlogEventPacketDecoder.class);
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List out) {

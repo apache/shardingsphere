@@ -12,9 +12,9 @@ import org.slf4j.LoggerFactory;
 /**
  * @author avalon566
  */
-public class MysqlLengthFieldBasedFrameEncoder extends MessageToByteEncoder {
+public class MySQLLengthFieldBasedFrameEncoder extends MessageToByteEncoder {
 
-    private Logger LOGGER = LoggerFactory.getLogger(MysqlLengthFieldBasedFrameEncoder.class);
+    private Logger LOGGER = LoggerFactory.getLogger(MySQLLengthFieldBasedFrameEncoder.class);
 
     @Override
     protected void encode(ChannelHandlerContext ctx, Object msg, ByteBuf out) {

@@ -17,7 +17,7 @@ import java.util.List;
  * @author yangyi
  */
 @Slf4j
-public class MysqlCommandPacketDecoder extends ByteToMessageDecoder {
+public class MySQLCommandPacketDecoder extends ByteToMessageDecoder {
     
     private enum States {Initiate, ResponsePacket, FieldPacket, RowDataPacket}
     

@@ -12,9 +12,9 @@ import java.util.Map;
 /**
  * @author avalon566
  */
-public class MysqlReader extends AbstractJdbcReader {
+public class MySQLReader extends AbstractJdbcReader {
 
-    public MysqlReader(RdbmsConfiguration rdbmsConfiguration) {
+    public MySQLReader(RdbmsConfiguration rdbmsConfiguration) {
         super(rdbmsConfiguration);
     }
 
