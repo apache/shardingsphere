@@ -20,10 +20,24 @@ package info.avalon566.shardingscaling.sync.mysql.binlog.packet;
 import io.netty.buffer.ByteBuf;
 
 /**
+ * Packet.
+ *
  * @author avalon566
+ * @author yangyi
  */
 public interface Packet {
+    
+    /**
+     * Read from {@code ByteBuf}.
+     *
+     * @param data byte buffer
+     */
     void fromByteBuf(ByteBuf data);
-
+    
+    /**
+     * Change packet to {@code ByteBuf}.
+     *
+     * @return byte buffer
+     */
     ByteBuf toByteBuf();
 }

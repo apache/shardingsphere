@@ -23,26 +23,35 @@ import lombok.Data;
 import lombok.var;
 
 /**
+ * MySQL packet header.
+ *
+ * <p>
+ *     MySQL Internals Manual  /  MySQL Client/Server Protocol  /  Overview  /  MySQL Packets
+ *     https://dev.mysql.com/doc/internals/en/mysql-packet.html
+ * </p>
+ *
  * @author avalon566
+ * @author yangyi
  */
 @Data
-public class HeaderPacket implements Packet {
+public final class HeaderPacket implements Packet {
 
-    private int  packetBodyLength;
+    private int packetBodyLength;
+    
     private byte packetSequenceNumber;
 
     @Override
     public ByteBuf toByteBuf() {
         var data = ByteBufAllocator.DEFAULT.heapBuffer(4);
-        data.writeByte((byte)(packetBodyLength & 0xFF));
-        data.writeByte((byte)(packetBodyLength >>> 8));
-        data.writeByte((byte)(packetBodyLength >>> 16));
-        data.writeByte((byte)getPacketSequenceNumber());
+        data.writeByte((byte) (packetBodyLength & 0xFF));
+        data.writeByte((byte) (packetBodyLength >>> 8));
+        data.writeByte((byte) (packetBodyLength >>> 16));
+        data.writeByte(getPacketSequenceNumber());
         return data;
     }
 
     @Override
-    public void fromByteBuf(ByteBuf data) {
+    public void fromByteBuf(final ByteBuf data) {
         var buffer = new byte[4];
         buffer[0] = data.readByte();
         buffer[1] = data.readByte();

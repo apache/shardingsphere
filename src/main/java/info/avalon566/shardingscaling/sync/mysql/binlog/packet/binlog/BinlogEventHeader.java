@@ -49,7 +49,12 @@ public final class BinlogEventHeader {
     private int endLogPos;
     
     private short flags;
-
+    
+    /**
+     * Init values from {@code ByteBuf}.
+     *
+     * @param data byte buffer
+     */
     public void fromBytes(final ByteBuf data) {
         timeStamp = DataTypesCodec.readInt(data);
         typeCode = DataTypesCodec.readByte(data);

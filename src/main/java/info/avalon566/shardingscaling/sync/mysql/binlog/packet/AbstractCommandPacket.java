@@ -20,11 +20,16 @@ package info.avalon566.shardingscaling.sync.mysql.binlog.packet;
 import lombok.Data;
 
 /**
+ * Abstract command packet.
+ *
  * @author avalon566
+ * @author yangyi
  */
 @Data
 public abstract class AbstractCommandPacket extends AbstractPacket {
+    
     private byte command;
+    
     public AbstractCommandPacket() {
         setSequenceNumber((byte) 0);
     }
