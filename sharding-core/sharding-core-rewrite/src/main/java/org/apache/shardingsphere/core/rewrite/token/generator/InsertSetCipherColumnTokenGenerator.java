@@ -85,6 +85,6 @@ public final class InsertSetCipherColumnTokenGenerator implements CollectionSQLT
     
     private ExpressionSegment getCipherValue(final InsertSQLStatementContext insertSQLStatementContext, final AssignmentSegment assignmentSegment) {
         return assignmentSegment.getValue() instanceof ParameterMarkerExpressionSegment ? assignmentSegment.getValue()
-                : insertSQLStatementContext.getInsertValues().get(0).getValueExpressions().get(insertSQLStatementContext.getColumnNames().indexOf(assignmentSegment.getColumn().getName()));
+                : insertSQLStatementContext.getInsertValueContexts().get(0).getValueExpressions().get(insertSQLStatementContext.getColumnNames().indexOf(assignmentSegment.getColumn().getName()));
     }
 }

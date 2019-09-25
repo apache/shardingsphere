@@ -95,7 +95,7 @@ public final class InsertSetQueryAndPlainColumnsTokenGenerator implements Option
     
     private List<ExpressionSegment> getEncryptDerivedValues(final InsertSQLStatementContext insertSQLStatementContext) {
         List<ExpressionSegment> result = new LinkedList<>();
-        for (ExpressionSegment each : insertSQLStatementContext.getInsertValues().get(0).getValueExpressions()) {
+        for (ExpressionSegment each : insertSQLStatementContext.getInsertValueContexts().get(0).getValueExpressions()) {
             if (each instanceof DerivedSimpleExpressionSegment && EncryptDerivedColumnType.ENCRYPT.equals(((DerivedSimpleExpressionSegment) each).getType())) { 
                 result.add(each);
             }

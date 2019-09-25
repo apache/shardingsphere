@@ -60,7 +60,7 @@ public final class InsertSetGeneratedKeyColumnTokenGenerator implements Optional
                                                                                     final String generatedKeyColumn, final List<AssignmentSegment> assignments) {
         int index = insertSQLStatementContext.getColumnNames().contains(generatedKeyColumn)
                 ? insertSQLStatementContext.getColumnNames().indexOf(generatedKeyColumn) : insertSQLStatementContext.getColumnNames().size();
-        ExpressionSegment expressionSegment = insertSQLStatementContext.getInsertValues().get(0).getValueExpressions().get(index);
+        ExpressionSegment expressionSegment = insertSQLStatementContext.getInsertValueContexts().get(0).getValueExpressions().get(index);
         return new InsertSetGeneratedKeyColumnToken(assignments.get(assignments.size() - 1).getStopIndex() + 1, generatedKeyColumn, expressionSegment);
     }
     

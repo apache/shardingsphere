@@ -67,12 +67,12 @@ public final class InsertSQLStatementContextTest {
     private void assertInsertSQLStatementContext(final InsertSQLStatementContext actual) {
         assertThat(actual.getTablesContext().getSingleTableName(), is("tbl"));
         assertThat(actual.getColumnNames(), is(Arrays.asList("id", "name", "status")));
-        assertThat(actual.getInsertValues().size(), is(2));
-        assertThat(actual.getInsertValues().get(0).getValue(0), is((Object) 1));
-        assertThat(actual.getInsertValues().get(0).getValue(1), is((Object) "Tom"));
-        assertThat(actual.getInsertValues().get(0).getValue(2), is((Object) "init"));
-        assertThat(actual.getInsertValues().get(1).getValue(0), is((Object) 2));
-        assertThat(actual.getInsertValues().get(1).getValue(1), is((Object) "Jerry"));
-        assertThat(actual.getInsertValues().get(1).getValue(2), is((Object) "init"));
+        assertThat(actual.getInsertValueContexts().size(), is(2));
+        assertThat(actual.getInsertValueContexts().get(0).getValue(0), is((Object) 1));
+        assertThat(actual.getInsertValueContexts().get(0).getValue(1), is((Object) "Tom"));
+        assertThat(actual.getInsertValueContexts().get(0).getValue(2), is((Object) "init"));
+        assertThat(actual.getInsertValueContexts().get(1).getValue(0), is((Object) 2));
+        assertThat(actual.getInsertValueContexts().get(1).getValue(1), is((Object) "Jerry"));
+        assertThat(actual.getInsertValueContexts().get(1).getValue(2), is((Object) "init"));
     }
 }

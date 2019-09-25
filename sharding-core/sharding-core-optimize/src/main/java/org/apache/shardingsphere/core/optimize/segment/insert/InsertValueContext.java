@@ -32,14 +32,14 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Insert value.
+ * Insert value context.
  *
  * @author panjuan
  * @author zhangliang
  */
 @Getter
 @ToString
-public final class InsertValue {
+public final class InsertValueContext {
     
     private final int parametersCount;
     
@@ -47,7 +47,7 @@ public final class InsertValue {
     
     private final List<Object> parameters;
     
-    public InsertValue(final Collection<ExpressionSegment> assignments, final List<Object> parameters, final int parametersOffset) {
+    public InsertValueContext(final Collection<ExpressionSegment> assignments, final List<Object> parameters, final int parametersOffset) {
         parametersCount = calculateParametersCount(assignments);
         valueExpressions = getValueExpressions(assignments);
         this.parameters = getParameters(parameters, parametersOffset);

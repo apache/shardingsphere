@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.route.router.sharding.condition.engine;
 
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.optimize.segment.insert.InsertValue;
+import org.apache.shardingsphere.core.optimize.segment.insert.InsertValueContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
@@ -58,7 +58,7 @@ public final class InsertClauseShardingConditionEngine {
         List<ShardingCondition> result = new LinkedList<>();
         String tableName = insertSQLStatementContext.getTablesContext().getSingleTableName();
         Collection<String> columnNames = getColumnNames(insertSQLStatementContext, generatedKey);
-        for (InsertValue each : insertSQLStatementContext.getInsertValues()) {
+        for (InsertValueContext each : insertSQLStatementContext.getInsertValueContexts()) {
             result.add(createShardingCondition(tableName, columnNames.iterator(), each, parameters));
         }
         if (null != generatedKey && generatedKey.isGenerated() && shardingRule.isShardingColumn(generatedKey.getColumnName(), tableName)) {
@@ -76,9 +76,9 @@ public final class InsertClauseShardingConditionEngine {
         return result;
     }
     
-    private ShardingCondition createShardingCondition(final String tableName, final Iterator<String> columnNames, final InsertValue insertValue, final List<Object> parameters) {
+    private ShardingCondition createShardingCondition(final String tableName, final Iterator<String> columnNames, final InsertValueContext insertValueContext, final List<Object> parameters) {
         ShardingCondition result = new ShardingCondition();
-        for (ExpressionSegment each : insertValue.getValueExpressions()) {
+        for (ExpressionSegment each : insertValueContext.getValueExpressions()) {
             String columnName = columnNames.next();
             if (each instanceof SimpleExpressionSegment && shardingRule.isShardingColumn(columnName, tableName)) {
                 result.getRouteValues().add(new ListRouteValue<>(columnName, tableName, Collections.singletonList(getRouteValue((SimpleExpressionSegment) each, parameters))));

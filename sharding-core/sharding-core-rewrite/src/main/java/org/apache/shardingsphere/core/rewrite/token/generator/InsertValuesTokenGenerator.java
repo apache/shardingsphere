@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.optimize.segment.insert.InsertValue;
+import org.apache.shardingsphere.core.optimize.segment.insert.InsertValueContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.InsertValuesSegment;
@@ -59,7 +59,7 @@ public final class InsertValuesTokenGenerator implements OptionalSQLTokenGenerat
         if (rewriteStatement.getSqlStatementContext() instanceof InsertSQLStatementContext) {
             shardingConditions = rewriteStatement.getShardingConditions().getConditions().isEmpty() ? null : rewriteStatement.getShardingConditions().getConditions().iterator();
         }
-        for (InsertValue each : ((InsertSQLStatementContext) rewriteStatement.getSqlStatementContext()).getInsertValues()) {
+        for (InsertValueContext each : ((InsertSQLStatementContext) rewriteStatement.getSqlStatementContext()).getInsertValueContexts()) {
             Collection<DataNode> dataNodes = null == shardingConditions ? Collections.<DataNode>emptyList() : shardingConditions.next().getDataNodes();
             result.addInsertValueToken(each.getValueExpressions(), dataNodes);
         }

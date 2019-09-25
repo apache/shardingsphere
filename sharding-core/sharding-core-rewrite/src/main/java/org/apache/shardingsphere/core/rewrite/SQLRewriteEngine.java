@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.rewrite;
 
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.optimize.segment.insert.InsertValue;
+import org.apache.shardingsphere.core.optimize.segment.insert.InsertValueContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
@@ -105,7 +105,7 @@ public final class SQLRewriteEngine {
     
     private List<List<Object>> getGroupedParameters() {
         List<List<Object>> result = new LinkedList<>();
-        for (InsertValue each : ((InsertSQLStatementContext) rewriteStatement.getSqlStatementContext()).getInsertValues()) {
+        for (InsertValueContext each : ((InsertSQLStatementContext) rewriteStatement.getSqlStatementContext()).getInsertValueContexts()) {
             result.add(each.getParameters());
         }
         return result;
